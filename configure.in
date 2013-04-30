@@ -1,0 +1,51 @@
+AC_INIT([iaengine],[0.1],[luis.camp0.2009@gmail.com],[],[])
+AM_INIT_AUTOMAKE(iaengine,0.0.1)
+AM_PROG_LIBTOOL
+
+AM_CONFIG_HEADER(config.h)
+
+AC_CONFIG_MACRO_DIR([m4])
+m4_include([m4/ax_boost_base.m4])
+m4_include([m4/debug.m4])
+m4_include([m4/ac_c++11.m4])
+
+AC_PREREQ(2.59)
+
+AC_PROG_INSTALL
+
+AC_LANG([C++])
+AC_PROG_CXX
+AC_PROG_MAKE_SET
+AC_HEADER_STDC
+
+CXXFLAGS="-std=c++11"
+AC_COMPILE_STDCXX_11
+
+# CXXFLAGS="-std=c++11"
+# CXXFLAGS="-std=c++0x"
+
+dnl BOOST
+AX_BOOST_BASE([1.49.0])
+
+AC_CHECK_DEBUG
+
+AC_CONFIG_FILES([
+Makefile
+src/Makefile
+test/Makefile
+])
+
+
+AC_OUTPUT
+
+echo "
+  FireSql 
+  ($PACKAGE_NAME) version $PACKAGE_VERSION
+  Prefix.........: $prefix
+  Debug Build....: $debug
+  C++ Compiler...: $CXX $CXXFLAGS $CPPFLAGS
+  Linker.........: $LD $LDFLAGS $LIBS
+  Boost..........: $boost_lib_version_req
+  Python.........: $ax_python_bin
+"
+
