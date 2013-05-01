@@ -13,7 +13,8 @@ public:
 
 	void releaseFlow(const Flow& flow);
 	const Flow& getFlow();
-
+	void createFlows(int number);
+	void destroyFlows(int number);
 private:
 	int32_t total_flows_;
 	int32_t current_flows_;

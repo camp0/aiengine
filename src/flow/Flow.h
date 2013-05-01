@@ -8,7 +8,9 @@ class Flow {
 public:
 	FiveTuple id;
 	void reset(){};
+	unsigned long getId() const { return id_;};
 private:
+	unsigned long id_;
 
        /* uint32_t saddr;
         uint32_t daddr;
