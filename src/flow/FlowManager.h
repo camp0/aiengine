@@ -23,14 +23,12 @@ typedef multi_index_container<
 class FlowManager
 {
 public:
-    	FlowManager(std::ofstream& logfile);
+    	FlowManager();
     	virtual ~FlowManager();
 
-	void addFlow(const FlowPtr& flow);
+	void addFlow(Flow *flow);
 
 private:
-	std::ofstream& logfile_;
-    	bool debug_;
     	timeval now_;
 
     	FlowTable flowTable_;

@@ -1,19 +1,20 @@
 #include "FlowManager.h"
 
 
-FlowManager::FlowManager(std::ofstream& logfile) :
-	logfile_(logfile),
-    	debug_(false)
+FlowManager::FlowManager() 
 {
 }
 
 FlowManager::~FlowManager()
 {
-
+	flowTable_.clear();
 }
 
 
-void FlowManager::addFlow(const FlowPtr& flow)
+void FlowManager::addFlow(Flow *flow)
 {
-	flowTable_.insert(flow);
+	flowTable_.insert(boost::shared_ptr<Flow>(flow));
+
+	std::cout << "items on multi:"<< flowTable_.size()<<std::endl;
+	//flowTable_.insert(std::make_shared<Flow>(flow));
 }
