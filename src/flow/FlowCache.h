@@ -12,7 +12,7 @@ public:
     	virtual ~FlowCache();
 
 	void releaseFlow(Flow *flow);
-	Flow *getFlow();
+	Flow *acquireFlow();
 
 	void createFlows(int number);
 	void destroyFlows(int number);

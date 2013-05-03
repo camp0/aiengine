@@ -22,7 +22,7 @@ void FlowCache::releaseFlow(Flow *flow)
 	return;
 }
 
-Flow *FlowCache::getFlow()
+Flow *FlowCache::acquireFlow()
 {
 	Flow *f= nullptr;
 

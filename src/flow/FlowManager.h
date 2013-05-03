@@ -19,6 +19,7 @@ typedef multi_index_container<
 	>
 >FlowTable;
 
+typedef FlowTable::nth_index<0>::type FlowByID;
 
 class FlowManager
 {
@@ -27,12 +28,12 @@ public:
     	virtual ~FlowManager();
 
 	void addFlow(Flow *flow);
+	Flow *findFlow(unsigned long hash1,unsigned long hash2);
 
 private:
     	timeval now_;
 
     	FlowTable flowTable_;
-
 };
 
 #endif

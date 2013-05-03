@@ -14,7 +14,25 @@ FlowManager::~FlowManager()
 void FlowManager::addFlow(Flow *flow)
 {
 	flowTable_.insert(boost::shared_ptr<Flow>(flow));
+	//std::cout << "Inserting flow:" << flow << " items on multi:"<< flowTable_.size()<<std::endl;
+}
 
-	std::cout << "items on multi:"<< flowTable_.size()<<std::endl;
-	//flowTable_.insert(std::make_shared<Flow>(flow));
+
+Flow *FlowManager::findFlow(unsigned long hash1,unsigned long hash2)
+{
+	FlowByID::iterator it = flowTable_.find(hash1);
+	Flow *f = nullptr;
+
+	if (it == flowTable_.end())
+	{
+		it = flowTable_.find(hash2);
+		if (it == flowTable_.end()) 
+		{
+			return nullptr;
+		}
+	}
+
+	f = (*it).get();
+	
+	return f;
 }
