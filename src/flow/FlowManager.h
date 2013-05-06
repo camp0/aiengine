@@ -9,7 +9,6 @@
 
 #include "Flow.h"
 
-
 using namespace boost::multi_index;
 
 typedef multi_index_container<
@@ -30,6 +29,10 @@ public:
 	void addFlow(Flow *flow);
 	Flow *findFlow(unsigned long hash1,unsigned long hash2);
 
+	int getNumberFlows() const { return flowTable_.size();}
+	
+	void removeFlow(Flow *flow);
+	void removeFlow(unsigned long hash1, unsigned long hash2);
 private:
     	timeval now_;
 

@@ -2,7 +2,7 @@
 #define _Flow_H
 
 #include <boost/shared_ptr.hpp>
-#include "FiveTuple.h"
+#include "../FiveTuple.h"
 
 class Flow {
 public:

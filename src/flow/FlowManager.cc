@@ -36,3 +36,18 @@ Flow *FlowManager::findFlow(unsigned long hash1,unsigned long hash2)
 	
 	return f;
 }
+
+void FlowManager::removeFlow(unsigned long hash1, unsigned long hash2)
+{
+	FlowByID::iterator it = flowTable_.find(hash1);
+
+	if (it != flowTable_.end())
+	{
+		flowTable_.erase(it);
+	}else {
+		it = flowTable_.find(hash2);
+		if (it != flowTable_.end()) 
+			flowTable_.erase(it);
+	}	
+	return;	
+}

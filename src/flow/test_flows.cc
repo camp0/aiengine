@@ -9,7 +9,21 @@
 
 BOOST_AUTO_TEST_SUITE (flowtest) // name of the test suite is stringtest
 
-BOOST_AUTO_TEST_CASE (test_flowcache)
+BOOST_AUTO_TEST_CASE (test1_flowcache)
+{
+	FlowCache *fc = new FlowCache(); 
+	BOOST_CHECK(fc->getTotalFlows() == 0);
+	BOOST_CHECK(fc->getTotalReleases() == 0);
+	BOOST_CHECK(fc->getTotalAcquires() == 0);
+	BOOST_CHECK(fc->getTotalFails() == 0);
+
+	fc->createFlows(1000);
+	BOOST_CHECK(fc->getTotalFlows() == 1000);
+	fc->destroyFlows(10000);
+	delete fc;	
+}
+
+BOOST_AUTO_TEST_CASE (test2_flowcache)
 {
 	FlowCache *fc = new FlowCache(); 
 	BOOST_CHECK(fc->getTotalFlows() == 0);
@@ -29,21 +43,24 @@ BOOST_AUTO_TEST_CASE (test_flowcache)
 
 	fc->destroyFlows(9);
 	BOOST_CHECK(fc->getTotalFlows() == 0);
+	BOOST_CHECK(fc->getTotalReleases() == 0);
+	BOOST_CHECK(fc->getTotalAcquires() == 0);
 
 	fc->createFlows(1);
-	const Flow *f1 = fc->acquireFlow();
+	Flow *f1 = fc->acquireFlow();
 	BOOST_CHECK(fc->getTotalFlows() == 1);
 	BOOST_CHECK(fc->getTotalReleases() == 0);
 	BOOST_CHECK(fc->getTotalAcquires() == 1);
 	BOOST_CHECK(fc->getTotalFails() == 0);
 
-	const Flow *f2 = fc->acquireFlow();
+	Flow *f2 = fc->acquireFlow();
 	BOOST_CHECK(fc->getTotalFlows() == 1);
 	BOOST_CHECK(fc->getTotalReleases() == 0);
 	BOOST_CHECK(fc->getTotalAcquires() == 1);
 	BOOST_CHECK(fc->getTotalFails() == 1);
 	BOOST_CHECK(f2 == nullptr);
-		
+	
+	//fc->destroyFlows(1);	
 	delete fc;
 }
 
@@ -65,6 +82,7 @@ BOOST_AUTO_TEST_CASE (test_flowmanager_lookups)
 
 	f1->setId(h1);
 	fm->addFlow(f1);
+	BOOST_CHECK(fm->getNumberFlows() == 1);
 
 	Flow *f2 = fm->findFlow(h1,hfail);
 	BOOST_CHECK(f1 == f2);
@@ -73,8 +91,11 @@ BOOST_AUTO_TEST_CASE (test_flowmanager_lookups)
 	f2 = fm->findFlow(hfail,hfail);
 	BOOST_CHECK(f2 == nullptr);
 
+	BOOST_CHECK(fm->getNumberFlows() == 1);
+	fm->removeFlow(hfail,h1);
+	BOOST_CHECK(fm->getNumberFlows() == 0);
 	fc->releaseFlow(f1);
-	//fc->destroyFlows(10);
+	BOOST_CHECK(fc->getTotalFlows() == 10);
 
 	delete fc;
 	delete fm;
