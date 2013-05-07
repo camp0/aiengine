@@ -9,59 +9,38 @@
 //#include "IPaccessor.h"
 #include "ForwarderFactory.h"
 
-class Mux : public Conduit
+class Multiplexer : public Forwarder
 {
- protected:
+protected:
     Accessor& accessor_;
-    ConduitFactory& sideBfactory_;
+    ForwarderFactory& sideBfactory_;
     boost::weak_ptr<Conduit> sideA_;
 
     typedef std::map<ProtocolType,Conduit*> MapSideB;
     MapSideB sideBlist_;
 
- public:
-    virtual ~Mux()
-    {
-        MapSideB::iterator iter = sideBlist_.begin();
-        for( ; iter != sideBlist_.end(); iter++) {
-            delete (*iter).second;
-        }
-        sideBlist_.clear();
-    }
-
-    Mux(Accessor& accessor, ConduitFactory& sideBfactory) :
+public:
+    Multiplexer(Accessor& accessor, ConduitFactory& sideBfactory) :
         accessor_(accessor),
         sideBfactory_(sideBfactory)
     {
     }
+    virtual ~Multiplexer();
 
-    virtual void setSideA(const boost::shared_ptr<Conduit>& side) { sideA_ = side; }
-    virtual void setSideB(const boost::shared_ptr<Conduit>& side) { throw "Mux has multiple side B"; }
-    virtual const boost::weak_ptr<Conduit>& getSideA() const { return sideA_; }
-    virtual const boost::weak_ptr<Conduit>& getSideB() const
-    {
-        throw "Mux has multiple side B";
-        return sideA_; // to prevent compile errors
-    }
+    virtual void setSideA(const ForwarderPtr& side); 
+    virtual void setSideB(const ForwarderPtr& side);
+    virtual const ForwarderPtrWeak& getSideA() const;
+    virtual const ForwarderPtrWeak& getSideB() const;
 
-    virtual const Conduit& getSideB(ProtocolType key)
-    {
-        MapSideB::iterator it = sideBlist_.find(key);
-        return *(it->second);
-    }
+    virtual const Forwarder& getSideB(ProtocolType key);
 
-    // we take ownership of the pointer
-    void addSideB(ProtocolType key, Conduit* sideB) {
-        if (sideB) {
-            sideBlist_[key] = sideB;
-        }
-    }
+    void addSideB(ProtocolType key, Forwarder* sideB);
 
-    virtual const ConduitFactory& getFactory() const { return sideBfactory_; }
-    virtual const Conduit& getAccessor() const { return accessor_; }
+    virtual const ForwarderFactory& getFactory() const;
+    virtual const Forwarder& getAccessor() const;
 };
 
-class UnhandledPktMux : public Mux
+class UnhandledPktMux : public Muxltiplexer
 {
  private:
     std::ofstream& logfile_;

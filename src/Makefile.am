@@ -1,13 +1,16 @@
 AUTOMAKE_OPTIONS = gnu
 
 noinst_HEADERS =        ForwarderVisitor.h \
+			ForwarderFactory.h \
 			Forwarder.h \
+			Multiplexer.h \
 			FiveTuple.h \
                         ./flow/FlowCache.h \
                         ./flow/FlowManager.h \
                         ./flow/Flow.h
 
-iaengine_core_sources = ./flow/FlowCache.cc \
+iaengine_core_sources = Multiplexer.cc \
+			./flow/FlowCache.cc \
 			./flow/FlowManager.cc 
 
 iaengine_SOURCES =      $(iaengine_core_sources) main.cc

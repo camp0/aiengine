@@ -5,6 +5,10 @@
 
 #include "ForwarderVisitor.h"
 
+class Forwarder;
+
+typedef boost::shared_ptr<Forwarder> ForwarderPtr;
+
 class Forwarder : public ForwarderVisitor
 {
 public:
@@ -17,7 +21,7 @@ public:
     	virtual const ForwarderPtrWeak& getSideB() const = 0;
 };
 
-typedef boost::shared_ptr<Forwarder> ForwarderPtr;
+//typedef boost::shared_ptr<Forwarder> ForwarderPtr;
 typedef boost::weak_ptr<Forwarder> ForwarderPtrWeak;
 
 #endif

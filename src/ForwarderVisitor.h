@@ -1,8 +1,6 @@
 #ifndef _ForwarderVisitor_H_
 #define _ForwarderVisitor_H_
 
-//#include <boost/weak_ptr.hpp>
-
 class ForwarderVisitor
 {
 public:
