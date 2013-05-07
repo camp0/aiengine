@@ -1,6 +1,8 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS =        FiveTuple.h \
+noinst_HEADERS =        ForwarderVisitor.h \
+			Forwarder.h \
+			FiveTuple.h \
                         ./flow/FlowCache.h \
                         ./flow/FlowManager.h \
                         ./flow/Flow.h

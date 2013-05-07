@@ -1,5 +1,5 @@
-#ifndef _5tuple_H_
-#define _5tuple_H_
+#ifndef _FiveTuple_H_
+#define _FiveTuple_H_
 
 #include <stdint.h>
 
