@@ -10,7 +10,6 @@ BOOST_AUTO_TEST_SUITE (flowcache) // name of the test suite is stringtest
 
 BOOST_AUTO_TEST_CASE (test1_flowcache)
 {
-	std::cout << "Test 1"<< std::endl;
 	FlowCache *fc = new FlowCache(); 
 	BOOST_CHECK(fc->getTotalFlows() == 0);
 	BOOST_CHECK(fc->getTotalReleases() == 0);
@@ -26,7 +25,6 @@ BOOST_AUTO_TEST_CASE (test1_flowcache)
 
 BOOST_AUTO_TEST_CASE (test2_flowcache)
 {
-	std::cout << "Test 2"<< std::endl;
 	FlowCache *fc = new FlowCache(); 
 	BOOST_CHECK(fc->getTotalFlows() == 0);
 	BOOST_CHECK(fc->getTotalReleases() == 0);
@@ -69,8 +67,6 @@ BOOST_AUTO_TEST_CASE (test2_flowcache)
 
 BOOST_AUTO_TEST_CASE (test3_flowcache)
 {
-        std::cout << "Test 3"<< std::endl;
-
         FlowCache *fc = new FlowCache();
         fc->createFlows(10);
 
@@ -101,8 +97,6 @@ BOOST_AUTO_TEST_SUITE (flowmanager) // name of the test suite is stringtest
 
 BOOST_AUTO_TEST_CASE (test1_flowmanager_lookups)
 {
-	std::cout << "Test 4"<< std::endl;
-
 	FlowManager *fm = new FlowManager();
 	FlowPtr f1 = FlowPtr(new Flow());
 
@@ -126,8 +120,6 @@ BOOST_AUTO_TEST_CASE (test1_flowmanager_lookups)
 
 BOOST_AUTO_TEST_CASE (test2_flowmanager_lookups_remove)
 {
-        std::cout << "Test 4"<< std::endl;
-
         FlowManager *fm = new FlowManager();
         FlowPtr f1 = FlowPtr(new Flow());
 
@@ -151,6 +143,34 @@ BOOST_AUTO_TEST_CASE (test2_flowmanager_lookups_remove)
         delete fm;
 }
 
+BOOST_AUTO_TEST_SUITE_END( )
 
+BOOST_AUTO_TEST_SUITE (flowcache_and_flowmanager) // name of the test suite is stringtest
+
+BOOST_AUTO_TEST_CASE (test1_flowcache_flowmanager)
+{
+	FlowCache *fc = new FlowCache(); 
+	FlowManager *fm = new FlowManager();
+
+	fc->createFlows(10);
+	FlowPtr f1 = FlowPtr(fc->acquireFlow());
+	BOOST_CHECK(f1.use_count() == 1);
+        BOOST_CHECK(fm->getNumberFlows() == 0);
+        
+	unsigned long h1 = 1^2^3^4^5;
+        unsigned long h2 = 4^5^3^1^2;
+        unsigned long hfail = 10^10^10^10^10; // for fails
+	f1->setId(h1);
+
+	fm->addFlow(f1);
+        BOOST_CHECK(fm->getNumberFlows() == 1);
+	FlowPtr f2 = fm->findFlow(h1,hfail);
+	BOOST_CHECK(f2.get() == f1.get());
+	fm->removeFlow(f1);
+        BOOST_CHECK(fm->getNumberFlows() == 0);
+
+	delete fm;
+	delete fc;
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
