@@ -17,6 +17,7 @@ public:
 	void createFlows(int number);
 	void destroyFlows(int number);
 
+	int32_t getTotalFlowsOnCache() const { return flows_.size();};
 	int32_t getTotalFlows() const { return total_flows_;};
 	int32_t getTotalAcquires() const { return total_acquires_;};
 	int32_t getTotalReleases() const { return total_releases_;};

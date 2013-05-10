@@ -2,14 +2,20 @@
 #define _Flow_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include "../FiveTuple.h"
 
 class Flow {
 public:
+    	Flow() {hash_=0;};
+    	virtual ~Flow(){};
+
 	FiveTuple id;
 	void reset(){};
-	unsigned long getId() const { return hash_;};
+	unsigned long getId(void) const { return hash_;};
 	void setId(unsigned long hash) { hash_=hash;};
+
+
 private:
 	unsigned long hash_;
 
@@ -26,5 +32,6 @@ private:
 };
 
 typedef boost::shared_ptr<Flow> FlowPtr;
+typedef boost::weak_ptr<Flow> FlowPtrWeak;
 
 #endif

@@ -10,44 +10,37 @@ FlowManager::~FlowManager()
 	flowTable_.clear();
 }
 
-
-void FlowManager::addFlow(Flow *flow)
+void FlowManager::addFlow(FlowPtr flow)
 {
-	flowTable_.insert(boost::shared_ptr<Flow>(flow));
-	//std::cout << "Inserting flow:" << flow << " items on multi:"<< flowTable_.size()<<std::endl;
+	flowTable_.insert(flow);
+}
+
+void FlowManager::removeFlow(FlowPtr flow)
+{
+	FlowByID::iterator it = flowTable_.find(flow->getId());
+	
+	flowTable_.erase(it);
+	flow.reset();
 }
 
 
-Flow *FlowManager::findFlow(unsigned long hash1,unsigned long hash2)
+FlowPtr FlowManager::findFlow(unsigned long hash1,unsigned long hash2)
 {
 	FlowByID::iterator it = flowTable_.find(hash1);
-	Flow *f = nullptr;
+	FlowPtr fp;
 
+	std::cout << "BEGIN Flow:" << fp << " count:" << fp.use_count() << " size:" << flowTable_.size() <<std::endl;	
 	if (it == flowTable_.end())
 	{
 		it = flowTable_.find(hash2);
 		if (it == flowTable_.end()) 
 		{
-			return nullptr;
+			return fp;
 		}
 	}
-
-	f = (*it).get();
+	fp = (*it);
 	
-	return f;
+	//std::cout << "END Flow:" << f << " count:" << (*it).use_count() << " size:" << flowTable_.size() <<std::endl;	
+	return fp;
 }
 
-void FlowManager::removeFlow(unsigned long hash1, unsigned long hash2)
-{
-	FlowByID::iterator it = flowTable_.find(hash1);
-
-	if (it != flowTable_.end())
-	{
-		flowTable_.erase(it);
-	}else {
-		it = flowTable_.find(hash2);
-		if (it != flowTable_.end()) 
-			flowTable_.erase(it);
-	}	
-	return;	
-}

@@ -15,6 +15,8 @@ typedef multi_index_container<
 	FlowPtr,
 	indexed_by<
 		hashed_unique< const_mem_fun<Flow,unsigned long, &Flow::getId>>
+		//hashed_unique< BOOST_MULTI_INDEX_MEM_FUNC(Flow,unsigned long, Flow::getId)>
+		//hashed_unique< const_mem_fun<Flow,unsigned long, &Flow::getId>>
 	>
 >FlowTable;
 
@@ -26,13 +28,12 @@ public:
     	FlowManager();
     	virtual ~FlowManager();
 
-	void addFlow(Flow *flow);
-	Flow *findFlow(unsigned long hash1,unsigned long hash2);
+	void addFlow(FlowPtr flow);
+	void removeFlow(FlowPtr flow);
+	FlowPtr findFlow(unsigned long hash1,unsigned long hash2);
 
 	int getNumberFlows() const { return flowTable_.size();}
 	
-	void removeFlow(Flow *flow);
-	void removeFlow(unsigned long hash1, unsigned long hash2);
 private:
     	timeval now_;
 
