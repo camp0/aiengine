@@ -6,58 +6,54 @@
 #include <map>
 
 #include "Forwarder.h"
-//#include "IPaccessor.h"
+#include "Accessor.h"
 #include "ForwarderFactory.h"
 
 class Multiplexer : public Forwarder
 {
-protected:
-    Accessor& accessor_;
-    ForwarderFactory& sideBfactory_;
-    boost::weak_ptr<Conduit> sideA_;
-
-    typedef std::map<ProtocolType,Conduit*> MapSideB;
-    MapSideB sideBlist_;
-
 public:
-    Multiplexer(Accessor& accessor, ConduitFactory& sideBfactory) :
-        accessor_(accessor),
-        sideBfactory_(sideBfactory)
-    {
-    }
-    virtual ~Multiplexer();
+    	Multiplexer(Accessor& accessor, ForwarderFactory& sideBfactory) :
+        	accessor_(accessor),
+        	sideBfactory_(sideBfactory)
+    	{
+    	}
+    	virtual ~Multiplexer();
 
-    virtual void setSideA(const ForwarderPtr& side); 
-    virtual void setSideB(const ForwarderPtr& side);
-    virtual const ForwarderPtrWeak& getSideA() const;
-    virtual const ForwarderPtrWeak& getSideB() const;
+    	virtual void setSideA(const ForwarderPtr& side) { sideA_ = side;} 
+    	virtual void setSideB(const ForwarderPtr& side) { throw "Multiplexer has multiple side B";}
+    	virtual const ForwarderPtrWeak& getSideA() const;
+    	virtual const ForwarderPtrWeak& getSideB() const;
 
-    virtual const Forwarder& getSideB(ProtocolType key);
+    	virtual const Forwarder& getSideB(int key);
 
-    void addSideB(ProtocolType key, Forwarder* sideB);
+    	void addSideB(int key, Forwarder* sideB);
 
-    virtual const ForwarderFactory& getFactory() const;
-    virtual const Forwarder& getAccessor() const;
+    	virtual const ForwarderFactory& getFactory() const;
+    	virtual const Forwarder& getAccessor() const;
+
+protected:
+    	Accessor& accessor_;
+    	ForwarderFactory& sideBfactory_;
+
+	ForwarderPtrWeak sideA_;	
+
+    	typedef std::map<int,Forwarder*> MapSideB;
+    	MapSideB sideBlist_;
 };
 
-class UnhandledPktMux : public Muxltiplexer
+class UnhandledPktMux : public Multiplexer
 {
- private:
-    std::ofstream& logfile_;
+public:
+    	UnhandledPktMux(Accessor& accessor, ForwarderFactory& sideBfactory) :
+    		Multiplexer(accessor, sideBfactory)
+	{
+	}
+    	virtual ~UnhandledPktMux() {}
 
- private:
-
- public:
-    UnhandledPktMux(std::ofstream& logfile, Accessor& accessor, ConduitFactory& sideBfactory) :
-    Mux(accessor, sideBfactory),
-    logfile_(logfile) {}
-
-    virtual ~UnhandledPktMux() {}
-
-    void visit(IPmsg& msg) {}
-    void visit(TCPmsg& pkt) { throw "UnhandledPktMux can not handle TCP messages"; }
-    void visit(UDPmsg& p) { throw "UnhandledPktMux can not handle UDP messages"; }
-    void visit(HTTPmsg& p) { throw "UnhandledPktMux can not handle HTTP messages"; }
+    	void visit(IPmsg& msg) {}
+    	void visit(TCPmsg& pkt) { throw "UnhandledPktMux can not handle TCP messages"; }
+    	void visit(UDPmsg& p) { throw "UnhandledPktMux can not handle UDP messages"; }
+    	void visit(HTTPmsg& p) { throw "UnhandledPktMux can not handle HTTP messages"; }
 };
 
 

@@ -12,8 +12,8 @@
 class ForwarderFactory : public Forwarder
 {
 public:
-	ConduitFactory() {}
-	virtual ~ConduitFactory() {}
+	ForwarderFactory() {}
+	virtual ~ForwarderFactory() {}
 
     	virtual void setSideA(const ForwarderPtr& side) { sideA_ = side; }
     	virtual void setSideB(const ForwarderPtr& side) { sideB_ = side; }

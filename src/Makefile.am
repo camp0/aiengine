@@ -3,6 +3,8 @@ AUTOMAKE_OPTIONS = gnu
 noinst_HEADERS =        ForwarderVisitor.h \
 			ForwarderFactory.h \
 			Forwarder.h \
+			Accessor.h \
+			Message.h \
 			Multiplexer.h \
 			FiveTuple.h \
                         ./flow/FlowCache.h \

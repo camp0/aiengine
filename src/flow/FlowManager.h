@@ -15,8 +15,6 @@ typedef multi_index_container<
 	FlowPtr,
 	indexed_by<
 		hashed_unique< const_mem_fun<Flow,unsigned long, &Flow::getId>>
-		//hashed_unique< BOOST_MULTI_INDEX_MEM_FUNC(Flow,unsigned long, Flow::getId)>
-		//hashed_unique< const_mem_fun<Flow,unsigned long, &Flow::getId>>
 	>
 >FlowTable;
 

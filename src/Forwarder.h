@@ -8,6 +8,7 @@
 class Forwarder;
 
 typedef boost::shared_ptr<Forwarder> ForwarderPtr;
+typedef boost::weak_ptr<Forwarder> ForwarderPtrWeak;
 
 class Forwarder : public ForwarderVisitor
 {
@@ -21,7 +22,5 @@ public:
     	virtual const ForwarderPtrWeak& getSideB() const = 0;
 };
 
-//typedef boost::shared_ptr<Forwarder> ForwarderPtr;
-typedef boost::weak_ptr<Forwarder> ForwarderPtrWeak;
 
 #endif

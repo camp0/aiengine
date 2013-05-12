@@ -15,9 +15,12 @@ public:
 	unsigned long getId(void) const { return hash_;};
 	void setId(unsigned long hash) { hash_=hash;};
 
+	void setProtocol(int proto) { protocol_ = proto;}
+	int getProtocol() const { return protocol_;}
 
 private:
 	unsigned long hash_;
+	int protocol_;
 
        /* uint32_t saddr;
         uint32_t daddr;

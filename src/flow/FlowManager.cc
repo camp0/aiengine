@@ -29,7 +29,6 @@ FlowPtr FlowManager::findFlow(unsigned long hash1,unsigned long hash2)
 	FlowByID::iterator it = flowTable_.find(hash1);
 	FlowPtr fp;
 
-	std::cout << "BEGIN Flow:" << fp << " count:" << fp.use_count() << " size:" << flowTable_.size() <<std::endl;	
 	if (it == flowTable_.end())
 	{
 		it = flowTable_.find(hash2);
@@ -39,8 +38,6 @@ FlowPtr FlowManager::findFlow(unsigned long hash1,unsigned long hash2)
 		}
 	}
 	fp = (*it);
-	
-	//std::cout << "END Flow:" << f << " count:" << (*it).use_count() << " size:" << flowTable_.size() <<std::endl;	
 	return fp;
 }
 
