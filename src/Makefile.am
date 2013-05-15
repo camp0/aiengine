@@ -1,18 +1,15 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS =        ForwarderVisitor.h \
-			ForwarderFactory.h \
-			Forwarder.h \
-			Accessor.h \
+			
+noinst_HEADERS =        Multiplexer.h \
 			Message.h \
-			Multiplexer.h \
 			FiveTuple.h \
+                        ./ip/IPMessage.h \
                         ./flow/FlowCache.h \
                         ./flow/FlowManager.h \
                         ./flow/Flow.h
 
-iaengine_core_sources = Multiplexer.cc \
-			./flow/FlowCache.cc \
+iaengine_core_sources =	./flow/FlowCache.cc \
 			./flow/FlowManager.cc 
 
 iaengine_SOURCES =      $(iaengine_core_sources) main.cc
@@ -22,6 +19,14 @@ iaengine_LDFLAGS = -lpthread -lstdc++ -lboost_system -lboost_thread -lboost_prog
 iaengine_LDADD = $(BOOST_LIBS)
 
 bin_PROGRAMS = iaengine
+
+TEST = tests_
+
+check_PROGRAMS = tests
+
+tests_SOURCES = tests.cc
+tests_LDADD   = -lboost_unit_test_framework
+
 
 CLEANFILES = *.o *.lo *.so
 

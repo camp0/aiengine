@@ -1,10 +1,9 @@
 #ifndef _Message_H_
 #define _Message_H_
 
-
 class Message
 {
-private:
+protected:
 	const void *payload;
 	unsigned int len;
 	const iphdr *ip;

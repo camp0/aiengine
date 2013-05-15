@@ -1,59 +1,50 @@
 #ifndef _Multiplexer_H_
 #define _Multiplexer_H_
 
-#include <iostream>
-#include <vector>
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include <map>
 
-#include "Forwarder.h"
-#include "Accessor.h"
-#include "ForwarderFactory.h"
+class Multiplexer;
+typedef boost::shared_ptr<Multiplexer> MultiplexerPtr; 
+typedef boost::weak_ptr<Multiplexer> MultiplexerPtrWeak; 
 
-class Multiplexer : public Forwarder
+class Multiplexer 
 {
 public:
-    	Multiplexer(Accessor& accessor, ForwarderFactory& sideBfactory) :
-        	accessor_(accessor),
-        	sideBfactory_(sideBfactory)
-    	{
-    	}
-    	virtual ~Multiplexer();
+    	Multiplexer(): offset_(0) {};
+    	virtual ~Multiplexer() {};
 
-    	virtual void setSideA(const ForwarderPtr& side) { sideA_ = side;} 
-    	virtual void setSideB(const ForwarderPtr& side) { throw "Multiplexer has multiple side B";}
-    	virtual const ForwarderPtrWeak& getSideA() const;
-    	virtual const ForwarderPtrWeak& getSideB() const;
-
-    	virtual const Forwarder& getSideB(int key);
-
-    	void addSideB(int key, Forwarder* sideB);
-
-    	virtual const ForwarderFactory& getFactory() const;
-    	virtual const Forwarder& getAccessor() const;
-
-protected:
-    	Accessor& accessor_;
-    	ForwarderFactory& sideBfactory_;
-
-	ForwarderPtrWeak sideA_;	
-
-    	typedef std::map<int,Forwarder*> MapSideB;
-    	MapSideB sideBlist_;
-};
-
-class UnhandledPktMux : public Multiplexer
-{
-public:
-    	UnhandledPktMux(Accessor& accessor, ForwarderFactory& sideBfactory) :
-    		Multiplexer(accessor, sideBfactory)
+    	void virtual addUpMultiplexer(MultiplexerPtrWeak mux, int key)
 	{
+		muxUpMap_[key] = mux;
 	}
-    	virtual ~UnhandledPktMux() {}
 
-    	void visit(IPmsg& msg) {}
-    	void visit(TCPmsg& pkt) { throw "UnhandledPktMux can not handle TCP messages"; }
-    	void visit(UDPmsg& p) { throw "UnhandledPktMux can not handle UDP messages"; }
-    	void visit(HTTPmsg& p) { throw "UnhandledPktMux can not handle HTTP messages"; }
+	void virtual addDownMultiplexer(MultiplexerPtrWeak mux)
+	{
+		muxDown_ = mux;
+	}
+
+	MultiplexerPtrWeak getDownMultiplexer() const { return muxDown_;}
+	MultiplexerPtrWeak getUpMultiplexer(int key) const
+	{
+		MuxMap::const_iterator it = muxUpMap_.find(key);
+		MultiplexerPtrWeak mp;
+
+		if(it != muxUpMap_.end())
+		{
+			mp = it->second;
+		} 
+		return mp;
+	} 
+
+	int getNumberUpMultiplexers() const { return muxUpMap_.size(); }
+	
+private:
+	MultiplexerPtrWeak muxDown_;
+	int offset_;
+    	typedef std::map<int,MultiplexerPtrWeak> MuxMap;
+	MuxMap muxUpMap_;
 };
 
 

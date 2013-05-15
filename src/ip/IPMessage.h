@@ -1,6 +1,20 @@
 #ifndef _IPMessage_H_
 #define _IPMessage_H_
 
+#ifdef __FAVOR_BSD
+#undef __FAVOR_BSD
+#endif // __FAVOR_BSD
+#include <netinet/tcp.h>
+#include <netinet/udp.h>
+#include <netinet/ip.h>
+#include <arpa/inet.h>
+
+#include "Message.h"
+#include "../flow/Flow.h"
+#include "../ForwarderVisitor.h"
+
+class ForwarderVisitor;
+
 class IPMessage: public Message
 {
 public:
@@ -19,13 +33,13 @@ public:
 	inline void setFlow(Flow *flow) { flow_ = flow; }
 	inline Flow *getFlow() const { return flow_;}
  
-    	void accept(ForwarderVisitor& forwarder) { forwarder.visit(*this); }
+    	void accept(ForwarderVisitor& forwarder) { forwarder.visit(*this);}
 
 	int getNextProtocol() const { return nextproto;}
 	void setNextProtocol(int proto) 
 	{ 
 		nextproto = proto;
-        	if (flow_) flow_->nextproto = proto;
+        	if (flow_) flow_->setProtocol(proto);
 	}
 
     	inline u_int8_t getTTL() const { return ip->ttl; }
@@ -46,22 +60,5 @@ public:
 protected:
 	Flow *flow_;
 };
-
-    ProtocolType getNextproto() const { return nextproto; }^M^M
-    void setNextproto(ProtocolType proto) {^M^M
-        nextproto = proto;^M^M
-        if (conn_) conn_->nextproto = proto;^M^M
-    }^M^M
-^M^M
-    inline void conn(connection* conn) { conn_=conn; }^M^M
-    inline connection* conn() const { return conn_; }^M^M
-^M^M
-    void accept(ConduitVisitor& conduit) { conduit.visit(*this); }^M^M
-^M^M
-    inline u_int8_t getTTL() const { return ip->ttl; }^M^M
-    inline u_int32_t getIPpktLength() const { return ntohs(ip->tot_len); }^M^M
-    inline u_int16_t getIPhdrLength() const { return ip->ihl * 4; }^M^M
-    inline bool isIP() const { return ip ? true : false ; }^M^M
-
 
 #endif

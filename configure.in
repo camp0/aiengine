@@ -39,7 +39,7 @@ src/flow/Makefile
 AC_OUTPUT
 
 echo "
-  FireSql 
+  iaengine 
   ($PACKAGE_NAME) version $PACKAGE_VERSION
   Prefix.........: $prefix
   Debug Build....: $debug
