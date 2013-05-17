@@ -1,7 +1,8 @@
 AUTOMAKE_OPTIONS = gnu
 
 			
-noinst_HEADERS =        Multiplexer.h \
+noinst_HEADERS =        PacketDispatcher.h \
+			Multiplexer.h \
 			Message.h \
 			FiveTuple.h \
                         ./ip/IPMessage.h \
@@ -9,13 +10,14 @@ noinst_HEADERS =        Multiplexer.h \
                         ./flow/FlowManager.h \
                         ./flow/Flow.h
 
-iaengine_core_sources =	./flow/FlowCache.cc \
+iaengine_core_sources =	PacketDispatcher.cc \
+			./flow/FlowCache.cc \
 			./flow/FlowManager.cc 
 
 iaengine_SOURCES =      $(iaengine_core_sources) main.cc
 
 iaengine_CPPFLAGS = $(BOOST_CPPFLAGS)
-iaengine_LDFLAGS = -lpthread -lstdc++ -lboost_system -lboost_thread -lboost_program_options -lboost_regex
+iaengine_LDFLAGS = -lpthread -lstdc++ -lboost_system -lboost_thread -lboost_program_options -lboost_regex -lpcap
 iaengine_LDADD = $(BOOST_LIBS)
 
 bin_PROGRAMS = iaengine

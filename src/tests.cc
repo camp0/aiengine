@@ -28,6 +28,16 @@ BOOST_AUTO_TEST_CASE (test1)
 	m1->addUpMultiplexer(m3,1);	
 	m1->addUpMultiplexer(m4,2);	
 	BOOST_CHECK(m1->getNumberUpMultiplexers()== 2);
+
+	MultiplexerPtrWeak m5 = m1->getUpMultiplexer(1);
+	BOOST_CHECK(m5.lock() == m3);
+
+	m5 = m1->getUpMultiplexer(2);
+	BOOST_CHECK(m5.lock() == m4);
+
+	m5 = m1->getDownMultiplexer();
+	BOOST_CHECK(m5.lock() == m2);
+
 }
 
 BOOST_AUTO_TEST_SUITE_END( )
