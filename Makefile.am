@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS = foreign
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src test src/flow 
+SUBDIRS = src test pcapfiles src/flow 
 
 dist_noinst_SCRIPTS = autogen.sh
 

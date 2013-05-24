@@ -1,13 +1,14 @@
 #include <string>
 #include "Multiplexer.h"
+#include "PacketDispatcher.h"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE maintests 
 #include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_SUITE (test1) // name of the test suite is stringtest
+BOOST_AUTO_TEST_SUITE (test_suite_1) // name of the test suite is stringtest
 
-BOOST_AUTO_TEST_CASE (test1)
+BOOST_AUTO_TEST_CASE (test_case_1)
 {
 	MultiplexerPtr m1 = MultiplexerPtr(new Multiplexer());
 	MultiplexerPtr m2 = MultiplexerPtr(new Multiplexer());
@@ -39,6 +40,18 @@ BOOST_AUTO_TEST_CASE (test1)
 	BOOST_CHECK(m5.lock() == m2);
 
 }
+
+BOOST_AUTO_TEST_CASE (test_case_2)
+{
+	PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+
+	//pd->addPcapSource("eth0");
+	//pd->addPcapSource("lo");
+	pd->addPcapSource("../pcapfiles/4udppackets.pcap");
+	// ../pcapfiles/4udppackets.pcap
+	pd->run();
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

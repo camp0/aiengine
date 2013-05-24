@@ -19,14 +19,8 @@ bool process_command_line(int argc, char **argv,
 
 	po::options_description mandatory_ops("Mandatory arguments");
 	mandatory_ops.add_options()
-		("localip,l",   po::value<std::string>(&local_address)->required(),
-			"set the local address of the proxy.")
-		("localport,p",   po::value<unsigned short>(&local_port)->required(),
-			"set the local port of the proxy.")
-		("remoteip,r", po::value<std::string>(&remote_address)->required(), 
-			"set the remote address of the database.")
-		("remoteport,q", po::value<unsigned short>(&remote_port)->required(), 
-			"set the remote port of the database.")
+		("interface,i",   po::value<std::string>(&local_address)->required(),
+			"sets the interface or pcap file.")
         	;
 
 	po::options_description optional_ops("Optional arguments");
@@ -50,13 +44,13 @@ bool process_command_line(int argc, char **argv,
 
         	if (vm.count("help"))
         	{
-            		std::cout << "FireSql " VERSION << std::endl;
+            		std::cout << "iaengine " VERSION << std::endl;
             		std::cout << mandatory_ops << std::endl;
             		return false;
         	}
         	if (vm.count("version"))
         	{
-            		std::cout << "FireSql " VERSION << std::endl;
+            		std::cout << "iaengine " VERSION << std::endl;
             		return false;
         	}
 
@@ -65,14 +59,14 @@ bool process_command_line(int argc, char **argv,
     	}
 	catch(boost::program_options::required_option& e)
     	{
-            	std::cout << "FireSql " VERSION << std::endl;
+            	std::cout << "iaengine " VERSION << std::endl;
         	std::cerr << "Error: " << e.what() << std::endl;
 		std::cout << mandatory_ops << std::endl;
         	return false;
     	}
     	catch(...)
     	{	
-            	std::cout << "FireSql " VERSION << std::endl;
+            	std::cout << "iaengine " VERSION << std::endl;
         	std::cerr << "Unsupported option." << std::endl;
 		std::cout << mandatory_ops << std::endl;
         	return false;

@@ -17,7 +17,7 @@ iaengine_core_sources =	PacketDispatcher.cc \
 iaengine_SOURCES =      $(iaengine_core_sources) main.cc
 
 iaengine_CPPFLAGS = $(BOOST_CPPFLAGS)
-iaengine_LDFLAGS = -lpthread -lstdc++ -lboost_system -lboost_thread -lboost_program_options -lboost_regex -lpcap
+iaengine_LDFLAGS = -DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ -lboost_system -lboost_thread -lboost_program_options -lboost_regex -lpcap
 iaengine_LDADD = $(BOOST_LIBS)
 
 bin_PROGRAMS = iaengine
@@ -26,9 +26,9 @@ TEST = tests_
 
 check_PROGRAMS = tests
 
-tests_SOURCES = tests.cc
-tests_LDADD   = -lboost_unit_test_framework
-
+tests_SOURCES = $(iaengine_core_sources) tests.cc
+tests_LDADD   = -lboost_system -lboost_unit_test_framework -lpcap
+tests_LDFLAGS = -DBOOST_ASIO_DISABLE_EPOLL
 
 CLEANFILES = *.o *.lo *.so
 

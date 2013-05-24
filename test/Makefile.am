@@ -1,0 +1,6 @@
+AUTOMAKE_OPTIONS = foreign
+
+EXTRA_DIST = 	README.txt 
+
+MAINTAINERCLEANFILES = Makefile.in 
+
