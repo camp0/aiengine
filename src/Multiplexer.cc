@@ -24,7 +24,7 @@ void Multiplexer::forward()
 	int offset;
 	unsigned char *v_packet;
 
-	for(it = muxUpMap_.begin; it != muxUpMap_.end();++it) 
+	for(it = muxUpMap_.begin(); it != muxUpMap_.end();++it) 
 	{
 		mp = it->second;
 
@@ -47,7 +47,5 @@ void Multiplexer::forward()
 
 bool Multiplexer::check(unsigned char *raw_packet_)
 {
-
-	return true;
-
+	return true ;//functor_(this,nullptr);
 }

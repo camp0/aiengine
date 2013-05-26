@@ -1,6 +1,7 @@
 #ifndef _Multiplexer_H_
 #define _Multiplexer_H_
 
+#include <functional>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <map>
@@ -9,10 +10,14 @@ class Multiplexer;
 typedef boost::shared_ptr<Multiplexer> MultiplexerPtr; 
 typedef boost::weak_ptr<Multiplexer> MultiplexerPtrWeak; 
 
+
 class Multiplexer 
 {
 public:
-    	Multiplexer(): offset_(0),raw_packet_(nullptr) {};
+    	Multiplexer(): offset_(0),raw_packet_(nullptr)
+	{
+		functor_ = std::bind(&Multiplexer::default_check,this,nullptr);
+	}
     	virtual ~Multiplexer() {};
 
     	void virtual addUpMultiplexer(MultiplexerPtrWeak mux, int key)
@@ -38,12 +43,17 @@ public:
 	int getOffset() const { return offset_;};
 	unsigned char *getRawPacket() const { return raw_packet_;};
 
+	//bool default_check(unsigned char *packet) { return true;};
 private:
+
+	bool default_check(unsigned char *packet) { return true;};
+
 	MultiplexerPtrWeak muxDown_;
 	int offset_;
 	unsigned char *raw_packet_;
     	typedef std::map<int,MultiplexerPtrWeak> MuxMap;
 	MuxMap muxUpMap_;
+	std::function <bool ()> functor_;	
 };
 
 
