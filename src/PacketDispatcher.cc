@@ -1,13 +1,64 @@
 #include "PacketDispatcher.h"
 #include <iostream>
-// good infor 
-// http://www.gamedev.net/blog/950/entry-2249317-a-guide-to-getting-started-with-boostasio/?pg=4
-// https://code.launchpad.net/~alan-griffiths/mir/receive-input-in-client-patch/+merge/155549
+
+void PacketDispatcher::openDevice(std::string device)
+{
+	char errorbuf[PCAP_ERRBUF_SIZE];
+
+	pcap_ = pcap_open_live(device.c_str(), PACKET_RECVBUFSIZE, 0, -1, errorbuf);
+	if(pcap_ == nullptr) 
+	{
+		std::cerr << "Unknown device "<< device.c_str() << std::endl;
+		device_is_ready_ = false;
+		return;
+	}
+	int ifd = pcap_get_selectable_fd(pcap_);
+	if(pcap_setnonblock(pcap_, 1, errorbuf) ==1 ) 
+	{
+		device_is_ready_ = false;
+		return;
+	}
+	stream_ = PcapStreamPtr(new PcapStream(io_service_));
+			
+	stream_->assign(::dup(ifd));
+	device_is_ready_ = true;
+}
+
+
+void PacketDispatcher::closeDevice()
+{
+	if(device_is_ready_)
+	{
+		stream_->close();
+		pcap_close(pcap_);
+		device_is_ready_ = false;
+	}
+}
+
+void PacketDispatcher::openPcapFile(std::string filename)
+{
+	char errorbuf[PCAP_ERRBUF_SIZE];
+
+        pcap_ = pcap_open_offline(filename.c_str(),errorbuf);
+        if(pcap_ == nullptr) 
+		pcap_file_ready_ = false;
+	else
+		pcap_file_ready_ = true;	
+
+}
+
+void PacketDispatcher::closePcapFile()
+{
+	if(pcap_file_ready_)
+	{
+		pcap_close(pcap_);
+		pcap_file_ready_ = false;
+	}
+}
 
 void PacketDispatcher::do_read(boost::system::error_code ec)
 {
 	int len = pcap_next_ex(pcap_,&header,&pkt_data);
-	//int len = pcap_next_ex(pcap_,&header,&pkt_data);
 	if(len >= 0) 
 	{
 		std::cout << "read packet" << std::endl;
@@ -20,51 +71,6 @@ void PacketDispatcher::do_read(boost::system::error_code ec)
 
 }
 
-
-void PacketDispatcher::addPcapSource(std::string device)
-{
-	char errorbuf[PCAP_ERRBUF_SIZE];
-	bool isfile = false;
-
-	pcap_ = pcap_open_live(device.c_str(), 1500, 0, -1, errorbuf);
-	if(pcap_ == nullptr) 
-	{
-		std::cout << "Checking for device "<< device.c_str() << std::endl;
-		pcap_ = pcap_open_offline(device.c_str(),errorbuf);
-		if(pcap_ == nullptr)
-			pcap_stream_ready_ = false;
-		else
-		{
-			isfile = true;
-			pcap_stream_ready_ = true;
-		}
-	}
-	else
-	{
-		std::cout << "openning:" << device.c_str() << std::endl;
-		pcap_stream_ready_ = true;
-	}
-	std::cout << "pcap_stream_ready_ =" << pcap_stream_ready_ <<  std::endl;	
-	if(pcap_stream_ready_)
-	{
-		try {	
-			int ifd = pcap_get_selectable_fd(pcap_);
-			if(pcap_setnonblock(pcap_, 1, errorBuffer_) ==1 ) 
-			{
-				return;
-			}
-			stream_ = PcapStreamPtr(new PcapStream(io_service_));
-			
-			stream_->assign(::dup(ifd));
-			std::cout << "READY" << std::endl;
-			start_operations();
-
-		}catch (std::exception& e)
-  		{
-    			std::cerr << "ERROR:" << e.what() << std::endl;
-  		}
-	}
-}
 
 void PacketDispatcher::start_operations()
 {
@@ -80,6 +86,20 @@ void PacketDispatcher::start_operations()
 	}
 }
 
+void PacketDispatcher::runPcap()
+{
+	int ret = 0;
+	while((ret = pcap_next_ex(pcap_,&header,&pkt_data)) >= 0)
+	{
+		++total_packets_;
+		if(defMux_)
+		{
+			defMux_->setPacketOffset(0,(unsigned char*)pkt_data);
+			defMux_->forward();
+		}
+	}
+	
+}
 
 
 void PacketDispatcher::run() 

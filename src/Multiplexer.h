@@ -12,7 +12,7 @@ typedef boost::weak_ptr<Multiplexer> MultiplexerPtrWeak;
 class Multiplexer 
 {
 public:
-    	Multiplexer(): offset_(0) {};
+    	Multiplexer(): offset_(0),raw_packet_(nullptr) {};
     	virtual ~Multiplexer() {};
 
     	void virtual addUpMultiplexer(MultiplexerPtrWeak mux, int key)
@@ -25,24 +25,23 @@ public:
 		muxDown_ = mux;
 	}
 
-	MultiplexerPtrWeak getDownMultiplexer() const { return muxDown_;}
-	MultiplexerPtrWeak getUpMultiplexer(int key) const
-	{
-		MuxMap::const_iterator it = muxUpMap_.find(key);
-		MultiplexerPtrWeak mp;
+	MultiplexerPtrWeak getDownMultiplexer() const; 
+	MultiplexerPtrWeak getUpMultiplexer(int key) const;
 
-		if(it != muxUpMap_.end())
-		{
-			mp = it->second;
-		} 
-		return mp;
-	} 
+	bool check(unsigned char *raw_packet_);
+	void forward();
 
 	int getNumberUpMultiplexers() const { return muxUpMap_.size(); }
-	
+
+	void setPacket(unsigned char *packet) { raw_packet_=packet;};	
+	void setPacketOffset(int offset, unsigned char *packet) { offset_= offset;raw_packet_=packet;};	
+	int getOffset() const { return offset_;};
+	unsigned char *getRawPacket() const { return raw_packet_;};
+
 private:
 	MultiplexerPtrWeak muxDown_;
 	int offset_;
+	unsigned char *raw_packet_;
     	typedef std::map<int,MultiplexerPtrWeak> MuxMap;
 	MuxMap muxUpMap_;
 };

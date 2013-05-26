@@ -45,11 +45,10 @@ BOOST_AUTO_TEST_CASE (test_case_2)
 {
 	PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
 
-	//pd->addPcapSource("eth0");
-	//pd->addPcapSource("lo");
-	pd->addPcapSource("../pcapfiles/4udppackets.pcap");
-	// ../pcapfiles/4udppackets.pcap
-	pd->run();
+	pd->openPcapFile("../pcapfiles/4udppackets.pcap");
+	pd->runPcap();
+	pd->closePcapFile();
+	BOOST_CHECK(pd->getTotalPackets() == 4);
 }
 
 

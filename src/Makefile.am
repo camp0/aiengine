@@ -10,7 +10,8 @@ noinst_HEADERS =        PacketDispatcher.h \
                         ./flow/FlowManager.h \
                         ./flow/Flow.h
 
-iaengine_core_sources =	PacketDispatcher.cc \
+iaengine_core_sources =	Multiplexer.cc \
+			PacketDispatcher.cc \
 			./flow/FlowCache.cc \
 			./flow/FlowManager.cc 
 
