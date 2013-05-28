@@ -1,8 +1,7 @@
 test_ethernet.o: test_ethernet.cc /usr/include/c++/4.7/string \
  /usr/include/c++/4.7/x86_64-linux-gnu/bits/c++config.h \
  /usr/include/c++/4.7/x86_64-linux-gnu/bits/os_defines.h \
- /usr/include/features.h /usr/include/stdc-predef.h \
- /usr/include/x86_64-linux-gnu/bits/predefs.h \
+ /usr/include/features.h /usr/include/x86_64-linux-gnu/bits/predefs.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
@@ -45,7 +44,6 @@ test_ethernet.o: test_ethernet.cc /usr/include/c++/4.7/string \
  /usr/include/x86_64-linux-gnu/bits/typesizes.h /usr/include/endian.h \
  /usr/include/x86_64-linux-gnu/bits/endian.h \
  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
- /usr/include/x86_64-linux-gnu/bits/byteswap-16.h \
  /usr/include/c++/4.7/bits/ostream_insert.h \
  /usr/include/c++/4.7/bits/cxxabi_forced.h \
  /usr/include/c++/4.7/bits/stl_function.h \
@@ -58,7 +56,6 @@ test_ethernet.o: test_ethernet.cc /usr/include/c++/4.7/string \
  /usr/include/pthread.h /usr/include/sched.h /usr/include/time.h \
  /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/time.h \
- /usr/include/x86_64-linux-gnu/bits/timex.h \
  /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
  /usr/include/c++/4.7/x86_64-linux-gnu/bits/atomic_word.h \
@@ -72,7 +69,6 @@ test_ethernet.o: test_ethernet.cc /usr/include/c++/4.7/string \
  /usr/include/x86_64-linux-gnu/bits/select.h \
  /usr/include/x86_64-linux-gnu/bits/sigset.h \
  /usr/include/x86_64-linux-gnu/sys/sysmacros.h /usr/include/alloca.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
  /usr/include/c++/4.7/cstdio /usr/include/libio.h \
  /usr/include/_G_config.h /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
@@ -187,7 +183,6 @@ test_ethernet.o: test_ethernet.cc /usr/include/c++/4.7/string \
  /usr/include/x86_64-linux-gnu/sys/uio.h \
  /usr/include/x86_64-linux-gnu/bits/uio.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
- /usr/include/x86_64-linux-gnu/bits/socket_type.h \
  /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
  /usr/include/x86_64-linux-gnu/asm/socket.h \
  /usr/include/asm-generic/socket.h \
@@ -502,8 +497,6 @@ test_ethernet.o: test_ethernet.cc /usr/include/c++/4.7/string \
 
 /usr/include/features.h:
 
-/usr/include/stdc-predef.h:
-
 /usr/include/x86_64-linux-gnu/bits/predefs.h:
 
 /usr/include/x86_64-linux-gnu/sys/cdefs.h:
@@ -612,8 +605,6 @@ test_ethernet.o: test_ethernet.cc /usr/include/c++/4.7/string \
 
 /usr/include/x86_64-linux-gnu/bits/byteswap.h:
 
-/usr/include/x86_64-linux-gnu/bits/byteswap-16.h:
-
 /usr/include/c++/4.7/bits/ostream_insert.h:
 
 /usr/include/c++/4.7/bits/cxxabi_forced.h:
@@ -641,8 +632,6 @@ test_ethernet.o: test_ethernet.cc /usr/include/c++/4.7/string \
 /usr/include/x86_64-linux-gnu/bits/sched.h:
 
 /usr/include/x86_64-linux-gnu/bits/time.h:
-
-/usr/include/x86_64-linux-gnu/bits/timex.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
 
@@ -673,8 +662,6 @@ test_ethernet.o: test_ethernet.cc /usr/include/c++/4.7/string \
 /usr/include/x86_64-linux-gnu/sys/sysmacros.h:
 
 /usr/include/alloca.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
 
 /usr/include/c++/4.7/cstdio:
 
@@ -969,8 +956,6 @@ EthernetProtocol.h:
 /usr/include/x86_64-linux-gnu/bits/uio.h:
 
 /usr/include/x86_64-linux-gnu/bits/socket.h:
-
-/usr/include/x86_64-linux-gnu/bits/socket_type.h:
 
 /usr/include/x86_64-linux-gnu/bits/sockaddr.h:
 

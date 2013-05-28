@@ -31,7 +31,7 @@ public:
 	bool ethernetChecker() const
 	{
 		int length = getMultiplexer().lock()->getPacketLength();
-
+		std::cout << __FILE__ << ":" << this << ":"<< __PRETTY_FUNCTION__ << std::endl;
 		if(ETHER_IS_VALID_LEN(length))
 		{
 			++total_valid_packets_; 

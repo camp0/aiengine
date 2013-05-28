@@ -22,9 +22,13 @@ public:
 	}
 
 	// Condition for say that a packet its vlan 802.1q 
-	bool vlanChecker() const
+	bool vlanChecker() 
 	{
 		int length = getMultiplexer().lock()->getPacketLength();
+		unsigned char *pkt = getMultiplexer().lock()->getRawPacket();
+		std::cout << __FILE__ << ":" << this << ":" << __FUNCTION__ << std::endl;
+		std::cout << "length " << length << std::endl;
+		setVLanHeader(pkt);	
 
 		if(length >= header_size)
 		{
@@ -38,7 +42,7 @@ public:
 		}
 	}
 
-	u_int16_t getVLanTci() const { return vlan_header_->vlan_tci;};
+	u_int16_t getEthernetType() const { return ntohs(vlan_header_->vlan_tci);};
 
 private:
 	struct vlan_tag *vlan_header_;

@@ -45,8 +45,12 @@ BOOST_AUTO_TEST_CASE (test2_vlan)
 	mux_eth->addUpMultiplexer(mux_vlan,0);
 	mux_vlan->addDownMultiplexer(mux_eth);	
 
-	std::cout << "mux eth" << mux_eth <<std::endl;
-	std::cout << "mux vlan" << mux_vlan <<std::endl;
+        // Sets the raw packet to a valid ethernet header
+        eth->setEthernetHeader(packet);
+        BOOST_CHECK(eth->getEthernetType() == ETH_P_8021Q);
+
+	std::cout << "Multiplexer ethernet on " << mux_eth << std::endl;
+	std::cout << "Multiplexer vlan on " << mux_vlan << std::endl;
 
 	// forward the packet through the multiplexers
 	mux_eth->setPacketInfo(0,packet,length);
@@ -54,11 +58,16 @@ BOOST_AUTO_TEST_CASE (test2_vlan)
 
 	BOOST_CHECK(mux_eth->getTotalForwardPackets() == 1);
 	BOOST_CHECK(mux_vlan->getTotalForwardPackets() == 0);
+	BOOST_CHECK(mux_vlan->getTotalFailPackets() == 1);
 
-	std::cout << "lenght" << mux_vlan->getPacketLength() << std::endl;
+//	std::cout << "lenght" << mux_vlan->getPacketLength() << std::endl;
 	// verify the data on the vlan mux
 	BOOST_CHECK(std::memcmp(mux_vlan->getRawPacket(),"\x02\x5e\x08\x00",4) == 0);
 	BOOST_CHECK(mux_vlan->getPacketLength() == 4);
+ 
+	//vl->setVLanHeader(mux_vlan->getRawPacket());
+       	BOOST_CHECK(vl->getEthernetType() == ETH_P_IP);
+
 
         delete eth;
 	delete vl;

@@ -19,6 +19,7 @@ public:
 		total_forward_packets_ = 0;
 		total_fail_packets_ = 0;
 		header_size_ = 0;
+		protocol_ =  0xffff;
 		addChecker(std::bind(&Multiplexer::default_check,this));
 	}
     	virtual ~Multiplexer() {};
@@ -63,6 +64,7 @@ private:
 	int header_size_;
 	int offset_;
 	int length_;
+	unsigned int protocol_; // the protocolo owned by the multiplexer
 	unsigned char *raw_packet_;
     	typedef std::map<int,MultiplexerPtrWeak> MuxMap;
 	MuxMap muxUpMap_;

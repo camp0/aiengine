@@ -36,6 +36,7 @@ pcapfiles/Makefile
 src/Makefile
 src/ethernet/Makefile
 src/vlan/Makefile
+src/ip/Makefile
 src/flow/Makefile
 ])
 
