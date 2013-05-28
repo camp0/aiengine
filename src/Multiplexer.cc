@@ -21,31 +21,33 @@ void Multiplexer::forward()
 {
 	MuxMap::iterator it;
 	MultiplexerPtrWeak mp;
-	int offset;
+	int offset,length;
 	unsigned char *v_packet;
 
+//	std::cout << "Forwarding packet" <<std::endl;
 	for(it = muxUpMap_.begin(); it != muxUpMap_.end();++it) 
 	{
 		mp = it->second;
-
-		if(mp.expired())
+//		std::cout << "mux on " << mp.lock() << " expired " << mp.expired() <<std::endl;
+		if(!mp.expired())
 		{
 			MultiplexerPtr mx = mp.lock();
-			offset = mx->getOffset();
-			v_packet = &raw_packet_[offset];
+			v_packet = &raw_packet_[header_size_];
 
-			if(mx->check(v_packet))
+			if(check_func_())
 			{
-				std::cout << "Forwarding packet!" << std::endl;
-				mx->setPacket(v_packet);
-				mx->forward();					
+				std::cout << "Forwarding packet header_size(" << header_size_ <<")offset(" << offset_ <<")pkt_length(" << length_-offset_ <<")" << std::endl;
+				mx->setPacketInfo(header_size_,v_packet,length_-header_size_);
+				++total_forward_packets_;
+				mx->forward();				
+				return;	
 			}	
 		}
 	}
-
+	++total_fail_packets_;
 }
 
-bool Multiplexer::check(unsigned char *raw_packet_)
+bool Multiplexer::check() const 
 {
-	return true ;//functor_(this,nullptr);
+	return check_func_();
 }

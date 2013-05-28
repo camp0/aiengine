@@ -34,6 +34,8 @@ Makefile
 test/Makefile
 pcapfiles/Makefile
 src/Makefile
+src/ethernet/Makefile
+src/vlan/Makefile
 src/flow/Makefile
 ])
 

@@ -88,13 +88,13 @@ void PacketDispatcher::start_operations()
 
 void PacketDispatcher::runPcap()
 {
-	int ret = 0;
-	while((ret = pcap_next_ex(pcap_,&header,&pkt_data)) >= 0)
+	int length = 0;
+	while((length = pcap_next_ex(pcap_,&header,&pkt_data)) >= 0)
 	{
 		++total_packets_;
 		if(defMux_)
 		{
-			defMux_->setPacketOffset(0,(unsigned char*)pkt_data);
+			defMux_->setPacketInfo(0,(unsigned char*)pkt_data,length);
 			defMux_->forward();
 		}
 	}

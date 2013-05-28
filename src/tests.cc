@@ -1,6 +1,7 @@
 #include <string>
 #include "Multiplexer.h"
 #include "PacketDispatcher.h"
+#include "./ethernet/EthernetProtocol.h"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE maintests 
@@ -49,6 +50,16 @@ BOOST_AUTO_TEST_CASE (test_case_2)
 	pd->runPcap();
 	pd->closePcapFile();
 	BOOST_CHECK(pd->getTotalPackets() == 4);
+}
+
+BOOST_AUTO_TEST_CASE(test_case_3)
+{
+	EthernetProtocol *eth = new EthernetProtocol();
+	MultiplexerPtr mux = MultiplexerPtr(new Multiplexer());
+
+	eth->setMultiplexer(mux);	
+
+	delete eth;
 }
 
 

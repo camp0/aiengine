@@ -14,9 +14,12 @@ typedef boost::weak_ptr<Multiplexer> MultiplexerPtrWeak;
 class Multiplexer 
 {
 public:
-    	Multiplexer(): offset_(0),raw_packet_(nullptr)
+    	Multiplexer(): offset_(0),raw_packet_(nullptr),length_(0)
 	{
-		functor_ = std::bind(&Multiplexer::default_check,this,nullptr);
+		total_forward_packets_ = 0;
+		total_fail_packets_ = 0;
+		header_size_ = 0;
+		addChecker(std::bind(&Multiplexer::default_check,this));
 	}
     	virtual ~Multiplexer() {};
 
@@ -33,27 +36,37 @@ public:
 	MultiplexerPtrWeak getDownMultiplexer() const; 
 	MultiplexerPtrWeak getUpMultiplexer(int key) const;
 
-	bool check(unsigned char *raw_packet_);
+	bool check() const;
 	void forward();
 
 	int getNumberUpMultiplexers() const { return muxUpMap_.size(); }
 
+	void setHeaderSize(int size) { header_size_ = size;};
+
 	void setPacket(unsigned char *packet) { raw_packet_=packet;};	
-	void setPacketOffset(int offset, unsigned char *packet) { offset_= offset;raw_packet_=packet;};	
-	int getOffset() const { return offset_;};
+	void setPacketInfo(int offset, unsigned char *packet,int length) { offset_= offset;raw_packet_=packet;length_=length;};	
+	int getPacketOffset() const { return offset_;};
+	int getPacketLength() const { return length_;};
 	unsigned char *getRawPacket() const { return raw_packet_;};
 
-	//bool default_check(unsigned char *packet) { return true;};
+	void addChecker(std::function <bool ()> checker){ check_func_ = checker;};
+
+	uint64_t getTotalForwardPackets() const { return total_forward_packets_;};
+	uint64_t getTotalFailPackets() const { return total_fail_packets_;};
 private:
 
-	bool default_check(unsigned char *packet) { return true;};
+	bool default_check() const { return true;};
 
+	uint64_t total_forward_packets_;
+	uint64_t total_fail_packets_;
 	MultiplexerPtrWeak muxDown_;
+	int header_size_;
 	int offset_;
+	int length_;
 	unsigned char *raw_packet_;
     	typedef std::map<int,MultiplexerPtrWeak> MuxMap;
 	MuxMap muxUpMap_;
-	std::function <bool ()> functor_;	
+	std::function <bool ()> check_func_;	
 };
 
 
