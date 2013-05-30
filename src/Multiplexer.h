@@ -17,6 +17,7 @@ public:
     	Multiplexer(): offset_(0),raw_packet_(nullptr),length_(0)
 	{
 		total_forward_packets_ = 0;
+		total_received_packets_ = 0;
 		total_fail_packets_ = 0;
 		header_size_ = 0;
 		protocol_ =  0xffff;
@@ -54,10 +55,12 @@ public:
 
 	uint64_t getTotalForwardPackets() const { return total_forward_packets_;};
 	uint64_t getTotalFailPackets() const { return total_fail_packets_;};
+	uint64_t getTotalReceivedPackets() const { return total_received_packets_;};
 private:
 
 	bool default_check() const { return true;};
 
+	uint64_t total_received_packets_;
 	uint64_t total_forward_packets_;
 	uint64_t total_fail_packets_;
 	MultiplexerPtrWeak muxDown_;

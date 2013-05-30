@@ -12,11 +12,28 @@
 
 BOOST_AUTO_TEST_SUITE (ip_suite) // name of the test suite is stringtest
 
+// check a IP header values
+//
 BOOST_AUTO_TEST_CASE (test1_ip)
 {
 	IPProtocol *ip = new IPProtocol();
+	std::string localip("192.168.1.25");	
+	std::string remoteip("66.220.153.28");	
+	char *raw_packet="\x45\x00"
+		"\x00\x34\x8b\x1e\x40\x00\x80\x06\xd1\xeb\xc0\xa8\x01\x19\x42\xdc"
+		"\x99\x1c\x05\xb1\x00\x50\x06\xa4\x1a\x34\x00\x00\x00\x00\x80\x02"
+		"\xff\xff\xaa\x84\x00\x00\x02\x04\x05\xb4\x01\x03\x03\x01\x01\x01"
+		"\x04\x02";
+	unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet);
 
+	ip->setIPHeader(packet);
 	BOOST_CHECK(ip->getTotalPackets() == 0);
+	BOOST_CHECK(ip->getTTL() == 128);
+	BOOST_CHECK(ip->getIPHeaderLength() == 20);
+	BOOST_CHECK(ip->getProtocol() == IPPROTO_TCP);
+
+	BOOST_CHECK(localip.compare(ip->getSrcAddrDotNotation())==0);
+	BOOST_CHECK(remoteip.compare(ip->getDstAddrDotNotation())==0);
 
 	delete ip;	
 }
@@ -122,7 +139,6 @@ BOOST_AUTO_TEST_CASE (test3_ip) // ethernet -> vlan -> ip
         BOOST_CHECK(mux_ip->getTotalForwardPackets() == 0);
         BOOST_CHECK(mux_vlan->getTotalFailPackets() == 0);
 
-	std::cout << ip->getIPPacketLength() << std::endl;
         BOOST_CHECK(mux_eth->getPacketLength() == length);
         BOOST_CHECK(mux_vlan->getPacketLength() == length - 14);
         BOOST_CHECK(mux_ip->getPacketLength() == length - (14 + 4 ));
@@ -199,7 +215,6 @@ BOOST_AUTO_TEST_CASE (test4_ip) // ethernet -> vlan -> ip
         BOOST_CHECK(mux_ip->getTotalForwardPackets() == 0);
         BOOST_CHECK(mux_ip->getTotalFailPackets() == 1);
 
-        std::cout << ip->getIPPacketLength() << std::endl;
         BOOST_CHECK(mux_eth->getPacketLength() == length);
         BOOST_CHECK(mux_vlan->getPacketLength() == 0);
         BOOST_CHECK(mux_ip->getPacketLength() == length - (14 ));
@@ -270,9 +285,13 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         mux_vlan->addDownMultiplexer(mux_eth);
         mux_eth->addUpMultiplexer(mux_ip1,ETHERTYPE_IP);
         mux_ip1->addDownMultiplexer(mux_eth);
-	mux_ip2->addUpMultiplexer(mux_ip2,IPPROTO_IPIP);
+	mux_ip1->addUpMultiplexer(mux_ip2,IPPROTO_IPIP);
 	mux_ip2->addDownMultiplexer(mux_ip1);
 
+	std::cout << "mux_eth:" << mux_eth <<std::endl;
+	std::cout << "mux_vlan:" << mux_vlan <<std::endl;
+	std::cout << "mux_ip1:" << mux_ip1 <<std::endl;
+	std::cout << "mux_ip2:" << mux_ip2 <<std::endl;
         // executing the packet
         // forward the packet through the multiplexers
         mux_eth->setPacketInfo(0,packet,length);
@@ -283,21 +302,26 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         BOOST_CHECK(vlan->getTotalPackets() == 0);
         BOOST_CHECK(ip1->getTotalPackets() == 1);
         BOOST_CHECK(ip2->getTotalPackets() == 1);
-/*
+
         BOOST_CHECK(mux_eth->getTotalForwardPackets() == 1);
         BOOST_CHECK(mux_vlan->getTotalForwardPackets() == 0);
-        BOOST_CHECK(mux_ip->getTotalForwardPackets() == 0);
-        BOOST_CHECK(mux_ip->getTotalFailPackets() == 1);
+        BOOST_CHECK(mux_ip1->getTotalForwardPackets() == 1);
+        BOOST_CHECK(mux_ip2->getTotalForwardPackets() == 0);
+        BOOST_CHECK(mux_ip2->getTotalFailPackets() == 1);
 
-        std::cout << ip->getIPPacketLength() << std::endl;
         BOOST_CHECK(mux_eth->getPacketLength() == length);
         BOOST_CHECK(mux_vlan->getPacketLength() == 0);
-        BOOST_CHECK(mux_ip->getPacketLength() == length - (14 ));
+        BOOST_CHECK(mux_ip1->getPacketLength() == length - (14 ));
+        BOOST_CHECK(mux_ip2->getPacketLength() == length - (14 + 20));
 
-        BOOST_CHECK(ip->getIPPacketLength() == mux_ip->getPacketLength());
-        BOOST_CHECK(ip->getProtocol() == IPPROTO_UDP);
+	std::cout << ip1->getIPPacketLength() << std::endl;
+	std::cout << mux_ip1->getPacketLength() << std::endl;
+        BOOST_CHECK(ip1->getIPPacketLength() == mux_ip1->getPacketLength());
+        BOOST_CHECK(ip2->getIPPacketLength() == mux_ip2->getPacketLength());
+        BOOST_CHECK(ip1->getProtocol() == IPPROTO_IPIP);
+        BOOST_CHECK(ip2->getProtocol() == IPPROTO_UDP);
         BOOST_CHECK(eth->getEthernetType() == ETH_P_IP);
-*/	
+	
 
 	delete ip1;
 	delete ip2;

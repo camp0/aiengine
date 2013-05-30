@@ -26,8 +26,7 @@ public:
 	{
 		int length = getMultiplexer().lock()->getPacketLength();
 		unsigned char *pkt = getMultiplexer().lock()->getRawPacket();
-		std::cout << __FILE__ << ":" << this << ":" << __FUNCTION__ << std::endl;
-		std::cout << "length " << length << std::endl;
+		
 		setVLanHeader(pkt);	
 
 		if(length >= header_size)
