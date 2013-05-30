@@ -30,7 +30,6 @@ void Multiplexer::forward()
 	for(it = muxUpMap_.begin(); it != muxUpMap_.end();++it) 
 	{
 		mp = it->second;
-//		std::cout << "mux on " << mp.lock() << " expired " << mp.expired() <<std::endl;
 		if(!mp.expired())
 		{
 			mx = mp.lock();
@@ -40,7 +39,6 @@ void Multiplexer::forward()
 			std::cout << __FILE__<<":" << this << " candidate mux on " << mx << std::endl;
 			if(mx->check_func_())
 			{
-				std::cout << __FILE__<<":" << this << " valid mux on " << mx << std::endl;
 				have_mux = true;
 				break;	
 			}	
@@ -49,13 +47,15 @@ void Multiplexer::forward()
 	
 	if(have_mux)
 	{
+		std::cout << __FILE__ << ":" << this;
 		std::cout << "Forwarding packet header_size(" << header_size_ <<")offset(" << offset_ <<")pkt_length(" << length_-offset_ <<")" << std::endl;
 		++total_forward_packets_;
 		mx->forward();			
 	}
 	else
 	{	
-		std::cout << "PROCESSING" <<std::endl;
+		std::cout << __FILE__ << ":" << this;
+		std::cout << "Processing the packet" <<std::endl;
 		++total_fail_packets_;
 	}
 }

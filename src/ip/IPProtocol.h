@@ -6,6 +6,7 @@
 #endif // __FAVOR_BSD
 
 #include <netinet/ip.h>
+#include <netinet/in.h>
 #include <arpa/inet.h>
 
 class IPProtocol: public Protocol 
@@ -54,7 +55,7 @@ public:
     	inline bool isFragment() const { return (ntohs(ip_header_->frag_off) & 0x3fff); }
     	inline u_int16_t getID() const { return ntohs(ip_header_->id); }
     	inline int getVersion() const { return ip_header_->version; }
-    	inline int getProto() const { return ip_header_->protocol; }
+    	inline int getProtocol () const { return ip_header_->protocol; }
     	inline u_int32_t getSrcAddr() const { return ip_header_->saddr; }
     	inline u_int32_t getDstAddr() const { return ip_header_->daddr; }
     	inline const char* getSrcAddrDotNotation() const { in_addr a; a.s_addr=ip_header_->saddr; return inet_ntoa(a); }
