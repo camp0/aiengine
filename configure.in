@@ -37,6 +37,8 @@ src/Makefile
 src/ethernet/Makefile
 src/vlan/Makefile
 src/ip/Makefile
+src/udp/Makefile
+src/tcp/Makefile
 src/flow/Makefile
 ])
 
