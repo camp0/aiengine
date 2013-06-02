@@ -15,23 +15,26 @@ public:
     	explicit TCPProtocol():tcp_header_(nullptr){};
     	virtual ~TCPProtocol() {};
 
+	static const u_int16_t id = IPPROTO_TCP;
+	static const int header_size = 20;
+
 	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
-        void setIPHeader(unsigned char *raw_packet)
+        void setTCPHeader(unsigned char *raw_packet)
         {
                 tcp_header_ = reinterpret_cast <struct tcphdr*> (raw_packet);
         }
 
 	// Condition for say that a packet its ethernet 
-	bool ipChecker() 
+	bool tcpChecker() 
 	{
 		int length = getMultiplexer().lock()->getPacketLength();
 		unsigned char *pkt = getMultiplexer().lock()->getRawPacket();	
 		
 		// extra check
-		setIPHeader(pkt);
+		setTCPHeader(pkt);
 
 		if(length >= header_size)
 		{
@@ -45,8 +48,6 @@ public:
 		}
 	}
 
-	static const int header_size = 20;
-
     	u_int16_t getSrcPort() const { return ntohs(tcp_header_->source); }
     	u_int16_t getDstPort() const { return ntohs(tcp_header_->dest); }
     	u_int32_t getSequence() const  { return ntohl(tcp_header_->seq); }
@@ -58,7 +59,7 @@ public:
     	bool isRst() const { return tcp_header_->rst; }
     	bool isPushSet() const { return tcp_header_->psh; }
     	//unsigned int getTcpSegmentLength() const { return ntohs(ip->tot_len) - ip->ihl * 4; }
-    	//unsigned int getTcpPayloadLength() const { return ntohs(ip->tot_len) - ip->ihl * 4 - tcp->doff * 4; }
+    	//unsigned int getPayloadLength() const { return ntohs(ip->tot_len) - 20 /* ip->ihl * 4 */ - tcp->doff * 4; }
     	unsigned int getTcpHdrLength() const { return tcp_header_->doff * 4; }
     	//const char* getTcpPayload() const { return getIPpayload()+getTcpHdrLength(); }
 private:

@@ -8,14 +8,13 @@
 /// ETHER_MAX_LEN and ETHER_MIN_LEN are the limits for a ethernet header
 /// Check on the ETHER_IS_VALID_LEN macro
 
-
-
 class EthernetProtocol: public Protocol 
 {
 public:
     	explicit EthernetProtocol():eth_header_(nullptr){};
     	virtual ~EthernetProtocol() {};
 
+	static const u_int16_t id = 0x0001; //Ethernet dont need a id
 	static const int header_size = 14;
 
 	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};

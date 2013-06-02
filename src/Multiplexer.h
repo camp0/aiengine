@@ -6,6 +6,8 @@
 #include <boost/weak_ptr.hpp>
 #include <map>
 
+#define NO_PROTOCOL_SELECTED 0xffff
+
 class Multiplexer;
 typedef boost::shared_ptr<Multiplexer> MultiplexerPtr; 
 typedef boost::weak_ptr<Multiplexer> MultiplexerPtrWeak; 
@@ -20,7 +22,7 @@ public:
 		total_received_packets_ = 0;
 		total_fail_packets_ = 0;
 		header_size_ = 0;
-		protocol_ =  0xffff;
+		protocol_id_ =  NO_PROTOCOL_SELECTED;
 		addChecker(std::bind(&Multiplexer::default_check,this));
 	}
     	virtual ~Multiplexer() {};
@@ -42,6 +44,8 @@ public:
 	void forward();
 
 	int getNumberUpMultiplexers() const { return muxUpMap_.size(); }
+
+	void setProtocolIdentifier(u_int16_t protocol_id) { protocol_id_ = protocol_id;};
 
 	void setHeaderSize(int size) { header_size_ = size;};
 
@@ -67,7 +71,7 @@ private:
 	int header_size_;
 	int offset_;
 	int length_;
-	unsigned int protocol_; // the protocolo owned by the multiplexer
+	u_int16_t protocol_id_; // the protocol analiyzer owned by the multiplexer
 	unsigned char *raw_packet_;
     	typedef std::map<int,MultiplexerPtrWeak> MuxMap;
 	MuxMap muxUpMap_;

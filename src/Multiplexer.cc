@@ -17,6 +17,9 @@ MultiplexerPtrWeak Multiplexer::getUpMultiplexer(int key) const
 	return mp;
 } 
 
+// TODO: two tyes of multiplexers should exists
+// 1.kknow mux, for standar protocols
+// 2.unknow mux, for l7 protocols
 void Multiplexer::forward()
 {
 	MuxMap::iterator it;
@@ -26,25 +29,33 @@ void Multiplexer::forward()
 	unsigned char *v_packet;
 	bool have_mux = false;
 
-	std::cout << __FILE__ <<":"<< this<< ":"<< " Forwarding packet" <<std::endl;
-	for(it = muxUpMap_.begin(); it != muxUpMap_.end();++it) 
+	mp = getUpMultiplexer(protocol_id_);
+	if(mp.expired()) 
 	{
-		mp = it->second;
-		if(!mp.expired())
-		{
-			mx = mp.lock();
-			v_packet = &raw_packet_[header_size_];
 
-			mx->setPacketInfo(header_size_,v_packet,length_-header_size_);
-			std::cout << __FILE__<<":" << this << ": candidate mux on " << mx << std::endl;
-			if(mx->check_func_())
+		std::cout << __FILE__ <<":"<< this<< ":"<< " Forwarding packet" <<std::endl;
+		for(it = muxUpMap_.begin(); it != muxUpMap_.end();++it) 
+		{
+			mp = it->second;
+			if(!mp.expired())
 			{
-				have_mux = true;
-				break;	
-			}	
+				mx = mp.lock();
+				v_packet = &raw_packet_[header_size_];
+
+				mx->setPacketInfo(header_size_,v_packet,length_-header_size_);
+				std::cout << __FILE__<<":" << this << ": candidate mux on " << mx << std::endl;
+				if(mx->check_func_())
+				{
+					have_mux = true;
+					break;	
+				}	
+			}
 		}
 	}
-	
+	else{
+		have_mux = true;
+	}
+		
 	if(have_mux)
 	{
 		std::cout << __FILE__ << ":" << this << ":";

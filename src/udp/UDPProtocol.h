@@ -15,23 +15,25 @@ public:
     	explicit UDPProtocol():udp_header_(nullptr){};
     	virtual ~UDPProtocol() {};
 
+	static const u_int16_t id = IPPROTO_UDP;
+	static const int header_size = 8;
+
 	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
-        void setIPHeader(unsigned char *raw_packet)
+        void setUDPHeader(unsigned char *raw_packet)
         {
                 udp_header_ = reinterpret_cast <struct udphdr*> (raw_packet);
         }
 
 	// Condition for say that a packet its ethernet 
-	bool ipChecker() 
+	bool udpChecker() 
 	{
 		int length = getMultiplexer().lock()->getPacketLength();
 		unsigned char *pkt = getMultiplexer().lock()->getRawPacket();	
 		
-		// extra check
-		setIPHeader(pkt);
+		setUDPHeader(pkt);
 
 		if(length >= header_size)
 		{
@@ -45,13 +47,11 @@ public:
 		}
 	}
 
-	static const int header_size = 8;
-
-	inline u_int16_t getSrcPort() const { return ntohs(udp_header_->source); }
-    	inline u_int16_t getDstPort() const { return ntohs(udp_header_->dest); }
-    	inline u_int16_t getLen() const { return udp_header_->len; }
-    	inline unsigned int getUdpPayloadLength() const { return ntohs(udp_header_->len) - sizeof(udphdr); }
-    	inline unsigned int getUdpHdrLength() const { return sizeof(udphdr); }
+	u_int16_t getSrcPort() const { return ntohs(udp_header_->source); }
+    	u_int16_t getDstPort() const { return ntohs(udp_header_->dest); }
+    	u_int16_t getLen() const { return udp_header_->len; }
+    	unsigned int getPayloadLength() const { return ntohs(udp_header_->len) - sizeof(udphdr); }
+    	unsigned int getUdpHdrLength() const { return sizeof(udphdr); }
 
 private:
 	struct udphdr *udp_header_;

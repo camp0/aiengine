@@ -1,4 +1,5 @@
 #include <string>
+#include "../../test/tests_packets.h"
 #include "../Protocol.h"
 #include "../Multiplexer.h"
 #include "../ethernet/EthernetProtocol.h"
@@ -19,13 +20,9 @@ BOOST_AUTO_TEST_CASE (test1_ip)
 	IPProtocol *ip = new IPProtocol();
 	std::string localip("192.168.1.25");	
 	std::string remoteip("66.220.153.28");	
-	char *raw_packet="\x45\x00"
-		"\x00\x34\x8b\x1e\x40\x00\x80\x06\xd1\xeb\xc0\xa8\x01\x19\x42\xdc"
-		"\x99\x1c\x05\xb1\x00\x50\x06\xa4\x1a\x34\x00\x00\x00\x00\x80\x02"
-		"\xff\xff\xaa\x84\x00\x00\x02\x04\x05\xb4\x01\x03\x03\x01\x01\x01"
-		"\x04\x02";
-	unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet);
-	int length = 52;
+
+	unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet_ip_tcp_syn);
+	int length = raw_packet_ip_tcp_syn_length;
 
 	ip->setIPHeader(packet);
 	BOOST_CHECK(ip->getTotalPackets() == 0);
@@ -47,14 +44,8 @@ BOOST_AUTO_TEST_CASE (test2_ip) // ethernet -> ip
 	IPProtocol *ip = new IPProtocol();
         MultiplexerPtr mux_ip = MultiplexerPtr(new Multiplexer());
 
-	// ethernet ->ip ->udp -> dns
-	char *raw_packet = "\x00\x0c\x29\x2e\x3c\x2a\x90\x84\x0d\x62\xd8\x04\x08\x00\x45\x00"
-		"\x00\x3d\x8a\x0d\x00\x00\xec\x11\xf4\x4f\xc0\xa8\x01\x76\x50\x3a"
-		"\x3d\xfa\xe9\xb3\x00\x35\x00\x29\x05\x94\x84\xd3\x01\x00\x00\x01"
-		"\x00\x00\x00\x00\x00\x00\x02\x63\x68\x04\x70\x6f\x6f\x6c\x03\x6e"
-		"\x74\x70\x03\x6f\x72\x67\x00\x00\x01\x00\x01";
-	int length = 75;
-	unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet);
+	unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dns);
+	int length = raw_packet_ethernet_ip_udp_dns_length;
 	
 	//configure the eth 
 	eth->setMultiplexer(mux_eth);
@@ -96,16 +87,9 @@ BOOST_AUTO_TEST_CASE (test3_ip) // ethernet -> vlan -> ip
 	IPProtocol *ip = new IPProtocol();
         MultiplexerPtr mux_ip = MultiplexerPtr(new Multiplexer());
 
-	// ethernet -> vlan ->ip ->udp -> dns
-	char *raw_packet = "\x00\x0c\x29\x2e\x3c\x2a\x90\x84\x0d\x62\xd8\x04" "\x81\x00\x02\x5e\x08\x00"
-		"\x45\x00"
-		"\x00\x3d\x8a\x0d\x00\x00\xec\x11\xf4\x4f\xc0\xa8\x01\x76\x50\x3a"
-		"\x3d\xfa\xe9\xb3\x00\x35\x00\x29\x05\x94\x84\xd3\x01\x00\x00\x01"
-		"\x00\x00\x00\x00\x00\x00\x02\x63\x68\x04\x70\x6f\x6f\x6c\x03\x6e"
-		"\x74\x70\x03\x6f\x72\x67\x00\x00\x01\x00\x01";
-	int length = 79;
-	unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet);
-	
+	unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet_ethernet_vlan_ip_udp_dns);
+	int length = raw_packet_ethernet_vlan_ip_udp_dns_length;	
+
 	//configure the eth 
 	eth->setMultiplexer(mux_eth);
         mux_eth->setHeaderSize(eth->header_size);
@@ -172,15 +156,8 @@ BOOST_AUTO_TEST_CASE (test4_ip) // ethernet -> vlan -> ip
         IPProtocol *ip = new IPProtocol();
         MultiplexerPtr mux_ip = MultiplexerPtr(new Multiplexer());
 
-        // ethernet -> vlan ->ip ->udp -> dns
-        char *raw_packet = "\x00\x0c\x29\x2e\x3c\x2a\x90\x84\x0d\x62\xd8\x04" "\x08\x00"
-                "\x45\x00"
-                "\x00\x3d\x8a\x0d\x00\x00\xec\x11\xf4\x4f\xc0\xa8\x01\x76\x50\x3a"
-                "\x3d\xfa\xe9\xb3\x00\x35\x00\x29\x05\x94\x84\xd3\x01\x00\x00\x01"
-                "\x00\x00\x00\x00\x00\x00\x02\x63\x68\x04\x70\x6f\x6f\x6c\x03\x6e"
-                "\x74\x70\x03\x6f\x72\x67\x00\x00\x01\x00\x01";
-        int length = 75;
-        unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet);
+        unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dns);
+	int length = raw_packet_ethernet_ip_udp_dns_length;
 
         //configure the eth
         eth->setMultiplexer(mux_eth);
@@ -250,23 +227,8 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         IPProtocol *ip2 = new IPProtocol();
         MultiplexerPtr mux_ip2 = MultiplexerPtr(new Multiplexer());
 
-        // ethernet -> ip ->ip ->udp -> dns
-        char *raw_packet = "\x00\x0c\x29\x2e\x3c\x2a\x90\x84\x0d\x62\xd8\x04" "\x08\x00"
-		// IP
-		"\x45\x00\x00\x51\x00\x00\x40\x00\x40" "\x04" "\xd5\x57\x0a\x3a\x09\x76"
-		"\xc3\x72\x8d\xd1"
-		// IP
-                "\x45\x00" // 36
-                "\x00\x3d\x8a\x0d\x00\x00\xec\x11\xf4\x4f\xc0\xa8\x01\x76\x50\x3a" 
-                "\x3d\xfa"
-		/* udp */
-		"\xe9\xb3\x00\x35\x00\x29\x05\x94"
-		// dns
-		"\x84\xd3\x01\x00\x00\x01"
-                "\x00\x00\x00\x00\x00\x00\x02\x63\x68\x04\x70\x6f\x6f\x6c\x03\x6e" // 84
-                "\x74\x70\x03\x6f\x72\x67\x00\x00\x01\x00\x01"; // 95 
-        int length = 95;
-        unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet);
+        unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_ip_udp_dns);
+	int length = raw_packet_ethernet_ip_ip_udp_dns_length;
 
         //configure the eth
         eth->setMultiplexer(mux_eth);

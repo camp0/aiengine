@@ -9,7 +9,8 @@ class VLanProtocol: public Protocol
 public:
     	explicit VLanProtocol():vlan_header_(nullptr){};
     	virtual ~VLanProtocol() {};
-	
+
+	static const u_int16_t id = ETH_P_8021Q;	
 	static const int header_size = VLAN_TAG_LEN;
 
 	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};

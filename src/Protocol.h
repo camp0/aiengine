@@ -12,7 +12,7 @@ public:
 	void virtual setMultiplexer(MultiplexerPtrWeak mux)
 	{
 		mux_ = mux;
-	}
+	};
 
 	MultiplexerPtrWeak virtual getMultiplexer() const { return mux_;}; 
 
@@ -20,6 +20,7 @@ public:
 	mutable uint64_t total_valid_packets_;
 private:
 	MultiplexerPtrWeak mux_;
+	u_int16_t protocol_id_;
 };
 
 #endif

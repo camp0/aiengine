@@ -4,10 +4,23 @@
 #include "EthernetProtocol.h"
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE ethernettest 
-#include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_SUITE (ethernet_suite) // name of the test suite is stringtest
+#ifndef BOOST_TEST_NO_MAIN 
+
+#define BOOST_TEST_MODULE ethernettest
+#include <boost/test/unit_test.hpp>
+//BOOST_AUTO_TEST_SUITE (ethernet_suite) 
+#endif
+
+
+//#define BOOST_TEST_DYN_LINK
+//#include <boost/test/unit_test.hpp>
+
+//#ifndef BOOST_TEST_MODULE
+//#define BOOST_TEST_MODULE ethernettest 
+//#define BOOST_TEST_MODULE_SET_ETHERNET
+//BOOST_AUTO_TEST_SUITE (ethernet_suite)  
+//#endif
 
 BOOST_AUTO_TEST_CASE (test1_ethernet)
 {
@@ -51,5 +64,6 @@ BOOST_AUTO_TEST_CASE (test2_ethernet)
         delete eth;
 }
 
-BOOST_AUTO_TEST_SUITE_END( )
-
+//#ifdef BOOST_TEST_MODULE_SET_ETHERNET
+//BOOST_AUTO_TEST_SUITE_END( )
+//#endif

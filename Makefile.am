@@ -2,7 +2,16 @@ AUTOMAKE_OPTIONS = foreign
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src test pcapfiles src/ethernet src/vlan src/ip src/udp src/tcp src/flow 
+SUBDIRS = 	src \
+		test \
+		pcapfiles \
+		src/ethernet \
+		src/vlan \
+		src/ip \
+		src/icmp \
+		src/udp \
+		src/tcp \
+		src/flow 
 
 dist_noinst_SCRIPTS = autogen.sh
 

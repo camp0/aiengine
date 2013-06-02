@@ -24,11 +24,11 @@ iaengine_LDADD = $(BOOST_LIBS)
 
 bin_PROGRAMS = iaengine
 
-TEST = tests_
+TEST = tests 
 
-check_PROGRAMS = tests
+check_PROGRAMS = tests 
 
-tests_SOURCES = $(iaengine_core_sources) tests.cc
+tests_SOURCES = $(iaengine_core_sources) tests.cc 
 tests_LDADD   = -lboost_system -lboost_unit_test_framework -lpcap
 tests_LDFLAGS = -DBOOST_ASIO_DISABLE_EPOLL
 
