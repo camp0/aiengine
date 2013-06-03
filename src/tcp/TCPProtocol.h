@@ -22,6 +22,8 @@ public:
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
+	void statistics(std::ofstream out) {};
+
         void setTCPHeader(unsigned char *raw_packet)
         {
                 tcp_header_ = reinterpret_cast <struct tcphdr*> (raw_packet);

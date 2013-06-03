@@ -1,6 +1,7 @@
 #ifndef _Protocol_H_
 #define _Protocol_H_
 
+#include <fstream>
 #include "Multiplexer.h"
 
 class Protocol 
@@ -8,6 +9,8 @@ class Protocol
 public:
     	Protocol():total_malformed_packets_(0),total_valid_packets_(0){};
     	virtual ~Protocol() {};
+
+	void virtual statistics(std::ofstream out) = 0;
 
 	void virtual setMultiplexer(MultiplexerPtrWeak mux)
 	{

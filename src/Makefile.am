@@ -1,7 +1,8 @@
 AUTOMAKE_OPTIONS = gnu
 
 			
-noinst_HEADERS =        Protocol.h \
+noinst_HEADERS =        Packet.h \
+			Protocol.h \
 			PacketDispatcher.h \
 			Multiplexer.h \
 			Message.h \

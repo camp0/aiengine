@@ -23,6 +23,8 @@ public:
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
+	void statistics(std::ofstream out) {};
+
         void setIPHeader(unsigned char *raw_packet)
         {
                 ip_header_ = reinterpret_cast <struct iphdr*> (raw_packet);
