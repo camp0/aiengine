@@ -33,11 +33,11 @@ public:
 	// Condition for say that a packet its ethernet 
 	bool ipChecker() 
 	{
-		int length = getMultiplexer().lock()->getPacketLength();
-		unsigned char *pkt = getMultiplexer().lock()->getRawPacket();	
-		
+		Packet *pkt = getMultiplexer().lock()->getCurrentPacket();
+		int length = pkt->getLength();
+
 		// extra check
-		setHeader(pkt);
+		setHeader(pkt->getPayload());
 
 		if((length >= header_size)&&(isIPver4()))
 		{

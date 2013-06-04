@@ -52,13 +52,8 @@ public:
 	void setHeaderSize(int size) { header_size_ = size;};
 
 	void setPacketInfo(unsigned char *packet, int length, int prev_header_size);
+	void setPacket(Packet *packet);
 
-/*	void setPacket(unsigned char *packet) { raw_packet_=packet;};	
-	void setPacketInfo(int offset, unsigned char *packet,int length) { offset_= offset;raw_packet_=packet;length_=length;};	
-	int getPacketOffset() const { return offset_;};
-	int getPacketLength() const { return length_;};
-	unsigned char *getRawPacket() const { return raw_packet_;};
-*/
 	void addChecker(std::function <bool ()> checker){ check_func_ = checker;};
 
 	uint64_t getTotalForwardPackets() const { return total_forward_packets_;};
@@ -69,7 +64,6 @@ public:
 private:
 
 	bool default_check() const { return true;};
-
 	Packet packet_;
 	uint64_t total_received_packets_;
 	uint64_t total_forward_packets_;
@@ -77,9 +71,7 @@ private:
 	MultiplexerPtrWeak muxDown_;
 	int header_size_;
 	int offset_;
-	int length_;
 	u_int16_t protocol_id_; // the protocol analiyzer owned by the multiplexer
-	unsigned char *raw_packet_;
     	typedef std::map<int,MultiplexerPtrWeak> MuxMap;
 	MuxMap muxUpMap_;
 	std::function <bool ()> check_func_;	

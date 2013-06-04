@@ -59,12 +59,13 @@ BOOST_AUTO_TEST_CASE (test2_vlan)
 	char *raw_packet = "\x00\x05\x47\x02\xa2\x5d\x00\x15\xc7\xee\x25\x98\x81\x00\x02\x5e\x08\x00";
 	unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet);
 	int length = 18;
-
+	Packet pkt(packet,length,0);
+	
         // Sets the raw packet to a valid ethernet header
         eth->setHeader(packet);
         BOOST_CHECK(eth->getEthernetType() == ETH_P_8021Q);
 	// forward the packet through the multiplexers
-	mux_eth->setPacketInfo(packet,length,0);
+	mux_eth->setPacket(&pkt);
 	mux_eth->forward();
 
 	BOOST_CHECK(mux_eth->getTotalForwardPackets() == 1);
@@ -73,6 +74,7 @@ BOOST_AUTO_TEST_CASE (test2_vlan)
 
 	BOOST_CHECK(std::memcmp(mux_vlan->getCurrentPacket()->getPayload(),"\x02\x5e\x08\x00",4) == 0);
 	BOOST_CHECK(mux_vlan->getCurrentPacket()->getLength() == 4);
+	BOOST_CHECK(mux_vlan->getCurrentPacket()->getPrevHeaderSize() == 14);
  
        	BOOST_CHECK(vlan->getEthernetType() == ETH_P_IP);
 }

@@ -24,6 +24,11 @@ void Multiplexer::setPacketInfo(unsigned char *packet, int length, int prev_head
 	packet_.setPrevHeaderSize(prev_header_size);
 }
 
+void Multiplexer::setPacket(Packet *pkt)
+{
+	setPacketInfo(pkt->getPayload(),pkt->getLength(),pkt->getPrevHeaderSize());
+}
+
 // TODO: two tyes of multiplexers should exists
 // 1.kknow mux, for standar protocols
 // 2.unknow mux, for l7 protocols
@@ -47,9 +52,9 @@ void Multiplexer::forward()
 			if(!mp.expired())
 			{
 				mx = mp.lock();
-				v_packet = &raw_packet_[header_size_];
+				v_packet = &packet_.getPayload()[header_size_];
 
-				mx->setPacketInfo(v_packet,length_-header_size_, header_size_);
+				mx->setPacketInfo(v_packet,packet_.getLength() - header_size_, header_size_);
 				std::cout << __FILE__<<":" << this << ": candidate mux on " << mx << std::endl;
 				if(mx->check_func_())
 				{
@@ -65,8 +70,14 @@ void Multiplexer::forward()
 		
 	if(have_mux)
 	{
+		mx = mp.lock();
+		v_packet = &packet_.getPayload()[header_size_];
+			
+		mx->setPacketInfo(v_packet,packet_.getLength() - header_size_,header_size_);		
+
 		std::cout << __FILE__ << ":" << this << ":";
-		std::cout << "Forwarding packet header_size(" << header_size_ <<")offset(" << offset_ <<")pkt_length(" << length_-offset_ <<")" << std::endl;
+		std::cout << "Forwarding packet header_size(" << header_size_ <<")offset(" << offset_ <<")pkt_length(";
+		std::cout << packet_.getLength()-offset_ <<")" << std::endl;
 		++total_forward_packets_;
 		mx->forward();			
 	}
