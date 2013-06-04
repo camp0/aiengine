@@ -1,6 +1,7 @@
 #ifndef _EthernetProtocol_H_
 #define _EthernetProtocol_H_
 
+#include "../Packet.h" 
 #include "../Protocol.h"
 #include <net/ethernet.h>
 #include <arpa/inet.h>
@@ -23,7 +24,7 @@ public:
 
 	void statistics(std::ofstream out) {};
 
-	void setEthernetHeader(unsigned char *raw_packet) 
+	void setHeader(unsigned char *raw_packet) 
 	{ 
 		eth_header_ = reinterpret_cast <struct ether_header*> (raw_packet);
 	} 
@@ -31,7 +32,8 @@ public:
 	// Condition for say that a packet its ethernet 
 	bool ethernetChecker() const
 	{
-		int length = getMultiplexer().lock()->getPacketLength();
+		Packet *pkt = getMultiplexer().lock()->getCurrentPacket();
+		int length = pkt->getLength();
 		std::cout << __FILE__ << ":" << this << ":"<< __PRETTY_FUNCTION__ << std::endl;
 		if(ETHER_IS_VALID_LEN(length))
 		{

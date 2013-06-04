@@ -17,6 +17,13 @@ MultiplexerPtrWeak Multiplexer::getUpMultiplexer(int key) const
 	return mp;
 } 
 
+void Multiplexer::setPacketInfo(unsigned char *packet, int length, int prev_header_size) 
+{
+	packet_.setPayload(packet);
+	packet_.setPayloadLength(length);
+	packet_.setPrevHeaderSize(prev_header_size);
+}
+
 // TODO: two tyes of multiplexers should exists
 // 1.kknow mux, for standar protocols
 // 2.unknow mux, for l7 protocols
@@ -42,7 +49,7 @@ void Multiplexer::forward()
 				mx = mp.lock();
 				v_packet = &raw_packet_[header_size_];
 
-				mx->setPacketInfo(header_size_,v_packet,length_-header_size_);
+				mx->setPacketInfo(v_packet,length_-header_size_, header_size_);
 				std::cout << __FILE__<<":" << this << ": candidate mux on " << mx << std::endl;
 				if(mx->check_func_())
 				{

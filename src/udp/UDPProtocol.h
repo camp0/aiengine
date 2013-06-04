@@ -24,7 +24,7 @@ public:
 
 	void statistics(std::ofstream out) {};
 
-        void setUDPHeader(unsigned char *raw_packet)
+        void setHeader(unsigned char *raw_packet)
         {
                 udp_header_ = reinterpret_cast <struct udphdr*> (raw_packet);
         }
@@ -35,7 +35,7 @@ public:
 		int length = getMultiplexer().lock()->getPacketLength();
 		unsigned char *pkt = getMultiplexer().lock()->getRawPacket();	
 		
-		setUDPHeader(pkt);
+		setHeader(pkt);
 
 		if(length >= header_size)
 		{

@@ -24,7 +24,7 @@ public:
 
 	void statistics(std::ofstream out) {};
 
-        void setTCPHeader(unsigned char *raw_packet)
+        void setHeader(unsigned char *raw_packet)
         {
                 tcp_header_ = reinterpret_cast <struct tcphdr*> (raw_packet);
         }
@@ -36,7 +36,7 @@ public:
 		unsigned char *pkt = getMultiplexer().lock()->getRawPacket();	
 		
 		// extra check
-		setTCPHeader(pkt);
+		setHeader(pkt);
 
 		if(length >= header_size)
 		{

@@ -61,18 +61,18 @@ BOOST_AUTO_TEST_CASE (test2_vlan)
 	int length = 18;
 
         // Sets the raw packet to a valid ethernet header
-        eth->setEthernetHeader(packet);
+        eth->setHeader(packet);
         BOOST_CHECK(eth->getEthernetType() == ETH_P_8021Q);
 	// forward the packet through the multiplexers
-	mux_eth->setPacketInfo(0,packet,length);
+	mux_eth->setPacketInfo(packet,length,0);
 	mux_eth->forward();
 
 	BOOST_CHECK(mux_eth->getTotalForwardPackets() == 1);
 	BOOST_CHECK(mux_vlan->getTotalForwardPackets() == 0);
 	BOOST_CHECK(mux_vlan->getTotalFailPackets() == 1);
 
-	BOOST_CHECK(std::memcmp(mux_vlan->getRawPacket(),"\x02\x5e\x08\x00",4) == 0);
-	BOOST_CHECK(mux_vlan->getPacketLength() == 4);
+	BOOST_CHECK(std::memcmp(mux_vlan->getCurrentPacket()->getPayload(),"\x02\x5e\x08\x00",4) == 0);
+	BOOST_CHECK(mux_vlan->getCurrentPacket()->getLength() == 4);
  
        	BOOST_CHECK(vlan->getEthernetType() == ETH_P_IP);
 }

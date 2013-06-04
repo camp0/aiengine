@@ -25,7 +25,7 @@ public:
 
 	void statistics(std::ofstream out) {};
 
-        void setIPHeader(unsigned char *raw_packet)
+        void setHeader(unsigned char *raw_packet)
         {
                 ip_header_ = reinterpret_cast <struct iphdr*> (raw_packet);
         }
@@ -37,7 +37,7 @@ public:
 		unsigned char *pkt = getMultiplexer().lock()->getRawPacket();	
 		
 		// extra check
-		setIPHeader(pkt);
+		setHeader(pkt);
 
 		if((length >= header_size)&&(isIPver4()))
 		{

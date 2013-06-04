@@ -22,7 +22,9 @@ public:
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
-        void setICMPHeader(unsigned char *raw_packet)
+	void statistics(std::ofstream out) { };
+
+        void setHeader(unsigned char *raw_packet)
         {
                 icmp_header_ = reinterpret_cast <struct icmphdr*> (raw_packet);
         }
@@ -34,7 +36,7 @@ public:
 		unsigned char *pkt = getMultiplexer().lock()->getRawPacket();	
 		
 		// extra check
-		setICMPHeader(pkt);
+		setHeader(pkt);
 
 		if(length >= header_size)
 		{

@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE (test1_tcp)
         // executing the packet
         // forward the packet through the multiplexers
         mux_eth->setPacketInfo(0,packet,length);
-        eth->setEthernetHeader(mux_eth->getRawPacket());
+        eth->setHeader(mux_eth->getRawPacket());
         mux_eth->forward();
 
         // Check the udp integrity

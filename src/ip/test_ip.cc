@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE (test1_ip)
 	unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet_ip_tcp_syn);
 	int length = raw_packet_ip_tcp_syn_length;
 
-	ip->setIPHeader(packet);
+	ip->setHeader(packet);
 	BOOST_CHECK(ip->getTotalPackets() == 0);
 	BOOST_CHECK(ip->getTTL() == 128);
 	BOOST_CHECK(ip->getIPHeaderLength() == 20);
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE (test2_ip) // ethernet -> ip
         mux_ip->addDownMultiplexer(mux_eth);	
 
 	mux_eth->setPacketInfo(0,packet,length);
-	eth->setEthernetHeader(mux_eth->getRawPacket());     
+	eth->setHeader(mux_eth->getRawPacket());     
 	// Sets the raw packet to a valid ethernet header
         BOOST_CHECK(eth->getEthernetType() == ETH_P_IP);
 
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE (test3_ip) // ethernet -> vlan -> ip
 	// executing the packet
 	// forward the packet through the multiplexers
         mux_eth->setPacketInfo(0,packet,length);
-    	eth->setEthernetHeader(mux_eth->getRawPacket()); 
+    	eth->setHeader(mux_eth->getRawPacket()); 
 	mux_eth->forward();	
 
 	BOOST_CHECK(vlan->getTotalPackets() == 1);
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE (test4_ip) // ethernet -> vlan -> ip
         // executing the packet
         // forward the packet through the multiplexers
         mux_eth->setPacketInfo(0,packet,length);
-        eth->setEthernetHeader(mux_eth->getRawPacket());
+        eth->setHeader(mux_eth->getRawPacket());
         mux_eth->forward();
         
 	BOOST_CHECK(vlan->getTotalPackets() == 0);
@@ -261,7 +261,7 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         // executing the packet
         // forward the packet through the multiplexers
         mux_eth->setPacketInfo(0,packet,length);
-        eth->setEthernetHeader(mux_eth->getRawPacket());
+        eth->setHeader(mux_eth->getRawPacket());
         mux_eth->forward();
 
 	// Now check all the path that the packet have take

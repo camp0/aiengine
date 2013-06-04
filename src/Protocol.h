@@ -10,7 +10,8 @@ public:
     	Protocol():total_malformed_packets_(0),total_valid_packets_(0){};
     	virtual ~Protocol() {};
 
-	void virtual statistics(std::ofstream out) = 0;
+	virtual void setHeader(unsigned char *raw_packet) = 0;
+	virtual void statistics(std::ofstream out) = 0;
 
 	void virtual setMultiplexer(MultiplexerPtrWeak mux)
 	{

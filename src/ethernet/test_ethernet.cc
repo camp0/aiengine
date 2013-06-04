@@ -13,15 +13,6 @@
 #endif
 
 
-//#define BOOST_TEST_DYN_LINK
-//#include <boost/test/unit_test.hpp>
-
-//#ifndef BOOST_TEST_MODULE
-//#define BOOST_TEST_MODULE ethernettest 
-//#define BOOST_TEST_MODULE_SET_ETHERNET
-//BOOST_AUTO_TEST_SUITE (ethernet_suite)  
-//#endif
-
 BOOST_AUTO_TEST_CASE (test1_ethernet)
 {
 	EthernetProtocol *eth = new EthernetProtocol();
@@ -40,19 +31,21 @@ BOOST_AUTO_TEST_CASE (test2_ethernet)
         unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet);
         int length = 64;
 
+	Packet pkt(packet,length,0);
+
         eth->setMultiplexer(mux);
 	mux->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth));
 
-	mux->setPacketInfo(0,packet,10);
+	mux->setPacketInfo(packet,10,0);
 	BOOST_CHECK(eth->ethernetChecker() == false);
 	BOOST_CHECK(mux->check() == false);
 	
-	mux->setPacketInfo(0,packet,length);
+	mux->setPacketInfo(packet,length,0);
 	BOOST_CHECK(eth->ethernetChecker() == true);
 	BOOST_CHECK(mux->check() == true);
 
 	// Sets the raw packet to a valid ethernet header
-	eth->setEthernetHeader(mux->getRawPacket());
+	eth->setHeader(mux->getCurrentPacket()->getPayload());
 
 	BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IP);
 

@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE (test2_icmp)
         // executing first the packet
         // forward the packet through the multiplexers
         mux_eth->setPacketInfo(0,packet,length);
-        eth->setEthernetHeader(mux_eth->getRawPacket());
+        eth->setHeader(mux_eth->getRawPacket());
         mux_eth->forward();
 
 	BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE (test2_icmp)
         packet = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_icmp_echo_reply);
         length = raw_packet_ethernet_ip_icmp_echo_reply_length;
         mux_eth->setPacketInfo(0,packet,length);
-        eth->setEthernetHeader(mux_eth->getRawPacket());
+        eth->setHeader(mux_eth->getRawPacket());
         mux_eth->forward();
 
 	BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);

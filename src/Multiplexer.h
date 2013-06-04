@@ -5,6 +5,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <map>
+#include "Packet.h"
 
 #define NO_PROTOCOL_SELECTED 0xffff
 
@@ -16,7 +17,7 @@ typedef boost::weak_ptr<Multiplexer> MultiplexerPtrWeak;
 class Multiplexer 
 {
 public:
-    	Multiplexer(): offset_(0),raw_packet_(nullptr),length_(0)
+    	Multiplexer(): packet_()
 	{
 		total_forward_packets_ = 0;
 		total_received_packets_ = 0;
@@ -47,23 +48,29 @@ public:
 
 	void setProtocolIdentifier(u_int16_t protocol_id) { protocol_id_ = protocol_id;};
 
+
 	void setHeaderSize(int size) { header_size_ = size;};
 
-	void setPacket(unsigned char *packet) { raw_packet_=packet;};	
+	void setPacketInfo(unsigned char *packet, int length, int prev_header_size);
+
+/*	void setPacket(unsigned char *packet) { raw_packet_=packet;};	
 	void setPacketInfo(int offset, unsigned char *packet,int length) { offset_= offset;raw_packet_=packet;length_=length;};	
 	int getPacketOffset() const { return offset_;};
 	int getPacketLength() const { return length_;};
 	unsigned char *getRawPacket() const { return raw_packet_;};
-
+*/
 	void addChecker(std::function <bool ()> checker){ check_func_ = checker;};
 
 	uint64_t getTotalForwardPackets() const { return total_forward_packets_;};
 	uint64_t getTotalFailPackets() const { return total_fail_packets_;};
 	uint64_t getTotalReceivedPackets() const { return total_received_packets_;};
+
+	Packet *getCurrentPacket() { return &packet_;};
 private:
 
 	bool default_check() const { return true;};
 
+	Packet packet_;
 	uint64_t total_received_packets_;
 	uint64_t total_forward_packets_;
 	uint64_t total_fail_packets_;

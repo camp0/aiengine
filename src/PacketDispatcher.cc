@@ -94,7 +94,7 @@ void PacketDispatcher::runPcap()
 		++total_packets_;
 		if(defMux_)
 		{
-			defMux_->setPacketInfo(0,(unsigned char*)pkt_data,length);
+			defMux_->setPacketInfo((unsigned char*)pkt_data,length,0);
 			defMux_->forward();
 		}
 	}

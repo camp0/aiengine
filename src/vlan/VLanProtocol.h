@@ -19,7 +19,7 @@ public:
 
 	void statistics(std::ofstream out) {};
 
-	void setVLanHeader(unsigned char *raw_packet) 
+	void setHeader(unsigned char *raw_packet) 
 	{ 
 		vlan_header_ = reinterpret_cast <struct vlan_tag*> (raw_packet);
 	}
@@ -27,10 +27,10 @@ public:
 	// Condition for say that a packet its vlan 802.1q 
 	bool vlanChecker() 
 	{
-		int length = getMultiplexer().lock()->getPacketLength();
-		unsigned char *pkt = getMultiplexer().lock()->getRawPacket();
-		
-		setVLanHeader(pkt);	
+		Packet *pkt = getMultiplexer().lock()->getCurrentPacket();
+		int length = pkt->getLength();
+
+		setHeader(pkt->getPayload());	
 
 		if(length >= header_size)
 		{
