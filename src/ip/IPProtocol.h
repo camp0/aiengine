@@ -5,7 +5,6 @@
 #undef __FAVOR_BSD
 #endif // __FAVOR_BSD
 
-//#include <net/ethernet.h>
 #include <netinet/ip.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -23,6 +22,7 @@ public:
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
+	void processPacket() {};
 	void statistics(std::ofstream out) {};
 
         void setHeader(unsigned char *raw_packet)

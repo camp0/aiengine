@@ -12,6 +12,7 @@ public:
 
 	virtual void setHeader(unsigned char *raw_packet) = 0;
 	virtual void statistics(std::ofstream out) = 0;
+	virtual void processPacket() = 0;
 
 	void virtual setMultiplexer(MultiplexerPtrWeak mux)
 	{

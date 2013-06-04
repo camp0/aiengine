@@ -66,13 +66,14 @@ BOOST_FIXTURE_TEST_SUITE(tcp_suite,StackTcp)
 //
 BOOST_AUTO_TEST_CASE (test1_tcp)
 {
-	unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_http_get);
+	unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_http_get);
         int length = raw_packet_ethernet_ip_tcp_http_get_length;
-
+	Packet packet(pkt,length,0);
+	
         // executing the packet
         // forward the packet through the multiplexers
-        mux_eth->setPacketInfo(0,packet,length);
-        eth->setHeader(mux_eth->getRawPacket());
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
         mux_eth->forward();
 
         // Check the udp integrity

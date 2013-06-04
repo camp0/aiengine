@@ -5,9 +5,12 @@
 #undef __FAVOR_BSD
 #endif // __FAVOR_BSD
 
+#include "../Protocol.h"
 #include <netinet/udp.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "../flow/FlowManager.h"
+#include "../flow/FlowCache.h"
 
 class UDPProtocol: public Protocol 
 {
@@ -22,7 +25,8 @@ public:
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
-	void statistics(std::ofstream out) {};
+	void processPacket() ;
+	void statistics(std::ofstream out);
 
         void setHeader(unsigned char *raw_packet)
         {
@@ -32,10 +36,10 @@ public:
 	// Condition for say that a packet its ethernet 
 	bool udpChecker() 
 	{
-		int length = getMultiplexer().lock()->getPacketLength();
-		unsigned char *pkt = getMultiplexer().lock()->getRawPacket();	
-		
-		setHeader(pkt);
+                Packet *pkt = getMultiplexer().lock()->getCurrentPacket();
+                int length = pkt->getLength();
+
+		setHeader(pkt->getPayload());
 
 		if(length >= header_size)
 		{
@@ -56,6 +60,8 @@ public:
     	unsigned int getUdpHdrLength() const { return sizeof(udphdr); }
 
 private:
+	FlowManager flow_table_;
+	FlowCache flow_cache_;
 	struct udphdr *udp_header_;
 };
 

@@ -22,6 +22,7 @@ public:
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
+	void processPacket() {};
 	void statistics(std::ofstream out) { };
 
         void setHeader(unsigned char *raw_packet)
@@ -32,11 +33,10 @@ public:
 	// Condition for say that a packet its icmp 
 	bool icmpChecker() 
 	{
-		int length = getMultiplexer().lock()->getPacketLength();
-		unsigned char *pkt = getMultiplexer().lock()->getRawPacket();	
-		
-		// extra check
-		setHeader(pkt);
+                Packet *pkt = getMultiplexer().lock()->getCurrentPacket();
+                int length = pkt->getLength();
+
+                setHeader(pkt->getPayload());
 
 		if(length >= header_size)
 		{

@@ -29,15 +29,15 @@ public:
                 tcp_header_ = reinterpret_cast <struct tcphdr*> (raw_packet);
         }
 
-	// Condition for say that a packet its ethernet 
+	// Condition for say that a packet its tcp 
 	bool tcpChecker() 
 	{
-		int length = getMultiplexer().lock()->getPacketLength();
-		unsigned char *pkt = getMultiplexer().lock()->getRawPacket();	
-		
-		// extra check
-		setHeader(pkt);
+                Packet *pkt = getMultiplexer().lock()->getCurrentPacket();
+                int length = pkt->getLength();
 
+                // extra check
+                setHeader(pkt->getPayload());
+	
 		if(length >= header_size)
 		{
 			++total_valid_packets_; 

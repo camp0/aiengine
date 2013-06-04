@@ -70,13 +70,14 @@ BOOST_AUTO_TEST_CASE (test1_icmp)
 
 BOOST_AUTO_TEST_CASE (test2_icmp)
 {
-        unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_icmp_echo_request);
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_icmp_echo_request);
         int length = raw_packet_ethernet_ip_icmp_echo_request_length;
+	Packet packet1(pkt,length,0);
 
         // executing first the packet
         // forward the packet through the multiplexers
-        mux_eth->setPacketInfo(0,packet,length);
-        eth->setHeader(mux_eth->getRawPacket());
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(packet1.getPayload());
         mux_eth->forward();
 
 	BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);
@@ -91,10 +92,12 @@ BOOST_AUTO_TEST_CASE (test2_icmp)
 
         // executing second the packet
         // forward the packet through the multiplexers
-        packet = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_icmp_echo_reply);
+        pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_icmp_echo_reply);
         length = raw_packet_ethernet_ip_icmp_echo_reply_length;
-        mux_eth->setPacketInfo(0,packet,length);
-        eth->setHeader(mux_eth->getRawPacket());
+	Packet packet2(pkt,length,0);
+
+        mux_eth->setPacket(&packet2);
+        eth->setHeader(packet2.getPayload());
         mux_eth->forward();
 
 	BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);

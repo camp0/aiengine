@@ -75,13 +75,14 @@ BOOST_AUTO_TEST_CASE (test1_udp)
 
 BOOST_AUTO_TEST_CASE (test2_udp)
 {
-        unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dhcp_offer);
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dhcp_offer);
         int length = raw_packet_ethernet_ip_udp_dhcp_offer_length;
+	Packet packet(pkt,length,0);
 
         // executing the packet
         // forward the packet through the multiplexers
-        mux_eth->setPacketInfo(0,packet,length);
-        eth->setHeader(mux_eth->getRawPacket());
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
         mux_eth->forward();
 
 	// Check the udp integrity
