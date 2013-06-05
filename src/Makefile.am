@@ -15,7 +15,8 @@ noinst_HEADERS =        Packet.h \
 iaengine_core_sources =	Multiplexer.cc \
 			PacketDispatcher.cc \
 			./flow/FlowCache.cc \
-			./flow/FlowManager.cc 
+			./flow/FlowManager.cc \
+			./ethernet/EthernetProtocol.cc 
 
 iaengine_SOURCES =      $(iaengine_core_sources) main.cc
 
