@@ -66,7 +66,7 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am_test_ethernet_OBJECTS = Multiplexer.$(OBJEXT) \
-	test_ethernet.$(OBJEXT)
+	EthernetProtocol.$(OBJEXT) test_ethernet.$(OBJEXT)
 test_ethernet_OBJECTS = $(am_test_ethernet_OBJECTS)
 test_ethernet_DEPENDENCIES =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -214,7 +214,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = gnu
 TEST = test_ethernet
-test_ethernet_SOURCES = ../Multiplexer.cc test_ethernet.cc
+test_ethernet_SOURCES = ../Multiplexer.cc EthernetProtocol.cc test_ethernet.cc
 test_ethernet_LDADD = -lboost_unit_test_framework
 CLEANFILES = *.o *.lo *.so
 MAINTAINERCLEANFILES = \
@@ -275,6 +275,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EthernetProtocol.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Multiplexer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_ethernet.Po@am__quote@
 

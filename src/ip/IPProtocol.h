@@ -5,9 +5,12 @@
 #undef __FAVOR_BSD
 #endif // __FAVOR_BSD
 
+#include "../Protocol.h"
+#include <net/ethernet.h>
 #include <netinet/ip.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <iostream>
 
 class IPProtocol: public Protocol 
 {
@@ -22,8 +25,9 @@ public:
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
-	void processPacket() {};
-	void statistics(std::ofstream out) {};
+	void processPacket();
+	void statistics(std::basic_ostream<char>& out);
+	void statistics() { statistics(std::cout);};
 
         void setHeader(unsigned char *raw_packet)
         {

@@ -4,7 +4,15 @@ TEST = test_tcp
 
 check_PROGRAMS = test_tcp
 
-test_tcp_SOURCES = ../Multiplexer.cc test_tcp.cc
+test_tcp_SOURCES = 	../Multiplexer.cc \
+			../flow/FlowCache.cc \
+			../flow/FlowManager.cc \
+			../ethernet/EthernetProtocol.cc \
+			../vlan/VLanProtocol.cc \
+			../ip/IPProtocol.cc \
+			TCPProtocol.cc \
+			test_tcp.cc
+
 test_tcp_LDADD   = -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so

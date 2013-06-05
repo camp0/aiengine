@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE (test1_udp)
 
 	BOOST_CHECK(ip->getTotalPackets() == 0);
 	BOOST_CHECK(udp->getTotalPackets() == 0);
-
+	udp->statistics(std::cout);
 }
 
 

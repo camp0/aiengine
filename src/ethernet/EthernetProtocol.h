@@ -22,8 +22,9 @@ public:
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
-	void processPacket() {};
-	void statistics(std::ofstream out) {};
+	void processPacket() ;
+	void statistics(std::basic_ostream<char>& out);
+	void statistics() { statistics(std::cout);};
 
 	void setHeader(unsigned char *raw_packet) 
 	{ 

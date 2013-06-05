@@ -19,6 +19,7 @@ BOOST_AUTO_TEST_CASE (test1_ethernet)
 
 	BOOST_CHECK(eth->getTotalPackets() == 0);
 
+	eth->statistics(std::cout);
 	delete eth;	
 }
 
