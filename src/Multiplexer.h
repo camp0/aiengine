@@ -4,6 +4,7 @@
 #include <functional>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
+#include <boost/variant/apply_visitor.hpp>
 #include <map>
 #include "Packet.h"
 #include "ProtocolVisitor.h"
@@ -48,7 +49,9 @@ public:
 	int getNumberUpMultiplexers() const { return muxUpMap_.size(); }
 
 	void setProtocolIdentifier(u_int16_t protocol_id) { protocol_id_ = protocol_id;};
-
+	void setProtocol(variantProtocol &p){
+		//boost::apply_visitor(proto_visit_,&p);
+	};
 
 	void setHeaderSize(int size) { header_size_ = size;};
 
