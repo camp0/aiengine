@@ -6,6 +6,7 @@
 #include <boost/weak_ptr.hpp>
 #include <map>
 #include "Packet.h"
+#include "ProtocolVisitor.h"
 
 #define NO_PROTOCOL_SELECTED 0xffff
 
@@ -62,7 +63,7 @@ public:
 
 	Packet *getCurrentPacket() { return &packet_;};
 private:
-
+	ProtocolVisitor proto_visit_;
 	bool default_check() const { return true;};
 	Packet packet_;
 	uint64_t total_received_packets_;
