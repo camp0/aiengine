@@ -13,35 +13,38 @@
 
 struct StackIcmp
 {
-        EthernetProtocol *eth;
-        IPProtocol *ip;
-        ICMPProtocol *icmp;
+        EthernetProtocolPtr eth;
+        IPProtocolPtr ip;
+        ICMPProtocolPtr icmp;
         MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
         MultiplexerPtr mux_icmp;
 
 	StackIcmp() 
 	{
-		eth = new EthernetProtocol();
-		ip = new IPProtocol();
-		icmp = new ICMPProtocol();
+		eth = EthernetProtocolPtr(new EthernetProtocol());
+		ip = IPProtocolPtr(new IPProtocol());
+		icmp = ICMPProtocolPtr(new ICMPProtocol());
 		mux_eth = MultiplexerPtr(new Multiplexer());
 		mux_ip = MultiplexerPtr(new Multiplexer());
 		mux_icmp = MultiplexerPtr(new Multiplexer());
 
 		//configure the eth
 		eth->setMultiplexer(mux_eth);
-		mux_eth->setHeaderSize(eth->header_size);
+		mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
+		mux_eth->setHeaderSize(eth->getHeaderSize());
 		mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth));
 
 		// configure the ip
 		ip->setMultiplexer(mux_ip);
-		mux_ip->setHeaderSize(ip->header_size);
+		mux_ip->setProtocol(static_cast<ProtocolPtr>(ip));
+		mux_ip->setHeaderSize(ip->getHeaderSize());
 		mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip));
 
 		//configure the icmp
 		icmp->setMultiplexer(mux_icmp);
-		mux_icmp->setHeaderSize(icmp->header_size);
+		mux_icmp->setProtocol(static_cast<ProtocolPtr>(icmp));
+		mux_icmp->setHeaderSize(icmp->getHeaderSize());
 		mux_icmp->addChecker(std::bind(&ICMPProtocol::icmpChecker,icmp));
 
         	// configure the multiplexers
@@ -53,9 +56,7 @@ struct StackIcmp
 	}
 
 	~StackIcmp() {
-		delete icmp;
-		delete ip;
-		delete eth;
+		// nothing to delete
 	}
 };
 

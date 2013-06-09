@@ -11,25 +11,27 @@
 
 struct StackVlan
 {
-        EthernetProtocol *eth;
-        VLanProtocol *vlan;
+        EthernetProtocolPtr eth;
+        VLanProtocolPtr vlan;
         MultiplexerPtr mux_eth;
         MultiplexerPtr mux_vlan;
 
         StackVlan()
         {
-        	eth = new EthernetProtocol();
-        	vlan = new VLanProtocol();
+        	eth = EthernetProtocolPtr(new EthernetProtocol());
+        	vlan = VLanProtocolPtr(new VLanProtocol());
         	mux_vlan = MultiplexerPtr(new Multiplexer());
         	mux_eth = MultiplexerPtr(new Multiplexer());
 
         	eth->setMultiplexer(mux_eth);
-        	mux_eth->setHeaderSize(eth->header_size);
+		mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
+        	mux_eth->setHeaderSize(eth->getHeaderSize());
         	mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth));
 
         	// configure the vlan handler
         	vlan->setMultiplexer(mux_vlan);
-        	mux_vlan->setHeaderSize(vlan->header_size);
+		mux_vlan->setProtocol(static_cast<ProtocolPtr>(vlan));
+        	mux_vlan->setHeaderSize(vlan->getHeaderSize());
         	mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan));
 
 		// configure the multiplexers
@@ -39,8 +41,7 @@ struct StackVlan
 	}
 
         ~StackVlan() {
-                delete vlan;
-                delete eth;
+          	// nothing to delete 
         }
 };
 

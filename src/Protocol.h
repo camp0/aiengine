@@ -16,18 +16,15 @@ public:
 
 	virtual void processPacket() = 0;
 
-	void virtual setMultiplexer(MultiplexerPtrWeak mux)
-	{
-		mux_ = mux;
-	};
-
-	MultiplexerPtrWeak virtual getMultiplexer() const { return mux_;}; 
+	void virtual setMultiplexer(MultiplexerPtrWeak mux) = 0;
+	MultiplexerPtrWeak virtual getMultiplexer() = 0; 
 
 	mutable uint64_t total_malformed_packets_;
 	mutable uint64_t total_valid_packets_;
 private:
-	MultiplexerPtrWeak mux_;
 	u_int16_t protocol_id_;
 };
+
+typedef boost::shared_ptr <Protocol> ProtocolPtr;
 
 #endif

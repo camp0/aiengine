@@ -13,35 +13,38 @@
 
 struct StackUdp 
 {
-	EthernetProtocol *eth;
-	IPProtocol *ip;	
-	UDPProtocol *udp;
+	EthernetProtocolPtr eth;
+	IPProtocolPtr ip;	
+	UDPProtocolPtr udp;
 	MultiplexerPtr mux_eth;
 	MultiplexerPtr mux_ip;
 	MultiplexerPtr mux_udp;
 	
 	StackUdp()
 	{
-        	udp = new UDPProtocol();
-        	ip = new IPProtocol();
-        	eth = new EthernetProtocol();
+        	udp = UDPProtocolPtr(new UDPProtocol());
+        	ip = IPProtocolPtr(new IPProtocol());
+        	eth = EthernetProtocolPtr(new EthernetProtocol());
         	mux_eth = MultiplexerPtr(new Multiplexer());
         	mux_ip = MultiplexerPtr(new Multiplexer());
         	mux_udp = MultiplexerPtr(new Multiplexer());	
 
 	        //configure the eth
         	eth->setMultiplexer(mux_eth);
-        	mux_eth->setHeaderSize(eth->header_size);
+		mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
+        	mux_eth->setHeaderSize(eth->getHeaderSize());
         	mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth));
 
         	// configure the ip
         	ip->setMultiplexer(mux_ip);
-        	mux_ip->setHeaderSize(ip->header_size);
+		mux_eth->setProtocol(static_cast<ProtocolPtr>(ip));
+        	mux_ip->setHeaderSize(ip->getHeaderSize());
         	mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip));
 
 		//configure the udp
 		udp->setMultiplexer(mux_udp);
-		mux_udp->setHeaderSize(udp->header_size);
+		mux_eth->setProtocol(static_cast<ProtocolPtr>(udp));
+		mux_udp->setHeaderSize(udp->getHeaderSize());
 		mux_udp->addChecker(std::bind(&UDPProtocol::udpChecker,udp));
 
 		// configure the multiplexers
@@ -49,13 +52,11 @@ struct StackUdp
 		mux_ip->addDownMultiplexer(mux_eth);
 		mux_ip->addUpMultiplexer(mux_udp,IPPROTO_UDP);
 		mux_udp->addDownMultiplexer(mux_ip);
-
+		BOOST_TEST_MESSAGE("Setup StackUdp");
 	}
 
 	~StackUdp() {
-		delete udp;
-		delete ip;
-		delete eth;
+		BOOST_TEST_MESSAGE("Teardown StackUdp");
 	}
 };
 
@@ -91,6 +92,21 @@ BOOST_AUTO_TEST_CASE (test2_udp)
 	BOOST_CHECK(udp->getPayloadLength() == 300);
 }
 
+BOOST_AUTO_TEST_CASE(test3_udp)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dhcp_offer);
+        int length = raw_packet_ethernet_ip_udp_dhcp_offer_length;
+        Packet packet(pkt,length,0);
+
+	// set the function handler for udp
+	mux_udp->addPacketFunction(std::bind(&UDPProtocol::processPacket,udp));	
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->forward();
+
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 

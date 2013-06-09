@@ -5,6 +5,7 @@
 #undef __FAVOR_BSD
 #endif // __FAVOR_BSD
 
+#include "../Multiplexer.h"
 #include "../Protocol.h"
 #include <netinet/ip_icmp.h>
 #include <netinet/in.h>
@@ -19,6 +20,8 @@ public:
 	static const u_int16_t id = IPPROTO_ICMP;
 	static const int header_size = 8;
 
+	int getHeaderSize() const { return header_size;};
+
 	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
@@ -26,6 +29,9 @@ public:
 	void processPacket();
 	void statistics(std::basic_ostream<char>& out) ;
 	void statistics() { statistics(std::cout);};
+
+        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
+        MultiplexerPtrWeak getMultiplexer() { mux_;};
 
         void setHeader(unsigned char *raw_packet)
         {
@@ -35,7 +41,7 @@ public:
 	// Condition for say that a packet its icmp 
 	bool icmpChecker() 
 	{
-                Packet *pkt = getMultiplexer().lock()->getCurrentPacket();
+                Packet *pkt = mux_.lock()->getCurrentPacket();
                 int length = pkt->getLength();
 
                 setHeader(pkt->getPayload());
@@ -58,7 +64,10 @@ public:
         u_int16_t getSequence() const { return ntohs(icmp_header_->un.echo.sequence); }
 
 private:
+	MultiplexerPtrWeak mux_;
 	struct icmphdr *icmp_header_;
 };
+
+typedef boost::shared_ptr<ICMPProtocol> ICMPProtocolPtr;
 
 #endif

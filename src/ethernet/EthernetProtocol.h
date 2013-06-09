@@ -1,6 +1,7 @@
 #ifndef _EthernetProtocol_H_
 #define _EthernetProtocol_H_
 
+#include "../Multiplexer.h"
 #include "../Packet.h" 
 #include "../Protocol.h"
 #include <net/ethernet.h>
@@ -17,6 +18,7 @@ public:
 
 	static const u_int16_t id = 0x0001; //Ethernet dont need a id
 	static const int header_size = 14;
+	int getHeaderSize() const { return header_size;};
 
 	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
@@ -26,6 +28,9 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
+        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
+        MultiplexerPtrWeak getMultiplexer() { mux_;};
+
 	void setHeader(unsigned char *raw_packet) 
 	{ 
 		eth_header_ = reinterpret_cast <struct ether_header*> (raw_packet);
@@ -34,7 +39,7 @@ public:
 	// Condition for say that a packet its ethernet 
 	bool ethernetChecker() const
 	{
-		Packet *pkt = getMultiplexer().lock()->getCurrentPacket();
+		Packet *pkt = mux_.lock()->getCurrentPacket();
 		int length = pkt->getLength();
 		std::cout << __FILE__ << ":" << this << ":"<< __PRETTY_FUNCTION__ << std::endl;
 		if(ETHER_IS_VALID_LEN(length))
@@ -53,7 +58,10 @@ public:
 	struct ether_header *getEthernetHeader() const { return eth_header_;};
 
 private:
+	MultiplexerPtrWeak mux_;
 	struct ether_header *eth_header_;
 };
+
+typedef boost::shared_ptr<EthernetProtocol> EthernetProtocolPtr;
 
 #endif

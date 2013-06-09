@@ -4,7 +4,10 @@ TEST = test_vlan
 
 check_PROGRAMS = test_vlan
 
-test_vlan_SOURCES = ../Multiplexer.cc ../ethernet/EthernetProtocol.cc VLanProtocol.cc test_vlan.cc
+test_vlan_SOURCES = 	../Multiplexer.cc \
+			../ethernet/EthernetProtocol.cc \
+			VLanProtocol.cc test_vlan.cc
+
 test_vlan_LDADD   = -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so

@@ -85,6 +85,7 @@ void Multiplexer::forward()
 	{	
 		std::cout << __FILE__ << ":" << this;
 		std::cout << ":Processing the packet" <<std::endl;
+		packet_func_();
 		++total_fail_packets_;
 	}
 }

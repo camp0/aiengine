@@ -5,6 +5,7 @@
 #undef __FAVOR_BSD
 #endif // __FAVOR_BSD
 
+#include "../Multiplexer.h"
 #include "../Protocol.h"
 #include <net/ethernet.h>
 #include <netinet/ip.h>
@@ -20,6 +21,7 @@ public:
 	
 	static const u_int16_t id = ETHERTYPE_IP;
 	static const int header_size = 20;
+	int getHeaderSize() const { return header_size;};
 
 	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
@@ -29,6 +31,9 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
+        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
+        MultiplexerPtrWeak getMultiplexer() { mux_;};
+
         void setHeader(unsigned char *raw_packet)
         {
                 ip_header_ = reinterpret_cast <struct iphdr*> (raw_packet);
@@ -37,7 +42,7 @@ public:
 	// Condition for say that a packet its ethernet 
 	bool ipChecker() 
 	{
-		Packet *pkt = getMultiplexer().lock()->getCurrentPacket();
+		Packet *pkt = mux_.lock()->getCurrentPacket();
 		int length = pkt->getLength();
 
 		// extra check
@@ -71,7 +76,10 @@ public:
     	u_int32_t getIPPayloadLength() const { return getPacketLength() - getIPHeaderLength(); }
 
 private:
+	MultiplexerPtrWeak mux_;
 	struct iphdr *ip_header_;
 };
+
+typedef boost::shared_ptr<IPProtocol> IPProtocolPtr;
 
 #endif

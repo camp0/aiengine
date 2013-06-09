@@ -5,6 +5,7 @@
 #undef __FAVOR_BSD
 #endif // __FAVOR_BSD
 
+#include "../Multiplexer.h"
 #include "../Protocol.h"
 #include <netinet/udp.h>
 #include <netinet/in.h>
@@ -21,9 +22,14 @@ public:
 	static const u_int16_t id = IPPROTO_UDP;
 	static const int header_size = 8;
 
+	int getHeaderSize() const { return header_size;};
+
 	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
+
+        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
+        MultiplexerPtrWeak getMultiplexer() { mux_;};
 
 	void processPacket() ;
 	void statistics(std::basic_ostream<char>& out);
@@ -37,7 +43,7 @@ public:
 	// Condition for say that a packet its ethernet 
 	bool udpChecker() 
 	{
-                Packet *pkt = getMultiplexer().lock()->getCurrentPacket();
+                Packet *pkt = mux_.lock()->getCurrentPacket();
                 int length = pkt->getLength();
 
 		setHeader(pkt->getPayload());
@@ -61,9 +67,15 @@ public:
     	unsigned int getUdpHdrLength() const { return sizeof(udphdr); }
 
 private:
+	
+	Flow* getFlow(); 
+
+	MultiplexerPtrWeak mux_;
 	FlowManager flow_table_;
 	FlowCache flow_cache_;
 	struct udphdr *udp_header_;
 };
+
+typedef boost::shared_ptr<UDPProtocol> UDPProtocolPtr;
 
 #endif

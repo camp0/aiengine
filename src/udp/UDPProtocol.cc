@@ -10,9 +10,22 @@ void UDPProtocol::statistics(std::basic_ostream<char>& out)
 
 }
 
+Flow *UDPProtocol::getFlow() 
+{
+	MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();	
+	ProtocolPtr p = downmux.lock()->getProtocol();	
+	//u_int32_t ipaddr = downmux->get
+	//getDownMultiplexer();	
+	std::cout << "ProtocolPtr points to " << p << std::endl;
+
+	return nullptr;
+}
+
 void UDPProtocol::processPacket()
 {
 	// Get the ips and ports for the hash access
+	Flow *flow = getFlow();
+
 	/*	
         FlowCache *fc = new FlowCache();
         FlowManager *fm = new FlowManager();

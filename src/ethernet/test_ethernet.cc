@@ -15,18 +15,17 @@
 
 BOOST_AUTO_TEST_CASE (test1_ethernet)
 {
-	EthernetProtocol *eth = new EthernetProtocol();
+	EthernetProtocolPtr eth = EthernetProtocolPtr(new EthernetProtocol());
 
 	BOOST_CHECK(eth->getTotalPackets() == 0);
 
 	eth->statistics(std::cout);
-	delete eth;	
 }
 
 
 BOOST_AUTO_TEST_CASE (test2_ethernet)
 {
-        EthernetProtocol *eth = new EthernetProtocol();
+        EthernetProtocolPtr eth = EthernetProtocolPtr(new EthernetProtocol());
         MultiplexerPtr mux = MultiplexerPtr(new Multiplexer());
 	char *raw_packet = "\x00\x05\x47\x02\xa2\x5d\x00\x15\xc7\xee\x25\x98\x08\x00\x02\x5e\x08\x00";
         unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet);
@@ -35,6 +34,7 @@ BOOST_AUTO_TEST_CASE (test2_ethernet)
 	Packet pkt(packet,length,0);
 
         eth->setMultiplexer(mux);
+	mux->setProtocol(static_cast<ProtocolPtr>(eth));
 	mux->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth));
 
 	mux->setPacketInfo(packet,10,0);
@@ -55,7 +55,6 @@ BOOST_AUTO_TEST_CASE (test2_ethernet)
 	BOOST_CHECK(eth->getTotalValidPackets() == 2);
 	BOOST_CHECK(eth->getTotalMalformedPackets() == 2);
 
-        delete eth;
 }
 
 //#ifdef BOOST_TEST_MODULE_SET_ETHERNET
