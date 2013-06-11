@@ -16,7 +16,7 @@
 class UDPProtocol: public Protocol 
 {
 public:
-    	explicit UDPProtocol():udp_header_(nullptr),flow_cache_(),flow_table_(){};
+    	explicit UDPProtocol();
     	virtual ~UDPProtocol() {};
 
 	static const u_int16_t id = IPPROTO_UDP;
@@ -66,16 +66,21 @@ public:
     	unsigned int getPayloadLength() const { return ntohs(udp_header_->len) - sizeof(udphdr); }
     	unsigned int getUdpHdrLength() const { return sizeof(udphdr); }
 
+	void setFlowManager(FlowManagerPtr flow_mng) { flow_table_ = flow_mng;};
+	FlowManagerPtr getFlowManager() { return flow_table_; };
+	void setFlowCache(FlowCachePtr flow_cache) { flow_cache_ = flow_cache;};
+	FlowCachePtr getFlowCache() { return flow_cache_;};
+
 private:
 	
-	Flow* getFlow(); 
+	FlowPtr getFlow(); 
 
 	MultiplexerPtrWeak mux_;
-	FlowManager flow_table_;
-	FlowCache flow_cache_;
+	FlowManagerPtr flow_table_;
+	FlowCachePtr flow_cache_;
 	struct udphdr *udp_header_;
 };
 
-typedef boost::shared_ptr<UDPProtocol> UDPProtocolPtr;
+typedef std::shared_ptr<UDPProtocol> UDPProtocolPtr;
 
 #endif

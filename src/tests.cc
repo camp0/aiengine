@@ -2,6 +2,10 @@
 #include "Multiplexer.h"
 #include "PacketDispatcher.h"
 #include "./ethernet/EthernetProtocol.h"
+#include "./ip/IPProtocol.h"
+#include "./udp/UDPProtocol.h"
+#include "./tcp/TCPProtocol.h"
+#include "StackLan.h"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE Main 
@@ -62,6 +66,18 @@ BOOST_AUTO_TEST_CASE(test_case_3)
 	delete eth;
 }
 
+BOOST_FIXTURE_TEST_CASE(test_case_4,StackLan)
+{
+
+	PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+
+	pd->setDefaultMultiplexer(mux_eth);
+	pd->openPcapFile("../pcapfiles/4udppackets.pcap");
+	pd->runPcap();
+	pd->closePcapFile();
+	this->statistics();
+
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 

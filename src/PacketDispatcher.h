@@ -6,13 +6,15 @@
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
 #include "Multiplexer.h"
+#include "./ethernet/EthernetProtocol.h"
+#include "Protocol.h"
 
 #define PACKET_RECVBUFSIZE    2048        /// receive_from buffer size for a single datagram
 
 #define BOOST_ASIO_DISABLE_EPOLL
 
 typedef boost::asio::posix::stream_descriptor PcapStream;
-typedef boost::shared_ptr<PcapStream> PcapStreamPtr;
+typedef std::shared_ptr<PcapStream> PcapStreamPtr;
 
 class PacketDispatcher 
 {
@@ -53,10 +55,11 @@ private:
 	boost::asio::io_service io_service_;
 	struct pcap_pkthdr *header;
 	const u_char *pkt_data;
-
+	
+	Packet current_packet_;
 	MultiplexerPtr defMux_;
 };
 
-typedef boost::shared_ptr<PacketDispatcher> PacketDispatcherPtr;
+typedef std::shared_ptr<PacketDispatcher> PacketDispatcherPtr;
 
 #endif

@@ -80,6 +80,6 @@ private:
 	struct iphdr *ip_header_;
 };
 
-typedef boost::shared_ptr<IPProtocol> IPProtocolPtr;
+typedef std::shared_ptr<IPProtocol> IPProtocolPtr;
 
 #endif

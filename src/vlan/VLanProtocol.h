@@ -61,6 +61,6 @@ private:
 	struct vlan_tag *vlan_header_;
 };
 
-typedef boost::shared_ptr<VLanProtocol> VLanProtocolPtr;
+typedef std::shared_ptr<VLanProtocol> VLanProtocolPtr;
 
 #endif

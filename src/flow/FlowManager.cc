@@ -1,5 +1,5 @@
 #include "FlowManager.h"
-
+#include <iomanip> // setw
 
 FlowManager::FlowManager() 
 {
@@ -39,5 +39,12 @@ FlowPtr FlowManager::findFlow(unsigned long hash1,unsigned long hash2)
 	}
 	fp = (*it);
 	return fp;
+}
+
+void FlowManager::statistics(std::basic_ostream<char>& out)
+{
+        out << "FlowManager statistics" << std::endl;
+        out << "\t" << "Total flows:            " << std::setw(10) << flowTable_.size() <<std::endl;
+
 }
 

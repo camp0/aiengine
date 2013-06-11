@@ -5,6 +5,7 @@
 #undef __FAVOR_BSD
 #endif // __FAVOR_BSD
 
+#include "../Multiplexer.h"
 #include <netinet/tcp.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -20,10 +21,14 @@ public:
 
 	static const u_int16_t id = IPPROTO_TCP;
 	static const int header_size = 20;
+	int getHeaderSize() const { return header_size;};
 
 	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
+
+        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
+        MultiplexerPtrWeak getMultiplexer() { mux_;};
 
 	void processPacket();
 	void statistics(std::basic_ostream<char>& out);
@@ -37,7 +42,7 @@ public:
 	// Condition for say that a packet its tcp 
 	bool tcpChecker() 
 	{
-                Packet *pkt = getMultiplexer().lock()->getCurrentPacket();
+                Packet *pkt = mux_.lock()->getCurrentPacket();
                 int length = pkt->getLength();
 
                 // extra check
@@ -70,7 +75,12 @@ public:
     	unsigned int getTcpHdrLength() const { return tcp_header_->doff * 4; }
     	//const char* getTcpPayload() const { return getIPpayload()+getTcpHdrLength(); }
 private:
+	MultiplexerPtrWeak mux_;
+	FlowManagerPtr flow_table_;
+	FlowCachePtr flow_cache_;
 	struct tcphdr *tcp_header_;
 };
+
+typedef std::shared_ptr<TCPProtocol> TCPProtocolPtr;
 
 #endif

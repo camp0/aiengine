@@ -79,6 +79,7 @@ void Multiplexer::forward()
 		std::cout << "Forwarding packet header_size(" << header_size_ <<")offset(" << offset_ <<")pkt_length(";
 		std::cout << packet_.getLength()-offset_ <<")" << std::endl;
 		++total_forward_packets_;
+		packet_func_();
 		mx->forward();			
 	}
 	else

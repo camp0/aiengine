@@ -37,15 +37,17 @@ struct StackUdp
 
         	// configure the ip
         	ip->setMultiplexer(mux_ip);
-		mux_eth->setProtocol(static_cast<ProtocolPtr>(ip));
+		mux_ip->setProtocol(static_cast<ProtocolPtr>(ip));
         	mux_ip->setHeaderSize(ip->getHeaderSize());
         	mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip));
+        	mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip));
 
 		//configure the udp
 		udp->setMultiplexer(mux_udp);
-		mux_eth->setProtocol(static_cast<ProtocolPtr>(udp));
+		mux_udp->setProtocol(static_cast<ProtocolPtr>(udp));
 		mux_udp->setHeaderSize(udp->getHeaderSize());
 		mux_udp->addChecker(std::bind(&UDPProtocol::udpChecker,udp));
+        	mux_udp->addPacketFunction(std::bind(&UDPProtocol::processPacket,udp));
 
 		// configure the multiplexers
 		mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
@@ -98,9 +100,7 @@ BOOST_AUTO_TEST_CASE(test3_udp)
         int length = raw_packet_ethernet_ip_udp_dhcp_offer_length;
         Packet packet(pkt,length,0);
 
-	// set the function handler for udp
-	mux_udp->addPacketFunction(std::bind(&UDPProtocol::processPacket,udp));	
-        // executing the packet
+	// executing the packet
         // forward the packet through the multiplexers
         mux_eth->setPacket(&packet);
         eth->setHeader(mux_eth->getCurrentPacket()->getPayload());

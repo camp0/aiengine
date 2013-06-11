@@ -3,6 +3,12 @@
 
 void IPProtocol::processPacket()
 {
+        MultiplexerPtr mux = mux_.lock();
+
+	mux->ipsrc = getSrcAddr();
+	mux->ipdst = getDstAddr();
+	std::cout << __FILE__ <<":"<< this<< ":";
+	std::cout << " ipsrc:" << mux->ipsrc << " ipdst:"<< mux->ipdst <<std::endl;
 
 }
 void IPProtocol::statistics(std::basic_ostream<char>& out)

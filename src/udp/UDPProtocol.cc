@@ -1,51 +1,69 @@
 #include "UDPProtocol.h"
 #include <iomanip> // setw
 
+UDPProtocol::UDPProtocol()
+{
+	udp_header_ = nullptr;
+//	flow_table_ = FlowManagerPtr(new FlowManager());
+//	flow_cache_ = FlowCachePtr(new FlowCache());
+}
+
 void UDPProtocol::statistics(std::basic_ostream<char>& out)
 {
 	out << "UDPProtocol statistics" << std::endl;
         out << "\t" << "Total packets:          " << std::setw(10) << total_malformed_packets_+total_valid_packets_ <<std::endl;
         out << "\t" << "Total valid packets:    " << std::setw(10) << total_valid_packets_ <<std::endl;
         out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
-
+	if(flow_table_)
+		flow_table_->statistics(out);
+	if(flow_cache_)
+		flow_cache_->statistics(out);
 }
 
-Flow *UDPProtocol::getFlow() 
+FlowPtr UDPProtocol::getFlow() 
 {
+	unsigned long h1;
+	unsigned long h2;
+	FlowPtr flow;
 	MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();	
-	ProtocolPtr p = downmux.lock()->getProtocol();	
-	//u_int32_t ipaddr = downmux->get
-	//getDownMultiplexer();	
-	std::cout << "ProtocolPtr points to " << p << std::endl;
+	MultiplexerPtr ipmux = downmux.lock();
 
-	return nullptr;
+	std::cout << __FILE__ <<":"<< this<< ":";	
+	std::cout << " ipsrc:" << ipmux->ipsrc << " ipdst:" << ipmux->ipdst <<std::endl;
+
+	h1 = ipmux->ipsrc ^ getSrcPort() ^ 17 ^ ipmux->ipdst ^ getDstPort();
+	h2 = ipmux->ipdst ^ getDstPort() ^ 17 ^ ipmux->ipsrc ^ getSrcPort();
+
+	if(flow_table_)
+	{
+		flow = flow_table_->findFlow(h1,h2);
+		if(!flow) 
+		{
+			if(flow_cache_)
+			{	
+				flow = FlowPtr(flow_cache_->acquireFlow());
+				if(flow)
+				{
+					flow->setId(h1);
+					flow_table_->addFlow(flow);			
+				}
+			}
+		}
+	}
+	return flow; 
 }
 
 void UDPProtocol::processPacket()
 {
-	// Get the ips and ports for the hash access
-	Flow *flow = getFlow();
+	FlowPtr flow = getFlow();
 
-	/*	
-        FlowCache *fc = new FlowCache();
-        FlowManager *fm = new FlowManager();
-
-        fc->createFlows(10);
-        FlowPtr f1 = FlowPtr(fc->acquireFlow());
-        BOOST_CHECK(f1.use_count() == 1);
-        BOOST_CHECK(fm->getNumberFlows() == 0);
-
-        unsigned long h1 = 1^2^3^4^5;
-        unsigned long h2 = 4^5^3^1^2;
-        unsigned long hfail = 10^10^10^10^10; // for fails
-        f1->setId(h1);
-
-        fm->addFlow(f1);
-        BOOST_CHECK(fm->getNumberFlows() == 1);
-        FlowPtr f2 = fm->findFlow(h1,hfail);
-        BOOST_CHECK(f2.get() == f1.get());
-        fm->removeFlow(f1);
-	*/
+	if(flow)
+	{
+		std::cout << __FILE__ <<":"<< this<< ":procesing flow:" << flow << std::endl;
 
 
+
+
+
+	}
 } 

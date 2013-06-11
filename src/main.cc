@@ -5,6 +5,7 @@
 #include <csignal>
 #include <boost/program_options.hpp>
 #include <fstream>
+#include "StackLan.h"
 
 bool process_command_line(int argc, char **argv,
 	std::string &local_address,

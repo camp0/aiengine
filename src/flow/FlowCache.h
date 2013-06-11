@@ -17,6 +17,9 @@ public:
 	void createFlows(int number);
 	void destroyFlows(int number);
 
+        void statistics(std::basic_ostream<char>& out);
+        void statistics() { statistics(std::cout);};
+
 	int32_t getTotalFlowsOnCache() const { return flows_.size();};
 	int32_t getTotalFlows() const { return total_flows_;};
 	int32_t getTotalAcquires() const { return total_acquires_;};
@@ -32,5 +35,7 @@ private:
 	// a vector of pointers to the created Flows
 	boost::ptr_vector<Flow> flows_;
 };
+
+typedef std::shared_ptr<FlowCache> FlowCachePtr;
 
 #endif

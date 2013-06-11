@@ -1,21 +1,24 @@
 #ifndef _Multiplexer_H_
 #define _Multiplexer_H_
 
+#include <iostream>
+#include <memory>
 #include <functional>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-#include <boost/variant/apply_visitor.hpp>
+//#include <boost/shared_ptr.hpp>
+//#include <boost/weak_ptr.hpp>
 #include <map>
 #include "Packet.h"
 
+//using namespace std;
+
 class Protocol;
-typedef boost::shared_ptr<Protocol> ProtocolPtr;
+typedef std::shared_ptr<Protocol> ProtocolPtr;
 
 #define NO_PROTOCOL_SELECTED 0xffff
 
 class Multiplexer;
-typedef boost::shared_ptr<Multiplexer> MultiplexerPtr; 
-typedef boost::weak_ptr<Multiplexer> MultiplexerPtrWeak; 
+typedef std::shared_ptr<Multiplexer> MultiplexerPtr; 
+typedef std::weak_ptr<Multiplexer> MultiplexerPtrWeak; 
 
 class Multiplexer 
 {
@@ -26,6 +29,8 @@ public:
 		total_received_packets_ = 0;
 		total_fail_packets_ = 0;
 		header_size_ = 0;
+		ipsrc = 0;
+		ipdst = 0;
 		protocol_id_ =  NO_PROTOCOL_SELECTED;
 		addChecker(std::bind(&Multiplexer::default_check,this));
 		addPacketFunction(std::bind(&Multiplexer::default_packet_func,this));
@@ -67,6 +72,11 @@ public:
 	uint64_t getTotalReceivedPackets() const { return total_received_packets_;};
 
 	Packet *getCurrentPacket() { return &packet_;};
+
+	// This is realy uggly puagggggg
+	u_int32_t ipsrc;
+	u_int32_t ipdst;
+
 private:
 	ProtocolPtr proto_;
 	bool default_check() const { return true;};

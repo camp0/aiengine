@@ -94,7 +94,14 @@ void PacketDispatcher::runPcap()
 		++total_packets_;
 		if(defMux_)
 		{
-			defMux_->setPacketInfo((unsigned char*)pkt_data,length,0);
+			//EthernetProtocolPtr pepe= dynamic_cast<EthernetProtocolPtr>(defMux_->getProtocol());
+			
+			current_packet_.setPayload((unsigned char*)pkt_data);
+			current_packet_.setPayloadLength(length);
+			current_packet_.setPrevHeaderSize(0);
+				
+			defMux_->setPacket(&current_packet_);
+			//eth->setHeader(packet.getPayload());
 			defMux_->forward();
 		}
 	}

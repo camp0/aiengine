@@ -1,4 +1,5 @@
 #include "FlowCache.h"
+#include <iomanip> // setw
 
 FlowCache::FlowCache() :
 	total_flows_(0),
@@ -62,3 +63,12 @@ void FlowCache::destroyFlows(int number)
 	return;
 }
 
+void FlowCache::statistics(std::basic_ostream<char>& out)
+{
+        out << "FlowCache statistics" << std::endl;
+        out << "\t" << "Total flows:            " << std::setw(10) << total_flows_ <<std::endl;
+        out << "\t" << "Total acquires:         " << std::setw(10) << total_acquires_ <<std::endl;
+        out << "\t" << "Total releases:         " << std::setw(10) << total_releases_ <<std::endl;
+        out << "\t" << "Total fails:            " << std::setw(10) << total_fails_ <<std::endl;
+
+}

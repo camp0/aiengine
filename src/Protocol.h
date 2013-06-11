@@ -1,6 +1,7 @@
 #ifndef _Protocol_H_
 #define _Protocol_H_
 
+#include <iostream>
 #include <fstream>
 #include "Multiplexer.h"
 
@@ -25,6 +26,6 @@ private:
 	u_int16_t protocol_id_;
 };
 
-typedef boost::shared_ptr <Protocol> ProtocolPtr;
+typedef std::shared_ptr <Protocol> ProtocolPtr;
 
 #endif

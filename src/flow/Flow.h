@@ -1,8 +1,6 @@
 #ifndef _Flow_H
 #define _Flow_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
 #include "../FiveTuple.h"
 
 class Flow {
@@ -34,7 +32,7 @@ private:
 	int32_t packets_down;
 };
 
-typedef boost::shared_ptr<Flow> FlowPtr;
-typedef boost::weak_ptr<Flow> FlowPtrWeak;
+typedef std::shared_ptr<Flow> FlowPtr;
+typedef std::weak_ptr<Flow> FlowPtrWeak;
 
 #endif

@@ -68,6 +68,6 @@ private:
 	struct icmphdr *icmp_header_;
 };
 
-typedef boost::shared_ptr<ICMPProtocol> ICMPProtocolPtr;
+typedef std::shared_ptr<ICMPProtocol> ICMPProtocolPtr;
 
 #endif

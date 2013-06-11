@@ -31,11 +31,16 @@ public:
 	FlowPtr findFlow(unsigned long hash1,unsigned long hash2);
 
 	int getNumberFlows() const { return flowTable_.size();}
+      
+	void statistics(std::basic_ostream<char>& out);
+        void statistics() { statistics(std::cout);};
 	
 private:
     	timeval now_;
 
     	FlowTable flowTable_;
 };
+
+typedef std::shared_ptr<FlowManager> FlowManagerPtr;
 
 #endif

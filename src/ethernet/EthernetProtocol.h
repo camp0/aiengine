@@ -62,6 +62,6 @@ private:
 	struct ether_header *eth_header_;
 };
 
-typedef boost::shared_ptr<EthernetProtocol> EthernetProtocolPtr;
+typedef std::shared_ptr<EthernetProtocol> EthernetProtocolPtr;
 
 #endif

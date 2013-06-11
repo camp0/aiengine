@@ -16,7 +16,10 @@ iaengine_core_sources =	Multiplexer.cc \
 			PacketDispatcher.cc \
 			./flow/FlowCache.cc \
 			./flow/FlowManager.cc \
-			./ethernet/EthernetProtocol.cc 
+			./ethernet/EthernetProtocol.cc \
+			./ip/IPProtocol.cc \
+			./udp/UDPProtocol.cc \
+			./tcp/TCPProtocol.cc 
 
 iaengine_SOURCES =      $(iaengine_core_sources) main.cc
 
