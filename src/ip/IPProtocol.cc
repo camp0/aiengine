@@ -7,8 +7,8 @@ void IPProtocol::processPacket()
 
 	mux->ipsrc = getSrcAddr();
 	mux->ipdst = getDstAddr();
-	std::cout << __FILE__ <<":"<< this<< ":";
-	std::cout << " ipsrc:" << mux->ipsrc << " ipdst:"<< mux->ipdst <<std::endl;
+//	std::cout << __FILE__ <<":"<< this<< ":";
+//	std::cout << " ipsrc:" << mux->ipsrc << " ipdst:"<< mux->ipdst <<std::endl;
 
 }
 void IPProtocol::statistics(std::basic_ostream<char>& out)

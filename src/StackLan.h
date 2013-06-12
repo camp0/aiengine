@@ -7,6 +7,8 @@
 #include "./ip/IPProtocol.h"
 #include "./udp/UDPProtocol.h"
 #include "./tcp/TCPProtocol.h"
+#include "./flow/FlowManager.h"
+#include "./flow/FlowCache.h"
 
 struct StackLan
 {

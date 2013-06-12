@@ -95,18 +95,18 @@ void PacketDispatcher::start_operations()
 
 void PacketDispatcher::runPcap()
 {
-	int length = 0;
-	while((length = pcap_next_ex(pcap_,&header,&pkt_data)) >= 0)
+	int ret = 0;
+	while((ret = pcap_next_ex(pcap_,&header,&pkt_data)) >= 0)
 	{
 		++total_packets_;
 		if(defMux_)
 		{
 			current_packet_.setPayload((unsigned char*)pkt_data);
-			current_packet_.setPayloadLength(length);
+			current_packet_.setPayloadLength(header->len);
 			current_packet_.setPrevHeaderSize(0);
-				
+	
 			defMux_->setPacket(&current_packet_);
-			eth_->setHeader(defMux_->getCurrentPacket()->getPayload());
+			eth_->setHeader((unsigned char*)pkt_data);
 			//eth_->setHeader(current_packet_.getPayload());
 			defMux_->forward();
 		}

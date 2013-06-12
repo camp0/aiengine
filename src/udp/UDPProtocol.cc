@@ -21,8 +21,8 @@ FlowPtr UDPProtocol::getFlow()
 	MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();	
 	MultiplexerPtr ipmux = downmux.lock();
 
-	std::cout << __FILE__ <<":"<< this<< ":";	
-	std::cout << " ipsrc:" << ipmux->ipsrc << " ipdst:" << ipmux->ipdst <<std::endl;
+//	std::cout << __FILE__ <<":"<< this<< ":";	
+//	std::cout << " ipsrc:" << ipmux->ipsrc << " ipdst:" << ipmux->ipdst <<std::endl;
 
 	h1 = ipmux->ipsrc ^ getSrcPort() ^ 17 ^ ipmux->ipdst ^ getDstPort();
 	h2 = ipmux->ipdst ^ getDstPort() ^ 17 ^ ipmux->ipsrc ^ getSrcPort();
