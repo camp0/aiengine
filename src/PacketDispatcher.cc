@@ -1,6 +1,13 @@
 #include "PacketDispatcher.h"
 #include <iostream>
 
+void PacketDispatcher::setDefaultMultiplexer(MultiplexerPtr mux)
+{
+	defMux_ = mux;
+	eth_ = std::dynamic_pointer_cast<EthernetProtocol>(defMux_->getProtocol());
+}
+
+
 void PacketDispatcher::openDevice(std::string device)
 {
 	char errorbuf[PCAP_ERRBUF_SIZE];
@@ -94,14 +101,13 @@ void PacketDispatcher::runPcap()
 		++total_packets_;
 		if(defMux_)
 		{
-			//EthernetProtocolPtr pepe= dynamic_cast<EthernetProtocolPtr>(defMux_->getProtocol());
-			
 			current_packet_.setPayload((unsigned char*)pkt_data);
 			current_packet_.setPayloadLength(length);
 			current_packet_.setPrevHeaderSize(0);
 				
 			defMux_->setPacket(&current_packet_);
-			//eth->setHeader(packet.getPayload());
+			eth_->setHeader(defMux_->getCurrentPacket()->getPayload());
+			//eth_->setHeader(current_packet_.getPayload());
 			defMux_->forward();
 		}
 	}

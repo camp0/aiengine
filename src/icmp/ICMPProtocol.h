@@ -14,7 +14,7 @@
 class ICMPProtocol: public Protocol 
 {
 public:
-    	explicit ICMPProtocol():icmp_header_(nullptr){};
+    	explicit ICMPProtocol():icmp_header_(nullptr){ name_="ICMPProtocol";};
     	virtual ~ICMPProtocol() {};
 
 	static const u_int16_t id = IPPROTO_ICMP;

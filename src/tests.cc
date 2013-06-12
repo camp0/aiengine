@@ -71,7 +71,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_4,StackLan)
 
 	PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
 
+	// connect with the stack
 	pd->setDefaultMultiplexer(mux_eth);
+
 	pd->openPcapFile("../pcapfiles/4udppackets.pcap");
 	pd->runPcap();
 	pd->closePcapFile();

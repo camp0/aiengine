@@ -16,7 +16,7 @@
 class UDPProtocol: public Protocol 
 {
 public:
-    	explicit UDPProtocol();
+    	explicit UDPProtocol(): udp_header_(nullptr) { name_="UDPProtocol";};
     	virtual ~UDPProtocol() {};
 
 	static const u_int16_t id = IPPROTO_UDP;

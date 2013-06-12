@@ -38,7 +38,7 @@ public:
 
 	uint64_t getTotalPackets() const { return total_packets_;};
 
-	void setDefaultMultiplexer(MultiplexerPtr mux) { defMux_ = mux;};
+	void setDefaultMultiplexer(MultiplexerPtr mux);
 
 private:
 	void start_operations();
@@ -55,7 +55,8 @@ private:
 	boost::asio::io_service io_service_;
 	struct pcap_pkthdr *header;
 	const u_char *pkt_data;
-	
+
+	EthernetProtocolPtr eth_;	
 	Packet current_packet_;
 	MultiplexerPtr defMux_;
 };

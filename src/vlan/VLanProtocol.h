@@ -10,7 +10,7 @@
 class VLanProtocol: public Protocol 
 {
 public:
-    	explicit VLanProtocol():vlan_header_(nullptr){};
+    	explicit VLanProtocol():vlan_header_(nullptr){ name_="VLanProtocol"; };
     	virtual ~VLanProtocol() {};
 
 	static const u_int16_t id = ETH_P_8021Q;	

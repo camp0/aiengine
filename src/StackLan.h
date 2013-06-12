@@ -57,13 +57,15 @@ struct StackLan
                 mux_tcp->addChecker(std::bind(&TCPProtocol::tcpChecker,tcp));
                 mux_tcp->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp));
 
-                // configure the multiplexers
+		// configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
                 mux_ip->addDownMultiplexer(mux_eth);
                 mux_ip->addUpMultiplexer(mux_udp,IPPROTO_UDP);
                 mux_udp->addDownMultiplexer(mux_ip);
-                mux_ip->addUpMultiplexer(mux_tcp,IPPROTO_TCP);
-                mux_tcp->addDownMultiplexer(mux_ip);
+
+                // configure the multiplexers
+                //mux_ip->addUpMultiplexer(mux_tcp,IPPROTO_TCP);
+                //mux_tcp->addDownMultiplexer(mux_ip);
         }
 
 	void statistics()

@@ -16,7 +16,7 @@
 class IPProtocol: public Protocol 
 {
 public:
-    	explicit IPProtocol():ip_header_(nullptr){};
+    	explicit IPProtocol():ip_header_(nullptr){ name_="IPProtocol";};
     	virtual ~IPProtocol() {};
 	
 	static const u_int16_t id = ETHERTYPE_IP;

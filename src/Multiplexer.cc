@@ -41,11 +41,14 @@ void Multiplexer::forward()
 	unsigned char *v_packet;
 	bool have_mux = false;
 
+	std::cout << __FILE__ <<":"<< this<< ":";
+	std::cout << "getting up multiplexer, id="<< protocol_id_ << std::endl; 
 	mp = getUpMultiplexer(protocol_id_);
 	if(mp.expired()) 
 	{
 
-		std::cout << __FILE__ <<":"<< this<< ":"<< " Forwarding packet" <<std::endl;
+		std::cout << __FILE__ <<":"<< this<< ":";
+		std::cout <<"Forwarding packet" <<std::endl;
 		for(it = muxUpMap_.begin(); it != muxUpMap_.end();++it) 
 		{
 			mp = it->second;
@@ -55,12 +58,15 @@ void Multiplexer::forward()
 				v_packet = &packet_.getPayload()[header_size_];
 
 				mx->setPacketInfo(v_packet,packet_.getLength() - header_size_, header_size_);
-				std::cout << __FILE__<<":" << this << ": candidate mux on " << mx << std::endl;
+				std::cout << __FILE__ <<":"<< this<< ":";
+				std::cout <<"candidate mux on " << mx ;
 				if(mx->check_func_())
 				{
+					std::cout << " True" << std::endl;
 					have_mux = true;
 					break;	
-				}	
+				}
+				std::cout << std::endl;	
 			}
 		}
 	}
@@ -84,8 +90,8 @@ void Multiplexer::forward()
 	}
 	else
 	{	
-		std::cout << __FILE__ << ":" << this;
-		std::cout << ":Processing the packet" <<std::endl;
+		std::cout << __FILE__ << ":" << this << ":";
+		std::cout << "Processing the packet" <<std::endl;
 		packet_func_();
 		++total_fail_packets_;
 	}

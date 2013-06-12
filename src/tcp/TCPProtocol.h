@@ -16,7 +16,7 @@
 class TCPProtocol: public Protocol 
 {
 public:
-    	explicit TCPProtocol():tcp_header_(nullptr){};
+    	explicit TCPProtocol():tcp_header_(nullptr){ name_="TCPProtocol";};
     	virtual ~TCPProtocol() {};
 
 	static const u_int16_t id = IPPROTO_TCP;

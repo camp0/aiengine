@@ -1,13 +1,6 @@
 #include "UDPProtocol.h"
 #include <iomanip> // setw
 
-UDPProtocol::UDPProtocol()
-{
-	udp_header_ = nullptr;
-//	flow_table_ = FlowManagerPtr(new FlowManager());
-//	flow_cache_ = FlowCachePtr(new FlowCache());
-}
-
 void UDPProtocol::statistics(std::basic_ostream<char>& out)
 {
 	out << "UDPProtocol statistics" << std::endl;

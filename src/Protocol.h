@@ -8,7 +8,7 @@
 class Protocol 
 {
 public:
-    	Protocol():total_malformed_packets_(0),total_valid_packets_(0){};
+    	Protocol():total_malformed_packets_(0),total_valid_packets_(0),name_(""){};
     	virtual ~Protocol() {};
 
 	virtual void setHeader(unsigned char *raw_packet) = 0;
@@ -20,6 +20,7 @@ public:
 	void virtual setMultiplexer(MultiplexerPtrWeak mux) = 0;
 	MultiplexerPtrWeak virtual getMultiplexer() = 0; 
 
+	mutable std::string name_;
 	mutable uint64_t total_malformed_packets_;
 	mutable uint64_t total_valid_packets_;
 private:
