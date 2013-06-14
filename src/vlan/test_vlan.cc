@@ -25,17 +25,19 @@ struct StackVlan
 
         	eth->setMultiplexer(mux_eth);
 		mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
+		mux_eth->setProtocolIdentifier(0);
         	mux_eth->setHeaderSize(eth->getHeaderSize());
         	mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth));
 
         	// configure the vlan handler
         	vlan->setMultiplexer(mux_vlan);
 		mux_vlan->setProtocol(static_cast<ProtocolPtr>(vlan));
+		mux_vlan->setProtocolIdentifier(ETH_P_8021Q);
         	mux_vlan->setHeaderSize(vlan->getHeaderSize());
         	mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan));
 
 		// configure the multiplexers
-		mux_eth->addUpMultiplexer(mux_vlan,0);
+		mux_eth->addUpMultiplexer(mux_vlan,ETH_P_8021Q);
 		mux_vlan->addDownMultiplexer(mux_eth);
 
 	}
@@ -69,6 +71,7 @@ BOOST_AUTO_TEST_CASE (test2_vlan)
         BOOST_CHECK(eth->getEthernetType() == ETH_P_8021Q);
 	// forward the packet through the multiplexers
 	mux_eth->setPacket(&pkt);
+	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
 	mux_eth->forward();
 
 	BOOST_CHECK(mux_eth->getTotalForwardPackets() == 1);

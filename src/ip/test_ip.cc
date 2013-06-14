@@ -26,12 +26,14 @@ struct StackEthernetIP
 
                 eth->setMultiplexer(mux_eth);
                 mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
+		mux_eth->setProtocolIdentifier(0);
                 mux_eth->setHeaderSize(eth->getHeaderSize());
                 mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth));
 
                 // configure the ip handler
                 ip->setMultiplexer(mux_ip);
                 mux_ip->setProtocol(static_cast<ProtocolPtr>(ip));
+		mux_ip->setProtocolIdentifier(ETHERTYPE_IP);
                 mux_ip->setHeaderSize(ip->getHeaderSize());
                 mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip));
 
@@ -64,20 +66,25 @@ struct StackEthernetVLanIP
 
                 eth->setMultiplexer(mux_eth);
                 mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
+		mux_eth->setProtocolIdentifier(0);
                 mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth.get()));
+                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth));
 
                 // configure the vlan handler
                 vlan->setMultiplexer(mux_vlan);
                 mux_vlan->setProtocol(static_cast<ProtocolPtr>(vlan));
+		mux_vlan->setProtocolIdentifier(ETH_P_8021Q);
                 mux_vlan->setHeaderSize(vlan->getHeaderSize());
-                mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan.get()));
+                mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan));
+                mux_vlan->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan));
 
                 // configure the ip handler
                 ip->setMultiplexer(mux_ip);
+		mux_ip->setProtocolIdentifier(ETHERTYPE_IP);
                 mux_ip->setProtocol(static_cast<ProtocolPtr>(ip));
                 mux_ip->setHeaderSize(ip->getHeaderSize());
-                mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip.get()));
+                mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip));
+		mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip));
 
         	// configure the multiplexers
         	mux_eth->addUpMultiplexer(mux_vlan,ETH_P_8021Q);
@@ -129,6 +136,7 @@ BOOST_AUTO_TEST_CASE (test2_ip) // ethernet -> ip
 	// executing the packet
 	// forward the packet through the multiplexers
         //mux_eth->setPacketInfo(0,packet,length);
+	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forward();	
 
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
@@ -147,6 +155,7 @@ BOOST_FIXTURE_TEST_CASE (test3_ip, StackEthernetVLanIP) // ethernet -> vlan -> i
 	// forward the packet through the multiplexers
         mux_eth->setPacket(&packet);
 	eth->setHeader(packet.getPayload());     
+	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
 	mux_eth->forward();	
 
 	BOOST_CHECK(vlan->getTotalPackets() == 1);
@@ -186,6 +195,7 @@ BOOST_FIXTURE_TEST_CASE (test4_ip,StackEthernetVLanIP) // ethernet -> vlan -> ip
         // forward the packet through the multiplexers
         mux_eth->setPacket(&packet);
 	eth->setHeader(packet.getPayload());     
+	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forward();
         
 	BOOST_CHECK(eth->getTotalPackets() == 0);

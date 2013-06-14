@@ -48,6 +48,61 @@ BOOST_AUTO_TEST_CASE (test_case_1)
 
 BOOST_AUTO_TEST_CASE (test_case_2)
 {
+        MultiplexerPtr m1 = MultiplexerPtr(new Multiplexer());
+        MultiplexerPtr m2 = MultiplexerPtr(new Multiplexer());
+        MultiplexerPtr m3 = MultiplexerPtr(new Multiplexer());
+        MultiplexerPtr m4 = MultiplexerPtr(new Multiplexer());
+
+        m1->addUpMultiplexer(m2,2);
+        m2->addDownMultiplexer(m1);
+
+        m2->addUpMultiplexer(m3,3);
+        m3->addDownMultiplexer(m2);
+
+        m3->addUpMultiplexer(m4,4);
+        m4->addDownMultiplexer(m3);
+
+        BOOST_CHECK(m1->getNumberUpMultiplexers()== 1);
+        BOOST_CHECK(m2->getNumberUpMultiplexers()== 1);
+        BOOST_CHECK(m3->getNumberUpMultiplexers()== 1);
+        BOOST_CHECK(m4->getNumberUpMultiplexers()== 0);
+
+        // Now check the position of the mux
+        MultiplexerPtrWeak w_mux;
+
+        // check positions from m1
+        w_mux = m1->getUpMultiplexer(2);
+        BOOST_CHECK(w_mux.lock() == m2);
+
+        w_mux = m1->getUpMultiplexer(3);
+        BOOST_CHECK(w_mux.lock() == nullptr);
+
+        w_mux = m1->getUpMultiplexer(4);
+        BOOST_CHECK(w_mux.lock() == nullptr);
+
+        // check positions from m2
+        w_mux = m2->getUpMultiplexer(1);
+        BOOST_CHECK(w_mux.lock() == nullptr);
+
+        w_mux = m2->getUpMultiplexer(3);
+        BOOST_CHECK(w_mux.lock() == m3);
+
+        w_mux = m2->getUpMultiplexer(4);
+        BOOST_CHECK(w_mux.lock() == nullptr);
+
+        // check positions from m3
+        w_mux = m3->getUpMultiplexer(2);
+        BOOST_CHECK(w_mux.lock() == nullptr);
+
+        w_mux = m3->getUpMultiplexer(3);
+        BOOST_CHECK(w_mux.lock() == nullptr);
+
+        w_mux = m3->getUpMultiplexer(4);
+        BOOST_CHECK(w_mux.lock() == m4);
+}
+
+BOOST_AUTO_TEST_CASE (test_case_3)
+{
 	PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
 
 	pd->openPcapFile("../pcapfiles/4udppackets.pcap");
@@ -56,7 +111,7 @@ BOOST_AUTO_TEST_CASE (test_case_2)
 	BOOST_CHECK(pd->getTotalPackets() == 4);
 }
 
-BOOST_AUTO_TEST_CASE(test_case_3)
+BOOST_AUTO_TEST_CASE(test_case_4)
 {
 	EthernetProtocol *eth = new EthernetProtocol();
 	MultiplexerPtr mux = MultiplexerPtr(new Multiplexer());
@@ -66,7 +121,7 @@ BOOST_AUTO_TEST_CASE(test_case_3)
 	delete eth;
 }
 
-BOOST_FIXTURE_TEST_CASE(test_case_4,StackLan)
+BOOST_FIXTURE_TEST_CASE(test_case_5,StackLan)
 {
 
 	PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());

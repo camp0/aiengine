@@ -32,6 +32,7 @@ public:
 		ipsrc = 0;
 		ipdst = 0;
 		protocol_id_ =  NO_PROTOCOL_SELECTED;
+		next_protocol_id_ =  NO_PROTOCOL_SELECTED;
 		addChecker(std::bind(&Multiplexer::default_check,this));
 		addPacketFunction(std::bind(&Multiplexer::default_packet_func,this));
 	}
@@ -52,10 +53,15 @@ public:
 
 	bool check() const;
 	void forward();
+	void forward_old();
 
 	int getNumberUpMultiplexers() const { return muxUpMap_.size(); }
 
-	void setProtocolIdentifier(u_int16_t protocol_id) { protocol_id_ = protocol_id;};
+	void setProtocolIdentifier(u_int16_t protocol_id) { 
+		protocol_id_ = protocol_id;
+		std::cout << __FILE__ << ":"<< this << ":setProtocolIdentifier:" << protocol_id_ << std::endl;
+	};
+	void setNextProtocolIdentifier(u_int16_t protocol_id) { next_protocol_id_ = protocol_id;};
 	void setProtocol(ProtocolPtr proto){ proto_ = proto; };
 	ProtocolPtr getProtocol() { return proto_;};
 
@@ -73,6 +79,8 @@ public:
 
 	Packet *getCurrentPacket() { return &packet_;};
 
+	bool acceptPacket() const { return check_func_();};
+
 	// This is realy uggly puagggggg
 	u_int32_t ipsrc;
 	u_int32_t ipdst;
@@ -89,6 +97,7 @@ private:
 	int header_size_;
 	int offset_;
 	u_int16_t protocol_id_; // the protocol analiyzer owned by the multiplexer
+	u_int16_t next_protocol_id_; // the next protocol to check by the multiplexer
     	typedef std::map<int,MultiplexerPtrWeak> MuxMap;
 	MuxMap muxUpMap_;
 	std::function <bool ()> check_func_;	

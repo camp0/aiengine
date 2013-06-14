@@ -31,6 +31,7 @@ public:
 
 	void setHeader(unsigned char *raw_packet) 
 	{ 
+		std::cout << __FILE__ << ":Setting header" << std::endl;
 		vlan_header_ = reinterpret_cast <struct vlan_tag*> (raw_packet);
 	}
 

@@ -28,11 +28,63 @@ void Multiplexer::setPacket(Packet *pkt)
 {
 	setPacketInfo(pkt->getPayload(),pkt->getLength(),pkt->getPrevHeaderSize());
 }
+#define DEBUG 1
+
+void Multiplexer::forward()
+{
+	MultiplexerPtrWeak next_mux;
+	unsigned char *packet = nullptr;
+
+#ifdef DEBUG
+	std::cout << __FILE__ << ":" << this << ":";
+        std::cout << "protocol_id_(" << std::hex << protocol_id_ << ")next_protocol_id_(";
+	std::cout << std::hex << next_protocol_id_ <<")" <<std::endl;
+#endif
+	next_mux = getUpMultiplexer(next_protocol_id_);
+	if(!next_mux.expired())
+	{
+                std::cout << "Multiplexer exist!!!!" <<std::endl;
+                MultiplexerPtr mux = next_mux.lock();
+
+                if(mux)
+                {
+                        packet = &packet_.getPayload()[header_size_];
+
+                        mux->setPacketInfo(packet,packet_.getLength() - header_size_, header_size_);
+#ifdef DEBUG
+                        std::cout << __FILE__ << ":" << this << ":";
+                        std::cout << "Forwarding packet header_size(" << std::dec<< header_size_ <<")pkt_length(";
+                        std::cout << packet_.getLength()-header_size_ <<")" << std::endl;
+#endif
+			if(mux->acceptPacket()) // The packet is accepted by the destination mux
+			{
+#ifdef DEBUG
+                        	std::cout << __FILE__ << ":" << this << ":";
+                        	std::cout << "Accepted packet by mux" << mux << std::endl;
+#endif
+                        	packet_func_();
+                        	++total_forward_packets_;
+                        	mux->forward();
+			}else{
+				std::cout << "WARNING: PACKET NO ACCEPTED" << std::endl;
+			}
+                }
+        }else{
+                std::cout << "No Up multiplexer for " << std::hex << next_protocol_id_ << std::endl;
+                ++total_fail_packets_;
+		if(check_func_())
+		{
+			std::cout << "Im the destination" << std::endl;
+			packet_func_();
+		}
+                //header_func_(v_packet);
+        }
+}
 
 // TODO: two tyes of multiplexers should exists
 // 1.kknow mux, for standar protocols
 // 2.unknow mux, for l7 protocols
-void Multiplexer::forward()
+void Multiplexer::forward_old()
 {
 	MuxMap::iterator it;
 	MultiplexerPtrWeak mp;
