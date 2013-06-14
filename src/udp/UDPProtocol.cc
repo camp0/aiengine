@@ -3,7 +3,7 @@
 
 void UDPProtocol::statistics(std::basic_ostream<char>& out)
 {
-	out << "UDPProtocol statistics" << std::endl;
+	out << "UDPProtocol statistics" << std::dec << std::endl;
         out << "\t" << "Total packets:          " << std::setw(10) << total_malformed_packets_+total_valid_packets_ <<std::endl;
         out << "\t" << "Total valid packets:    " << std::setw(10) << total_valid_packets_ <<std::endl;
         out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
@@ -20,9 +20,6 @@ FlowPtr UDPProtocol::getFlow()
 	FlowPtr flow;
 	MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();	
 	MultiplexerPtr ipmux = downmux.lock();
-
-//	std::cout << __FILE__ <<":"<< this<< ":";	
-//	std::cout << " ipsrc:" << ipmux->ipsrc << " ipdst:" << ipmux->ipdst <<std::endl;
 
 	h1 = ipmux->ipsrc ^ getSrcPort() ^ 17 ^ ipmux->ipdst ^ getDstPort();
 	h2 = ipmux->ipdst ^ getDstPort() ^ 17 ^ ipmux->ipsrc ^ getSrcPort();
@@ -52,11 +49,6 @@ void UDPProtocol::processPacket()
 
 	if(flow)
 	{
-		std::cout << __FILE__ <<":"<< this<< ":procesing flow:" << flow << std::endl;
-
-
-
-
-
+		//std::cout << __FILE__ <<":"<< this<< ":procesing flow:" << flow << std::endl;
 	}
 } 

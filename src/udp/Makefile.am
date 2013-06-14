@@ -5,9 +5,9 @@ TEST = test_udp
 check_PROGRAMS = test_udp
 
 test_udp_SOURCES = 	../Multiplexer.cc \
-			../flow/FlowCache.cc \
-			../flow/FlowManager.cc \
 			../ethernet/EthernetProtocol.cc \
+			../flow/FlowManager.cc \
+			../flow/FlowCache.cc \
 			../vlan/VLanProtocol.cc \
 			../ip/IPProtocol.cc \
 			UDPProtocol.cc \

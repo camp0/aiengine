@@ -74,7 +74,14 @@ public:
     	//unsigned int getPayloadLength() const { return ntohs(ip->tot_len) - 20 /* ip->ihl * 4 */ - tcp->doff * 4; }
     	unsigned int getTcpHdrLength() const { return tcp_header_->doff * 4; }
     	//const char* getTcpPayload() const { return getIPpayload()+getTcpHdrLength(); }
+
+        void setFlowManager(FlowManagerPtr flow_mng) { flow_table_ = flow_mng;};
+        FlowManagerPtr getFlowManager() { return flow_table_; };
+        void setFlowCache(FlowCachePtr flow_cache) { flow_cache_ = flow_cache;};
+        FlowCachePtr getFlowCache() { return flow_cache_;};
+
 private:
+        FlowPtr getFlow();
 	MultiplexerPtrWeak mux_;
 	FlowManagerPtr flow_table_;
 	FlowCachePtr flow_cache_;

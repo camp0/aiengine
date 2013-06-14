@@ -38,7 +38,7 @@ public:
 	}
     	virtual ~Multiplexer() {};
 
-    	void virtual addUpMultiplexer(MultiplexerPtrWeak mux, int key)
+    	void virtual addUpMultiplexer(MultiplexerPtrWeak mux,unsigned int key)
 	{
 		muxUpMap_[key] = mux;
 	}
@@ -51,7 +51,7 @@ public:
 	MultiplexerPtrWeak getDownMultiplexer() const; 
 	MultiplexerPtrWeak getUpMultiplexer(int key) const;
 
-	bool check() const;
+	//bool check() const;
 	void forward();
 	void forward_old();
 
@@ -59,9 +59,11 @@ public:
 
 	void setProtocolIdentifier(u_int16_t protocol_id) { 
 		protocol_id_ = protocol_id;
-		std::cout << __FILE__ << ":"<< this << ":setProtocolIdentifier:" << protocol_id_ << std::endl;
+		//std::cout << __FILE__ << ":"<< this << ":setProtocolIdentifier:" << std::hex <<protocol_id_ << std::endl;
 	};
-	void setNextProtocolIdentifier(u_int16_t protocol_id) { next_protocol_id_ = protocol_id;};
+	void setNextProtocolIdentifier(u_int16_t protocol_id) { 
+		//std::cout << __FILE__ << ":"<< this << ":setNextProtocolIdentifier:" << std::hex << protocol_id << std::endl;
+		next_protocol_id_ = protocol_id;};
 	void setProtocol(ProtocolPtr proto){ proto_ = proto; };
 	ProtocolPtr getProtocol() { return proto_;};
 

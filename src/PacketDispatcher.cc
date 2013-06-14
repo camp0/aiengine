@@ -108,6 +108,7 @@ void PacketDispatcher::runPcap()
 			defMux_->setPacket(&current_packet_);
 			eth_->setHeader((unsigned char*)pkt_data);
 			//eth_->setHeader(current_packet_.getPayload());
+			defMux_->setNextProtocolIdentifier(eth_->getEthernetType());
 			defMux_->forward();
 		}
 	}

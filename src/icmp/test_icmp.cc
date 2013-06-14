@@ -32,18 +32,22 @@ struct StackIcmp
 		//configure the eth
 		eth->setMultiplexer(mux_eth);
 		mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
+		mux_eth->setProtocolIdentifier(0);
 		mux_eth->setHeaderSize(eth->getHeaderSize());
 		mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth));
 
 		// configure the ip
 		ip->setMultiplexer(mux_ip);
 		mux_ip->setProtocol(static_cast<ProtocolPtr>(ip));
+		mux_ip->setProtocolIdentifier(ETHERTYPE_IP);
 		mux_ip->setHeaderSize(ip->getHeaderSize());
 		mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip));
+		mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip));
 
 		//configure the icmp
 		icmp->setMultiplexer(mux_icmp);
 		mux_icmp->setProtocol(static_cast<ProtocolPtr>(icmp));
+		mux_icmp->setProtocolIdentifier(IPPROTO_ICMP);
 		mux_icmp->setHeaderSize(icmp->getHeaderSize());
 		mux_icmp->addChecker(std::bind(&ICMPProtocol::icmpChecker,icmp));
 
@@ -79,6 +83,7 @@ BOOST_AUTO_TEST_CASE (test2_icmp)
         // forward the packet through the multiplexers
         mux_eth->setPacket(&packet1);
         eth->setHeader(packet1.getPayload());
+	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forward();
 
 	BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);

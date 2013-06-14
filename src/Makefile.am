@@ -1,6 +1,5 @@
 AUTOMAKE_OPTIONS = gnu
 
-			
 noinst_HEADERS =        Packet.h \
 			Protocol.h \
 			PacketDispatcher.h \
@@ -18,6 +17,7 @@ iaengine_core_sources =	Multiplexer.cc \
 			./flow/FlowManager.cc \
 			./ethernet/EthernetProtocol.cc \
 			./ip/IPProtocol.cc \
+			./icmp/ICMPProtocol.cc \
 			./udp/UDPProtocol.cc \
 			./tcp/TCPProtocol.cc 
 

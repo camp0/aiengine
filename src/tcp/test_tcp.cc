@@ -32,28 +32,37 @@ struct StackTcp
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);
+                mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
+                mux_eth->setProtocolIdentifier(0);
                 mux_eth->setHeaderSize(eth->getHeaderSize());
                 mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth));
 
                 // configure the ip
                 ip->setMultiplexer(mux_ip);
+                mux_ip->setProtocol(static_cast<ProtocolPtr>(ip));
+                mux_ip->setProtocolIdentifier(ETHERTYPE_IP);
                 mux_ip->setHeaderSize(ip->getHeaderSize());
                 mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip));
+                mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip));
 
                 //configure the tcp 
                 tcp->setMultiplexer(mux_tcp);
+                mux_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
+                mux_tcp->setProtocolIdentifier(IPPROTO_TCP);
                 mux_tcp->setHeaderSize(tcp->getHeaderSize());
                 mux_tcp->addChecker(std::bind(&TCPProtocol::tcpChecker,tcp));
+                mux_tcp->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp));
 
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
                 mux_ip->addDownMultiplexer(mux_eth);
                 mux_ip->addUpMultiplexer(mux_tcp,IPPROTO_TCP);
                 mux_tcp->addDownMultiplexer(mux_ip);
-
+                BOOST_TEST_MESSAGE("Setup StackTcp");
         }
 
         ~StackTcp() {
+                BOOST_TEST_MESSAGE("Teardown StackTcp");
         }
 };
 
@@ -71,6 +80,7 @@ BOOST_AUTO_TEST_CASE (test1_tcp)
         // forward the packet through the multiplexers
         mux_eth->setPacket(&packet);
         eth->setHeader(packet.getPayload());
+	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forward();
 
         // Check the udp integrity

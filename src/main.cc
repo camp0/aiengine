@@ -1,39 +1,33 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
 #include <csignal>
 #include <boost/program_options.hpp>
 #include <fstream>
+#include "PacketDispatcher.h"
 #include "StackLan.h"
 
+
+PacketDispatcherPtr pktdis;
+
 bool process_command_line(int argc, char **argv,
-	std::string &local_address,
-	unsigned short &local_port,
-	std::string &remote_address,
-	unsigned short &remote_port,
-	std::string &regex_exp,
-	std::string &regex_file,
-	std::string &action_str)
+	std::string &pcapfile,
+	std::string &device)
 {
 	namespace po = boost::program_options;
 
 	po::options_description mandatory_ops("Mandatory arguments");
 	mandatory_ops.add_options()
-		("interface,i",   po::value<std::string>(&local_address)->required(),
-			"sets the interface or pcap file.")
+//		("interface,i",   po::value<std::string>(&device)->required(),
+//			"sets the interface.")
+		("pcapfile,f",   po::value<std::string>(&pcapfile)->required(),
+			"sets the pcap file.")
         	;
 
 	po::options_description optional_ops("Optional arguments");
 	optional_ops.add_options()
 		("help",     	"show help")
 		("version,v",   "show version string")
-          	("regex,R", po::value<std::string>(&regex_exp), 
-			"use a regex for the user queries(default action print).")
-          	("regexfile,F", po::value<std::string>(&regex_file), 
-			"use a regex file for the user queries(default action print).")
-          	("action,a", po::value<std::string>(&action_str), 
-			"sets the action when matchs the regex (print,close,reject,drop).")
 		;
 
 	mandatory_ops.add(optional_ops);
@@ -79,41 +73,45 @@ bool process_command_line(int argc, char **argv,
 
 void signalHandler( int signum )
 {
+	if(pktdis)
+	{
+	//	pktdis->statistics();
+	}
 	exit(signum);  
 }
 
 int main(int argc, char* argv[])
 {
-	std::string local_host;
-	std::string remote_host;
-	std::string regex_exp;
-	std::string regex_file;
-	std::string action_str;
-	unsigned short local_port;
-	unsigned short remote_port;
+	std::string pcapfile;
+	std::string interface;
 
-	if(!process_command_line(argc,argv,local_host,local_port,remote_host,remote_port,
-		regex_exp,regex_file,action_str))
+	if(!process_command_line(argc,argv,pcapfile,pcapfile))
 	{
 		return 1;
 	}
 
     	signal(SIGINT, signalHandler);  
 
-/*
-   	try
-   	{
-		proxy = new Proxy(local_host,local_port,remote_host,remote_port);
-		
-		proxy->start();
-		proxy->run();
+	pktdis = PacketDispatcherPtr(new PacketDispatcher());
+	StackLan stack = StackLan();
+	
+	// connect with the stack
+        pktdis->setDefaultMultiplexer(stack.mux_eth);
+
+	std::cout << "Processing pcapfile:" << pcapfile << std::endl;
+        pktdis->openPcapFile(pcapfile.c_str());
+
+	try
+	{
+        	pktdis->runPcap();
    	}
    	catch(std::exception& e)
    	{
       		std::cerr << "Error: " << e.what() << std::endl;
-      		return 1;
-   	}
-*/
+	}
+	stack.statistics();	
+        pktdis->closePcapFile();
+
 	return 0;
 }
 

@@ -16,7 +16,7 @@ public:
     	explicit EthernetProtocol():eth_header_(nullptr){ name_ = "Ethernet";};
     	virtual ~EthernetProtocol() {};
 
-	static const u_int16_t id = 0x0001; //Ethernet dont need a id
+	static const u_int16_t id = 0x0000; //Ethernet dont need a id
 	static const int header_size = 14;
 	int getHeaderSize() const { return header_size;};
 

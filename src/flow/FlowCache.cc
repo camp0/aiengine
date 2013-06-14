@@ -29,9 +29,9 @@ Flow *FlowCache::acquireFlow()
 	{
 		f = flows_.release(flows_.begin()).release();
 		++total_acquires_;
-	}else
+	}else{
 		++total_fails_;
-
+	}
 	return f;
 }
 

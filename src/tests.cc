@@ -132,7 +132,105 @@ BOOST_FIXTURE_TEST_CASE(test_case_5,StackLan)
 	pd->openPcapFile("../pcapfiles/4udppackets.pcap");
 	pd->runPcap();
 	pd->closePcapFile();
+	BOOST_CHECK(pd->getTotalPackets() == 4);
+	BOOST_CHECK(ip->getTotalValidPackets() == 4);
+	BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+	BOOST_CHECK(ip->getTotalPackets() == 4);
+	BOOST_CHECK(udp->getTotalPackets() == 4);
+	BOOST_CHECK(udp->getTotalValidPackets() == 4);
+	BOOST_CHECK(udp->getTotalMalformedPackets() == 0);
+	BOOST_CHECK(tcp->getTotalPackets() == 0);
+	BOOST_CHECK(tcp->getTotalValidPackets() == 0);
+	BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
+
+}
+
+BOOST_FIXTURE_TEST_CASE(test_case_6,StackLan)
+{
+
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+        pd->openPcapFile("../pcapfiles/sslflow.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+        BOOST_CHECK(pd->getTotalPackets() == 95);
+        BOOST_CHECK(ip->getTotalValidPackets() == 95);
+        BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(ip->getTotalPackets() == 95);
+        BOOST_CHECK(udp->getTotalPackets() == 0);
+        BOOST_CHECK(udp->getTotalValidPackets() == 0);
+        BOOST_CHECK(udp->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(tcp->getTotalPackets() == 95);
+        BOOST_CHECK(tcp->getTotalValidPackets() == 95);
+        BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
+
+}
+
+BOOST_FIXTURE_TEST_CASE(test_case_7,StackLan)
+{
+
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+	FlowManagerPtr flowmgr = FlowManagerPtr(new FlowManager());
+	FlowCachePtr flowcache1 = FlowCachePtr(new FlowCache());
+	FlowCachePtr flowcache2 = FlowCachePtr(new FlowCache());
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+	// Connect the flow manager and flow cache to their corresponding analyzer
+	udp->setFlowManager(flowmgr);
+	udp->setFlowCache(flowcache1);
+
+	// No flows on the cache 	
+        pd->openPcapFile("../pcapfiles/4udppackets.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+	
+	//Checkers
+        BOOST_CHECK(flowcache1->getTotalFlowsOnCache() == 0);
+        BOOST_CHECK(flowcache1->getTotalFlows() == 0);
+        BOOST_CHECK(flowcache1->getTotalAcquires() == 0);
+        BOOST_CHECK(flowcache1->getTotalReleases() == 0);
+        BOOST_CHECK(flowcache1->getTotalFails() == 4);
+	BOOST_CHECK(flowmgr->getNumberFlows() == 0);
+
+	// One flow on the cache
+	flowcache2->createFlows(1);
+	udp->setFlowCache(flowcache2);
+
+        pd->openPcapFile("../pcapfiles/4udppackets.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+	//Checkers
+        BOOST_CHECK(flowcache2->getTotalFlowsOnCache() == 0);
+        BOOST_CHECK(flowcache2->getTotalFlows() == 1);
+        BOOST_CHECK(flowcache2->getTotalAcquires() == 1);
+        BOOST_CHECK(flowcache2->getTotalReleases() == 0);
+        BOOST_CHECK(flowcache2->getTotalFails() == 0);
+	BOOST_CHECK(flowmgr->getNumberFlows() == 1);
+	//this->statistics();
+	
+	// Add one flow on the cache
+	flowcache2->createFlows(1);
+	tcp->setFlowCache(flowcache2);
+	tcp->setFlowManager(flowmgr);
+
+        pd->openPcapFile("../pcapfiles/sslflow.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
 	this->statistics();
+
+        //Checkers
+        BOOST_CHECK(flowcache2->getTotalFlowsOnCache() == 0);
+        BOOST_CHECK(flowcache2->getTotalFlows() == 2);
+        BOOST_CHECK(flowcache2->getTotalAcquires() == 2);
+        BOOST_CHECK(flowcache2->getTotalReleases() == 0);
+        BOOST_CHECK(flowcache2->getTotalFails() == 0);
+        BOOST_CHECK(flowmgr->getNumberFlows() == 2);
 
 }
 
