@@ -7,6 +7,7 @@ void IPProtocol::processPacket()
 
 	mux->ipsrc = getSrcAddr();
 	mux->ipdst = getDstAddr();
+	mux->total_length = getPacketLength();
 	mux->setNextProtocolIdentifier(getProtocol());
 	//std::cout << __FILE__ <<":"<< this<< ":";
 	//std::cout << " ipsrc:" << mux->ipsrc << " ipdst:"<< mux->ipdst <<std::endl;

@@ -86,7 +86,7 @@ public:
 	// This is realy uggly puagggggg
 	u_int32_t ipsrc;
 	u_int32_t ipdst;
-
+	u_int16_t total_length;
 private:
 	ProtocolPtr proto_;
 	bool default_check() const { return true;};

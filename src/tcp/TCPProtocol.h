@@ -16,7 +16,7 @@
 class TCPProtocol: public Protocol 
 {
 public:
-    	explicit TCPProtocol():tcp_header_(nullptr){ name_="TCPProtocol";};
+    	explicit TCPProtocol():tcp_header_(nullptr),total_bytes_(0){ name_="TCPProtocol";};
     	virtual ~TCPProtocol() {};
 
 	static const u_int16_t id = IPPROTO_TCP;
@@ -86,6 +86,7 @@ private:
 	FlowManagerPtr flow_table_;
 	FlowCachePtr flow_cache_;
 	struct tcphdr *tcp_header_;
+	int32_t total_bytes_;
 };
 
 typedef std::shared_ptr<TCPProtocol> TCPProtocolPtr;

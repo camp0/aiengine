@@ -20,12 +20,6 @@ private:
 	unsigned long hash_;
 	int protocol_;
 
-       /* uint32_t saddr;
-        uint32_t daddr;
-        uint16_t sport;
-        uint16_t dport;
-        uint8_t protocol;
-*/
 	int32_t bytes_up;
 	int32_t bytes_down;
 	int32_t packets_up;

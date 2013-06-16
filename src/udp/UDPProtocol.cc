@@ -7,6 +7,7 @@ void UDPProtocol::statistics(std::basic_ostream<char>& out)
         out << "\t" << "Total packets:          " << std::setw(10) << total_malformed_packets_+total_valid_packets_ <<std::endl;
         out << "\t" << "Total valid packets:    " << std::setw(10) << total_valid_packets_ <<std::endl;
         out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
+        out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
 	if(flow_table_)
 		flow_table_->statistics(out);
 	if(flow_cache_)
@@ -21,11 +22,11 @@ FlowPtr UDPProtocol::getFlow()
 	MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();	
 	MultiplexerPtr ipmux = downmux.lock();
 
-	h1 = ipmux->ipsrc ^ getSrcPort() ^ 17 ^ ipmux->ipdst ^ getDstPort();
-	h2 = ipmux->ipdst ^ getDstPort() ^ 17 ^ ipmux->ipsrc ^ getSrcPort();
-
 	if(flow_table_)
 	{
+		h1 = ipmux->ipsrc ^ getSrcPort() ^ 17 ^ ipmux->ipdst ^ getDstPort();
+		h2 = ipmux->ipdst ^ getDstPort() ^ 17 ^ ipmux->ipsrc ^ getSrcPort();
+
 		flow = flow_table_->findFlow(h1,h2);
 		if(!flow) 
 		{
@@ -49,6 +50,8 @@ void UDPProtocol::processPacket()
 
 	if(flow)
 	{
-		//std::cout << __FILE__ <<":"<< this<< ":procesing flow:" << flow << std::endl;
+		total_bytes_ += (getLength() - getHeaderLength());
+		//std::cout << __FILE__ <<":"<< this<< ":procesing flow:" << flow << " total bytes:" << total_bytes_<< std::endl;
+		//std::cout << __FILE__ <<":"<< this<< ":header:" << getHeaderLength()<< ":" << getLength() << std::endl;
 	}
 } 
