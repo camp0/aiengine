@@ -1,4 +1,5 @@
 #include "Multiplexer.h"
+#include <iomanip> // setw
 
 MultiplexerPtrWeak Multiplexer::getDownMultiplexer() const 
 { 
@@ -75,8 +76,13 @@ void Multiplexer::forward()
         }
 }
 
-/*
-bool Multiplexer::check() const 
+
+void Multiplexer::statistics(std::basic_ostream<char>& out)
 {
-	return check_func_();
-} */
+      	out << "Multiplexer statistics" <<std::endl;
+	out << "\t" << "Plugged to object("<< proto_ << ")" << std::endl;
+        out << "\t" << "Total forward packets:  " << std::setw(10) << total_forward_packets_ <<std::endl;
+        out << "\t" << "Total received packets: " << std::setw(10) << total_received_packets_ <<std::endl;
+        out << "\t" << "Total fail packets:     " << std::setw(10) << total_fail_packets_ <<std::endl;
+}
+

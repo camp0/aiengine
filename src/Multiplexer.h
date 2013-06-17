@@ -51,9 +51,11 @@ public:
 	MultiplexerPtrWeak getDownMultiplexer() const; 
 	MultiplexerPtrWeak getUpMultiplexer(int key) const;
 
-	//bool check() const;
 	void forward();
 	void forward_old();
+
+        void statistics(std::basic_ostream<char>& out);
+        void statistics() { statistics(std::cout);};
 
 	int getNumberUpMultiplexers() const { return muxUpMap_.size(); }
 

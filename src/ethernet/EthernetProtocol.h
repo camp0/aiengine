@@ -24,6 +24,8 @@ public:
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
+	const char *getName() { return name_.c_str();};
+
 	void processPacket() ;
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
@@ -41,7 +43,7 @@ public:
 	{
 		Packet *pkt = mux_.lock()->getCurrentPacket();
 		int length = pkt->getLength();
-		std::cout << __FILE__ << ":" << this << ":"<< __PRETTY_FUNCTION__ << std::endl;
+
 		if(ETHER_IS_VALID_LEN(length))
 		{
 			++total_valid_packets_; 

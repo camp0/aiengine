@@ -108,9 +108,14 @@ struct StackLan
 	void statistics()
 	{
 		eth->statistics();
+		mux_eth->statistics();
+		std::cout << std::endl;
 		ip->statistics();
+		std::cout << std::endl;
 		tcp->statistics();
+		std::cout << std::endl;
 		udp->statistics();
+		std::cout << std::endl;
 		icmp->statistics();
 	}
 
