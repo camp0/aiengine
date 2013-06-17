@@ -111,12 +111,16 @@ struct StackLan
 		mux_eth->statistics();
 		std::cout << std::endl;
 		ip->statistics();
+		mux_ip->statistics();
 		std::cout << std::endl;
 		tcp->statistics();
+		mux_tcp->statistics();
 		std::cout << std::endl;
 		udp->statistics();
+		mux_udp->statistics();
 		std::cout << std::endl;
 		icmp->statistics();
+		mux_icmp->statistics();
 	}
 
         ~StackLan() {

@@ -43,6 +43,7 @@ void Multiplexer::forward()
         std::cout << "protocol_id_(" << std::hex << protocol_id_ << ")next_protocol_id_(";
 	std::cout << std::hex << next_protocol_id_ <<")" <<std::endl;
 #endif
+        ++total_received_packets_;
 	next_mux = getUpMultiplexer(next_protocol_id_);
 	if(!next_mux.expired())
 	{
@@ -79,7 +80,7 @@ void Multiplexer::forward()
 
 void Multiplexer::statistics(std::basic_ostream<char>& out)
 {
-      	out << "Multiplexer statistics" <<std::endl;
+      	out << "Multiplexer(" << this << ") statistics" <<std::endl;
 	out << "\t" << "Plugged to object("<< proto_ << ")" << std::endl;
         out << "\t" << "Total forward packets:  " << std::setw(10) << total_forward_packets_ <<std::endl;
         out << "\t" << "Total received packets: " << std::setw(10) << total_received_packets_ <<std::endl;
