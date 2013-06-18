@@ -37,10 +37,13 @@ src/Makefile
 src/ethernet/Makefile
 src/vlan/Makefile
 src/ip/Makefile
+src/ip6/Makefile
 src/icmp/Makefile
 src/udp/Makefile
 src/tcp/Makefile
 src/flow/Makefile
+src/http/Makefile
+src/ssl/Makefile
 ])
 
 

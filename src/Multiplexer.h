@@ -4,12 +4,8 @@
 #include <iostream>
 #include <memory>
 #include <functional>
-//#include <boost/shared_ptr.hpp>
-//#include <boost/weak_ptr.hpp>
 #include <map>
 #include "Packet.h"
-
-//using namespace std;
 
 class Protocol;
 typedef std::shared_ptr<Protocol> ProtocolPtr;
@@ -59,13 +55,8 @@ public:
 
 	int getNumberUpMultiplexers() const { return muxUpMap_.size(); }
 
-	void setProtocolIdentifier(u_int16_t protocol_id) { 
-		protocol_id_ = protocol_id;
-		//std::cout << __FILE__ << ":"<< this << ":setProtocolIdentifier:" << std::hex <<protocol_id_ << std::endl;
-	};
-	void setNextProtocolIdentifier(u_int16_t protocol_id) { 
-		//std::cout << __FILE__ << ":"<< this << ":setNextProtocolIdentifier:" << std::hex << protocol_id << std::endl;
-		next_protocol_id_ = protocol_id;};
+	void setProtocolIdentifier(u_int16_t protocol_id) { protocol_id_ = protocol_id; }; 
+	void setNextProtocolIdentifier(u_int16_t protocol_id) { next_protocol_id_ = protocol_id;};
 	void setProtocol(ProtocolPtr proto){ proto_ = proto; };
 	ProtocolPtr getProtocol() { return proto_;};
 

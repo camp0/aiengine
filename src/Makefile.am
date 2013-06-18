@@ -4,9 +4,6 @@ noinst_HEADERS =        Packet.h \
 			Protocol.h \
 			PacketDispatcher.h \
 			Multiplexer.h \
-			Message.h \
-			FiveTuple.h \
-                        ./ip/IPMessage.h \
                         ./flow/FlowCache.h \
                         ./flow/FlowManager.h \
                         ./flow/Flow.h
