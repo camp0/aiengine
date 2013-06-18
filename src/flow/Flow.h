@@ -1,29 +1,25 @@
 #ifndef _Flow_H
 #define _Flow_H
 
-#include "../FiveTuple.h"
-
 class Flow {
 public:
-    	Flow() {hash_=0;};
+    	Flow() {reset();};
     	virtual ~Flow(){};
 
-	FiveTuple id;
-	void reset(){};
-	unsigned long getId(void) const { return hash_;};
 	void setId(unsigned long hash) { hash_=hash;};
+	unsigned long getId() const { return hash_;};
 
-	void setProtocol(int proto) { protocol_ = proto;}
-	int getProtocol() const { return protocol_;}
-
+	int32_t total_bytes;
+	int32_t total_packets;
+	
+	void reset()
+	{
+		hash_ = 0;
+		total_bytes = 0;
+		total_packets = 0;
+	};
 private:
 	unsigned long hash_;
-	int protocol_;
-
-	int32_t bytes_up;
-	int32_t bytes_down;
-	int32_t packets_up;
-	int32_t packets_down;
 };
 
 typedef std::shared_ptr<Flow> FlowPtr;

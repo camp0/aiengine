@@ -28,6 +28,7 @@ Flow *FlowCache::acquireFlow()
 	if(flows_.size() > 0)
 	{
 		f = flows_.release(flows_.begin()).release();
+		f->reset();
 		++total_acquires_;
 	}else{
 		++total_fails_;

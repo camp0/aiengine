@@ -47,10 +47,16 @@ FlowPtr UDPProtocol::getFlow()
 void UDPProtocol::processPacket()
 {
 	FlowPtr flow = getFlow();
+	int bytes;
 
 	if(flow)
 	{
-		total_bytes_ += (getLength() - getHeaderLength());
+		bytes = (getLength() - getHeaderLength());
+
+		total_bytes_ += bytes;
+		flow->total_bytes += bytes;
+		++flow->total_packets;
+
 		//std::cout << __FILE__ <<":"<< this<< ":procesing flow:" << flow << " total bytes:" << total_bytes_<< std::endl;
 		//std::cout << __FILE__ <<":"<< this<< ":header:" << getHeaderLength()<< ":" << getLength() << std::endl;
 	}

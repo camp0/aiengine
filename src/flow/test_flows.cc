@@ -91,6 +91,33 @@ BOOST_AUTO_TEST_CASE (test3_flowcache)
 	delete fc;
 }
 
+BOOST_AUTO_TEST_CASE (test4_flowcache)
+{
+        FlowCache *fc = new FlowCache();
+        fc->createFlows(1);
+
+        Flow *f1 = fc->acquireFlow();
+
+	BOOST_CHECK(fc->getTotalFlowsOnCache() == 0);
+	f1->setId(10);
+	f1->total_bytes = 10;
+	f1->total_packets = 10;
+
+        fc->releaseFlow(f1);
+	BOOST_CHECK(fc->getTotalFlowsOnCache() == 1);
+        BOOST_CHECK(fc->getTotalReleases() == 1);
+
+	Flow *f2 = fc->acquireFlow();
+//	BOOST_CHECK(f2->getId() == 0);
+//	BOOST_CHECK(f2->total_bytes == 0);
+	//BOOST_CHECK(f2->total_packets == 0);
+//	BOOST_CHECK(f1 == f2);
+        fc->destroyFlows(fc->getTotalFlows());
+        delete fc;
+}
+
+
+
 BOOST_AUTO_TEST_SUITE_END( )
 
 BOOST_AUTO_TEST_SUITE (flowmanager) // name of the test suite is stringtest
