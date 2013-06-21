@@ -39,13 +39,16 @@ public:
 	} 
 
 	// Condition for say that a packet its ethernet 
-	bool ethernetChecker() const
+	bool ethernetChecker(const Packet &packet) 
+	//bool ethernetChecker(const Packet &packet) const
 	{
-		Packet *pkt = mux_.lock()->getCurrentPacket();
-		int length = pkt->getLength();
+		int length = packet.getLength();
 
 		if(ETHER_IS_VALID_LEN(length))
 		{
+			unsigned char *p = packet.getPayload();
+			eth_header_ = reinterpret_cast <struct ether_header*> (p);
+			//this->setHeader(p);
 			++total_valid_packets_; 
 			return true;
 		}

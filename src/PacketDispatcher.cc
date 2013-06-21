@@ -105,8 +105,8 @@ void PacketDispatcher::runPcap()
 			current_packet_.setPayloadLength(header->len);
 			current_packet_.setPrevHeaderSize(0);
 	
-			defMux_->setPacket(&current_packet_);
-			if(defMux_->acceptPacket())
+			//defMux_->setPacket(&current_packet_);
+			if(defMux_->acceptPacket(current_packet_))
 			{	
 			//eth_->setHeader((unsigned char*)pkt_data);
 				eth_->setHeader(current_packet_.getPayload());

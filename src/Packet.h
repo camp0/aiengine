@@ -14,8 +14,8 @@ public:
 	void setPayloadLength(int length) { length_ = length;};
 	void setPrevHeaderSize(int size) { prev_header_size_ = size;};
 
-	unsigned char *getPayload()  { return packet_;};
-	int getLength()  { return length_;};
+	unsigned char *getPayload() const { return packet_;};
+	int getLength() const  { return length_;};
 	int getPrevHeaderSize() { return prev_header_size_;};
 private:
 	int length_;

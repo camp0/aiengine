@@ -30,19 +30,11 @@ void Multiplexer::setPacket(Packet *pkt)
 	setPacketInfo(pkt->getPayload(),pkt->getLength(),pkt->getPrevHeaderSize());
 }
 
-// TODO: two tyes of multiplexers should exists
-// 1.kknow mux, for standar protocols
-// 2.unknow mux, for l7 protocols
 void Multiplexer::forward()
 {
 	MultiplexerPtrWeak next_mux;
-	unsigned char *packet = nullptr;
+	//unsigned char *packet = nullptr;
 
-#ifdef DEBUG
-	std::cout << __FILE__ << ":" << this << ":";
-        std::cout << "protocol_id_(" << std::hex << protocol_id_ << ")next_protocol_id_(";
-	std::cout << std::hex << next_protocol_id_ <<")" <<std::endl;
-#endif
         ++total_received_packets_;
 	next_mux = getUpMultiplexer(next_protocol_id_);
 	if(!next_mux.expired())
@@ -50,20 +42,14 @@ void Multiplexer::forward()
                 MultiplexerPtr mux = next_mux.lock();
                 if(mux)
                 {
-                        packet = &packet_.getPayload()[header_size_];
+                      	Packet pkt_candidate(&packet_.getPayload()[header_size_],packet_.getLength() - header_size_, header_size_);
+		 
+			//packet = &packet_.getPayload()[header_size_];
 
-                        mux->setPacketInfo(packet,packet_.getLength() - header_size_, header_size_);
-#ifdef DEBUG
-                        std::cout << __FILE__ << ":" << this << ":";
-                        std::cout << "Forwarding packet header_size(" << std::dec<< header_size_ <<")pkt_length(";
-                        std::cout << packet_.getLength()-header_size_ <<")" << std::endl;
-#endif
-			if(mux->acceptPacket()) // The packet is accepted by the destination mux
+                        //mux->setPacketInfo(packet,packet_.getLength() - header_size_, header_size_);
+
+			if(mux->acceptPacket(pkt_candidate)) // The packet is accepted by the destination mux
 			{
-#ifdef DEBUG
-                        	std::cout << __FILE__ << ":" << this << ":";
-                        	std::cout << "Accepted packet by mux:" << mux << std::endl;
-#endif
                         	mux->packet_func_();
                         	++total_forward_packets_;
                         	mux->forward();
@@ -72,7 +58,6 @@ void Multiplexer::forward()
 			}
                 }
         }else{
-//                std::cout << "No Up multiplexer for " << std::hex << next_protocol_id_ << std::endl;
                 ++total_fail_packets_;
         }
 }

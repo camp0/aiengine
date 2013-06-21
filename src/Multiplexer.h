@@ -29,7 +29,7 @@ public:
 		ipdst = 0;
 		protocol_id_ =  NO_PROTOCOL_SELECTED;
 		next_protocol_id_ =  NO_PROTOCOL_SELECTED;
-		addChecker(std::bind(&Multiplexer::default_check,this));
+		addChecker(std::bind(&Multiplexer::default_check,this,std::placeholders::_1));
 		addPacketFunction(std::bind(&Multiplexer::default_packet_func,this));
 	}
     	virtual ~Multiplexer() {};
@@ -48,7 +48,6 @@ public:
 	MultiplexerPtrWeak getUpMultiplexer(int key) const;
 
 	void forward();
-	void forward_old();
 
         void statistics(std::basic_ostream<char>& out);
         void statistics() { statistics(std::cout);};
@@ -65,7 +64,7 @@ public:
 	void setPacketInfo(unsigned char *packet, int length, int prev_header_size);
 	void setPacket(Packet *packet);
 
-	void addChecker(std::function <bool ()> checker){ check_func_ = checker;};
+	void addChecker(std::function <bool (const Packet&)> checker){ check_func_ = checker;};
 	void addPacketFunction(std::function <void ()> packet_func){ packet_func_ = packet_func;};
 
 	uint64_t getTotalForwardPackets() const { return total_forward_packets_;};
@@ -74,7 +73,7 @@ public:
 
 	Packet *getCurrentPacket() { return &packet_;};
 
-	bool acceptPacket() const { return check_func_();};
+	bool acceptPacket(const Packet &packet) const { return check_func_(packet);};
 
 	// This is realy uggly puagggggg
 	u_int32_t ipsrc;
@@ -82,7 +81,7 @@ public:
 	u_int16_t total_length;
 private:
 	ProtocolPtr proto_;
-	bool default_check() const { return true;};
+	bool default_check(const Packet&) const { return true;};
 	void default_packet_func() const { };
 	Packet packet_;
 	uint64_t total_received_packets_;
@@ -95,7 +94,7 @@ private:
 	u_int16_t next_protocol_id_; // the next protocol to check by the multiplexer
     	typedef std::map<int,MultiplexerPtrWeak> MuxMap;
 	MuxMap muxUpMap_;
-	std::function <bool ()> check_func_;	
+	std::function <bool (const Packet&)> check_func_;	
 	std::function <void ()> packet_func_;	
 };
 
