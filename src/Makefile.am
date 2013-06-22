@@ -4,11 +4,13 @@ noinst_HEADERS =        Packet.h \
 			Protocol.h \
 			PacketDispatcher.h \
 			Multiplexer.h \
+			FlowForwarder.h \
                         ./flow/FlowCache.h \
                         ./flow/FlowManager.h \
                         ./flow/Flow.h
 
 iaengine_core_sources =	Multiplexer.cc \
+			FlowForwarder.cc \
 			PacketDispatcher.cc \
 			./flow/FlowCache.cc \
 			./flow/FlowManager.cc \

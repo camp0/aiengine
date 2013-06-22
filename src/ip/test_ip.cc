@@ -28,14 +28,14 @@ struct StackEthernetIP
                 mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
 		mux_eth->setProtocolIdentifier(0);
                 mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth));
+                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the ip handler
                 ip->setMultiplexer(mux_ip);
                 mux_ip->setProtocol(static_cast<ProtocolPtr>(ip));
 		mux_ip->setProtocolIdentifier(ETHERTYPE_IP);
                 mux_ip->setHeaderSize(ip->getHeaderSize());
-                mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip));
+                mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip,std::placeholders::_1));
 
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
@@ -68,14 +68,14 @@ struct StackEthernetVLanIP
                 mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
 		mux_eth->setProtocolIdentifier(0);
                 mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth));
+                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the vlan handler
                 vlan->setMultiplexer(mux_vlan);
                 mux_vlan->setProtocol(static_cast<ProtocolPtr>(vlan));
 		mux_vlan->setProtocolIdentifier(ETH_P_8021Q);
                 mux_vlan->setHeaderSize(vlan->getHeaderSize());
-                mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan));
+                mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan,std::placeholders::_1));
                 mux_vlan->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan));
 
                 // configure the ip handler
@@ -83,7 +83,7 @@ struct StackEthernetVLanIP
 		mux_ip->setProtocolIdentifier(ETHERTYPE_IP);
                 mux_ip->setProtocol(static_cast<ProtocolPtr>(ip));
                 mux_ip->setHeaderSize(ip->getHeaderSize());
-                mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip));
+                mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip,std::placeholders::_1));
 		mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip));
 
         	// configure the multiplexers
@@ -242,14 +242,14 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         eth->setMultiplexer(mux_eth);
         mux_eth->setHeaderSize(eth->header_size);
 	mux_eth->setProtocolIdentifier(0);
-        mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth));
+        mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
         // configure the vlan handler
         vlan->setMultiplexer(mux_vlan);
         mux_vlan->setProtocol(static_cast<ProtocolPtr>(vlan));
         mux_vlan->setProtocolIdentifier(ETH_P_8021Q);
         mux_vlan->setHeaderSize(vlan->getHeaderSize());
-        mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan));
+        mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan,std::placeholders::_1));
         mux_vlan->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan));
 
         // configure the ip1
@@ -257,7 +257,7 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         mux_ip1->setProtocolIdentifier(ETHERTYPE_IP);
         mux_ip1->setProtocol(static_cast<ProtocolPtr>(ip1));
         mux_ip1->setHeaderSize(ip1->getHeaderSize());
-        mux_ip1->addChecker(std::bind(&IPProtocol::ipChecker,ip1));
+        mux_ip1->addChecker(std::bind(&IPProtocol::ipChecker,ip1,std::placeholders::_1));
         mux_ip1->addPacketFunction(std::bind(&IPProtocol::processPacket,ip1));
 
         // configure the ip1
@@ -265,7 +265,7 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         mux_ip2->setProtocolIdentifier(ETHERTYPE_IP);
         mux_ip2->setProtocol(static_cast<ProtocolPtr>(ip2));
         mux_ip2->setHeaderSize(ip2->getHeaderSize());
-        mux_ip2->addChecker(std::bind(&IPProtocol::ipChecker,ip2));
+        mux_ip2->addChecker(std::bind(&IPProtocol::ipChecker,ip2,std::placeholders::_1));
         mux_ip2->addPacketFunction(std::bind(&IPProtocol::processPacket,ip2));
 
         // configure the multiplexers

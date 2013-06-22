@@ -35,14 +35,14 @@ struct StackTcp
                 mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
                 mux_eth->setProtocolIdentifier(0);
                 mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth));
+                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the ip
                 ip->setMultiplexer(mux_ip);
                 mux_ip->setProtocol(static_cast<ProtocolPtr>(ip));
                 mux_ip->setProtocolIdentifier(ETHERTYPE_IP);
                 mux_ip->setHeaderSize(ip->getHeaderSize());
-                mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip));
+                mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip,std::placeholders::_1));
                 mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip));
 
                 //configure the tcp 
@@ -50,7 +50,7 @@ struct StackTcp
                 mux_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
                 mux_tcp->setProtocolIdentifier(IPPROTO_TCP);
                 mux_tcp->setHeaderSize(tcp->getHeaderSize());
-                mux_tcp->addChecker(std::bind(&TCPProtocol::tcpChecker,tcp));
+                mux_tcp->addChecker(std::bind(&TCPProtocol::tcpChecker,tcp,std::placeholders::_1));
                 mux_tcp->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp));
 
                 // configure the multiplexers

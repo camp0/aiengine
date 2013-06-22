@@ -13,7 +13,7 @@
 
 BOOST_AUTO_TEST_SUITE (test_suite_1) // name of the test suite is stringtest
 
-BOOST_AUTO_TEST_CASE (test_case_1)
+BOOST_AUTO_TEST_CASE ( test_case_1 )
 {
 	MultiplexerPtr m1 = MultiplexerPtr(new Multiplexer());
 	MultiplexerPtr m2 = MultiplexerPtr(new Multiplexer());

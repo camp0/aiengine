@@ -41,14 +41,12 @@ public:
                 ip_header_ = reinterpret_cast <struct iphdr*> (raw_packet);
         }
 
-	// Condition for say that a packet its ethernet 
-	bool ipChecker() 
+	// Condition for say that a packet is IP 
+	bool ipChecker(const Packet &packet) 
 	{
-		Packet *pkt = mux_.lock()->getCurrentPacket();
-		int length = pkt->getLength();
+		int length = packet.getLength();
 
-		// extra check
-		setHeader(pkt->getPayload());
+		setHeader(packet.getPayload());
 
 		if((length >= header_size)&&(isIPver4()))
 		{

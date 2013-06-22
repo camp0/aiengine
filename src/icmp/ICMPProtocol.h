@@ -41,12 +41,11 @@ public:
         }
 
 	// Condition for say that a packet its icmp 
-	bool icmpChecker() 
+	bool icmpChecker(const Packet &packet) 
 	{
-                Packet *pkt = mux_.lock()->getCurrentPacket();
-                int length = pkt->getLength();
+                int length = packet.getLength();
 
-                setHeader(pkt->getPayload());
+                setHeader(packet.getPayload());
 
 		if(length >= header_size)
 		{

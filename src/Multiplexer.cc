@@ -33,7 +33,6 @@ void Multiplexer::setPacket(Packet *pkt)
 void Multiplexer::forward()
 {
 	MultiplexerPtrWeak next_mux;
-	//unsigned char *packet = nullptr;
 
         ++total_received_packets_;
 	next_mux = getUpMultiplexer(next_protocol_id_);
@@ -43,14 +42,12 @@ void Multiplexer::forward()
                 if(mux)
                 {
                       	Packet pkt_candidate(&packet_.getPayload()[header_size_],packet_.getLength() - header_size_, header_size_);
-		 
-			//packet = &packet_.getPayload()[header_size_];
-
-                        //mux->setPacketInfo(packet,packet_.getLength() - header_size_, header_size_);
 
 			if(mux->acceptPacket(pkt_candidate)) // The packet is accepted by the destination mux
 			{
-                        	mux->packet_func_();
+                   		mux->setPacket(&pkt_candidate);
+ 
+    				mux->packet_func_();
                         	++total_forward_packets_;
                         	mux->forward();
 			}else{

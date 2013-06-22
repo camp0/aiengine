@@ -43,15 +43,13 @@ public:
         }
 
 	// Condition for say that a packet its ethernet 
-	bool udpChecker() 
+	bool udpChecker(const Packet &packet) 
 	{
-                Packet *pkt = mux_.lock()->getCurrentPacket();
-                int length = pkt->getLength();
-
-		setHeader(pkt->getPayload());
+                int length = packet.getLength();
 
 		if(length >= header_size)
 		{
+			setHeader(packet.getPayload());
 			++total_valid_packets_; 
 			return true;
 		}

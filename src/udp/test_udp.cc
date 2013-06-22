@@ -34,14 +34,14 @@ struct StackUdp
 		mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
 		mux_eth->setProtocolIdentifier(0);
         	mux_eth->setHeaderSize(eth->getHeaderSize());
-        	mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth));
+        	mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
         	// configure the ip
         	ip->setMultiplexer(mux_ip);
 		mux_ip->setProtocol(static_cast<ProtocolPtr>(ip));
 		mux_ip->setProtocolIdentifier(ETHERTYPE_IP);
         	mux_ip->setHeaderSize(ip->getHeaderSize());
-        	mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip));
+        	mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip,std::placeholders::_1));
         	mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip));
 
 		//configure the udp
@@ -49,7 +49,7 @@ struct StackUdp
 		mux_udp->setProtocol(static_cast<ProtocolPtr>(udp));
 		mux_udp->setProtocolIdentifier(IPPROTO_UDP);
 		mux_udp->setHeaderSize(udp->getHeaderSize());
-		mux_udp->addChecker(std::bind(&UDPProtocol::udpChecker,udp));
+		mux_udp->addChecker(std::bind(&UDPProtocol::udpChecker,udp,std::placeholders::_1));
         	mux_udp->addPacketFunction(std::bind(&UDPProtocol::processPacket,udp));
 
 		// configure the multiplexers

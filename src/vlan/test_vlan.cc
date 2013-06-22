@@ -27,14 +27,14 @@ struct StackVlan
 		mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
 		mux_eth->setProtocolIdentifier(0);
         	mux_eth->setHeaderSize(eth->getHeaderSize());
-        	mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth));
+        	mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
         	// configure the vlan handler
         	vlan->setMultiplexer(mux_vlan);
 		mux_vlan->setProtocol(static_cast<ProtocolPtr>(vlan));
 		mux_vlan->setProtocolIdentifier(ETH_P_8021Q);
         	mux_vlan->setHeaderSize(vlan->getHeaderSize());
-        	mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan));
+        	mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan,std::placeholders::_1));
 
 		// configure the multiplexers
 		mux_eth->addUpMultiplexer(mux_vlan,ETH_P_8021Q);

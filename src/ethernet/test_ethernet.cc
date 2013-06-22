@@ -9,7 +9,6 @@
 
 #define BOOST_TEST_MODULE ethernettest
 #include <boost/test/unit_test.hpp>
-//BOOST_AUTO_TEST_SUITE (ethernet_suite) 
 #endif
 
 
@@ -45,11 +44,7 @@ BOOST_AUTO_TEST_CASE (test2_ethernet)
 	BOOST_CHECK(eth->ethernetChecker(pkt) == true);
 	BOOST_CHECK(mux->acceptPacket(pkt) == true);
 
-	// Sets the raw packet to a valid ethernet header
-	//eth->setHeader(mux->getCurrentPacket()->getPayload());
-
-	// FIX thisssssss
-	//BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IP);
+	BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IP);
 
 	// The check is two packets because there is
 	// two calls to the same function
@@ -58,6 +53,3 @@ BOOST_AUTO_TEST_CASE (test2_ethernet)
 
 }
 
-//#ifdef BOOST_TEST_MODULE_SET_ETHERNET
-//BOOST_AUTO_TEST_SUITE_END( )
-//#endif

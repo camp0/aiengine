@@ -41,17 +41,14 @@ public:
                 tcp_header_ = reinterpret_cast <struct tcphdr*> (raw_packet);
         }
 
-	// Condition for say that a packet its tcp 
-	bool tcpChecker() 
+	// Condition for say that a packet is tcp 
+	bool tcpChecker(const Packet &packet) 
 	{
-                Packet *pkt = mux_.lock()->getCurrentPacket();
-                int length = pkt->getLength();
+                int length = packet.getLength();
 
-                // extra check
-                setHeader(pkt->getPayload());
-	
 		if(length >= header_size)
 		{
+                	setHeader(packet.getPayload());
 			++total_valid_packets_; 
 			return true;
 		}

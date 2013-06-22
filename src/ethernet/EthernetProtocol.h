@@ -38,17 +38,14 @@ public:
 		eth_header_ = reinterpret_cast <struct ether_header*> (raw_packet);
 	} 
 
-	// Condition for say that a packet its ethernet 
+	// Condition for say that a packet is ethernet 
 	bool ethernetChecker(const Packet &packet) 
-	//bool ethernetChecker(const Packet &packet) const
 	{
 		int length = packet.getLength();
 
 		if(ETHER_IS_VALID_LEN(length))
 		{
-			unsigned char *p = packet.getPayload();
-			eth_header_ = reinterpret_cast <struct ether_header*> (p);
-			//this->setHeader(p);
+			setHeader(packet.getPayload());
 			++total_valid_packets_; 
 			return true;
 		}
