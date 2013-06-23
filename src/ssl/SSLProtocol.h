@@ -6,6 +6,7 @@
 #endif // __FAVOR_BSD
 
 #include "../Multiplexer.h"
+#include "../FlowForwarder.h"
 #include "../Protocol.h"
 #include <net/ethernet.h>
 #include <netinet/ip.h>
@@ -37,27 +38,23 @@ public:
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
         MultiplexerPtrWeak getMultiplexer() { mux_;};
 
+        void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; };
+        FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;};
+
         void setHeader(unsigned char *raw_packet)
         {
                 ssl_header_ = raw_packet;
         }
 
-	// Condition for say that a packet its ethernet 
-	bool sslChecker() 
+	// Condition for say that a payload is ssl 
+	bool sslChecker(unsigned char *payload) 
 	{
-		Packet *pkt = mux_.lock()->getCurrentPacket();
-		int length = pkt->getLength();
-
-		// extra check
-		setHeader(pkt->getPayload());
-
-		if(length >= header_size)
+		std::cout << "sslChecker:" << std::endl;
+		if(std::memcmp("\x16\x03",payload,2)==0)
 		{
-			if(std::memcmp("\x16\x03",ssl_header_,2)==0)
-			{
-				++total_valid_packets_; 
-				return true;
-			}
+			setHeader(payload);
+			++total_valid_packets_; 
+			return true;
 		}
 		else
 		{
@@ -68,6 +65,7 @@ public:
 
 
 private:
+	FlowForwarderPtrWeak flow_forwarder_;	
 	MultiplexerPtrWeak mux_;
 	unsigned char *ssl_header_;
 };

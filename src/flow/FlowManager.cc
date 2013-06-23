@@ -48,3 +48,8 @@ void FlowManager::statistics(std::basic_ostream<char>& out)
 
 }
 
+void FlowManager::printFlows(std::basic_ostream<char>& out)
+{
+
+
+}

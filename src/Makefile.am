@@ -18,7 +18,9 @@ iaengine_core_sources =	Multiplexer.cc \
 			./ip/IPProtocol.cc \
 			./icmp/ICMPProtocol.cc \
 			./udp/UDPProtocol.cc \
-			./tcp/TCPProtocol.cc 
+			./tcp/TCPProtocol.cc \
+			./http/HTTPProtocol.cc \
+			./ssl/SSLProtocol.cc 
 
 iaengine_SOURCES =      $(iaengine_core_sources) main.cc
 
@@ -33,7 +35,7 @@ TEST = tests
 check_PROGRAMS = tests 
 
 tests_SOURCES = $(iaengine_core_sources) tests.cc 
-tests_LDADD   = -lboost_system -lboost_unit_test_framework -lpcap
+tests_LDADD   = -lboost_system -lboost_unit_test_framework -lboost_regex -lpcap
 tests_LDFLAGS = -DBOOST_ASIO_DISABLE_EPOLL
 
 CLEANFILES = *.o *.lo *.so

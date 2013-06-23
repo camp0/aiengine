@@ -23,4 +23,6 @@ private:
 	int prev_header_size_;
 };
 
+typedef std::shared_ptr<Packet> PacketPtr;
+
 #endif

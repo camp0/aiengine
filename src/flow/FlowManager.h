@@ -31,7 +31,9 @@ public:
 	FlowPtr findFlow(unsigned long hash1,unsigned long hash2);
 
 	int getNumberFlows() const { return flowTable_.size();}
-      
+
+	void printFlows(std::basic_ostream<char>& out);
+	void printFlows() { printFlows(std::cout);};      
 	void statistics(std::basic_ostream<char>& out);
         void statistics() { statistics(std::cout);};
 	

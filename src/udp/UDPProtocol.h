@@ -12,6 +12,7 @@
 #include <arpa/inet.h>
 #include "../flow/FlowManager.h"
 #include "../flow/FlowCache.h"
+#include "../FlowForwarder.h"
 
 class UDPProtocol: public Protocol 
 {
@@ -30,6 +31,9 @@ public:
 
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
         MultiplexerPtrWeak getMultiplexer() { mux_;};
+
+	void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; };
+	FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;};
 
         const char *getName() { return name_.c_str();};
 
@@ -78,6 +82,7 @@ private:
 	MultiplexerPtrWeak mux_;
 	FlowManagerPtr flow_table_;
 	FlowCachePtr flow_cache_;
+	FlowForwarderPtrWeak flow_forwarder_;
 	struct udphdr *udp_header_;
 
 	int32_t total_bytes_;

@@ -1,10 +1,13 @@
 #include <string>
 #include "Multiplexer.h"
+#include "FlowForwarder.h"
 #include "PacketDispatcher.h"
 #include "./ethernet/EthernetProtocol.h"
 #include "./ip/IPProtocol.h"
 #include "./udp/UDPProtocol.h"
 #include "./tcp/TCPProtocol.h"
+#include "./ssl/SSLProtocol.h"
+#include "./http/HTTPProtocol.h"
 #include "StackLan.h"
 
 #define BOOST_TEST_DYN_LINK
@@ -222,7 +225,6 @@ BOOST_FIXTURE_TEST_CASE(test_case_7,StackLan)
         pd->openPcapFile("../pcapfiles/sslflow.pcap");
         pd->runPcap();
         pd->closePcapFile();
-	this->statistics();
 
         //Checkers
         BOOST_CHECK(flowcache2->getTotalFlowsOnCache() == 0);
@@ -232,6 +234,97 @@ BOOST_FIXTURE_TEST_CASE(test_case_7,StackLan)
         BOOST_CHECK(flowcache2->getTotalFails() == 0);
         BOOST_CHECK(flowmgr->getNumberFlows() == 2);
 
+}
+
+BOOST_FIXTURE_TEST_CASE(test_case_8,StackLan)
+{
+
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        FlowManagerPtr flowmgr = FlowManagerPtr(new FlowManager());
+        FlowCachePtr flowcache = FlowCachePtr(new FlowCache());
+	FlowForwarderPtr ff_tcp = FlowForwarderPtr(new FlowForwarder());	
+	FlowForwarderPtr ff_ssl = FlowForwarderPtr(new FlowForwarder());	
+	SSLProtocolPtr ssl = SSLProtocolPtr(new SSLProtocol());
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+        flowcache->createFlows(1);
+        tcp->setFlowCache(flowcache);
+        tcp->setFlowManager(flowmgr);
+
+	// configure the flow forwarder
+	tcp->setFlowForwarder(ff_tcp);
+	ff_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
+	ff_tcp->addUpFlowForwarder(ff_ssl);
+
+	ssl->setFlowForwarder(ff_ssl);
+	ff_ssl->setProtocol(static_cast<ProtocolPtr>(ssl));
+	
+	//connect the ssl protocol on top of tcp
+	ff_tcp->addUpFlowForwarder(ff_ssl);
+
+	ff_ssl->addChecker(std::bind(&SSLProtocol::sslChecker,ssl,std::placeholders::_1));
+
+        pd->openPcapFile("../pcapfiles/sslflow.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        //Checkers
+        BOOST_CHECK(flowcache->getTotalFlowsOnCache() == 0);
+        BOOST_CHECK(flowcache->getTotalFlows() == 1);
+        BOOST_CHECK(flowcache->getTotalAcquires() == 1);
+        BOOST_CHECK(flowcache->getTotalReleases() == 0);
+        BOOST_CHECK(flowcache->getTotalFails() == 0);
+        BOOST_CHECK(flowmgr->getNumberFlows() == 1);
+
+	//Checkers of the forwarders
+	BOOST_CHECK(ff_tcp->getTotalForwardFlows() == 1);
+	BOOST_CHECK(ff_tcp->getTotalReceivedFlows() == 95);
+	BOOST_CHECK(ff_tcp->getTotalFailFlows() == 4);
+	
+}
+
+BOOST_FIXTURE_TEST_CASE(test_case_9,StackLan)
+{
+
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        FlowForwarderPtr ff_tcp = FlowForwarderPtr(new FlowForwarder());
+        FlowForwarderPtr ff_ssl = FlowForwarderPtr(new FlowForwarder());
+        FlowForwarderPtr ff_http = FlowForwarderPtr(new FlowForwarder());
+        HTTPProtocolPtr http = HTTPProtocolPtr(new HTTPProtocol());
+        SSLProtocolPtr ssl = SSLProtocolPtr(new SSLProtocol());
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+        // configure the flow forwarder
+        tcp->setFlowForwarder(ff_tcp);
+        ff_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
+        ff_tcp->addUpFlowForwarder(ff_ssl);
+
+        ssl->setFlowForwarder(ff_ssl);
+        ff_ssl->setProtocol(static_cast<ProtocolPtr>(ssl));
+
+        //connect the ssl protocol on top of tcp
+        ff_tcp->addUpFlowForwarder(ff_ssl);
+        ff_ssl->addChecker(std::bind(&SSLProtocol::sslChecker,ssl,std::placeholders::_1));
+
+        http->setFlowForwarder(ff_http);
+        ff_http->setProtocol(static_cast<ProtocolPtr>(http));
+
+        //connect the http protocol on top of tcp
+        ff_tcp->addUpFlowForwarder(ff_http);
+        ff_http->addChecker(std::bind(&HTTPProtocol::httpChecker,http,std::placeholders::_1));
+
+        pd->openPcapFile("../pcapfiles/accessgoogle.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+        this->statistics();
+	ssl->statistics();
+	ff_ssl->statistics();
+	http->statistics();
+	ff_http->statistics();
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

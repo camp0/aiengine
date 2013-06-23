@@ -1,6 +1,11 @@
 #ifndef _Flow_H
 #define _Flow_H
 
+#include "../Packet.h"
+
+class FlowForwarder;
+typedef std::weak_ptr<FlowForwarder> FlowForwarderPtrWeak;
+
 class Flow {
 public:
     	Flow() {reset();};
@@ -11,12 +16,18 @@ public:
 
 	int32_t total_bytes;
 	int32_t total_packets;
+
+	FlowForwarderPtrWeak forwarder;
+
+	unsigned char *payload;	
 	
 	void reset()
 	{
 		hash_ = 0;
 		total_bytes = 0;
 		total_packets = 0;
+		forwarder.reset();
+		payload = nullptr;
 	};
 private:
 	unsigned long hash_;

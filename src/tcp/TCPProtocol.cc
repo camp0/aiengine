@@ -12,6 +12,8 @@ void TCPProtocol::statistics(std::basic_ostream<char>& out)
                 flow_table_->statistics(out);
         if(flow_cache_)
                 flow_cache_->statistics(out);
+        if(flow_forwarder_.lock())
+                flow_forwarder_.lock()->statistics(out);
 }
 
 // This method its similar to the UDP, so maybe in future.....
@@ -55,8 +57,23 @@ void TCPProtocol::processPacket()
         {
         	MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();
         	MultiplexerPtr ipmux = downmux.lock();
-		total_bytes_ += (ipmux->total_length - 20 - getTcpHdrLength()); 
-                //std::cout << __FILE__ <<":"<< this<< ":procesing flow:" << flow << " bytes" << total_bytes_<< std::endl;
+                
+		int bytes = (ipmux->total_length - 20 - getTcpHdrLength());
+
+                total_bytes_ += bytes;
+                flow->total_bytes += bytes;
+                ++flow->total_packets;
+
+                if(flow_forwarder_.lock())
+                {
+                        FlowForwarderPtr ff = flow_forwarder_.lock();
+
+			flow->payload = getPayload();
+                        ff->forwardFlow(flow.get());
+                }
+
+             // 	std::cout << __FILE__ <<":"<< this<< ":procesing flow(" << flow << ")bytes(" << bytes ;
+	//	std::cout << ")packets(" << flow->total_packets << ")" << std::endl;
         }
 }
 

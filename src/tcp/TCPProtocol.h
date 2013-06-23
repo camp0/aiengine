@@ -12,6 +12,7 @@
 #include "../Protocol.h"
 #include "../flow/FlowManager.h"
 #include "../flow/FlowCache.h"
+#include "../FlowForwarder.h"
 
 class TCPProtocol: public Protocol 
 {
@@ -26,6 +27,9 @@ public:
 	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
+
+        void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; };
+        FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;};
 
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
         MultiplexerPtrWeak getMultiplexer() { mux_;};
@@ -72,7 +76,7 @@ public:
     	//unsigned int getTcpSegmentLength() const { return ntohs(ip->tot_len) - ip->ihl * 4; }
     	//unsigned int getPayloadLength() const { return ntohs(ip->tot_len) - 20 /* ip->ihl * 4 */ - tcp->doff * 4; }
     	unsigned int getTcpHdrLength() const { return tcp_header_->doff * 4; }
-    	//const char* getTcpPayload() const { return getIPpayload()+getTcpHdrLength(); }
+    	unsigned char* getPayload() const { return (unsigned char*)tcp_header_ +getTcpHdrLength(); }
 
         void setFlowManager(FlowManagerPtr flow_mng) { flow_table_ = flow_mng;};
         FlowManagerPtr getFlowManager() { return flow_table_; };
@@ -82,6 +86,7 @@ public:
 private:
         FlowPtr getFlow();
 	MultiplexerPtrWeak mux_;
+	FlowForwarderPtrWeak flow_forwarder_;
 	FlowManagerPtr flow_table_;
 	FlowCachePtr flow_cache_;
 	struct tcphdr *tcp_header_;

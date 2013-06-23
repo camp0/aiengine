@@ -6,17 +6,23 @@
 #endif // __FAVOR_BSD
 
 #include "../Multiplexer.h"
+#include "../FlowForwarder.h"
 #include "../Protocol.h"
 #include <net/ethernet.h>
 #include <netinet/ip.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
+#include <boost/regex.hpp>
 
 class HTTPProtocol: public Protocol 
 {
 public:
-    	explicit HTTPProtocol():http_header_(nullptr){ name_="HTTPProtocol";};
+    	explicit HTTPProtocol():http_header_(nullptr),
+		http_regex_("^(GET|POST|HEAD|PUT|TRACE).*HTTP/1.")
+	{ 
+		name_="HTTPProtocol";
+	}
     	virtual ~HTTPProtocol() {};
 	
 	static const u_int16_t id = 0;
@@ -36,36 +42,40 @@ public:
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
         MultiplexerPtrWeak getMultiplexer() { mux_;};
 
+        void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; };
+        FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;};
+
         void setHeader(unsigned char *raw_packet)
         {
                 http_header_ = reinterpret_cast <unsigned char*> (raw_packet);
         }
 
-	// Condition for say that a packet its ethernet 
-	bool httpChecker() 
-	{
-		Packet *pkt = mux_.lock()->getCurrentPacket();
-		int length = pkt->getLength();
 
-		// extra check
-		setHeader(pkt->getPayload());
+        // Condition for say that a payload is HTTp 
+        bool httpChecker(unsigned char *payload)
+        {
+		const char * paco = reinterpret_cast<const char*>(payload);
 
-		if((length >= header_size))
-		{
-			++total_valid_packets_; 
-			return true;
-		}
-		else
-		{
-			++total_malformed_packets_;
-			return false;
-		}
-	}
+		std::cout << "httpChecker:" << std::endl;
+		if(boost::regex_search(paco, what_, http_regex_)) 
+                {
+                        std::cout << "http valid packet" << std::endl;
+                        ++total_valid_packets_;
+                        return true;
+                }
+                else
+                {
+                        ++total_malformed_packets_;
+                        return false;
+                }
+        }
 
 private:
+	FlowForwarderPtrWeak flow_forwarder_;
+	boost::regex http_regex_;
+        boost::cmatch what_;
 	MultiplexerPtrWeak mux_;
 	unsigned char *http_header_;
-	//struct iphdr *ip_header_;
 };
 
 typedef std::shared_ptr<HTTPProtocol> HTTPProtocolPtr;

@@ -57,6 +57,13 @@ void UDPProtocol::processPacket()
 		flow->total_bytes += bytes;
 		++flow->total_packets;
 
+		if(flow_forwarder_.lock())
+		{
+			FlowForwarderPtr ff = flow_forwarder_.lock();
+
+			ff->forwardFlow(flow.get());	
+		}	
+
 		//std::cout << __FILE__ <<":"<< this<< ":procesing flow:" << flow << " total bytes:" << total_bytes_<< std::endl;
 		//std::cout << __FILE__ <<":"<< this<< ":header:" << getHeaderLength()<< ":" << getLength() << std::endl;
 	}

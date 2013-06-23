@@ -8,6 +8,7 @@ test_udp_SOURCES = 	../Multiplexer.cc \
 			../ethernet/EthernetProtocol.cc \
 			../flow/FlowManager.cc \
 			../flow/FlowCache.cc \
+			../FlowForwarder.cc \
 			../vlan/VLanProtocol.cc \
 			../ip/IPProtocol.cc \
 			UDPProtocol.cc \
