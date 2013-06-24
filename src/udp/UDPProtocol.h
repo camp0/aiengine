@@ -69,6 +69,7 @@ public:
     	u_int16_t getLength() const { return ntohs(udp_header_->len); }
     	unsigned int getPayloadLength() const { return ntohs(udp_header_->len) - sizeof(udphdr); }
     	unsigned int getHeaderLength() const { return sizeof(udphdr); }
+	unsigned char* getPayload() const { return (unsigned char*)udp_header_ +getHeaderLength(); }
 
 	void setFlowManager(FlowManagerPtr flow_mng) { flow_table_ = flow_mng;};
 	FlowManagerPtr getFlowManager() { return flow_table_; };

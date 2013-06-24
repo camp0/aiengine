@@ -19,6 +19,7 @@ public:
 
 	FlowForwarderPtrWeak forwarder;
 
+	int payload_length;
 	unsigned char *payload;	
 	
 	void reset()
@@ -28,6 +29,7 @@ public:
 		total_packets = 0;
 		forwarder.reset();
 		payload = nullptr;
+		payload_length = 0;
 	};
 private:
 	unsigned long hash_;

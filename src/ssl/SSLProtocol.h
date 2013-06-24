@@ -18,7 +18,7 @@
 class SSLProtocol: public Protocol 
 {
 public:
-    	explicit SSLProtocol():ssl_header_(nullptr){ name_="SSLProtocol";};
+    	explicit SSLProtocol():ssl_header_(nullptr),total_bytes_(0) { name_="SSLProtocol";};
     	virtual ~SSLProtocol() {};
 	
 	static const u_int16_t id = 0;
@@ -68,6 +68,7 @@ private:
 	FlowForwarderPtrWeak flow_forwarder_;	
 	MultiplexerPtrWeak mux_;
 	unsigned char *ssl_header_;
+        int32_t total_bytes_;
 };
 
 typedef std::shared_ptr<SSLProtocol> SSLProtocolPtr;

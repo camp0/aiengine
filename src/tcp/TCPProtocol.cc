@@ -63,11 +63,12 @@ void TCPProtocol::processPacket()
                 total_bytes_ += bytes;
                 flow->total_bytes += bytes;
                 ++flow->total_packets;
-
-                if(flow_forwarder_.lock())
+		
+                if(flow_forwarder_.lock()&&(bytes > 0))
                 {
                         FlowForwarderPtr ff = flow_forwarder_.lock();
 
+			flow->payload_length = bytes;
 			flow->payload = getPayload();
                         ff->forwardFlow(flow.get());
                 }

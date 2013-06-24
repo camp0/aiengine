@@ -280,8 +280,8 @@ BOOST_FIXTURE_TEST_CASE(test_case_8,StackLan)
 
 	//Checkers of the forwarders
 	BOOST_CHECK(ff_tcp->getTotalForwardFlows() == 1);
-	BOOST_CHECK(ff_tcp->getTotalReceivedFlows() == 95);
-	BOOST_CHECK(ff_tcp->getTotalFailFlows() == 4);
+	BOOST_CHECK(ff_tcp->getTotalReceivedFlows() == 56); // just 56 packets with payload;
+	BOOST_CHECK(ff_tcp->getTotalFailFlows() == 0);
 	
 }
 
@@ -301,7 +301,6 @@ BOOST_FIXTURE_TEST_CASE(test_case_9,StackLan)
         // configure the flow forwarder
         tcp->setFlowForwarder(ff_tcp);
         ff_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
-        ff_tcp->addUpFlowForwarder(ff_ssl);
 
         ssl->setFlowForwarder(ff_ssl);
         ff_ssl->setProtocol(static_cast<ProtocolPtr>(ssl));

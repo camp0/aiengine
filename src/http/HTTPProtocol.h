@@ -18,7 +18,7 @@
 class HTTPProtocol: public Protocol 
 {
 public:
-    	explicit HTTPProtocol():http_header_(nullptr),
+    	explicit HTTPProtocol():http_header_(nullptr),total_bytes_(0),
 		http_regex_("^(GET|POST|HEAD|PUT|TRACE).*HTTP/1.")
 	{ 
 		name_="HTTPProtocol";
@@ -76,6 +76,7 @@ private:
         boost::cmatch what_;
 	MultiplexerPtrWeak mux_;
 	unsigned char *http_header_;
+	int32_t total_bytes_;
 };
 
 typedef std::shared_ptr<HTTPProtocol> HTTPProtocolPtr;
