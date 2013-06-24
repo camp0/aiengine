@@ -29,13 +29,15 @@ public:
 	static const int header_size = 0;
 	int getHeaderSize() const { return header_size;};
 
+	int32_t getTotalBytes() const { return total_bytes_; };
 	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
         const char *getName() { return name_.c_str();};
 
-	void processPacket();
+	void processPacket(){};
+	void processFlow(Flow *flow);
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
@@ -51,15 +53,13 @@ public:
         }
 
 
-        // Condition for say that a payload is HTTp 
+        // Condition for say that a payload is HTTP 
         bool httpChecker(unsigned char *payload)
         {
 		const char * paco = reinterpret_cast<const char*>(payload);
 
-		std::cout << "httpChecker:" << std::endl;
 		if(boost::regex_search(paco, what_, http_regex_)) 
                 {
-                        std::cout << "http valid packet" << std::endl;
                         ++total_valid_packets_;
                         return true;
                 }

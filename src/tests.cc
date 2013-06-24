@@ -146,6 +146,10 @@ BOOST_FIXTURE_TEST_CASE(test_case_5,StackLan)
 	BOOST_CHECK(tcp->getTotalValidPackets() == 0);
 	BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
 
+	BOOST_CHECK(eth->getTotalBytes() == 655);
+	BOOST_CHECK(ip->getTotalBytes() == 599); 
+	BOOST_CHECK(udp->getTotalBytes() == 487); 
+	BOOST_CHECK(tcp->getTotalBytes() == 0); 
 }
 
 BOOST_FIXTURE_TEST_CASE(test_case_6,StackLan)
@@ -242,9 +246,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_8,StackLan)
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         FlowManagerPtr flowmgr = FlowManagerPtr(new FlowManager());
         FlowCachePtr flowcache = FlowCachePtr(new FlowCache());
-	FlowForwarderPtr ff_tcp = FlowForwarderPtr(new FlowForwarder());	
-	FlowForwarderPtr ff_ssl = FlowForwarderPtr(new FlowForwarder());	
-	SSLProtocolPtr ssl = SSLProtocolPtr(new SSLProtocol());
+	FlowForwarderPtr ff_tcp_aux = FlowForwarderPtr(new FlowForwarder());	
+	FlowForwarderPtr ff_ssl_aux = FlowForwarderPtr(new FlowForwarder());	
+	SSLProtocolPtr ssl_aux = SSLProtocolPtr(new SSLProtocol());
 
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
@@ -254,17 +258,18 @@ BOOST_FIXTURE_TEST_CASE(test_case_8,StackLan)
         tcp->setFlowManager(flowmgr);
 
 	// configure the flow forwarder
-	tcp->setFlowForwarder(ff_tcp);
-	ff_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
-	ff_tcp->addUpFlowForwarder(ff_ssl);
+	tcp->setFlowForwarder(ff_tcp_aux);
+	ff_tcp_aux->setProtocol(static_cast<ProtocolPtr>(tcp));
+	ff_tcp_aux->addUpFlowForwarder(ff_ssl_aux);
 
-	ssl->setFlowForwarder(ff_ssl);
-	ff_ssl->setProtocol(static_cast<ProtocolPtr>(ssl));
+	ssl_aux->setFlowForwarder(ff_ssl_aux);
+	ff_ssl_aux->setProtocol(static_cast<ProtocolPtr>(ssl_aux));
 	
 	//connect the ssl protocol on top of tcp
-	ff_tcp->addUpFlowForwarder(ff_ssl);
+	ff_tcp_aux->addUpFlowForwarder(ff_ssl_aux);
 
-	ff_ssl->addChecker(std::bind(&SSLProtocol::sslChecker,ssl,std::placeholders::_1));
+	ff_ssl_aux->addChecker(std::bind(&SSLProtocol::sslChecker,ssl_aux,std::placeholders::_1));
+        ff_ssl_aux->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl_aux,std::placeholders::_1));
 
         pd->openPcapFile("../pcapfiles/sslflow.pcap");
         pd->runPcap();
@@ -279,51 +284,88 @@ BOOST_FIXTURE_TEST_CASE(test_case_8,StackLan)
         BOOST_CHECK(flowmgr->getNumberFlows() == 1);
 
 	//Checkers of the forwarders
-	BOOST_CHECK(ff_tcp->getTotalForwardFlows() == 1);
-	BOOST_CHECK(ff_tcp->getTotalReceivedFlows() == 56); // just 56 packets with payload;
-	BOOST_CHECK(ff_tcp->getTotalFailFlows() == 0);
-	
+	BOOST_CHECK(ff_tcp_aux->getTotalForwardFlows() == 1);
+	BOOST_CHECK(ff_tcp_aux->getTotalReceivedFlows() == 56); // just 56 packets with payload;
+	BOOST_CHECK(ff_tcp_aux->getTotalFailFlows() == 0);
+
+	BOOST_CHECK(ssl_aux->getTotalBytes() == 41821);
+	ff_ssl_aux->statistics();	
 }
 
 BOOST_FIXTURE_TEST_CASE(test_case_9,StackLan)
 {
 
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
-        FlowForwarderPtr ff_tcp = FlowForwarderPtr(new FlowForwarder());
-        FlowForwarderPtr ff_ssl = FlowForwarderPtr(new FlowForwarder());
-        FlowForwarderPtr ff_http = FlowForwarderPtr(new FlowForwarder());
-        HTTPProtocolPtr http = HTTPProtocolPtr(new HTTPProtocol());
-        SSLProtocolPtr ssl = SSLProtocolPtr(new SSLProtocol());
+        FlowForwarderPtr ff_tcp_aux = FlowForwarderPtr(new FlowForwarder());
+        FlowForwarderPtr ff_ssl_aux = FlowForwarderPtr(new FlowForwarder());
+        FlowForwarderPtr ff_http_aux = FlowForwarderPtr(new FlowForwarder());
+        HTTPProtocolPtr http_aux = HTTPProtocolPtr(new HTTPProtocol());
+        SSLProtocolPtr ssl_aux = SSLProtocolPtr(new SSLProtocol());
 
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
 
         // configure the flow forwarder
-        tcp->setFlowForwarder(ff_tcp);
-        ff_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
+        tcp->setFlowForwarder(ff_tcp_aux);
+        ff_tcp_aux->setProtocol(static_cast<ProtocolPtr>(tcp));
 
-        ssl->setFlowForwarder(ff_ssl);
-        ff_ssl->setProtocol(static_cast<ProtocolPtr>(ssl));
+        ssl_aux->setFlowForwarder(ff_ssl_aux);
+        ff_ssl_aux->setProtocol(static_cast<ProtocolPtr>(ssl_aux));
 
         //connect the ssl protocol on top of tcp
-        ff_tcp->addUpFlowForwarder(ff_ssl);
-        ff_ssl->addChecker(std::bind(&SSLProtocol::sslChecker,ssl,std::placeholders::_1));
+        ff_tcp_aux->addUpFlowForwarder(ff_ssl_aux);
+        ff_ssl_aux->addChecker(std::bind(&SSLProtocol::sslChecker,ssl_aux,std::placeholders::_1));
+        ff_ssl_aux->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl_aux,std::placeholders::_1));
 
-        http->setFlowForwarder(ff_http);
-        ff_http->setProtocol(static_cast<ProtocolPtr>(http));
+        http_aux->setFlowForwarder(ff_http_aux);
+        ff_http_aux->setProtocol(static_cast<ProtocolPtr>(http_aux));
 
         //connect the http protocol on top of tcp
-        ff_tcp->addUpFlowForwarder(ff_http);
-        ff_http->addChecker(std::bind(&HTTPProtocol::httpChecker,http,std::placeholders::_1));
+        ff_tcp_aux->addUpFlowForwarder(ff_http_aux);
+        ff_http_aux->addChecker(std::bind(&HTTPProtocol::httpChecker,http_aux,std::placeholders::_1));
+        ff_http_aux->addFlowFunction(std::bind(&HTTPProtocol::processFlow,http_aux,std::placeholders::_1));
 
         pd->openPcapFile("../pcapfiles/accessgoogle.pcap");
         pd->runPcap();
         pd->closePcapFile();
+
+        //Checkers of the forwarders
+        BOOST_CHECK(ff_tcp_aux->getTotalForwardFlows() == 1);
+        BOOST_CHECK(ff_tcp_aux->getTotalReceivedFlows() == 4); // just 56 packets with payload;
+        std::cout << "VALUE " <<ff_tcp_aux->getTotalReceivedFlows() << std::endl;
+        BOOST_CHECK(ff_tcp_aux->getTotalFailFlows() == 0);
+
+	// Verify the UDP part
+	BOOST_CHECK(udp->getTotalPackets() == 4);
+	BOOST_CHECK(udp->getTotalValidPackets() == 4);
+	BOOST_CHECK(udp->getTotalBytes() == 252);
+
+	BOOST_CHECK(mux_udp->getTotalReceivedPackets() == 4);
+	BOOST_CHECK(mux_udp->getTotalForwardPackets() == 0);// nothing on top of UDP
+	BOOST_CHECK(mux_udp->getTotalFailPackets() == 4);// nothing to forward
+
+	// Verify the ICMP part
+	BOOST_CHECK(icmp->getTotalPackets() == 0);
+	BOOST_CHECK(icmp->getTotalValidPackets() == 0);
+
+	BOOST_CHECK(mux_icmp->getTotalReceivedPackets() == 0);
+	BOOST_CHECK(mux_icmp->getTotalForwardPackets() == 0);
+	BOOST_CHECK(mux_icmp->getTotalFailPackets() == 0);
+
+	// Verify the TCP part
+
+	// verify the SSL Part
+        BOOST_CHECK(ssl_aux->getTotalBytes() == 0);
+
+	// verify the HTTP part
+	BOOST_CHECK(http_aux->getTotalBytes() == 1826);
+
+
         this->statistics();
-	ssl->statistics();
-	ff_ssl->statistics();
-	http->statistics();
-	ff_http->statistics();
+	ssl_aux->statistics();
+	ff_ssl_aux->statistics();
+	http_aux->statistics();
+	ff_http_aux->statistics();
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

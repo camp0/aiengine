@@ -13,13 +13,14 @@
 class EthernetProtocol: public Protocol 
 {
 public:
-    	explicit EthernetProtocol():eth_header_(nullptr){ name_ = "Ethernet";};
+    	explicit EthernetProtocol():eth_header_(nullptr),total_bytes_(0){ name_ = "Ethernet";};
     	virtual ~EthernetProtocol() {};
 
 	static const u_int16_t id = 0x0000; //Ethernet dont need a id
 	static const int header_size = 14;
 	int getHeaderSize() const { return header_size;};
 
+	int32_t getTotalBytes() const { return total_bytes_;};
 	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
@@ -46,7 +47,8 @@ public:
 		if(ETHER_IS_VALID_LEN(length))
 		{
 			setHeader(packet.getPayload());
-			++total_valid_packets_; 
+			++total_valid_packets_;
+			total_bytes_ += length; 
 			return true;
 		}
 		else
@@ -62,6 +64,7 @@ public:
 private:
 	MultiplexerPtrWeak mux_;
 	struct ether_header *eth_header_;
+	int32_t total_bytes_;
 };
 
 typedef std::shared_ptr<EthernetProtocol> EthernetProtocolPtr;

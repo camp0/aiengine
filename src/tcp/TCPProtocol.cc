@@ -60,7 +60,7 @@ void TCPProtocol::processPacket()
                 
 		int bytes = (ipmux->total_length - 20 - getTcpHdrLength());
 
-                total_bytes_ += bytes;
+                //total_bytes_ += bytes;
                 flow->total_bytes += bytes;
                 ++flow->total_packets;
 		

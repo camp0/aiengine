@@ -16,13 +16,14 @@
 class IPProtocol: public Protocol 
 {
 public:
-    	explicit IPProtocol():ip_header_(nullptr){ name_="IPProtocol";};
+    	explicit IPProtocol():ip_header_(nullptr),total_bytes_(0){ name_="IPProtocol";};
     	virtual ~IPProtocol() {};
 	
 	static const u_int16_t id = ETHERTYPE_IP;
 	static const int header_size = 20;
 	int getHeaderSize() const { return header_size;};
 
+	int32_t getTotalBytes() const { return total_bytes_;};
 	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
@@ -78,6 +79,7 @@ public:
 private:
 	MultiplexerPtrWeak mux_;
 	struct iphdr *ip_header_;
+	int32_t total_bytes_;
 };
 
 typedef std::shared_ptr<IPProtocol> IPProtocolPtr;

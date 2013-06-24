@@ -24,6 +24,7 @@ public:
 	static const int header_size = 20;
 	int getHeaderSize() const { return header_size;};
 
+	int32_t getTotalBytes()  const { return total_bytes_; };
 	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};
 	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
@@ -53,7 +54,8 @@ public:
 		if(length >= header_size)
 		{
                 	setHeader(packet.getPayload());
-			++total_valid_packets_; 
+			++total_valid_packets_;
+			total_bytes_ += length; 
 			return true;
 		}
 		else

@@ -12,6 +12,8 @@ void UDPProtocol::statistics(std::basic_ostream<char>& out)
 		flow_table_->statistics(out);
 	if(flow_cache_)
 		flow_cache_->statistics(out);
+        if(flow_forwarder_.lock())
+                flow_forwarder_.lock()->statistics(out);
 }
 
 FlowPtr UDPProtocol::getFlow() 
