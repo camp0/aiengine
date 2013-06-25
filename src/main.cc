@@ -13,7 +13,7 @@ PacketDispatcherPtr pktdis;
 bool process_command_line(int argc, char **argv,
 	std::string &pcapfile,
 	std::string &device,
-	bool print_flows)
+	bool &print_flows)
 {
 	namespace po = boost::program_options;
 

@@ -2,6 +2,7 @@
 #include <iomanip> // setw
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <boost/format.hpp>
 
 FlowManager::FlowManager() 
 {
@@ -52,19 +53,25 @@ void FlowManager::statistics(std::basic_ostream<char>& out)
 
 void FlowManager::printFlows(std::basic_ostream<char>& out)
 {
+	in_addr src_a,dst_a; 
+
+	// Print a header
+	out << boost::format("%-44s %-10s %-10s") % "Flow" % "Bytes" % "Packets" ;
+	out << std::endl;	
 	for(auto it = flowTable_.begin(); it!=flowTable_.end(); ++it)
 	{
 		FlowPtr flow = *it;
 
-		in_addr src_a,dst_a; 
-
+		std::ostringstream fivetuple;
 		src_a.s_addr=flow->getSourceAddress();
 		dst_a.s_addr=flow->getDestinationAddress();
 
-		out << "Flow(" << inet_ntoa(src_a) << ":" << flow->getSourcePort() << ":" << flow->getProtocol();
-		out << ":" << inet_ntoa(dst_a) << ":" << flow->getDestinationPort() << ")" << std::endl;
+		fivetuple << inet_ntoa(src_a) << ":" << flow->getSourcePort() << ":" << flow->getProtocol();
+		fivetuple << ":" << inet_ntoa(dst_a) << ":" << flow->getDestinationPort();
 
-		///saddr; return inet_ntoa(a);
+		out << boost::format("%-44s %-10d %-10d") % fivetuple.str() % flow->total_bytes % flow->total_packets;
+
+		out << std::endl;
 			
 	}
 

@@ -39,6 +39,7 @@ FlowPtr TCPProtocol::getFlow()
                                 if(flow)
                                 {
                                         flow->setId(h1);
+					flow->setFiveTuple(ipmux->ipsrc,getSrcPort(),6,ipmux->ipdst,getDstPort());
                                         flow_table_->addFlow(flow);
                                 }
                         }

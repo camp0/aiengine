@@ -38,6 +38,7 @@ FlowPtr UDPProtocol::getFlow()
 				if(flow)
 				{
 					flow->setId(h1);
+					flow->setFiveTuple(ipmux->ipsrc,getSrcPort(),17,ipmux->ipdst,getDstPort());
 					flow_table_->addFlow(flow);			
 				}
 			}

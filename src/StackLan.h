@@ -98,6 +98,7 @@ struct StackLan
                 //configure the udp
                 udp->setMultiplexer(mux_udp);
                 mux_udp->setProtocol(static_cast<ProtocolPtr>(udp));
+        	ff_udp->setProtocol(static_cast<ProtocolPtr>(udp));
 		mux_udp->setProtocolIdentifier(IPPROTO_UDP);
                 mux_udp->setHeaderSize(udp->getHeaderSize());
                 mux_udp->addChecker(std::bind(&UDPProtocol::udpChecker,udp,std::placeholders::_1));
@@ -106,6 +107,7 @@ struct StackLan
                 //configure the tcp 
                 tcp->setMultiplexer(mux_tcp);
                 mux_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
+        	ff_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
 		mux_tcp->setProtocolIdentifier(IPPROTO_TCP);
                 mux_tcp->setHeaderSize(tcp->getHeaderSize());
                 mux_tcp->addChecker(std::bind(&TCPProtocol::tcpChecker,tcp,std::placeholders::_1));
@@ -170,6 +172,7 @@ struct StackLan
 		mux_icmp->statistics();
 		std::cout << std::endl;
 		http->statistics();
+		std::cout << std::endl;
 		ssl->statistics();
 	}
 
