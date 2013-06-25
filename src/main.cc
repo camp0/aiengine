@@ -12,7 +12,8 @@ PacketDispatcherPtr pktdis;
 
 bool process_command_line(int argc, char **argv,
 	std::string &pcapfile,
-	std::string &device)
+	std::string &device,
+	bool print_flows)
 {
 	namespace po = boost::program_options;
 
@@ -21,13 +22,14 @@ bool process_command_line(int argc, char **argv,
 //		("interface,i",   po::value<std::string>(&device)->required(),
 //			"sets the interface.")
 		("pcapfile,f",   po::value<std::string>(&pcapfile)->required(),
-			"sets the pcap file.")
+			"Sets the pcap file.")
         	;
 
 	po::options_description optional_ops("Optional arguments");
 	optional_ops.add_options()
-		("help",     	"show help")
-		("version,v",   "show version string")
+		("dumpflows,d",      	"Dump the flows to stdout.")
+		("help,h",     		"Show help")
+		("version,v",   	"Show version string")
 		;
 
 	mandatory_ops.add(optional_ops);
@@ -48,7 +50,10 @@ bool process_command_line(int argc, char **argv,
             		std::cout << "iaengine " VERSION << std::endl;
             		return false;
         	}
-
+		if (vm.count("dumpflows"))
+		{
+			print_flows = true;
+		}
 
         	po::notify(vm);
     	}
@@ -84,8 +89,9 @@ int main(int argc, char* argv[])
 {
 	std::string pcapfile;
 	std::string interface;
+	bool print_flows = false;
 
-	if(!process_command_line(argc,argv,pcapfile,pcapfile))
+	if(!process_command_line(argc,argv,pcapfile,pcapfile,print_flows))
 	{
 		return 1;
 	}
@@ -111,6 +117,11 @@ int main(int argc, char* argv[])
 	}
 	stack.statistics();	
         pktdis->closePcapFile();
+
+	if(print_flows)
+	{
+		stack.dumpFlows();
+	}
 
 	return 0;
 }

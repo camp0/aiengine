@@ -1,5 +1,7 @@
 #include "FlowManager.h"
 #include <iomanip> // setw
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 FlowManager::FlowManager() 
 {
@@ -50,6 +52,20 @@ void FlowManager::statistics(std::basic_ostream<char>& out)
 
 void FlowManager::printFlows(std::basic_ostream<char>& out)
 {
+	for(auto it = flowTable_.begin(); it!=flowTable_.end(); ++it)
+	{
+		FlowPtr flow = *it;
 
+		in_addr src_a,dst_a; 
+
+		src_a.s_addr=flow->getSourceAddress();
+		dst_a.s_addr=flow->getDestinationAddress();
+
+		out << "Flow(" << inet_ntoa(src_a) << ":" << flow->getSourcePort() << ":" << flow->getProtocol();
+		out << ":" << inet_ntoa(dst_a) << ":" << flow->getDestinationPort() << ")" << std::endl;
+
+		///saddr; return inet_ntoa(a);
+			
+	}
 
 }

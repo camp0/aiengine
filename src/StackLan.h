@@ -173,7 +173,15 @@ struct StackLan
 		ssl->statistics();
 	}
 
-        ~StackLan() {
+	void dumpFlows()
+	{
+		std::cout << "Flows on memory" << std::endl;
+		flow_table_tcp->printFlows(std::cout);
+		flow_table_udp->printFlows(std::cout);
+	}
+
+        ~StackLan()
+	{
         }
 };
 

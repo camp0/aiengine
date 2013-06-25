@@ -14,6 +14,21 @@ public:
 	void setId(unsigned long hash) { hash_=hash;};
 	unsigned long getId() const { return hash_;};
 
+	inline void setFiveTuple(u_int32_t src_a,u_int16_t src_p,u_int16_t proto,u_int32_t dst_a,u_int16_t dst_p)
+	{
+		source_address_ = src_a;
+		dest_address_ = dst_a;
+		source_port_ = src_p;
+		dest_port_ = dst_p;
+		protocol_ = proto;
+	}
+
+	u_int32_t getSourceAddress() const { return source_address_;};
+	u_int32_t getDestinationAddress() const { return dest_address_;};
+	u_int16_t getSourcePort() const { return source_port_;};
+	u_int16_t getDestinationPort() const { return dest_port_;};
+	u_int16_t getProtocol() const { return protocol_;};
+
 	int32_t total_bytes;
 	int32_t total_packets;
 
@@ -30,9 +45,20 @@ public:
 		forwarder.reset();
 		payload = nullptr;
 		payload_length = 0;
+		source_address_ =0;
+		dest_address_ = 0;
+		source_port_ = 0;
+		dest_port_ = 0;
+		protocol_ = 0;		
+
 	};
 private:
 	unsigned long hash_;
+	u_int32_t source_address_;
+	u_int32_t dest_address_;
+	u_int16_t source_port_;
+	u_int16_t dest_port_;
+	u_int16_t protocol_;
 };
 
 typedef std::shared_ptr<Flow> FlowPtr;
