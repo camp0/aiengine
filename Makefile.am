@@ -9,6 +9,7 @@ SUBDIRS = 	src \
 		src/vlan \
 		src/ip \
 		src/ip6 \
+		src/gprs \
 		src/icmp \
 		src/udp \
 		src/tcp \

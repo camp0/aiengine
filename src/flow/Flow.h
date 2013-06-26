@@ -50,7 +50,7 @@ public:
 		source_port_ = 0;
 		dest_port_ = 0;
 		protocol_ = 0;		
-
+		forwarder.reset();
 	};
 private:
 	unsigned long hash_;
