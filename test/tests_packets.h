@@ -175,4 +175,21 @@ char *raw_packet_ethernet_ip_tcp_http_get =
 
 int raw_packet_ethernet_ip_tcp_http_get_length = 843;
 
+// grps packet with icmp
+// source address 127.0.0.1
+// source and dest adddress 192.168.0.1 and 192.168.0.3
+/*
+
+0000   00 00 00 00 00 00 00 00 00 00 00 00 08 00 45 00
+0010   00 84 00 00 40 00 40 11 3c 66 7f 00 00 02 7f 00
+0020   00 01 0d 3a 0d 3a 00 70 fe 84 1e ff 00 54 00 00
+0030   00 01 ff ff ff ff 42 00 01 21 43 65 87 09 45 00
+0040   00 54 00 00 40 00 40 01 c5 3f c0 a8 00 03 d1 55
+0050   e3 68 08 00 e5 e9 00 00 00 00 82 54 f0 4b aa 72
+0060   0a 00 08 09 0a 0b 0c 0d 0e 0f 10 11 12 13 14 15
+0070   16 17 18 19 1a 1b 1c 1d 1e 1f 20 21 22 23 24 25
+0080   26 27 28 29 2a 2b 2c 2d 2e 2f 30 31 32 33 34 35
+0090   36 37
+*/
+
 #endif
