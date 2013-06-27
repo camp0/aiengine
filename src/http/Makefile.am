@@ -4,7 +4,7 @@ TEST = test_http
 
 check_PROGRAMS = test_http
 
-test_http_SOURCES = 	../Multiplexer.cc \
+test_http_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ethernet/EthernetProtocol.cc \
 			../vlan/VLanProtocol.cc \
 			HTTPProtocol.cc test_http.cc

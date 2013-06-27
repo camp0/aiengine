@@ -27,6 +27,7 @@ public:
 
 	const char *getName() { return name_.c_str();};
 
+	void processFlow(Flow *flow) {}; // This protocol dont generate any flow 
 	void processPacket() ;
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};

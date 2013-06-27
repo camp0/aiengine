@@ -4,7 +4,8 @@ TEST = test_tcp
 
 check_PROGRAMS = test_tcp
 
-test_tcp_SOURCES = 	../Multiplexer.cc \
+test_tcp_SOURCES = 	../Multiplexer.cc  \
+			../FlowForwarder.cc \
 			../flow/FlowCache.cc \
 			../flow/FlowManager.cc \
 			../ethernet/EthernetProtocol.cc \

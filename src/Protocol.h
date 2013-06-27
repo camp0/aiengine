@@ -5,6 +5,8 @@
 #include <fstream>
 #include "Multiplexer.h"
 
+class Flow;
+
 class Protocol 
 {
 public:
@@ -16,6 +18,7 @@ public:
 	virtual void statistics() = 0;
 	virtual const char* getName() = 0;
 
+	virtual void processFlow(Flow *flow) = 0;
 	virtual void processPacket() = 0;
 
 	void virtual setMultiplexer(MultiplexerPtrWeak mux) = 0;

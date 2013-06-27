@@ -5,11 +5,6 @@ void GPRSProtocol::processPacket()
 {
         MultiplexerPtr mux = mux_.lock();
 
-	mux->ipsrc = getSrcAddr();
-	mux->ipdst = getDstAddr();
-	mux->total_length = getPacketLength();
-	total_bytes_ += getPacketLength();
-	mux->setNextProtocolIdentifier(getProtocol());
 	//std::cout << __FILE__ <<":"<< this<< ":";
 	//std::cout << " ipsrc:" << mux->ipsrc << " ipdst:"<< mux->ipdst <<std::endl;
 
