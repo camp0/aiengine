@@ -178,18 +178,21 @@ int raw_packet_ethernet_ip_tcp_http_get_length = 843;
 // grps packet with icmp
 // source address 127.0.0.1
 // source and dest adddress 192.168.0.1 and 192.168.0.3
-/*
 
-0000   00 00 00 00 00 00 00 00 00 00 00 00 08 00 45 00
-0010   00 84 00 00 40 00 40 11 3c 66 7f 00 00 02 7f 00
-0020   00 01 0d 3a 0d 3a 00 70 fe 84 1e ff 00 54 00 00
-0030   00 01 ff ff ff ff 42 00 01 21 43 65 87 09 45 00
-0040   00 54 00 00 40 00 40 01 c5 3f c0 a8 00 03 d1 55
-0050   e3 68 08 00 e5 e9 00 00 00 00 82 54 f0 4b aa 72
-0060   0a 00 08 09 0a 0b 0c 0d 0e 0f 10 11 12 13 14 15
-0070   16 17 18 19 1a 1b 1c 1d 1e 1f 20 21 22 23 24 25
-0080   26 27 28 29 2a 2b 2c 2d 2e 2f 30 31 32 33 34 35
-0090   36 37
-*/
+
+char *raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo = 
+"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\x00\x45\x00"
+"\x00\x84\x00\x00\x40\x00\x40\x11\x3c\x66\x7f\x00\x00\x02\x7f\x00"
+"\x00\x01\x0d\x3a\x0d\x3a\x00\x70\xfe\x84\x1e\xff\x00\x54\x00\x00"
+"\x00\x01\xff\xff\xff\xff\x42\x00\x01\x21\x43\x65\x87\x09\x45\x00"
+"\x00\x54\x00\x00\x40\x00\x40\x01\xc5\x3f\xc0\xa8\x00\x03\xd1\x55"
+"\xe3\x68\x08\x00\xe5\xe9\x00\x00\x00\x00\x82\x54\xf0\x4b\xaa\x72"
+"\x0a\x00\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15"
+"\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20\x21\x22\x23\x24\x25"
+"\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x34\x35"
+"\x36\x37";
+
+int raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo_length = 146;
+
 
 #endif
