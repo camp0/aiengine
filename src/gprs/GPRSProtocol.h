@@ -6,6 +6,7 @@
 #endif // __FAVOR_BSD
 
 #include "../Multiplexer.h"
+#include "../FlowForwarder.h"
 #include "../Protocol.h"
 #include <net/ethernet.h>
 #include <netinet/ip.h>
@@ -16,7 +17,7 @@
 class GPRSProtocol: public Protocol 
 {
 public:
-    	explicit GPRSProtocol():ip_header_(nullptr),total_bytes_(0){ name_="GPRSProtocol";};
+    	explicit GPRSProtocol():gprs_header_(nullptr),total_bytes_(0){ name_="GPRSProtocol";};
     	virtual ~GPRSProtocol() {};
 	
 	static const u_int16_t id = ETHERTYPE_IP;
@@ -31,24 +32,27 @@ public:
         const char *getName() { return name_.c_str();};
 
 	void processFlow(Flow *flow){};
-	void processPacket();
+	void processPacket() ;
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
         MultiplexerPtrWeak getMultiplexer() { mux_;};
 
+        void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; };
+        FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;};
+
         void setHeader(unsigned char *raw_packet)
         {
-                ip_header_ = reinterpret_cast <struct iphdr*> (raw_packet);
+		gprs_header_ = raw_packet;
+	                //ip_header_ = reinterpret_cast <struct iphdr*> (raw_packet);
         }
 
 	// Condition for say that a packet is GPRS 
-	bool gprsChecker(const Packet &packet) 
+	bool gprsChecker(unsigned char *packet) 
 	{
-		int length = packet.getLength();
 
-		setHeader(packet.getPayload());
+		int length = 12;
 
 		if(length >= header_size)
 		{
@@ -64,8 +68,9 @@ public:
 
 private:
 	MultiplexerPtrWeak mux_;
-	struct iphdr *ip_header_;
+	unsigned char *gprs_header_;
 	int32_t total_bytes_;
+	FlowForwarderPtrWeak flow_forwarder_;
 };
 
 typedef std::shared_ptr<GPRSProtocol> GPRSProtocolPtr;

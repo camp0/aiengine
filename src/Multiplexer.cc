@@ -33,12 +33,13 @@ void Multiplexer::setPacket(Packet *pkt)
 void Multiplexer::forward()
 {
 	MultiplexerPtrWeak next_mux;
+	MultiplexerPtr mux;
 
         ++total_received_packets_;
 	next_mux = getUpMultiplexer(next_protocol_id_);
 	if(!next_mux.expired())
 	{
-                MultiplexerPtr mux = next_mux.lock();
+                mux = next_mux.lock();
                 if(mux)
                 {
                       	Packet pkt_candidate(&packet_.getPayload()[header_size_],packet_.getLength() - header_size_, header_size_);
@@ -55,6 +56,22 @@ void Multiplexer::forward()
 			}
                 }
         }else{
+		// Give a try to other mux, tunneling for example
+/*	        for (auto it = muxUpMap_.begin(); it != muxUpMap_.end(); ++it)
+        	{
+                	next_mux = it->second;
+                      	Packet pkt_candidate(&packet_.getPayload()[header_size_],packet_.getLength() - header_size_, header_size_);
+
+			if(mux->acceptPacket(pkt_candidate))
+			{
+                   		mux->setPacket(&pkt_candidate);
+ 
+    				mux->packet_func_();
+                        	++total_forward_packets_;
+				return;
+			}	
+		} 
+*/
                 ++total_fail_packets_;
         }
 }

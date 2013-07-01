@@ -4,7 +4,7 @@ TEST = test_ssl
 
 check_PROGRAMS = test_ssl
 
-test_ssl_SOURCES = 	../Multiplexer.cc \
+test_ssl_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ethernet/EthernetProtocol.cc \
 			../vlan/VLanProtocol.cc \
 			SSLProtocol.cc test_ssl.cc
