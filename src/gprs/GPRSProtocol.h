@@ -20,7 +20,7 @@ public:
     	explicit GPRSProtocol():gprs_header_(nullptr),total_bytes_(0){ name_="GPRSProtocol";};
     	virtual ~GPRSProtocol() {};
 	
-	static const u_int16_t id = ETHERTYPE_IP;
+	static const u_int16_t id = 0;
 	static const int header_size = 8;
 	int getHeaderSize() const { return header_size;};
 
@@ -45,15 +45,14 @@ public:
         void setHeader(unsigned char *raw_packet)
         {
 		gprs_header_ = raw_packet;
-	                //ip_header_ = reinterpret_cast <struct iphdr*> (raw_packet);
         }
 
 	// Condition for say that a packet is GPRS 
 	bool gprsChecker(unsigned char *packet) 
 	{
 
-		int length = 12;
-
+		int length = 8;
+		std::cout << "yes" << std::endl;
 		if(length >= header_size)
 		{
 			++total_valid_packets_; 

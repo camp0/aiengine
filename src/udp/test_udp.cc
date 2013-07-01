@@ -112,5 +112,36 @@ BOOST_AUTO_TEST_CASE(test3_udp)
 
 }
 
+BOOST_AUTO_TEST_CASE(test4_udp)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo);
+        int length = raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo_length;
+
+        Packet packet(pkt,length,0);
+
+	FlowCachePtr flow_cache = FlowCachePtr(new FlowCache());
+	FlowManagerPtr flow_mng = FlowManagerPtr(new FlowManager());
+	FlowForwarderPtr ff_udp = FlowForwarderPtr(new FlowForwarder());
+
+	udp->setFlowCache(flow_cache);
+	udp->setFlowManager(flow_mng);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forward();
+
+	BOOST_CHECK(ip->getTotalPackets() == 1);
+	BOOST_CHECK(ip->getTotalValidPackets() == 1);
+	BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+	BOOST_CHECK(ip->getTotalBytes() == 132);
+
+	eth->statistics();
+	ip->statistics();
+	udp->statistics();
+}
+
 BOOST_AUTO_TEST_SUITE_END( )
 

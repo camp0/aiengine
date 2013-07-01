@@ -5,8 +5,8 @@ void GPRSProtocol::processPacket()
 {
         MultiplexerPtr mux = mux_.lock();
 
-	//std::cout << __FILE__ <<":"<< this<< ":";
-	//std::cout << " ipsrc:" << mux->ipsrc << " ipdst:"<< mux->ipdst <<std::endl;
+	std::cout << __FILE__ <<":"<< this<< ":";
+	std::cout << " gtp:" <<1 <<std::endl;
 
 }
 void GPRSProtocol::statistics(std::basic_ostream<char>& out)

@@ -71,22 +71,16 @@ struct Stack3Gtest
 		gprs->setFlowForwarder(ff_gprs);
 		ff_gprs->setProtocol(static_cast<ProtocolPtr>(gprs));
                 ff_gprs->addChecker(std::bind(&GPRSProtocol::gprsChecker,gprs,std::placeholders::_1));
-        	//ff_gprs->addFlowFunction(std::bind(&GPRSProtocol::processFlow,gprs,std::placeholders::_1));
-
+        	ff_gprs->addFlowFunction(std::bind(&GPRSProtocol::processFlow,gprs,std::placeholders::_1));
 
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip_low,ETHERTYPE_IP);
-
                 mux_ip_low->addDownMultiplexer(mux_eth);
                 mux_ip_low->addUpMultiplexer(mux_udp_low,IPPROTO_UDP);
-
-                //mux_udp_low->addDownMultiplexer(mux_ip_low);
-                //mux_udp_low->addUpMultiplexer(mux_gprs,0);
-
-                // mux_gprs->addDownMultiplexer(mux_udp_low);
+		mux_udp_low->addDownMultiplexer(mux_ip_low);
 
 		// Connect the FlowManager and FlowCache
-		flow_cache->createFlows(16);
+		flow_cache->createFlows(10);
 		udp_low->setFlowCache(flow_cache);
 		udp_low->setFlowManager(flow_mng);
 
