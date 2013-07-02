@@ -31,7 +31,7 @@ public:
 
         const char *getName() { return name_.c_str();};
 
-	void processFlow(Flow *flow){};
+	void processFlow(Flow *flow);
 	void processPacket() ;
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
@@ -52,9 +52,10 @@ public:
 	{
 
 		int length = 8;
-		std::cout << "yes" << std::endl;
+		
 		if(length >= header_size)
 		{
+			setHeader(packet);
 			++total_valid_packets_; 
 			return true;
 		}
@@ -64,6 +65,8 @@ public:
 			return false;
 		}
 	}
+
+	unsigned char *getPayload() const { return gprs_header_;};
 
 private:
 	MultiplexerPtrWeak mux_;

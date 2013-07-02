@@ -133,14 +133,12 @@ BOOST_AUTO_TEST_CASE(test4_udp)
 	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forward();
 
+	// ip
 	BOOST_CHECK(ip->getTotalPackets() == 1);
 	BOOST_CHECK(ip->getTotalValidPackets() == 1);
 	BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
 	BOOST_CHECK(ip->getTotalBytes() == 132);
 
-	eth->statistics();
-	ip->statistics();
-	udp->statistics();
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include "FlowForwarder.h"
 #include "Multiplexer.h"
 
 class Flow;
@@ -24,6 +25,9 @@ public:
 	void virtual setMultiplexer(MultiplexerPtrWeak mux) = 0;
 	MultiplexerPtrWeak virtual getMultiplexer() = 0; 
 
+	void virtual setFlowForwarder(FlowForwarderPtrWeak ff) = 0;
+	FlowForwarderPtrWeak virtual getFlowForwarder() = 0; 
+	
 	mutable std::string name_;
 	mutable uint64_t total_malformed_packets_;
 	mutable uint64_t total_valid_packets_;

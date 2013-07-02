@@ -36,6 +36,9 @@ public:
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
         MultiplexerPtrWeak getMultiplexer() { mux_;};
 
+        void setFlowForwarder(FlowForwarderPtrWeak ff) {};
+        FlowForwarderPtrWeak getFlowForwarder() {};
+
         void setHeader(unsigned char *raw_packet)
         {
                 icmp_header_ = reinterpret_cast <struct icmphdr*> (raw_packet);

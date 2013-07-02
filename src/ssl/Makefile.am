@@ -6,7 +6,10 @@ check_PROGRAMS = test_ssl
 
 test_ssl_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ethernet/EthernetProtocol.cc \
-			../vlan/VLanProtocol.cc \
+			../ip/IPProtocol.cc \
+			../tcp/TCPProtocol.cc \
+			../flow/FlowCache.cc \
+			../flow/FlowManager.cc \
 			SSLProtocol.cc test_ssl.cc
 
 test_ssl_LDADD   = -lboost_unit_test_framework

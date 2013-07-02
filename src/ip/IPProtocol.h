@@ -35,6 +35,9 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
+        void setFlowForwarder(FlowForwarderPtrWeak ff) {};
+        FlowForwarderPtrWeak getFlowForwarder() {};
+
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
         MultiplexerPtrWeak getMultiplexer() { mux_;};
 

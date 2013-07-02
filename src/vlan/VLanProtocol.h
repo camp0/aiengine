@@ -32,6 +32,9 @@ public:
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
         MultiplexerPtrWeak getMultiplexer() { mux_;};
 
+        void setFlowForwarder(FlowForwarderPtrWeak ff) {};
+        FlowForwarderPtrWeak getFlowForwarder() {};
+
 	void setHeader(unsigned char *raw_packet) 
 	{ 
 		std::cout << __FILE__ << ":Setting header" << std::endl;

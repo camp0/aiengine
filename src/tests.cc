@@ -289,7 +289,6 @@ BOOST_FIXTURE_TEST_CASE(test_case_8,StackLan)
 	BOOST_CHECK(ff_tcp_aux->getTotalFailFlows() == 0);
 
 	BOOST_CHECK(ssl_aux->getTotalBytes() == 41821);
-	ff_ssl_aux->statistics();	
 }
 
 BOOST_FIXTURE_TEST_CASE(test_case_9,StackLan)
@@ -332,7 +331,6 @@ BOOST_FIXTURE_TEST_CASE(test_case_9,StackLan)
         //Checkers of the forwarders
         BOOST_CHECK(ff_tcp_aux->getTotalForwardFlows() == 1);
         BOOST_CHECK(ff_tcp_aux->getTotalReceivedFlows() == 4); // just 56 packets with payload;
-        std::cout << "VALUE " <<ff_tcp_aux->getTotalReceivedFlows() << std::endl;
         BOOST_CHECK(ff_tcp_aux->getTotalFailFlows() == 0);
 
 	// Verify the UDP part
@@ -360,12 +358,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_9,StackLan)
 	// verify the HTTP part
 	BOOST_CHECK(http_aux->getTotalBytes() == 1826);
 
-
         this->statistics();
-	ssl_aux->statistics();
-	ff_ssl_aux->statistics();
-	http_aux->statistics();
-	ff_http_aux->statistics();
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

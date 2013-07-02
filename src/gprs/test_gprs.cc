@@ -85,7 +85,7 @@ struct Stack3Gtest
 		udp_low->setFlowManager(flow_mng);
 
 		// Configure the FlowForwarders
-	
+		udp_low->setFlowForwarder(ff_udp_low);
 		ff_udp_low->addUpFlowForwarder(ff_gprs);
 
         }
@@ -126,7 +126,8 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
         BOOST_CHECK(ip_low->getIPHeaderLength() == 20);
         BOOST_CHECK(ip_low->getProtocol() == IPPROTO_UDP);
         BOOST_CHECK(ip_low->getPacketLength() == length - 14);
-        
+       	BOOST_CHECK(ip_low->getTotalBytes() == 132);
+
 	std::string localip("127.0.0.2");
         std::string remoteip("127.0.0.1");
 
@@ -134,6 +135,7 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
         BOOST_CHECK(remoteip.compare(ip_low->getDstAddrDotNotation())==0);
 
 	// Check the UDP layer
+       	BOOST_CHECK(udp_low->getTotalBytes() == 104);
 
 	udp_low->statistics();
 	mux_udp_low->statistics();

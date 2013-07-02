@@ -37,6 +37,9 @@ public:
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
         MultiplexerPtrWeak getMultiplexer() { mux_;};
 
+        void setFlowForwarder(FlowForwarderPtrWeak ff) {};
+        FlowForwarderPtrWeak getFlowForwarder() {};
+
         void setHeader(unsigned char *raw_packet)
         {
                 ip6_header_ = reinterpret_cast <struct ipv6hdr*> (raw_packet);
