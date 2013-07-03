@@ -54,9 +54,9 @@ public:
 
 
         // Condition for say that a payload is HTTP 
-        bool httpChecker(unsigned char *payload)
+        bool httpChecker(const Packet& packet)
         {
-		const char * paco = reinterpret_cast<const char*>(payload);
+		const char * paco = reinterpret_cast<const char*>(packet.getPayload());
 
 		if(boost::regex_search(paco, what_, http_regex_)) 
                 {

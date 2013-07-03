@@ -64,8 +64,9 @@ void UDPProtocol::processPacket()
 		{
 			FlowForwarderPtr ff = flow_forwarder_.lock();
 
-                        flow->payload_length = bytes;
-                        flow->payload = getPayload();
+			flow->packet = mux_.lock()->getCurrentPacket();
+                        //flow->payload_length = bytes;
+                        //flow->payload = getPayload();
 			ff->forwardFlow(flow.get());	
 		}	
 

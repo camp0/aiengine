@@ -27,7 +27,7 @@ void FlowForwarder::forwardFlow(Flow *flow)
         {
 		ff = (*it).lock();
 
-		if(ff->acceptPayload(flow->payload))
+		if(ff->acceptPacket(*(flow->packet)))
 		{
 			// The packet have been accepted by the FlowForwarder
 			flow->forwarder = (*it);

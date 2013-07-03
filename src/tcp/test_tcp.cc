@@ -86,6 +86,7 @@ BOOST_AUTO_TEST_CASE (test1_tcp)
         // Check the udp integrity
         BOOST_CHECK(tcp->getSrcPort() == 53637);
         BOOST_CHECK(tcp->getDstPort() == 80);
+	BOOST_CHECK(tcp->getTotalBytes() == 809);
 }
 
 BOOST_AUTO_TEST_CASE (test2_tcp)

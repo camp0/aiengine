@@ -49,11 +49,11 @@ public:
         }
 
 	// Condition for say that a payload is ssl 
-	bool sslChecker(unsigned char *payload) 
+	bool sslChecker(const Packet &packet) 
 	{
-		if(std::memcmp("\x16\x03",payload,2)==0)
+		if(std::memcmp("\x16\x03",packet.getPayload(),2)==0)
 		{
-			setHeader(payload);
+			setHeader(packet.getPayload());
 			++total_valid_packets_; 
 			return true;
 		}

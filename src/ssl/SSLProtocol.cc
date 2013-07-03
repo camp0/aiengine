@@ -4,7 +4,7 @@
 void SSLProtocol::processFlow(Flow *flow)
 {
 
-	total_bytes_ += flow->payload_length;
+	total_bytes_ += flow->packet->getLength();
 
 }
 void SSLProtocol::statistics(std::basic_ostream<char>& out)

@@ -4,7 +4,7 @@
 void HTTPProtocol::processFlow(Flow *flow)
 {
 	
-	total_bytes_ += flow->payload_length;
+	total_bytes_ += flow->packet->getLength();
 	//std::cout << __FILE__ <<":"<< this<< ":";
 	//std::cout << " ipsrc:" << mux->ipsrc << " ipdst:"<< mux->ipdst <<std::endl;
 
