@@ -12,7 +12,7 @@ void GPRSProtocol::processPacket()
 
 void GPRSProtocol::processFlow(Flow *flow)
 {
-	int bytes = flow->payload_length;
+	int bytes = flow->packet->getLength();
 
         total_bytes_ += bytes;
 

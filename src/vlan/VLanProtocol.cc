@@ -3,13 +3,13 @@
 
 void VLanProtocol::processPacket() 
 {
-        std::cout << "----------------------------joder" << std::endl;
+//        std::cout << "----------------------------joder" << std::endl;
         MultiplexerPtr mux = mux_.lock();
         if(mux)
         {
                 mux->setNextProtocolIdentifier(getEthernetType());
-                std::cout << __FILE__ <<":"<< this<< ":";
-                std::cout << "setting next proto to " << std::hex << getEthernetType() <<std::endl;
+ //               std::cout << __FILE__ <<":"<< this<< ":";
+//                std::cout << "setting next proto to " << std::hex << getEthernetType() <<std::endl;
 
         }
 };

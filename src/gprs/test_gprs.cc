@@ -6,8 +6,9 @@
 #include "../flow/FlowManager.h"
 #include "../ethernet/EthernetProtocol.h"
 #include "../udp/UDPProtocol.h"
+#include "../ip/IPProtocol.h"
 #include "GPRSProtocol.h"
-#include "../Stack3G.h"
+//#include "../Stack3G.h"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE gprstest 
@@ -16,7 +17,7 @@
 struct Stack3Gtest
 {
         EthernetProtocolPtr eth;
-        IPProtocolPtr ip_low;
+        IPProtocolPtr ip_low,ip_high;
         UDPProtocolPtr udp_low;
         GPRSProtocolPtr gprs;
         MultiplexerPtr mux_eth;
@@ -24,6 +25,7 @@ struct Stack3Gtest
         MultiplexerPtr mux_udp_low;
 	FlowForwarderPtr ff_udp_low;
 	FlowForwarderPtr ff_gprs;
+	FlowForwarderPtr ff_ip;
 	FlowCachePtr flow_cache;
 	FlowManagerPtr flow_mng;
 
@@ -31,6 +33,7 @@ struct Stack3Gtest
         {
                 eth = EthernetProtocolPtr(new EthernetProtocol());
                 ip_low = IPProtocolPtr(new IPProtocol());
+                ip_high = IPProtocolPtr(new IPProtocol());
 		udp_low = UDPProtocolPtr(new UDPProtocol());
 		gprs = GPRSProtocolPtr(new GPRSProtocol());
 
@@ -40,6 +43,7 @@ struct Stack3Gtest
 
 		ff_udp_low = FlowForwarderPtr(new FlowForwarder());
 		ff_gprs = FlowForwarderPtr(new FlowForwarder());
+		ff_ip = FlowForwarderPtr(new FlowForwarder());
 
                 flow_cache = FlowCachePtr(new FlowCache());
                 flow_mng = FlowManagerPtr(new FlowManager());
@@ -57,6 +61,19 @@ struct Stack3Gtest
                 mux_ip_low->setHeaderSize(ip_low->getHeaderSize());
                 mux_ip_low->addChecker(std::bind(&IPProtocol::ipChecker,ip_low,std::placeholders::_1));
                 mux_ip_low->addPacketFunction(std::bind(&IPProtocol::processPacket,ip_low));
+
+                // configure the higj ip handler
+		ip_high->setFlowForwarder(ff_ip);
+		ff_ip->setProtocol(static_cast<ProtocolPtr>(ip_high));
+                ff_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip_high,std::placeholders::_1));
+                //ff_ip->addFlowFunction(std::bind(&IPProtocol::processFlow,ip_high,std::placeholders::_1));
+	
+                mux_ip_low->setProtocol(static_cast<ProtocolPtr>(ip_low));
+                mux_ip_low->setProtocolIdentifier(ETHERTYPE_IP);
+                mux_ip_low->setHeaderSize(ip_low->getHeaderSize());
+                mux_ip_low->addChecker(std::bind(&IPProtocol::ipChecker,ip_low,std::placeholders::_1));
+                mux_ip_low->addPacketFunction(std::bind(&IPProtocol::processPacket,ip_low));
+
 
 		//configure the udp
                 udp_low->setMultiplexer(mux_udp_low);
@@ -88,6 +105,7 @@ struct Stack3Gtest
 		udp_low->setFlowForwarder(ff_udp_low);
 		ff_udp_low->addUpFlowForwarder(ff_gprs);
 
+		//ff_ip->addUpFlowForwarder(ff_ip);
         }
         ~Stack3Gtest() {
                 // nothing to delete

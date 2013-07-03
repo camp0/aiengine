@@ -288,6 +288,7 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         BOOST_CHECK(ip1->getTotalPackets() == 1);
         BOOST_CHECK(ip2->getTotalPackets() == 1);
 
+	ip2->statistics();
         BOOST_CHECK(mux_eth->getTotalForwardPackets() == 1);
         BOOST_CHECK(mux_vlan->getTotalForwardPackets() == 0);
         BOOST_CHECK(mux_ip1->getTotalForwardPackets() == 1);

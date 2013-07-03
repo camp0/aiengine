@@ -48,14 +48,14 @@ public:
         }
 
 	// Condition for say that a packet is GPRS 
-	bool gprsChecker(unsigned char *packet) 
+	bool gprsChecker(const Packet& packet) 
 	{
 
 		int length = 8;
 		
 		if(length >= header_size)
 		{
-			setHeader(packet);
+			setHeader(packet.getPayload());
 			++total_valid_packets_; 
 			return true;
 		}
