@@ -1,7 +1,7 @@
 #include "IPProtocol.h"
 #include <iomanip> // setw
 
-void IPProtocol::processPacket()
+void IPProtocol::processPacket(const Packet& packet)
 {
         MultiplexerPtr mux = mux_.lock();
 
@@ -10,8 +10,8 @@ void IPProtocol::processPacket()
 	mux->total_length = getPacketLength();
 	total_bytes_ += getPacketLength();
 	mux->setNextProtocolIdentifier(getProtocol());
-	//std::cout << __FILE__ <<":"<< this<< ":";
-	//std::cout << " ipsrc:" << mux->ipsrc << " ipdst:"<< mux->ipdst <<std::endl;
+	std::cout << __FILE__ <<":"<< this<< ":";
+	std::cout << " ipsrc:" << mux->ipsrc << " ipdst:"<< mux->ipdst << " protocol:" << getProtocol() <<std::endl;
 
 }
 void IPProtocol::statistics(std::basic_ostream<char>& out)

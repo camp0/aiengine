@@ -10,7 +10,7 @@
 class VLanProtocol: public Protocol 
 {
 public:
-    	explicit VLanProtocol():vlan_header_(nullptr){ name_="VLanProtocol"; };
+    	explicit VLanProtocol():vlan_header_(nullptr),total_bytes_(0){ name_="VLanProtocol"; };
     	virtual ~VLanProtocol() {};
 
 	static const u_int16_t id = ETH_P_8021Q;	
@@ -25,7 +25,7 @@ public:
         const char *getName() { return name_.c_str();};
 
        	void processFlow(Flow *flow) {}; // This protocol dont generate any flow 
-	void processPacket();
+	void processPacket(const Packet &packet);
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
@@ -37,7 +37,6 @@ public:
 
 	void setHeader(unsigned char *raw_packet) 
 	{ 
-		std::cout << __FILE__ << ":Setting header" << std::endl;
 		vlan_header_ = reinterpret_cast <struct vlan_tag*> (raw_packet);
 	}
 
@@ -65,6 +64,7 @@ public:
 private:
 	MultiplexerPtrWeak mux_;
 	struct vlan_tag *vlan_header_;
+	int32_t total_bytes_;
 };
 
 typedef std::shared_ptr<VLanProtocol> VLanProtocolPtr;

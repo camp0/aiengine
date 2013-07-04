@@ -42,7 +42,7 @@ struct StackIcmp
 		mux_ip->setProtocolIdentifier(ETHERTYPE_IP);
 		mux_ip->setHeaderSize(ip->getHeaderSize());
 		mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip,std::placeholders::_1));
-		mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip));
+		mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip,std::placeholders::_1));
 
 		//configure the icmp
 		icmp->setMultiplexer(mux_icmp);
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE (test2_icmp)
         mux_eth->setPacket(&packet1);
         eth->setHeader(packet1.getPayload());
 	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forward();
+        mux_eth->forwardPacket(packet1);
 
 	BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);
 	BOOST_CHECK(icmp->getType() == ICMP_ECHO);
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE (test2_icmp)
 
         mux_eth->setPacket(&packet2);
         eth->setHeader(packet2.getPayload());
-        mux_eth->forward();
+        mux_eth->forwardPacket(packet2);
 
 	BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);
 	BOOST_CHECK(icmp->getType() == ICMP_ECHOREPLY);

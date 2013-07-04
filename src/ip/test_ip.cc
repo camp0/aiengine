@@ -36,6 +36,7 @@ struct StackEthernetIP
 		mux_ip->setProtocolIdentifier(ETHERTYPE_IP);
                 mux_ip->setHeaderSize(ip->getHeaderSize());
                 mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip,std::placeholders::_1));
+		mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip,std::placeholders::_1));
 
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
@@ -76,7 +77,7 @@ struct StackEthernetVLanIP
 		mux_vlan->setProtocolIdentifier(ETH_P_8021Q);
                 mux_vlan->setHeaderSize(vlan->getHeaderSize());
                 mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan,std::placeholders::_1));
-                mux_vlan->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan));
+                mux_vlan->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan,std::placeholders::_1));
 
                 // configure the ip handler
                 ip->setMultiplexer(mux_ip);
@@ -84,7 +85,7 @@ struct StackEthernetVLanIP
                 mux_ip->setProtocol(static_cast<ProtocolPtr>(ip));
                 mux_ip->setHeaderSize(ip->getHeaderSize());
                 mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip,std::placeholders::_1));
-		mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip));
+		mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip,std::placeholders::_1));
 
         	// configure the multiplexers
         	mux_eth->addUpMultiplexer(mux_vlan,ETH_P_8021Q);
@@ -137,7 +138,7 @@ BOOST_AUTO_TEST_CASE (test2_ip) // ethernet -> ip
 	// forward the packet through the multiplexers
         //mux_eth->setPacketInfo(0,packet,length);
 	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forward();	
+        mux_eth->forwardPacket(packet);	
 
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
         BOOST_CHECK(mux_ip->getCurrentPacket()->getLength() == length - 14);
@@ -156,7 +157,7 @@ BOOST_FIXTURE_TEST_CASE (test3_ip, StackEthernetVLanIP) // ethernet -> vlan -> i
         mux_eth->setPacket(&packet);
 	eth->setHeader(packet.getPayload());     
 	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-	mux_eth->forward();	
+	mux_eth->forwardPacket(packet);	
 
 	BOOST_CHECK(vlan->getTotalPackets() == 1);
 	BOOST_CHECK(ip->getTotalPackets() == 1);
@@ -196,7 +197,7 @@ BOOST_FIXTURE_TEST_CASE (test4_ip,StackEthernetVLanIP) // ethernet -> vlan -> ip
         mux_eth->setPacket(&packet);
 	eth->setHeader(packet.getPayload());     
 	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forward();
+        mux_eth->forwardPacket(packet);
         
 	BOOST_CHECK(eth->getTotalPackets() == 0);
 	BOOST_CHECK(vlan->getTotalPackets() == 0);
@@ -250,7 +251,7 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         mux_vlan->setProtocolIdentifier(ETH_P_8021Q);
         mux_vlan->setHeaderSize(vlan->getHeaderSize());
         mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan,std::placeholders::_1));
-        mux_vlan->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan));
+        mux_vlan->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan,std::placeholders::_1));
 
         // configure the ip1
         ip1->setMultiplexer(mux_ip);
@@ -258,15 +259,15 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         mux_ip1->setProtocol(static_cast<ProtocolPtr>(ip1));
         mux_ip1->setHeaderSize(ip1->getHeaderSize());
         mux_ip1->addChecker(std::bind(&IPProtocol::ipChecker,ip1,std::placeholders::_1));
-        mux_ip1->addPacketFunction(std::bind(&IPProtocol::processPacket,ip1));
+        mux_ip1->addPacketFunction(std::bind(&IPProtocol::processPacket,ip1,std::placeholders::_1));
 
         // configure the ip1
         ip2->setMultiplexer(mux_ip);
-        mux_ip2->setProtocolIdentifier(ETHERTYPE_IP);
+        mux_ip2->setProtocolIdentifier(IPPROTO_IPIP);
         mux_ip2->setProtocol(static_cast<ProtocolPtr>(ip2));
         mux_ip2->setHeaderSize(ip2->getHeaderSize());
         mux_ip2->addChecker(std::bind(&IPProtocol::ipChecker,ip2,std::placeholders::_1));
-        mux_ip2->addPacketFunction(std::bind(&IPProtocol::processPacket,ip2));
+        mux_ip2->addPacketFunction(std::bind(&IPProtocol::processPacket,ip2,std::placeholders::_1));
 
         // configure the multiplexers
         mux_eth->addUpMultiplexer(mux_vlan,ETH_P_8021Q);
@@ -281,14 +282,23 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         mux_eth->setPacket(&packet);
 	eth->setHeader(packet.getPayload());     
 	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forward();
+        mux_eth->forwardPacket(packet);
 
 	// Now check all the path that the packet have take
         BOOST_CHECK(vlan->getTotalPackets() == 0);
         BOOST_CHECK(ip1->getTotalPackets() == 1);
+        BOOST_CHECK(ip1->getTotalValidPackets() == 1);
+        BOOST_CHECK(ip1->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(ip2->getTotalValidPackets() == 1);
+        BOOST_CHECK(ip2->getTotalMalformedPackets() == 0);
         BOOST_CHECK(ip2->getTotalPackets() == 1);
 
+	ip1->statistics();
+	mux_ip1->statistics();
+
 	ip2->statistics();
+	mux_ip2->statistics();
+
         BOOST_CHECK(mux_eth->getTotalForwardPackets() == 1);
         BOOST_CHECK(mux_vlan->getTotalForwardPackets() == 0);
         BOOST_CHECK(mux_ip1->getTotalForwardPackets() == 1);

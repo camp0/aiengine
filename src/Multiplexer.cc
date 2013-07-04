@@ -30,7 +30,7 @@ void Multiplexer::setPacket(Packet *pkt)
 	setPacketInfo(pkt->getPayload(),pkt->getLength(),pkt->getPrevHeaderSize());
 }
 
-void Multiplexer::forward()
+void Multiplexer::forwardPacket(const Packet &packet)
 {
 	MultiplexerPtrWeak next_mux;
 	MultiplexerPtr mux;
@@ -42,15 +42,15 @@ void Multiplexer::forward()
                 mux = next_mux.lock();
                 if(mux)
                 {
-                      	Packet pkt_candidate(&packet_.getPayload()[header_size_],packet_.getLength() - header_size_, header_size_);
+                      	Packet pkt_candidate(&packet.getPayload()[header_size_],packet.getLength() - header_size_, header_size_);
 
 			if(mux->acceptPacket(pkt_candidate)) // The packet is accepted by the destination mux
 			{
                    		mux->setPacket(&pkt_candidate);
  
-    				mux->packet_func_();
+    				mux->packet_func_(pkt_candidate);
                         	++total_forward_packets_;
-                        	mux->forward();
+                        	mux->forwardPacket(pkt_candidate);
 			}else{
 				std::cout << "WARNING: PACKET NO ACCEPTED" << std::endl;
 			}

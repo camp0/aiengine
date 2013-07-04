@@ -43,7 +43,7 @@ struct StackTcp
                 mux_ip->setProtocolIdentifier(ETHERTYPE_IP);
                 mux_ip->setHeaderSize(ip->getHeaderSize());
                 mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip,std::placeholders::_1));
-                mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip));
+                mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip,std::placeholders::_1));
 
                 //configure the tcp 
                 tcp->setMultiplexer(mux_tcp);
@@ -51,7 +51,7 @@ struct StackTcp
                 mux_tcp->setProtocolIdentifier(IPPROTO_TCP);
                 mux_tcp->setHeaderSize(tcp->getHeaderSize());
                 mux_tcp->addChecker(std::bind(&TCPProtocol::tcpChecker,tcp,std::placeholders::_1));
-                mux_tcp->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp));
+                mux_tcp->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp,std::placeholders::_1));
 
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE (test1_tcp)
         mux_eth->setPacket(&packet);
         eth->setHeader(packet.getPayload());
 	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forward();
+        mux_eth->forwardPacket(packet);
 
         // Check the udp integrity
         BOOST_CHECK(tcp->getSrcPort() == 53637);

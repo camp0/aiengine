@@ -50,7 +50,7 @@ FlowPtr TCPProtocol::getFlow()
 
 
 
-void TCPProtocol::processPacket()
+void TCPProtocol::processPacket(const Packet &packet)
 {
 	FlowPtr flow = getFlow();
 

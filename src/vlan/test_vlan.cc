@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE (test2_vlan)
 	// forward the packet through the multiplexers
 	mux_eth->setPacket(&pkt);
 	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-	mux_eth->forward();
+	mux_eth->forwardPacket(pkt);
 
 	BOOST_CHECK(mux_eth->getTotalForwardPackets() == 1);
 	BOOST_CHECK(mux_vlan->getTotalForwardPackets() == 0);

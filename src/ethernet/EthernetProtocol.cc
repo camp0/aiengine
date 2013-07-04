@@ -1,7 +1,7 @@
 #include "EthernetProtocol.h"
 #include <iomanip> // setw
 
-void EthernetProtocol::processPacket() 
+void EthernetProtocol::processPacket(const Packet& packet) 
 {
 }
 	

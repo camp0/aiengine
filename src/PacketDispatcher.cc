@@ -109,7 +109,7 @@ void PacketDispatcher::runPcap()
 			{
 				defMux_->setPacket(&current_packet_);	
 				defMux_->setNextProtocolIdentifier(eth_->getEthernetType());
-				defMux_->forward();
+				defMux_->forwardPacket(current_packet_);
 			}
 		}
 	}

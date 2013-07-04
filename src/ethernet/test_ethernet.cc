@@ -50,6 +50,7 @@ BOOST_AUTO_TEST_CASE (test2_ethernet)
 	// two calls to the same function
 	BOOST_CHECK(eth->getTotalValidPackets() == 2);
 	BOOST_CHECK(eth->getTotalMalformedPackets() == 2);
-
 }
+
+
 

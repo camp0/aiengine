@@ -86,7 +86,7 @@ struct StackLan
 		mux_ip->setProtocolIdentifier(ETHERTYPE_IP);
                 mux_ip->setHeaderSize(ip->getHeaderSize());
                 mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip,std::placeholders::_1));
-                mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip));
+                mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip,std::placeholders::_1));
 
                 //configure the icmp
                 icmp->setMultiplexer(mux_icmp);
@@ -102,7 +102,7 @@ struct StackLan
 		mux_udp->setProtocolIdentifier(IPPROTO_UDP);
                 mux_udp->setHeaderSize(udp->getHeaderSize());
                 mux_udp->addChecker(std::bind(&UDPProtocol::udpChecker,udp,std::placeholders::_1));
-                mux_udp->addPacketFunction(std::bind(&UDPProtocol::processPacket,udp));
+                mux_udp->addPacketFunction(std::bind(&UDPProtocol::processPacket,udp,std::placeholders::_1));
 
                 //configure the tcp 
                 tcp->setMultiplexer(mux_tcp);
@@ -111,7 +111,7 @@ struct StackLan
 		mux_tcp->setProtocolIdentifier(IPPROTO_TCP);
                 mux_tcp->setHeaderSize(tcp->getHeaderSize());
                 mux_tcp->addChecker(std::bind(&TCPProtocol::tcpChecker,tcp,std::placeholders::_1));
-                mux_tcp->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp));
+                mux_tcp->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp,std::placeholders::_1));
 
 		// configure the http 
 		http->setFlowForwarder(ff_http);

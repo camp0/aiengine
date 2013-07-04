@@ -20,7 +20,7 @@ public:
 	virtual const char* getName() = 0;
 
 	virtual void processFlow(Flow *flow) = 0;
-	virtual void processPacket() = 0;
+	virtual void processPacket(const Packet &packet) = 0;
 
 	void virtual setMultiplexer(MultiplexerPtrWeak mux) = 0;
 	MultiplexerPtrWeak virtual getMultiplexer() = 0; 

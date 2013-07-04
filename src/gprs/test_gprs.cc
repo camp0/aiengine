@@ -60,7 +60,7 @@ struct Stack3Gtest
                 mux_ip_low->setProtocolIdentifier(ETHERTYPE_IP);
                 mux_ip_low->setHeaderSize(ip_low->getHeaderSize());
                 mux_ip_low->addChecker(std::bind(&IPProtocol::ipChecker,ip_low,std::placeholders::_1));
-                mux_ip_low->addPacketFunction(std::bind(&IPProtocol::processPacket,ip_low));
+                mux_ip_low->addPacketFunction(std::bind(&IPProtocol::processPacket,ip_low,std::placeholders::_1));
 
                 // configure the higj ip handler
 		ip_high->setFlowForwarder(ff_ip);
@@ -72,7 +72,7 @@ struct Stack3Gtest
                 mux_ip_low->setProtocolIdentifier(ETHERTYPE_IP);
                 mux_ip_low->setHeaderSize(ip_low->getHeaderSize());
                 mux_ip_low->addChecker(std::bind(&IPProtocol::ipChecker,ip_low,std::placeholders::_1));
-                mux_ip_low->addPacketFunction(std::bind(&IPProtocol::processPacket,ip_low));
+                mux_ip_low->addPacketFunction(std::bind(&IPProtocol::processPacket,ip_low,std::placeholders::_1));
 
 
 		//configure the udp
@@ -82,7 +82,7 @@ struct Stack3Gtest
 		mux_udp_low->setProtocolIdentifier(IPPROTO_UDP);
                 mux_udp_low->setHeaderSize(udp_low->getHeaderSize());
                 mux_udp_low->addChecker(std::bind(&UDPProtocol::udpChecker,udp_low,std::placeholders::_1));
-                mux_udp_low->addPacketFunction(std::bind(&UDPProtocol::processPacket,udp_low));
+                mux_udp_low->addPacketFunction(std::bind(&UDPProtocol::processPacket,udp_low,std::placeholders::_1));
 
                 //configure the gprs 
 		gprs->setFlowForwarder(ff_gprs);
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
         mux_eth->setPacket(&packet);
         eth->setHeader(packet.getPayload());
         mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forward();
+        mux_eth->forwardPacket(packet);
 
 	// check the ethernet layer
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);

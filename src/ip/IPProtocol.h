@@ -31,7 +31,7 @@ public:
         const char *getName() { return name_.c_str();};
 
        	void processFlow(Flow *flow) {}; // This protocol dont generate any flow 
-	void processPacket();
+	void processPacket(const Packet& packet);
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
@@ -53,13 +53,16 @@ public:
 
 		setHeader(packet.getPayload());
 
+		std::cout << packet;
 		if((length >= header_size)&&(isIPver4()))
 		{
-			++total_valid_packets_; 
+			++total_valid_packets_;
+			std::cout << "valid" <<std::endl; 
 			return true;
 		}
 		else
 		{
+			std::cout << "not valid" <<std::endl; 
 			++total_malformed_packets_;
 			return false;
 		}

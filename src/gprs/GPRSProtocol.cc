@@ -1,7 +1,7 @@
 #include "GPRSProtocol.h"
 #include <iomanip> // setw
 
-void GPRSProtocol::processPacket()
+void GPRSProtocol::processPacket(const Packet& packet)
 {
         MultiplexerPtr mux = mux_.lock();
 

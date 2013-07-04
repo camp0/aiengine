@@ -32,7 +32,7 @@ public:
         const char *getName() { return name_.c_str();};
 
 	void processFlow(Flow *flow);
-	void processPacket() ;
+	void processPacket(const Packet& packet) ;
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 

@@ -47,7 +47,7 @@ FlowPtr UDPProtocol::getFlow()
 	return flow; 
 }
 
-void UDPProtocol::processPacket()
+void UDPProtocol::processPacket(const Packet& packet)
 {
 	FlowPtr flow = getFlow();
 	int bytes;

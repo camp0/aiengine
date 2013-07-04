@@ -1,6 +1,9 @@
 #ifndef _Packet_H_
 #define _Packet_H_
 
+#include <iostream>
+using namespace std;
+
 class Packet 
 {
 public:
@@ -17,6 +20,17 @@ public:
 	unsigned char *getPayload() const { return packet_;};
 	int getLength() const  { return length_;};
 	int getPrevHeaderSize() { return prev_header_size_;};
+
+	friend ostream& operator<<(ostream& os, const Packet& p)
+	{
+		os << "Packet length:" << p.length_ << std::endl;
+		for (int i = 0;i< p.length_;++i)
+		{
+			os << hex << (int)p.packet_[i] << " ";
+		}
+		os << std::endl; 
+	}	
+
 private:
 	int length_;
 	unsigned char *packet_;
