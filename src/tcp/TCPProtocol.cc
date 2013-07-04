@@ -69,7 +69,7 @@ void TCPProtocol::processPacket(const Packet &packet)
                 {
                         FlowForwarderPtr ff = flow_forwarder_.lock();
 
-			flow->packet = mux_.lock()->getCurrentPacket();
+			flow->packet = const_cast<Packet*>(&packet);
 			std::cout << "packet length:" << flow->packet->getLength() << std::endl;
 			//flow->payload_length = bytes;
 			//flow->payload = getPayload();
