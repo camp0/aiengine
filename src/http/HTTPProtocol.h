@@ -57,7 +57,9 @@ public:
         bool httpChecker(const Packet& packet)
         {
 		const char * paco = reinterpret_cast<const char*>(packet.getPayload());
-
+		
+		std::cout << packet;
+		std::cout << paco << std::endl;
 		if(boost::regex_search(paco, what_, http_regex_)) 
                 {
                         ++total_valid_packets_;

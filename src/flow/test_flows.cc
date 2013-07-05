@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE (test1_flowmanager_lookups)
 
 	f1->setId(h1);
 	fm->addFlow(f1);
-	BOOST_CHECK(fm->getNumberFlows() == 1);
+	BOOST_CHECK(fm->getTotalFlows() == 1);
 
 	FlowPtr f2 = fm->findFlow(hfail,h2);
 	BOOST_CHECK(f1 == f2);
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE (test1_flowmanager_lookups)
 
 	FlowPtr f3 = fm->findFlow(hfail,hfail);
 	BOOST_CHECK(f3.get() == 0);
-	BOOST_CHECK(fm->getNumberFlows() == 1);
+	BOOST_CHECK(fm->getTotalFlows() == 1);
 	delete fm;
 }
 
@@ -159,13 +159,13 @@ BOOST_AUTO_TEST_CASE (test2_flowmanager_lookups_remove)
 	BOOST_CHECK(f1.use_count() == 1); 
 	fm->addFlow(f1);
 	BOOST_CHECK(f1.use_count() == 2); 
-        BOOST_CHECK(fm->getNumberFlows() == 1);
+        BOOST_CHECK(fm->getTotalFlows() == 1);
 
         f1 = fm->findFlow(hfail,h2);
 
 	fm->removeFlow(f1);
 	BOOST_CHECK(f1.use_count() == 1); 
-        BOOST_CHECK(fm->getNumberFlows() == 0);
+        BOOST_CHECK(fm->getTotalFlows() == 0);
 
         delete fm;
 }
@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE (test1_flowcache_flowmanager)
 	fc->createFlows(10);
 	FlowPtr f1 = FlowPtr(fc->acquireFlow());
 	BOOST_CHECK(f1.use_count() == 1);
-        BOOST_CHECK(fm->getNumberFlows() == 0);
+        BOOST_CHECK(fm->getTotalFlows() == 0);
         
 	unsigned long h1 = 1^2^3^4^5;
         unsigned long h2 = 4^5^3^1^2;
@@ -190,11 +190,11 @@ BOOST_AUTO_TEST_CASE (test1_flowcache_flowmanager)
 	f1->setId(h1);
 
 	fm->addFlow(f1);
-        BOOST_CHECK(fm->getNumberFlows() == 1);
+        BOOST_CHECK(fm->getTotalFlows() == 1);
 	FlowPtr f2 = fm->findFlow(h1,hfail);
 	BOOST_CHECK(f2.get() == f1.get());
 	fm->removeFlow(f1);
-        BOOST_CHECK(fm->getNumberFlows() == 0);
+        BOOST_CHECK(fm->getTotalFlows() == 0);
 
 	delete fm;
 	delete fc;

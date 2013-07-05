@@ -19,16 +19,16 @@ public:
 
 	unsigned char *getPayload() const { return packet_;};
 	int getLength() const  { return length_;};
-	int getPrevHeaderSize() { return prev_header_size_;};
+	int getPrevHeaderSize() const { return prev_header_size_;};
 
 	friend ostream& operator<<(ostream& os, const Packet& p)
 	{
-		os << "Packet length:" << p.length_ << std::endl;
+		os << "Begin packet length:" << p.length_ << " prev header size:" << p.prev_header_size_ << std::endl;
 		for (int i = 0;i< p.length_;++i)
 		{
 			os << hex << (int)p.packet_[i] << " ";
 		}
-		os << std::endl; 
+		os << "End packet" << std::endl; 
 	}	
 
 private:

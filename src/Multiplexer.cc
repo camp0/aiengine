@@ -42,7 +42,10 @@ void Multiplexer::forwardPacket(const Packet &packet)
                 mux = next_mux.lock();
                 if(mux)
                 {
+			int offset = mux->header_size_;
                       	Packet pkt_candidate(&packet.getPayload()[header_size_],packet.getLength() - header_size_, header_size_);
+
+			std::cout << __FILE__ << "(" << this <<"):HEADER SIZE:" << header_size_ << " mux h size:" << offset << std::endl;
 
 			if(mux->acceptPacket(pkt_candidate)) // The packet is accepted by the destination mux
 			{

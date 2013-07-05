@@ -52,9 +52,11 @@ public:
 	{
                 int length = packet.getLength();
 
+		std::cout << "TCP:" << packet;
 		if(length >= header_size)
 		{
                 	setHeader(packet.getPayload());
+			std::cout << "tcpChecker:packet accepted:header size:"<< packet.getPrevHeaderSize() << std::endl;	
 			++total_valid_packets_;
 			total_bytes_ += length; 
 			return true;

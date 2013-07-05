@@ -64,15 +64,16 @@ void TCPProtocol::processPacket(const Packet &packet)
                 //total_bytes_ += bytes;
                 flow->total_bytes += bytes;
                 ++flow->total_packets;
-		
+	
+		std::cout << __FILE__ << ":ip lenght:"<< ipmux->total_length << " tcphdrlength:" << getTcpHdrLength() << std::endl;
+	
+		std::cout << __FILE__ << ":" << packet <<std::endl;
+			
                 if(flow_forwarder_.lock()&&(bytes > 0))
                 {
                         FlowForwarderPtr ff = flow_forwarder_.lock();
 
 			flow->packet = const_cast<Packet*>(&packet);
-			std::cout << "packet length:" << flow->packet->getLength() << std::endl;
-			//flow->payload_length = bytes;
-			//flow->payload = getPayload();
                         ff->forwardFlow(flow.get());
                 }
 
