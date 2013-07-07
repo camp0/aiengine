@@ -1,7 +1,7 @@
 #include "VLanProtocol.h"
 #include <iomanip>
 
-void VLanProtocol::processPacket(const Packet &packet) 
+void VLanProtocol::processPacket(Packet &packet) 
 {
 //        std::cout << "----------------------------joder" << std::endl;
         MultiplexerPtr mux = mux_.lock();

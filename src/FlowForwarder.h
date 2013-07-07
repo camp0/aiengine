@@ -42,8 +42,8 @@ public:
 	void setProtocol(ProtocolPtr proto){ proto_ = proto; };
 	ProtocolPtr getProtocol() { return proto_;};
 
-	bool acceptPacket(const Packet& packet) const { return check_func_(packet);};
-	void addChecker(std::function <bool (const Packet&)> checker){ check_func_ = checker;};
+	bool acceptPacket(Packet& packet) const { return check_func_(packet);};
+	void addChecker(std::function <bool (Packet&)> checker){ check_func_ = checker;};
 	void addFlowFunction(std::function <void (Flow*)> flow_func){ flow_func_ = flow_func;};
 
 	uint64_t getTotalForwardFlows() const { return total_forward_flows_;};
@@ -52,7 +52,7 @@ public:
 
 private:
 	ProtocolPtr proto_;
-	bool default_check(const Packet&) const { return true;};
+	bool default_check(Packet&) const { return true;};
 	void default_flow_func(Flow*) const { };
 	uint64_t total_received_flows_;
 	uint64_t total_forward_flows_;
@@ -61,7 +61,7 @@ private:
 	u_int16_t protocol_id_; // the protocol analiyzer owned by the multiplexer
     	std::vector<FlowForwarderPtrWeak> flowForwarderVector_;
 	std::function <void (Flow*)> flow_func_;
-	std::function <bool (const Packet&)> check_func_;	
+	std::function <bool (Packet&)> check_func_;	
 };
 
 

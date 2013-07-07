@@ -39,7 +39,7 @@ public:
         const char *getName() { return name_.c_str();};
 
 	void processFlow(Flow *flow) {}; // This protocol generates flows but not for destination.
-	void processPacket(const Packet& packet) ;
+	void processPacket(Packet& packet) ;
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
@@ -49,10 +49,11 @@ public:
         }
 
 	// Condition for say that a packet its ethernet 
-	bool udpChecker(const Packet &packet) 
+	bool udpChecker(Packet &packet) 
 	{
                 int length = packet.getLength();
 
+//		std::cout << "UDPProtocol:" << packet ;
 		if(length >= header_size)
 		{
 			setHeader(packet.getPayload());

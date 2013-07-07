@@ -47,7 +47,7 @@ public:
 	MultiplexerPtrWeak getDownMultiplexer() const; 
 	MultiplexerPtrWeak getUpMultiplexer(int key) const;
 
-	void forwardPacket(const Packet &packet);
+	void forwardPacket(Packet& packet);
 
         void statistics(std::basic_ostream<char>& out);
         void statistics() { statistics(std::cout);};
@@ -64,8 +64,8 @@ public:
 	void setPacketInfo(unsigned char *packet, int length, int prev_header_size);
 	void setPacket(Packet *packet);
 
-	void addChecker(std::function <bool (const Packet&)> checker){ check_func_ = checker;};
-	void addPacketFunction(std::function <void (const Packet&)> packet_func){ packet_func_ = packet_func;};
+	void addChecker(std::function <bool (Packet&)> checker){ check_func_ = checker;};
+	void addPacketFunction(std::function <void (Packet&)> packet_func){ packet_func_ = packet_func;};
 
 	uint64_t getTotalForwardPackets() const { return total_forward_packets_;};
 	uint64_t getTotalFailPackets() const { return total_fail_packets_;};
@@ -73,7 +73,7 @@ public:
 
 	Packet *getCurrentPacket() { return &packet_;};
 
-	bool acceptPacket(const Packet &packet) const { return check_func_(packet);};
+	bool acceptPacket(Packet &packet) const { return check_func_(packet);};
 
 	// This is realy uggly puagggggg
 	u_int32_t ipsrc;
@@ -81,8 +81,8 @@ public:
 	u_int16_t total_length;
 private:
 	ProtocolPtr proto_;
-	bool default_check(const Packet&) const { return true;};
-	void default_packet_func(const Packet&) const { };
+	bool default_check(Packet&) const { return true;};
+	void default_packet_func(Packet&) const { };
 	Packet packet_;
 	uint64_t total_received_packets_;
 	uint64_t total_forward_packets_;
@@ -94,8 +94,8 @@ private:
 	u_int16_t next_protocol_id_; // the next protocol to check by the multiplexer
     	typedef std::map<int,MultiplexerPtrWeak> MuxMap;
 	MuxMap muxUpMap_;
-	std::function <bool (const Packet&)> check_func_;	
-	std::function <void (const Packet&)> packet_func_;	
+	std::function <bool (Packet&)> check_func_;	
+	std::function <void (Packet&)> packet_func_;	
 };
 
 

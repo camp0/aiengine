@@ -1,7 +1,7 @@
 #include "IPProtocol.h"
 #include <iomanip> // setw
 
-void IPProtocol::processPacket(const Packet& packet)
+void IPProtocol::processPacket(Packet& packet)
 {
         MultiplexerPtr mux = mux_.lock();
 
@@ -10,8 +10,15 @@ void IPProtocol::processPacket(const Packet& packet)
 	mux->total_length = packet.getLength();
 	total_bytes_ += packet.getLength();
 	mux->setNextProtocolIdentifier(getProtocol());
-	std::cout << __FILE__ <<":"<< this<< ":";
-	std::cout << " ipsrc:" << mux->ipsrc << " ipdst:"<< mux->ipdst << " protocol:" << getProtocol() <<std::endl;
+	//std::cout << __FILE__ <<":"<< this<< ":";
+	//std::cout << " ipsrc:" << mux->ipsrc << " ipdst:"<< mux->ipdst << " protocol:" << getProtocol() <<std::endl;
+	packet.setPrevHeaderSize(header_size);
+}
+
+
+void IPProtocol::processFlow(Flow *flow)
+{
+	std::cout << "IPProtocolo receive a flow" << std::endl;
 
 }
 void IPProtocol::statistics(std::basic_ostream<char>& out)

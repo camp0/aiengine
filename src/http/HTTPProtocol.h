@@ -36,7 +36,7 @@ public:
 
         const char *getName() { return name_.c_str();};
 
-	void processPacket(const Packet& packet){};
+	void processPacket(Packet& packet){};
 	void processFlow(Flow *flow);
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
@@ -54,14 +54,13 @@ public:
 
 
         // Condition for say that a payload is HTTP 
-        bool httpChecker(const Packet& packet)
+        bool httpChecker(Packet& packet)
         {
 		const char * paco = reinterpret_cast<const char*>(packet.getPayload());
 		
-		std::cout << packet;
-		std::cout << paco << std::endl;
 		if(boost::regex_search(paco, what_, http_regex_)) 
                 {
+			setHeader(packet.getPayload());
                         ++total_valid_packets_;
                         return true;
                 }
@@ -71,6 +70,8 @@ public:
                         return false;
                 }
         }
+
+	unsigned char *getPayload() { return http_header_; };
 
 private:
 	FlowForwarderPtrWeak flow_forwarder_;

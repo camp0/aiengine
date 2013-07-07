@@ -10,7 +10,7 @@ void ICMPProtocol::statistics(std::basic_ostream<char>& out)
 
 }
 
-void ICMPProtocol::processPacket(const Packet &packet)
+void ICMPProtocol::processPacket(Packet &packet)
 {
 
 

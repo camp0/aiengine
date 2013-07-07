@@ -7,6 +7,7 @@
 #include "../ethernet/EthernetProtocol.h"
 #include "../udp/UDPProtocol.h"
 #include "../ip/IPProtocol.h"
+#include "../icmp/ICMPProtocol.h"
 #include "GPRSProtocol.h"
 //#include "../Stack3G.h"
 
@@ -20,14 +21,17 @@ struct Stack3Gtest
         IPProtocolPtr ip_low,ip_high;
         UDPProtocolPtr udp_low;
         GPRSProtocolPtr gprs;
+	ICMPProtocolPtr icmp;
         MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip_low;
         MultiplexerPtr mux_udp_low;
 	FlowForwarderPtr ff_udp_low;
 	FlowForwarderPtr ff_gprs;
-	FlowForwarderPtr ff_ip;
 	FlowCachePtr flow_cache;
 	FlowManagerPtr flow_mng;
+        MultiplexerPtr mux_gprs;
+        MultiplexerPtr mux_ip_high;
+        MultiplexerPtr mux_icmp_high;
 
         Stack3Gtest()
         {
@@ -36,14 +40,18 @@ struct Stack3Gtest
                 ip_high = IPProtocolPtr(new IPProtocol());
 		udp_low = UDPProtocolPtr(new UDPProtocol());
 		gprs = GPRSProtocolPtr(new GPRSProtocol());
+		icmp = ICMPProtocolPtr(new ICMPProtocol());
 
                 mux_ip_low = MultiplexerPtr(new Multiplexer());
                 mux_udp_low = MultiplexerPtr(new Multiplexer());
                 mux_eth = MultiplexerPtr(new Multiplexer());
+                
+		mux_gprs = MultiplexerPtr(new Multiplexer());
+		mux_ip_high = MultiplexerPtr(new Multiplexer());
+		mux_icmp_high = MultiplexerPtr(new Multiplexer());
 
 		ff_udp_low = FlowForwarderPtr(new FlowForwarder());
 		ff_gprs = FlowForwarderPtr(new FlowForwarder());
-		ff_ip = FlowForwarderPtr(new FlowForwarder());
 
                 flow_cache = FlowCachePtr(new FlowCache());
                 flow_mng = FlowManagerPtr(new FlowManager());
@@ -62,18 +70,13 @@ struct Stack3Gtest
                 mux_ip_low->addChecker(std::bind(&IPProtocol::ipChecker,ip_low,std::placeholders::_1));
                 mux_ip_low->addPacketFunction(std::bind(&IPProtocol::processPacket,ip_low,std::placeholders::_1));
 
-                // configure the higj ip handler
-		ip_high->setFlowForwarder(ff_ip);
-		ff_ip->setProtocol(static_cast<ProtocolPtr>(ip_high));
-                ff_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip_high,std::placeholders::_1));
-                //ff_ip->addFlowFunction(std::bind(&IPProtocol::processFlow,ip_high,std::placeholders::_1));
-	
-                mux_ip_low->setProtocol(static_cast<ProtocolPtr>(ip_low));
-                mux_ip_low->setProtocolIdentifier(ETHERTYPE_IP);
-                mux_ip_low->setHeaderSize(ip_low->getHeaderSize());
-                mux_ip_low->addChecker(std::bind(&IPProtocol::ipChecker,ip_low,std::placeholders::_1));
-                mux_ip_low->addPacketFunction(std::bind(&IPProtocol::processPacket,ip_low,std::placeholders::_1));
-
+                // configure the high ip handler
+                ip_high->setMultiplexer(mux_ip_high);
+                mux_ip_high->setProtocol(static_cast<ProtocolPtr>(ip_high));
+                mux_ip_high->setProtocolIdentifier(ETHERTYPE_IP);
+                mux_ip_high->setHeaderSize(ip_high->getHeaderSize());
+                mux_ip_high->addChecker(std::bind(&IPProtocol::ipChecker,ip_high,std::placeholders::_1));
+                mux_ip_high->addPacketFunction(std::bind(&IPProtocol::processPacket,ip_high,std::placeholders::_1));
 
 		//configure the udp
                 udp_low->setMultiplexer(mux_udp_low);
@@ -86,11 +89,22 @@ struct Stack3Gtest
 
                 //configure the gprs 
 		gprs->setFlowForwarder(ff_gprs);
+		gprs->setMultiplexer(mux_gprs);
+		mux_gprs->setProtocol(static_cast<ProtocolPtr>(gprs));
+                mux_gprs->setHeaderSize(gprs->getHeaderSize());
+                mux_gprs->setProtocolIdentifier(0);
 		ff_gprs->setProtocol(static_cast<ProtocolPtr>(gprs));
                 ff_gprs->addChecker(std::bind(&GPRSProtocol::gprsChecker,gprs,std::placeholders::_1));
         	ff_gprs->addFlowFunction(std::bind(&GPRSProtocol::processFlow,gprs,std::placeholders::_1));
 
-                // configure the multiplexers
+                //configure the icmp
+                icmp->setMultiplexer(mux_icmp_high);
+                mux_icmp_high->setProtocol(static_cast<ProtocolPtr>(icmp));
+                mux_icmp_high->setProtocolIdentifier(IPPROTO_ICMP);
+                mux_icmp_high->setHeaderSize(icmp->getHeaderSize());
+                mux_icmp_high->addChecker(std::bind(&ICMPProtocol::icmpChecker,icmp,std::placeholders::_1));
+
+                // configure the multiplexers of the first part
                 mux_eth->addUpMultiplexer(mux_ip_low,ETHERTYPE_IP);
                 mux_ip_low->addDownMultiplexer(mux_eth);
                 mux_ip_low->addUpMultiplexer(mux_udp_low,IPPROTO_UDP);
@@ -105,7 +119,13 @@ struct Stack3Gtest
 		udp_low->setFlowForwarder(ff_udp_low);
 		ff_udp_low->addUpFlowForwarder(ff_gprs);
 
-		//ff_ip->addUpFlowForwarder(ff_ip);
+                // configure the multiplexers of the second part
+                mux_gprs->addUpMultiplexer(mux_ip_high,ETHERTYPE_IP);
+                mux_ip_high->addDownMultiplexer(mux_gprs);
+                mux_ip_high->addUpMultiplexer(mux_icmp_high,IPPROTO_ICMP);
+		mux_icmp_high->addDownMultiplexer(mux_ip_high);
+
+		
         }
         ~Stack3Gtest() {
                 // nothing to delete
@@ -154,16 +174,53 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
 
 	// Check the UDP layer
        	BOOST_CHECK(udp_low->getTotalBytes() == 104);
+       	BOOST_CHECK(udp_low->getTotalValidPackets() == 1);
+       	BOOST_CHECK(udp_low->getTotalMalformedPackets() == 0);
+       	BOOST_CHECK(udp_low->getTotalPackets() == 1);
 
-	udp_low->statistics();
-	mux_udp_low->statistics();
+	BOOST_CHECK(ff_udp_low->getTotalForwardFlows()  == 1);
+	BOOST_CHECK(ff_udp_low->getTotalReceivedFlows()  == 1);
+	BOOST_CHECK(ff_udp_low->getTotalFailFlows()  == 0);
 
 	// check the GPRS layer;
-	gprs->statistics();
-	ff_gprs->statistics();
+       	BOOST_CHECK(gprs->getTotalBytes() == 104);// Im not sure of this value, check!!!
+       	BOOST_CHECK(gprs->getTotalValidPackets() == 1);
+       	BOOST_CHECK(gprs->getTotalMalformedPackets() == 0);
+       	BOOST_CHECK(gprs->getTotalPackets() == 1);
+
+        BOOST_CHECK(mux_gprs->getTotalForwardPackets() == 1);
+        BOOST_CHECK(mux_gprs->getTotalReceivedPackets() == 1);
+        BOOST_CHECK(mux_gprs->getTotalFailPackets() == 0);
 
 	// check the HIGH IP layer
 
+       	BOOST_CHECK(ip_high->getTotalBytes() == 84);
+       	BOOST_CHECK(ip_high->getTotalValidPackets() == 1);
+       	BOOST_CHECK(ip_high->getTotalMalformedPackets() == 0);
+       	BOOST_CHECK(ip_high->getTotalPackets() == 1);
+
+        BOOST_CHECK(mux_ip_high->getTotalForwardPackets() == 1);
+        BOOST_CHECK(mux_ip_high->getTotalReceivedPackets() == 1);
+        BOOST_CHECK(mux_ip_high->getTotalFailPackets() == 0);
+	
+	std::string localip_h("192.168.0.3");
+        std::string remoteip_h("209.85.227.104");
+
+        BOOST_CHECK(localip_h.compare(ip_high->getSrcAddrDotNotation())==0);
+        BOOST_CHECK(remoteip_h.compare(ip_high->getDstAddrDotNotation())==0);
+
+	// check the ICMP layer
+
+       	BOOST_CHECK(icmp->getTotalValidPackets() == 1);
+       	BOOST_CHECK(icmp->getTotalMalformedPackets() == 0);
+       	BOOST_CHECK(icmp->getTotalPackets() == 1);
+        
+	BOOST_CHECK(mux_icmp_high->getTotalForwardPackets() == 0);
+        BOOST_CHECK(mux_icmp_high->getTotalReceivedPackets() == 1);
+        BOOST_CHECK(mux_icmp_high->getTotalFailPackets() == 1);
+
+	BOOST_CHECK(icmp->getType() == 8);
+	BOOST_CHECK(icmp->getCode() == 0);
 
 }
 

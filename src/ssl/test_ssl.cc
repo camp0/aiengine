@@ -65,7 +65,7 @@ struct StackSSLtest
                 mux_ip->setProtocolIdentifier(ETHERTYPE_IP);
                 mux_ip->setHeaderSize(ip->getHeaderSize());
                 mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip,std::placeholders::_1));
-                mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip));
+                mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip,std::placeholders::_1));
 
                 //configure the tcp
                 tcp->setMultiplexer(mux_tcp);
@@ -74,7 +74,7 @@ struct StackSSLtest
                 mux_tcp->setProtocolIdentifier(IPPROTO_TCP);
                 mux_tcp->setHeaderSize(tcp->getHeaderSize());
                 mux_tcp->addChecker(std::bind(&TCPProtocol::tcpChecker,tcp,std::placeholders::_1));
-                mux_tcp->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp));
+                mux_tcp->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp,std::placeholders::_1));
 
                 // configure the ssl
                 ssl->setFlowForwarder(ff_ssl);
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE (test1_ssl)
         mux_eth->setPacket(&packet);
         eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
         mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forward();
+        mux_eth->forwardPacket(packet);
 
 	// Check the results
 
@@ -132,13 +132,9 @@ BOOST_AUTO_TEST_CASE (test1_ssl)
 	BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
 
 	// ssl
-
 	BOOST_CHECK(ssl->getTotalPackets() == 1);
-	std::cout << "bytes ssl:" << ssl->getTotalBytes() << std::endl;
-	//BOOST_CHECK(ssl->getTotalBytes() == 193);
+	BOOST_CHECK(ssl->getTotalBytes() == 193);
 	BOOST_CHECK(ssl->getTotalMalformedPackets() == 0);
-
-	ssl->statistics();
 
 }
 

@@ -16,6 +16,11 @@ void FlowForwarder::forwardFlow(Flow *flow)
 	FlowForwarderPtr ff;
 	bool have_forwarder = false;
 
+#ifdef DEBUG
+	std::cout << __FILE__ << ":" << this << ":forwardFlow(" << flow << ")" << std::endl;
+
+#endif
+
 	++total_received_flows_;     
 	if((ff = flow->forwarder.lock()))
 	{

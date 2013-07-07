@@ -1,13 +1,9 @@
 #include "GPRSProtocol.h"
 #include <iomanip> // setw
 
-void GPRSProtocol::processPacket(const Packet& packet)
+void GPRSProtocol::processPacket(Packet& packet)
 {
-        MultiplexerPtr mux = mux_.lock();
-
-	std::cout << __FILE__ <<":"<< this<< ":";
-	std::cout << " gtp:" <<1 <<std::endl;
-
+	// Nothing to process
 }
 
 void GPRSProtocol::processFlow(Flow *flow)
@@ -16,17 +12,21 @@ void GPRSProtocol::processFlow(Flow *flow)
 
         total_bytes_ += bytes;
 
-	std::cout << flow_forwarder_.lock() << std::endl;
-
-/*        if(flow_forwarder_.lock()&&(bytes > 0))
+        if(mux_.lock()&&(bytes > 0))
         {
-        	FlowForwarderPtr ff = flow_forwarder_.lock();
+        	MultiplexerPtr mux = mux_.lock();
 
-                flow->payload_length = bytes;
-                flow->payload = getPayload();
-                ff->forwardFlow(flow);
+		Packet *packet = flow->packet;
+		Packet gpacket;
+		
+                gpacket.setPayload(packet->getPayload());
+                gpacket.setPrevHeaderSize(header_size);
+                gpacket.setPayloadLength(packet->getLength());
+
+		mux->setNextProtocolIdentifier(ETHERTYPE_IP); 
+		mux->forwardPacket(gpacket);
          }
-*/
+
 }
 
 void GPRSProtocol::statistics(std::basic_ostream<char>& out)

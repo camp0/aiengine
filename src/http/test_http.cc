@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE (test1_http)
 	BOOST_CHECK(ip->getTotalPackets() == 1);
 	BOOST_CHECK(ip->getTotalValidPackets() == 1);
 	BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
-	BOOST_CHECK(ip->getTotalBytes() == 829);
+	BOOST_CHECK(ip->getTotalBytes() == 371);
 
 	BOOST_CHECK(mux_ip->getTotalForwardPackets() == 1);
 	BOOST_CHECK(mux_ip->getTotalReceivedPackets() == 1);
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE (test1_http)
 	BOOST_CHECK(tcp->getTotalPackets() == 1);
 	BOOST_CHECK(tcp->getTotalValidPackets() == 1);
 	BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
-	BOOST_CHECK(tcp->getTotalBytes() == 809);
+	BOOST_CHECK(tcp->getTotalBytes() == 351);
 
 	BOOST_CHECK(flow_mng->getTotalFlows() == 1);
 	BOOST_CHECK(flow_cache->getTotalFlows() == 1);	
@@ -147,6 +147,12 @@ BOOST_AUTO_TEST_CASE (test1_http)
 
 	http->statistics();
 
+        // check integrity of the header
+        std::string cad("GET / HTTP/1.1");
+	std::string cad1(reinterpret_cast <const char*>(http->getPayload()));
+
+        BOOST_CHECK(cad.compare(reinterpret_cast <const char*>(http->getPayload()))==0);
+	std::cout << http->getPayload() << std::cout;
 
 }
 

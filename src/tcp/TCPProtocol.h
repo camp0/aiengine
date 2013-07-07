@@ -38,7 +38,7 @@ public:
         const char *getName() { return name_.c_str();};
 
 	void processFlow(Flow *flow) {}; // This protocol generates flows but not for destination.
-	void processPacket(const Packet &packet);
+	void processPacket(Packet &packet);
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
@@ -48,15 +48,13 @@ public:
         }
 
 	// Condition for say that a packet is tcp 
-	bool tcpChecker(const Packet &packet) 
+	bool tcpChecker(Packet &packet) 
 	{
                 int length = packet.getLength();
 
-		std::cout << "TCP:" << packet;
 		if(length >= header_size)
 		{
                 	setHeader(packet.getPayload());
-			std::cout << "tcpChecker:packet accepted:header size:"<< packet.getPrevHeaderSize() << std::endl;	
 			++total_valid_packets_;
 			total_bytes_ += length; 
 			return true;

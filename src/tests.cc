@@ -202,7 +202,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_7,StackLan)
         BOOST_CHECK(flowcache1->getTotalAcquires() == 0);
         BOOST_CHECK(flowcache1->getTotalReleases() == 0);
         BOOST_CHECK(flowcache1->getTotalFails() == 4);
-	BOOST_CHECK(flowmgr->getNumberFlows() == 0);
+	BOOST_CHECK(flowmgr->getTotalFlows() == 0);
 
 	// One flow on the cache
 	flowcache2->createFlows(1);
@@ -218,7 +218,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_7,StackLan)
         BOOST_CHECK(flowcache2->getTotalAcquires() == 1);
         BOOST_CHECK(flowcache2->getTotalReleases() == 0);
         BOOST_CHECK(flowcache2->getTotalFails() == 0);
-	BOOST_CHECK(flowmgr->getNumberFlows() == 1);
+	BOOST_CHECK(flowmgr->getTotalFlows() == 1);
 	//this->statistics();
 	
 	// Add one flow on the cache
@@ -236,7 +236,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_7,StackLan)
         BOOST_CHECK(flowcache2->getTotalAcquires() == 2);
         BOOST_CHECK(flowcache2->getTotalReleases() == 0);
         BOOST_CHECK(flowcache2->getTotalFails() == 0);
-        BOOST_CHECK(flowmgr->getNumberFlows() == 2);
+        BOOST_CHECK(flowmgr->getTotalFlows() == 2);
 
 }
 
@@ -281,7 +281,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_8,StackLan)
         BOOST_CHECK(flowcache->getTotalAcquires() == 1);
         BOOST_CHECK(flowcache->getTotalReleases() == 0);
         BOOST_CHECK(flowcache->getTotalFails() == 0);
-        BOOST_CHECK(flowmgr->getNumberFlows() == 1);
+        BOOST_CHECK(flowmgr->getTotalFlows() == 1);
 
 	//Checkers of the forwarders
 	BOOST_CHECK(ff_tcp_aux->getTotalForwardFlows() == 1);

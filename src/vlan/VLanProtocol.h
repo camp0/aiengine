@@ -25,7 +25,7 @@ public:
         const char *getName() { return name_.c_str();};
 
        	void processFlow(Flow *flow) {}; // This protocol dont generate any flow 
-	void processPacket(const Packet &packet);
+	void processPacket(Packet &packet);
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
@@ -41,7 +41,7 @@ public:
 	}
 
 	// Condition for say that a packet its vlan 802.1q 
-	bool vlanChecker(const Packet &packet) 
+	bool vlanChecker(Packet &packet) 
 	{
 		int length = packet.getLength();
 

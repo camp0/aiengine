@@ -30,11 +30,14 @@ void Multiplexer::setPacket(Packet *pkt)
 	setPacketInfo(pkt->getPayload(),pkt->getLength(),pkt->getPrevHeaderSize());
 }
 
-void Multiplexer::forwardPacket(const Packet &packet)
+void Multiplexer::forwardPacket(Packet &packet)
 {
 	MultiplexerPtrWeak next_mux;
 	MultiplexerPtr mux;
 
+#ifdef DEBUG
+	std::cout << __FILE__ << "(" << this << "):forwardPacket,next proto:"<< next_protocol_id_ <<std::endl;
+#endif
         ++total_received_packets_;
 	next_mux = getUpMultiplexer(next_protocol_id_);
 	if(!next_mux.expired())
@@ -45,36 +48,17 @@ void Multiplexer::forwardPacket(const Packet &packet)
 			int offset = mux->header_size_;
                       	Packet pkt_candidate(&packet.getPayload()[header_size_],packet.getLength() - header_size_, header_size_);
 
-			std::cout << __FILE__ << "(" << this <<"):HEADER SIZE:" << header_size_ << " mux h size:" << offset << std::endl;
-
 			if(mux->acceptPacket(pkt_candidate)) // The packet is accepted by the destination mux
 			{
-                   		mux->setPacket(&pkt_candidate);
- 
     				mux->packet_func_(pkt_candidate);
                         	++total_forward_packets_;
+				pkt_candidate.setPrevHeaderSize(header_size_);
                         	mux->forwardPacket(pkt_candidate);
 			}else{
 				std::cout << "WARNING: PACKET NO ACCEPTED" << std::endl;
 			}
                 }
         }else{
-		// Give a try to other mux, tunneling for example
-/*	        for (auto it = muxUpMap_.begin(); it != muxUpMap_.end(); ++it)
-        	{
-                	next_mux = it->second;
-                      	Packet pkt_candidate(&packet_.getPayload()[header_size_],packet_.getLength() - header_size_, header_size_);
-
-			if(mux->acceptPacket(pkt_candidate))
-			{
-                   		mux->setPacket(&pkt_candidate);
- 
-    				mux->packet_func_();
-                        	++total_forward_packets_;
-				return;
-			}	
-		} 
-*/
                 ++total_fail_packets_;
         }
 }

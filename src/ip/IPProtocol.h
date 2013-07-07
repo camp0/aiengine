@@ -30,8 +30,8 @@ public:
 
         const char *getName() { return name_.c_str();};
 
-       	void processFlow(Flow *flow) {}; // This protocol dont generate any flow 
-	void processPacket(const Packet& packet);
+       	void processFlow(Flow *flow); 
+	void processPacket(Packet& packet);
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
@@ -47,22 +47,20 @@ public:
         }
 
 	// Condition for say that a packet is IP 
-	bool ipChecker(const Packet &packet) 
+	bool ipChecker(Packet &packet) 
 	{
 		int length = packet.getLength();
 
 		setHeader(packet.getPayload());
-
-		std::cout << packet;
+		//std::cout << "IPProtocol:"<< packet ;
 		if((length >= header_size)&&(isIPver4()))
 		{
 			++total_valid_packets_;
-			std::cout << "valid" <<std::endl; 
 			return true;
 		}
 		else
 		{
-			std::cout << "not valid" <<std::endl; 
+		//	std::cout << "not valid" <<std::endl; 
 			++total_malformed_packets_;
 			return false;
 		}

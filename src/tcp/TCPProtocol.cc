@@ -50,7 +50,7 @@ FlowPtr TCPProtocol::getFlow()
 
 
 
-void TCPProtocol::processPacket(const Packet &packet)
+void TCPProtocol::processPacket(Packet &packet)
 {
 	FlowPtr flow = getFlow();
 
@@ -61,17 +61,17 @@ void TCPProtocol::processPacket(const Packet &packet)
                 
 		int bytes = (ipmux->total_length - 20 - getTcpHdrLength());
 
-                //total_bytes_ += bytes;
                 flow->total_bytes += bytes;
                 ++flow->total_packets;
 	
-		std::cout << __FILE__ << ":ip lenght:"<< ipmux->total_length << " tcphdrlength:" << getTcpHdrLength() << std::endl;
-	
-		std::cout << __FILE__ << ":" << packet <<std::endl;
-			
                 if(flow_forwarder_.lock()&&(bytes > 0))
                 {
                         FlowForwarderPtr ff = flow_forwarder_.lock();
+
+			// Modify the packet for the next level
+			packet.setPayload(&packet.getPayload()[getTcpHdrLength()]);
+			packet.setPrevHeaderSize(getTcpHdrLength());
+			packet.setPayloadLength(packet.getLength() - getTcpHdrLength());	
 
 			flow->packet = const_cast<Packet*>(&packet);
                         ff->forwardFlow(flow.get());

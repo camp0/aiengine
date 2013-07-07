@@ -47,7 +47,7 @@ FlowPtr UDPProtocol::getFlow()
 	return flow; 
 }
 
-void UDPProtocol::processPacket(const Packet& packet)
+void UDPProtocol::processPacket(Packet& packet)
 {
 	FlowPtr flow = getFlow();
 	int bytes;
@@ -64,10 +64,13 @@ void UDPProtocol::processPacket(const Packet& packet)
 		{
 			FlowForwarderPtr ff = flow_forwarder_.lock();
 
-			flow->packet = mux_.lock()->getCurrentPacket();
-                        //flow->payload_length = bytes;
-                        //flow->payload = getPayload();
-			ff->forwardFlow(flow.get());	
+                        // Modify the packet for the next level
+                        packet.setPayload(&packet.getPayload()[getHeaderLength()]);
+                        packet.setPrevHeaderSize(getHeaderLength());
+                        packet.setPayloadLength(packet.getLength() - getHeaderLength());
+
+                        flow->packet = const_cast<Packet*>(&packet);
+                        ff->forwardFlow(flow.get());
 		}	
 
 		//std::cout << __FILE__ <<":"<< this<< ":procesing flow:" << flow << " total bytes:" << total_bytes_<< std::endl;

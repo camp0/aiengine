@@ -32,7 +32,7 @@ public:
 
         const char *getName() { return name_.c_str();};
 
-	void processPacket(const Packet& packet){};
+	void processPacket(Packet& packet){};
 	void processFlow(Flow *flow);
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
@@ -49,7 +49,7 @@ public:
         }
 
 	// Condition for say that a payload is ssl 
-	bool sslChecker(const Packet &packet) 
+	bool sslChecker(Packet &packet) 
 	{
 		if(std::memcmp("\x16\x03",packet.getPayload(),2)==0)
 		{
