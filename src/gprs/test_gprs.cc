@@ -194,7 +194,6 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
 
 	// check the HIGH IP layer
 
-       	std::cout <<ip_high->getTotalBytes()<< std::endl; 
        	BOOST_CHECK(ip_high->getTotalBytes() == 36);
        	BOOST_CHECK(ip_high->getTotalValidPackets() == 1);
        	BOOST_CHECK(ip_high->getTotalMalformedPackets() == 0);
@@ -211,7 +210,6 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
         BOOST_CHECK(remoteip_h.compare(ip_high->getDstAddrDotNotation())==0);
 
 	// check the ICMP layer
-
        	BOOST_CHECK(icmp->getTotalValidPackets() == 1);
        	BOOST_CHECK(icmp->getTotalMalformedPackets() == 0);
        	BOOST_CHECK(icmp->getTotalPackets() == 1);
@@ -264,33 +262,17 @@ BOOST_AUTO_TEST_CASE (test2_gprs)
         mux_eth->forwardPacket(packet);
 
 	// Check the integrity of the highest IP 
-
-	ip_low->statistics();
-	udp_low->statistics();
-
-	gprs->statistics();
-	ip_high->statistics();
-
-/*        std::string localip_h("192.168.0.3");
-        std::string remoteip_h("209.85.227.104");
+	std::string localip_h("28.102.6.36");
+        std::string remoteip_h("212.190.178.154");
 
         BOOST_CHECK(localip_h.compare(ip_high->getSrcAddrDotNotation())==0);
         BOOST_CHECK(remoteip_h.compare(ip_high->getDstAddrDotNotation())==0);
-*/
 
-	// The flow cache should have two entryies as well as the flow manager
+	// The flow cache should have two entries as well as the flow manager
 	BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
-
-/*
-FlowManager statistics
-	Total flows:                     2
-FlowCache statistics
-	Total flows:                    10
-	Total acquires:                  2
-	Total releases:                  0
-	Total fails:                     0
-
-*/
+	BOOST_CHECK(flow_mng->getTotalFlows() == 2);
+	BOOST_CHECK(flow_cache->getTotalFails() == 0);
+	flow_mng->printFlows(std::cout);
 }
 
 BOOST_AUTO_TEST_SUITE_END( )
