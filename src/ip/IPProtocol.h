@@ -52,7 +52,7 @@ public:
 		int length = packet.getLength();
 
 		setHeader(packet.getPayload());
-		//std::cout << "IPProtocol:"<< packet ;
+		std::cout << "IPProtocol:"<< packet ;
 		if((length >= header_size)&&(isIPver4()))
 		{
 			++total_valid_packets_;
@@ -60,7 +60,7 @@ public:
 		}
 		else
 		{
-		//	std::cout << "not valid" <<std::endl; 
+			std::cout << "not valid" <<std::endl; 
 			++total_malformed_packets_;
 			return false;
 		}

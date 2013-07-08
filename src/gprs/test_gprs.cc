@@ -136,8 +136,8 @@ BOOST_FIXTURE_TEST_SUITE(gprs_suite,Stack3Gtest)
 
 BOOST_AUTO_TEST_CASE (test1_gprs)
 {
-        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo);
-        int length = raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo_length;
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gtpv1_ip_icmp_echo);
+        int length = raw_packet_ethernet_ip_udp_gtpv1_ip_icmp_echo_length;
 
         Packet packet(pkt,length,0);
 
@@ -160,20 +160,20 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
         BOOST_CHECK(mux_ip_low->getTotalForwardPackets() == 1);
         BOOST_CHECK(mux_ip_low->getTotalFailPackets() == 0);
 
-        BOOST_CHECK(ip_low->getTTL() == 64);
+        BOOST_CHECK(ip_low->getTTL() == 254);
         BOOST_CHECK(ip_low->getIPHeaderLength() == 20);
         BOOST_CHECK(ip_low->getProtocol() == IPPROTO_UDP);
         BOOST_CHECK(ip_low->getPacketLength() == length - 14);
-       	BOOST_CHECK(ip_low->getTotalBytes() == 132);
+       	BOOST_CHECK(ip_low->getTotalBytes() == 72);
 
-	std::string localip("127.0.0.2");
-        std::string remoteip("127.0.0.1");
+	std::string localip("208.64.30.124");
+        std::string remoteip("164.20.62.30");
 
         BOOST_CHECK(localip.compare(ip_low->getSrcAddrDotNotation())==0);
         BOOST_CHECK(remoteip.compare(ip_low->getDstAddrDotNotation())==0);
 
 	// Check the UDP layer
-       	BOOST_CHECK(udp_low->getTotalBytes() == 104);
+       	BOOST_CHECK(udp_low->getTotalBytes() == 44);
        	BOOST_CHECK(udp_low->getTotalValidPackets() == 1);
        	BOOST_CHECK(udp_low->getTotalMalformedPackets() == 0);
        	BOOST_CHECK(udp_low->getTotalPackets() == 1);
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
 	BOOST_CHECK(ff_udp_low->getTotalFailFlows()  == 0);
 
 	// check the GPRS layer;
-       	BOOST_CHECK(gprs->getTotalBytes() == 104);// Im not sure of this value, check!!!
+       	BOOST_CHECK(gprs->getTotalBytes() == 44);// Im not sure of this value, check!!!
        	BOOST_CHECK(gprs->getTotalValidPackets() == 1);
        	BOOST_CHECK(gprs->getTotalMalformedPackets() == 0);
        	BOOST_CHECK(gprs->getTotalPackets() == 1);
@@ -194,7 +194,8 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
 
 	// check the HIGH IP layer
 
-       	BOOST_CHECK(ip_high->getTotalBytes() == 84);
+       	std::cout <<ip_high->getTotalBytes()<< std::endl; 
+       	BOOST_CHECK(ip_high->getTotalBytes() == 36);
        	BOOST_CHECK(ip_high->getTotalValidPackets() == 1);
        	BOOST_CHECK(ip_high->getTotalMalformedPackets() == 0);
        	BOOST_CHECK(ip_high->getTotalPackets() == 1);
@@ -203,8 +204,8 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
         BOOST_CHECK(mux_ip_high->getTotalReceivedPackets() == 1);
         BOOST_CHECK(mux_ip_high->getTotalFailPackets() == 0);
 	
-	std::string localip_h("192.168.0.3");
-        std::string remoteip_h("209.85.227.104");
+	std::string localip_h("12.19.126.226");
+        std::string remoteip_h("30.225.92.1");
 
         BOOST_CHECK(localip_h.compare(ip_high->getSrcAddrDotNotation())==0);
         BOOST_CHECK(remoteip_h.compare(ip_high->getDstAddrDotNotation())==0);
@@ -222,6 +223,74 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
 	BOOST_CHECK(icmp->getType() == 8);
 	BOOST_CHECK(icmp->getCode() == 0);
 
+}
+
+BOOST_AUTO_TEST_CASE (test2_gprs)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gprs_ip_udp_dns_request);
+        int length = raw_packet_ethernet_ip_udp_gprs_ip_udp_dns_request_length;
+
+        Packet packet(pkt,length,0);
+
+	// Allocate the UDP high part
+        MultiplexerPtr mux_udp_high = MultiplexerPtr(new Multiplexer());
+	UDPProtocolPtr udp_high = UDPProtocolPtr(new UDPProtocol());
+	FlowForwarderPtr ff_udp_high = FlowForwarderPtr(new FlowForwarder());
+
+	// Create the new UDP 
+        udp_high->setMultiplexer(mux_udp_high);
+        mux_udp_high->setProtocol(static_cast<ProtocolPtr>(udp_high));
+        ff_udp_high->setProtocol(static_cast<ProtocolPtr>(udp_high));
+        mux_udp_high->setProtocolIdentifier(IPPROTO_UDP);
+        mux_udp_high->setHeaderSize(udp_high->getHeaderSize());
+        mux_udp_high->addChecker(std::bind(&UDPProtocol::udpChecker,udp_high,std::placeholders::_1));
+        mux_udp_high->addPacketFunction(std::bind(&UDPProtocol::processPacket,udp_high,std::placeholders::_1));
+
+	// Plug the Multiplexer and the forwarder on the stack
+       	mux_ip_high->addUpMultiplexer(mux_udp_high,IPPROTO_UDP);
+        mux_udp_high->addDownMultiplexer(mux_ip_high);
+
+        udp_high->setFlowCache(flow_cache);
+        udp_high->setFlowManager(flow_mng);
+
+        // Configure the FlowForwarders
+        udp_high->setFlowForwarder(ff_udp_high);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+	// Check the integrity of the highest IP 
+
+	ip_low->statistics();
+	udp_low->statistics();
+
+	gprs->statistics();
+	ip_high->statistics();
+
+/*        std::string localip_h("192.168.0.3");
+        std::string remoteip_h("209.85.227.104");
+
+        BOOST_CHECK(localip_h.compare(ip_high->getSrcAddrDotNotation())==0);
+        BOOST_CHECK(remoteip_h.compare(ip_high->getDstAddrDotNotation())==0);
+*/
+
+	// The flow cache should have two entryies as well as the flow manager
+	BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
+
+/*
+FlowManager statistics
+	Total flows:                     2
+FlowCache statistics
+	Total flows:                    10
+	Total acquires:                  2
+	Total releases:                  0
+	Total fails:                     0
+
+*/
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

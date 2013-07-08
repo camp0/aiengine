@@ -21,7 +21,7 @@ public:
     	virtual ~GPRSProtocol() {};
 	
 	static const u_int16_t id = 0;
-	static const int header_size = 20;
+	static const int header_size = 8; // GTP version 1
 	int getHeaderSize() const { return header_size;};
 
 	int32_t getTotalBytes() const { return total_bytes_;};

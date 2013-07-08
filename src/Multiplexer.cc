@@ -55,7 +55,7 @@ void Multiplexer::forwardPacket(Packet &packet)
 				pkt_candidate.setPrevHeaderSize(header_size_);
                         	mux->forwardPacket(pkt_candidate);
 			}else{
-				std::cout << "WARNING: PACKET NO ACCEPTED" << std::endl;
+				std::cout << "WARNING: PACKET NO ACCEPTED by Multiplexer(" << this <<")" << std::endl;
 			}
                 }
         }else{
