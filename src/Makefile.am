@@ -3,6 +3,9 @@ AUTOMAKE_OPTIONS = gnu
 noinst_HEADERS =        Packet.h \
 			Protocol.h \
 			PacketDispatcher.h \
+			NetworkStack.h \
+			StackLan.h \
+			Stack3G.h \
 			Multiplexer.h \
 			FlowForwarder.h \
                         ./flow/FlowCache.h \
@@ -20,7 +23,8 @@ iaengine_core_sources =	Multiplexer.cc \
 			./udp/UDPProtocol.cc \
 			./tcp/TCPProtocol.cc \
 			./http/HTTPProtocol.cc \
-			./ssl/SSLProtocol.cc 
+			./ssl/SSLProtocol.cc \
+			Stack3G.cc StackLan.cc 
 
 iaengine_SOURCES =      $(iaengine_core_sources) main.cc
 

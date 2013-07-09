@@ -10,11 +10,23 @@
 
 PacketDispatcherPtr pktdis;
 
-bool process_command_line(int argc, char **argv,
-	std::string &pcapfile,
-	std::string &device,
-	bool &print_flows)
+void signalHandler( int signum )
 {
+        if(pktdis)
+        {
+        //      pktdis->statistics();
+        }
+        exit(signum);
+}
+
+int main(int argc, char* argv[])
+{
+	std::string pcapfile;
+	std::string interface;
+	bool print_flows = false;
+	int tcp_flows_cache;
+	int udp_flows_cache;
+
 	namespace po = boost::program_options;
 
 	po::options_description mandatory_ops("Mandatory arguments");
@@ -24,6 +36,20 @@ bool process_command_line(int argc, char **argv,
 		("pcapfile,f",   po::value<std::string>(&pcapfile)->required(),
 			"Sets the pcap file.")
         	;
+
+	po::options_description optional_ops_tcp("TCP optional arguments");
+	optional_ops_tcp.add_options()
+		("tcp-flows,t",    po::value<int>(&tcp_flows_cache)->default_value(32768),
+		  	"Sets the number of TCP flows on the pool.")
+		;
+	
+	po::options_description optional_ops_udp("UDP optional arguments");
+	optional_ops_udp.add_options()
+		("udp-flows,u",    po::value<int>(&udp_flows_cache)->default_value(16384),
+		  	"Sets the number of UDP flows on the pool.")
+		;
+	mandatory_ops.add(optional_ops_tcp);
+	mandatory_ops.add(optional_ops_udp);
 
 	po::options_description optional_ops("Optional arguments");
 	optional_ops.add_options()
@@ -73,36 +99,17 @@ bool process_command_line(int argc, char **argv,
     	}
 
 
-	return true;
-}
-
-void signalHandler( int signum )
-{
-	if(pktdis)
-	{
-	//	pktdis->statistics();
-	}
-	exit(signum);  
-}
-
-int main(int argc, char* argv[])
-{
-	std::string pcapfile;
-	std::string interface;
-	bool print_flows = false;
-
-	if(!process_command_line(argc,argv,pcapfile,pcapfile,print_flows))
-	{
-		return 1;
-	}
-
     	signal(SIGINT, signalHandler);  
 
 	pktdis = PacketDispatcherPtr(new PacketDispatcher());
-	StackLan stack = StackLan();
 	
+	NetworkStackPtr stack = NetworkStackPtr(new StackLan());
+
+	stack->setTotalTCPFlows(tcp_flows_cache);	
+	stack->setTotalUDPFlows(udp_flows_cache);	
+
 	// connect with the stack
-        pktdis->setDefaultMultiplexer(stack.mux_eth);
+        pktdis->setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());
 
 	std::cout << "Processing pcapfile:" << pcapfile << std::endl;
         pktdis->openPcapFile(pcapfile.c_str());
@@ -115,12 +122,12 @@ int main(int argc, char* argv[])
    	{
       		std::cerr << "Error: " << e.what() << std::endl;
 	}
-	stack.statistics();	
+	stack->statistics();	
         pktdis->closePcapFile();
 
 	if(print_flows)
 	{
-		stack.dumpFlows();
+		stack->printFlows();
 	}
 
 	return 0;

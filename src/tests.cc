@@ -8,7 +8,7 @@
 #include "./tcp/TCPProtocol.h"
 #include "./ssl/SSLProtocol.h"
 #include "./http/HTTPProtocol.h"
-#include "StackLan.h"
+#include "StackLanTest.h"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE Main 
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(test_case_4)
 	delete eth;
 }
 
-BOOST_FIXTURE_TEST_CASE(test_case_5,StackLan)
+BOOST_FIXTURE_TEST_CASE(test_case_5,StackLanTest)
 {
 
 	PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
@@ -152,7 +152,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_5,StackLan)
 	BOOST_CHECK(tcp->getTotalBytes() == 0); 
 }
 
-BOOST_FIXTURE_TEST_CASE(test_case_6,StackLan)
+BOOST_FIXTURE_TEST_CASE(test_case_6,StackLanTest)
 {
 
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
@@ -176,7 +176,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_6,StackLan)
 
 }
 
-BOOST_FIXTURE_TEST_CASE(test_case_7,StackLan)
+BOOST_FIXTURE_TEST_CASE(test_case_7,StackLanTest)
 {
 
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
@@ -240,7 +240,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_7,StackLan)
 
 }
 
-BOOST_FIXTURE_TEST_CASE(test_case_8,StackLan)
+BOOST_FIXTURE_TEST_CASE(test_case_8,StackLanTest)
 {
 
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
@@ -291,7 +291,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_8,StackLan)
 	BOOST_CHECK(ssl_aux->getTotalBytes() == 41821);
 }
 
-BOOST_FIXTURE_TEST_CASE(test_case_9,StackLan)
+BOOST_FIXTURE_TEST_CASE(test_case_9,StackLanTest)
 {
 
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
