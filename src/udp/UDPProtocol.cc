@@ -71,6 +71,9 @@ void UDPProtocol::processPacket(Packet& packet)
                         packet.setPrevHeaderSize(getHeaderLength());
                         packet.setPayloadLength(packet.getLength() - getHeaderLength());
 
+                        packet.setDestinationPort(getDstPort());
+                        packet.setSourcePort(getSrcPort());
+
                         flow->packet = const_cast<Packet*>(&packet);
                         ff->forwardFlow(flow.get());
 		}	

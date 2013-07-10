@@ -13,6 +13,9 @@ SUBDIRS = 	src \
 		src/icmp \
 		src/udp \
 		src/tcp \
+		src/http \
+		src/ssl \
+		src/dns \
 		src/flow 
 
 dist_noinst_SCRIPTS = autogen.sh

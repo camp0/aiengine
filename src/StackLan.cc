@@ -2,6 +2,8 @@
 
 StackLan::StackLan()
 {
+	name_ = "Lan network stack";
+
 	// Allocate all the Protocol objects
         tcp_ = TCPProtocolPtr(new TCPProtocol());
         udp_ = UDPProtocolPtr(new UDPProtocol());
@@ -10,6 +12,7 @@ StackLan::StackLan()
         icmp_ = ICMPProtocolPtr(new ICMPProtocol());
         http_ = HTTPProtocolPtr(new HTTPProtocol());
         ssl_ = SSLProtocolPtr(new SSLProtocol());
+        dns_ = DNSProtocolPtr(new DNSProtocol());
 
 	// Allocate the Multiplexers
 	mux_eth_ = MultiplexerPtr(new Multiplexer());
@@ -28,6 +31,7 @@ StackLan::StackLan()
 	ff_udp_ = FlowForwarderPtr(new FlowForwarder());
 	ff_http_ = FlowForwarderPtr(new FlowForwarder());
 	ff_ssl_ = FlowForwarderPtr(new FlowForwarder());
+	ff_dns_ = FlowForwarderPtr(new FlowForwarder());
 
 	//configure the Ethernet Layer 
 	eth_->setMultiplexer(mux_eth_);
@@ -81,6 +85,12 @@ StackLan::StackLan()
 	ff_ssl_->addChecker(std::bind(&SSLProtocol::sslChecker,ssl_,std::placeholders::_1));
 	ff_ssl_->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl_,std::placeholders::_1));
 
+	// configure the DNS Layer 
+	dns_->setFlowForwarder(ff_dns_);
+	ff_dns_->setProtocol(static_cast<ProtocolPtr>(dns_));
+	ff_dns_->addChecker(std::bind(&DNSProtocol::dnsChecker,dns_,std::placeholders::_1));
+	ff_dns_->addFlowFunction(std::bind(&DNSProtocol::processFlow,dns_,std::placeholders::_1));
+
 	// configure the multiplexers
 	mux_eth_->addUpMultiplexer(mux_ip_,ETHERTYPE_IP);
 	mux_ip_->addDownMultiplexer(mux_eth_);
@@ -104,7 +114,7 @@ StackLan::StackLan()
 	
 	ff_tcp_->addUpFlowForwarder(ff_http_);
 	ff_tcp_->addUpFlowForwarder(ff_ssl_);
-
+	ff_udp_->addUpFlowForwarder(ff_dns_);
 }
 
 void StackLan::statistics(std::basic_ostream<char>& out)
@@ -119,6 +129,8 @@ void StackLan::statistics(std::basic_ostream<char>& out)
 	udp_->statistics(out);
 	out << std::endl;
 	icmp_->statistics(out);
+	out << std::endl;
+	dns_->statistics(out);
 	out << std::endl;
 	http_->statistics(out);
 	out << std::endl;

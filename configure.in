@@ -45,6 +45,7 @@ src/tcp/Makefile
 src/flow/Makefile
 src/http/Makefile
 src/ssl/Makefile
+src/dns/Makefile
 ])
 
 

@@ -8,6 +8,16 @@ noinst_HEADERS =        Packet.h \
 			Stack3G.h \
 			Multiplexer.h \
 			FlowForwarder.h \
+			./ethernet/EthernetProtocol.h \
+			./vlan/VLanProtocol.h \
+			./ip/IPProtocol.h \
+			./icmp/ICMPProtocol.h \
+			./udp/UDPProtocol.h \
+			./tcp/TCPProtocol.h \
+			./gprs/GPRSProtocol.h \
+			./http/HTTPProtocol.h \
+			./ssl/SSLProtocol.h \
+			./dns/DNSProtocol.h \
                         ./flow/FlowCache.h \
                         ./flow/FlowManager.h \
                         ./flow/Flow.h
@@ -18,12 +28,15 @@ iaengine_core_sources =	Multiplexer.cc \
 			./flow/FlowCache.cc \
 			./flow/FlowManager.cc \
 			./ethernet/EthernetProtocol.cc \
+			./vlan/VLanProtocol.cc \
 			./ip/IPProtocol.cc \
 			./icmp/ICMPProtocol.cc \
 			./udp/UDPProtocol.cc \
 			./tcp/TCPProtocol.cc \
+			./gprs/GPRSProtocol.cc \
 			./http/HTTPProtocol.cc \
 			./ssl/SSLProtocol.cc \
+			./dns/DNSProtocol.cc \
 			Stack3G.cc StackLan.cc 
 
 iaengine_SOURCES =      $(iaengine_core_sources) main.cc

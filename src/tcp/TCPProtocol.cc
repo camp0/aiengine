@@ -75,6 +75,9 @@ void TCPProtocol::processPacket(Packet &packet)
 			packet.setPrevHeaderSize(getTcpHdrLength());
 			packet.setPayloadLength(packet.getLength() - getTcpHdrLength());	
 
+			packet.setDestinationPort(getDstPort());
+			packet.setSourcePort(getSrcPort());
+
 			flow->packet = const_cast<Packet*>(&packet);
                         ff->forwardFlow(flow.get());
                 }

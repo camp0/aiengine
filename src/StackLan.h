@@ -11,6 +11,7 @@
 #include "./icmp/ICMPProtocol.h"
 #include "./http/HTTPProtocol.h"
 #include "./ssl/SSLProtocol.h"
+#include "./dns/DNSProtocol.h"
 #include "./flow/FlowManager.h"
 #include "./flow/FlowCache.h"
 #include "NetworkStack.h"
@@ -46,6 +47,7 @@ private:
         ICMPProtocolPtr icmp_;
         HTTPProtocolPtr http_;
         SSLProtocolPtr ssl_;
+        DNSProtocolPtr dns_;
 
         // Multiplexers
         MultiplexerPtr mux_eth_;
@@ -65,7 +67,7 @@ private:
         FlowForwarderPtr ff_udp_;
         FlowForwarderPtr ff_http_;
         FlowForwarderPtr ff_ssl_;
-
+	FlowForwarderPtr ff_dns_;
 };
 
 

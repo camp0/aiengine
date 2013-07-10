@@ -6,7 +6,7 @@
 #include <fstream>
 #include "PacketDispatcher.h"
 #include "StackLan.h"
-
+#include "Stack3G.h"
 
 PacketDispatcherPtr pktdis;
 
@@ -21,6 +21,7 @@ void signalHandler( int signum )
 
 int main(int argc, char* argv[])
 {
+	std::string stack_name;
 	std::string pcapfile;
 	std::string interface;
 	bool print_flows = false;
@@ -53,6 +54,8 @@ int main(int argc, char* argv[])
 
 	po::options_description optional_ops("Optional arguments");
 	optional_ops.add_options()
+		("stack,s",	po::value<std::string>(&stack_name)->default_value("lan"),
+				      	"Sets the network stack (lan,3g).")
 		("dumpflows,d",      	"Dump the flows to stdout.")
 		("help,h",     		"Show help")
 		("version,v",   	"Show version string")
@@ -102,9 +105,20 @@ int main(int argc, char* argv[])
     	signal(SIGINT, signalHandler);  
 
 	pktdis = PacketDispatcherPtr(new PacketDispatcher());
-	
-	NetworkStackPtr stack = NetworkStackPtr(new StackLan());
+	NetworkStackPtr stack;
 
+	if(stack_name.compare("lan") == 0)
+	{
+		stack = NetworkStackPtr(new StackLan());
+	}else{
+		if (stack_name.compare("3g") ==0)
+		{
+			stack = NetworkStackPtr(new Stack3G());
+		}else{
+			std::cout << "iaengine: Unknown stack " << stack_name << std::endl;
+			exit(-1);
+		}
+	}
 	stack->setTotalTCPFlows(tcp_flows_cache);	
 	stack->setTotalUDPFlows(udp_flows_cache);	
 
