@@ -12,6 +12,7 @@ test_gprs_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ip/IPProtocol.cc \
 			../udp/UDPProtocol.cc \
 			../icmp/ICMPProtocol.cc \
+			../dns/DNSProtocol.cc \
 			GPRSProtocol.cc test_gprs.cc
 
 test_gprs_LDADD   = -lboost_unit_test_framework

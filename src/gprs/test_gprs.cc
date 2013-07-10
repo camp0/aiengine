@@ -8,6 +8,7 @@
 #include "../udp/UDPProtocol.h"
 #include "../ip/IPProtocol.h"
 #include "../icmp/ICMPProtocol.h"
+#include "../dns/DNSProtocol.h"
 #include "GPRSProtocol.h"
 //#include "../Stack3G.h"
 
@@ -274,5 +275,130 @@ BOOST_AUTO_TEST_CASE (test2_gprs)
 	BOOST_CHECK(flow_cache->getTotalFails() == 0);
 	flow_mng->printFlows(std::cout);
 }
+
+BOOST_AUTO_TEST_CASE (test3_gprs)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gtpv1_ip_udp_payload);
+        int length = raw_packet_ethernet_ip_udp_gtpv1_ip_udp_payload_length;
+
+        Packet packet(pkt,length,0);
+
+        // Allocate the UDP high part
+        MultiplexerPtr mux_udp_high = MultiplexerPtr(new Multiplexer());
+        UDPProtocolPtr udp_high = UDPProtocolPtr(new UDPProtocol());
+        FlowForwarderPtr ff_udp_high = FlowForwarderPtr(new FlowForwarder());
+
+        // Create the new UDP
+        udp_high->setMultiplexer(mux_udp_high);
+        mux_udp_high->setProtocol(static_cast<ProtocolPtr>(udp_high));
+        ff_udp_high->setProtocol(static_cast<ProtocolPtr>(udp_high));
+        mux_udp_high->setProtocolIdentifier(IPPROTO_UDP);
+        mux_udp_high->setHeaderSize(udp_high->getHeaderSize());
+        mux_udp_high->addChecker(std::bind(&UDPProtocol::udpChecker,udp_high,std::placeholders::_1));
+        mux_udp_high->addPacketFunction(std::bind(&UDPProtocol::processPacket,udp_high,std::placeholders::_1));
+
+        // Plug the Multiplexer and the forwarder on the stack
+        mux_ip_high->addUpMultiplexer(mux_udp_high,IPPROTO_UDP);
+        mux_udp_high->addDownMultiplexer(mux_ip_high);
+
+	FlowCachePtr f_cache = FlowCachePtr(new FlowCache());
+	FlowManagerPtr f_mng = FlowManagerPtr(new FlowManager());
+
+	f_cache->createFlows(10);
+
+        udp_high->setFlowCache(f_cache);
+        udp_high->setFlowManager(f_mng);
+
+        // Configure the FlowForwarders
+        udp_high->setFlowForwarder(ff_udp_high);
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        // Check the integrity of the highest IP
+        std::string localip_h("28.102.6.36");
+        std::string remoteip_h("212.190.178.154");
+
+        BOOST_CHECK(localip_h.compare(ip_high->getSrcAddrDotNotation())==0);
+        BOOST_CHECK(remoteip_h.compare(ip_high->getDstAddrDotNotation())==0);
+
+        // The flow cache should have two entries as well as the flow manager
+        BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
+        BOOST_CHECK(flow_mng->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache->getTotalFails() == 0);
+        flow_mng->printFlows(std::cout);
+}
+
+BOOST_AUTO_TEST_CASE (test4_gprs) // with the DNSProtocol 
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gprs_ip_udp_dns_request);
+        int length = raw_packet_ethernet_ip_udp_gprs_ip_udp_dns_request_length;
+
+        Packet packet(pkt,length,0);
+
+        // Allocate the UDP high part
+        MultiplexerPtr mux_udp_high = MultiplexerPtr(new Multiplexer());
+        UDPProtocolPtr udp_high = UDPProtocolPtr(new UDPProtocol());
+        FlowForwarderPtr ff_udp_high = FlowForwarderPtr(new FlowForwarder());
+        FlowForwarderPtr ff_dns_ = FlowForwarderPtr(new FlowForwarder());
+
+        // Create the new UDP
+        udp_high->setMultiplexer(mux_udp_high);
+        mux_udp_high->setProtocol(static_cast<ProtocolPtr>(udp_high));
+        ff_udp_high->setProtocol(static_cast<ProtocolPtr>(udp_high));
+        mux_udp_high->setProtocolIdentifier(IPPROTO_UDP);
+        mux_udp_high->setHeaderSize(udp_high->getHeaderSize());
+        mux_udp_high->addChecker(std::bind(&UDPProtocol::udpChecker,udp_high,std::placeholders::_1));
+        mux_udp_high->addPacketFunction(std::bind(&UDPProtocol::processPacket,udp_high,std::placeholders::_1));
+
+        // Plug the Multiplexer and the forwarder on the stack
+        mux_ip_high->addUpMultiplexer(mux_udp_high,IPPROTO_UDP);
+        mux_udp_high->addDownMultiplexer(mux_ip_high);
+
+        udp_high->setFlowCache(flow_cache);
+        udp_high->setFlowManager(flow_mng);
+
+        // configure the DNS Layer
+	DNSProtocolPtr dns_ = DNSProtocolPtr(new DNSProtocol());
+        dns_->setFlowForwarder(ff_dns_);
+        ff_dns_->setProtocol(static_cast<ProtocolPtr>(dns_));
+        ff_dns_->addChecker(std::bind(&DNSProtocol::dnsChecker,dns_,std::placeholders::_1));
+        ff_dns_->addFlowFunction(std::bind(&DNSProtocol::processFlow,dns_,std::placeholders::_1));
+
+
+        // Configure the FlowForwarders
+        udp_high->setFlowForwarder(ff_udp_high);
+	ff_udp_high->addUpFlowForwarder(ff_dns_);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+
+        // Check the integrity of the highest IP
+        std::string localip_h("28.102.6.36");
+        std::string remoteip_h("212.190.178.154");
+
+        BOOST_CHECK(localip_h.compare(ip_high->getSrcAddrDotNotation())==0);
+        BOOST_CHECK(remoteip_h.compare(ip_high->getDstAddrDotNotation())==0);
+
+        // The flow cache should have two entries as well as the flow manager
+        BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
+        BOOST_CHECK(flow_mng->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache->getTotalFails() == 0);
+        flow_mng->printFlows(std::cout);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )

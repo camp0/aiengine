@@ -41,6 +41,7 @@ Stack3G::Stack3G()
 	ff_http_ = FlowForwarderPtr(new FlowForwarder());
 	ff_ssl_ = FlowForwarderPtr(new FlowForwarder());
 	ff_dns_ = FlowForwarderPtr(new FlowForwarder());
+	ff_gprs_ = FlowForwarderPtr(new FlowForwarder());
 
 	//configure the Ethernet Layer 
 	eth_->setMultiplexer(mux_eth_);
@@ -121,6 +122,12 @@ Stack3G::Stack3G()
 	ff_ssl_->addChecker(std::bind(&SSLProtocol::sslChecker,ssl_,std::placeholders::_1));
 	ff_ssl_->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl_,std::placeholders::_1));
 
+        // configure the DNS Layer
+        dns_->setFlowForwarder(ff_dns_);
+        ff_dns_->setProtocol(static_cast<ProtocolPtr>(dns_));
+        ff_dns_->addChecker(std::bind(&DNSProtocol::dnsChecker,dns_,std::placeholders::_1));
+        ff_dns_->addFlowFunction(std::bind(&DNSProtocol::processFlow,dns_,std::placeholders::_1));
+
 	// configure the multiplexers
 	mux_eth_->addUpMultiplexer(mux_ip_low_,ETHERTYPE_IP);
 	mux_ip_low_->addDownMultiplexer(mux_eth_);
@@ -143,16 +150,17 @@ Stack3G::Stack3G()
 			
 	udp_low_->setFlowCache(flow_cache_udp_low_);
 	udp_low_->setFlowManager(flow_mng_udp_low_);
+	udp_high_->setFlowCache(flow_cache_udp_low_);
+	udp_high_->setFlowManager(flow_mng_udp_low_);
 	
-	udp_high_->setFlowCache(flow_cache_udp_high_);
-	udp_high_->setFlowManager(flow_mng_udp_high_);
+	//udp_high_->setFlowCache(flow_cache_udp_high_);
+	//udp_high_->setFlowManager(flow_mng_udp_high_);
 
 	// Configure the FlowForwarders
 	udp_low_->setFlowForwarder(ff_udp_low_);
 	ff_udp_low_->addUpFlowForwarder(ff_gprs_);
 
 	tcp_->setFlowForwarder(ff_tcp_);	
-	udp_low_->setFlowForwarder(ff_udp_low_);	
 	udp_high_->setFlowForwarder(ff_udp_high_);	
 	
 	ff_tcp_->addUpFlowForwarder(ff_http_);
