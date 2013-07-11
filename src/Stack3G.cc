@@ -142,7 +142,7 @@ Stack3G::Stack3G()
 	mux_ip_high_->addUpMultiplexer(mux_tcp_,IPPROTO_TCP);
 	mux_tcp_->addDownMultiplexer(mux_ip_high_);
 	mux_ip_high_->addUpMultiplexer(mux_udp_high_,IPPROTO_UDP);
-	mux_udp_low_->addDownMultiplexer(mux_ip_high_);
+	mux_udp_high_->addDownMultiplexer(mux_ip_high_);
 
 	// Connect the FlowManager and FlowCache
 	tcp_->setFlowCache(flow_cache_tcp_);
