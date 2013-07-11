@@ -3,10 +3,9 @@
 
 void DNSProtocol::processFlow(Flow *flow)
 {
-
 	total_bytes_ += flow->packet->getLength();
-
 }
+
 void DNSProtocol::statistics(std::basic_ostream<char>& out)
 {
         out << "DNSProtocol(" << this << ") statistics" << std::dec <<  std::endl;

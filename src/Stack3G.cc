@@ -150,11 +150,12 @@ Stack3G::Stack3G()
 			
 	udp_low_->setFlowCache(flow_cache_udp_low_);
 	udp_low_->setFlowManager(flow_mng_udp_low_);
-	udp_high_->setFlowCache(flow_cache_udp_low_);
-	udp_high_->setFlowManager(flow_mng_udp_low_);
 	
-	//udp_high_->setFlowCache(flow_cache_udp_high_);
-	//udp_high_->setFlowManager(flow_mng_udp_high_);
+//	udp_high_->setFlowCache(flow_cache_udp_low_);
+//	udp_high_->setFlowManager(flow_mng_udp_low_);
+	
+	udp_high_->setFlowCache(flow_cache_udp_high_);
+	udp_high_->setFlowManager(flow_mng_udp_high_);
 
 	// Configure the FlowForwarders
 	udp_low_->setFlowForwarder(ff_udp_low_);
@@ -176,6 +177,8 @@ void Stack3G::statistics(std::basic_ostream<char>& out)
 	ip_low_->statistics(out);
 	out << std::endl;
 	udp_low_->statistics(out);
+	out << std::endl;
+	gprs_->statistics(out);
 	out << std::endl;
 	ip_high_->statistics(out);
 	out << std::endl;

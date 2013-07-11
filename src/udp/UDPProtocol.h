@@ -53,7 +53,7 @@ public:
 	{
                 int length = packet.getLength();
 
-		std::cout << "UDPProtocol:" << packet ;
+		//std::cout << "UDPProtocol:" << packet ;
 		if(length >= header_size)
 		{
 			setHeader(packet.getPayload());

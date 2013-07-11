@@ -318,18 +318,29 @@ BOOST_AUTO_TEST_CASE (test3_gprs)
         mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forwardPacket(packet);
 
-        // Check the integrity of the highest IP
-        std::string localip_h("28.102.6.36");
-        std::string remoteip_h("212.190.178.154");
+	// Check the integrity of the first IP header
+        std::string localip("192.168.62.200");
+        std::string remoteip("192.168.62.16");
 
-        BOOST_CHECK(localip_h.compare(ip_high->getSrcAddrDotNotation())==0);
+	BOOST_CHECK(localip.compare(ip_low->getSrcAddrDotNotation())==0);
+        BOOST_CHECK(remoteip.compare(ip_low->getDstAddrDotNotation())==0);
+
+        // Check the integrity of the second IP
+        std::string localip_h("193.190.200.98");
+        std::string remoteip_h("193.206.206.32");
+
+	BOOST_CHECK(localip_h.compare(ip_high->getSrcAddrDotNotation())==0);
         BOOST_CHECK(remoteip_h.compare(ip_high->getDstAddrDotNotation())==0);
 
-        // The flow cache should have two entries as well as the flow manager
-        BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
-        BOOST_CHECK(flow_mng->getTotalFlows() == 2);
+        // The first cache 
+        BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
+        BOOST_CHECK(flow_mng->getTotalFlows() == 1);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);
-        flow_mng->printFlows(std::cout);
+
+      	// Check the second cache 
+        BOOST_CHECK(f_cache->getTotalAcquires() == 1);
+        BOOST_CHECK(f_mng->getTotalFlows() == 1);
+        BOOST_CHECK(f_cache->getTotalFails() == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test4_gprs) // with the DNSProtocol 
@@ -380,11 +391,10 @@ BOOST_AUTO_TEST_CASE (test4_gprs) // with the DNSProtocol
         mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forwardPacket(packet);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+//        mux_eth->setPacket(&packet);
+ //       eth->setHeader(packet.getPayload());
+//        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forwardPacket(packet);
-
 
         // Check the integrity of the highest IP
         std::string localip_h("28.102.6.36");
@@ -398,6 +408,13 @@ BOOST_AUTO_TEST_CASE (test4_gprs) // with the DNSProtocol
         BOOST_CHECK(flow_mng->getTotalFlows() == 2);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);
         flow_mng->printFlows(std::cout);
+	dns_->statistics();
+
+	// check the DNSProtocol values
+	BOOST_CHECK(dns_->getTotalPackets() == 1);
+	BOOST_CHECK(dns_->getTotalValidPackets() == 1);
+	BOOST_CHECK(dns_->getTotalBytes() == 68);
+
 }
 
 
