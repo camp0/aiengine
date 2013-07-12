@@ -136,14 +136,14 @@ BOOST_FIXTURE_TEST_CASE(test_case_5,StackLanTest)
 	pd->runPcap();
 	pd->closePcapFile();
 	BOOST_CHECK(pd->getTotalPackets() == 4);
-	BOOST_CHECK(ip->getTotalValidPackets() == 4);
+	BOOST_CHECK(ip->getTotalValidatedPackets() == 4);
 	BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
 	BOOST_CHECK(ip->getTotalPackets() == 4);
 	BOOST_CHECK(udp->getTotalPackets() == 4);
-	BOOST_CHECK(udp->getTotalValidPackets() == 4);
+	BOOST_CHECK(udp->getTotalValidatedPackets() == 4);
 	BOOST_CHECK(udp->getTotalMalformedPackets() == 0);
 	BOOST_CHECK(tcp->getTotalPackets() == 0);
-	BOOST_CHECK(tcp->getTotalValidPackets() == 0);
+	BOOST_CHECK(tcp->getTotalValidatedPackets() == 0);
 	BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
 
 	BOOST_CHECK(eth->getTotalBytes() == 655);
@@ -164,14 +164,14 @@ BOOST_FIXTURE_TEST_CASE(test_case_6,StackLanTest)
         pd->runPcap();
         pd->closePcapFile();
         BOOST_CHECK(pd->getTotalPackets() == 95);
-        BOOST_CHECK(ip->getTotalValidPackets() == 95);
+        BOOST_CHECK(ip->getTotalValidatedPackets() == 95);
         BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
         BOOST_CHECK(ip->getTotalPackets() == 95);
         BOOST_CHECK(udp->getTotalPackets() == 0);
-        BOOST_CHECK(udp->getTotalValidPackets() == 0);
+        BOOST_CHECK(udp->getTotalValidatedPackets() == 0);
         BOOST_CHECK(udp->getTotalMalformedPackets() == 0);
         BOOST_CHECK(tcp->getTotalPackets() == 95);
-        BOOST_CHECK(tcp->getTotalValidPackets() == 95);
+        BOOST_CHECK(tcp->getTotalValidatedPackets() == 95);
         BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
 
 }
@@ -335,7 +335,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_9,StackLanTest)
 
 	// Verify the UDP part
 	BOOST_CHECK(udp->getTotalPackets() == 4);
-	BOOST_CHECK(udp->getTotalValidPackets() == 4);
+	BOOST_CHECK(udp->getTotalValidatedPackets() == 4);
 	BOOST_CHECK(udp->getTotalBytes() == 252);
 
 	BOOST_CHECK(mux_udp->getTotalReceivedPackets() == 4);
@@ -344,7 +344,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_9,StackLanTest)
 
 	// Verify the ICMP part
 	BOOST_CHECK(icmp->getTotalPackets() == 0);
-	BOOST_CHECK(icmp->getTotalValidPackets() == 0);
+	BOOST_CHECK(icmp->getTotalValidatedPackets() == 0);
 
 	BOOST_CHECK(mux_icmp->getTotalReceivedPackets() == 0);
 	BOOST_CHECK(mux_icmp->getTotalForwardPackets() == 0);

@@ -5,6 +5,7 @@ void IPv6Protocol::processPacket()
 {
         MultiplexerPtr mux = mux_.lock();
 
+	
 	//mux->ipsrc = getSrcAddr();
 	//mux->ipdst = getDstAddr();
 	//mux->total_length = getPacketLength();
@@ -16,8 +17,8 @@ void IPv6Protocol::processPacket()
 void IPv6Protocol::statistics(std::basic_ostream<char>& out)
 {
         out << "IPv6Protocol(" << this << ") statistics" << std::dec <<  std::endl;
-        out << "\t" << "Total packets:          " << std::setw(10) << total_malformed_packets_+total_valid_packets_ <<std::endl;
-        out << "\t" << "Total valid packets:    " << std::setw(10) << total_valid_packets_ <<std::endl;
+        out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
+        out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
         out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
 }
 

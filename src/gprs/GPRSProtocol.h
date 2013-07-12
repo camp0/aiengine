@@ -25,8 +25,8 @@ public:
 	int getHeaderSize() const { return header_size;};
 
 	int32_t getTotalBytes() const { return total_bytes_;};
-	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};
-	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
+	uint64_t getTotalPackets() const { return total_packets_;};
+	uint64_t getTotalValidatedPackets() const { return total_validated_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
         const char *getName() { return name_.c_str();};
@@ -50,14 +50,24 @@ public:
 	// Condition for say that a packet is GPRS 
 	bool gprsChecker(Packet& packet) 
 	{
-		int length = header_size;
+		int length = packet.getLength();
 	
-	//	std::cout << "GPRSProtocol:" << packet;	
-		if(length >= header_size)
+	//	std::cout << "GPRSProtocol:" << packet;
+	// 	first byt use to be x32 version for signaling packets 
+	//	second byte is the flags
+	//		flag == 0x10 create pdp contex
+	//		flag == 0x12 update pdp context
+	//		flag == 0x15 delete pdp context
+	// 	packets with data start with x30 and flags == 0xff for data
+	//	
+		if((length >= header_size))
 		{
-			setHeader(packet.getPayload());
-			++total_valid_packets_; 
-			return true;
+			if((packet.getPayload()[0] == 0x30)||(packet.getPayload()[0] == 0x32))
+			{	
+				setHeader(packet.getPayload());
+				++total_validated_packets_; 
+				return true;
+			}
 		}
 		else
 		{

@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE (test2_icmp)
 	BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);
 	BOOST_CHECK(icmp->getType() == ICMP_ECHO);
 	BOOST_CHECK(icmp->getCode() == 0);
-	BOOST_CHECK(icmp->getTotalPackets() == 1);
+	BOOST_CHECK(icmp->getTotalPackets() == 0); // The function is not set!!!
 
 	auto ipaddr1 = ip->getSrcAddr();
 	auto ipaddr2 = ip->getDstAddr();
@@ -102,6 +102,9 @@ BOOST_AUTO_TEST_CASE (test2_icmp)
         length = raw_packet_ethernet_ip_icmp_echo_reply_length;
 	Packet packet2(pkt,length,0);
 
+	// Set the packet function
+	mux_icmp->addPacketFunction(std::bind(&ICMPProtocol::processPacket,icmp,std::placeholders::_1));
+	
         mux_eth->setPacket(&packet2);
         eth->setHeader(packet2.getPayload());
         mux_eth->forwardPacket(packet2);
@@ -109,7 +112,7 @@ BOOST_AUTO_TEST_CASE (test2_icmp)
 	BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);
 	BOOST_CHECK(icmp->getType() == ICMP_ECHOREPLY);
 	BOOST_CHECK(icmp->getCode() == 0);
-	BOOST_CHECK(icmp->getTotalPackets() == 2);
+	BOOST_CHECK(icmp->getTotalPackets() == 1);
 
 	BOOST_CHECK(ipaddr1 == ip->getDstAddr());
 	BOOST_CHECK(ipaddr2 == ip->getSrcAddr());

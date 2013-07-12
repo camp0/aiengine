@@ -5,6 +5,8 @@ void IPProtocol::processPacket(Packet& packet)
 {
         MultiplexerPtr mux = mux_.lock();
 
+	++total_packets_;
+
 	mux->ipsrc = getSrcAddr();
 	mux->ipdst = getDstAddr();
 	mux->total_length = packet.getLength();
@@ -24,8 +26,8 @@ void IPProtocol::processFlow(Flow *flow)
 void IPProtocol::statistics(std::basic_ostream<char>& out)
 {
         out << "IPProtocol(" << this << ") statistics" << std::dec <<  std::endl;
-        out << "\t" << "Total packets:          " << std::setw(10) << total_malformed_packets_+total_valid_packets_ <<std::endl;
-        out << "\t" << "Total valid packets:    " << std::setw(10) << total_valid_packets_ <<std::endl;
+        out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
+        out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
         out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
         out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
         if(mux_.lock())

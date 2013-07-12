@@ -175,7 +175,7 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
 
 	// Check the UDP layer
        	BOOST_CHECK(udp_low->getTotalBytes() == 44);
-       	BOOST_CHECK(udp_low->getTotalValidPackets() == 1);
+       	BOOST_CHECK(udp_low->getTotalValidatedPackets() == 1);
        	BOOST_CHECK(udp_low->getTotalMalformedPackets() == 0);
        	BOOST_CHECK(udp_low->getTotalPackets() == 1);
 
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
 
 	// check the GPRS layer;
        	BOOST_CHECK(gprs->getTotalBytes() == 44);// Im not sure of this value, check!!!
-       	BOOST_CHECK(gprs->getTotalValidPackets() == 1);
+       	BOOST_CHECK(gprs->getTotalValidatedPackets() == 1);
        	BOOST_CHECK(gprs->getTotalMalformedPackets() == 0);
        	BOOST_CHECK(gprs->getTotalPackets() == 1);
 
@@ -196,7 +196,7 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
 	// check the HIGH IP layer
 
        	BOOST_CHECK(ip_high->getTotalBytes() == 36);
-       	BOOST_CHECK(ip_high->getTotalValidPackets() == 1);
+       	BOOST_CHECK(ip_high->getTotalValidatedPackets() == 1);
        	BOOST_CHECK(ip_high->getTotalMalformedPackets() == 0);
        	BOOST_CHECK(ip_high->getTotalPackets() == 1);
 
@@ -211,9 +211,9 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
         BOOST_CHECK(remoteip_h.compare(ip_high->getDstAddrDotNotation())==0);
 
 	// check the ICMP layer
-       	BOOST_CHECK(icmp->getTotalValidPackets() == 1);
+       	BOOST_CHECK(icmp->getTotalValidatedPackets() == 1);
        	BOOST_CHECK(icmp->getTotalMalformedPackets() == 0);
-       	BOOST_CHECK(icmp->getTotalPackets() == 1);
+       	BOOST_CHECK(icmp->getTotalPackets() == 0); // Because the packet function is not set!!!
         
 	BOOST_CHECK(mux_icmp_high->getTotalForwardPackets() == 0);
         BOOST_CHECK(mux_icmp_high->getTotalReceivedPackets() == 1);
@@ -273,7 +273,7 @@ BOOST_AUTO_TEST_CASE (test2_gprs)
 	BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
 	BOOST_CHECK(flow_mng->getTotalFlows() == 2);
 	BOOST_CHECK(flow_cache->getTotalFails() == 0);
-	flow_mng->printFlows(std::cout);
+	//flow_mng->printFlows(std::cout);
 }
 
 BOOST_AUTO_TEST_CASE (test3_gprs)
@@ -411,8 +411,8 @@ BOOST_AUTO_TEST_CASE (test4_gprs) // with the DNSProtocol
 	dns_->statistics();
 
 	// check the DNSProtocol values
-	BOOST_CHECK(dns_->getTotalPackets() == 1);
-	BOOST_CHECK(dns_->getTotalValidPackets() == 1);
+	BOOST_CHECK(dns_->getTotalPackets() == 2);
+	BOOST_CHECK(dns_->getTotalValidatedPackets() == 1);
 	BOOST_CHECK(dns_->getTotalBytes() == 68);
 
 }

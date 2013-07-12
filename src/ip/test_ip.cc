@@ -287,9 +287,9 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
 	// Now check all the path that the packet have take
         BOOST_CHECK(vlan->getTotalPackets() == 0);
         BOOST_CHECK(ip1->getTotalPackets() == 1);
-        BOOST_CHECK(ip1->getTotalValidPackets() == 1);
+        BOOST_CHECK(ip1->getTotalValidatedPackets() == 1);
         BOOST_CHECK(ip1->getTotalMalformedPackets() == 0);
-        BOOST_CHECK(ip2->getTotalValidPackets() == 1);
+        BOOST_CHECK(ip2->getTotalValidatedPackets() == 1);
         BOOST_CHECK(ip2->getTotalMalformedPackets() == 0);
         BOOST_CHECK(ip2->getTotalPackets() == 1);
 

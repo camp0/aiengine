@@ -23,8 +23,8 @@ public:
 	static const int header_size = 20;
 	int getHeaderSize() const { return header_size;};
 
-	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};
-	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
+	uint64_t getTotalPackets() const { return total_packets_;};
+	uint64_t getTotalValidatedPackets() const { return total_validated_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
         const char *getName() { return name_.c_str();};
@@ -57,7 +57,7 @@ public:
 		if((length >= header_size))
 		//if((length >= header_size)&&(isIPver4()))
 		{
-			++total_valid_packets_; 
+			++total_validated_packets_; 
 			return true;
 		}
 		else

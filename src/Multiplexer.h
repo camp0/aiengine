@@ -27,6 +27,7 @@ public:
 		header_size_ = 0;
 		ipsrc = 0;
 		ipdst = 0;
+		total_length = 0;
 		protocol_id_ =  NO_PROTOCOL_SELECTED;
 		next_protocol_id_ =  NO_PROTOCOL_SELECTED;
 		addChecker(std::bind(&Multiplexer::default_check,this,std::placeholders::_1));

@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(test4_udp)
 
 	// ip
 	BOOST_CHECK(ip->getTotalPackets() == 1);
-	BOOST_CHECK(ip->getTotalValidPackets() == 1);
+	BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
 	BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
 	BOOST_CHECK(ip->getTotalBytes() == 132);
 

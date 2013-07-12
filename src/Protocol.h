@@ -11,7 +11,8 @@ class Flow;
 class Protocol 
 {
 public:
-    	Protocol():total_malformed_packets_(0),total_valid_packets_(0),name_(""){};
+    	Protocol():total_malformed_packets_(0),total_validated_packets_(0),
+		total_packets_(0),name_(""){};
     	virtual ~Protocol() {};
 
 	virtual void setHeader(unsigned char *raw_packet) = 0;
@@ -30,7 +31,8 @@ public:
 	
 	mutable std::string name_;
 	mutable uint64_t total_malformed_packets_;
-	mutable uint64_t total_valid_packets_;
+	mutable uint64_t total_validated_packets_;
+	mutable uint64_t total_packets_;
 private:
 	u_int16_t protocol_id_;
 };

@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE (test1_http)
 
 	// check ip layer
 	BOOST_CHECK(ip->getTotalPackets() == 1);
-	BOOST_CHECK(ip->getTotalValidPackets() == 1);
+	BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
 	BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
 	BOOST_CHECK(ip->getTotalBytes() == 371);
 
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE (test1_http)
 
 	// check the tcp layer	
 	BOOST_CHECK(tcp->getTotalPackets() == 1);
-	BOOST_CHECK(tcp->getTotalValidPackets() == 1);
+	BOOST_CHECK(tcp->getTotalValidatedPackets() == 1);
 	BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
 	BOOST_CHECK(tcp->getTotalBytes() == 351);
 

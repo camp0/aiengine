@@ -56,6 +56,7 @@ void Multiplexer::forwardPacket(Packet &packet)
                         	mux->forwardPacket(pkt_candidate);
 			}else{
 				std::cout << "WARNING: PACKET NO ACCEPTED by Multiplexer(" << this <<")" << std::endl;
+				std::cout << pkt_candidate;
 			}
                 }
         }else{

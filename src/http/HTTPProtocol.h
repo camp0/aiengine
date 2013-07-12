@@ -30,8 +30,8 @@ public:
 	int getHeaderSize() const { return header_size;};
 
 	int32_t getTotalBytes() const { return total_bytes_; };
-	uint64_t getTotalPackets() const { return total_malformed_packets_+total_valid_packets_;};
-	uint64_t getTotalValidPackets() const { return total_valid_packets_;};
+	uint64_t getTotalPackets() const { return total_packets_;};
+	uint64_t getTotalValidatedPackets() const { return total_validated_packets_;};
 	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
         const char *getName() { return name_.c_str();};
@@ -61,7 +61,7 @@ public:
 		if(boost::regex_search(paco, what_, http_regex_)) 
                 {
 			setHeader(packet.getPayload());
-                        ++total_valid_packets_;
+                        ++total_validated_packets_;
                         return true;
                 }
                 else
