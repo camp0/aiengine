@@ -141,7 +141,11 @@ BOOST_AUTO_TEST_CASE (test2_ip) // ethernet -> ip
         mux_eth->forwardPacket(packet);	
 
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
-        BOOST_CHECK(mux_ip->getCurrentPacket()->getLength() == length - 14);
+
+	BOOST_CHECK(ip->getTotalPackets() == 1);
+	BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
+	BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+	BOOST_CHECK(ip->getTotalBytes() == length -14);
 
 }
 
@@ -167,11 +171,10 @@ BOOST_FIXTURE_TEST_CASE (test3_ip, StackEthernetVLanIP) // ethernet -> vlan -> i
         BOOST_CHECK(mux_ip->getTotalForwardPackets() == 0);
         BOOST_CHECK(mux_vlan->getTotalFailPackets() == 0);
 
+	BOOST_CHECK(vlan->getTotalBytes() == length - 14);
+	BOOST_CHECK(ip->getTotalBytes() == length - 18);
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
-        BOOST_CHECK(mux_vlan->getCurrentPacket()->getLength() == length - 14);
-        BOOST_CHECK(mux_ip->getCurrentPacket()->getLength() == length - (14 + 4 ));
 
-        BOOST_CHECK(ip->getPacketLength() == mux_ip->getCurrentPacket()->getLength());
         BOOST_CHECK(eth->getEthernetType() == ETH_P_8021Q);
         BOOST_CHECK(vlan->getEthernetType() == ETH_P_IP);
 }

@@ -11,7 +11,7 @@
 #define BOOST_TEST_MODULE udptest 
 #include <boost/test/unit_test.hpp>
 
-struct StackUdp 
+struct StackUdpTest 
 {
 	EthernetProtocolPtr eth;
 	IPProtocolPtr ip;	
@@ -20,7 +20,7 @@ struct StackUdp
 	MultiplexerPtr mux_ip;
 	MultiplexerPtr mux_udp;
 	
-	StackUdp()
+	StackUdpTest()
 	{
         	udp = UDPProtocolPtr(new UDPProtocol());
         	ip = IPProtocolPtr(new IPProtocol());
@@ -57,18 +57,18 @@ struct StackUdp
 		mux_ip->addDownMultiplexer(mux_eth);
 		mux_ip->addUpMultiplexer(mux_udp,IPPROTO_UDP);
 		mux_udp->addDownMultiplexer(mux_ip);
-		BOOST_TEST_MESSAGE("Setup StackUdp");
+		BOOST_TEST_MESSAGE("Setup StackUdpTest");
 	}
 
-	~StackUdp() {
-		BOOST_TEST_MESSAGE("Teardown StackUdp");
+	~StackUdpTest() {
+		BOOST_TEST_MESSAGE("Teardown StackUdpTest");
 	}
 };
 
 
 //BOOST_AUTO_TEST_SUITE (udp_suite) name of the test suite is stringtest
 
-BOOST_FIXTURE_TEST_SUITE(udp_suite,StackUdp)
+BOOST_FIXTURE_TEST_SUITE(udp_suite,StackUdpTest)
 
 BOOST_AUTO_TEST_CASE (test1_udp)
 {

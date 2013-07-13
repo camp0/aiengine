@@ -4,6 +4,7 @@
 void VLanProtocol::processPacket(Packet &packet) 
 {
 	++total_packets_;
+	total_bytes_ += packet.getLength();
 //        std::cout << "----------------------------joder" << std::endl;
         MultiplexerPtr mux = mux_.lock();
         if(mux)

@@ -54,8 +54,6 @@ BOOST_AUTO_TEST_CASE (test1_vlan)
 {
 	BOOST_CHECK(vlan->getTotalPackets() == 0);
 	BOOST_CHECK(eth->getTotalPackets() == 0);
-	vlan->statistics(std::cout);
-	eth->statistics(std::cout);
 }
 
 
@@ -78,13 +76,7 @@ BOOST_AUTO_TEST_CASE (test2_vlan)
 	BOOST_CHECK(mux_vlan->getTotalForwardPackets() == 0);
 	BOOST_CHECK(mux_vlan->getTotalFailPackets() == 1);
 
-	//BOOST_CHECK(std::memcmp(mux_vlan->getCurrentPacket()->getPayload(),"\x02\x5e\x08\x00",4) == 0);
-	BOOST_CHECK(mux_vlan->getCurrentPacket()->getLength() == 4);
-	BOOST_CHECK(mux_vlan->getCurrentPacket()->getPrevHeaderSize() == 14);
- 
        	BOOST_CHECK(vlan->getEthernetType() == ETH_P_IP);
-	vlan->statistics();
-	eth->statistics();
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

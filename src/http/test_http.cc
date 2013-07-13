@@ -142,18 +142,17 @@ BOOST_AUTO_TEST_CASE (test1_http)
 	BOOST_CHECK(flow_cache->getTotalAcquires() == 1);	
 	BOOST_CHECK(flow_cache->getTotalReleases() == 0);	
 	
-	// check the tcp flow forwarder
-	tcp->statistics();
-
-	http->statistics();
+	BOOST_CHECK(http->getTotalPackets() == 1);
+	BOOST_CHECK(http->getTotalValidatedPackets() == 1);
+	BOOST_CHECK(http->getTotalBytes() == 331);
 
         // check integrity of the header
         std::string cad("GET / HTTP/1.1");
-	std::string cad1(reinterpret_cast <const char*>(http->getPayload()));
+	std::ostringstream h;
 
-        BOOST_CHECK(cad.compare(reinterpret_cast <const char*>(http->getPayload()))==0);
-	std::cout << http->getPayload() << std::cout;
+	h << http->getPayload();
 
+        BOOST_CHECK(cad.compare(0,14,h.str()));
 }
 
 
