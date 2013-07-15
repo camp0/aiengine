@@ -1,6 +1,10 @@
 #ifndef _EthernetProtocol_H_
 #define _EthernetProtocol_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "../Multiplexer.h"
 #include "../Packet.h" 
 #include "../Protocol.h"

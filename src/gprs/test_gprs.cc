@@ -194,7 +194,6 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
         BOOST_CHECK(mux_gprs->getTotalFailPackets() == 0);
 
 	// check the HIGH IP layer
-
        	BOOST_CHECK(ip_high->getTotalBytes() == 36);
        	BOOST_CHECK(ip_high->getTotalValidatedPackets() == 1);
        	BOOST_CHECK(ip_high->getTotalMalformedPackets() == 0);
@@ -273,7 +272,6 @@ BOOST_AUTO_TEST_CASE (test2_gprs)
 	BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
 	BOOST_CHECK(flow_mng->getTotalFlows() == 2);
 	BOOST_CHECK(flow_cache->getTotalFails() == 0);
-	//flow_mng->printFlows(std::cout);
 }
 
 BOOST_AUTO_TEST_CASE (test3_gprs)
@@ -379,7 +377,6 @@ BOOST_AUTO_TEST_CASE (test4_gprs) // with the DNSProtocol
         ff_dns_->addChecker(std::bind(&DNSProtocol::dnsChecker,dns_,std::placeholders::_1));
         ff_dns_->addFlowFunction(std::bind(&DNSProtocol::processFlow,dns_,std::placeholders::_1));
 
-
         // Configure the FlowForwarders
         udp_high->setFlowForwarder(ff_udp_high);
 	ff_udp_high->addUpFlowForwarder(ff_dns_);
@@ -391,9 +388,7 @@ BOOST_AUTO_TEST_CASE (test4_gprs) // with the DNSProtocol
         mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forwardPacket(packet);
 
-//        mux_eth->setPacket(&packet);
- //       eth->setHeader(packet.getPayload());
-//        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+	// forward the same packet again
         mux_eth->forwardPacket(packet);
 
         // Check the integrity of the highest IP
@@ -407,8 +402,6 @@ BOOST_AUTO_TEST_CASE (test4_gprs) // with the DNSProtocol
         BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
         BOOST_CHECK(flow_mng->getTotalFlows() == 2);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);
-        flow_mng->printFlows(std::cout);
-	dns_->statistics();
 
 	// check the DNSProtocol values
 	BOOST_CHECK(dns_->getTotalPackets() == 2);

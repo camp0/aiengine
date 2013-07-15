@@ -1,6 +1,10 @@
 #ifndef _FlowForwarder_H_
 #define _FlowForwarder_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <iostream>
 #include <memory>
 #include <functional>

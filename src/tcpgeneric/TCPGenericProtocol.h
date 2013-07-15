@@ -1,5 +1,5 @@
-#ifndef _SSLProtocol_H_
-#define _SSLProtocol_H_
+#ifndef _TCPGenericProtocol_H_
+#define _TCPGenericProtocol_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -12,6 +12,7 @@
 #include "../Multiplexer.h"
 #include "../FlowForwarder.h"
 #include "../Protocol.h"
+#include "../signatures/SignatureManager.h"
 #include <net/ethernet.h>
 #include <netinet/ip.h>
 #include <netinet/in.h>
@@ -19,14 +20,14 @@
 #include <iostream>
 #include <cstring>
 
-class SSLProtocol: public Protocol 
+class TCPGenericProtocol: public Protocol 
 {
 public:
-    	explicit SSLProtocol():ssl_header_(nullptr),total_bytes_(0) { name_="SSLProtocol";};
-    	virtual ~SSLProtocol() {};
+    	explicit TCPGenericProtocol():tcp_generic_header_(nullptr),total_bytes_(0) { name_="TCPGenericProtocol";};
+    	virtual ~TCPGenericProtocol() {};
 	
 	static const u_int16_t id = 0;
-	static const int header_size = 2;
+	static const int header_size = 0;
 	int getHeaderSize() const { return header_size;};
 
 	int32_t getTotalBytes() const { return total_bytes_; };
@@ -49,33 +50,27 @@ public:
 
         void setHeader(unsigned char *raw_packet)
         {
-                ssl_header_ = raw_packet;
+                tcp_generic_header_ = raw_packet;
         }
 
-	// Condition for say that a payload is ssl 
-	bool sslChecker(Packet &packet) 
+	// Condition for say that a payload is for generic tcp 
+	// Accepts all!
+	bool tcpGenericChecker(Packet &packet) 
 	{
-		if(std::memcmp("\x16\x03",packet.getPayload(),2)==0)
-		{
-			setHeader(packet.getPayload());
-			++total_validated_packets_; 
-			return true;
-		}
-		else
-		{
-			++total_malformed_packets_;
-			return false;
-		}
+		setHeader(packet.getPayload());
+		++total_validated_packets_; 
+		return true;
 	}
-
 
 private:
 	FlowForwarderPtrWeak flow_forwarder_;	
 	MultiplexerPtrWeak mux_;
-	unsigned char *ssl_header_;
+	unsigned char *tcp_generic_header_;
         int32_t total_bytes_;
+	SignatureManagerPtrWeak sigs_;
 };
 
-typedef std::shared_ptr<SSLProtocol> SSLProtocolPtr;
+typedef std::shared_ptr<TCPGenericProtocol> TCPGenericProtocolPtr;
+typedef std::weak_ptr<TCPGenericProtocol> TCPGenericProtocolPtrWeak;
 
 #endif

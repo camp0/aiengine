@@ -1,6 +1,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
 #include <csignal>
 #include <boost/program_options.hpp>
 #include <fstream>
@@ -14,7 +15,7 @@ void signalHandler( int signum )
 {
         if(pktdis)
         {
-        //      pktdis->statistics();
+              //pktdis->statistics();
         }
         exit(signum);
 }
@@ -25,6 +26,7 @@ int main(int argc, char* argv[])
 	std::string pcapfile;
 	std::string interface;
 	bool print_flows = false;
+	bool show_statistics = false;
 	int tcp_flows_cache;
 	int udp_flows_cache;
 
@@ -57,6 +59,7 @@ int main(int argc, char* argv[])
 		("stack,s",	po::value<std::string>(&stack_name)->default_value("lan"),
 				      	"Sets the network stack (lan,3g).")
 		("dumpflows,d",      	"Dump the flows to stdout.")
+		("statistics,S",      	"Show statistics of the stack.")
 		("help,h",     		"Show help")
 		("version,v",   	"Show version string")
 		;
@@ -82,6 +85,10 @@ int main(int argc, char* argv[])
 		if (vm.count("dumpflows"))
 		{
 			print_flows = true;
+		}
+		if (vm.count("statistics"))
+		{
+			show_statistics = true;
 		}
 
         	po::notify(vm);
@@ -130,14 +137,19 @@ int main(int argc, char* argv[])
 
 	try
 	{
-        	pktdis->runPcap();
+        	pktdis->run();
+        	//pktdis->runPcap();
    	}
    	catch(std::exception& e)
    	{
       		std::cerr << "Error: " << e.what() << std::endl;
 	}
-	stack->statistics();	
         pktdis->closePcapFile();
+
+	if(show_statistics)
+	{
+		stack->statistics();	
+	}
 
 	if(print_flows)
 	{

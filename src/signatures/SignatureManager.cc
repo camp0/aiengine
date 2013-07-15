@@ -13,7 +13,7 @@ void SignatureManager::addSignature(SignaturePtr sig)
 	signatures_.push_back(sig);
 }
 
-void SignatureManager::evaluate(const std::string &query, bool *result)
+void SignatureManager::evaluate(const unsigned char *payload, bool *result)
 {
 //	std::cout << "Processing query(" << query.c_str() << ")" <<std::endl;
 
@@ -21,7 +21,7 @@ void SignatureManager::evaluate(const std::string &query, bool *result)
                 signatures_.end(),  [&](SignaturePtr& sig)
         {
 //		std::cout << "Evaluating rule(" << r->getExpression() << ")" << std::endl;
-		if(sig->evaluate(query.c_str()))
+		if(sig->evaluate(payload))
 		{
 			++total_matched_signatures_;
 			current_signature_ = sig;

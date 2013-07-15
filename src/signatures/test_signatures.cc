@@ -10,7 +10,7 @@ BOOST_AUTO_TEST_SUITE(signature_suite)
 
 BOOST_AUTO_TEST_CASE (test1_signature)
 {
-	SignatureManager *sigmng = SignatureManager::getInstance();
+	SignatureManagerPtr sigmng = SignatureManagerPtr( new SignatureManager());
 
 	BOOST_CHECK(sigmng->getTotalSignatures()  ==0);
 	BOOST_CHECK(sigmng->getTotalMatchingSignatures() == 0);
@@ -19,12 +19,21 @@ BOOST_AUTO_TEST_CASE (test1_signature)
 
 BOOST_AUTO_TEST_CASE (test2_signature)
 {
-        SignatureManager *sigmng = SignatureManager::getInstance();
+	SignatureManagerPtr sigmng = SignatureManagerPtr( new SignatureManager());
 
 	sigmng->addSignature("^hello");
         BOOST_CHECK(sigmng->getTotalSignatures()  == 1);
         BOOST_CHECK(sigmng->getTotalMatchingSignatures() == 0);
         BOOST_CHECK(sigmng->getMachtedSignature() == nullptr);
+
+	std::string cad("hello world");
+	bool value = false;
+	const unsigned char *buffer = reinterpret_cast<const unsigned char*>(cad.c_str());
+
+	sigmng->evaluate(buffer,&value);
+	BOOST_CHECK(value == true);
+	BOOST_CHECK(sigmng->getMachtedSignature() != nullptr);
+        BOOST_CHECK(sigmng->getTotalMatchingSignatures() == 1);
 }
 
 

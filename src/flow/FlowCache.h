@@ -1,6 +1,10 @@
 #ifndef _FlowCache_H_
 #define _FlowCache_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <boost/ptr_container/ptr_vector.hpp>
 
 #include "Flow.h"

@@ -1,6 +1,10 @@
 #ifndef _IPv6Protocol_H_
 #define _IPv6Protocol_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifdef __FAVOR_BSD
 #undef __FAVOR_BSD
 #endif // __FAVOR_BSD
@@ -45,7 +49,7 @@ public:
                 ip6_header_ = reinterpret_cast <struct ipv6hdr*> (raw_packet);
         }
 
-	// Condition for say that a packet its ethernet 
+	// Condition for say that a packet is ipv6 
 	bool ip6Checker() 
 	{
 		Packet *pkt = mux_.lock()->getCurrentPacket();

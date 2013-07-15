@@ -16,7 +16,10 @@ SUBDIRS = 	src \
 		src/http \
 		src/ssl \
 		src/dns \
-		src/flow 
+		src/flow \
+		src/tcpgeneric \
+		src/udpgeneric \
+		src/signatures  
 
 dist_noinst_SCRIPTS = autogen.sh
 

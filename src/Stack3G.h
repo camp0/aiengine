@@ -1,6 +1,10 @@
 #ifndef _Stack3G_H_
 #define _Stack3G_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <string>
 #include "Multiplexer.h"
 #include "FlowForwarder.h"

@@ -1,6 +1,10 @@
 #ifndef _IPProtocol_H_
 #define _IPProtocol_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifdef __FAVOR_BSD
 #undef __FAVOR_BSD
 #endif // __FAVOR_BSD

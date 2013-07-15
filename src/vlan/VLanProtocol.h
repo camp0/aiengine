@@ -1,6 +1,10 @@
 #ifndef _VLanProtocol_H_
 #define _VLanProtocol_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "../Multiplexer.h"
 #include "../Protocol.h"
 #include <pcap/vlan.h>

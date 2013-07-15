@@ -1,6 +1,10 @@
 #ifndef _Flow_H
 #define _Flow_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "../Packet.h"
 
 class FlowForwarder;
@@ -34,8 +38,6 @@ public:
 
 	FlowForwarderPtrWeak forwarder;
 
-	// TODO
-//	PacketPtr packet;
 	Packet *packet;
 	
 	void reset()

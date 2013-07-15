@@ -19,7 +19,7 @@ public:
 	}
 
 	virtual ~Signature()=default;
-	bool evaluate(const char *query);
+	bool evaluate(const unsigned char *payload);
 	const std::string &getExpression() { return expression_;};	
 
 private:
@@ -32,5 +32,5 @@ private:
 
 typedef std::shared_ptr<Signature> SignaturePtr;
 
-#endif // FIRESQL_RULE_H
+#endif // _Signature_H_ 
 
