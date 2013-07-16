@@ -62,9 +62,11 @@ public:
 		return true;
 	}
 
+	void setSignatureManager(SignatureManagerPtrWeak sig) { sigs_ = sig;};
+
 private:
 	FlowForwarderPtrWeak flow_forwarder_;	
-	MultiplexerPtrWeak mux_;
+	MultiplexerPtrWeak mux_; // Not used;
 	unsigned char *tcp_generic_header_;
         int32_t total_bytes_;
 	SignatureManagerPtrWeak sigs_;

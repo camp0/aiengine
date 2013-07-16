@@ -12,6 +12,7 @@
 #include "../Multiplexer.h"
 #include "../FlowForwarder.h"
 #include "../Protocol.h"
+#include "../signatures/SignatureManager.h"
 #include <net/ethernet.h>
 #include <netinet/ip.h>
 #include <netinet/in.h>
@@ -61,11 +62,14 @@ public:
 		return true;
 	}
 
+	void setSignatureManager(SignatureManagerPtrWeak sig) { sigs_ = sig;};
+
 private:
 	FlowForwarderPtrWeak flow_forwarder_;	
 	MultiplexerPtrWeak mux_;
 	unsigned char *udp_generic_header_;
         int32_t total_bytes_;
+	SignatureManagerPtrWeak sigs_;
 };
 
 typedef std::shared_ptr<UDPGenericProtocol> UDPGenericProtocolPtr;

@@ -3,10 +3,23 @@
 
 void TCPGenericProtocol::processFlow(Flow *flow)
 {
+	SignatureManagerPtr sig = sigs_.lock();
 	++total_packets_;
 	total_bytes_ += flow->packet->getLength();
 
+	if(sig) // There is a SignatureManager attached
+	{
+		bool result = false;
+		const unsigned char *payload = flow->packet->getPayload();
+
+		sig->evaluate(payload,&result);
+		if(result)
+		{
+			std::cout << "The packet matchs!" << std::endl;
+		}	
+	}
 }
+
 void TCPGenericProtocol::statistics(std::basic_ostream<char>& out)
 {
         out << "TCPGenericProtocol(" << this << ") statistics" << std::dec <<  std::endl;

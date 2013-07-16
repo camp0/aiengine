@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE (test2_signature)
 
 	std::string cad("hello world");
 	bool value = false;
-	const unsigned char *buffer = reinterpret_cast<const unsigned char*>(cad.c_str());
+	unsigned const char *buffer = reinterpret_cast<const unsigned char*>(cad.c_str());
 
 	sigmng->evaluate(buffer,&value);
 	BOOST_CHECK(value == true);
