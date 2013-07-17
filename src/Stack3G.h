@@ -43,7 +43,7 @@ public:
 	void setTotalUDPFlows(int value) 
 	{ 	
 		flow_cache_udp_high_->createFlows(value);
-		flow_cache_udp_low_->createFlows(value/64);
+		flow_cache_udp_low_->createFlows(value/8);
 	};
 
 private:

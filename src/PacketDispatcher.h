@@ -74,6 +74,8 @@ private:
 	void handle_receive(boost::system::error_code error);
 	void do_read(boost::system::error_code error);
 
+	void forwardRawPacket(unsigned char *packet,int length);
+
 	PcapStreamPtr stream_;
 	bool pcap_file_ready_;
 	bool read_in_progress_;

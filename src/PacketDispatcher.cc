@@ -15,8 +15,9 @@ void PacketDispatcher::openDevice(std::string device)
 	pcap_ = pcap_open_live(device.c_str(), PACKET_RECVBUFSIZE, 0, -1, errorbuf);
 	if(pcap_ == nullptr) 
 	{
-		std::cerr << "Unknown device "<< device.c_str() << std::endl;
+		std::cerr << "Unknown device:"<< device.c_str() << std::endl;
 		device_is_ready_ = false;
+		exit(-1);
 		return;
 	}
 	int ifd = pcap_get_selectable_fd(pcap_);
@@ -47,8 +48,12 @@ void PacketDispatcher::openPcapFile(std::string filename)
 	char errorbuf[PCAP_ERRBUF_SIZE];
 
         pcap_ = pcap_open_offline(filename.c_str(),errorbuf);
-        if(pcap_ == nullptr) 
+        if(pcap_ == nullptr)
+	{ 
 		pcap_file_ready_ = false;
+		std::cerr << "Unknown pcapfile:"<< filename.c_str() << std::endl;
+		exit(-1);
+	}	
 	else
 		pcap_file_ready_ = true;	
 
@@ -68,7 +73,8 @@ void PacketDispatcher::do_read(boost::system::error_code ec)
 	int len = pcap_next_ex(pcap_,&header,&pkt_data);
 	if(len >= 0) 
 	{
-		std::cout << "read packet" << std::endl;
+		forwardRawPacket((unsigned char*)pkt_data,header->len);
+		//std::cout << "read packet" << std::endl;
 	 	//update the buffer
 	}
 
@@ -78,11 +84,28 @@ void PacketDispatcher::do_read(boost::system::error_code ec)
 
 }
 
+void PacketDispatcher::forwardRawPacket(unsigned char *packet,int length)
+{
+	++total_packets_;
+	if(defMux_)
+	{
+		current_packet_.setPayload(packet);
+		current_packet_.setPayloadLength(length);
+		current_packet_.setPrevHeaderSize(0);
+
+		if(defMux_->acceptPacket(current_packet_))
+		{
+			defMux_->setPacket(&current_packet_);
+			defMux_->setNextProtocolIdentifier(eth_->getEthernetType());
+			defMux_->forwardPacket(current_packet_);
+                }
+	}
+}
 
 void PacketDispatcher::start_operations()
 {
 	read_in_progress_ = false;
-	std::cout << "start_operations" << std::endl;
+	//std::cout << "start_operations" << std::endl;
 	if(!read_in_progress_)
 	{
 		read_in_progress_ = true;
@@ -98,20 +121,7 @@ void PacketDispatcher::runPcap()
 	int ret = 0;
 	while((ret = pcap_next_ex(pcap_,&header,&pkt_data)) >= 0)
 	{
-		++total_packets_;
-		if(defMux_)
-		{
-			current_packet_.setPayload((unsigned char*)pkt_data);
-			current_packet_.setPayloadLength(header->len);
-			current_packet_.setPrevHeaderSize(0);
-				
-			if(defMux_->acceptPacket(current_packet_))
-			{
-				defMux_->setPacket(&current_packet_);	
-				defMux_->setNextProtocolIdentifier(eth_->getEthernetType());
-				defMux_->forwardPacket(current_packet_);
-			}
-		}
+		forwardRawPacket((unsigned char*)pkt_data,header->len);
 	}
 	
 }
@@ -120,9 +130,11 @@ void PacketDispatcher::runPcap()
 void PacketDispatcher::run() 
 {
 	try {
+		start_operations();
 		io_service_.run();
 
-	}catch (std::exception& e)
+	}
+	catch (std::exception& e)
         {
         	std::cerr << e.what() << std::endl;
         }

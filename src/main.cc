@@ -10,33 +10,44 @@
 #include "Stack3G.h"
 
 PacketDispatcherPtr pktdis;
+NetworkStackPtr stack;
+std::string stack_name;
+std::string pcapfile;
+std::string interface;
+bool print_flows = false;
+bool show_statistics = false;
+int tcp_flows_cache;
+int udp_flows_cache;
 
 void signalHandler( int signum )
 {
-        if(pktdis)
-        {
-              //pktdis->statistics();
-        }
         exit(signum);
 }
 
+
+void iaengineExit()
+{
+        if((stack)&&(show_statistics))
+        {
+              stack->statistics();
+        }
+        if((stack)&&(print_flows))
+        {
+              stack->printFlows();
+        }
+}
+
+
 int main(int argc, char* argv[])
 {
-	std::string stack_name;
-	std::string pcapfile;
-	std::string interface;
-	bool print_flows = false;
-	bool show_statistics = false;
-	int tcp_flows_cache;
-	int udp_flows_cache;
-
 	namespace po = boost::program_options;
+	po::variables_map var_map;
 
 	po::options_description mandatory_ops("Mandatory arguments");
 	mandatory_ops.add_options()
-//		("interface,i",   po::value<std::string>(&device)->required(),
-//			"sets the interface.")
-		("pcapfile,f",   po::value<std::string>(&pcapfile)->required(),
+		("interface,i",   po::value<std::string>(&interface),
+			"sets the interface.")
+		("pcapfile,f",   po::value<std::string>(&pcapfile),
 			"Sets the pcap file.")
         	;
 
@@ -68,30 +79,30 @@ int main(int argc, char* argv[])
 
 	try
 	{
-		po::variables_map vm;
-        	po::store(po::parse_command_line(argc, argv, mandatory_ops), vm);
+        	po::store(po::parse_command_line(argc, argv, mandatory_ops), var_map);
 
-        	if (vm.count("help"))
+        	if (var_map.count("help"))
         	{
             		std::cout << "iaengine " VERSION << std::endl;
             		std::cout << mandatory_ops << std::endl;
             		return false;
         	}
-        	if (vm.count("version"))
+        	if (var_map.count("version"))
         	{
             		std::cout << "iaengine " VERSION << std::endl;
             		return false;
         	}
-		if (vm.count("dumpflows"))
+		if((var_map.count("interface") == 0)&&(var_map.count("pcapfile") == 0))
 		{
-			print_flows = true;
-		}
-		if (vm.count("statistics"))
-		{
-			show_statistics = true;
+            		std::cout << "iaengine " VERSION << std::endl;
+            		std::cout << mandatory_ops << std::endl;
+			return false;
 		}
 
-        	po::notify(vm);
+		if (var_map.count("dumpflows")) print_flows = true;
+		if (var_map.count("statistics")) show_statistics = true;
+
+        	po::notify(var_map);
     	}
 	catch(boost::program_options::required_option& e)
     	{
@@ -112,7 +123,6 @@ int main(int argc, char* argv[])
     	signal(SIGINT, signalHandler);  
 
 	pktdis = PacketDispatcherPtr(new PacketDispatcher());
-	NetworkStackPtr stack;
 
 	if(stack_name.compare("lan") == 0)
 	{
@@ -132,28 +142,37 @@ int main(int argc, char* argv[])
 	// connect with the stack
         pktdis->setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());
 
-	std::cout << "Processing pcapfile:" << pcapfile << std::endl;
-        pktdis->openPcapFile(pcapfile.c_str());
-
-	try
+	if(var_map.count("pcapfile") == 1)
 	{
-        	pktdis->run();
-        	//pktdis->runPcap();
-   	}
-   	catch(std::exception& e)
-   	{
-      		std::cerr << "Error: " << e.what() << std::endl;
+        	pktdis->openPcapFile(pcapfile.c_str());
+		try
+		{
+			atexit(iaengineExit);
+			pktdis->runPcap();
+		}
+		catch(std::exception& e)
+		{
+			std::cerr << "Error: " << e.what() << std::endl;
+		}
+		pktdis->closePcapFile();
 	}
-        pktdis->closePcapFile();
-
-	if(show_statistics)
+	else
 	{
-		stack->statistics();	
-	}
+		if(var_map.count("interface") == 1)
+		{
+        		pktdis->openDevice(interface.c_str());
+			try
+			{
+				atexit(iaengineExit);
+				pktdis->run();
+			}
+			catch(std::exception& e)
+			{
+				std::cerr << "Error: " << e.what() << std::endl;
+			}
+			pktdis->closeDevice();
 
-	if(print_flows)
-	{
-		stack->printFlows();
+		}
 	}
 
 	return 0;
