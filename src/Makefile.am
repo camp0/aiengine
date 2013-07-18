@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
 
+EXTRA_DIST = py_wrapper.cc setup.py
+
 noinst_HEADERS =        Packet.h \
 			Protocol.h \
 			PacketDispatcher.h \
@@ -54,6 +56,14 @@ check_PROGRAMS = tests
 tests_SOURCES = $(iaengine_core_sources) tests.cc 
 tests_LDADD   = -lboost_system -lboost_unit_test_framework -lboost_regex -lpcap
 tests_LDFLAGS = -DBOOST_ASIO_DISABLE_EPOLL
+
+BUILT_SOURCES = $(srcdir)/pyiaengine.so
+
+$(srcdir)/pyiaengine.so: py_wrapper.cc
+        g++ -fPIC $(iaengine_core_sources) \
+                py_wrapper.cc `pkg-config --cflags python-2.7` \
+                -I/usr/include/boost/python -std=c++11 -lpthread -lstdc++ -lboost_system \
+                -lboost_thread -lboost_regex -lboost_python -lpython2.7 -o pyiaengine.so -shared
 
 CLEANFILES = *.o *.lo *.so
 

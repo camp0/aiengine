@@ -5,7 +5,9 @@ AM_PROG_LIBTOOL
 AM_CONFIG_HEADER(config.h)
 
 AC_CONFIG_MACRO_DIR([m4])
+m4_include([m4/ax_python_devel.m4])
 m4_include([m4/ax_boost_base.m4])
+m4_include([m4/ax_boost_python.m4])
 m4_include([m4/debug.m4])
 m4_include([m4/ac_c++11.m4])
 
@@ -26,6 +28,9 @@ AC_COMPILE_STDCXX_11
 
 dnl BOOST
 AX_BOOST_BASE([1.49.0])
+
+AX_PYTHON_DEVEL([>= 2.7])
+AX_BOOST_PYTHON
 
 AC_CHECK_DEBUG
 

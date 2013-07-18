@@ -46,6 +46,9 @@ public:
 		flow_cache_udp_low_->createFlows(value/8);
 	};
 
+        void setTCPSignatureManager(SignatureManagerPtrWeak sig) {}; 
+        void setUDPSignatureManager(SignatureManagerPtrWeak sig) {};
+
 private:
 	std::string name_;
         //Protocols

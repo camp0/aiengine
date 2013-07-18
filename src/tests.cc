@@ -357,8 +357,6 @@ BOOST_FIXTURE_TEST_CASE(test_case_9,StackLanTest)
 
 	// verify the HTTP part
 	BOOST_CHECK(http_aux->getTotalBytes() == 1826);
-
-        this->statistics();
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

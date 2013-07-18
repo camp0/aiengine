@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 	po::options_description mandatory_ops("Mandatory arguments");
 	mandatory_ops.add_options()
 		("interface,i",   po::value<std::string>(&interface),
-			"sets the interface.")
+			"Sets the network interface.")
 		("pcapfile,f",   po::value<std::string>(&pcapfile),
 			"Sets the pcap file.")
         	;
