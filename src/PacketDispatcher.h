@@ -20,33 +20,7 @@
 typedef boost::asio::posix::stream_descriptor PcapStream;
 typedef std::shared_ptr<PcapStream> PcapStreamPtr;
 
-template <class T>
-class SingletonPacketDispatcher
-{
-public:
-        template <typename... Args>
-
-        static T* getInstance()
-        {
-                if(!dispatcherMngInstance_)
-                {
-                        dispatcherMngInstance_ = new T();
-                }
-                return dispatcherMngInstance_;
-        }
-
-        static void destroyInstance()
-        {
-                delete dispatcherMngInstance_;
-                dispatcherMngInstance_ = nullptr;
-        }
-
-private:
-        static T* dispatcherMngInstance_;
-};
-
-template <class T> T*  SingletonPacketDispatcher<T>::dispatcherMngInstance_ = nullptr;
-class PacketDispatcher : public SingletonPacketDispatcher<PacketDispatcher> 
+class PacketDispatcher 
 {
 public:
     	explicit PacketDispatcher():
@@ -55,7 +29,7 @@ public:
 		pcap_file_ready_(false),
 		device_is_ready_(false) {};
 
-    	virtual ~PacketDispatcher() { io_service_.stop(); };
+//    	virtual ~PacketDispatcher() { io_service_.stop(); };
 
 	void openDevice(std::string device);
 	void closeDevice();

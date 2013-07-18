@@ -10,7 +10,7 @@
 class Signature
 {
 public:
-	explicit Signature(std::string exp):
+	explicit Signature(const std::string& exp):
 		expression_(exp),
 		exp_(exp,boost::regex::icase),
 		total_matchs_(0),

@@ -39,6 +39,8 @@ iaengine_core_sources =	Multiplexer.cc \
 			./http/HTTPProtocol.cc \
 			./ssl/SSLProtocol.cc \
 			./dns/DNSProtocol.cc \
+			./signatures/Signature.cc \
+			./signatures/SignatureManager.cc \
 			Stack3G.cc StackLan.cc 
 
 iaengine_SOURCES =      $(iaengine_core_sources) main.cc
@@ -60,10 +62,10 @@ tests_LDFLAGS = -DBOOST_ASIO_DISABLE_EPOLL
 BUILT_SOURCES = $(srcdir)/pyiaengine.so
 
 $(srcdir)/pyiaengine.so: py_wrapper.cc
-        g++ -fPIC $(iaengine_core_sources) \
-                py_wrapper.cc `pkg-config --cflags python-2.7` \
-                -I/usr/include/boost/python -std=c++11 -lpthread -lstdc++ -lboost_system \
-                -lboost_thread -lboost_regex -lboost_python -lpython2.7 -o pyiaengine.so -shared
+	g++ -fPIC $(iaengine_core_sources) \
+        	py_wrapper.cc `pkg-config --cflags python-2.7` \
+		-I/usr/include/boost/python -std=c++11 -lpthread -lstdc++ -lboost_system \
+		-lboost_thread -lboost_regex -lboost_python -lpython2.7 -o pyiaengine.so -shared
 
 CLEANFILES = *.o *.lo *.so
 

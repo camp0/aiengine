@@ -1,4 +1,6 @@
-#include "./signatures/SignatureManager.h"
+#include "NetworkStack.h"
+#include "PacketDispatcher.h"
+#include "./signatures/Signature.h"
 #include <boost/python.hpp>
 
 using namespace boost::python;
@@ -6,8 +8,19 @@ using namespace boost::python;
 BOOST_PYTHON_MODULE(pyiaengine)
 {
         using namespace std;
+	using namespace boost::asio;
 
-/
+	boost::python::class_<NetworkStackPtr>("NetworkStack",no_init);
+
+	boost::python::class_<Signature>("Signature",init<const std::string&>())
+//		.def("getExpression",&Signature::getExpression)
+	;
+
+	boost::python::class_<PacketDispatcher>("PacketDispatcher")
+	;
+
+
+/*
         boost::python::class_<ActionManager>("ActionManager",no_init)
                 .def("getInstance",&ActionManager::getInstance,return_value_policy<reference_existing_object>()).staticmethod("getInstance")
                 .def("statistics",&ActionManager::statistics)
