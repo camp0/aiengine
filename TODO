@@ -2,4 +2,4 @@ Add a verification when a specific multiplexer is setup.
 Add DNSProtocol
 Add User class for managing the behavior.
 Add Host cache for the HTTPProtocol.
-
+Unify the unit test into one on the src directory.

@@ -25,13 +25,13 @@ public:
 	void evaluate(const unsigned char *payload,bool *result); 
 
 	void addSignature(const std::string expression);
+	void addSignature(SignaturePtr sig);
 
 	SignaturePtr getMachtedSignature();
 
 	void statistics();
 
 private:
-	void addSignature(const SignaturePtr rule);
 	SignaturePtr current_signature_;
 	int32_t total_matched_signatures_;
 	std::vector<SignaturePtr> signatures_;

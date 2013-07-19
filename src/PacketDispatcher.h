@@ -29,7 +29,8 @@ public:
 		pcap_file_ready_(false),
 		device_is_ready_(false) {};
 
-//    	virtual ~PacketDispatcher() { io_service_.stop(); };
+    	//virtual ~PacketDispatcher()=default;
+    	//virtual ~PacketDispatcher() { io_service_.stop(); };
 
 	void openDevice(std::string device);
 	void closeDevice();
