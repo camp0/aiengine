@@ -16,7 +16,13 @@ if __name__ == '__main__':
 
 	st = pyiaengine.StackLan()
 
+	pdis = pyiaengine.PacketDispatcher()
 
-	print dir(st)
+
+	print st.linkLayerMultiplexer
+
+	#pdis.setDefaultMultiplexer(st.linkLayerMultiplexer)
+
+	print dir(pdis)
 	sys.exit(0)
 

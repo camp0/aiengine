@@ -6,7 +6,14 @@
 #include <boost/python.hpp>
 #include <boost/asio.hpp>
 
+// http://multiplexer.googlecode.com/svn/trunk/src/multiplexer/_mxclientmodule.cc
+
 using namespace boost::python;
+
+boost::shared_ptr<boost::asio::io_service> create_new_asio_ioservice() {
+    return boost::shared_ptr<boost::asio::io_service>(
+            new boost::asio::io_service());
+}
 
 BOOST_PYTHON_MODULE(pyiaengine)
 {
@@ -38,7 +45,10 @@ BOOST_PYTHON_MODULE(pyiaengine)
                 .def("setTotalUDPFlows",&Stack3G::setTotalUDPFlows)
                 .def("statistics",statistics3G)
                 .def("printFlows",printFlows3G)
-                .add_property("linkLayerMultiplexer", &Stack3G::getLinkLayerMultiplexer, &Stack3G::setLinkLayerMultiplexer)
+                .add_property("linkLayerMultiplexer", 
+			make_function(&Stack3G::getLinkLayerMultiplexer,
+                    		return_value_policy<manage_new_object>()),
+			make_function(&Stack3G::setLinkLayerMultiplexer)) 
         ;
 
 
@@ -46,9 +56,24 @@ BOOST_PYTHON_MODULE(pyiaengine)
 	//	.def("getExpression",&Signature::getExpression)
 	;
 
-//	boost::python::class_<PacketDispatcher>("PacketDispatcher")
-//	;
+	boost::python::class_<PacketDispatcher,boost::noncopyable>("PacketDispatcher")
+		.def("openDevice",&PacketDispatcher::openDevice)
+		.def("closeDevice",&PacketDispatcher::closeDevice)
+		.def("openPcapFile",&PacketDispatcher::openPcapFile)
+		.def("closePcapFile",&PacketDispatcher::closePcapFile)
+		.def("run",&PacketDispatcher::run)
+		.def("runPcap",&PacketDispatcher::runPcap)
+		.def("setDefaultMultiplexer",&PacketDispatcher::setDefaultMultiplexer)
+	;
+/*
+        void openDevice(std::string device);
+        void closeDevice();
+        void openPcapFile(std::string filename);
+        void closePcapFile();
 
+        void run();
+        void runPcap();
+*/
 
 	void (SignatureManager::*addSignature1)(const std::string) = &SignatureManager::addSignature;
 	void (SignatureManager::*addSignature2)(SignaturePtr) = &SignatureManager::addSignature;

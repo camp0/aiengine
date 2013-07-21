@@ -30,7 +30,7 @@ public:
 		device_is_ready_(false) {};
 
     	//virtual ~PacketDispatcher()=default;
-    	//virtual ~PacketDispatcher() { io_service_.stop(); };
+    	virtual ~PacketDispatcher() { io_service_.stop(); };
 
 	void openDevice(std::string device);
 	void closeDevice();
