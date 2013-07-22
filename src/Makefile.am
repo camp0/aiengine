@@ -7,6 +7,7 @@ noinst_HEADERS =        Packet.h \
 			PacketDispatcher.h \
 			NetworkStack.h \
 			StackLan.h \
+			Cache.h \
 			Stack3G.h \
 			Multiplexer.h \
 			FlowForwarder.h \
@@ -27,7 +28,6 @@ noinst_HEADERS =        Packet.h \
 iaengine_core_sources =	Multiplexer.cc \
 			FlowForwarder.cc \
 			PacketDispatcher.cc \
-			./flow/FlowCache.cc \
 			./flow/FlowManager.cc \
 			./ethernet/EthernetProtocol.cc \
 			./vlan/VLanProtocol.cc \

@@ -2,6 +2,7 @@
 #include "StackLan.h"
 #include "Stack3G.h"
 #include "PacketDispatcher.h"
+#include "NetworkStack.h"
 #include "./signatures/Signature.h"
 #include <boost/python.hpp>
 #include <boost/asio.hpp>
@@ -20,18 +21,31 @@ BOOST_PYTHON_MODULE(pyiaengine)
         using namespace std;
 	using namespace boost::asio;
 
+
+	// for overload the methods with the class
+//	void (NetworkStack::*statisticsNetworkStack)() = &NetworkStack::statistics;
+//	void (NetworkStack::*printFlowsNetworkStack)() = &NetworkStack::printFlows;
+
+	boost::python::class_<NetworkStack, boost::noncopyable>("NetworkStack",no_init)
+		.def("setUDPSignatureManager",pure_virtual(&NetworkStack::setUDPSignatureManager))	
+		.def("setTCPSignatureManager",pure_virtual(&NetworkStack::setTCPSignatureManager))	
+		.def("setTotalTCPFlows",pure_virtual(&NetworkStack::setTotalTCPFlows))
+		.def("setTotalUDPFlows",pure_virtual(&NetworkStack::setTotalUDPFlows))
+	//	.def("statistics",pure_virtual(statisticsNetworkStack))
+	//	.def("printFlows",pure_virtual(printFlowsNetworkStack))
+	;
+
 	// for overload the methods with the class
 	void (StackLan::*statisticsLan)() = &StackLan::statistics;
 	void (StackLan::*printFlowsLan)() = &StackLan::printFlows;
 
-	boost::python::class_<StackLan>("StackLan")
+	boost::python::class_<StackLan, bases<NetworkStack> >("StackLan")
 		.def("setUDPSignatureManager",&StackLan::setUDPSignatureManager)	
 		.def("setTCPSignatureManager",&StackLan::setTCPSignatureManager)	
 		.def("setTotalTCPFlows",&StackLan::setTotalTCPFlows)
 		.def("setTotalUDPFlows",&StackLan::setTotalUDPFlows)
-		.def("statistics",statisticsLan)
-		.def("printFlows",printFlowsLan)
-		.add_property("linkLayerMultiplexer", &StackLan::getLinkLayerMultiplexer, &StackLan::setLinkLayerMultiplexer)
+	//	.def("statistics",statisticsLan)
+	//	.def("printFlows",printFlowsLan)
 	;
 
         // for overload the methods with the class
@@ -43,12 +57,8 @@ BOOST_PYTHON_MODULE(pyiaengine)
                 .def("setTCPSignatureManager",&Stack3G::setTCPSignatureManager)
                 .def("setTotalTCPFlows",&Stack3G::setTotalTCPFlows)
                 .def("setTotalUDPFlows",&Stack3G::setTotalUDPFlows)
-                .def("statistics",statistics3G)
-                .def("printFlows",printFlows3G)
-                .add_property("linkLayerMultiplexer", 
-			make_function(&Stack3G::getLinkLayerMultiplexer,
-                    		return_value_policy<manage_new_object>()),
-			make_function(&Stack3G::setLinkLayerMultiplexer)) 
+         //       .def("statistics",statistics3G)
+          //      .def("printFlows",printFlows3G)
         ;
 
 
@@ -63,7 +73,7 @@ BOOST_PYTHON_MODULE(pyiaengine)
 		.def("closePcapFile",&PacketDispatcher::closePcapFile)
 		.def("run",&PacketDispatcher::run)
 		.def("runPcap",&PacketDispatcher::runPcap)
-		.def("setDefaultMultiplexer",&PacketDispatcher::setDefaultMultiplexer)
+		.def("setStack",&PacketDispatcher::setStack)
 	;
 /*
         void openDevice(std::string device);

@@ -9,6 +9,7 @@
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
+#include "NetworkStack.h"
 #include "Multiplexer.h"
 #include "./ethernet/EthernetProtocol.h"
 #include "Protocol.h"
@@ -42,7 +43,7 @@ public:
 
 	uint64_t getTotalPackets() const { return total_packets_;};
 
-	void setDefaultMultiplexer(MultiplexerPtr mux);
+	void setStack(NetworkStackPtr stack);
 
 private:
 	void start_operations();

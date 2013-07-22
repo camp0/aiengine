@@ -1,12 +1,19 @@
 #include "PacketDispatcher.h"
 #include <iostream>
 
+
+void PacketDispatcher::setStack(NetworkStackPtr stack)
+{
+	defMux_ = stack->getLinkLayerMultiplexer().lock();
+	eth_ = std::dynamic_pointer_cast<EthernetProtocol>(defMux_->getProtocol());
+}
+/*
 void PacketDispatcher::setDefaultMultiplexer(MultiplexerPtr mux)
 {
 	defMux_ = mux;
 	eth_ = std::dynamic_pointer_cast<EthernetProtocol>(defMux_->getProtocol());
 }
-
+*/
 
 void PacketDispatcher::openDevice(std::string device)
 {

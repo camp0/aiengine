@@ -19,9 +19,8 @@ if __name__ == '__main__':
 	pdis = pyiaengine.PacketDispatcher()
 
 
-	print st.linkLayerMultiplexer
 
-	#pdis.setDefaultMultiplexer(st.linkLayerMultiplexer)
+	pdis.setStack(pyiaengine.NetworkStack(st))
 
 	print dir(pdis)
 	sys.exit(0)

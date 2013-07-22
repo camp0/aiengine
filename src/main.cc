@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
 	stack->setTotalUDPFlows(udp_flows_cache);	
 
 	// connect with the stack
-        pktdis->setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());
+        pktdis->setStack(stack);
 
 	if(var_map.count("pcapfile") == 1)
 	{

@@ -54,6 +54,7 @@ src/dns/Makefile
 src/tcpgeneric/Makefile
 src/udpgeneric/Makefile
 src/signatures/Makefile
+src/user/Makefile
 ])
 
 

@@ -1,11 +1,12 @@
 AUTOMAKE_OPTIONS = gnu
 
-TEST = test_flows 
+TEST = test_users 
 
-check_PROGRAMS = test_flows 
+check_PROGRAMS = test_users 
 
-test_flows_SOURCES = FlowManager.cc test_flows.cc
-test_flows_LDADD   = -lboost_unit_test_framework
+test_users_SOURCES = test_users.cc
+
+test_users_LDADD   = -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so
 
