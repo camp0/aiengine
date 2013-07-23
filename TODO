@@ -3,3 +3,4 @@ Add DNSProtocol
 Add User class for managing the behavior.
 Add Host cache for the HTTPProtocol.
 Unify the unit test into one on the src directory.
+Add a command line for setting up the vlan tag or not.

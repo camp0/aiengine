@@ -17,6 +17,8 @@ noinst_HEADERS =        Packet.h \
 			./icmp/ICMPProtocol.h \
 			./udp/UDPProtocol.h \
 			./tcp/TCPProtocol.h \
+			./tcpgeneric/TCPGenericProtocol.h \
+			./udpgeneric/UDPGenericProtocol.h \
 			./gprs/GPRSProtocol.h \
 			./http/HTTPProtocol.h \
 			./ssl/SSLProtocol.h \
@@ -35,6 +37,8 @@ iaengine_core_sources =	Multiplexer.cc \
 			./icmp/ICMPProtocol.cc \
 			./udp/UDPProtocol.cc \
 			./tcp/TCPProtocol.cc \
+			./tcpgeneric/TCPGenericProtocol.cc \
+			./udpgeneric/UDPGenericProtocol.cc \
 			./gprs/GPRSProtocol.cc \
 			./http/HTTPProtocol.cc \
 			./ssl/SSLProtocol.cc \

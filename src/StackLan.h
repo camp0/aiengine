@@ -12,6 +12,8 @@
 #include "./ip/IPProtocol.h"
 #include "./udp/UDPProtocol.h"
 #include "./tcp/TCPProtocol.h"
+#include "./tcpgeneric/TCPGenericProtocol.h"
+#include "./udpgeneric/UDPGenericProtocol.h"
 #include "./icmp/ICMPProtocol.h"
 #include "./http/HTTPProtocol.h"
 #include "./ssl/SSLProtocol.h"
@@ -55,6 +57,8 @@ private:
         HTTPProtocolPtr http_;
         SSLProtocolPtr ssl_;
         DNSProtocolPtr dns_;
+	TCPGenericProtocolPtr tcp_generic_;
+	UDPGenericProtocolPtr udp_generic_;
 
         // Multiplexers
         MultiplexerPtr mux_eth_;
@@ -75,6 +79,8 @@ private:
         FlowForwarderPtr ff_http_;
         FlowForwarderPtr ff_ssl_;
 	FlowForwarderPtr ff_dns_;
+	FlowForwarderPtr ff_tcp_generic_;
+	FlowForwarderPtr ff_udp_generic_;
 };
 
 

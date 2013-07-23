@@ -13,6 +13,8 @@ StackLan::StackLan()
         http_ = HTTPProtocolPtr(new HTTPProtocol());
         ssl_ = SSLProtocolPtr(new SSLProtocol());
         dns_ = DNSProtocolPtr(new DNSProtocol());
+	tcp_generic_ = TCPGenericProtocolPtr(new TCPGenericProtocol());
+	udp_generic_ = UDPGenericProtocolPtr(new UDPGenericProtocol());
 
 	// Allocate the Multiplexers
 	mux_eth_ = MultiplexerPtr(new Multiplexer());
@@ -32,6 +34,8 @@ StackLan::StackLan()
 	ff_http_ = FlowForwarderPtr(new FlowForwarder());
 	ff_ssl_ = FlowForwarderPtr(new FlowForwarder());
 	ff_dns_ = FlowForwarderPtr(new FlowForwarder());
+        ff_tcp_generic_ = FlowForwarderPtr(new FlowForwarder());
+        ff_udp_generic_ = FlowForwarderPtr(new FlowForwarder());
 
 	//configure the Ethernet Layer 
 	eth_->setMultiplexer(mux_eth_);
@@ -91,6 +95,18 @@ StackLan::StackLan()
 	ff_dns_->addChecker(std::bind(&DNSProtocol::dnsChecker,dns_,std::placeholders::_1));
 	ff_dns_->addFlowFunction(std::bind(&DNSProtocol::processFlow,dns_,std::placeholders::_1));
 
+	// configure the TCP generic Layer 
+	tcp_generic_->setFlowForwarder(ff_tcp_generic_);
+	ff_tcp_generic_->setProtocol(static_cast<ProtocolPtr>(tcp_generic_));
+	ff_tcp_generic_->addChecker(std::bind(&TCPGenericProtocol::tcpGenericChecker,tcp_generic_,std::placeholders::_1));
+	ff_tcp_generic_->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,tcp_generic_,std::placeholders::_1));
+	
+	// configure the UDP generic Layer 
+	udp_generic_->setFlowForwarder(ff_udp_generic_);
+	ff_udp_generic_->setProtocol(static_cast<ProtocolPtr>(udp_generic_));
+	ff_udp_generic_->addChecker(std::bind(&UDPGenericProtocol::udpGenericChecker,udp_generic_,std::placeholders::_1));
+	ff_udp_generic_->addFlowFunction(std::bind(&UDPGenericProtocol::processFlow,udp_generic_,std::placeholders::_1));
+
 	// configure the multiplexers
 	mux_eth_->addUpMultiplexer(mux_ip_,ETHERTYPE_IP);
 	mux_ip_->addDownMultiplexer(mux_eth_);
@@ -114,7 +130,9 @@ StackLan::StackLan()
 	
 	ff_tcp_->addUpFlowForwarder(ff_http_);
 	ff_tcp_->addUpFlowForwarder(ff_ssl_);
+	ff_tcp_->addUpFlowForwarder(ff_tcp_generic_);
 	ff_udp_->addUpFlowForwarder(ff_dns_);
+	ff_udp_->addUpFlowForwarder(ff_udp_generic_);
 }
 
 void StackLan::statistics(std::basic_ostream<char>& out)
@@ -132,9 +150,13 @@ void StackLan::statistics(std::basic_ostream<char>& out)
 	out << std::endl;
 	dns_->statistics(out);
 	out << std::endl;
+	udp_generic_->statistics(out);
+	out << std::endl;
 	http_->statistics(out);
 	out << std::endl;
 	ssl_->statistics(out);
+	out << std::endl;
+	tcp_generic_->statistics(out);
 }
 
 void StackLan::printFlows(std::basic_ostream<char>& out)

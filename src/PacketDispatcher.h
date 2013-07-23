@@ -13,6 +13,8 @@
 #include "Multiplexer.h"
 #include "./ethernet/EthernetProtocol.h"
 #include "Protocol.h"
+#include "StackLan.h"
+#include "Stack3G.h"
 
 #define PACKET_RECVBUFSIZE    2048        /// receive_from buffer size for a single datagram
 
@@ -30,7 +32,6 @@ public:
 		pcap_file_ready_(false),
 		device_is_ready_(false) {};
 
-    	//virtual ~PacketDispatcher()=default;
     	virtual ~PacketDispatcher() { io_service_.stop(); };
 
 	void openDevice(std::string device);
@@ -43,13 +44,16 @@ public:
 
 	uint64_t getTotalPackets() const { return total_packets_;};
 
-	void setStack(NetworkStackPtr stack);
+	void setStack(NetworkStackPtr stack) { setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());};
+	void setStack(StackLan& stack) { setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}; 
+	void setStack(Stack3G& stack) { setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());};
+
+	void setDefaultMultiplexer(MultiplexerPtr mux); // just use for the unit tests
 
 private:
 	void start_operations();
 	void handle_receive(boost::system::error_code error);
 	void do_read(boost::system::error_code error);
-
 	void forwardRawPacket(unsigned char *packet,int length);
 
 	PcapStreamPtr stream_;

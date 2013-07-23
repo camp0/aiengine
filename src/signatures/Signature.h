@@ -20,7 +20,7 @@ public:
 
 	virtual ~Signature()=default;
 	bool evaluate(const unsigned char *payload);
-	const std::string &getExpression() { return expression_;};	
+	std::string &getExpression() { return expression_;};	
 
 private:
 	int32_t total_matchs_;

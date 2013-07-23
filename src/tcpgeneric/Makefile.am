@@ -8,7 +8,6 @@ test_tcpgeneric_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 				../ethernet/EthernetProtocol.cc \
 				../ip/IPProtocol.cc \
 				../tcp/TCPProtocol.cc \
-				../flow/FlowCache.cc \
 				../flow/FlowManager.cc \
 				../signatures/SignatureManager.cc \
 				../signatures/Signature.cc \

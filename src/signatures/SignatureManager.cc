@@ -1,6 +1,11 @@
 #include <iostream>
 #include "SignatureManager.h"
 
+void SignatureManager::addSignature(const Signature& sig)
+{
+	addSignature(std::make_shared<Signature>(sig));
+}
+
 void SignatureManager::addSignature(const std::string expression)
 {
 	SignaturePtr sig = SignaturePtr(new Signature(expression));

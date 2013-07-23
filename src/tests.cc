@@ -361,3 +361,13 @@ BOOST_FIXTURE_TEST_CASE(test_case_9,StackLanTest)
 
 BOOST_AUTO_TEST_SUITE_END( )
 
+BOOST_AUTO_TEST_SUITE (test_real_stack) // Test cases for real stacks StackLan and Stack3G 
+
+BOOST_AUTO_TEST_CASE ( test_case_1 )
+{
+
+
+}
+
+BOOST_AUTO_TEST_SUITE_END( )
+
