@@ -5,7 +5,13 @@ void SSLProtocol::processFlow(Flow *flow)
 {
 	++total_packets_;
 	total_bytes_ += flow->packet->getLength();
+	++flow->total_packets_l7;
 
+	if(flow->total_packets == 1) 
+	{
+		// Extract the CN from the SSL Hello
+
+	}
 }
 void SSLProtocol::statistics(std::basic_ostream<char>& out)
 {

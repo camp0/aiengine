@@ -155,6 +155,10 @@ BOOST_AUTO_TEST_CASE (test1_http)
         BOOST_CHECK(cad.compare(0,14,h.str()));
 }
 
+BOOST_AUTO_TEST_CASE (test2_http)
+{
+	// TODO: Check the referer, useragent and host 
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 

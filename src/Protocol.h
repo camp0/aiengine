@@ -30,9 +30,9 @@ public:
 	FlowForwarderPtrWeak virtual getFlowForwarder() = 0; 
 	
 	mutable std::string name_;
-	mutable uint64_t total_malformed_packets_;
-	mutable uint64_t total_validated_packets_;
-	mutable uint64_t total_packets_;
+	mutable int64_t total_malformed_packets_;
+	mutable int64_t total_validated_packets_;
+	mutable int64_t total_packets_;
 private:
 	u_int16_t protocol_id_;
 };

@@ -26,9 +26,9 @@ public:
 
 	int getHeaderSize() const { return header_size;};
 
-	uint64_t getTotalPackets() const { return total_packets_;};
-	uint64_t getTotalValidatedPackets() const { return total_validated_packets_;};
-	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
+	int64_t getTotalPackets() const { return total_packets_;};
+	int64_t getTotalValidatedPackets() const { return total_validated_packets_;};
+	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
         const char *getName() { return name_.c_str();};
 

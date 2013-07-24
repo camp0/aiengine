@@ -34,6 +34,7 @@ public:
 	u_int16_t getProtocol() const { return protocol_;};
 
 	int32_t total_bytes;
+	int32_t total_packets_l7;
 	int32_t total_packets;
 
 	FlowForwarderPtrWeak forwarder;
@@ -45,6 +46,7 @@ public:
 		hash_ = 0;
 		total_bytes = 0;
 		total_packets = 0;
+		total_packets_l7 = 0;
 		forwarder.reset();
 		//payload = nullptr;
 		//payload_length = 0;

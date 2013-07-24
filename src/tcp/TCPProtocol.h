@@ -28,10 +28,10 @@ public:
 	static const int header_size = 20;
 	int getHeaderSize() const { return header_size;};
 
-	int32_t getTotalBytes()  const { return total_bytes_; };
-	uint64_t getTotalPackets() const { return total_packets_;};
-	uint64_t getTotalValidatedPackets() const { return total_validated_packets_;};
-	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
+	int64_t getTotalBytes()  const { return total_bytes_; };
+	int64_t getTotalPackets() const { return total_packets_;};
+	int64_t getTotalValidatedPackets() const { return total_validated_packets_;};
+	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
         void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; };
         FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;};
@@ -97,7 +97,7 @@ private:
 	FlowManagerPtr flow_table_;
 	FlowCachePtr flow_cache_;
 	struct tcphdr *tcp_header_;
-	int32_t total_bytes_;
+	int64_t total_bytes_;
 };
 
 typedef std::shared_ptr<TCPProtocol> TCPProtocolPtr;

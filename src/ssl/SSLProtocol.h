@@ -29,10 +29,10 @@ public:
 	static const int header_size = 2;
 	int getHeaderSize() const { return header_size;};
 
-	int32_t getTotalBytes() const { return total_bytes_; };
-	uint64_t getTotalPackets() const { return total_packets_;};
-	uint64_t getTotalValidatedPackets() const { return total_validated_packets_;};
-	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
+	int64_t getTotalBytes() const { return total_bytes_; };
+	int64_t getTotalPackets() const { return total_packets_;};
+	int64_t getTotalValidatedPackets() const { return total_validated_packets_;};
+	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
         const char *getName() { return name_.c_str();};
 
@@ -73,7 +73,7 @@ private:
 	FlowForwarderPtrWeak flow_forwarder_;	
 	MultiplexerPtrWeak mux_;
 	unsigned char *ssl_header_;
-        int32_t total_bytes_;
+        int64_t total_bytes_;
 };
 
 typedef std::shared_ptr<SSLProtocol> SSLProtocolPtr;

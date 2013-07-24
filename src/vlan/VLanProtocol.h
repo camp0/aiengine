@@ -22,10 +22,10 @@ public:
 
 	int getHeaderSize() const { return header_size;};
 
-	int32_t getTotalBytes() const { return total_bytes_;};
-	uint64_t getTotalPackets() const { return total_packets_;};
-	uint64_t getTotalValidatedPackets() const { return total_validated_packets_;};
-	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
+	int64_t getTotalBytes() const { return total_bytes_;};
+	int64_t getTotalPackets() const { return total_packets_;};
+	int64_t getTotalValidatedPackets() const { return total_validated_packets_;};
+	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
         const char *getName() { return name_.c_str();};
 
@@ -69,7 +69,7 @@ public:
 private:
 	MultiplexerPtrWeak mux_;
 	struct vlan_tag *vlan_header_;
-	int32_t total_bytes_;
+	int64_t total_bytes_;
 };
 
 typedef std::shared_ptr<VLanProtocol> VLanProtocolPtr;

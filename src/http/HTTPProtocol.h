@@ -14,12 +14,18 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include <boost/regex.hpp>
+#include "HTTPHost.h"
+#include "HTTPUserAgent.h"
+#include "HTTPReferer.h"
 
 class HTTPProtocol: public Protocol 
 {
 public:
     	explicit HTTPProtocol():http_header_(nullptr),total_bytes_(0),
-		http_regex_("^(GET|POST|HEAD|PUT|TRACE).*HTTP/1.")
+		http_regex_("^(GET|POST|HEAD|PUT|TRACE).*HTTP/1."),
+		http_host_("Host: .*?\r\n"),
+		http_ua_("User-Agent: .*?\r\n"),
+		http_referer_("Referer: .*?\r\n")
 	{ 
 		name_="HTTPProtocol";
 	}
@@ -29,10 +35,10 @@ public:
 	static const int header_size = 0;
 	int getHeaderSize() const { return header_size;};
 
-	int32_t getTotalBytes() const { return total_bytes_; };
-	uint64_t getTotalPackets() const { return total_packets_;};
-	uint64_t getTotalValidatedPackets() const { return total_validated_packets_;};
-	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
+	int64_t getTotalBytes() const { return total_bytes_; };
+	int64_t getTotalPackets() const { return total_packets_;};
+	int64_t getTotalValidatedPackets() const { return total_validated_packets_;};
+	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
 
         const char *getName() { return name_.c_str();};
 
@@ -75,11 +81,16 @@ public:
 
 private:
 	FlowForwarderPtrWeak flow_forwarder_;
-	boost::regex http_regex_;
+	boost::regex http_regex_,http_host_,http_ua_,http_referer_;
         boost::cmatch what_;
 	MultiplexerPtrWeak mux_;
 	unsigned char *http_header_;
-	int32_t total_bytes_;
+	int64_t total_bytes_;
+
+	typedef std::map<std::string,int32_t> HostMapType;
+	typedef std::map<std::string,int32_t> UAMapType;
+	UAMapType ua_map_;	
+	HostMapType host_map_;	
 };
 
 typedef std::shared_ptr<HTTPProtocol> HTTPProtocolPtr;
