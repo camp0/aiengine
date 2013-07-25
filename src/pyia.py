@@ -34,6 +34,7 @@ if __name__ == '__main__':
 	pdis.setStack(st)
 	s = loadSignaturesForTcp()
 
+	st.setTCPSignatureManager(s)
 	st.setTotalTCPFlows(350000)
 	st.setTotalUDPFlows(350000)
 

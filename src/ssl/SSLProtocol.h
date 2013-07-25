@@ -19,6 +19,24 @@
 #include <iostream>
 #include <cstring>
 
+// Minium SSL header
+struct ssl_header {
+	int8_t record_type; // SSL record type 
+	uint16_t version; // SSL version (major/minor)
+	uint16_t length; //Length of data in the record (excluding the header itself), The maximum SSL supports is 16384 (16K). 
+};
+// record_type
+// SSL3_RT_CHANGE_CIPHER_SPEC      20   (x'14')
+// SSL3_RT_ALERT                   21   (x'15')
+// SSL3_RT_HANDSHAKE               22   (x'16')
+// SSL3_RT_APPLICATION_DATA        23   (x'17')
+
+// version
+// SSL3_VERSION           x'0300'
+// TLS1_VERSION           x'0301'
+
+// http://publib.boulder.ibm.com/infocenter/tpfhelp/current/index.jsp?topic=%2Fcom.ibm.ztpf-ztpfdf.doc_put.cur%2Fgtps5%2Fs5rcd.html
+
 class SSLProtocol: public Protocol 
 {
 public:

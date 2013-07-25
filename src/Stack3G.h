@@ -50,6 +50,8 @@ public:
 
         void setTCPSignatureManager(SignatureManagerPtrWeak sig) {}; 
         void setUDPSignatureManager(SignatureManagerPtrWeak sig) {};
+        void setTCPSignatureManager(SignatureManager& sig) {};
+        void setUDPSignatureManager(SignatureManager& sig) {};
 
 private:
 	std::string name_;

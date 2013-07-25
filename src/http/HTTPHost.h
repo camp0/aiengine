@@ -11,6 +11,7 @@ public:
     	virtual ~HTTPHost() {};
 	
 	std::string &getName() { return host_name_; };
+	void setName(const std::string& name) { host_name_ = name;};
 
 private:
 	std::string host_name_;

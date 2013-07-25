@@ -28,6 +28,8 @@ public:
 
 	virtual void setTCPSignatureManager(SignatureManagerPtrWeak sig) = 0;	
 	virtual void setUDPSignatureManager(SignatureManagerPtrWeak sig) = 0;	
+	virtual void setTCPSignatureManager(SignatureManager& sig) = 0;	
+	virtual void setUDPSignatureManager(SignatureManager& sig) = 0;	
 };
 
 typedef std::shared_ptr <NetworkStack> NetworkStackPtr;

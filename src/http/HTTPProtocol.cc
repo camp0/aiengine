@@ -54,9 +54,15 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out)
         if(flow_forwarder_.lock())
                 flow_forwarder_.lock()->statistics(out);
 
+	out << "Hosts used" << std::endl;
 	for(auto it = host_map_.begin(); it!=host_map_.end(); ++it)
 	{
-		out << "\tHost:" << (*it).first <<":" << (*it).second << std::endl;
+		out << "\t\tHost:" << (*it).first <<":" << (*it).second << std::endl;
+	}
+	out << "UserAgents used" << std::endl;
+	for(auto it = ua_map_.begin(); it!=ua_map_.end(); ++it)
+	{
+		out << "\t\tUserAgent:" << (*it).first <<":" << (*it).second << std::endl;
 	}
 }
 

@@ -21,7 +21,7 @@
 class TCPProtocol: public Protocol 
 {
 public:
-    	explicit TCPProtocol():tcp_header_(nullptr),total_bytes_(0){ name_="TCPProtocol";};
+    	explicit TCPProtocol():tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0){ name_="TCPProtocol";};
     	virtual ~TCPProtocol() {};
 
 	static const u_int16_t id = IPPROTO_TCP;
@@ -90,6 +90,7 @@ public:
         void setFlowCache(FlowCachePtr flow_cache) { flow_cache_ = flow_cache;};
         FlowCachePtr getFlowCache() { return flow_cache_;};
 
+	Flow *getCurrenFlow() { return current_flow_;};
 private:
         FlowPtr getFlow();
 	MultiplexerPtrWeak mux_;
@@ -97,6 +98,7 @@ private:
 	FlowManagerPtr flow_table_;
 	FlowCachePtr flow_cache_;
 	struct tcphdr *tcp_header_;
+	Flow *current_flow_;
 	int64_t total_bytes_;
 };
 

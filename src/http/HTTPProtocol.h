@@ -17,6 +17,7 @@
 #include "HTTPHost.h"
 #include "HTTPUserAgent.h"
 #include "HTTPReferer.h"
+#include <unordered_map>
 
 class HTTPProtocol: public Protocol 
 {

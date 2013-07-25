@@ -8,7 +8,6 @@ test_ssl_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ethernet/EthernetProtocol.cc \
 			../ip/IPProtocol.cc \
 			../tcp/TCPProtocol.cc \
-			../flow/FlowCache.cc \
 			../flow/FlowManager.cc \
 			SSLProtocol.cc test_ssl.cc
 
