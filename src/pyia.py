@@ -33,8 +33,11 @@ if __name__ == '__main__':
 
 	pdis.setStack(st)
 	s = loadSignaturesForTcp()
-
 	st.setTCPSignatureManager(s)
+
+	s = loadSignaturesForUdp()
+	st.setUDPSignatureManager(s)
+	
 	st.setTotalTCPFlows(350000)
 	st.setTotalUDPFlows(350000)
 
@@ -43,8 +46,6 @@ if __name__ == '__main__':
 		print "Processing ",pfile
 		fpath = "%s/%s" %(directory,pfile)
 		pdis.openPcapFile(fpath)
-
-		#st.setTCPSignatureManager(s)
 
 		try:
 			pdis.runPcap()

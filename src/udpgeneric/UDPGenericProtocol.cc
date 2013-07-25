@@ -16,7 +16,7 @@ void UDPGenericProtocol::processFlow(Flow *flow)
 		sig->evaluate(payload,&result);
 		if(result)
 		{
-			//std::cout << "The packet matchs!" << std::endl;
+			std::cout << "The packet matchs!" << std::endl;
 		}	
 	}
 }

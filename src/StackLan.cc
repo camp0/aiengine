@@ -166,4 +166,26 @@ void StackLan::printFlows(std::basic_ostream<char>& out)
 	flow_table_udp_->printFlows(out);
 }
 
+void StackLan::setTCPSignatureManager(SignatureManagerPtrWeak sig) 
+{
+	if(sig.lock())
+		tcp_generic_->setSignatureManager(sig);
+}
+
+void StackLan::setUDPSignatureManager(SignatureManagerPtrWeak sig) 
+{
+	if(sig.lock())
+		udp_generic_->setSignatureManager(sig);
+}
+
+void StackLan::setTCPSignatureManager(SignatureManager& sig) 
+{ 
+	setTCPSignatureManager(std::make_shared<SignatureManager>(sig));
+} 
+
+void StackLan::setUDPSignatureManager(SignatureManager& sig) 
+{ 
+	setUDPSignatureManager(std::make_shared<SignatureManager>(sig));
+} 
+
 

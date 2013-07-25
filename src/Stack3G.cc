@@ -227,4 +227,25 @@ void Stack3G::printFlows(std::basic_ostream<char>& out)
 	flow_mng_udp_high_->printFlows(out);
 }
 
+void Stack3G::setTCPSignatureManager(SignatureManagerPtrWeak sig)
+{
+        if(sig.lock())
+                tcp_generic_->setSignatureManager(sig);
+}
+
+void Stack3G::setUDPSignatureManager(SignatureManagerPtrWeak sig)
+{
+        if(sig.lock())
+                udp_generic_->setSignatureManager(sig);
+}
+
+void Stack3G::setTCPSignatureManager(SignatureManager& sig)
+{
+        setTCPSignatureManager(std::make_shared<SignatureManager>(sig));
+}
+
+void Stack3G::setUDPSignatureManager(SignatureManager& sig)
+{
+        setUDPSignatureManager(std::make_shared<SignatureManager>(sig));
+}
 

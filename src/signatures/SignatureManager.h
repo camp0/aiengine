@@ -30,7 +30,8 @@ public:
 
 	SignaturePtr getMachtedSignature();
 
-	void statistics();
+	void statistics(std::basic_ostream<char>& out);
+	void statistics() { statistics(std::cout);};
 
 private:
 	SignaturePtr current_signature_;

@@ -21,6 +21,8 @@ public:
 	virtual ~Signature()=default;
 	bool evaluate(const unsigned char *payload);
 	std::string &getExpression() { return expression_;};	
+	void incrementMatchs() { ++total_matchs_; };
+	int32_t getMatchs() { return total_matchs_; };
 
 private:
 	int32_t total_matchs_;

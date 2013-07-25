@@ -42,7 +42,7 @@ public:
 	int32_t getTotalFails() const { return fc_->getTotalFails();};
 
 private:
-	Cache<Flow>::CachePtr fc_;//(new Cache<User>)
+	Cache<Flow>::CachePtr fc_;
 };
 
 typedef std::shared_ptr<FlowCache> FlowCachePtr;
