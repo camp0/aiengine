@@ -1,7 +1,7 @@
 #include <iostream>
 #include "SignatureManager.h"
 
-void SignatureManager::addSignature(const Signature& sig)
+void SignatureManager::addSignature(Signature& sig)
 {
 	addSignature(std::make_shared<Signature>(sig));
 }

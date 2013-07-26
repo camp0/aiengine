@@ -26,7 +26,7 @@ public:
 
 	void addSignature(const std::string expression);
 	void addSignature(SignaturePtr sig);
-	void addSignature(const Signature& sig);
+	void addSignature(Signature& sig);
 
 	SignaturePtr getMachtedSignature();
 

@@ -11,6 +11,8 @@
 
 PacketDispatcherPtr pktdis;
 NetworkStackPtr stack;
+SignatureManagerPtr sm;
+
 std::string stack_name;
 std::string pcapfile;
 std::string interface;
@@ -138,6 +140,12 @@ int main(int argc, char* argv[])
 	}
 	stack->setTotalTCPFlows(tcp_flows_cache);	
 	stack->setTotalUDPFlows(udp_flows_cache);	
+
+        sm = SignatureManagerPtr(new SignatureManager());
+
+        sm->addSignature("^d1:ad2:id20");
+
+	stack->setUDPSignatureManager(sm);
 
 	// connect with the stack
         pktdis->setStack(stack);

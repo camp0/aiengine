@@ -230,13 +230,13 @@ void Stack3G::printFlows(std::basic_ostream<char>& out)
 void Stack3G::setTCPSignatureManager(SignatureManagerPtrWeak sig)
 {
         if(sig.lock())
-                tcp_generic_->setSignatureManager(sig);
+                tcp_generic_->setSignatureManager(sig.lock());
 }
 
 void Stack3G::setUDPSignatureManager(SignatureManagerPtrWeak sig)
 {
         if(sig.lock())
-                udp_generic_->setSignatureManager(sig);
+                udp_generic_->setSignatureManager(sig.lock());
 }
 
 void Stack3G::setTCPSignatureManager(SignatureManager& sig)

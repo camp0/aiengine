@@ -169,13 +169,16 @@ void StackLan::printFlows(std::basic_ostream<char>& out)
 void StackLan::setTCPSignatureManager(SignatureManagerPtrWeak sig) 
 {
 	if(sig.lock())
-		tcp_generic_->setSignatureManager(sig);
+		tcp_generic_->setSignatureManager(sig.lock());
 }
 
 void StackLan::setUDPSignatureManager(SignatureManagerPtrWeak sig) 
 {
-	if(sig.lock())
-		udp_generic_->setSignatureManager(sig);
+	if(sig.lock()){
+		std::cout << __FILE__ << "SIG:" << sig.lock() << "points to:" << sig.lock().get()<<std::endl;
+		std::cout << __FILE__ << "expired:" << sig.expired() <<std::endl;
+		udp_generic_->setSignatureManager(sig.lock());
+	}
 }
 
 void StackLan::setTCPSignatureManager(SignatureManager& sig) 
@@ -185,7 +188,9 @@ void StackLan::setTCPSignatureManager(SignatureManager& sig)
 
 void StackLan::setUDPSignatureManager(SignatureManager& sig) 
 { 
-	setUDPSignatureManager(std::make_shared<SignatureManager>(sig));
+	SignatureManagerPtr sigp = std::make_shared<SignatureManager>(sig);
+	std::cout << __FILE__ << "sigp:" << sigp << " points to " << sigp.get() << " should be equal to:" << &sig <<std::endl;
+	setUDPSignatureManager(sigp);
 } 
 
 

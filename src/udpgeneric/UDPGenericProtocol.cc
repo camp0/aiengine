@@ -7,11 +7,14 @@ void UDPGenericProtocol::processFlow(Flow *flow)
 
 	++total_packets_;
 	total_bytes_ += flow->packet->getLength();
+	++flow->total_packets_l7;
 
 	if(sig) // There is a SignatureManager attached
 	{
 		bool result = false;
 		const unsigned char *payload = flow->packet->getPayload();
+	
+		std::cout << "The packet could matchs!" << std::endl;
 
 		sig->evaluate(payload,&result);
 		if(result)
@@ -30,5 +33,7 @@ void UDPGenericProtocol::statistics(std::basic_ostream<char>& out)
         out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
         if(flow_forwarder_.lock())
                 flow_forwarder_.lock()->statistics(out);
+        if(sigs_.lock())
+                sigs_.lock()->statistics(out);
 }
 

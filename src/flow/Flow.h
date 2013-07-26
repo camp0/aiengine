@@ -41,22 +41,18 @@ public:
 
 	Packet *packet;
 	
-	void reset()
+	inline void reset()
 	{
 		hash_ = 0;
 		total_bytes = 0;
 		total_packets = 0;
 		total_packets_l7 = 0;
-		forwarder.reset();
-		//payload = nullptr;
-		//payload_length = 0;
 		source_address_ =0;
 		dest_address_ = 0;
 		source_port_ = 0;
 		dest_port_ = 0;
 		protocol_ = 0;		
 		forwarder.reset();
-	//	packet.reset();
 		packet = nullptr;
 	};
 private:
