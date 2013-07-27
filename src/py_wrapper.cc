@@ -40,7 +40,7 @@ BOOST_PYTHON_MODULE(pyiaengine)
 
 	// for overload the methods with the class
 	void (StackLan::*statisticsLan1)() = &StackLan::statistics;
-	void (StackLan::*statisticsLan2)(std::osstream&) = &StackLan::statistics;
+	void (StackLan::*statisticsLan2)(std::ostream&) = &StackLan::statistics;
 	void (StackLan::*printFlowsLan)() = &StackLan::printFlows;
 
 	void (StackLan::*setUDPSignatureManagerLan1)(SignatureManager&) = &StackLan::setUDPSignatureManager;
@@ -62,7 +62,7 @@ BOOST_PYTHON_MODULE(pyiaengine)
 
         // for overload the methods with the class
         void (Stack3G::*statistics3G1)() = &Stack3G::statistics;
-        void (Stack3G::*statistics3G2)(std::osstream&) = &Stack3G::statistics;
+        void (Stack3G::*statistics3G2)(std::ostream&) = &Stack3G::statistics;
         void (Stack3G::*printFlows3G)() = &Stack3G::printFlows;
 
 	void (Stack3G::*setUDPSignatureManager3G1)(SignatureManager&) = &Stack3G::setUDPSignatureManager;
@@ -102,17 +102,18 @@ BOOST_PYTHON_MODULE(pyiaengine)
 		.def("setStack",setStack3G)
 	;
 
+
 	void (SignatureManager::*addSignature1)(const std::string) = &SignatureManager::addSignature;
 	void (SignatureManager::*addSignature2)(Signature&) = &SignatureManager::addSignature;
         void (SignatureManager::*statisticsSignatureManager)() = &SignatureManager::statistics;
 
-	boost::python::class_<SignatureManager,boost::shared_ptr<SignatureManager>,boost::noncopyable >("SignatureManager")
+	boost::python::class_<SignatureManager >("SignatureManager")
+//	boost::python::class_<SignatureManager,boost::shared_ptr<SignatureManager>,boost::noncopyable >("SignatureManager")
 		.def("addSignature",addSignature1)
 		.def("addSignature",addSignature2)
 		.def("statistics",statisticsSignatureManager)
 	;
 
-	//register_ptr_to_python<SignaturePtr>();
 }
 
 

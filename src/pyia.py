@@ -28,8 +28,8 @@ def loadSignaturesForUdp():
 
 if __name__ == '__main__':
 
-	#st = pyiaengine.Stack3G()
-	st = pyiaengine.StackLan()
+	st = pyiaengine.Stack3G()
+	#st = pyiaengine.StackLan()
 
 	pdis = pyiaengine.PacketDispatcher()
 
@@ -43,7 +43,7 @@ if __name__ == '__main__':
 	st.setTotalTCPFlows(350000)
 	st.setTotalUDPFlows(350000)
 
-	directory = "/home/luis/pcapfiles/1"
+	directory = "/home/luis/pcapfiles/vcom"
 	for pfile in os.listdir(directory):
 		print "Processing ",pfile
 		fpath = "%s/%s" %(directory,pfile)
