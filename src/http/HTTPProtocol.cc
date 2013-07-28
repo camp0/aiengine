@@ -12,8 +12,8 @@ void HTTPProtocol::processFlow(Flow *flow)
 	// Is the first packet accepted and processed
 	if(flow->total_packets_l7 == 1) 
 	{
-		const char *header = reinterpret_cast <const char*> (http_header_);
-
+		const char *header = reinterpret_cast <const char*> (flow->packet->getPayload());
+		
 		// extract the Host value
 		if(boost::regex_search(header,result,http_host_))
 		{

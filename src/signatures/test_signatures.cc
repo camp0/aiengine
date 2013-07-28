@@ -58,6 +58,7 @@ BOOST_AUTO_TEST_CASE (test3_signature)
 
 	// Shared ptr and sig are stored on different places but should have the same regex
 	BOOST_CHECK(sig.getExpression().compare(sigmng->getMachtedSignature()->getExpression())== 0);
+
 }
 
 

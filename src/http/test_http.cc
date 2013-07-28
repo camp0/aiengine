@@ -107,21 +107,18 @@ struct StackHTTPtest
 
 BOOST_FIXTURE_TEST_SUITE(http_suite,StackHTTPtest)
 
+
 BOOST_AUTO_TEST_CASE (test1_http)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_http_barrapunto_get);
         int length = raw_packet_ethernet_ip_tcp_http_barrapunto_get_length;
         Packet packet(pkt,length,0);
 
-        // executing the packet
-        // forward the packet through the multiplexers
         mux_eth->setPacket(&packet);
         eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
         mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forwardPacket(packet);
 
-
-	// check ip layer
 	BOOST_CHECK(ip->getTotalPackets() == 1);
 	BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
 	BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
@@ -131,7 +128,6 @@ BOOST_AUTO_TEST_CASE (test1_http)
 	BOOST_CHECK(mux_ip->getTotalReceivedPackets() == 1);
 	BOOST_CHECK(mux_ip->getTotalFailPackets() == 0);
 
-	// check the tcp layer	
 	BOOST_CHECK(tcp->getTotalPackets() == 1);
 	BOOST_CHECK(tcp->getTotalValidatedPackets() == 1);
 	BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
@@ -146,7 +142,6 @@ BOOST_AUTO_TEST_CASE (test1_http)
 	BOOST_CHECK(http->getTotalValidatedPackets() == 1);
 	BOOST_CHECK(http->getTotalBytes() == 331);
 
-        // check integrity of the header
         std::string cad("GET / HTTP/1.1");
 	std::ostringstream h;
 
@@ -157,6 +152,18 @@ BOOST_AUTO_TEST_CASE (test1_http)
 
 BOOST_AUTO_TEST_CASE (test2_http)
 {
+	char *header = "GET / HTTP/1.1\r\nHost: www.google.com\r\nConnection: close\r\n\r\n";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+        
+	Packet packet(pkt,length,0);
+	FlowPtr flow = FlowPtr(new Flow());
+
+	flow->packet = const_cast<Packet*>(&packet);
+        http->processFlow(flow.get());
+
+	// Check the values of the flow
+	//http->statistics();
 	// TODO: Check the referer, useragent and host 
 }
 

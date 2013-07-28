@@ -55,3 +55,4 @@ void SignatureManager::statistics(std::basic_ostream<char>& out)
 		out << "\t" << "Signature:" << sig->getExpression() << " matches:" << sig->getMatchs() << std::endl;
 	}
 }
+
