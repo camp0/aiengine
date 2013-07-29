@@ -24,6 +24,8 @@ public:
 	void incrementMatchs() { ++total_matchs_; };
 	int32_t getMatchs() { return total_matchs_; };
 
+	friend std::ostream& operator<< (std::ostream& out, const Signature& sig);
+
 private:
 	int32_t total_matchs_;
 	int32_t total_evaluates_;

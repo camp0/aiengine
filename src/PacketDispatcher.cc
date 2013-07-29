@@ -75,8 +75,6 @@ void PacketDispatcher::do_read(boost::system::error_code ec)
 	if(len >= 0) 
 	{
 		forwardRawPacket((unsigned char*)pkt_data,header->len);
-		//std::cout << "read packet" << std::endl;
-	 	//update the buffer
 	}
 
 	if (!ec || ec == boost::asio::error::would_block)
@@ -88,6 +86,8 @@ void PacketDispatcher::do_read(boost::system::error_code ec)
 void PacketDispatcher::forwardRawPacket(unsigned char *packet,int length)
 {
 	++total_packets_;
+	total_bytes_ += length;
+	
 	if(defMux_)
 	{
 		current_packet_.setPayload(packet);

@@ -62,7 +62,7 @@ public:
 		return true;
 	}
 
-	void setSignatureManager(SignatureManagerPtrWeak sig) { sigs_ = sig;};
+	void setSignatureManager(SignatureManagerPtrWeak sig) { sigs_ = sig;}; 
 
 private:
 	FlowForwarderPtrWeak flow_forwarder_;	

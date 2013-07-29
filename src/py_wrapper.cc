@@ -15,12 +15,11 @@ BOOST_PYTHON_MODULE(pyiaengine)
 {
         using namespace std;
 	using namespace boost::asio;
+	using self_ns::str;
 
 	boost::python::class_< std::ostream, boost::noncopyable >( "std_ostream",no_init); 
 
         // for overload the methods with the class
-        void (NetworkStack::*statisticsNetworkStack1)() = &NetworkStack::statistics;
-        void (NetworkStack::*statisticsNetworkStack2)(std::ostream&) = &NetworkStack::statistics;
       	void (NetworkStack::*printFlowsNetworkStack)() = &NetworkStack::printFlows;
 
 	void (NetworkStack::*setUDPSignatureManager1)(SignatureManager&) = &NetworkStack::setUDPSignatureManager;
@@ -33,14 +32,10 @@ BOOST_PYTHON_MODULE(pyiaengine)
                 .def("setTCPSignatureManager",pure_virtual(setTCPSignatureManager1))
                 .def("setTotalTCPFlows",pure_virtual(&NetworkStack::setTotalTCPFlows))
                 .def("setTotalUDPFlows",pure_virtual(&NetworkStack::setTotalUDPFlows))
-              	.def("statistics",pure_virtual(statisticsNetworkStack1))
-              	.def("statistics",pure_virtual(statisticsNetworkStack2))
               	.def("printFlows",pure_virtual(printFlowsNetworkStack))
         ;
 
 	// for overload the methods with the class
-	void (StackLan::*statisticsLan1)() = &StackLan::statistics;
-	void (StackLan::*statisticsLan2)(std::ostream&) = &StackLan::statistics;
 	void (StackLan::*printFlowsLan)() = &StackLan::printFlows;
 
 	void (StackLan::*setUDPSignatureManagerLan1)(SignatureManager&) = &StackLan::setUDPSignatureManager;
@@ -55,14 +50,11 @@ BOOST_PYTHON_MODULE(pyiaengine)
 		.def("setTCPSignatureManager",setTCPSignatureManagerLan2)	
 		.def("setTotalTCPFlows",&StackLan::setTotalTCPFlows)
 		.def("setTotalUDPFlows",&StackLan::setTotalUDPFlows)
-		.def("statistics",statisticsLan1)
-		.def("statistics",statisticsLan2)
+		.def(self_ns::str(self_ns::self))
 		.def("printFlows",printFlowsLan)
 	;
 
         // for overload the methods with the class
-        void (Stack3G::*statistics3G1)() = &Stack3G::statistics;
-        void (Stack3G::*statistics3G2)(std::ostream&) = &Stack3G::statistics;
         void (Stack3G::*printFlows3G)() = &Stack3G::printFlows;
 
 	void (Stack3G::*setUDPSignatureManager3G1)(SignatureManager&) = &Stack3G::setUDPSignatureManager;
@@ -77,14 +69,14 @@ BOOST_PYTHON_MODULE(pyiaengine)
 		.def("setTCPSignatureManager",setTCPSignatureManager3G2)	
                 .def("setTotalTCPFlows",&Stack3G::setTotalTCPFlows)
                 .def("setTotalUDPFlows",&Stack3G::setTotalUDPFlows)
-                .def("statistics",statistics3G1)
-                .def("statistics",statistics3G2)
+		.def(self_ns::str(self_ns::self))
                 .def("printFlows",printFlows3G)
         ;
 
 	boost::python::class_<Signature>("Signature",init<const std::string&>())
 		.def("getExpression",&Signature::getExpression,return_internal_reference<>())
 		.def("getMatchs",&Signature::getMatchs)
+		.def(self_ns::str(self_ns::self))
 	;
 
 	// for overload the methods with the class
@@ -105,13 +97,12 @@ BOOST_PYTHON_MODULE(pyiaengine)
 
 	void (SignatureManager::*addSignature1)(const std::string) = &SignatureManager::addSignature;
 	void (SignatureManager::*addSignature2)(Signature&) = &SignatureManager::addSignature;
-        void (SignatureManager::*statisticsSignatureManager)() = &SignatureManager::statistics;
 
-	boost::python::class_<SignatureManager >("SignatureManager")
-//	boost::python::class_<SignatureManager,boost::shared_ptr<SignatureManager>,boost::noncopyable >("SignatureManager")
+//	boost::python::class_<SignatureManager >("SignatureManager")
+	boost::python::class_<SignatureManager,boost::shared_ptr<SignatureManager>,boost::noncopyable >("SignatureManager")
 		.def("addSignature",addSignature1)
 		.def("addSignature",addSignature2)
-		.def("statistics",statisticsSignatureManager)
+		.def(self_ns::str(self_ns::self))
 	;
 
 }

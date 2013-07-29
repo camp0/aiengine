@@ -156,6 +156,7 @@ BOOST_AUTO_TEST_CASE (test2_udpgeneric) // Same case as test1_genericudp but wit
         BOOST_CHECK(sig->getTotalMatchingSignatures() == 1);
         BOOST_CHECK(sig->getMachtedSignature() != nullptr);
 
+	std::cout << *sig;
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

@@ -135,28 +135,29 @@ StackLan::StackLan()
 	ff_udp_->addUpFlowForwarder(ff_udp_generic_);
 }
 
-void StackLan::statistics(std::basic_ostream<char>& out)
+std::ostream& operator<< (std::ostream& out, const StackLan& stk)
 {
-	
-	eth_->statistics(out);
+	stk.eth_->statistics(out);
 	out << std::endl;
-	ip_->statistics(out);
+	stk.ip_->statistics(out);
 	out << std::endl;
-	tcp_->statistics(out);
+	stk.tcp_->statistics(out);
 	out << std::endl;
-	udp_->statistics(out);
+	stk.udp_->statistics(out);
 	out << std::endl;
-	icmp_->statistics(out);
+	stk.icmp_->statistics(out);
 	out << std::endl;
-	dns_->statistics(out);
+	stk.dns_->statistics(out);
 	out << std::endl;
-	udp_generic_->statistics(out);
+	stk.udp_generic_->statistics(out);
 	out << std::endl;
-	http_->statistics(out);
+	stk.http_->statistics(out);
 	out << std::endl;
-	ssl_->statistics(out);
+	stk.ssl_->statistics(out);
 	out << std::endl;
-	tcp_generic_->statistics(out);
+	stk.tcp_generic_->statistics(out);
+
+	return out;
 }
 
 void StackLan::printFlows(std::basic_ostream<char>& out)
@@ -169,28 +170,29 @@ void StackLan::printFlows(std::basic_ostream<char>& out)
 void StackLan::setTCPSignatureManager(SignatureManagerPtrWeak sig) 
 {
 	if(sig.lock())
+	{
 		tcp_generic_->setSignatureManager(sig.lock());
+	}
 }
 
 void StackLan::setUDPSignatureManager(SignatureManagerPtrWeak sig) 
 {
-	if(sig.lock()){
-		std::cout << __FILE__ << "SIG:" << sig.lock() << "points to:" << sig.lock().get()<<std::endl;
-		std::cout << __FILE__ << "expired:" << sig.expired() <<std::endl;
+	if(sig.lock())
+	{
 		udp_generic_->setSignatureManager(sig.lock());
 	}
 }
 
 void StackLan::setTCPSignatureManager(SignatureManager& sig) 
 { 
-	setTCPSignatureManager(std::make_shared<SignatureManager>(sig));
+	sigs_tcp_ = std::make_shared<SignatureManager>(sig);
+	setTCPSignatureManager(sigs_tcp_);
 } 
 
 void StackLan::setUDPSignatureManager(SignatureManager& sig) 
 { 
-	SignatureManagerPtr sigp = std::make_shared<SignatureManager>(sig);
-	std::cout << __FILE__ << "sigp:" << sigp << " points to " << sigp.get() << " should be equal to:" << &sig <<std::endl;
-	setUDPSignatureManager(sigp);
+	sigs_udp_ = std::make_shared<SignatureManager>(sig);
+	setUDPSignatureManager(sigs_udp_);
 } 
 
 

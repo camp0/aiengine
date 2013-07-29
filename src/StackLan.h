@@ -34,9 +34,6 @@ public:
         void setLinkLayerMultiplexer(MultiplexerPtrWeak mux) { };
         MultiplexerPtrWeak getLinkLayerMultiplexer() { return mux_eth_;};
 	
-	void statistics(std::basic_ostream<char>& out);
-	void statistics() { statistics(std::cout);};
-
 	void printFlows(std::basic_ostream<char>& out);
 	void printFlows() { printFlows(std::cout);};
 
@@ -47,6 +44,8 @@ public:
 	void setUDPSignatureManager(SignatureManagerPtrWeak sig);
         void setTCPSignatureManager(SignatureManager& sig) ;
         void setUDPSignatureManager(SignatureManager& sig) ;
+
+	friend std::ostream& operator<< (std::ostream& out, const StackLan& stk);
 
 private:
 	std::string name_;
@@ -83,7 +82,15 @@ private:
 	FlowForwarderPtr ff_dns_;
 	FlowForwarderPtr ff_tcp_generic_;
 	FlowForwarderPtr ff_udp_generic_;
+
+	// References to the SignaturesManagers
+	// This references are created on the python side, so we need
+	// to have them on a shared_ptr, because weak_ptr dont have
+	// the ownership of them.
+	SignatureManagerPtr sigs_tcp_;
+	SignatureManagerPtr sigs_udp_;
 };
 
+typedef std::shared_ptr<StackLan> StackLanPtr;
 
 #endif

@@ -187,36 +187,37 @@ Stack3G::Stack3G()
 	ff_udp_high_->addUpFlowForwarder(ff_udp_generic_);
 }
 
-void Stack3G::statistics(std::basic_ostream<char>& out)
+std::ostream& operator<< (std::ostream& out, const Stack3G& stk)
 {
 	
-	eth_->statistics(out);
+	stk.eth_->statistics(out);
 	out << std::endl;
-	ip_low_->statistics(out);
+	stk.ip_low_->statistics(out);
 	out << std::endl;
-	udp_low_->statistics(out);
+	stk.udp_low_->statistics(out);
 	out << std::endl;
-	gprs_->statistics(out);
+	stk.gprs_->statistics(out);
 	out << std::endl;
-	ip_high_->statistics(out);
+	stk.ip_high_->statistics(out);
 	out << std::endl;
-	tcp_->statistics(out);
+	stk.tcp_->statistics(out);
 	out << std::endl;
-	udp_high_->statistics(out);
+	stk.udp_high_->statistics(out);
 
         out << std::endl;
-        icmp_->statistics(out);
+        stk.icmp_->statistics(out);
         out << std::endl;
-        dns_->statistics(out);
+        stk.dns_->statistics(out);
         out << std::endl;
-        udp_generic_->statistics(out);
+        stk.udp_generic_->statistics(out);
         out << std::endl;
-        http_->statistics(out);
+        stk.http_->statistics(out);
         out << std::endl;
-        ssl_->statistics(out);
+        stk.ssl_->statistics(out);
         out << std::endl;
-        tcp_generic_->statistics(out);
+        stk.tcp_generic_->statistics(out);
 
+	return out;
 }
 
 void Stack3G::printFlows(std::basic_ostream<char>& out)
@@ -230,22 +231,28 @@ void Stack3G::printFlows(std::basic_ostream<char>& out)
 void Stack3G::setTCPSignatureManager(SignatureManagerPtrWeak sig)
 {
         if(sig.lock())
+	{
                 tcp_generic_->setSignatureManager(sig.lock());
+	}
 }
 
 void Stack3G::setUDPSignatureManager(SignatureManagerPtrWeak sig)
 {
         if(sig.lock())
+	{
                 udp_generic_->setSignatureManager(sig.lock());
+	}
 }
 
 void Stack3G::setTCPSignatureManager(SignatureManager& sig)
 {
-        setTCPSignatureManager(std::make_shared<SignatureManager>(sig));
+	sigs_tcp_ = std::make_shared<SignatureManager>(sig);
+        setTCPSignatureManager(sigs_tcp_);
 }
 
 void Stack3G::setUDPSignatureManager(SignatureManager& sig)
 {
-        setUDPSignatureManager(std::make_shared<SignatureManager>(sig));
+	sigs_udp_ = std::make_shared<SignatureManager>(sig);
+        setUDPSignatureManager(sigs_udp_);
 }
 

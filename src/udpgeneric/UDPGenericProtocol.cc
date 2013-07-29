@@ -14,12 +14,10 @@ void UDPGenericProtocol::processFlow(Flow *flow)
 		bool result = false;
 		const unsigned char *payload = flow->packet->getPayload();
 	
-		std::cout << "The packet could matchs!" << std::endl;
-
 		sig->evaluate(payload,&result);
 		if(result)
 		{
-			std::cout << "The packet matchs!" << std::endl;
+		//	std::cout << "The packet matchs!" << std::endl;
 		}	
 	}
 }
@@ -34,6 +32,6 @@ void UDPGenericProtocol::statistics(std::basic_ostream<char>& out)
         if(flow_forwarder_.lock())
                 flow_forwarder_.lock()->statistics(out);
         if(sigs_.lock())
-                sigs_.lock()->statistics(out);
+                out << *sigs_.lock();
 }
 

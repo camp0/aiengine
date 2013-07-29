@@ -20,20 +20,16 @@ void SignatureManager::addSignature(SignaturePtr sig)
 
 void SignatureManager::evaluate(const unsigned char *payload, bool *result)
 {
-//	std::cout << "Processing query(" << query.c_str() << ")" <<std::endl;
 
         std::find_if(signatures_.begin(),
                 signatures_.end(),  [&](SignaturePtr& sig)
         {
-//		std::cout << "Evaluating rule(" << r->getExpression() << ")" << std::endl;
 		if(sig->evaluate(payload))
 		{
 			++total_matched_signatures_;
 			current_signature_ = sig;
 			sig->incrementMatchs();
 			(*result) = true;
-//			std::cout << "Matchs(" << query.c_str() <<")" << *result <<std::endl;
-			// return from the find_if	
 			return true;
 		}
         });
@@ -46,13 +42,13 @@ SignaturePtr SignatureManager::getMachtedSignature()
 	return current_signature_;
 }
 
-void SignatureManager::statistics(std::basic_ostream<char>& out)
+std::ostream& operator<< (std::ostream& out, const SignatureManager& sig)
 {
-	out << "SignatureManager(" << this << ") statistics" << std::dec <<  std::endl;	
-	for (auto it = signatures_.begin(); it != signatures_.end(); ++it)
+	out << "SignatureManager(" << &sig << ") statistics" << std::dec <<  std::endl;	
+	for (auto it = sig.signatures_.begin(); it != sig.signatures_.end(); ++it)
 	{
 		SignaturePtr sig = (*it);
 		out << "\t" << "Signature:" << sig->getExpression() << " matches:" << sig->getMatchs() << std::endl;
 	}
+	return out;
 }
-

@@ -31,7 +31,8 @@ void iaengineExit()
 {
         if((stack)&&(show_statistics))
         {
-              stack->statistics();
+	//	StackLanPtr stk = StackLanPtr(stack);
+              	//std::cout << *stack;
         }
         if((stack)&&(print_flows))
         {

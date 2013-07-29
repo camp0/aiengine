@@ -30,8 +30,8 @@ public:
 
 	SignaturePtr getMachtedSignature();
 
-	void statistics(std::basic_ostream<char>& out);
-	void statistics() { statistics(std::cout);};
+	friend std::ostream& operator<< (std::ostream& out, const SignatureManager& sig);
+//	std::string toString() { std::ostringstream s; s << this; return s.str();}; // Wrapper for python 
 
 private:
 	SignaturePtr current_signature_;

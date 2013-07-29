@@ -15,7 +15,7 @@ void TCPGenericProtocol::processFlow(Flow *flow)
 		sig->evaluate(payload,&result);
 		if(result)
 		{
-			std::cout << "The packet matchs!" << std::endl;
+	//		std::cout << "The packet matchs!" << std::endl;
 		}	
 	}
 }
@@ -30,7 +30,7 @@ void TCPGenericProtocol::statistics(std::basic_ostream<char>& out)
         if(flow_forwarder_.lock())
                 flow_forwarder_.lock()->statistics(out);
 	if(sigs_.lock())
-		sigs_.lock()->statistics(out);
+		out << *sigs_.lock();
 
 }
 

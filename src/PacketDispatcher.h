@@ -29,6 +29,7 @@ public:
     	explicit PacketDispatcher():
 		io_service_(),
 		total_packets_(0),
+		total_bytes_(0),
 		pcap_file_ready_(false),
 		device_is_ready_(false) {};
 
@@ -42,6 +43,7 @@ public:
 	void run(); 
 	void runPcap(); 
 
+	uint64_t getTotalBytes() const { return total_bytes_;};
 	uint64_t getTotalPackets() const { return total_packets_;};
 
 	void setStack(NetworkStackPtr stack) { setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());};
@@ -62,6 +64,7 @@ private:
 	bool device_is_ready_;
 
 	uint64_t total_packets_;	
+	uint64_t total_bytes_;	
     	pcap_t* pcap_;
 	boost::asio::io_service io_service_;
 	struct pcap_pkthdr *header;

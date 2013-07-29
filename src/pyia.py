@@ -13,8 +13,6 @@ def loadSignaturesForTcp():
 	
 	sig = pyiaengine.Signature("^\x13BitTorrent")
 
-	#sm.addSignature("^\x13BitTorrent")
-
 	sm.addSignature(sig)
 
 	return sm
@@ -43,7 +41,7 @@ if __name__ == '__main__':
 	st.setTotalTCPFlows(350000)
 	st.setTotalUDPFlows(350000)
 
-	directory = "/home/luis/pcapfiles/vcom"
+	directory = "/home/luis/pcapfiles/torrent/vuze"
 	for pfile in os.listdir(directory):
 		print "Processing ",pfile
 		fpath = "%s/%s" %(directory,pfile)
@@ -55,11 +53,13 @@ if __name__ == '__main__':
 			print "Error: capturing packets"
 			pass
 
-	f = open("pepe.dat",'w')
-	s_tcp.statistics()
-	s_udp.statistics()
-	st.statistics(f)
+	print s_udp
+	print s_tcp
+#	f = open("pepe.dat",'w')
+#	s_tcp.statistics()
+#	s_udp.statistics()
+#	st.statistics()
 	pdis.closePcapFile()
-
+	print st
 	sys.exit(0)
 
