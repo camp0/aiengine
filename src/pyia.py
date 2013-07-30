@@ -1,4 +1,4 @@
-"""Example script for integrate/configureate the iaengine """
+"""Example script for integrate/configurate the iaengine """
 __author__ = "Luis Campo Giralte"
 __copyright__ = "Copyright (C) 2013 by Luis Campo Giralte"
 __revision__ = "$Id$"
@@ -32,6 +32,7 @@ if __name__ == '__main__':
 	pdis = pyiaengine.PacketDispatcher()
 
 	pdis.setStack(st)
+	
 	s_tcp = loadSignaturesForTcp()
 	st.setTCPSignatureManager(s_tcp)
 
@@ -42,6 +43,8 @@ if __name__ == '__main__':
 	st.setTotalUDPFlows(350000)
 
 	directory = "/home/luis/pcapfiles/torrent/vuze"
+	directory = "/home/luis/pcapfiles/defcon18/"
+	directory = "/home/luis/pcapfiles/vcom/"
 	for pfile in os.listdir(directory):
 		print "Processing ",pfile
 		fpath = "%s/%s" %(directory,pfile)
@@ -53,13 +56,14 @@ if __name__ == '__main__':
 			print "Error: capturing packets"
 			pass
 
-	print s_udp
-	print s_tcp
-#	f = open("pepe.dat",'w')
-#	s_tcp.statistics()
-#	s_udp.statistics()
-#	st.statistics()
+	f = open("signatures_tcp.log","w")
+	f.write(str(s_tcp))
+	f.close()
+
+	f = open("statistics.log","w")
+	f.write(str(st))
+	f.close()
 	pdis.closePcapFile()
-	print st
+
 	sys.exit(0)
 

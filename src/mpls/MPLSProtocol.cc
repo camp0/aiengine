@@ -23,21 +23,22 @@ void MPLSProtocol::processPacket(Packet& packet)
 			label |= mpls_header[2]>>4;
 	
 			std::bitset<1> b1(mpls_header[2]);
+
 			mpls_header = (mpls_header + 4);
 			mpls_header_size += 4;
-			if(b1[0] == true) sw = false;
-			std::cout << "One MPLS header" << std::endl;	
-              		std::cout << __FILE__ <<":"<< this<< ":";
-                	std::cout << "mpls label" << label <<std::endl;
+			//std::cout << "One MPLS header" << std::endl;	
+              		//std::cout << __FILE__ <<":"<< this<< ":";
+                	//std::cout << "mpls label" << label <<std::endl;
 			++counter;
 			if((b1[0] == true)||(counter >2)) sw = false;
 		} while(sw);
 
-			       
+		mux->setHeaderSize(mpls_header_size);			       
 		packet.setPrevHeaderSize(mpls_header_size); 
 		mux->setNextProtocolIdentifier(ETHERTYPE_IP);
-                std::cout << "header prev header size" << mpls_header_size <<std::endl;
-		std::cout << packet;
+                //std::cout << "header prev header size:" << mpls_header_size <<std::endl;
+		//std::cout << packet;
+		//std::cout << "----------------------" << std::endl;
         }
 }
 

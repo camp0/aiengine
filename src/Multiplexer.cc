@@ -46,13 +46,13 @@ void Multiplexer::forwardPacket(Packet &packet)
                 if(mux)
                 {
 			int offset = mux->header_size_;
-                      	Packet pkt_candidate(&packet.getPayload()[header_size_],packet.getLength() - header_size_, header_size_);
-			std::cout << pkt_candidate;
+			int prev_header_size = packet.getPrevHeaderSize();
+                      	Packet pkt_candidate(&packet.getPayload()[header_size_],packet.getLength() - header_size_, prev_header_size);
+
 			if(mux->acceptPacket(pkt_candidate)) // The packet is accepted by the destination mux
 			{
     				mux->packet_func_(pkt_candidate);
                         	++total_forward_packets_;
-				pkt_candidate.setPrevHeaderSize(header_size_);
                         	mux->forwardPacket(pkt_candidate);
 #ifdef DEBUG
 			}else{
