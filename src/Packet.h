@@ -29,7 +29,7 @@ public:
 
 	friend ostream& operator<<(ostream& os, const Packet& p)
 	{
-		os << "Begin packet length:" << p.length_ << " prev header size:" << p.prev_header_size_ << std::endl;
+		os << "Begin packet(" << &p << ") length:" << p.length_ << " prev header size:" << p.prev_header_size_ << std::endl;
 		for (int i = 0;i< p.length_;++i)
 		{
 			os << hex << (int)p.packet_[i] << " ";

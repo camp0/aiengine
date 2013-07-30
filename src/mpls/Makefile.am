@@ -1,17 +1,16 @@
 AUTOMAKE_OPTIONS = gnu
 
-TEST = test_dns
+TEST = test_mpls
 
-check_PROGRAMS = test_dns
+check_PROGRAMS = test_mpls
 
-test_dns_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
+test_mpls_SOURCES = 	../Multiplexer.cc \
 			../ethernet/EthernetProtocol.cc \
 			../ip/IPProtocol.cc \
-			../udp/UDPProtocol.cc \
-			../flow/FlowManager.cc \
-			DNSProtocol.cc test_dns.cc
+			../icmp/ICMPProtocol.cc \
+			MPLSProtocol.cc test_mpls.cc
 
-test_dns_LDADD   = -lboost_unit_test_framework
+test_mpls_LDADD   = -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so
 

@@ -8,7 +8,6 @@ test_gprs_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ethernet/EthernetProtocol.cc \
 			../vlan/VLanProtocol.cc \
 			../flow/FlowManager.cc \
-			../flow/FlowCache.cc \
 			../ip/IPProtocol.cc \
 			../udp/UDPProtocol.cc \
 			../icmp/ICMPProtocol.cc \

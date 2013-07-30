@@ -7,6 +7,7 @@ SUBDIRS = 	src \
 		pcapfiles \
 		src/ethernet \
 		src/vlan \
+		src/mpls \
 		src/ip \
 		src/ip6 \
 		src/gprs \
