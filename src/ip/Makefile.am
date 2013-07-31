@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
 
+noinst_HEADERS =	test_ip.h
+
 TEST = test_ip
 
 check_PROGRAMS = test_ip

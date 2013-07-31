@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
 
+noinst_HEADERS = 	test_gprs.h
+
 TEST = test_gprs
 
 check_PROGRAMS = test_gprs

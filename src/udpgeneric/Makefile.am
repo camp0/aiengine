@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
 
+noinst_HEADERS =	test_udpgeneric.h
+
 TEST = test_udpgeneric
 
 check_PROGRAMS = test_udpgeneric

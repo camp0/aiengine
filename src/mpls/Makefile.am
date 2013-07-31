@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
 
+noinst_HEADERS =	test_mpls.h
+
 TEST = test_mpls
 
 check_PROGRAMS = test_mpls

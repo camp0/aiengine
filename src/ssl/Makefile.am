@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
 
+noinst_HEADERS =	test_ssl.h
+
 TEST = test_ssl
 
 check_PROGRAMS = test_ssl

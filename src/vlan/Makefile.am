@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
 
+noinst_HEADERS =	test_vlan.h
+
 TEST = test_vlan
 
 check_PROGRAMS = test_vlan

@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
 
+noinst_HEADERS =	test_dns.h
+
 TEST = test_dns
 
 check_PROGRAMS = test_dns

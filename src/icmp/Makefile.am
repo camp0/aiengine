@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
 
+noinst_HEADERS =	test_icmp.h
+
 TEST = test_icmp
 
 check_PROGRAMS = test_icmp

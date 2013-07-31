@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
 
+noinst_HEADERS =	test_tcpgeneric.h
+
 TEST = test_tcpgeneric
 
 check_PROGRAMS = test_tcpgeneric
