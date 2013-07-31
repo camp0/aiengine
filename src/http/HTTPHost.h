@@ -18,5 +18,6 @@ private:
 };
 
 typedef std::shared_ptr<HTTPHost> HTTPHostPtr;
+typedef std::weak_ptr<HTTPHost> HTTPHostPtrWeak;
 
 #endif

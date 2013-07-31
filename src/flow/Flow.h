@@ -6,6 +6,9 @@
 #endif
 
 #include "../Packet.h"
+#include "../frequency/Frequencies.h"
+#include "../http/HTTPHost.h"
+#include "../http/HTTPUserAgent.h"
 
 class FlowForwarder;
 typedef std::weak_ptr<FlowForwarder> FlowForwarderPtrWeak;
@@ -37,6 +40,9 @@ public:
 	int32_t total_packets_l7;
 	int32_t total_packets;
 
+	HTTPHostPtrWeak http_host;
+	HTTPUserAgentPtrWeak http_ua;	
+	FrequenciesPtrWeak frequencies;
 	FlowForwarderPtrWeak forwarder;
 
 	Packet *packet;
@@ -53,6 +59,9 @@ public:
 		dest_port_ = 0;
 		protocol_ = 0;		
 		forwarder.reset();
+		frequencies.reset();
+		http_host.reset();
+		http_ua.reset();
 		packet = nullptr;
 	};
 private:

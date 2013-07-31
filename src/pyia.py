@@ -63,6 +63,7 @@ if __name__ == '__main__':
 	f = open("statistics.log","w")
 	f.write(str(st))
 	f.close()
+
 	pdis.closePcapFile()
 
 	sys.exit(0)

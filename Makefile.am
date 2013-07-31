@@ -20,7 +20,9 @@ SUBDIRS = 	src \
 		src/flow \
 		src/tcpgeneric \
 		src/udpgeneric \
-		src/signatures  
+		src/signatures \
+		src/user \
+		src/frequency  
 
 dist_noinst_SCRIPTS = autogen.sh
 

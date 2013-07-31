@@ -31,8 +31,8 @@ void iaengineExit()
 {
         if((stack)&&(show_statistics))
         {
-	//	StackLanPtr stk = StackLanPtr(stack);
-              	//std::cout << *stack;
+		//StackLanPtr stk(stack);
+              	//std::cout << *stack.get();
         }
         if((stack)&&(print_flows))
         {
@@ -129,6 +129,8 @@ int main(int argc, char* argv[])
 
 	if(stack_name.compare("lan") == 0)
 	{
+		//StackLanPtr stack_lan = StackLanPtr(new StackLan());
+		//stack = stack_lan;
 		stack = NetworkStackPtr(new StackLan());
 	}else{
 		if (stack_name.compare("3g") ==0)
