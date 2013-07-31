@@ -8,7 +8,7 @@ BOOST_FIXTURE_TEST_SUITE(ip_suite,StackEthernetIP)
 
 // check a IP header values
 //
-BOOST_AUTO_TEST_CASE (test1_ip)
+BOOST_AUTO_TEST_CASE ( test1_ip )
 {
 	std::string localip("192.168.1.25");	
 	std::string remoteip("66.220.153.28");	
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         mux_vlan->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan,std::placeholders::_1));
 
         // configure the ip1
-        ip1->setMultiplexer(mux_ip);
+        ip1->setMultiplexer(mux_ip1);
         mux_ip1->setProtocolIdentifier(ETHERTYPE_IP);
         mux_ip1->setProtocol(static_cast<ProtocolPtr>(ip1));
         mux_ip1->setHeaderSize(ip1->getHeaderSize());
@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         mux_ip1->addPacketFunction(std::bind(&IPProtocol::processPacket,ip1,std::placeholders::_1));
 
         // configure the ip1
-        ip2->setMultiplexer(mux_ip);
+        ip2->setMultiplexer(mux_ip2);
         mux_ip2->setProtocolIdentifier(IPPROTO_IPIP);
         mux_ip2->setProtocol(static_cast<ProtocolPtr>(ip2));
         mux_ip2->setHeaderSize(ip2->getHeaderSize());
@@ -224,11 +224,9 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
 
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
         BOOST_CHECK(mux_vlan->getCurrentPacket()->getLength() == 0);
-        BOOST_CHECK(mux_ip1->getCurrentPacket()->getLength() == length - (14 ));
-        BOOST_CHECK(mux_ip2->getCurrentPacket()->getLength() == length - (14 + 20));
 
-        BOOST_CHECK(ip1->getPacketLength() == mux_ip1->getCurrentPacket()->getLength());
-        BOOST_CHECK(ip2->getPacketLength() == mux_ip2->getCurrentPacket()->getLength());
+        BOOST_CHECK(ip1->getPacketLength() == 81);
+        BOOST_CHECK(ip2->getPacketLength() == 61);
 
         BOOST_CHECK(ip1->getProtocol() == IPPROTO_IPIP);
         BOOST_CHECK(ip2->getProtocol() == IPPROTO_UDP);
@@ -239,11 +237,6 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
 
         BOOST_CHECK(src_ip.compare(ip2->getSrcAddrDotNotation())==0);
         BOOST_CHECK(dst_ip.compare(ip2->getDstAddrDotNotation())==0);
-
-	delete ip1;
-	delete ip2;
-	delete vlan;
-	delete eth;
 }
 
 
