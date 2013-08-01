@@ -18,8 +18,8 @@ public:
     	FlowCache(): fc_(new Cache<Flow>) {};
     	virtual ~FlowCache() {};
 
-	void releaseFlow(Flow *flow) { fc_->release(flow);};
-	Flow *acquireFlow() { return fc_->acquire();};
+	void releaseFlow(FlowPtr flow) { fc_->release(flow);};
+	FlowPtrWeak acquireFlow() { return fc_->acquire();};
 
 	void createFlows(int number) { fc_->create(number);};
 	void destroyFlows(int number) { fc_->destroy(number);};

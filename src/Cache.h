@@ -13,24 +13,32 @@ public:
 
 	typedef std::shared_ptr <Cache<A_Type>> CachePtr;
 
+	typedef std::shared_ptr <A_Type> A_TypePtr;
+	typedef std::weak_ptr <A_Type> A_TypePtrWeak;
+
     	Cache():total_(0),total_acquires_(0),total_releases_(0),total_fails_(0) {};
     	virtual ~Cache() { items_.clear();};
 
-	void release(A_Type *a) 
+	void release(A_TypePtr a) 
 	{         
-		items_.push_back(a);
-        	++total_releases_;
+		if(total_ < items_.size())
+		{
+		       	++total_releases_;
+                	++total_;
+                	items_[total_-1] = a;
+		}
 	};
 
-	A_Type *acquire()
+	A_TypePtrWeak acquire()
 	{
-		A_Type *a= nullptr;
+		A_TypePtrWeak a;
 
-		if(items_.size() > 0)
+		if(total_ > 0)
 		{
-			a = items_.release(items_.begin()).release();
-			a->reset();
+			a = items_[total_-1];
+			a.lock()->reset();
 			++total_acquires_;
+			--total_;
 		}else{
 			++total_fails_;
 		}
@@ -41,8 +49,8 @@ public:
 	{
 		for( int i = 0;i<number;++i)
 		{
-			items_.push_back(new A_Type());
-			++total_;// += number;
+			items_.push_back(A_TypePtr(new A_Type()));
+			++total_;
 		}
 	};
 
@@ -57,14 +65,14 @@ public:
 
 		for (int i = 0;i<real_items ;++i)
 		{
-			A_Type *a=items_.release(items_.begin()).release();
-                	delete a;
-                	--total_;
+			items_[total_-1].reset();
+			items_.erase(items_.begin()+total_-1);
+                        --total_;
 		}
         };
 
-	int32_t getTotalOnCache() const { return items_.size();};
-	int32_t getTotal() const { return total_;};
+	int32_t getTotalOnCache() const { return total_;};
+	int32_t getTotal() const { return items_.size();};
 	int32_t getTotalAcquires() const { return total_acquires_;};
 	int32_t getTotalReleases() const { return total_releases_;};
 	int32_t getTotalFails() const { return total_fails_;};
@@ -76,7 +84,7 @@ private:
 	int32_t total_fails_;
 
 	// a vector of pointers to the created Flows
-	boost::ptr_vector<A_Type> items_;
+	std::vector<A_TypePtr> items_;
 };
 
 #endif

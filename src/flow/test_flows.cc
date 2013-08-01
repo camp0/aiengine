@@ -33,11 +33,13 @@ BOOST_AUTO_TEST_CASE (test2_flowcache)
 
 	fc->createFlows(10);
 	BOOST_CHECK(fc->getTotalFlows() == 10);
+	BOOST_CHECK(fc->getTotalFlowsOnCache() == 10);
 	BOOST_CHECK(fc->getTotalReleases() == 0);
 	BOOST_CHECK(fc->getTotalAcquires() == 0);
 	BOOST_CHECK(fc->getTotalFails() == 0);
 
 	fc->destroyFlows(9);
+	BOOST_CHECK(fc->getTotalFlowsOnCache() == 1);
 	BOOST_CHECK(fc->getTotalFlows() == 1);
 	BOOST_CHECK(fc->getTotalFails() == 0);
 
@@ -47,22 +49,29 @@ BOOST_AUTO_TEST_CASE (test2_flowcache)
 	BOOST_CHECK(fc->getTotalAcquires() == 0);
 
 	fc->createFlows(1);
-	Flow *f1 = fc->acquireFlow();
+	BOOST_CHECK(fc->getTotalFlowsOnCache() == 1);
+	BOOST_CHECK(fc->getTotalFlows() == 1);
+
+	FlowPtr f1 = fc->acquireFlow().lock();
+
+	BOOST_CHECK(fc->getTotalFlowsOnCache() == 0);
 	BOOST_CHECK(fc->getTotalFlows() == 1);
 	BOOST_CHECK(fc->getTotalReleases() == 0);
 	BOOST_CHECK(fc->getTotalAcquires() == 1);
 	BOOST_CHECK(fc->getTotalFails() == 0);
 
-	Flow *f2 = fc->acquireFlow();
+	FlowPtr f2 = fc->acquireFlow().lock();
 	BOOST_CHECK(fc->getTotalFlows() == 1);
 	BOOST_CHECK(fc->getTotalReleases() == 0);
 	BOOST_CHECK(fc->getTotalAcquires() == 1);
 	BOOST_CHECK(fc->getTotalFails() == 1);
+	BOOST_CHECK(fc->getTotalFlowsOnCache() == 0);
 	BOOST_CHECK(f2 == nullptr);
 
 	fc->releaseFlow(f1);
 	fc->destroyFlows(1);	
 	delete fc;
+
 }
 
 BOOST_AUTO_TEST_CASE (test3_flowcache)
@@ -70,9 +79,9 @@ BOOST_AUTO_TEST_CASE (test3_flowcache)
         FlowCache *fc = new FlowCache();
         fc->createFlows(10);
 
-	Flow *f1 = fc->acquireFlow();
-	Flow *f2 = fc->acquireFlow();
-	Flow *f3 = fc->acquireFlow();
+	FlowPtr f1 = fc->acquireFlow().lock();
+	FlowPtr f2 = fc->acquireFlow().lock();
+	FlowPtr f3 = fc->acquireFlow().lock();
 	
 	BOOST_CHECK(fc->getTotalFlowsOnCache() == 7);
 	BOOST_CHECK(fc->getTotalFlows() == 10);
@@ -96,7 +105,7 @@ BOOST_AUTO_TEST_CASE (test4_flowcache)
         FlowCache *fc = new FlowCache();
         fc->createFlows(1);
 
-        Flow *f1 = fc->acquireFlow();
+        FlowPtr f1 = fc->acquireFlow().lock();
 
 	BOOST_CHECK(fc->getTotalFlowsOnCache() == 0);
 	f1->setId(10);
@@ -107,20 +116,15 @@ BOOST_AUTO_TEST_CASE (test4_flowcache)
 	BOOST_CHECK(fc->getTotalFlowsOnCache() == 1);
         BOOST_CHECK(fc->getTotalReleases() == 1);
 
-	Flow *f2 = fc->acquireFlow();
-//	BOOST_CHECK(f2->getId() == 0);
-//	BOOST_CHECK(f2->total_bytes == 0);
-	//BOOST_CHECK(f2->total_packets == 0);
-//	BOOST_CHECK(f1 == f2);
+	FlowPtr f2 = fc->acquireFlow().lock();
         fc->destroyFlows(fc->getTotalFlows());
         delete fc;
 }
 
-
-
 BOOST_AUTO_TEST_SUITE_END( )
 
 BOOST_AUTO_TEST_SUITE (flowmanager) // name of the test suite is stringtest
+
 
 BOOST_AUTO_TEST_CASE (test1_flowmanager_lookups)
 {
@@ -180,8 +184,8 @@ BOOST_AUTO_TEST_CASE (test1_flowcache_flowmanager)
 	FlowManager *fm = new FlowManager();
 
 	fc->createFlows(10);
-	FlowPtr f1 = FlowPtr(fc->acquireFlow());
-	BOOST_CHECK(f1.use_count() == 1);
+	FlowPtr f1 = fc->acquireFlow().lock();
+	BOOST_CHECK(f1.use_count() == 2); // one is the cache and the other f1
         BOOST_CHECK(fm->getTotalFlows() == 0);
         
 	unsigned long h1 = 1^2^3^4^5;
