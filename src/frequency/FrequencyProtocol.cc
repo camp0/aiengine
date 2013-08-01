@@ -9,15 +9,15 @@ void FrequencyProtocol::processFlow(Flow *flow)
 
 	if(flow->total_packets < 100) 
 	{
-		FrequenciesPtrWeak freq = flow->frequencies;
+		FrequenciesPtr freq = flow->frequencies.lock();
 
-		if(!freq.lock()) // There is no Frequency object attached to the flow
+		if(!freq) // There is no Frequency object attached to the flow
 		{
-			freq = freqs_cache_->acquire();
+			freq = freqs_cache_->acquire().lock();
 			if(freq)
 				flow->frequencies = freq;
 		}
-
+		
 		if(freq)
 		{
 			freq->addPayload(flow->packet->getPayload(),flow->packet->getLength());			

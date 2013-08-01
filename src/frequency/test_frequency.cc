@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE (test2_frequencies)
 	BOOST_CHECK(freqs4 != freqs2);	
 }
 
-
+/*
 BOOST_AUTO_TEST_CASE (test10_frequencies)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE (test10_frequencies)
 	BOOST_CHECK(tcp->getTotalBytes() == 225);
 	BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
 }
-
+*/
 
 BOOST_AUTO_TEST_SUITE_END( )
 

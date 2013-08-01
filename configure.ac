@@ -1,5 +1,5 @@
-AC_INIT([iaengine],[0.1],[luis.camp0.2009@gmail.com],[],[])
-AM_INIT_AUTOMAKE(iaengine,0.0.1)
+AC_INIT([iaengine],[0.1])
+AM_INIT_AUTOMAKE
 AM_PROG_LIBTOOL
 
 AM_CONFIG_HEADER(config.h)

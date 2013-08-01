@@ -204,4 +204,57 @@ BOOST_AUTO_TEST_CASE (test1_flowcache_flowmanager)
 	delete fc;
 }
 
+BOOST_AUTO_TEST_CASE (test2_flowcache_flowmanager)
+{
+        FlowCachePtr fc = FlowCachePtr(new FlowCache());
+        FlowManagerPtr fm = FlowManagerPtr(new FlowManager());
+	std::vector<FlowPtr> v;
+	
+        fc->createFlows(64);
+
+	for (int i = 0;i< 66; ++i)
+	{
+        	FlowPtr f1 = fc->acquireFlow().lock();
+
+		if(f1)
+		{
+        		unsigned long h1 = 1^2^3^4^i;
+        		unsigned long h2 = 4^i^3^1^2;
+        		f1->setId(h1);
+
+        		fm->addFlow(f1);
+        		BOOST_CHECK(fm->getTotalFlows() == i+1);
+		}
+	}
+
+	BOOST_CHECK(fm->getTotalFlows() == 64);
+	BOOST_CHECK(fc->getTotalFlows() == 64);
+	BOOST_CHECK(fc->getTotalAcquires() == 64);
+	BOOST_CHECK(fc->getTotalReleases() == 0);
+	BOOST_CHECK(fc->getTotalFails() == 2);
+
+	for (int i = 0; i<64; ++i)
+	{
+        	unsigned long h1 = 1^2^3^4^i;
+        	unsigned long h2 = 4^i^3^1^2;
+
+		FlowPtr f1 = fm->findFlow(h1,h2);
+		if(f1)
+		{
+			fm->removeFlow(f1);
+			v.push_back(f1);
+		}
+	}
+	BOOST_CHECK(fm->getTotalFlows() == 0);
+
+	for (auto value: v)
+	{
+		fc->releaseFlow(value);
+	}
+
+	BOOST_CHECK(fc->getTotalReleases() == 64);
+}
+
+
+
 BOOST_AUTO_TEST_SUITE_END( )

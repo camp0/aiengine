@@ -36,7 +36,7 @@ FlowPtr UDPProtocol::getFlow()
 		{
 			if(flow_cache_)
 			{	
-				flow = FlowPtr(flow_cache_->acquireFlow());
+				flow = flow_cache_->acquireFlow().lock();
 				if(flow)
 				{
 					flow->setId(h1);
