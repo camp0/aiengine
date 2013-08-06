@@ -24,7 +24,8 @@
 class FrequencyProtocol: public Protocol 
 {
 public:
-    	explicit FrequencyProtocol():freq_header_(nullptr),total_bytes_(0) { name_="FrequencyProtocol";};
+    	explicit FrequencyProtocol():freqs_cache_(new Cache<Frequencies>),
+		freq_header_(nullptr),total_bytes_(0) { name_="FrequencyProtocol";};
     	virtual ~FrequencyProtocol() {};
 	
 	static const u_int16_t id = 0;

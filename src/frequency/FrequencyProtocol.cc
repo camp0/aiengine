@@ -20,7 +20,7 @@ void FrequencyProtocol::processFlow(Flow *flow)
 		
 		if(freq)
 		{
-			freq->addPayload(flow->packet->getPayload(),flow->packet->getLength());			
+			freq->addPayload(flow->packet->getPayload(),flow->packet->getLength());		
 		}
 
 	}
