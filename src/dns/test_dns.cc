@@ -1,7 +1,9 @@
 #include "test_dns.h"
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE dnstest 
+#ifdef STAND_ALONE
+#define BOOST_TEST_MODULE dnstest
+#endif
 #include <boost/test/unit_test.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(dns_suite,StackDNStest)

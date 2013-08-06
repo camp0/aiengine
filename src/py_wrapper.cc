@@ -11,7 +11,7 @@
 
 using namespace boost::python;
 
-BOOST_PYTHON_MODULE(pyiaengine)
+BOOST_PYTHON_MODULE(pyaiengine)
 {
         using namespace std;
 	using namespace boost::asio;

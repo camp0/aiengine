@@ -1,10 +1,12 @@
 #include "test_vlan.h"
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE vlantest 
+#ifdef STAND_ALONE
+#define BOOST_TEST_MODULE vlantest
+#endif
 #include <boost/test/unit_test.hpp>
 
-BOOST_FIXTURE_TEST_SUITE(vlan_suite,StackVlan)
+BOOST_FIXTURE_TEST_SUITE(vlan_suite,StackTestVlan)
 
 BOOST_AUTO_TEST_CASE (test1_vlan)
 {

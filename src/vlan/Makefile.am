@@ -10,6 +10,7 @@ test_vlan_SOURCES = 	../Multiplexer.cc \
 			../ethernet/EthernetProtocol.cc \
 			VLanProtocol.cc test_vlan.cc
 
+test_vlan_CPPFLAGS = -DSTAND_ALONE
 test_vlan_LDADD   = -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so

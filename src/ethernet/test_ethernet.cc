@@ -4,23 +4,17 @@
 #include "EthernetProtocol.h"
 
 #define BOOST_TEST_DYN_LINK
-
-#ifndef BOOST_TEST_NO_MAIN 
-
+#ifdef STAND_ALONE
 #define BOOST_TEST_MODULE ethernettest
-#include <boost/test/unit_test.hpp>
 #endif
-
+#include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_CASE (test1_ethernet)
 {
 	EthernetProtocolPtr eth = EthernetProtocolPtr(new EthernetProtocol());
 
 	BOOST_CHECK(eth->getTotalPackets() == 0);
-
-	eth->statistics(std::cout);
 }
-
 
 BOOST_AUTO_TEST_CASE (test2_ethernet)
 {
@@ -51,6 +45,5 @@ BOOST_AUTO_TEST_CASE (test2_ethernet)
 	BOOST_CHECK(eth->getTotalValidatedPackets() == 2);
 	BOOST_CHECK(eth->getTotalMalformedPackets() == 2);
 }
-
 
 

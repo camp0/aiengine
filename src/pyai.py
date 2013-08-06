@@ -6,19 +6,19 @@ __version__ = "0.1"
 import os
 import signal
 import sys
-import pyiaengine
+import pyaiengine
 
 def loadSignaturesForTcp():
-	sm = pyiaengine.SignatureManager()
+	sm = pyaiengine.SignatureManager()
 	
-	sig = pyiaengine.Signature("^\x13BitTorrent")
+	sig = pyaiengine.Signature("^\x13BitTorrent")
 
 	sm.addSignature(sig)
 
 	return sm
 
 def loadSignaturesForUdp():
-	sm = pyiaengine.SignatureManager()
+	sm = pyaiengine.SignatureManager()
 
 	sm.addSignature("^d1:ad2:id20")
 
@@ -26,10 +26,10 @@ def loadSignaturesForUdp():
 
 if __name__ == '__main__':
 
-	st = pyiaengine.Stack3G()
-	#st = pyiaengine.StackLan()
+	st = pyaiengine.Stack3G()
+	#st = pyaiengine.StackLan()
 
-	pdis = pyiaengine.PacketDispatcher()
+	pdis = pyaiengine.PacketDispatcher()
 
 	pdis.setStack(st)
 	

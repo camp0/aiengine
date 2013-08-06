@@ -1,9 +1,9 @@
 from distutils.core import setup
 from distutils.extension import Extension
 
-setup(name="PackageName",
+setup(name="AIEngine",
     ext_modules=[
-        Extension("pyiaengine", ["py_wrapper.cc"],
+        Extension("pyaiengine", ["py_wrapper.cc"],
         libraries = ["boost_python"])
     ])
 

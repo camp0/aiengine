@@ -1,7 +1,13 @@
 #include "test_udp.h"
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE udptest 
+#ifdef STAND_ALONE
+#define BOOST_TEST_MODULE udptest
+#include "../../test/tests_packets.h"
+#else
+#include "../test/tests_packets.h"
+#endif
+
 #include <boost/test/unit_test.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(udp_suite,StackUDPTest)

@@ -1,7 +1,9 @@
 #include "test_udpgeneric.h"
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE udpgenerictest 
+#ifdef STAND_ALONE
+#define BOOST_TEST_MODULE udpgenerictest
+#endif
 #include <boost/test/unit_test.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(udpgeneric_suite,StackUDPGenericTest)
@@ -61,7 +63,7 @@ BOOST_AUTO_TEST_CASE (test2_udpgeneric) // Same case as test1_genericudp but wit
         BOOST_CHECK(sig->getTotalMatchingSignatures() == 1);
         BOOST_CHECK(sig->getMachtedSignature() != nullptr);
 
-	std::cout << *sig;
+	//std::cout << *sig;
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

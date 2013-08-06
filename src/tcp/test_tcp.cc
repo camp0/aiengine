@@ -1,7 +1,9 @@
 #include "test_tcp.h"
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE tcptest 
+#ifdef STAND_ALONE
+#define BOOST_TEST_MODULE tcptest
+#endif
 #include <boost/test/unit_test.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(tcp_suite,StackTCPTest)

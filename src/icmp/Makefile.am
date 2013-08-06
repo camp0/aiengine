@@ -11,6 +11,7 @@ test_icmp_SOURCES = 	../Multiplexer.cc \
 			../ip/IPProtocol.cc \
 			ICMPProtocol.cc test_icmp.cc
 
+test_icmp_CPPFLAGS = -DSTAND_ALONE
 test_icmp_LDADD   = -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so

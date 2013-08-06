@@ -4,6 +4,7 @@ TEST = test_flows
 
 check_PROGRAMS = test_flows 
 
+test_flows_CPPFLAGS = -DSTAND_ALONE
 test_flows_SOURCES = FlowManager.cc test_flows.cc
 test_flows_LDADD   = -lboost_unit_test_framework
 

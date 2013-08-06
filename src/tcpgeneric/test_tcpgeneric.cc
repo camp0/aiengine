@@ -1,7 +1,9 @@
 #include "test_tcpgeneric.h"
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE tcpgenerictest 
+#ifdef STAND_ALONE
+#define BOOST_TEST_MODULE tcpgenerictest
+#endif
 #include <boost/test/unit_test.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(tcpgeneric_suite,StackTCPGenericTest)

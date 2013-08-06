@@ -1,7 +1,9 @@
 #include "test_mpls.h"
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE mplstest 
+#ifdef STAND_ALONE
+#define BOOST_TEST_MODULE mplstest
+#endif
 #include <boost/test/unit_test.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(mpls_suite,StackMPLStest)

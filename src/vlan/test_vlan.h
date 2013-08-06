@@ -8,14 +8,14 @@
 #include "VLanProtocol.h"
 #include <cstring>
 
-struct StackVlan
+struct StackTestVlan
 {
         EthernetProtocolPtr eth;
         VLanProtocolPtr vlan;
         MultiplexerPtr mux_eth;
         MultiplexerPtr mux_vlan;
 
-        StackVlan()
+        StackTestVlan()
         {
         	eth = EthernetProtocolPtr(new EthernetProtocol());
         	vlan = VLanProtocolPtr(new VLanProtocol());
@@ -41,7 +41,7 @@ struct StackVlan
 
 	}
 
-        ~StackVlan() {
+        ~StackTestVlan() {
           	// nothing to delete 
         }
 };

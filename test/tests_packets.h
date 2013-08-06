@@ -8,32 +8,32 @@
 // ttl = 128
 // tcp syn packet
 
-char *raw_packet_ip_tcp_syn =
+static char *raw_packet_ip_tcp_syn =
 	"\x45\x00"
 	"\x00\x34\x8b\x1e\x40\x00\x80\x06\xd1\xeb\xc0\xa8\x01\x19\x42\xdc"
 	"\x99\x1c\x05\xb1\x00\x50\x06\xa4\x1a\x34\x00\x00\x00\x00\x80\x02"
 	"\xff\xff\xaa\x84\x00\x00\x02\x04\x05\xb4\x01\x03\x03\x01\x01\x01"
 	"\x04\x02";
-int raw_packet_ip_tcp_syn_length = 52;
+static int raw_packet_ip_tcp_syn_length = 52;
 
 // ethernet, ip, udp and dns
-char *raw_packet_ethernet_ip_udp_dns =
+static char *raw_packet_ethernet_ip_udp_dns =
 	"\x00\x0c\x29\x2e\x3c\x2a\x90\x84\x0d\x62\xd8\x04\x08\x00\x45\x00"
 	"\x00\x3d\x8a\x0d\x00\x00\xec\x11\xf4\x4f\xc0\xa8\x01\x76\x50\x3a"
 	"\x3d\xfa\xe9\xb3\x00\x35\x00\x29\x05\x94\x84\xd3\x01\x00\x00\x01"
 	"\x00\x00\x00\x00\x00\x00\x02\x63\x68\x04\x70\x6f\x6f\x6c\x03\x6e"
 	"\x74\x70\x03\x6f\x72\x67\x00\x00\x01\x00\x01";
-int raw_packet_ethernet_ip_udp_dns_length = 75;
+static int raw_packet_ethernet_ip_udp_dns_length = 75;
 	
 // ethernet, vlan, ip, udp and dns
-char *raw_packet_ethernet_vlan_ip_udp_dns =
+static char *raw_packet_ethernet_vlan_ip_udp_dns =
 	"\x00\x0c\x29\x2e\x3c\x2a\x90\x84\x0d\x62\xd8\x04" "\x81\x00\x02\x5e\x08\x00"
 	"\x45\x00"
 	"\x00\x3d\x8a\x0d\x00\x00\xec\x11\xf4\x4f\xc0\xa8\x01\x76\x50\x3a"
 	"\x3d\xfa\xe9\xb3\x00\x35\x00\x29\x05\x94\x84\xd3\x01\x00\x00\x01"
 	"\x00\x00\x00\x00\x00\x00\x02\x63\x68\x04\x70\x6f\x6f\x6c\x03\x6e"
 	"\x74\x70\x03\x6f\x72\x67\x00\x00\x01\x00\x01";
-int raw_packet_ethernet_vlan_ip_udp_dns_length = 79;
+static int raw_packet_ethernet_vlan_ip_udp_dns_length = 79;
 	
 
 // ethernet, ip1 , ip2 , udp an dns
@@ -41,7 +41,7 @@ int raw_packet_ethernet_vlan_ip_udp_dns_length = 79;
 // ip2.src = 192.168.1.118
 // ip2.dst = 80.58.61.250
  
-char *raw_packet_ethernet_ip_ip_udp_dns =
+static char *raw_packet_ethernet_ip_ip_udp_dns =
 	"\x00\x0c\x29\x2e\x3c\x2a\x90\x84\x0d\x62\xd8\x04" "\x08\x00"
 	// IP
 	"\x45\x00\x00\x51\x00\x00\x40\x00\x40" "\x04" "\xd5\x57\x0a\x3a\x09\x76"
@@ -56,10 +56,10 @@ char *raw_packet_ethernet_ip_ip_udp_dns =
 	"\x84\xd3\x01\x00\x00\x01"
         "\x00\x00\x00\x00\x00\x00\x02\x63\x68\x04\x70\x6f\x6f\x6c\x03\x6e" // 84
         "\x74\x70\x03\x6f\x72\x67\x00\x00\x01\x00\x01"; // 95 
-int raw_packet_ethernet_ip_ip_udp_dns_length = 95;
+static int raw_packet_ethernet_ip_ip_udp_dns_length = 95;
 
 // ethernet, ip, udp, dhcp offer
-char *raw_packet_ethernet_ip_udp_dhcp_offer =       
+static char *raw_packet_ethernet_ip_udp_dhcp_offer =       
         "\x00\x0c\x29\xc0\xb9\xa8\x00\x50\x56\xfa\xa0\x55\x08\x00\x45\x10"
         "\x01\x48\x00\x00\x00\x00\x10\x11\xd6\xbd\xc0\xa8\x28\xfe\xc0\xa8"
         "\x28\x89\x00\x43\x00\x44\x01\x34\xe3\xaa\x02\x01\x06\x00\x66\xc8"
@@ -82,28 +82,28 @@ char *raw_packet_ethernet_ip_udp_dhcp_offer =
         "\x04\xc0\xa8\x28\xff\x03\x04\xc0\xa8\x28\x02\x0f\x0b\x6c\x6f\x63"
         "\x61\x6c\x64\x6f\x6d\x61\x69\x6e\x06\x04\xc0\xa8\x28\x02\x2c\x04"
         "\xc0\xa8\x28\x02\xff\x00";
-int raw_packet_ethernet_ip_udp_dhcp_offer_length= 342; 
+static int raw_packet_ethernet_ip_udp_dhcp_offer_length= 342; 
 
 
 // ip.src = 192.168.40.254
 // ip.dst = 192.168.40.137
 // ip.ttl = 128
-char *raw_packet_ethernet_ip_icmp_echo_request = 
+static char *raw_packet_ethernet_ip_icmp_echo_request = 
 	"\x00\x0c\x29\xc0\xb9\xa8\x00\x50\x56\xef\xaf\xd8\x08\x00\x45\x00"
 	"\x00\x30\x34\xb9\x00\x00\x80\x01\x33\x3c\xc0\xa8\x28\xfe\xc0\xa8"
 	"\x28\x89\x08\x00\xd3\xb5\xd8\x05\x00\x00\xdb\x01\x92\x7c\x83\x4d"
 	"\x13\x78\x00\x00\x3b\x00\x00\x00\x00\x00\x0d\x00\x00\x00";
-int raw_packet_ethernet_ip_icmp_echo_request_length = 62;
+static int raw_packet_ethernet_ip_icmp_echo_request_length = 62;
 
 // ip.src = 192.168.40.137
 // ip.dst = 192.168.40.254
 // ip.ttl = 64
-char *raw_packet_ethernet_ip_icmp_echo_reply = 
+static char *raw_packet_ethernet_ip_icmp_echo_reply = 
 	"\x00\x50\x56\xfa\xa0\x55\x00\x0c\x29\xc0\xb9\xa8\x08\x00\x45\x00"
 	"\x00\x30\xa0\xbf\x00\x00\x40\x01\x07\x36\xc0\xa8\x28\x89\xc0\xa8"
 	"\x28\xfe\x00\x00\xdb\xb5\xd8\x05\x00\x00\xdb\x01\x92\x7c\x83\x4d"
 	"\x13\x78\x00\x00\x3b\x00\x00\x00\x00\x00\x0d\x00\x00\x00";
-int raw_packet_ethernet_ip_icmp_echo_reply_length = 62;
+static int raw_packet_ethernet_ip_icmp_echo_reply_length = 62;
 
 // http request to google 
 //GET /pagead/conversion/1053964783/?random=1297767800114&cv=6&fst=1297767799966&num=2&fmt=1&label=eyRdCNmRThDv88j2Aw&bg=ffffff&hl=en&gl=US&guid=ON&u_h=768&u_w=1024&u_ah=720&u_aw=1024&u_cd=24&u_his=5&u_tz=60&u_java=false&u_nplug=5&u_nmime=39&ref=http%3A//www.google.com/chrome/eula.html%3Fhl%3Des&url=http%3A//www.google.com/chrome/thankyou.html%3Fhl%3Des HTTP/1.1
@@ -118,7 +118,7 @@ int raw_packet_ethernet_ip_icmp_echo_reply_length = 62;
 // Referer: http://www.google.com/chrome/thankyou.html?hl=es
 //
 
-char *raw_packet_ethernet_ip_tcp_http_get = 
+static char *raw_packet_ethernet_ip_tcp_http_get = 
 "\x00\x50\x56\xef\xaf\xd8\x00\x0c\x29\xc0\xb9\xa8\x08\x00\x45\x00"
 "\x03\x3d\x97\x52\x40\x00\x40\x06\x00\x81\xc0\xa8\x28\x89\xd1\x55"
 "\xe5\x60\xd1\x85\x00\x50\xc1\x96\xd5\xfc\x71\xf8\x2e\xf3\x50\x18"
@@ -173,14 +173,14 @@ char *raw_packet_ethernet_ip_tcp_http_get =
 "\x6f\x6d\x65\x2f\x74\x68\x61\x6e\x6b\x79\x6f\x75\x2e\x68\x74\x6d"
 "\x6c\x3f\x68\x6c\x3d\x65\x73\x0d\x0a\x0d\x0a";
 
-int raw_packet_ethernet_ip_tcp_http_get_length = 843;
+static int raw_packet_ethernet_ip_tcp_http_get_length = 843;
 
 // grps packet with icmp
 // source address 127.0.0.1
 // source and dest adddress 192.168.0.1 and 192.168.0.3
 // This packet is GTP version 0, DONT USE! BECAUSE IS NOT SUPPORTED
 
-char *raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo = 
+static char *raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo = 
 "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\x00\x45\x00"
 "\x00\x84\x00\x00\x40\x00\x40\x11\x3c\x66\x7f\x00\x00\x02\x7f\x00"
 "\x00\x01\x0d\x3a\x0d\x3a\x00\x70\xfe\x84\x1e\xff\x00\x54\x00\x00"
@@ -192,13 +192,13 @@ char *raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo =
 "\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31\x32\x33\x34\x35"
 "\x36\x37";
 
-int raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo_length = 146;
+static int raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo_length = 146;
 
 // ethernet ip tcp ssl packet
 // source address 192.168.13 destination 74.125.24.186
 // client hello
 
-char *raw_packet_ethernet_ip_tcp_ssl_client_hello =
+static char *raw_packet_ethernet_ip_tcp_ssl_client_hello =
 "\x04\x71\x7d\x00\xb8\x71\x1d\xa9\x00\x49\x43\x5c\x08\x00\x45\x00"
 "\x00\xf5\x4b\x3a\x40\x00\x40\x06\xc9\xd9\xc0\xa8\x01\x0d\x4a\x7d"
 "\x18\xbd\xac\xe9\x01\xbb\x15\x98\x88\x0d\xd0\xa5\x1a\x97\x80\x18"
@@ -217,9 +217,7 @@ char *raw_packet_ethernet_ip_tcp_ssl_client_hello =
 "\x00\x00\x33\x74\x00\x00\x75\x4f\x00\x00\x00\x05\x00\x05\x01\x00"
 "\x00\x00\x00";
 
-int raw_packet_ethernet_ip_tcp_ssl_client_hello_length = 259;
-
-
+static int raw_packet_ethernet_ip_tcp_ssl_client_hello_length = 259;
 
 // access to barrapunto.es
 // GET / HTTP/1.1
@@ -230,7 +228,7 @@ int raw_packet_ethernet_ip_tcp_ssl_client_hello_length = 259;
 // Accept-Encoding: gzip,deflate,sdch
 // Accept-Language: en-US,en;q=0.8
 
-char *raw_packet_ethernet_ip_tcp_http_barrapunto_get = 
+static char *raw_packet_ethernet_ip_tcp_http_barrapunto_get = 
 "\x00\x1a\xa0\x1e\x39\xfb\x5c\xf9\xdd\x54\x92\xb3\x08\x00\x45\x00"
 "\x01\x73\x01\xe2\x40\x00\x80\x06\x2d\xfe\xac\x1e\x03\xbd\x5e\x17"
 "\xbb\xb2\xd2\xa1\x00\x50\xa5\xa7\xb3\x8f\x60\x31\xb0\xd9\x50\x18"
@@ -257,11 +255,10 @@ char *raw_packet_ethernet_ip_tcp_http_barrapunto_get =
 "\x6e\x2d\x55\x53\x2c\x65\x6e\x3b\x71\x3d\x30\x2e\x38\x0d\x0a\x0d"
 "\x0a";
 
-int raw_packet_ethernet_ip_tcp_http_barrapunto_get_length = 385;
+static int raw_packet_ethernet_ip_tcp_http_barrapunto_get_length = 385;
 
 
-
-char *raw_packet_ethernet_ip_udp_gprs_ip_udp_dns_request =
+static char *raw_packet_ethernet_ip_udp_gprs_ip_udp_dns_request =
 "\x00\x05\x47\x02\xcd\xe3\x00\x21\x1c\x58\xb8\xaa\x08\x00\x45\x48"
 "\x00\x62\x00\x00\x00\x00\xf8\x11\x30\xf9\xd4\x44\xaa\xb0\xd4\x44"
 "\x3e\x10\x08\x68\x08\x68\x00\x4e\x8f\x81\x30\xff\x00\x3e\x58\x6a"
@@ -270,11 +267,11 @@ char *raw_packet_ethernet_ip_udp_gprs_ip_udp_dns_request =
 "\x01\x00\x00\x01\x00\x00\x00\x00\x00\x00\x03\x77\x77\x77\x08\x66"
 "\x61\x63\x65\x62\x6f\x6f\x6b\x03\x63\x6f\x6d\x00\x00\x1c\x00\x01";
 
-int raw_packet_ethernet_ip_udp_gprs_ip_udp_dns_request_length = 112;
+static int raw_packet_ethernet_ip_udp_gprs_ip_udp_dns_request_length = 112;
 
 // GTP v1 packet
 
-char *raw_packet_ethernet_ip_udp_gtpv1_ip_icmp_echo = 
+static char *raw_packet_ethernet_ip_udp_gtpv1_ip_icmp_echo = 
 
 "\x00\x05\x47\x02\xcd\xe3\x00\x05\x47\x02\x88\x4a\x08\x00\x45\x00"
 "\x00\x48\x00\x00\x00\x00\xfe\x11\x97\x8f\xd0\x40\x1e\x7c\xa4\x14"
@@ -283,10 +280,9 @@ char *raw_packet_ethernet_ip_udp_gtpv1_ip_icmp_echo =
 "\x7e\xe2\x1e\xe1\x5c\x01\x08\x00\x54\x32\x12\x34\x00\x04\x61\x62"
 "\x63\x64\x65\x66\x67\x68";
 
-int raw_packet_ethernet_ip_udp_gtpv1_ip_icmp_echo_length = 86;
+static int raw_packet_ethernet_ip_udp_gtpv1_ip_icmp_echo_length = 86;
 
-char *raw_packet_ethernet_ip_udp_gtpv1_ip_udp_payload =
-
+static char *raw_packet_ethernet_ip_udp_gtpv1_ip_udp_payload =
 "\x00\x05\x47\x02\xcd\xe3\x00\x21\x1c\x58\xb8\xaa\x08\x00\x45\x00"
 "\x00\x5d\x00\x00\x00\x00\xfd\x11\x98\x2e\xc0\xa8\x3e\xc8\xc0\xa8"
 "\x3e\x10\x08\x68\x08\x68\x00\x49\x0c\x4a\x30\xff\x00\x39\x8e\xe9"
@@ -295,6 +291,6 @@ char *raw_packet_ethernet_ip_udp_gtpv1_ip_udp_payload =
 "\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x0b\x61\x64\x62\x61\x6b"
 "\x6b\x65\x72\x2d\x50\x43\x00\x00\xff\x00\x01";
 
-int raw_packet_ethernet_ip_udp_gtpv1_ip_udp_payload_length = 107;
+static int raw_packet_ethernet_ip_udp_gtpv1_ip_udp_payload_length = 107;
 
 #endif

@@ -1,7 +1,10 @@
 #include "test_ip.h"
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE iptest 
+#ifdef STAND_ALONE
+#define BOOST_TEST_MODULE iptest
+#endif
+
 #include <boost/test/unit_test.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(ip_suite,StackEthernetIP)
@@ -200,12 +203,6 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         BOOST_CHECK(ip2->getTotalValidatedPackets() == 1);
         BOOST_CHECK(ip2->getTotalMalformedPackets() == 0);
         BOOST_CHECK(ip2->getTotalPackets() == 1);
-
-	ip1->statistics();
-	mux_ip1->statistics();
-
-	ip2->statistics();
-	mux_ip2->statistics();
 
         BOOST_CHECK(mux_eth->getTotalForwardPackets() == 1);
         BOOST_CHECK(mux_vlan->getTotalForwardPackets() == 0);

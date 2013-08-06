@@ -1,7 +1,9 @@
 #include "test_icmp.h"
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE icmptest 
+#ifdef STAND_ALONE
+#define BOOST_TEST_MODULE icmptest
+#endif
 #include <boost/test/unit_test.hpp>
 
 BOOST_FIXTURE_TEST_SUITE (icmp_suite,StackIcmp) // name of the test suite is stringtest
