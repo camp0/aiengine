@@ -40,7 +40,8 @@ public:
 	void printFlows() { printFlows(std::cout);};      
 	void statistics(std::basic_ostream<char>& out);
         void statistics() { statistics(std::cout);};
-	
+
+	FlowTable getFlowTable() const { return flowTable_;};	
 private:
     	timeval now_;
 

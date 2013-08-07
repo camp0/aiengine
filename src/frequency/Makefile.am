@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS =	test_frequency.h
+noinst_HEADERS =	test_frequency.h FrequencyCounter.h
 
 TEST = test_frequency
 

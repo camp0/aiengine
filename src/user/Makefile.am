@@ -6,6 +6,7 @@ check_PROGRAMS = test_users
 
 test_users_SOURCES = test_users.cc
 
+test_users_CPPFLAGS = -DSTAND_ALONE
 test_users_LDADD   = -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so

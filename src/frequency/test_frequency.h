@@ -9,6 +9,7 @@
 #include "../ip/IPProtocol.h"
 #include "../tcp/TCPProtocol.h"
 #include "FrequencyProtocol.h"
+#include "FrequencyCounter.h"
 
 #define BOOST_TEST_DYN_LINK
 #ifdef STAND_ALONE
