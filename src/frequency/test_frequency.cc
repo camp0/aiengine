@@ -129,6 +129,11 @@ BOOST_AUTO_TEST_CASE ( test5_frequencies )
 	for (int i = 0; i< 100 ; ++i) 
         	mux_eth->forwardPacket(packet);
 
+	BOOST_CHECK(freq->getTotalBytes() == 19300);
+	BOOST_CHECK(freq->getTotalValidatedPackets() == 1);
+	BOOST_CHECK(freq->getTotalPackets() == 100);
+	BOOST_CHECK(freq->getTotalMalformedPackets() == 0);
+
 	FrequencyCounterPtr fcount = FrequencyCounterPtr(new FrequencyCounter());
  
 	auto ft = flow_mng->getFlowTable();
@@ -136,12 +141,20 @@ BOOST_AUTO_TEST_CASE ( test5_frequencies )
 	{
 		FlowPtr flow = *it;
 		if(flow->frequencies.lock())
-			fcount->addFrequencyComponent(flow->frequencies.lock());	
+		{
+			FrequenciesPtr freq = flow->frequencies.lock();
+
+			fcount->addFrequencyComponent(freq);
+		}
 	}
+	// nothing to compute on this case
+	fcount->compute();
 
 	Frequencies *f1_p = fcount->getFrequencyComponent().lock().get();
 
-	BOOST_CHECK((*f1_p)[0] == 66 );
+	//std::cout << *f1_p;
+	//std::cout << (*f1_p)[0] << std::endl;
+	//BOOST_CHECK((*f1_p)[0] == 66 *101 );
 	
 }
 
