@@ -11,7 +11,7 @@ import pyaiengine
 def loadSignaturesForTcp():
 	sm = pyaiengine.SignatureManager()
 	
-	sig = pyaiengine.Signature("^\x13BitTorrent")
+	sig = pyaiengine.Signature("bittorrent tcp","^\x13BitTorrent")
 
 	sm.addSignature(sig)
 
@@ -20,14 +20,14 @@ def loadSignaturesForTcp():
 def loadSignaturesForUdp():
 	sm = pyaiengine.SignatureManager()
 
-	sm.addSignature("^d1:ad2:id20")
+	sm.addSignature("bittorrent udp","^d1:ad2:id20")
 
 	return sm
 
 if __name__ == '__main__':
 
 	st = pyaiengine.Stack3G()
-	#st = pyaiengine.StackLan()
+	st = pyaiengine.StackLan()
 
 	pdis = pyaiengine.PacketDispatcher()
 
@@ -43,8 +43,8 @@ if __name__ == '__main__':
 	st.setTotalUDPFlows(350000)
 
 	directory = "/home/luis/pcapfiles/torrent/vuze"
-	directory = "/home/luis/pcapfiles/defcon18/"
-	directory = "/home/luis/pcapfiles/vcom/"
+#	directory = "/home/luis/pcapfiles/defcon18/"
+#	directory = "/home/luis/pcapfiles/vcom/"
 	for pfile in os.listdir(directory):
 		print "Processing ",pfile
 		fpath = "%s/%s" %(directory,pfile)
@@ -63,6 +63,8 @@ if __name__ == '__main__':
 	f = open("statistics.log","w")
 	f.write(str(st))
 	f.close()
+
+	st.printFlows()
 
 	pdis.closePcapFile()
 

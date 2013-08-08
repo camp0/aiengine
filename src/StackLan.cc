@@ -15,6 +15,8 @@ StackLan::StackLan()
         dns_ = DNSProtocolPtr(new DNSProtocol());
 	tcp_generic_ = TCPGenericProtocolPtr(new TCPGenericProtocol());
 	udp_generic_ = UDPGenericProtocolPtr(new UDPGenericProtocol());
+	freqs_tcp_ = FrequencyProtocolPtr(new FrequencyProtocol());
+	freqs_udp_ = FrequencyProtocolPtr(new FrequencyProtocol());
 
 	// Allocate the Multiplexers
 	mux_eth_ = MultiplexerPtr(new Multiplexer());
@@ -36,6 +38,8 @@ StackLan::StackLan()
 	ff_dns_ = FlowForwarderPtr(new FlowForwarder());
         ff_tcp_generic_ = FlowForwarderPtr(new FlowForwarder());
         ff_udp_generic_ = FlowForwarderPtr(new FlowForwarder());
+        ff_tcp_freqs_ = FlowForwarderPtr(new FlowForwarder());
+        ff_udp_freqs_ = FlowForwarderPtr(new FlowForwarder());
 
 	//configure the Ethernet Layer 
 	eth_->setMultiplexer(mux_eth_);
@@ -107,6 +111,18 @@ StackLan::StackLan()
 	ff_udp_generic_->addChecker(std::bind(&UDPGenericProtocol::udpGenericChecker,udp_generic_,std::placeholders::_1));
 	ff_udp_generic_->addFlowFunction(std::bind(&UDPGenericProtocol::processFlow,udp_generic_,std::placeholders::_1));
 
+        // configure the TCP frequencies
+        freqs_tcp_->setFlowForwarder(ff_tcp_freqs_);
+        ff_tcp_freqs_->setProtocol(static_cast<ProtocolPtr>(freqs_tcp_));
+        ff_tcp_freqs_->addChecker(std::bind(&FrequencyProtocol::freqChecker,freqs_tcp_,std::placeholders::_1));
+        ff_tcp_freqs_->addFlowFunction(std::bind(&FrequencyProtocol::processFlow,freqs_tcp_,std::placeholders::_1));
+
+        // configure the UDP frequencies
+        freqs_udp_->setFlowForwarder(ff_udp_freqs_);
+        ff_udp_freqs_->setProtocol(static_cast<ProtocolPtr>(freqs_udp_));
+        ff_udp_freqs_->addChecker(std::bind(&FrequencyProtocol::freqChecker,freqs_udp_,std::placeholders::_1));
+        ff_udp_freqs_->addFlowFunction(std::bind(&FrequencyProtocol::processFlow,freqs_udp_,std::placeholders::_1));
+
 	// configure the multiplexers
 	mux_eth_->addUpMultiplexer(mux_ip_,ETHERTYPE_IP);
 	mux_ip_->addDownMultiplexer(mux_eth_);
@@ -151,11 +167,15 @@ std::ostream& operator<< (std::ostream& out, const StackLan& stk)
 	out << std::endl;
 	stk.udp_generic_->statistics(out);
 	out << std::endl;
+	stk.freqs_udp_->statistics(out);
+	out << std::endl;
 	stk.http_->statistics(out);
 	out << std::endl;
 	stk.ssl_->statistics(out);
 	out << std::endl;
 	stk.tcp_generic_->statistics(out);
+	out << std::endl;
+	stk.freqs_tcp_->statistics(out);
 
 	return out;
 }
@@ -196,3 +216,27 @@ void StackLan::setUDPSignatureManager(SignatureManager& sig)
 } 
 
 
+void StackLan::enableFrequencyEngine(bool enable)
+{
+	int tcp_flows_created = flow_cache_tcp_->getTotalFlows();
+	int udp_flows_created = flow_cache_udp_->getTotalFlows();
+
+	ff_udp_->removeUpFlowForwarder();
+	ff_tcp_->removeUpFlowForwarder();
+	if(enable)
+	{
+		freqs_tcp_->createFrequencies(tcp_flows_created);	
+		freqs_udp_->createFrequencies(udp_flows_created);	
+	
+		ff_tcp_->addUpFlowForwarder(ff_udp_freqs_);
+		ff_udp_->addUpFlowForwarder(ff_udp_freqs_);
+	}
+	else
+	{
+		freqs_tcp_->destroyFrequencies(tcp_flows_created);	
+		freqs_udp_->destroyFrequencies(udp_flows_created);	
+		
+		ff_tcp_->addUpFlowForwarder(ff_udp_generic_);
+		ff_udp_->addUpFlowForwarder(ff_udp_generic_);
+	}
+}

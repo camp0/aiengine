@@ -7,6 +7,6 @@ bool Signature::evaluate(const unsigned char *payload)
 
 std::ostream& operator<< (std::ostream& out, const Signature& sig)
 {
-	out << "\t" << "Signature:" << sig.expression_ << " matches:" << sig.total_matchs_ << std::endl;	
+	out << "\t" << "Signature:" << sig.name_ << " matches:" << sig.total_matchs_ << std::endl;	
 	return out;
 }

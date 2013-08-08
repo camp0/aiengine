@@ -20,6 +20,7 @@
 #include "./dns/DNSProtocol.h"
 #include "./flow/FlowManager.h"
 #include "./flow/FlowCache.h"
+#include "./frequency/FrequencyProtocol.h"
 #include "NetworkStack.h"
 
 class StackLan: public NetworkStack
@@ -37,6 +38,9 @@ public:
 	void printFlows(std::basic_ostream<char>& out);
 	void printFlows() { printFlows(std::cout);};
 
+        void statistics(std::basic_ostream<char>& out) { out << *this; };
+        void statistics() { statistics(std::cout);} ;
+
 	void setTotalTCPFlows(int value) { flow_cache_tcp_->createFlows(value);};
 	void setTotalUDPFlows(int value) { flow_cache_udp_->createFlows(value);};
 
@@ -44,6 +48,8 @@ public:
 	void setUDPSignatureManager(SignatureManagerPtrWeak sig);
         void setTCPSignatureManager(SignatureManager& sig) ;
         void setUDPSignatureManager(SignatureManager& sig) ;
+
+	void enableFrequencyEngine(bool enable);
 
 	friend std::ostream& operator<< (std::ostream& out, const StackLan& stk);
 
@@ -60,6 +66,8 @@ private:
         DNSProtocolPtr dns_;
 	TCPGenericProtocolPtr tcp_generic_;
 	UDPGenericProtocolPtr udp_generic_;
+	FrequencyProtocolPtr freqs_tcp_;
+	FrequencyProtocolPtr freqs_udp_;
 
         // Multiplexers
         MultiplexerPtr mux_eth_;
@@ -82,6 +90,8 @@ private:
 	FlowForwarderPtr ff_dns_;
 	FlowForwarderPtr ff_tcp_generic_;
 	FlowForwarderPtr ff_udp_generic_;
+	FlowForwarderPtr ff_tcp_freqs_;
+	FlowForwarderPtr ff_udp_freqs_;
 
 	// References to the SignaturesManagers
 	// This references are created on the python side, so we need

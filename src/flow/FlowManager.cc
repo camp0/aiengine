@@ -57,7 +57,7 @@ void FlowManager::printFlows(std::basic_ostream<char>& out)
 
 	// Print a header
 	out << std::endl;
-	out << boost::format("%-44s %-10s %-10s %-13s") % "Flow" % "Bytes" % "Packets" % "FlowForwarder";
+	out << boost::format("%-44s %-10s %-10s %-13s %-12s") % "Flow" % "Bytes" % "Packets" % "FlowForwarder" % "Info";
 	out << std::endl;	
 	for(auto it = flowTable_.begin(); it!=flowTable_.end(); ++it)
 	{
@@ -71,6 +71,15 @@ void FlowManager::printFlows(std::basic_ostream<char>& out)
 		fivetuple << ":" << inet_ntoa(dst_a) << ":" << flow->getDestinationPort();
 
 		out << boost::format("%-44s %-10d %-10d %p") % fivetuple.str() % flow->total_bytes % flow->total_packets % flow->forwarder.lock();
+
+		if(flow->http_host.lock())	
+			out << flow->http_host.lock()->getName();
+	
+		if(flow->http_ua.lock())
+			out << flow->http_ua.lock()->getName();	
+
+		if(flow->frequencies.lock())
+			out << flow->frequencies.lock()->getFrequenciesString();
 
 		out << std::endl;
 			

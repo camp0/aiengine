@@ -38,6 +38,12 @@ public:
 		flowForwarderVector_.push_back(mux);
 	}
 
+    	void virtual removeUpFlowForwarder()
+	{
+		flowForwarderVector_.pop_back();
+		//flowForwarderVector_.erase(std::remove(flowForwarderVector_.begin(),flowForwarderVector_.end(),mux.lock()),flowForwarderVector_.end());
+	}
+
 	void forwardFlow(Flow *flow);
 
         void statistics(std::basic_ostream<char>& out);

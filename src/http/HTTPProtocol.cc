@@ -27,6 +27,7 @@ void HTTPProtocol::processFlow(Flow *flow)
 				host_map_[host] = 0;
 			}
 			++host_map_[host];
+			//flow->http_host = host;
 		}
 		// extract the User-Agent	
 		if(boost::regex_search(header,result,http_ua_))
@@ -40,6 +41,7 @@ void HTTPProtocol::processFlow(Flow *flow)
                                 ua_map_[ua] = 0;
                         }
                         ++ua_map_[ua];
+			//flow->http_ua = ua;
 		}		
 	}
 }

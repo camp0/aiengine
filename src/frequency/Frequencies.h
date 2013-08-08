@@ -1,6 +1,7 @@
 #ifndef _Frequencies_H_
 #define _Frequencies_H_
 
+#include <sstream>
 #include <iostream>
 #include <array>
 using namespace std;
@@ -18,11 +19,20 @@ public:
 		for(int i=0;i< length;++i) ++freqs_[payload[i]];
 	}
 
+	std::string getFrequenciesString() 
+	{
+		std::ostringstream os;
+
+		for (auto& value: freqs_) os << (int)value << " "; 
+
+		return os.str();
+	}
+
 	friend ostream& operator<<(ostream& os, const Frequencies& fq)
 	{
 		os << "Begin frequencies(" << &fq << ")" << std::endl;
 		for (auto& value: fq.freqs_)
-			os << hex << (int)value << " ";
+			os << (int)value << " ";
 		os << std::endl; 
 	}	
 

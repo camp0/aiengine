@@ -73,8 +73,9 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("printFlows",printFlows3G)
         ;
 
-	boost::python::class_<Signature>("Signature",init<const std::string&>())
+	boost::python::class_<Signature>("Signature",init<const std::string&,const std::string&>())
 		.def("getExpression",&Signature::getExpression,return_internal_reference<>())
+		.def("getName",&Signature::getName,return_internal_reference<>())
 		.def("getMatchs",&Signature::getMatchs)
 		.def(self_ns::str(self_ns::self))
 	;
@@ -95,7 +96,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
 
-	void (SignatureManager::*addSignature1)(const std::string) = &SignatureManager::addSignature;
+	void (SignatureManager::*addSignature1)(const std::string,const std::string) = &SignatureManager::addSignature;
 	void (SignatureManager::*addSignature2)(Signature&) = &SignatureManager::addSignature;
 
 //	boost::python::class_<SignatureManager >("SignatureManager")

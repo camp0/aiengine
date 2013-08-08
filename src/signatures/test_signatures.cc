@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE (test2_signature)
 {
 	SignatureManagerPtr sigmng = SignatureManagerPtr( new SignatureManager());
 
-	sigmng->addSignature("^hello");
+	sigmng->addSignature("hello","^hello");
         BOOST_CHECK(sigmng->getTotalSignatures()  == 1);
         BOOST_CHECK(sigmng->getTotalMatchingSignatures() == 0);
         BOOST_CHECK(sigmng->getMachtedSignature() == nullptr);
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE (test2_signature)
 BOOST_AUTO_TEST_CASE (test3_signature)
 {
         SignatureManagerPtr sigmng = SignatureManagerPtr( new SignatureManager());
-	Signature sig("some hex");
+	Signature sig("name","some hex");
 
         sigmng->addSignature(sig);
         BOOST_CHECK(sigmng->getTotalSignatures()  == 1);

@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE (test1_tcpgeneric)
 
         SignatureManagerPtr sig = SignatureManagerPtr(new SignatureManager());
 
-        sig->addSignature("\\x13BitTorrent");
+        sig->addSignature("bittorrent tcp","\\x13BitTorrent");
         gtcp->setSignatureManager(sig);
 
         // executing the packet

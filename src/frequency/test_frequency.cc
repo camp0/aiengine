@@ -24,6 +24,19 @@ BOOST_AUTO_TEST_CASE (test1_frequencies)
 
 BOOST_AUTO_TEST_CASE (test2_frequencies)
 {
+	char *buffer = "\x00\x00\x00\xff\xff";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (buffer);
+        int length = 5;
+
+        Frequencies freqs;
+
+        freqs.addPayload(pkt,length);
+        BOOST_CHECK(freqs[0] == 3);
+        BOOST_CHECK(freqs[255] == 2);
+}
+
+BOOST_AUTO_TEST_CASE (test3_frequencies)
+{
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
 
@@ -65,7 +78,7 @@ BOOST_AUTO_TEST_CASE (test2_frequencies)
 }
 
 
-BOOST_AUTO_TEST_CASE (test3_frequencies)
+BOOST_AUTO_TEST_CASE (test4_frequencies)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
@@ -79,7 +92,7 @@ BOOST_AUTO_TEST_CASE (test3_frequencies)
 	BOOST_CHECK( freqs != nullptr);
 }
 
-BOOST_AUTO_TEST_CASE (test4_frequencies)
+BOOST_AUTO_TEST_CASE (test5_frequencies)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
@@ -113,7 +126,7 @@ BOOST_AUTO_TEST_CASE (test4_frequencies)
 	BOOST_CHECK(freq->getTotalMalformedPackets() == 0);
 }
 
-BOOST_AUTO_TEST_CASE ( test5_frequencies )
+BOOST_AUTO_TEST_CASE ( test6_frequencies )
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
@@ -126,8 +139,9 @@ BOOST_AUTO_TEST_CASE ( test5_frequencies )
         eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
         mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
 
+	// Inject the packet 100 times.
 	for (int i = 0; i< 100 ; ++i) 
-        	mux_eth->forwardPacket(packet);
+       		mux_eth->forwardPacket(packet);
 
 	BOOST_CHECK(freq->getTotalBytes() == 19300);
 	BOOST_CHECK(freq->getTotalValidatedPackets() == 1);
@@ -152,9 +166,8 @@ BOOST_AUTO_TEST_CASE ( test5_frequencies )
 
 	Frequencies *f1_p = fcount->getFrequencyComponent().lock().get();
 
-	//std::cout << *f1_p;
-	//std::cout << (*f1_p)[0] << std::endl;
-	//BOOST_CHECK((*f1_p)[0] == 66 *101 );
+	BOOST_CHECK((*f1_p)[0] == 56 *99 );
+	BOOST_CHECK((*f1_p)[254] == 99 );
 	
 }
 

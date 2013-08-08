@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE (test2_udpgeneric) // Same case as test1_genericudp but wit
 
 	SignatureManagerPtr sig = SignatureManagerPtr(new SignatureManager());
 
-        sig->addSignature("^hello");
+        sig->addSignature("a signature","^hello");
 	gudp->setSignatureManager(sig);
 
         // executing the packet
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE (test2_udpgeneric) // Same case as test1_genericudp but wit
         BOOST_CHECK(sig->getMachtedSignature() == nullptr);
 
 	// Add another true signature that matchs the packet
-	sig->addSignature("^d1");
+	sig->addSignature("other","^d1");
         
 	mux_eth->forwardPacket(packet);
         BOOST_CHECK(sig->getTotalSignatures()  == 2);

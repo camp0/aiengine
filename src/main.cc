@@ -33,6 +33,7 @@ void iaengineExit()
         {
 		//StackLanPtr stk(stack);
               	//std::cout << *stack.get();
+		stack->statistics();
         }
         if((stack)&&(print_flows))
         {
@@ -65,8 +66,15 @@ int main(int argc, char* argv[])
 		("udp-flows,u",    po::value<int>(&udp_flows_cache)->default_value(16384),
 		  	"Sets the number of UDP flows on the pool.")
 		;
+
+        po::options_description optional_ops_freq("Frequencies optional arguments");
+        optional_ops_freq.add_options()
+                ("enable-frequencies,F",  	"Enables the Frequency engine.") 
+                ;
+
 	mandatory_ops.add(optional_ops_tcp);
 	mandatory_ops.add(optional_ops_udp);
+	mandatory_ops.add(optional_ops_freq);
 
 	po::options_description optional_ops("Optional arguments");
 	optional_ops.add_options()
@@ -146,9 +154,11 @@ int main(int argc, char* argv[])
 
         sm = SignatureManagerPtr(new SignatureManager());
 
-        sm->addSignature("^d1:ad2:id20");
+        sm->addSignature("bitorrent dht","^d1:ad2:id20");
 
 	stack->setUDPSignatureManager(sm);
+
+	if(var_map.count("enable-frequencies") == 1) stack->enableFrequencyEngine(true);
 
 	// connect with the stack
         pktdis->setStack(stack);

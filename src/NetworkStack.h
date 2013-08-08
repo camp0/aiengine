@@ -15,6 +15,9 @@ public:
 	virtual void printFlows(std::basic_ostream<char>& out) = 0;
 	virtual void printFlows() = 0;
 
+	virtual void statistics(std::basic_ostream<char>& out) = 0;
+	virtual void statistics() = 0;
+
 	virtual const char* getName() = 0;
 	virtual void setName(char *name) = 0;
 
@@ -28,6 +31,8 @@ public:
 	virtual void setUDPSignatureManager(SignatureManagerPtrWeak sig) = 0;	
 	virtual void setTCPSignatureManager(SignatureManager& sig) = 0;	
 	virtual void setUDPSignatureManager(SignatureManager& sig) = 0;	
+
+	virtual void enableFrequencyEngine(bool enable) = 0;
 };
 
 typedef std::shared_ptr <NetworkStack> NetworkStackPtr;

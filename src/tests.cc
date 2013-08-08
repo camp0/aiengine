@@ -14,7 +14,7 @@
 #define BOOST_TEST_MODULE Main 
 #include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_SUITE (test_suite_1) // name of the test suite is stringtest
+BOOST_AUTO_TEST_SUITE (test_suite_1) 
 
 BOOST_AUTO_TEST_CASE ( test_case_1 )
 {
@@ -365,7 +365,10 @@ BOOST_AUTO_TEST_SUITE (test_real_stack) // Test cases for real stacks StackLan a
 
 BOOST_AUTO_TEST_CASE ( test_case_1 )
 {
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+	StackLanPtr stack = StackLanPtr(new StackLan());
 
+	
 
 }
 

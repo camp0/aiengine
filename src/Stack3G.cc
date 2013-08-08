@@ -18,6 +18,8 @@ Stack3G::Stack3G()
         dns_ = DNSProtocolPtr(new DNSProtocol());
         tcp_generic_ = TCPGenericProtocolPtr(new TCPGenericProtocol());
         udp_generic_ = UDPGenericProtocolPtr(new UDPGenericProtocol());
+	freqs_tcp_ = FrequencyProtocolPtr(new FrequencyProtocol());
+	freqs_udp_ = FrequencyProtocolPtr(new FrequencyProtocol());
 
 	// Allocate the Multiplexers
 	mux_eth_ = MultiplexerPtr(new Multiplexer());
@@ -46,6 +48,8 @@ Stack3G::Stack3G()
 	ff_gprs_ = FlowForwarderPtr(new FlowForwarder());
         ff_tcp_generic_ = FlowForwarderPtr(new FlowForwarder());
         ff_udp_generic_ = FlowForwarderPtr(new FlowForwarder());
+        ff_tcp_freqs_ = FlowForwarderPtr(new FlowForwarder());
+        ff_udp_freqs_ = FlowForwarderPtr(new FlowForwarder());
 
 	//configure the Ethernet Layer 
 	eth_->setMultiplexer(mux_eth_);
@@ -254,5 +258,30 @@ void Stack3G::setUDPSignatureManager(SignatureManager& sig)
 {
 	sigs_udp_ = std::make_shared<SignatureManager>(sig);
         setUDPSignatureManager(sigs_udp_);
+}
+
+void Stack3G::enableFrequencyEngine(bool enable)
+{
+        int tcp_flows_created = flow_cache_tcp_->getTotalFlows();
+        int udp_flows_created = flow_cache_udp_high_->getTotalFlows();
+
+        ff_udp_high_->removeUpFlowForwarder();
+        ff_tcp_->removeUpFlowForwarder();
+        if(enable)
+        {
+                freqs_tcp_->createFrequencies(tcp_flows_created);
+                freqs_udp_->createFrequencies(udp_flows_created);
+
+                ff_tcp_->addUpFlowForwarder(ff_udp_freqs_);
+                ff_udp_high_->addUpFlowForwarder(ff_udp_freqs_);
+        }
+        else
+        {
+                freqs_tcp_->destroyFrequencies(tcp_flows_created);
+                freqs_udp_->destroyFrequencies(udp_flows_created);
+
+                ff_tcp_->addUpFlowForwarder(ff_udp_generic_);
+                ff_udp_high_->addUpFlowForwarder(ff_udp_generic_);
+        }
 }
 

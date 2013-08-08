@@ -24,7 +24,7 @@ public:
 
 	void evaluate(const unsigned char *payload,bool *result); 
 
-	void addSignature(const std::string expression);
+	void addSignature(const std::string name,const std::string expression);
 	void addSignature(SignaturePtr sig);
 	void addSignature(Signature& sig);
 

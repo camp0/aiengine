@@ -6,9 +6,9 @@ void SignatureManager::addSignature(Signature& sig)
 	addSignature(std::make_shared<Signature>(sig));
 }
 
-void SignatureManager::addSignature(const std::string expression)
+void SignatureManager::addSignature(const std::string name,const std::string expression)
 {
-	SignaturePtr sig = SignaturePtr(new Signature(expression));
+	SignaturePtr sig = SignaturePtr(new Signature(name,expression));
 
 	addSignature(sig);
 }
@@ -48,7 +48,7 @@ std::ostream& operator<< (std::ostream& out, const SignatureManager& sig)
 	for (auto it = sig.signatures_.begin(); it != sig.signatures_.end(); ++it)
 	{
 		SignaturePtr sig = (*it);
-		out << "\t" << "Signature:" << sig->getExpression() << " matches:" << sig->getMatchs() << std::endl;
+		out << "\t" << "Signature:" << sig->getName() << " matches:" << sig->getMatchs() << std::endl;
 	}
 	return out;
 }

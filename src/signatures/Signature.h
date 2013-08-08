@@ -10,7 +10,8 @@
 class Signature
 {
 public:
-	explicit Signature(const std::string& exp):
+	explicit Signature(const std::string &name, const std::string& exp):
+		name_(name),
 		expression_(exp),
 		exp_(exp,boost::regex::icase),
 		total_matchs_(0),
@@ -21,6 +22,7 @@ public:
 	virtual ~Signature()=default;
 	bool evaluate(const unsigned char *payload);
 	std::string &getExpression() { return expression_;};	
+	std::string &getName() { return name_;};	
 	void incrementMatchs() { ++total_matchs_; };
 	int32_t getMatchs() { return total_matchs_; };
 
@@ -30,6 +32,7 @@ private:
 	int32_t total_matchs_;
 	int32_t total_evaluates_;
 	std::string expression_;	
+	std::string name_;	
 	boost::regex exp_;
 	boost::cmatch what;
 };
