@@ -16,6 +16,8 @@ SignatureManagerPtr sm;
 std::string stack_name;
 std::string pcapfile;
 std::string interface;
+std::string freqs_group_port;
+std::string freqs_group_ip;
 bool print_flows = false;
 bool show_statistics = false;
 int tcp_flows_cache;
@@ -31,8 +33,6 @@ void iaengineExit()
 {
         if((stack)&&(show_statistics))
         {
-		//StackLanPtr stk(stack);
-              	//std::cout << *stack.get();
 		stack->statistics();
         }
         if((stack)&&(print_flows))
@@ -70,6 +70,10 @@ int main(int argc, char* argv[])
         po::options_description optional_ops_freq("Frequencies optional arguments");
         optional_ops_freq.add_options()
                 ("enable-frequencies,F",  	"Enables the Frequency engine.") 
+                ("group-by-port,p",  	po::value<std::string>(&freqs_group_port)->default_value("src"),
+					"Groups frequencies by port (src,dst).") 
+                ("group-by-ip,I",  	po::value<std::string>(&freqs_group_ip)->default_value("src"),
+					"Groups frequencies by IP address (src,dst).") 
                 ;
 
 	mandatory_ops.add(optional_ops_tcp);
@@ -82,8 +86,8 @@ int main(int argc, char* argv[])
 				      	"Sets the network stack (lan,3g).")
 		("dumpflows,d",      	"Dump the flows to stdout.")
 		("statistics,S",      	"Show statistics of the stack.")
-		("help,h",     		"Show help")
-		("version,v",   	"Show version string")
+		("help,h",     		"Show help.")
+		("version,v",   	"Show version string.")
 		;
 
 	mandatory_ops.add(optional_ops);

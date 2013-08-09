@@ -62,8 +62,17 @@ BOOST_AUTO_TEST_CASE (test2_http)
 	flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
-	// Check the values of the flow
-	//http->statistics();
+	BOOST_CHECK(flow->http_host.lock() == nullptr); // there is no items on the cache
+
+	// Create one HTTPHost object on the cache
+	http->createHTTPHosts(10);
+        http->processFlow(flow.get());
+
+//	BOOST_CHECK(flow->http_host.lock() != nullptr); 
+	if(flow->http_host.lock())
+		std::cout << "host value:" <<  flow->http_host.lock()->getName() << std::endl;
+
+//	http->statistics();
 	// TODO: Check the referer, useragent and host 
 }
 

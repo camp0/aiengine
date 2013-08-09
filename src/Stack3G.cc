@@ -148,6 +148,18 @@ Stack3G::Stack3G()
         ff_udp_generic_->addChecker(std::bind(&UDPGenericProtocol::udpGenericChecker,udp_generic_,std::placeholders::_1));
         ff_udp_generic_->addFlowFunction(std::bind(&UDPGenericProtocol::processFlow,udp_generic_,std::placeholders::_1));
 
+        // configure the TCP frequencies
+        freqs_tcp_->setFlowForwarder(ff_tcp_freqs_);
+        ff_tcp_freqs_->setProtocol(static_cast<ProtocolPtr>(freqs_tcp_));
+        ff_tcp_freqs_->addChecker(std::bind(&FrequencyProtocol::freqChecker,freqs_tcp_,std::placeholders::_1));
+        ff_tcp_freqs_->addFlowFunction(std::bind(&FrequencyProtocol::processFlow,freqs_tcp_,std::placeholders::_1));
+
+        // configure the UDP frequencies
+        freqs_udp_->setFlowForwarder(ff_udp_freqs_);
+        ff_udp_freqs_->setProtocol(static_cast<ProtocolPtr>(freqs_udp_));
+        ff_udp_freqs_->addChecker(std::bind(&FrequencyProtocol::freqChecker,freqs_udp_,std::placeholders::_1));
+        ff_udp_freqs_->addFlowFunction(std::bind(&FrequencyProtocol::processFlow,freqs_udp_,std::placeholders::_1));
+
 	// configure the multiplexers
 	mux_eth_->addUpMultiplexer(mux_ip_low_,ETHERTYPE_IP);
 	mux_ip_low_->addDownMultiplexer(mux_eth_);
@@ -214,12 +226,16 @@ std::ostream& operator<< (std::ostream& out, const Stack3G& stk)
         stk.dns_->statistics(out);
         out << std::endl;
         stk.udp_generic_->statistics(out);
+	out << std::endl;
+        stk.freqs_udp_->statistics(out);
         out << std::endl;
         stk.http_->statistics(out);
         out << std::endl;
         stk.ssl_->statistics(out);
         out << std::endl;
         stk.tcp_generic_->statistics(out);
+	out << std::endl;
+        stk.freqs_tcp_->statistics(out);
 
 	return out;
 }
@@ -272,16 +288,17 @@ void Stack3G::enableFrequencyEngine(bool enable)
                 freqs_tcp_->createFrequencies(tcp_flows_created);
                 freqs_udp_->createFrequencies(udp_flows_created);
 
-                ff_tcp_->addUpFlowForwarder(ff_udp_freqs_);
-                ff_udp_high_->addUpFlowForwarder(ff_udp_freqs_);
+                ff_tcp_->insertUpFlowForwarder(ff_tcp_freqs_);
+                ff_udp_high_->insertUpFlowForwarder(ff_udp_freqs_);
         }
         else
         {
                 freqs_tcp_->destroyFrequencies(tcp_flows_created);
                 freqs_udp_->destroyFrequencies(udp_flows_created);
 
-                ff_tcp_->addUpFlowForwarder(ff_udp_generic_);
-                ff_udp_high_->addUpFlowForwarder(ff_udp_generic_);
+
+                ff_tcp_->removeUpFlowForwarder(ff_tcp_freqs_);
+                ff_udp_high_->removeUpFlowForwarder(ff_udp_freqs_);
         }
 }
 

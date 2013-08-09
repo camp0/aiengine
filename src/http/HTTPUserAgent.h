@@ -7,8 +7,10 @@ class HTTPUserAgent
 {
 public:
     	explicit HTTPUserAgent(const std::string& name):ua_name_(name) {};
+    	explicit HTTPUserAgent():ua_name_("") {};
     	virtual ~HTTPUserAgent() {};
-	
+
+        void setName(const std::string& name) { ua_name_ = name;};
 	std::string &getName() { return ua_name_; };
 
 private:

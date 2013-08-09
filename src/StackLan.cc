@@ -227,16 +227,16 @@ void StackLan::enableFrequencyEngine(bool enable)
 	{
 		freqs_tcp_->createFrequencies(tcp_flows_created);	
 		freqs_udp_->createFrequencies(udp_flows_created);	
-	
-		ff_tcp_->addUpFlowForwarder(ff_udp_freqs_);
-		ff_udp_->addUpFlowForwarder(ff_udp_freqs_);
+
+		ff_tcp_->insertUpFlowForwarder(ff_tcp_freqs_);	
+		ff_udp_->insertUpFlowForwarder(ff_udp_freqs_);	
 	}
 	else
 	{
 		freqs_tcp_->destroyFrequencies(tcp_flows_created);	
 		freqs_udp_->destroyFrequencies(udp_flows_created);	
 		
-		ff_tcp_->addUpFlowForwarder(ff_udp_generic_);
-		ff_udp_->addUpFlowForwarder(ff_udp_generic_);
+		ff_tcp_->removeUpFlowForwarder(ff_tcp_freqs_);
+		ff_udp_->removeUpFlowForwarder(ff_udp_freqs_);
 	}
 }

@@ -9,6 +9,7 @@
 #include <memory>
 #include <functional>
 #include <vector>
+#include <algorithm>
 #include "./flow/Flow.h"
 #include "Packet.h"
 
@@ -33,15 +34,24 @@ public:
 	}
     	virtual ~FlowForwarder() {};
 
-    	void virtual addUpFlowForwarder(FlowForwarderPtrWeak mux)
-	{
-		flowForwarderVector_.push_back(mux);
-	}
-
-    	void virtual removeUpFlowForwarder()
-	{
-		flowForwarderVector_.pop_back();
-		//flowForwarderVector_.erase(std::remove(flowForwarderVector_.begin(),flowForwarderVector_.end(),mux.lock()),flowForwarderVector_.end());
+    	void virtual insertUpFlowForwarder(FlowForwarderPtrWeak mux) { flowForwarderVector_.insert(flowForwarderVector_.begin(),mux); }
+    	void virtual addUpFlowForwarder(FlowForwarderPtrWeak mux) { flowForwarderVector_.push_back(mux); }
+    	void virtual removeUpFlowForwarder() { flowForwarderVector_.pop_back(); }
+    	void virtual removeUpFlowForwarder(FlowForwarderPtrWeak mux) 
+	{ 
+		auto it = std::find_if(flowForwarderVector_.begin(),flowForwarderVector_.end(),
+			[&] (FlowForwarderPtrWeak &p)
+				{ return p.lock() == mux.lock(); }
+				//{ return p == mux.lock(); }
+				//{ return p.lock() == mux; }
+				//{ return p == mux; }
+				//{ return *p.lock() == mux; }
+				//{ return *p == mux.lock(); }
+				//{ return *p == mux; }
+				//{ return *p == mux.lock(); }
+		);
+		if(it != flowForwarderVector_.end()) // The element exist
+			flowForwarderVector_.erase(it);
 	}
 
 	void forwardFlow(Flow *flow);

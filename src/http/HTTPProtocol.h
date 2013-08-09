@@ -17,6 +17,7 @@
 #include "HTTPHost.h"
 #include "HTTPUserAgent.h"
 #include "HTTPReferer.h"
+#include "../Cache.h"
 #include <unordered_map>
 
 class HTTPProtocol: public Protocol 
@@ -26,7 +27,9 @@ public:
 		http_regex_("^(GET|POST|HEAD|PUT|TRACE).*HTTP/1."),
 		http_host_("Host: .*?\r\n"),
 		http_ua_("User-Agent: .*?\r\n"),
-		http_referer_("Referer: .*?\r\n")
+		http_referer_("Referer: .*?\r\n"),
+		host_cache_(new Cache<HTTPHost>),
+		ua_cache_(new Cache<HTTPUserAgent>)
 	{ 
 		name_="HTTPProtocol";
 	}
@@ -80,13 +83,25 @@ public:
 
 	unsigned char *getPayload() { return http_header_; };
 
+        void createHTTPHosts(int number) { host_cache_->create(number);};
+        void destroyHTTPHosts(int number) { host_cache_->destroy(number);};
+        void createHTTPUserAgents(int number) { ua_cache_->create(number);};
+        void destroyHTTPUserAgents(int number) { ua_cache_->destroy(number);};
+
 private:
+
+	void extractHostValue(Flow *flow, const char *header);
+	void extractUserAgentValue(Flow *flow, const char *header);
+
 	FlowForwarderPtrWeak flow_forwarder_;
 	boost::regex http_regex_,http_host_,http_ua_,http_referer_;
         boost::cmatch what_;
 	MultiplexerPtrWeak mux_;
 	unsigned char *http_header_;
 	int64_t total_bytes_;
+
+	Cache<HTTPHost>::CachePtr host_cache_;
+	Cache<HTTPUserAgent>::CachePtr ua_cache_;
 
 	typedef std::map<std::string,int32_t> HostMapType;
 	typedef std::map<std::string,int32_t> UAMapType;
