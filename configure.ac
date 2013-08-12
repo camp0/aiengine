@@ -1,4 +1,4 @@
-AC_INIT([iaengine],[0.1])
+AC_INIT([aiengine],[0.1])
 AM_INIT_AUTOMAKE
 AM_PROG_LIBTOOL
 

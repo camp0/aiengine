@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iostream>
 #include <array>
+
 using namespace std;
 
 class Frequencies 

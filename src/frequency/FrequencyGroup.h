@@ -6,6 +6,7 @@
 #endif
 
 #include <iostream>
+#include <utility>
 #include <cstring>
 #include "Frequencies.h"
 #include "../flow/FlowManager.h"
@@ -29,22 +30,22 @@ public:
 				FrequenciesPtr freq = flow->frequencies.lock();
 				if(freq)
 				{
-					auto id = condition(flow);
-					auto it2 = group_map_.find(id);
-					Frequencies *freq_ptr = nullptr;			
-	
+					auto key = condition(flow);
+					auto it2 = group_map_.find(key);
+					Frequencies *freq_ptr = nullptr;	
+					std::cout << "lches" << std::endl;	
 					if(it2 == group_map_.end())
 					{
-						std::pair <Frequencies,int> f_pair;
-
-						f_pair = std::make_pair(Frequencies(),1); 
-						group_map_.insert(std::make_pair(id,f_pair));
-						//freq_ptr = *f_pair.first;
+						auto f_pair = std::make_pair(Frequencies(),1);
+					
+						freq_ptr = &std::get<0>(f_pair);	
+						group_map_.insert(std::make_pair(key,f_pair));
 					}
 					else
 					{
-						//freq_ptr = it2.first;
-						//++it2.second;	
+						freq_ptr = &std::get<0>(it2->second);
+						int counter = std::get<1>(it2->second);
+						++counter;	
 					}
 					*freq_ptr = *freq_ptr + *freq.get();	
 				}
@@ -56,15 +57,22 @@ public:
 	{
 		for (auto it = group_map_.begin(); it!=group_map_.end();++it)
 		{
-			it.first = it.first / it.second;
+			Frequencies *freq_ptr = &std::get<0>(it->second);
+			int items = std::get<1>(it->second);	
+			//it.first = it.first / it.second;
 		}
 	}
 
 	friend ostream& operator<<(ostream& os, const FrequencyGroup& fg)
 	{
-/*		os << "Begin frequencies(" << &fq << ")" << std::endl;
-		for (auto& value: fq.freqs_)
-			os << (int)value << " "; */;
+		os << "Frequency Group(" << &fg <<") total frequencies groups:" << fg.group_map_.size() << std::endl;
+		for (auto it = fg.group_map_.begin(); it!=fg.group_map_.end();++it)
+		{
+			const Frequencies *freq_ptr = &std::get<0>(it->second);
+			int items = std::get<1>(it->second);	
+			os << "Group:" << std::endl;
+			os << *freq_ptr << std::endl;
+		}
 		os << std::endl; 
 	}	
 private:

@@ -220,7 +220,10 @@ BOOST_AUTO_TEST_CASE ( test8_frequencies )
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
         Packet packet(pkt,length,0);
 
-        mux_eth->setPacket(&packet);
+        // Create one Frequency object
+        freq->createFrequencies(1);
+        
+	mux_eth->setPacket(&packet);
         eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
         mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forwardPacket(packet);
@@ -231,7 +234,9 @@ BOOST_AUTO_TEST_CASE ( test8_frequencies )
 	group_by_port.agregateFlows(flow_mng,
 		([] (const FlowPtr& flow) { return flow->getDestinationPort();})
 	);
+	group_by_port.compute();
 
+	std::cout << group_by_port;
 }
 
 BOOST_AUTO_TEST_SUITE_END( )
