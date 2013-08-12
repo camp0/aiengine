@@ -171,5 +171,68 @@ BOOST_AUTO_TEST_CASE ( test6_frequencies )
 	
 }
 
+BOOST_AUTO_TEST_CASE ( test7_frequencies )
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
+        int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
+        Packet packet(pkt,length,0);
+
+        // Create one Frequency object
+        freq->createFrequencies(1);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+
+        mux_eth->forwardPacket(packet);
+
+        FrequencyCounterPtr fcount = FrequencyCounterPtr(new FrequencyCounter());
+
+	// There is only one flow on port 443
+	int port = 80;
+
+	auto fb = ([&] (const FlowPtr& flow) { return (flow->getDestinationPort()== port); });
+
+	fcount->filterFrequencyComponent(flow_mng, 
+		([&] (const FlowPtr& flow) { return (flow->getDestinationPort()== port); })
+	);
+        fcount->compute();
+
+        Frequencies *f1_p = fcount->getFrequencyComponent().lock().get();
+
+        BOOST_CHECK((*f1_p)[0] == 0 );
+        BOOST_CHECK((*f1_p)[254] == 0 );
+
+        port = 443;
+	fcount->reset();
+        fcount->filterFrequencyComponent(flow_mng,
+                ([&] (const FlowPtr& flow) { return (flow->getDestinationPort()== port); })
+        );
+        fcount->compute();
+
+        BOOST_CHECK((*f1_p)[0] == 56 );
+        BOOST_CHECK((*f1_p)[254] == 1 );
+}
+
+BOOST_AUTO_TEST_CASE ( test8_frequencies )
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
+        int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
+        Packet packet(pkt,length,0);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+	FrequencyGroup<uint16_t> group_by_port;
+
+	//group_by_port.reset();
+	group_by_port.agregateFlows(flow_mng,
+		([] (const FlowPtr& flow) { return flow->getDestinationPort();})
+	);
+
+}
+
 BOOST_AUTO_TEST_SUITE_END( )
 

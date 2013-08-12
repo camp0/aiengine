@@ -10,12 +10,7 @@
 #include "../tcp/TCPProtocol.h"
 #include "FrequencyProtocol.h"
 #include "FrequencyCounter.h"
-
-#define BOOST_TEST_DYN_LINK
-#ifdef STAND_ALONE
-#define BOOST_TEST_MODULE freqtest
-#endif
-#include <boost/test/unit_test.hpp>
+#include "FrequencyGroup.h"
 
 struct StackFrequencytest
 {

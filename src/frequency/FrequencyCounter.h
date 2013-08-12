@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cstring>
 #include "Frequencies.h"
+#include "../flow/FlowManager.h"
 
 using namespace std;
 
@@ -39,6 +40,25 @@ public:
 	}
 
 	FrequenciesPtrWeak getFrequencyComponent() { return freqs_;};	
+
+	void filterFrequencyComponent(FlowManagerPtr flow_t, std::function <bool (FlowPtr&)> checker )
+	{
+		auto ft = flow_t->getFlowTable();
+		for (auto it = ft.begin(); it!=ft.end();++it)
+		{
+			FlowPtr flow = *it;
+			if(flow->frequencies.lock())
+			{
+				if(checker(flow))
+				{
+					FrequenciesPtr freq = flow->frequencies.lock();
+
+					if(freq)
+						addFrequencyComponent(freq);
+				}
+			}
+		}	
+	}
 
 private:
 	FrequenciesPtr freqs_;
