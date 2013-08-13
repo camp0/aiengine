@@ -56,6 +56,9 @@ public:
 
 	void enableFrequencyEngine(bool value);
 
+        FlowManagerPtrWeak getTCPFlowManager() { return flow_mng_tcp_;};
+        FlowManagerPtrWeak getUDPFlowManager() { return flow_mng_udp_high_;};
+
         friend std::ostream& operator<< (std::ostream& out, const Stack3G& stk);
 
 private:

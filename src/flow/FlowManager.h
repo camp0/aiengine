@@ -49,5 +49,6 @@ private:
 };
 
 typedef std::shared_ptr<FlowManager> FlowManagerPtr;
+typedef std::weak_ptr<FlowManager> FlowManagerPtrWeak;
 
 #endif

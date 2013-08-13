@@ -16,9 +16,9 @@ SignatureManagerPtr sm;
 std::string stack_name;
 std::string pcapfile;
 std::string interface;
-std::string freqs_group_port;
-std::string freqs_group_ip;
+std::string freqs_group_value;
 bool print_flows = false;
+bool enable_frequencies = false;
 bool show_statistics = false;
 int tcp_flows_cache;
 int udp_flows_cache;
@@ -31,14 +31,19 @@ void signalHandler( int signum )
 
 void iaengineExit()
 {
-        if((stack)&&(show_statistics))
-        {
-		stack->statistics();
-        }
-        if((stack)&&(print_flows))
-        {
-              stack->printFlows();
-        }
+	if(stack)
+	{
+		if(show_statistics)
+			stack->statistics();
+		
+		if(print_flows)
+              		stack->printFlows();
+
+		if(enable_frequencies)
+		{
+
+		}
+       	}
 }
 
 
@@ -70,10 +75,8 @@ int main(int argc, char* argv[])
         po::options_description optional_ops_freq("Frequencies optional arguments");
         optional_ops_freq.add_options()
                 ("enable-frequencies,F",  	"Enables the Frequency engine.") 
-                ("group-by-port,p",  	po::value<std::string>(&freqs_group_port)->default_value("src"),
-					"Groups frequencies by port (src,dst).") 
-                ("group-by-ip,I",  	po::value<std::string>(&freqs_group_ip)->default_value("src"),
-					"Groups frequencies by IP address (src,dst).") 
+                ("group-by,g",  	po::value<std::string>(&freqs_group_value)->default_value("src-port"),
+					"Groups frequencies by src-ip,dst-ip,src-port and dst-port.") 
                 ;
 
 	mandatory_ops.add(optional_ops_tcp);
@@ -162,7 +165,11 @@ int main(int argc, char* argv[])
 
 	stack->setUDPSignatureManager(sm);
 
-	if(var_map.count("enable-frequencies") == 1) stack->enableFrequencyEngine(true);
+	if(var_map.count("enable-frequencies") == 1)
+	{
+		stack->enableFrequencyEngine(true);
+		enable_frequencies = true;
+	}
 
 	// connect with the stack
         pktdis->setStack(stack);

@@ -9,6 +9,8 @@
 #include "../frequency/Frequencies.h"
 #include "../http/HTTPHost.h"
 #include "../http/HTTPUserAgent.h"
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 class FlowForwarder;
 typedef std::weak_ptr<FlowForwarder> FlowForwarderPtrWeak;
@@ -35,6 +37,9 @@ public:
 	u_int16_t getSourcePort() const { return source_port_;};
 	u_int16_t getDestinationPort() const { return dest_port_;};
 	u_int16_t getProtocol() const { return protocol_;};
+
+	char* getSrcAddrDotNotation() const { in_addr a; a.s_addr=source_address_; return inet_ntoa(a); }
+	char* getDstAddrDotNotation() const { in_addr a; a.s_addr=dest_address_; return inet_ntoa(a); }
 
 	int32_t total_bytes;
 	int32_t total_packets_l7;

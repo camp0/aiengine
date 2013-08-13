@@ -230,13 +230,58 @@ BOOST_AUTO_TEST_CASE ( test8_frequencies )
 
 	FrequencyGroup<uint16_t> group_by_port;
 
-	//group_by_port.reset();
 	group_by_port.agregateFlows(flow_mng,
 		([] (const FlowPtr& flow) { return flow->getDestinationPort();})
 	);
 	group_by_port.compute();
 
-	std::cout << group_by_port;
+	//std::cout << group_by_port;
+}
+
+BOOST_AUTO_TEST_CASE ( test9_frequencies )
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
+        int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
+        Packet packet(pkt,length,0);
+
+        // Create one Frequency object
+        freq->createFrequencies(1);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        FrequencyGroup<char*> group_by_address;
+
+        group_by_address.agregateFlows(flow_mng,
+                ([] (const FlowPtr& flow) { return flow->getDstAddrDotNotation();})
+        );
+        group_by_address.compute();
+
+        //std::cout << group_by_address;
+}
+
+BOOST_AUTO_TEST_CASE ( test10_frequencies )
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
+        int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
+        Packet packet(pkt,length,0);
+
+        // Create one Frequency object
+        freq->createFrequencies(1);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        FrequencyGroup<uint16_t> group_by_destination_port;
+
+        group_by_destination_port.agregateFlowsByDestinationPort(flow_mng);
+        group_by_destination_port.compute();
+
+//      std::cout << group_by_destination_port;
 }
 
 BOOST_AUTO_TEST_SUITE_END( )
