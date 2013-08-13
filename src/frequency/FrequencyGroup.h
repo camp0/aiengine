@@ -19,7 +19,7 @@ public:
     	explicit FrequencyGroup(): name_(""),total_process_flows_(0),total_computed_flows_(0) {};
     	virtual ~FrequencyGroup() {};
 
-	const char* getName(){ return name_;} 
+	const char* getName(){ return name_.c_str();} 
 	void setName(char *name) { name_ = name;}
 
 	void agregateFlows(FlowManagerPtr flow_t, std::function <A_Type (FlowPtr&)> condition)
@@ -36,12 +36,15 @@ public:
 					auto key = condition(flow);
 					auto it2 = group_map_.find(key);
 					Frequencies *freq_ptr = nullptr;	
-			
+					
+					std::cout << "key ->" << key <<std::endl;	
 					if(it2 == group_map_.end())
 					{
 						FrequenciesPtr new_freq = FrequenciesPtr(new Frequencies());
 						auto f_pair = std::make_pair(new_freq,1);
-					
+				
+							
+						std::cout << "new key ->" << key <<std::endl;	
 						freq_ptr = new_freq.get();	
 						group_map_.insert(std::make_pair(key,f_pair));
 					}
@@ -49,7 +52,8 @@ public:
 					{
 						freq_ptr = std::get<0>(it2->second).get();
 						int counter = std::get<1>(it2->second);
-						++counter;	
+						++counter;
+						std::cout << "existing key ->" << key <<std::endl;	
 					}
 					*freq_ptr = *freq_ptr + *freq.get();
 					++total_process_flows_;
@@ -79,7 +83,7 @@ public:
 		{
 			const Frequencies *freq_ptr = std::get<0>(it->second).get();
 			int items = std::get<1>(it->second);	
-			os << "\tGroup by:" << it->first << std::endl;
+			os << "\tGroup by:" << it->first <<  " items:" << items <<std::endl;
 			os << "\t" << *freq_ptr << std::endl;
 		}
 		os << std::endl; 
@@ -112,7 +116,5 @@ private:
 	int32_t total_computed_flows_;
 	std::map <A_Type,std::pair<FrequenciesPtr,int>> group_map_;
 };
-
-//typedef std::shared_ptr<FrequencyGroup> FrequencyGroupPtr;
 
 #endif

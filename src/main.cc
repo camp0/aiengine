@@ -6,6 +6,7 @@
 #include <boost/program_options.hpp>
 #include <fstream>
 #include "PacketDispatcher.h"
+#include "./frequency/FrequencyGroup.h"
 #include "StackLan.h"
 #include "Stack3G.h"
 
@@ -17,6 +18,7 @@ std::string stack_name;
 std::string pcapfile;
 std::string interface;
 std::string freqs_group_value;
+std::string freqs_type_flows;
 bool print_flows = false;
 bool enable_frequencies = false;
 bool show_statistics = false;
@@ -28,6 +30,57 @@ void signalHandler( int signum )
         exit(signum);
 }
 
+void showFrequencyResults()
+{
+	FlowManagerPtr flow_t;
+
+	if(freqs_type_flows.compare("tcp")==0) flow_t = stack->getTCPFlowManager().lock();
+	if(freqs_type_flows.compare("udp")==0) flow_t = stack->getUDPFlowManager().lock();
+
+	if(!flow_t)
+		return;
+	
+	if(freqs_group_value.compare("src-port") == 0)
+        {
+        	FrequencyGroup<uint16_t> f_group;
+
+        	f_group.setName("by source port");
+		std::cout << "Computing frequencies " << f_group.getName() << std::endl;
+		f_group.agregateFlowsBySourcePort(flow_t);
+		f_group.compute();
+		std::cout << f_group;
+	}
+	if(freqs_group_value.compare("dst-port") == 0)
+        {
+        	FrequencyGroup<uint16_t> f_group;
+
+        	f_group.setName("by destination port");
+		std::cout << "Computing frequencies " << f_group.getName() << std::endl;
+		f_group.agregateFlowsByDestinationPort(flow_t);
+		f_group.compute();
+		std::cout << f_group;
+	}
+	if(freqs_group_value.compare("src-ip") == 0)
+        {
+        	FrequencyGroup<char*> f_group;
+
+        	f_group.setName("by source IP");
+		std::cout << "Computing frequencies " << f_group.getName() << std::endl;
+		f_group.agregateFlowsBySourceAddress(flow_t);
+		f_group.compute();
+		std::cout << f_group;
+	}
+	if(freqs_group_value.compare("dst-ip") == 0)
+        {
+        	FrequencyGroup<char*> f_group;
+
+        	f_group.setName("by destination IP");
+		std::cout << "Computing frequencies " << f_group.getName() << std::endl;
+		f_group.agregateFlowsByDestinationAddress(flow_t);
+		f_group.compute();
+		std::cout << f_group;
+	}
+}
 
 void iaengineExit()
 {
@@ -40,9 +93,7 @@ void iaengineExit()
               		stack->printFlows();
 
 		if(enable_frequencies)
-		{
-
-		}
+			showFrequencyResults();
        	}
 }
 
@@ -77,6 +128,8 @@ int main(int argc, char* argv[])
                 ("enable-frequencies,F",  	"Enables the Frequency engine.") 
                 ("group-by,g",  	po::value<std::string>(&freqs_group_value)->default_value("src-port"),
 					"Groups frequencies by src-ip,dst-ip,src-port and dst-port.") 
+                ("flow-type,T",  	po::value<std::string>(&freqs_type_flows)->default_value("tcp"),
+					"Uses tcp or udp flows.") 
                 ;
 
 	mandatory_ops.add(optional_ops_tcp);

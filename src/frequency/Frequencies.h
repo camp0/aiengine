@@ -24,8 +24,15 @@ public:
 	{
 		std::ostringstream os;
 
-		for (auto& value: freqs_) os << (int)value << " "; 
+		os << "[";
+		for (auto& value: freqs_) os << value << ","; 
 
+		string foo(os.str());
+		foo.pop_back();
+		os.str(foo);
+		os.seekp (0, os.end);  
+
+		os << "]";
 		return os.str();
 	}
 

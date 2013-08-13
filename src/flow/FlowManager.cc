@@ -79,7 +79,7 @@ void FlowManager::printFlows(std::basic_ostream<char>& out)
 			out << flow->http_ua.lock()->getName();	
 
 		if(flow->frequencies.lock())
-			out << flow->frequencies.lock()->getFrequenciesString();
+			out << boost::format("%-8s") % flow->frequencies.lock()->getFrequenciesString();
 
 		out << std::endl;
 			
