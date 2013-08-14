@@ -8,6 +8,7 @@
 #include "./tcp/TCPProtocol.h"
 #include "./ssl/SSLProtocol.h"
 #include "./http/HTTPProtocol.h"
+#include "./frequency/FrequencyGroup.h"
 #include "StackLanTest.h"
 
 #define BOOST_TEST_DYN_LINK
@@ -368,8 +369,30 @@ BOOST_AUTO_TEST_CASE ( test_case_1 )
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
 	StackLanPtr stack = StackLanPtr(new StackLan());
 
-	
+	stack->setTotalTCPFlows(2);
+	stack->enableFrequencyEngine(true);
+	pd->setStack(stack);
+	pd->openPcapFile("../pcapfiles/two_http_flows.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
 
+	FrequencyGroup<std::string> group_by_ip;
+
+       	group_by_ip.setName("by destination IP");
+	group_by_ip.agregateFlowsByDestinationAddress(stack->getTCPFlowManager().lock());
+	group_by_ip.compute();
+
+	BOOST_CHECK(group_by_ip.getTotalProcessFlows() == 2);
+	BOOST_CHECK(group_by_ip.getTotalComputedFrequencies() == 2);
+
+        FrequencyGroup<uint16_t> group_by_port;
+
+        group_by_port.setName("by destination port");
+        group_by_port.agregateFlowsByDestinationPort(stack->getTCPFlowManager().lock());
+        group_by_port.compute();
+
+	BOOST_CHECK(group_by_port.getTotalProcessFlows() == 2);
+	BOOST_CHECK(group_by_port.getTotalComputedFrequencies() == 1);
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

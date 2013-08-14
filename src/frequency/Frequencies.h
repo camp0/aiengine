@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iostream>
 #include <array>
+#include <unordered_map>
 
 using namespace std;
 
@@ -20,14 +21,14 @@ public:
 		for(int i=0;i< length;++i) ++freqs_[payload[i]];
 	}
 
-	std::string getFrequenciesString() 
+	std::string getFrequenciesString() const 
 	{
 		std::ostringstream os;
 
 		os << "[";
 		for (auto& value: freqs_) os << value << ","; 
 
-		string foo(os.str());
+		std::string foo(os.str());
 		foo.pop_back();
 		os.str(foo);
 		os.seekp (0, os.end);  
@@ -38,10 +39,19 @@ public:
 
 	friend ostream& operator<<(ostream& os, const Frequencies& fq)
 	{
-		os << "Begin frequencies(" << &fq << ")" << std::endl;
-		for (auto& value: fq.freqs_)
-			os << (int)value << " ";
-		os << std::endl; 
+		std::ostringstream os_f;
+
+		os << "Begin frequencies" << std::endl;
+                os_f << "[";
+                for (auto& value: fq.freqs_) os_f << value << ",";
+
+                std::string foo(os_f.str());
+                foo.pop_back();
+                os_f.str(foo);
+                os_f.seekp (0, os_f.end);
+
+                os_f << "]";
+		os << os_f.str() << std::endl;
 	}	
 
 	int& operator [](const int index)
@@ -89,6 +99,13 @@ public:
                 return false;
         }
 
+	int getDispersion() 
+	{
+		std::unordered_map<int,int> values;
+
+                for (auto& value: freqs_) values[value] = 1; 
+		return values.size();
+	}
 
 private:
 	std::array<int,255> freqs_;

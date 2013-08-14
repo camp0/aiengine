@@ -235,7 +235,8 @@ BOOST_AUTO_TEST_CASE ( test8_frequencies )
 	);
 	group_by_port.compute();
 
-	//std::cout << group_by_port;
+	BOOST_CHECK(group_by_port.getTotalProcessFlows() == 1);
+	BOOST_CHECK(group_by_port.getTotalComputedFrequencies() == 1);
 }
 
 BOOST_AUTO_TEST_CASE ( test9_frequencies )
@@ -259,7 +260,8 @@ BOOST_AUTO_TEST_CASE ( test9_frequencies )
         );
         group_by_address.compute();
 
-        //std::cout << group_by_address;
+	BOOST_CHECK(group_by_address.getTotalProcessFlows() == 1);
+	BOOST_CHECK(group_by_address.getTotalComputedFrequencies() == 1);
 }
 
 BOOST_AUTO_TEST_CASE ( test10_frequencies )
@@ -281,7 +283,8 @@ BOOST_AUTO_TEST_CASE ( test10_frequencies )
         group_by_destination_port.agregateFlowsByDestinationPort(flow_mng);
         group_by_destination_port.compute();
 
-//      std::cout << group_by_destination_port;
+	BOOST_CHECK(group_by_destination_port.getTotalProcessFlows() == 1);
+	BOOST_CHECK(group_by_destination_port.getTotalComputedFrequencies() == 1);
 }
 
 BOOST_AUTO_TEST_SUITE_END( )
