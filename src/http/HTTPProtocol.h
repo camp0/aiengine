@@ -126,8 +126,8 @@ private:
 	Cache<HTTPHost>::CachePtr host_cache_;
 	Cache<HTTPUserAgent>::CachePtr ua_cache_;
 
-	typedef std::map<std::string,int32_t> HostMapType;
-	typedef std::map<std::string,int32_t> UAMapType;
+	typedef std::map<HTTPHostPtr,int32_t> HostMapType;
+	typedef std::map<HTTPUserAgentPtr,int32_t> UAMapType;
 	UAMapType ua_map_;	
 	HostMapType host_map_;	
 };

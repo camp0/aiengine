@@ -42,17 +42,19 @@ void HTTPProtocol::extractHostValue(Flow *flow, const char *header)
 			{
                       		host_ptr->setName(host); 
 		         	flow->http_host = host_ptr;
-				std::cout << "yes" << std::endl;
 			}
-                }else{ std::cout << "joder " << std::endl;}
+                }
 
-                HostMapType::iterator it = host_map_.find(host);
-
+                HostMapType::iterator it = host_map_.find(host_ptr);
                	if(it == host_map_.end())
                 {
-                	host_map_[host] = 0;
+                	host_map_.insert(std::make_pair(host_ptr,1));
                 }
-                ++host_map_[host];
+		else
+		{
+			int *counter = &(it->second);
+			++(*counter);
+		}
 	}
 }
 
@@ -65,13 +67,28 @@ void HTTPProtocol::extractUserAgentValue(Flow *flow, const char *header)
 		std::string ua_raw(result[0].first, result[0].second);
 		std::string ua(ua_raw,12,ua_raw.length()-14); // remove also the \r\n
 
-		UAMapType::iterator it = ua_map_.find(ua);
+		HTTPUserAgentPtr ua_ptr = flow->http_ua.lock();
+
+		if(!ua_ptr) // There is no user agent attached
+		{
+			ua_ptr = ua_cache_->acquire().lock();
+			if(ua_ptr)
+			{
+				ua_ptr->setName(ua);
+				flow->http_ua = ua_ptr;
+			}
+		}
+
+		UAMapType::iterator it = ua_map_.find(ua_ptr);
 		if(it == ua_map_.end())
 		{
-			ua_map_[ua] = 0;
+                	ua_map_.insert(std::make_pair(ua_ptr,1));
+                }
+		else
+		{
+			int *counter = &(it->second);
+			++(*counter);
 		}
-		++ua_map_[ua];
-		//flow->http_ua = ua;
 	}
 }
 
@@ -105,7 +122,7 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out)
 	out << "Hosts used" << std::endl;
 	for(auto it = host_map_.begin(); it!=host_map_.end(); ++it)
 	{
-		out << "\t\tHost:" << (*it).first <<":" << (*it).second << std::endl;
+		out << "\t\tHost:" << ((*it).first)->getName() <<":" << (*it).second << std::endl;
 	}
 	out << "UserAgents used" << std::endl;
 	for(auto it = ua_map_.begin(); it!=ua_map_.end(); ++it)

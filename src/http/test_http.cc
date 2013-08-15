@@ -75,7 +75,9 @@ BOOST_AUTO_TEST_CASE (test1_http)
 
 BOOST_AUTO_TEST_CASE (test2_http)
 {
-	char *header = "GET / HTTP/1.1\r\nHost: www.google.com\r\nConnection: close\r\n\r\n";
+	char *header = 	"GET / HTTP/1.1\r\n"
+			"Host: www.google.com\r\n"
+			"Connection: close\r\n\r\n";
         unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
         int length = strlen(header);
         
@@ -86,18 +88,168 @@ BOOST_AUTO_TEST_CASE (test2_http)
         http->processFlow(flow.get());
 
 	BOOST_CHECK(flow->http_host.lock() == nullptr); // there is no items on the cache
+	BOOST_CHECK(flow->http_ua.lock() == nullptr); // there is no items on the cache
+}
 
-	// Create one HTTPHost object on the cache
-	http->createHTTPHosts(10);
+
+BOOST_AUTO_TEST_CASE (test3_http)
+{
+        char *header = 	"GET / HTTP/1.1\r\n"
+			"Host: www.google.com\r\n"
+			"Connection: close\r\n\r\n";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+
+        Packet packet(pkt,length,0);
+        FlowPtr flow = FlowPtr(new Flow());
+
+        http->createHTTPHosts(10);
+
+        flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
-//	BOOST_CHECK(flow->http_host.lock() != nullptr); 
-	if(flow->http_host.lock())
-		std::cout << "host value:" <<  flow->http_host.lock()->getName() << std::endl;
+        BOOST_CHECK(flow->http_host.lock() != nullptr);
 
-//	http->statistics();
-	// TODO: Check the referer, useragent and host 
+	std::string cad("www.google.com");
+
+	// The host is valid
+	BOOST_CHECK(cad.compare(flow->http_host.lock()->getName()) == 0);
+	BOOST_CHECK(flow->http_ua.lock() == nullptr);
 }
+
+BOOST_AUTO_TEST_CASE (test4_http)
+{
+        char *header = 	"GET /someur-oonnnnn-a-/somefile.php HTTP/1.1\r\n"
+			"Host: www.g00gle.com\r\n"
+			"Connection: close\r\n"
+			"User-Agent: LuisAgent\r\n\r\n";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+
+        Packet packet(pkt,length,0);
+        FlowPtr flow = FlowPtr(new Flow());
+
+        http->createHTTPHosts(1);
+        http->createHTTPUserAgents(1);
+
+        flow->packet = const_cast<Packet*>(&packet);
+        http->processFlow(flow.get());
+
+        std::string cad_host("www.g00gle.com");
+        std::string cad_ua("LuisAgent");
+
+        BOOST_CHECK(flow->http_ua.lock() != nullptr);
+        BOOST_CHECK(flow->http_host.lock() != nullptr);
+
+        // The host is valid
+        BOOST_CHECK(cad_host.compare(flow->http_host.lock()->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(flow->http_ua.lock()->getName()) == 0);
+}
+
+BOOST_AUTO_TEST_CASE (test5_http)
+{
+        char *header = 	"GET /someur-oonnnnn-a-/somefile.php HTTP/1.1\r\n"
+			"Host: www.g00gle.com\r\n"
+			"Connection: close\r\n"
+			"Accept-Encoding: gzip, deflate\r\n"
+			"Accept-Language: en-gb\r\n"
+			"Accept: */*\r\n"
+			"User-Agent: LuisAgent\r\n\r\n";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+
+        Packet packet(pkt,length,0);
+        FlowPtr flow = FlowPtr(new Flow());
+
+        http->createHTTPHosts(1);
+        http->createHTTPUserAgents(1);
+
+        flow->packet = const_cast<Packet*>(&packet);
+        http->processFlow(flow.get());
+
+        std::string cad_host("www.g00gle.com");
+        std::string cad_ua("LuisAgent");
+
+        BOOST_CHECK(flow->http_ua.lock() != nullptr);
+        BOOST_CHECK(flow->http_host.lock() != nullptr);
+
+        // The host is valid
+        BOOST_CHECK(cad_host.compare(flow->http_host.lock()->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(flow->http_ua.lock()->getName()) == 0);
+}
+
+BOOST_AUTO_TEST_CASE (test6_http)
+{
+        char *header =  "GET /MFYwVKADAgEAME0wSzBJMAkGBSsOAwIaBQAEFDmvGLQcAh85EJZW%2FcbTWO90hYuZBBROQ8gddu83U3pP8lhvl"
+			"PM44tW93wIQac%2FGD3s1X7nqon4RByZFag%3D%3D HTTP/1.1\r\n"
+                        "Host: www.g00gle.com\r\n"
+                        "Connection: close\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Accept: */*\r\n"
+                        "User-Agent: LuisAgent CFNetwork/609 Darwin/13.0.0\r\n"
+                        "Accept-Language: en-gb\r\n"
+			"\r\n";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+
+        Packet packet(pkt,length,0);
+        FlowPtr flow = FlowPtr(new Flow());
+
+        http->createHTTPHosts(1);
+        http->createHTTPUserAgents(1);
+
+        flow->packet = const_cast<Packet*>(&packet);
+        http->processFlow(flow.get());
+
+        std::string cad_host("www.g00gle.com");
+        std::string cad_ua("LuisAgent CFNetwork/609 Darwin/13.0.0");
+
+        BOOST_CHECK(flow->http_ua.lock() != nullptr);
+        BOOST_CHECK(flow->http_host.lock() != nullptr);
+
+        // The host is valid
+        BOOST_CHECK(cad_host.compare(flow->http_host.lock()->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(flow->http_ua.lock()->getName()) == 0);
+}
+
+
+BOOST_AUTO_TEST_CASE (test7_http)
+{
+	char *header = 	"GET /access/megustaelfary.mp4?version=4&lid=1187884873&token=JJz8QucMbPrjzSq4y7ffuLUTFO2Etiqu"
+			"Evd4Y34WVkhvAPWJK1%2F7nJlhnAkhXOPT9GCuPlZLgLnIxANviI%2FgtwRfJ9qh9QWwUS2WvW2JAOlS7bvHoIL9JbgA8"
+			"VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB"
+			"f7%2BndweWllFJWGr54vsfFJAZtBeEEE%2FZMlWJkvTpfDPJZSXmzzKZHbP6mm5u1jYBlJoDAKByHRjSUXRuauvzq1HDj"
+			"9QRoPmYJBXJvOlyH%2Fs6mNArj%2F7y0oT1UkApkjaGawH5zJBYkpq9&av=4.4 HTTP/1.1\r\n"
+                        "Connection: close\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Accept: */*\r\n"
+                        "User-Agent: LuisAgent CFNetwork/609 Darwin/13.0.0\r\n"
+                        "Accept-Language: en-gb\r\n"
+                        "Host: onedomain.com\r\n"
+                        "\r\n";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+
+        Packet packet(pkt,length,0);
+        FlowPtr flow = FlowPtr(new Flow());
+
+        http->createHTTPHosts(1);
+        http->createHTTPUserAgents(1);
+
+        flow->packet = const_cast<Packet*>(&packet);
+        http->processFlow(flow.get());
+
+        std::string cad_host("onedomain.com");
+        std::string cad_ua("LuisAgent CFNetwork/609 Darwin/13.0.0");
+
+        BOOST_CHECK(flow->http_ua.lock() != nullptr);
+        BOOST_CHECK(flow->http_host.lock() != nullptr);
+
+        // The host is valid
+        BOOST_CHECK(cad_host.compare(flow->http_host.lock()->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(flow->http_ua.lock()->getName()) == 0);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 
