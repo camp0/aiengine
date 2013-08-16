@@ -250,6 +250,66 @@ BOOST_AUTO_TEST_CASE (test7_http)
         BOOST_CHECK(cad_ua.compare(flow->http_ua.lock()->getName()) == 0);
 }
 
+BOOST_AUTO_TEST_CASE (test8_http)
+{
+        char *header1 =  "GET /access/megustaelfary.mp4?version=4&lid=1187884873&token=JJz8QucMbPrjzSq4y7ffuLUTFO2Etiqu"
+                        "Evd4Y34WVkhvAPWJK1%2F7nJlhnAkhXOPT9GCuPlZLgLnIxANviI%2FgtwRfJ9qh9QWwUS2WvW2JAOlS7bvHoIL9JbgA8"
+                        "VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB"
+                        "f7%2BndweWllFJWGr54vsfFJAZtBeEEE%2FZMlWJkvTpfDPJZSXmzzKZHbP6mm5u1jYBlJoDAKByHRjSUXRuauvzq1HDj"
+                        "9QRoPmYJBXJvOlyH%2Fs6mNArj%2F7y0oT1UkApkjaGawH5zJBYkpq9&av=4.4 HTTP/1.1\r\n"
+                        "Connection: close\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Accept: */*\r\n"
+                        "User-Agent: LuisAgent CFNetwork/609 Darwin/13.0.0\r\n"
+                        "Accept-Language: en-gb\r\n"
+                        "Host: onedomain.com\r\n"
+                        "\r\n";
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header1);
+        int length1 = strlen(header1);
+
+        Packet packet1(pkt1,length1,0);
+        FlowPtr flow1 = FlowPtr(new Flow());
+
+        http->createHTTPHosts(2);
+        http->createHTTPUserAgents(2);
+
+        flow1->packet = const_cast<Packet*>(&packet1);
+        http->processFlow(flow1.get());
+
+        std::string cad_host("onedomain.com");
+        std::string cad_ua("LuisAgent CFNetwork/609 Darwin/13.0.0");
+
+        BOOST_CHECK(flow1->http_ua.lock() != nullptr);
+        BOOST_CHECK(flow1->http_host.lock() != nullptr);
+
+        // The host is valid
+        BOOST_CHECK(cad_host.compare(flow1->http_host.lock()->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(flow1->http_ua.lock()->getName()) == 0);
+
+        char *header2 =  "GET /access/megustaelfary.mp4?version=4&lid=1187884873&token=JJz8QucMbPrjzSq4y7ffuLUTFO2Etiqu"
+                        "Evd4Y34WVkhvAPWJK1%2F7nJlhnAkhXOPT9GCuPlZLgLnIxANviI%2FgtwRfJ9qh9QWwUS2WvW2JAOlS7bvHoIL9JbgA8"
+                        "9QRoPmYJBXJvOlyH%2Fs6mNArj%2F7y0oT1UkApkjaGawH5zJBYkpq9&av=4.4 HTTP/1.1\r\n"
+                        "Connection: close\r\n"
+                        "User-Agent: LuisAgent CFNetwork/609 Darwin/13.0.0\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Accept: */*\r\n"
+                        "Host: otherdomain.com\r\n"
+                        "Accept-Language: en-gb\r\n"
+                        "\r\n";
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (header2);
+        int length2 = strlen(header2);
+
+        Packet packet2(pkt2,length2,0);
+        FlowPtr flow2 = FlowPtr(new Flow());
+
+        flow2->packet = const_cast<Packet*>(&packet2);
+        http->processFlow(flow2.get());
+
+
+
+        http->statistics();
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

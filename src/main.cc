@@ -30,6 +30,7 @@
 #include <fstream>
 #include "PacketDispatcher.h"
 #include "./frequency/FrequencyGroup.h"
+#include "System.h"
 #include "StackLan.h"
 #include "Stack3G.h"
 

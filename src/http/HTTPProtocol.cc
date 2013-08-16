@@ -122,12 +122,16 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out)
 	out << "Hosts used" << std::endl;
 	for(auto it = host_map_.begin(); it!=host_map_.end(); ++it)
 	{
-		out << "\t\tHost:" << ((*it).first)->getName() <<":" << (*it).second << std::endl;
+		HTTPHostPtr host = (*it).first;
+		if(host)
+			out << "\t\tHost:" << host->getName() <<":" << (*it).second << std::endl;
 	}
 	out << "UserAgents used" << std::endl;
 	for(auto it = ua_map_.begin(); it!=ua_map_.end(); ++it)
 	{
-		out << "\t\tUserAgent:" << (*it).first <<":" << (*it).second << std::endl;
+		HTTPUserAgentPtr ua = (*it).first;
+		if(ua)
+			out << "\t\tUserAgent:" << ua->getName() <<":" << (*it).second << std::endl;
 	}
 }
 

@@ -96,10 +96,10 @@ void FlowManager::printFlows(std::basic_ostream<char>& out)
 		out << boost::format("%-44s %-10d %-10d %p") % fivetuple.str() % flow->total_bytes % flow->total_packets % flow->forwarder.lock();
 
 		if(flow->http_host.lock())	
-			out << flow->http_host.lock()->getName();
+			out << "      Host:" << flow->http_host.lock()->getName();
 	
 		if(flow->http_ua.lock())
-			out << flow->http_ua.lock()->getName();	
+			out << " UserAgent:" << flow->http_ua.lock()->getName();	
 
 		if(flow->frequencies.lock())
 			out << boost::format("%-8s") % flow->frequencies.lock()->getFrequenciesString();

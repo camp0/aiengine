@@ -64,8 +64,8 @@ public:
         void statistics(std::basic_ostream<char>& out) { out << *this; };
         void statistics() { statistics(std::cout);} ;
 
-	void setTotalTCPFlows(int value) { flow_cache_tcp_->createFlows(value);};
-	void setTotalUDPFlows(int value) { flow_cache_udp_->createFlows(value);};
+	void setTotalTCPFlows(int value);
+	void setTotalUDPFlows(int value);
 
 	void setTCPSignatureManager(SignatureManagerPtrWeak sig); 
 	void setUDPSignatureManager(SignatureManagerPtrWeak sig);

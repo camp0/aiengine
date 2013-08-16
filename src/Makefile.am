@@ -28,7 +28,8 @@ noinst_HEADERS =        Packet.h \
                         ./flow/FlowManager.h \
                         ./flow/Flow.h \
 			./frequency/Frequencies.h \
-			./frequency/FrequencyProtocol.h 
+			./frequency/FrequencyProtocol.h \
+			System.h 
 
 aiengine_core_sources =	Multiplexer.cc \
 			FlowForwarder.cc \
