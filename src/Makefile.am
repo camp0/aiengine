@@ -51,6 +51,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			./signatures/Signature.cc \
 			./signatures/SignatureManager.cc \
 			./frequency/FrequencyProtocol.cc \
+			System.cc \
 			Stack3G.cc StackLan.cc 
 
 aiengine_SOURCES =      $(aiengine_core_sources) main.cc

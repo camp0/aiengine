@@ -45,14 +45,14 @@ void HTTPProtocol::extractHostValue(Flow *flow, const char *header)
 			}
                 }
 
-                HostMapType::iterator it = host_map_.find(host_ptr);
+                HostMapType::iterator it = host_map_.find(host);
                	if(it == host_map_.end())
                 {
-                	host_map_.insert(std::make_pair(host_ptr,1));
+                	host_map_.insert(std::make_pair(host,std::make_pair(host_ptr,1)));
                 }
 		else
 		{
-			int *counter = &(it->second);
+			int *counter = &std::get<1>(it->second);
 			++(*counter);
 		}
 	}
@@ -79,14 +79,14 @@ void HTTPProtocol::extractUserAgentValue(Flow *flow, const char *header)
 			}
 		}
 
-		UAMapType::iterator it = ua_map_.find(ua_ptr);
+		UAMapType::iterator it = ua_map_.find(ua);
 		if(it == ua_map_.end())
 		{
-                	ua_map_.insert(std::make_pair(ua_ptr,1));
+                	ua_map_.insert(std::make_pair(ua,std::make_pair(ua_ptr,1)));
                 }
 		else
 		{
-			int *counter = &(it->second);
+			int *counter = &std::get<1>(it->second);
 			++(*counter);
 		}
 	}
@@ -122,16 +122,18 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out)
 	out << "Hosts used" << std::endl;
 	for(auto it = host_map_.begin(); it!=host_map_.end(); ++it)
 	{
-		HTTPHostPtr host = (*it).first;
+		HTTPHostPtr host = std::get<0>((*it).second);
+		int count = std::get<1>((*it).second);
 		if(host)
-			out << "\t\tHost:" << host->getName() <<":" << (*it).second << std::endl;
+			out << "\t\tHost:" << host->getName() <<":" << count << std::endl;
 	}
 	out << "UserAgents used" << std::endl;
 	for(auto it = ua_map_.begin(); it!=ua_map_.end(); ++it)
 	{
-		HTTPUserAgentPtr ua = (*it).first;
+		HTTPUserAgentPtr ua = std::get<0>((*it).second);
+		int count = std::get<1>((*it).second);
 		if(ua)
-			out << "\t\tUserAgent:" << ua->getName() <<":" << (*it).second << std::endl;
+			out << "\t\tUserAgent:" << ua->getName() <<":" << count << std::endl;
 	}
 }
 

@@ -34,6 +34,7 @@
 #include "StackLan.h"
 #include "Stack3G.h"
 
+SystemPtr system_stats;
 PacketDispatcherPtr pktdis;
 NetworkStackPtr stack;
 SignatureManagerPtr sm;
@@ -118,6 +119,9 @@ void iaengineExit()
 
 		if(enable_frequencies)
 			showFrequencyResults();
+	
+		if(system_stats)	
+			system_stats->statistics();
        	}
 }
 
@@ -250,6 +254,8 @@ int main(int argc, char* argv[])
 
 	// connect with the stack
         pktdis->setStack(stack);
+
+	system_stats = SystemPtr(new System());
 
 	if(var_map.count("pcapfile") == 1)
 	{

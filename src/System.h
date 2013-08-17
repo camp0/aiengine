@@ -28,26 +28,29 @@
 #include <config.h>
 #endif
 
+#include <iostream>
+#include <iomanip> // setw
+#include <sys/resource.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
+
+using namespace std;
 
 class System
 {
 public:
 
-    	System(){start_time_ = boost::posix_time::microsec_clock::local_time();};
+    	System()
+	{ start_time_ = boost::posix_time::microsec_clock::local_time();};
     	virtual ~System() {};
-	
-	void statistics() {
-		end_time_ = boost::posix_time::microsec_clock::local_time();
-		boost::posix_time::time_duration duration(end_time_ - start_time_);
 
-		std::cout << "Statistics" <<std::endl;
-		std::cout << "\telapsed time:" << duration <<std::endl;
-	}
+	void statistics(std::basic_ostream<char>& out);
+	void statistics() { statistics(std::cout);};	
+
 private:
 	boost::posix_time::ptime start_time_;
 	boost::posix_time::ptime end_time_;
 
 };
 
+typedef std::shared_ptr<System> SystemPtr;
 #endif
