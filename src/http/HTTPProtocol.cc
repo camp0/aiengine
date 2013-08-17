@@ -119,7 +119,10 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out)
         if(flow_forwarder_.lock())
                 flow_forwarder_.lock()->statistics(out);
 
-	out << "Hosts used" << std::endl;
+	host_cache_->statistics(out);
+	ua_cache_->statistics(out);
+
+	out << "\tHTTP Hosts usage" << std::endl;
 	for(auto it = host_map_.begin(); it!=host_map_.end(); ++it)
 	{
 		HTTPHostPtr host = std::get<0>((*it).second);
@@ -127,7 +130,7 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out)
 		if(host)
 			out << "\t\tHost:" << host->getName() <<":" << count << std::endl;
 	}
-	out << "UserAgents used" << std::endl;
+	out << "\tHTTP UserAgents usage" << std::endl;
 	for(auto it = ua_map_.begin(); it!=ua_map_.end(); ++it)
 	{
 		HTTPUserAgentPtr ua = std::get<0>((*it).second);

@@ -51,8 +51,8 @@ public:
 		http_host_("Host: .*?\r\n"),
 		http_ua_("User-Agent: .*?\r\n"),
 		http_referer_("Referer: .*?\r\n"),
-		host_cache_(new Cache<HTTPHost>),
-		ua_cache_(new Cache<HTTPUserAgent>)
+		host_cache_(new Cache<HTTPHost>("Host cache")),
+		ua_cache_(new Cache<HTTPUserAgent>("UserAgent cache"))
 	{ 
 		name_="HTTPProtocol";
 	}

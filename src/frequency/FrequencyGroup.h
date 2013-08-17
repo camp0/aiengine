@@ -39,7 +39,7 @@ using namespace std;
 template <class A_Type> class FrequencyGroup 
 {
 public:
-    	explicit FrequencyGroup(): name_(""),total_process_flows_(0),total_computed_freqs_(0) {};
+    	explicit FrequencyGroup(): name_(""),total_process_flows_(0),total_computed_freqs_(0),log_level_(0) {};
     	virtual ~FrequencyGroup() {};
 
 	const char* getName(){ return name_.c_str();} 
@@ -59,10 +59,13 @@ public:
 			int items = std::get<1>(it->second);	
 			
 			os << "\tGroup by:" << it->first <<  " items:" << items << " dispersion:" << freq_ptr->getDispersion() <<std::endl;
-			os << "\t" << freq_ptr->getFrequenciesString() << std::endl;
+			if(fg.log_level_>0)
+				os << "\t" << freq_ptr->getFrequenciesString() << std::endl;
 		}
 		os << std::endl; 
 	}	
+
+	void setLogLevel(int level) { log_level_ = level;};
 
 	void agregateFlowsBySourcePort(FlowManagerPtr flow_t);
 	void agregateFlowsByDestinationPort(FlowManagerPtr flow_t);
@@ -74,6 +77,7 @@ public:
 
 private:
 	std::string name_;
+	int log_level_;
 	int32_t total_process_flows_;
 	int32_t total_computed_freqs_;
 	std::map <A_Type,std::pair<FrequenciesPtr,int>> group_map_;

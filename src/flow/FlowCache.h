@@ -38,7 +38,7 @@
 class FlowCache
 {
 public:
-    	FlowCache(): fc_(new Cache<Flow>) {};
+    	FlowCache(): fc_(new Cache<Flow>("FlowCache")) {};
     	virtual ~FlowCache() {};
 
 	void releaseFlow(FlowPtr flow) { fc_->release(flow);};

@@ -29,6 +29,7 @@
 #endif
 
 #include <boost/ptr_container/ptr_vector.hpp>
+#include <iomanip>
 
 template <class A_Type> class Cache
 {
@@ -39,7 +40,8 @@ public:
 	typedef std::shared_ptr <A_Type> A_TypePtr;
 	typedef std::weak_ptr <A_Type> A_TypePtrWeak;
 
-    	Cache():total_(0),total_acquires_(0),total_releases_(0),total_fails_(0) {};
+    	Cache():total_(0),total_acquires_(0),total_releases_(0),total_fails_(0),name_("") {};
+    	Cache(std::string name):total_(0),total_acquires_(0),total_releases_(0),total_fails_(0),name_(name) {};
     	virtual ~Cache() { items_.clear();};
 
 	void release(A_TypePtr a) 
@@ -100,12 +102,23 @@ public:
 	int32_t getTotalReleases() const { return total_releases_;};
 	int32_t getTotalFails() const { return total_fails_;};
 
+        void statistics(std::basic_ostream<char>& out)
+	{
+		out << name_ << " statistics" << std::endl;
+		out << "\t" << "Total items:            " << std::setw(10) << items_.size() <<std::endl;
+		out << "\t" << "Total acquires:         " << std::setw(10) << total_acquires_ <<std::endl;
+		out << "\t" << "Total releases:         " << std::setw(10) << total_releases_ <<std::endl;
+		out << "\t" << "Total fails:            " << std::setw(10) << total_fails_ <<std::endl;
+	};
+
+        void statistics() { statistics(std::cout);};
+
 private:
 	int32_t total_;
 	int32_t total_acquires_;
 	int32_t total_releases_;
 	int32_t total_fails_;
-
+	std::string name_;
 	// a vector of pointers to the created Flows
 	std::vector<A_TypePtr> items_;
 };

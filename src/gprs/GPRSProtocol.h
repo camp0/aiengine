@@ -79,7 +79,6 @@ public:
 	{
 		int length = packet.getLength();
 	
-	//	std::cout << "GPRSProtocol:" << packet;
 	// 	first byt use to be x32 version for signaling packets 
 	//	second byte is the flags
 	//		flag == 0x10 create pdp contex
