@@ -32,7 +32,7 @@
 #include "./frequency/FrequencyGroup.h"
 #include "System.h"
 #include "StackLan.h"
-#include "Stack3G.h"
+#include "StackMobile.h"
 
 SystemPtr system_stats;
 PacketDispatcherPtr pktdis;
@@ -47,6 +47,7 @@ std::string freqs_type_flows;
 bool print_flows = false;
 bool enable_frequencies = false;
 bool show_statistics = false;
+bool show_pstatistics = false;
 int tcp_flows_cache;
 int udp_flows_cache;
 
@@ -119,9 +120,10 @@ void iaengineExit()
 
 		if(enable_frequencies)
 			showFrequencyResults();
-	
-		if(system_stats)	
-			system_stats->statistics();
+
+		if(show_pstatistics)	
+			if(system_stats)	
+				system_stats->statistics();
        	}
 }
 
@@ -167,9 +169,10 @@ int main(int argc, char* argv[])
 	po::options_description optional_ops("Optional arguments");
 	optional_ops.add_options()
 		("stack,s",	po::value<std::string>(&stack_name)->default_value("lan"),
-				      	"Sets the network stack (lan,3g).")
+				      	"Sets the network stack (lan,mobile).")
 		("dumpflows,d",      	"Dump the flows to stdout.")
-		("statistics,S",      	"Show statistics of the stack.")
+		("statistics,S",      	"Show statistics of the network stack.")
+		("pstatistics,p",      	"Show statistics of the process.")
 		("help,h",     		"Show help.")
 		("version,v",   	"Show version string.")
 		;
@@ -200,6 +203,7 @@ int main(int argc, char* argv[])
 
 		if (var_map.count("dumpflows")) print_flows = true;
 		if (var_map.count("statistics")) show_statistics = true;
+		if (var_map.count("pstatistics")) show_pstatistics = true;
 
         	po::notify(var_map);
     	}
@@ -229,9 +233,9 @@ int main(int argc, char* argv[])
 		//stack = stack_lan;
 		stack = NetworkStackPtr(new StackLan());
 	}else{
-		if (stack_name.compare("3g") ==0)
+		if (stack_name.compare("mobile") ==0)
 		{
-			stack = NetworkStackPtr(new Stack3G());
+			stack = NetworkStackPtr(new StackMobile());
 		}else{
 			std::cout << "iaengine: Unknown stack " << stack_name << std::endl;
 			exit(-1);

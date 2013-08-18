@@ -8,7 +8,7 @@ noinst_HEADERS =        Packet.h \
 			NetworkStack.h \
 			StackLan.h \
 			Cache.h \
-			Stack3G.h \
+			StackMobile.h \
 			Multiplexer.h \
 			FlowForwarder.h \
 			./ethernet/EthernetProtocol.h \
@@ -52,7 +52,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			./signatures/SignatureManager.cc \
 			./frequency/FrequencyProtocol.cc \
 			System.cc \
-			Stack3G.cc StackLan.cc 
+			StackMobile.cc StackLan.cc 
 
 aiengine_SOURCES =      $(aiengine_core_sources) main.cc
 

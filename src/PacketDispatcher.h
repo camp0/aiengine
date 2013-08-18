@@ -37,7 +37,7 @@
 #include "./ethernet/EthernetProtocol.h"
 #include "Protocol.h"
 #include "StackLan.h"
-#include "Stack3G.h"
+#include "StackMobile.h"
 
 #define PACKET_RECVBUFSIZE    2048        /// receive_from buffer size for a single datagram
 
@@ -71,7 +71,7 @@ public:
 
 	void setStack(NetworkStackPtr stack) { setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());};
 	void setStack(StackLan& stack) { setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}; 
-	void setStack(Stack3G& stack) { setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());};
+	void setStack(StackMobile& stack) { setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());};
 
 	void setDefaultMultiplexer(MultiplexerPtr mux); // just use for the unit tests
 

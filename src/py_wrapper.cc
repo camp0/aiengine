@@ -23,9 +23,10 @@
  */
 #include "NetworkStack.h"
 #include "StackLan.h"
-#include "Stack3G.h"
+#include "StackMobile.h"
 #include "PacketDispatcher.h"
 #include "NetworkStack.h"
+#include "./frequency/FrequencyGroup.h"
 #include "./signatures/Signature.h"
 #include <boost/python.hpp>
 #include <boost/asio.hpp>
@@ -56,6 +57,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setTotalTCPFlows",pure_virtual(&NetworkStack::setTotalTCPFlows))
                 .def("setTotalUDPFlows",pure_virtual(&NetworkStack::setTotalUDPFlows))
               	.def("printFlows",pure_virtual(printFlowsNetworkStack))
+		.def("enableFrequencyEngine",pure_virtual(&NetworkStack::enableFrequencyEngine))
         ;
 
 	// for overload the methods with the class
@@ -75,25 +77,27 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setTotalUDPFlows",&StackLan::setTotalUDPFlows)
 		.def(self_ns::str(self_ns::self))
 		.def("printFlows",printFlowsLan)
+		.def("enableFrequencyEngine",&StackLan::enableFrequencyEngine)
 	;
 
         // for overload the methods with the class
-        void (Stack3G::*printFlows3G)() = &Stack3G::printFlows;
+        void (StackMobile::*printFlowsMobile)() = &StackMobile::printFlows;
 
-	void (Stack3G::*setUDPSignatureManager3G1)(SignatureManager&) = &Stack3G::setUDPSignatureManager;
-	void (Stack3G::*setTCPSignatureManager3G1)(SignatureManager&) = &Stack3G::setTCPSignatureManager;
-	void (Stack3G::*setUDPSignatureManager3G2)(SignatureManagerPtrWeak) = &Stack3G::setUDPSignatureManager;
-	void (Stack3G::*setTCPSignatureManager3G2)(SignatureManagerPtrWeak) = &Stack3G::setTCPSignatureManager;
+	void (StackMobile::*setUDPSignatureManagerMobile1)(SignatureManager&) = &StackMobile::setUDPSignatureManager;
+	void (StackMobile::*setTCPSignatureManagerMobile1)(SignatureManager&) = &StackMobile::setTCPSignatureManager;
+	void (StackMobile::*setUDPSignatureManagerMobile2)(SignatureManagerPtrWeak) = &StackMobile::setUDPSignatureManager;
+	void (StackMobile::*setTCPSignatureManagerMobile2)(SignatureManagerPtrWeak) = &StackMobile::setTCPSignatureManager;
 
-        boost::python::class_<Stack3G, bases<NetworkStack> >("Stack3G")
-		.def("setUDPSignatureManager",setUDPSignatureManager3G1)	
-		.def("setTCPSignatureManager",setTCPSignatureManager3G1)	
-		.def("setUDPSignatureManager",setUDPSignatureManager3G2)	
-		.def("setTCPSignatureManager",setTCPSignatureManager3G2)	
-                .def("setTotalTCPFlows",&Stack3G::setTotalTCPFlows)
-                .def("setTotalUDPFlows",&Stack3G::setTotalUDPFlows)
+        boost::python::class_<StackMobile, bases<NetworkStack> >("StackMobile")
+		.def("setUDPSignatureManager",setUDPSignatureManagerMobile1)	
+		.def("setTCPSignatureManager",setTCPSignatureManagerMobile1)	
+		.def("setUDPSignatureManager",setUDPSignatureManagerMobile2)	
+		.def("setTCPSignatureManager",setTCPSignatureManagerMobile2)	
+                .def("setTotalTCPFlows",&StackMobile::setTotalTCPFlows)
+                .def("setTotalUDPFlows",&StackMobile::setTotalUDPFlows)
 		.def(self_ns::str(self_ns::self))
-                .def("printFlows",printFlows3G)
+                .def("printFlows",printFlowsMobile)
+		.def("enableFrequencyEngine",&StackMobile::enableFrequencyEngine)
         ;
 
 	boost::python::class_<Signature>("Signature",init<const std::string&,const std::string&>())
@@ -105,7 +109,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	// for overload the methods with the class
 	void (PacketDispatcher::*setStackLan)(StackLan&) = &PacketDispatcher::setStack;
-	void (PacketDispatcher::*setStack3G)(Stack3G&) = &PacketDispatcher::setStack;
+	void (PacketDispatcher::*setStackMobile)(StackMobile&) = &PacketDispatcher::setStack;
 
 	boost::python::class_<PacketDispatcher,boost::noncopyable>("PacketDispatcher")
 		.def("openDevice",&PacketDispatcher::openDevice)
@@ -115,20 +119,23 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("run",&PacketDispatcher::run)
 		.def("runPcap",&PacketDispatcher::runPcap)
 		.def("setStack",setStackLan)
-		.def("setStack",setStack3G)
+		.def("setStack",setStackMobile)
 	;
 
 
 	void (SignatureManager::*addSignature1)(const std::string,const std::string) = &SignatureManager::addSignature;
 	void (SignatureManager::*addSignature2)(Signature&) = &SignatureManager::addSignature;
 
-//	boost::python::class_<SignatureManager >("SignatureManager")
 	boost::python::class_<SignatureManager,boost::shared_ptr<SignatureManager>,boost::noncopyable >("SignatureManager")
 		.def("addSignature",addSignature1)
 		.def("addSignature",addSignature2)
 		.def(self_ns::str(self_ns::self))
 	;
 
+	// Templatize the FrequencyGroup
+	//	
+	//boost::python::class_<FrequencyGroup,boost::noncopyable>("FrequencyGroup")
+	//;
 }
 
 

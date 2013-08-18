@@ -20,7 +20,7 @@ AC_PROG_CXX
 AC_PROG_MAKE_SET
 AC_HEADER_STDC
 
-CXXFLAGS="-O0 -g -std=c++11"
+CXXFLAGS="-O0 -g -std=c++11 -Wno-write-strings"
 AC_COMPILE_STDCXX_11
 
 # CXXFLAGS="-std=c++11"

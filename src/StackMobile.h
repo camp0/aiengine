@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _Stack3G_H_
-#define _Stack3G_H_
+#ifndef _StackMobile_H_
+#define _StackMobile_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -47,11 +47,11 @@
 #include "./frequency/FrequencyProtocol.h"
 #include "NetworkStack.h"
 
-class Stack3G: public NetworkStack
+class StackMobile: public NetworkStack
 {
 public:
-	explicit Stack3G();
-        virtual ~Stack3G() {};
+	explicit StackMobile();
+        virtual ~StackMobile() {};
 
         const char* getName() { return name_.c_str();}; 
         void setName(char *name) { name_ = name;};
@@ -82,7 +82,7 @@ public:
         FlowManagerPtrWeak getTCPFlowManager() { return flow_mng_tcp_;};
         FlowManagerPtrWeak getUDPFlowManager() { return flow_mng_udp_high_;};
 
-        friend std::ostream& operator<< (std::ostream& out, const Stack3G& stk);
+        friend std::ostream& operator<< (std::ostream& out, const StackMobile& stk);
 
 private:
 	std::string name_;

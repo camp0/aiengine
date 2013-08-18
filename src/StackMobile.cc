@@ -21,11 +21,11 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#include "Stack3G.h"
+#include "StackMobile.h"
 
-Stack3G::Stack3G()
+StackMobile::StackMobile()
 {
-	name_ = "3G Network Stack";
+	name_ = "Mobile Network Stack";
 
 	// Allocate all the Protocol objects
         eth_= EthernetProtocolPtr(new EthernetProtocol());
@@ -226,7 +226,7 @@ Stack3G::Stack3G()
 	ff_udp_high_->addUpFlowForwarder(ff_udp_generic_);
 }
 
-std::ostream& operator<< (std::ostream& out, const Stack3G& stk)
+std::ostream& operator<< (std::ostream& out, const StackMobile& stk)
 {
 	
 	stk.eth_->statistics(out);
@@ -263,7 +263,7 @@ std::ostream& operator<< (std::ostream& out, const Stack3G& stk)
 	return out;
 }
 
-void Stack3G::printFlows(std::basic_ostream<char>& out)
+void StackMobile::printFlows(std::basic_ostream<char>& out)
 {
 	out << "Flows on memory" << std::endl;
 	flow_mng_udp_low_->printFlows(out);
@@ -271,7 +271,7 @@ void Stack3G::printFlows(std::basic_ostream<char>& out)
 	flow_mng_udp_high_->printFlows(out);
 }
 
-void Stack3G::setTCPSignatureManager(SignatureManagerPtrWeak sig)
+void StackMobile::setTCPSignatureManager(SignatureManagerPtrWeak sig)
 {
         if(sig.lock())
 	{
@@ -279,7 +279,7 @@ void Stack3G::setTCPSignatureManager(SignatureManagerPtrWeak sig)
 	}
 }
 
-void Stack3G::setUDPSignatureManager(SignatureManagerPtrWeak sig)
+void StackMobile::setUDPSignatureManager(SignatureManagerPtrWeak sig)
 {
         if(sig.lock())
 	{
@@ -287,19 +287,19 @@ void Stack3G::setUDPSignatureManager(SignatureManagerPtrWeak sig)
 	}
 }
 
-void Stack3G::setTCPSignatureManager(SignatureManager& sig)
+void StackMobile::setTCPSignatureManager(SignatureManager& sig)
 {
 	sigs_tcp_ = std::make_shared<SignatureManager>(sig);
         setTCPSignatureManager(sigs_tcp_);
 }
 
-void Stack3G::setUDPSignatureManager(SignatureManager& sig)
+void StackMobile::setUDPSignatureManager(SignatureManager& sig)
 {
 	sigs_udp_ = std::make_shared<SignatureManager>(sig);
         setUDPSignatureManager(sigs_udp_);
 }
 
-void Stack3G::enableFrequencyEngine(bool enable)
+void StackMobile::enableFrequencyEngine(bool enable)
 {
         int tcp_flows_created = flow_cache_tcp_->getTotalFlows();
         int udp_flows_created = flow_cache_udp_high_->getTotalFlows();

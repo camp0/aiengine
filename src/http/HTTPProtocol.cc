@@ -37,24 +37,24 @@ void HTTPProtocol::extractHostValue(Flow *flow, const char *header)
 
                 if(!host_ptr) // There is no Host object attached to the flow
                 {
-                        host_ptr = host_cache_->acquire().lock();
-                        if(host_ptr)
+                	HostMapType::iterator it = host_map_.find(host);
+                	if(it == host_map_.end())      
+			{  
+                		host_ptr = host_cache_->acquire().lock();
+                        	if(host_ptr)
+				{
+                      			host_ptr->setName(host); 
+		         		flow->http_host = host_ptr;
+                			host_map_.insert(std::make_pair(host,std::make_pair(host_ptr,1)));
+				}
+			}
+			else
 			{
-                      		host_ptr->setName(host); 
-		         	flow->http_host = host_ptr;
+				int *counter = &std::get<1>(it->second);
+				++(*counter);
+				flow->http_host = std::get<0>(it->second);	
 			}
                 }
-
-                HostMapType::iterator it = host_map_.find(host);
-               	if(it == host_map_.end())
-                {
-                	host_map_.insert(std::make_pair(host,std::make_pair(host_ptr,1)));
-                }
-		else
-		{
-			int *counter = &std::get<1>(it->second);
-			++(*counter);
-		}
 	}
 }
 
@@ -71,23 +71,23 @@ void HTTPProtocol::extractUserAgentValue(Flow *flow, const char *header)
 
 		if(!ua_ptr) // There is no user agent attached
 		{
-			ua_ptr = ua_cache_->acquire().lock();
-			if(ua_ptr)
+			UAMapType::iterator it = ua_map_.find(ua);
+			if(it == ua_map_.end())
 			{
-				ua_ptr->setName(ua);
-				flow->http_ua = ua_ptr;
+			        ua_ptr = ua_cache_->acquire().lock();
+                        	if(ua_ptr)
+                        	{
+                                	ua_ptr->setName(ua);
+                                	flow->http_ua = ua_ptr;
+                			ua_map_.insert(std::make_pair(ua,std::make_pair(ua_ptr,1)));
+                        	}	
 			}
-		}
-
-		UAMapType::iterator it = ua_map_.find(ua);
-		if(it == ua_map_.end())
-		{
-                	ua_map_.insert(std::make_pair(ua,std::make_pair(ua_ptr,1)));
-                }
-		else
-		{
-			int *counter = &std::get<1>(it->second);
-			++(*counter);
+			else
+			{
+				int *counter = &std::get<1>(it->second);
+				++(*counter);
+				flow->http_ua = std::get<0>(it->second);	
+			}
 		}
 	}
 }
