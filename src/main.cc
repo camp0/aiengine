@@ -67,50 +67,63 @@ void showFrequencyResults()
 	if(!flow_t)
 		return;
 
-	auto group = nullptr;
-	FrequencyGroup<uint16_t> f_group_int;
-	FrequencyGroup<std::string> f_group_str;
+	FrequencyGroup<std::string> group;
 
 	if(freqs_group_value.compare("src-port") == 0)
         {
-      		group = f_group_int; 
-
         	group.setName("by source port");
-		std::cout << "Computing frequencies " << f_group.getName() << std::endl;
+		std::cout << "Agregating frequencies " << group.getName() << std::endl;
 		group.agregateFlowsBySourcePort(flow_t);
+		std::cout << "Computing frequencies " << group.getName() << std::endl;
 		group.compute();
 		std::cout << group;
 	}
 	if(freqs_group_value.compare("dst-port") == 0)
         {
-        	FrequencyGroup<uint16_t> f_group;
-
-        	f_group.setName("by destination port");
-		std::cout << "Computing frequencies " << f_group.getName() << std::endl;
-		f_group.agregateFlowsByDestinationPort(flow_t);
-		f_group.compute();
-		std::cout << f_group;
+        	group.setName("by destination port");
+		std::cout << "Agregating frequencies " << group.getName() << std::endl;
+		group.agregateFlowsByDestinationPort(flow_t);
+		std::cout << "Computing frequencies " << group.getName() << std::endl;
+		group.compute();
+		std::cout << group;
 	}
 	if(freqs_group_value.compare("src-ip") == 0)
         {
-        	FrequencyGroup<char*> f_group;
-
-        	f_group.setName("by source IP");
-		std::cout << "Computing frequencies " << f_group.getName() << std::endl;
-		f_group.agregateFlowsBySourceAddress(flow_t);
-		f_group.compute();
-		std::cout << f_group;
+        	group.setName("by source IP");
+		std::cout << "Agregating frequencies " << group.getName() << std::endl;
+		group.agregateFlowsBySourceAddress(flow_t);
+		std::cout << "Computing frequencies " << group.getName() << std::endl;
+		group.compute();
+		std::cout << group;
 	}
 	if(freqs_group_value.compare("dst-ip") == 0)
         {
-        	FrequencyGroup<char*> f_group;
-
-        	f_group.setName("by destination IP");
-		std::cout << "Computing frequencies " << f_group.getName() << std::endl;
-		f_group.agregateFlowsByDestinationAddress(flow_t);
-		f_group.compute();
-		std::cout << f_group;
+        	group.setName("by destination IP");
+		std::cout << "Agregating frequencies " << group.getName() << std::endl;
+		group.agregateFlowsByDestinationAddress(flow_t);
+		std::cout << "Computing frequencies " << group.getName() << std::endl;
+		group.compute();
+		std::cout << group;
 	}
+        if(freqs_group_value.compare("src-ip,src-port") == 0)
+        {
+                group.setName("by source IP and port");
+                std::cout << "Agregating frequencies " << group.getName() << std::endl;
+                group.agregateFlowsBySourceAddressAndPort(flow_t);
+                std::cout << "Computing frequencies " << group.getName() << std::endl;
+                group.compute();
+                std::cout << group;
+        }
+        if(freqs_group_value.compare("dst-ip,dst-port") == 0)
+        {
+                group.setName("by destination IP and port");
+                std::cout << "Agregating frequencies " << group.getName() << std::endl;
+                group.agregateFlowsByDestinationAddressAndPort(flow_t);
+                std::cout << "Computing frequencies " << group.getName() << std::endl;
+                group.compute();
+                std::cout << group;
+        }
+
 }
 
 void iaengineExit()

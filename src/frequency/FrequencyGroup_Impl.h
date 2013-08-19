@@ -79,13 +79,13 @@ void FrequencyGroup<A_Type>::compute()
 template <class A_Type>
 void FrequencyGroup<A_Type>::agregateFlowsBySourcePort(FlowManagerPtr flow_t) 
 {
-	agregateFlows(flow_t, ([] (const FlowPtr& flow) { return flow->getSourcePort();}));
+	agregateFlows(flow_t, ([] (const FlowPtr& flow) { return std::to_string(flow->getSourcePort());}));
 }
 
 template <class A_Type>
 void FrequencyGroup<A_Type>::agregateFlowsByDestinationPort(FlowManagerPtr flow_t)
 {
-	agregateFlows(flow_t, ([] (const FlowPtr& flow) { return flow->getDestinationPort();}));
+	agregateFlows(flow_t, ([] (const FlowPtr& flow) { return std::to_string(flow->getDestinationPort());}));
 } 
 
 template <class A_Type>
@@ -104,8 +104,11 @@ template <class A_Type>
 void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddressAndPort(FlowManagerPtr flow_t)
 {
 	agregateFlows(flow_t, ([] (const FlowPtr& flow) 
-	{ 	
-		return (flow->getDstAddrDotNotation() + std::to_string(flow->getDestinationPort()));
+	{ 
+		std::ostringstream os;
+		
+		os << flow->getDstAddrDotNotation() << ":" << std::to_string(flow->getDestinationPort());	
+		return os.str();
 	}));
 
 }
@@ -115,7 +118,10 @@ void FrequencyGroup<A_Type>::agregateFlowsBySourceAddressAndPort(FlowManagerPtr 
 {
 	agregateFlows(flow_t, ([] (const FlowPtr& flow) 
 	{ 	
-		return (flow->getSrcAddrDotNotation() + std::to_string(flow->getSourcePort()));
+		std::ostringstream os;
+		
+		os << flow->getSrcAddrDotNotation() << ":" << std::to_string(flow->getSourcePort());
+		return os.str();
 	}));
 }
 

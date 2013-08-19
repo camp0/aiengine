@@ -58,6 +58,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setTotalUDPFlows",pure_virtual(&NetworkStack::setTotalUDPFlows))
               	.def("printFlows",pure_virtual(printFlowsNetworkStack))
 		.def("enableFrequencyEngine",pure_virtual(&NetworkStack::enableFrequencyEngine))
+		.def("getTCPFlowManager",pure_virtual(&NetworkStack::getTCPFlowManager))
+		.def("getUDPFlowManager",pure_virtual(&NetworkStack::getUDPFlowManager))
         ;
 
 	// for overload the methods with the class
@@ -78,6 +80,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def(self_ns::str(self_ns::self))
 		.def("printFlows",printFlowsLan)
 		.def("enableFrequencyEngine",&StackLan::enableFrequencyEngine)
+		.def("getTCPFlowManager",&StackLan::getTCPFlowManager,return_internal_reference<>())
+		.def("getUDPFlowManager",&StackLan::getUDPFlowManager,return_internal_reference<>())
 	;
 
         // for overload the methods with the class
@@ -98,6 +102,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def(self_ns::str(self_ns::self))
                 .def("printFlows",printFlowsMobile)
 		.def("enableFrequencyEngine",&StackMobile::enableFrequencyEngine)
+		.def("getTCPFlowManager",&StackMobile::getTCPFlowManager,return_internal_reference<>())
+		.def("getUDPFlowManager",&StackMobile::getUDPFlowManager,return_internal_reference<>())
         ;
 
 	boost::python::class_<Signature>("Signature",init<const std::string&,const std::string&>())
@@ -132,6 +138,12 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def(self_ns::str(self_ns::self))
 	;
 
+	//boost::python::class_<FlowManager,boost::shared_ptr<FlowManager>,boost::noncopyable >("FlowManager")
+	boost::python::class_<FlowManager,boost::shared_ptr<FlowManager>,boost::noncopyable >("FlowManager")
+		.def("__iter__",range(&FlowManager::begin,&FlowManager::end))
+		//.def("addSignature",addSignature2)
+		//.def(self_ns::str(self_ns::self))
+	;
 	// Templatize the FrequencyGroup
 	//	
 	//boost::python::class_<FrequencyGroup,boost::noncopyable>("FrequencyGroup")

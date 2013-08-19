@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE ( test10_frequencies )
         mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forwardPacket(packet);
 
-        FrequencyGroup<uint16_t> group_by_destination_port;
+        FrequencyGroup<std::string> group_by_destination_port;
 
         group_by_destination_port.agregateFlowsByDestinationPort(flow_mng);
         group_by_destination_port.compute();
@@ -329,7 +329,6 @@ BOOST_AUTO_TEST_CASE ( test11_frequencies )
         group_by_destination_ip_port.agregateFlowsByDestinationAddressAndPort(flow_mng);
         group_by_destination_ip_port.compute();
 
-//        std::cout << group_by_destination_ip_port;
         BOOST_CHECK(group_by_destination_ip_port.getTotalProcessFlows() == 1);
         BOOST_CHECK(group_by_destination_ip_port.getTotalComputedFrequencies() == 1);
 }

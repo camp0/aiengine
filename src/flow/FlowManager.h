@@ -65,6 +65,11 @@ public:
         void statistics() { statistics(std::cout);};
 
 	FlowTable getFlowTable() const { return flowTable_;};	
+
+	// Methods for exposing the class to python iterable methods
+	FlowTable::iterator begin() { return flowTable_.begin(); };
+	FlowTable::iterator end() { return flowTable_.end(); };
+
 private:
     	timeval now_;
 
