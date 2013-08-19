@@ -100,3 +100,22 @@ void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddress(FlowManagerPtr fl
 	agregateFlows(flow_t, ([] (const FlowPtr& flow) { return flow->getDstAddrDotNotation();}));
 } 
 
+template <class A_Type>
+void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddressAndPort(FlowManagerPtr flow_t)
+{
+	agregateFlows(flow_t, ([] (const FlowPtr& flow) 
+	{ 	
+		return (flow->getDstAddrDotNotation() + std::to_string(flow->getDestinationPort()));
+	}));
+
+}
+
+template <class A_Type>
+void FrequencyGroup<A_Type>::agregateFlowsBySourceAddressAndPort(FlowManagerPtr flow_t)
+{
+	agregateFlows(flow_t, ([] (const FlowPtr& flow) 
+	{ 	
+		return (flow->getSrcAddrDotNotation() + std::to_string(flow->getSourcePort()));
+	}));
+}
+

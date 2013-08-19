@@ -28,6 +28,7 @@
 #include <csignal>
 #include <boost/program_options.hpp>
 #include <fstream>
+#include <boost/variant.hpp>
 #include "PacketDispatcher.h"
 #include "./frequency/FrequencyGroup.h"
 #include "System.h"
@@ -65,16 +66,20 @@ void showFrequencyResults()
 
 	if(!flow_t)
 		return;
-	
+
+	auto group = nullptr;
+	FrequencyGroup<uint16_t> f_group_int;
+	FrequencyGroup<std::string> f_group_str;
+
 	if(freqs_group_value.compare("src-port") == 0)
         {
-        	FrequencyGroup<uint16_t> f_group;
+      		group = f_group_int; 
 
-        	f_group.setName("by source port");
+        	group.setName("by source port");
 		std::cout << "Computing frequencies " << f_group.getName() << std::endl;
-		f_group.agregateFlowsBySourcePort(flow_t);
-		f_group.compute();
-		std::cout << f_group;
+		group.agregateFlowsBySourcePort(flow_t);
+		group.compute();
+		std::cout << group;
 	}
 	if(freqs_group_value.compare("dst-port") == 0)
         {
@@ -156,7 +161,7 @@ int main(int argc, char* argv[])
         po::options_description optional_ops_freq("Frequencies optional arguments");
         optional_ops_freq.add_options()
                 ("enable-frequencies,F",  	"Enables the Frequency engine.") 
-                ("group-by,g",  	po::value<std::string>(&freqs_group_value)->default_value("src-port"),
+                ("group-by,g",  	po::value<std::string>(&freqs_group_value)->default_value("dst-port"),
 					"Groups frequencies by src-ip,dst-ip,src-port and dst-port.") 
                 ("flow-type,T",  	po::value<std::string>(&freqs_type_flows)->default_value("tcp"),
 					"Uses tcp or udp flows.") 

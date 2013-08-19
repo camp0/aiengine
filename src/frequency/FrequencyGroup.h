@@ -71,6 +71,8 @@ public:
 	void agregateFlowsByDestinationPort(FlowManagerPtr flow_t);
 	void agregateFlowsBySourceAddress(FlowManagerPtr flow_t); 
 	void agregateFlowsByDestinationAddress(FlowManagerPtr flow_t); 
+	void agregateFlowsByDestinationAddressAndPort(FlowManagerPtr flow_t); 
+	void agregateFlowsBySourceAddressAndPort(FlowManagerPtr flow_t); 
 
 	int32_t getTotalProcessFlows() { return total_process_flows_;}
 	int32_t getTotalComputedFrequencies() { return total_computed_freqs_;}

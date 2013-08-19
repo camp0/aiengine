@@ -310,5 +310,30 @@ BOOST_AUTO_TEST_CASE ( test10_frequencies )
 	BOOST_CHECK(group_by_destination_port.getTotalComputedFrequencies() == 1);
 }
 
+BOOST_AUTO_TEST_CASE ( test11_frequencies )
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
+        int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
+        Packet packet(pkt,length,0);
+
+        // Create one Frequency object
+        freq->createFrequencies(1);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        FrequencyGroup<std::string> group_by_destination_ip_port;
+
+        group_by_destination_ip_port.agregateFlowsByDestinationAddressAndPort(flow_mng);
+        group_by_destination_ip_port.compute();
+
+//        std::cout << group_by_destination_ip_port;
+        BOOST_CHECK(group_by_destination_ip_port.getTotalProcessFlows() == 1);
+        BOOST_CHECK(group_by_destination_ip_port.getTotalComputedFrequencies() == 1);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END( )
 
