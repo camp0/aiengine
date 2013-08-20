@@ -46,11 +46,18 @@
 typedef boost::asio::posix::stream_descriptor PcapStream;
 typedef std::shared_ptr<PcapStream> PcapStreamPtr;
 
+static void myprint(const boost::system::error_code& /*e*/)
+{
+  std::cout << "Hello, world!\n";
+}
+
 class PacketDispatcher 
 {
 public:
     	explicit PacketDispatcher():
 		io_service_(),
+		idle_work_interval_(5),
+		idle_work_(io_service_,boost::posix_time::seconds(0)),
 		total_packets_(0),
 		total_bytes_(0),
 		pcap_file_ready_(false),
@@ -80,6 +87,7 @@ private:
 	void handle_receive(boost::system::error_code error);
 	void do_read(boost::system::error_code error);
 	void forwardRawPacket(unsigned char *packet,int length);
+	void idle_handler(boost::system::error_code error);
 
 	PcapStreamPtr stream_;
 	bool pcap_file_ready_;
@@ -90,6 +98,8 @@ private:
 	uint64_t total_bytes_;	
     	pcap_t* pcap_;
 	boost::asio::io_service io_service_;
+	boost::asio::deadline_timer idle_work_;
+	int idle_work_interval_;
 	struct pcap_pkthdr *header;
 	const u_char *pkt_data;
 

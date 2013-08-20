@@ -75,8 +75,8 @@ public:
 	void enableFrequencyEngine(bool enable);
 
 #ifdef PYTHON_BINDING
-        FlowManager *getTCPFlowManager() { return flow_table_tcp_.get();};
-        FlowManager *getUDPFlowManager() { return flow_table_udp_.get();};
+        FlowManager &getTCPFlowManager() { return *flow_table_tcp_.get();};
+        FlowManager &getUDPFlowManager() { return *flow_table_udp_.get();};
 #else
         FlowManagerPtrWeak getTCPFlowManager() { return flow_table_tcp_;};
         FlowManagerPtrWeak getUDPFlowManager() { return flow_table_udp_;};

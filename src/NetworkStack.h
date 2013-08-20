@@ -59,8 +59,8 @@ public:
 	virtual void enableFrequencyEngine(bool enable) = 0;
 
 #ifdef PYTHON_BINDING
-	virtual FlowManager *getTCPFlowManager() = 0;
-	virtual FlowManager *getUDPFlowManager() = 0;
+	virtual FlowManager& getTCPFlowManager() = 0;
+	virtual FlowManager& getUDPFlowManager() = 0;
 #else
 	virtual FlowManagerPtrWeak getTCPFlowManager() = 0;
 	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;

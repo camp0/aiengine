@@ -408,7 +408,7 @@ BOOST_AUTO_TEST_CASE ( test_case_1 )
 	BOOST_CHECK(group_by_ip.getTotalProcessFlows() == 2);
 	BOOST_CHECK(group_by_ip.getTotalComputedFrequencies() == 2);
 
-        FrequencyGroup<uint16_t> group_by_port;
+        FrequencyGroup<std::string> group_by_port;
 
         group_by_port.setName("by destination port");
         group_by_port.agregateFlowsByDestinationPort(stack->getTCPFlowManager().lock());

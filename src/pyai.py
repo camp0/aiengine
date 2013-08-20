@@ -26,7 +26,7 @@ def loadSignaturesForUdp():
 
 if __name__ == '__main__':
 
-	st = pyaiengine.StackMobile()
+#	st = pyaiengine.StackMobile()
 	st = pyaiengine.StackLan()
 
 	pdis = pyaiengine.PacketDispatcher()
@@ -71,5 +71,6 @@ if __name__ == '__main__':
 
 	pdis.closePcapFile()
 
+	print flows
 	sys.exit(0)
 

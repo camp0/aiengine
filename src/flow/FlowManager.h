@@ -64,11 +64,15 @@ public:
 	void statistics(std::basic_ostream<char>& out);
         void statistics() { statistics(std::cout);};
 
+	friend std::ostream& operator<< (std::ostream& out, const FlowManager& fm);
+
 	FlowTable getFlowTable() const { return flowTable_;};	
 
+#ifdef PYTHON_BINDING
 	// Methods for exposing the class to python iterable methods
 	FlowTable::iterator begin() { return flowTable_.begin(); };
 	FlowTable::iterator end() { return flowTable_.end(); };
+#endif
 
 private:
     	timeval now_;

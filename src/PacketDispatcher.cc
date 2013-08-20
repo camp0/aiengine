@@ -92,6 +92,17 @@ void PacketDispatcher::closePcapFile()
 	}
 }
 
+void PacketDispatcher::idle_handler(boost::system::error_code error)
+{
+
+
+	idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(idle_work_interval_));
+        idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
+        	boost::asio::placeholders::error));
+
+	std::cout << "Timer expired" << std::endl;
+}
+
 void PacketDispatcher::do_read(boost::system::error_code ec)
 {
 	int len = pcap_next_ex(pcap_,&header,&pkt_data);
@@ -129,7 +140,7 @@ void PacketDispatcher::forwardRawPacket(unsigned char *packet,int length)
 void PacketDispatcher::start_operations()
 {
 	read_in_progress_ = false;
-	//std::cout << "start_operations" << std::endl;
+//std::cout << "start_operations" << std::endl;
 	if(!read_in_progress_)
 	{
 		read_in_progress_ = true;
@@ -153,6 +164,14 @@ void PacketDispatcher::runPcap()
 
 void PacketDispatcher::run() 
 {
+	if(device_is_ready_)
+	{
+        idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(5));
+                idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
+                        boost::asio::placeholders::error));
+
+	}
+
 	try {
 		start_operations();
 		io_service_.run();

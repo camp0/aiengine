@@ -67,6 +67,13 @@ FlowPtr FlowManager::findFlow(unsigned long hash1,unsigned long hash2)
 	return fp;
 }
 
+
+std::ostream& operator<< (std::ostream& out, const FlowManager& fm)
+{
+        out << "FlowManager statistics" << std::endl;
+        out << "\t" << "Total flows:            " << std::setw(10) << fm.flowTable_.size() <<std::endl;
+}
+
 void FlowManager::statistics(std::basic_ostream<char>& out)
 {
         out << "FlowManager statistics" << std::endl;

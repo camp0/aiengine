@@ -80,8 +80,8 @@ public:
 	void enableFrequencyEngine(bool value);
 
 #ifdef PYTHON_BINDING
-        FlowManager *getTCPFlowManager() { return flow_mng_tcp_.get();};
-        FlowManager *getUDPFlowManager() { return flow_mng_udp_high_.get();};
+        FlowManager &getTCPFlowManager() { return *flow_mng_tcp_.get();};
+        FlowManager &getUDPFlowManager() { return *flow_mng_udp_high_.get();};
 #else
         FlowManagerPtrWeak getTCPFlowManager() { return flow_mng_tcp_;};
         FlowManagerPtrWeak getUDPFlowManager() { return flow_mng_udp_high_;};
