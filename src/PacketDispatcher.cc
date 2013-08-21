@@ -92,15 +92,43 @@ void PacketDispatcher::closePcapFile()
 	}
 }
 
+
+static void TimevalSub(struct timeval *r, struct timeval *a, struct timeval *b)
+{
+        if (a->tv_usec < b->tv_usec) {
+                r->tv_usec = (a->tv_usec + 1000000) - b->tv_usec;
+                r->tv_sec = a->tv_sec - b->tv_sec - 1;
+        } else {
+                r->tv_usec = a->tv_usec - b->tv_usec;
+                r->tv_sec = a->tv_sec - b->tv_sec;
+        }
+}
+
 void PacketDispatcher::idle_handler(boost::system::error_code error)
 {
+	struct rusage usage;
+	struct timeval difftime_user;
+	struct timeval difftime_sys;
+	
+	// Check the cpu comsumption and packets per second
+	getrusage(RUSAGE_SELF,&usage);
 
-
+	TimevalSub(&difftime_user,&(usage.ru_utime),&(stats_.ru_utime));
+	TimevalSub(&difftime_sys,&(usage.ru_stime),&(stats_.ru_stime));
+ 
 	idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(idle_work_interval_));
         idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
         	boost::asio::placeholders::error));
 
-	std::cout << "Timer expired" << std::endl;
+	std::cout << "Packets per interval:" << total_packets_ - stats_.prev_total_packets_per_interval << std::endl; 
+	std::cout << "Usage seconds:" << difftime_user.tv_sec << ":"<< difftime_user.tv_usec;
+	std::cout << " sys:" << difftime_sys.tv_sec << ":" << difftime_sys.tv_usec << std::endl;
+
+	stats_.prev_total_packets_per_interval = total_packets_;
+	stats_.ru_utime.tv_sec = usage.ru_utime.tv_sec;
+	stats_.ru_utime.tv_usec = usage.ru_utime.tv_usec;
+	stats_.ru_stime.tv_sec = usage.ru_stime.tv_sec;
+	stats_.ru_stime.tv_usec = usage.ru_stime.tv_usec;
 }
 
 void PacketDispatcher::do_read(boost::system::error_code ec)
@@ -140,7 +168,7 @@ void PacketDispatcher::forwardRawPacket(unsigned char *packet,int length)
 void PacketDispatcher::start_operations()
 {
 	read_in_progress_ = false;
-//std::cout << "start_operations" << std::endl;
+	//std::cout << "start_operations" << std::endl;
 	if(!read_in_progress_)
 	{
 		read_in_progress_ = true;
@@ -166,10 +194,9 @@ void PacketDispatcher::run()
 {
 	if(device_is_ready_)
 	{
-        idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(5));
+        	idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(5));
                 idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
                         boost::asio::placeholders::error));
-
 	}
 
 	try {

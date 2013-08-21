@@ -40,7 +40,8 @@ class System
 public:
 
     	System()
-	{ start_time_ = boost::posix_time::microsec_clock::local_time();};
+	{ start_time_ = boost::posix_time::microsec_clock::local_time();
+		getrusage(RUSAGE_SELF,&usage_);};
     	virtual ~System() {};
 
 	void statistics(std::basic_ostream<char>& out);
@@ -49,7 +50,7 @@ public:
 private:
 	boost::posix_time::ptime start_time_;
 	boost::posix_time::ptime end_time_;
-
+	struct rusage usage_;
 };
 
 typedef std::shared_ptr<System> SystemPtr;

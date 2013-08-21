@@ -38,6 +38,7 @@
 #include "Protocol.h"
 #include "StackLan.h"
 #include "StackMobile.h"
+#include <sys/resource.h>
 
 #define PACKET_RECVBUFSIZE    2048        /// receive_from buffer size for a single datagram
 
@@ -46,16 +47,27 @@
 typedef boost::asio::posix::stream_descriptor PcapStream;
 typedef std::shared_ptr<PcapStream> PcapStreamPtr;
 
-static void myprint(const boost::system::error_code& /*e*/)
-{
-  std::cout << "Hello, world!\n";
-}
-
 class PacketDispatcher 
 {
 public:
+	class Statistics
+	{
+		public:
+			explicit Statistics():interval(0),prev_total_packets_per_interval(0)
+			{
+				ru_utime.tv_sec = 0; ru_utime.tv_usec = 0; 
+				ru_stime.tv_sec = 0; ru_stime.tv_usec = 0; 
+			}
+			virtual ~Statistics() {};
+			int interval;
+			struct timeval ru_utime;
+			struct timeval ru_stime;
+			int64_t prev_total_packets_per_interval;	
+	};
+
     	explicit PacketDispatcher():
 		io_service_(),
+		stats_(),
 		idle_work_interval_(5),
 		idle_work_(io_service_,boost::posix_time::seconds(0)),
 		total_packets_(0),
@@ -100,6 +112,7 @@ private:
 	boost::asio::io_service io_service_;
 	boost::asio::deadline_timer idle_work_;
 	int idle_work_interval_;
+	Statistics stats_;
 	struct pcap_pkthdr *header;
 	const u_char *pkt_data;
 

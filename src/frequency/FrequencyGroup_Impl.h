@@ -39,24 +39,24 @@ void FrequencyGroup<A_Type>::agregateFlows(FlowManagerPtr flow_t, std::function 
 			{
 				auto key = condition(flow);
 				auto it2 = group_map_.find(key);
-				Frequencies *freq_ptr = nullptr;	
-				
+				FrequencyGroupItemPtr fg_item = nullptr;
+	
 				if(it2 == group_map_.end())
 				{
-					FrequenciesPtr new_freq = FrequenciesPtr(new Frequencies());
-					auto f_pair = std::make_pair(new_freq,1);
+					FrequencyGroupItemPtr fgitem = FrequencyGroupItemPtr(new FrequencyGroupItem());
 			
-					freq_ptr = new_freq.get();	
-					group_map_.insert(std::make_pair(key,f_pair));
+					fg_item = fgitem;	
+					group_map_.insert(std::make_pair(key,fgitem));
 				}
 				else
 				{
-					freq_ptr = std::get<0>(it2->second).get();
-					int *counter = &std::get<1>(it2->second);
-			
-					++(*counter);// = *counter + 1;
+					fg_item = it2->second;
 				}
-				*freq_ptr = *freq_ptr + *freq.get();
+				
+				fg_item->incTotalItems();
+				fg_item->addTotalFlowsBytes(flow->total_bytes);
+				fg_item->sumFrequencies(freq);
+
 				++total_process_flows_;
 			}
 		}
@@ -68,10 +68,11 @@ void FrequencyGroup<A_Type>::compute()
 {
 	for (auto it = group_map_.begin(); it!=group_map_.end();++it)
 	{
-		Frequencies *freq_ptr = std::get<0>(it->second).get();
+		
+	/*	Frequencies *freq_ptr = std::get<0>(it->second).get();
 		int items = std::get<1>(it->second);
 
-		*freq_ptr = *freq_ptr / items;
+		*freq_ptr = *freq_ptr / items; */
 		++total_computed_freqs_;
 	}
 }

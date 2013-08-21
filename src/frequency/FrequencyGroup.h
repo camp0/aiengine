@@ -39,6 +39,38 @@ using namespace std;
 template <class A_Type> class FrequencyGroup 
 {
 public:
+	class FrequencyGroupItem
+	{
+		public:
+			explicit FrequencyGroupItem() 
+			{
+				freqs_ = FrequenciesPtr(new Frequencies());
+				total_items_ = 0;
+				total_flows_bytes_ = 0;
+			}	
+    			virtual ~FrequencyGroupItem() {};
+			
+			void incTotalItems() { ++total_items_;};
+			void addTotalFlowsBytes(int32_t bytes) { total_flows_bytes_ += bytes;};
+
+			void sumFrequencies(FrequenciesPtr freqs) 
+			{ 
+				Frequencies *freq_ptr = freqs_.get();
+
+				*freq_ptr = *freq_ptr + *freqs.get();
+			}
+		
+			int getTotalItems() { return total_items_;};
+			int32_t getTotalFlowsBytes() { return total_flows_bytes_;};	
+			FrequenciesPtr getFrequencies() { return freqs_;};	
+		private:		
+			int total_items_;
+			int32_t total_flows_bytes_;
+			FrequenciesPtr freqs_;
+	};
+	typedef std::shared_ptr<FrequencyGroupItem> FrequencyGroupItemPtr;
+	
+
     	explicit FrequencyGroup(): name_(""),total_process_flows_(0),total_computed_freqs_(0),log_level_(0) {};
     	virtual ~FrequencyGroup() {};
 
@@ -55,12 +87,14 @@ public:
 		os << "\tTotal computed frequencies:" << fg.total_computed_freqs_<< std::endl;
 		for (auto it = fg.group_map_.begin(); it!=fg.group_map_.end();++it)
 		{
-			Frequencies *freq_ptr = std::get<0>(it->second).get();
-			int items = std::get<1>(it->second);	
+			FrequencyGroupItemPtr fgi = it->second;
 			
-			os << "\tGroup by:" << it->first <<  " items:" << items << " dispersion:" << freq_ptr->getDispersion() <<std::endl;
+			os << "\tGroup by:" << it->first <<  " items:" << fgi->getTotalItems();
+			os << " bytes:" << fgi->getTotalFlowsBytes();
+			os << " dispersion:" << fgi->getFrequencies()->getDispersion();
+			os << " enthropy:" << fgi->getFrequencies()->getEnthropy() <<std::endl;
 			if(fg.log_level_>0)
-				os << "\t" << freq_ptr->getFrequenciesString() << std::endl;
+				os << "\t" << fgi->getFrequencies()->getFrequenciesString() << std::endl;
 		}
 		os << std::endl; 
 	}	
@@ -82,7 +116,7 @@ private:
 	int log_level_;
 	int32_t total_process_flows_;
 	int32_t total_computed_freqs_;
-	std::map <A_Type,std::pair<FrequenciesPtr,int>> group_map_;
+	std::map <A_Type,FrequencyGroupItemPtr> group_map_;
 };
 
 #include "FrequencyGroup_Impl.h"

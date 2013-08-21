@@ -130,6 +130,19 @@ public:
 		return values.size();
 	}
 
+	double getEnthropy()
+	{
+		double h = 0, x;
+
+		for(auto& value: freqs_)
+		{
+			x = value / 255;
+			if(x>0)
+				h += - x * log2(x);	
+		}
+		return h;
+	}
+
 private:
 	std::array<int,255> freqs_;
 };
