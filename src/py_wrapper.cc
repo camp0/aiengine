@@ -138,11 +138,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def(self_ns::str(self_ns::self))
 	;
 
-	//boost::python::class_<FlowManager,boost::shared_ptr<FlowManager>,boost::noncopyable >("FlowManager")
 	boost::python::class_<FlowManager,boost::shared_ptr<FlowManager>,boost::noncopyable >("FlowManager")
+		//.def("__iter__",iterator<FlowManager>())
 		.def("__iter__",range(&FlowManager::begin,&FlowManager::end))
 		.def(self_ns::str(self_ns::self))
 	;
+	
+//	boost::python::class_<Flow,FlowPtr>("Flow")
+//	;
 	// Templatize the FrequencyGroup
 	//	
 	//boost::python::class_<FrequencyGroup,boost::noncopyable>("FrequencyGroup")

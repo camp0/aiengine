@@ -48,7 +48,7 @@ class FrequencyProtocol: public Protocol
 {
 public:
     	explicit FrequencyProtocol():freqs_cache_(new Cache<Frequencies>),
-		freq_header_(nullptr),total_bytes_(0) { name_="FrequencyProtocol";};
+		inspection_limit_(100),freq_header_(nullptr),total_bytes_(0) { name_="FrequencyProtocol";};
     	virtual ~FrequencyProtocol() {};
 	
 	static const u_int16_t id = 0;
@@ -94,6 +94,7 @@ private:
 	MultiplexerPtrWeak mux_;
 	unsigned char *freq_header_;
         int64_t total_bytes_;
+	int inspection_limit_;
 	Cache<Frequencies>::CachePtr freqs_cache_;
 };
 

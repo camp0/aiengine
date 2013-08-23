@@ -24,6 +24,10 @@
 #include "PacketDispatcher.h"
 #include <iostream>
 
+using namespace log4cxx;
+using namespace log4cxx::helpers;
+
+LoggerPtr PacketDispatcher::logger(Logger::getLogger("aiengine.packetdispatcher"));
 
 void PacketDispatcher::setDefaultMultiplexer(MultiplexerPtr mux)
 {
@@ -39,7 +43,7 @@ void PacketDispatcher::openDevice(std::string device)
 	pcap_ = pcap_open_live(device.c_str(), PACKET_RECVBUFSIZE, 0, -1, errorbuf);
 	if(pcap_ == nullptr) 
 	{
-		std::cerr << "Unknown device:"<< device.c_str() << std::endl;
+		LOG4CXX_ERROR(logger,"Unknown device:" <<device.c_str());
 		device_is_ready_ = false;
 		exit(-1);
 		return;
@@ -75,7 +79,7 @@ void PacketDispatcher::openPcapFile(std::string filename)
         if(pcap_ == nullptr)
 	{ 
 		pcap_file_ready_ = false;
-		std::cerr << "Unknown pcapfile:"<< filename.c_str() << std::endl;
+		LOG4CXX_ERROR(logger,"Unknown pcapfile:" << filename.c_str());
 		exit(-1);
 	}	
 	else
@@ -120,9 +124,10 @@ void PacketDispatcher::idle_handler(boost::system::error_code error)
         idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
         	boost::asio::placeholders::error));
 
-	std::cout << "Packets per interval:" << total_packets_ - stats_.prev_total_packets_per_interval << std::endl; 
-	std::cout << "Usage seconds:" << difftime_user.tv_sec << ":"<< difftime_user.tv_usec;
-	std::cout << " sys:" << difftime_sys.tv_sec << ":" << difftime_sys.tv_usec << std::endl;
+	LOG4CXX_DEBUG(logger,
+		"Packets per interval:" << total_packets_ - stats_.prev_total_packets_per_interval <<  
+		" usage seconds:" << difftime_user.tv_sec << ":"<< difftime_user.tv_usec <<
+		" sys:" << difftime_sys.tv_sec << ":" << difftime_sys.tv_usec ); 
 
 	stats_.prev_total_packets_per_interval = total_packets_;
 	stats_.ru_utime.tv_sec = usage.ru_utime.tv_sec;

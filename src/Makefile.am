@@ -84,6 +84,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		./signatures/test_signatures.cc \
 		./ssl/test_ssl.cc \
 		./user/test_users.cc \
+		./learner/test_learner.cc \
 		tests.cc 
 
 tests_LDADD   = -lboost_system -lboost_unit_test_framework -lboost_regex -lpcap

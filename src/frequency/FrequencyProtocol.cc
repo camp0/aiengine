@@ -30,7 +30,7 @@ void FrequencyProtocol::processFlow(Flow *flow)
 	total_bytes_ += flow->packet->getLength();
 	++flow->total_packets_l7;
 
-	if(flow->total_packets < 100) 
+	if(flow->total_packets < inspection_limit_ ) 
 	{
 		FrequenciesPtr freq = flow->frequencies.lock();
 

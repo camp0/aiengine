@@ -29,6 +29,7 @@
 #endif
 
 #include <string>
+#include "log4cxx/logger.h"
 #include "Multiplexer.h"
 #include "FlowForwarder.h"
 #include "./ethernet/EthernetProtocol.h"
@@ -85,6 +86,8 @@ public:
 
 private:
 	std::string name_;
+	static log4cxx::LoggerPtr logger;
+
         //Protocols
         EthernetProtocolPtr eth_;
         IPProtocolPtr ip_;

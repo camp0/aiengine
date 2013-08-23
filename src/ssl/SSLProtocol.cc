@@ -32,8 +32,18 @@ void SSLProtocol::processFlow(Flow *flow)
 
 	if(flow->total_packets == 1) 
 	{
-		// Extract the CN from the SSL Hello
-
+		int length = ssl_header_->length;
+		if(length > 0) 
+		{
+			/*ssl_data_ = (&(ssl_header_->length) +1);
+			if(ssl_data_[0] == '\x01')
+			{
+			
+			}
+			else if(ssl_data_[0] == '\x02')
+			{
+			} */
+		}
 	}
 }
 void SSLProtocol::statistics(std::basic_ostream<char>& out)

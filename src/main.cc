@@ -29,11 +29,16 @@
 #include <boost/program_options.hpp>
 #include <fstream>
 #include <boost/variant.hpp>
+#include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
 #include "PacketDispatcher.h"
 #include "./frequency/FrequencyGroup.h"
 #include "System.h"
 #include "StackLan.h"
 #include "StackMobile.h"
+
+using namespace log4cxx;
+using namespace log4cxx::helpers;
 
 SystemPtr system_stats;
 PacketDispatcherPtr pktdis;
@@ -243,6 +248,8 @@ int main(int argc, char* argv[])
 
     	signal(SIGINT, signalHandler);  
 
+	BasicConfigurator::configure();
+	
 	pktdis = PacketDispatcherPtr(new PacketDispatcher());
 
 	if(stack_name.compare("lan") == 0)

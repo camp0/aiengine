@@ -32,6 +32,7 @@
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
+#include "log4cxx/logger.h"
 #include "NetworkStack.h"
 #include "Multiplexer.h"
 #include "./ethernet/EthernetProtocol.h"
@@ -101,6 +102,7 @@ private:
 	void forwardRawPacket(unsigned char *packet,int length);
 	void idle_handler(boost::system::error_code error);
 
+	static log4cxx::LoggerPtr logger;
 	PcapStreamPtr stream_;
 	bool pcap_file_ready_;
 	bool read_in_progress_;

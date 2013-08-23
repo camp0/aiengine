@@ -47,6 +47,7 @@ struct ssl_header {
 	int8_t record_type; // SSL record type 
 	uint16_t version; // SSL version (major/minor)
 	uint16_t length; //Length of data in the record (excluding the header itself), The maximum SSL supports is 16384 (16K). 
+	u_char *ssl_data;
 };
 // record_type
 // SSL3_RT_CHANGE_CIPHER_SPEC      20   (x'14')
@@ -90,7 +91,7 @@ public:
 
         void setHeader(unsigned char *raw_packet)
         {
-                ssl_header_ = raw_packet;
+                ssl_header_ = reinterpret_cast<struct ssl_header*>(raw_packet);
         }
 
 	// Condition for say that a payload is ssl 
@@ -113,7 +114,8 @@ public:
 private:
 	FlowForwarderPtrWeak flow_forwarder_;	
 	MultiplexerPtrWeak mux_;
-	unsigned char *ssl_header_;
+	unsigned char *ssl_data_;
+	struct ssl_header *ssl_header_;
         int64_t total_bytes_;
 };
 

@@ -23,6 +23,11 @@
  */
 #include "StackMobile.h"
 
+using namespace log4cxx;
+using namespace log4cxx::helpers;
+
+LoggerPtr StackMobile::logger(Logger::getLogger("aiengine.stackmobile"));
+
 StackMobile::StackMobile()
 {
 	name_ = "Mobile Network Stack";
@@ -224,6 +229,8 @@ StackMobile::StackMobile()
 	ff_tcp_->addUpFlowForwarder(ff_tcp_generic_);
 	ff_udp_high_->addUpFlowForwarder(ff_dns_);
 	ff_udp_high_->addUpFlowForwarder(ff_udp_generic_);
+
+	LOG4CXX_INFO (logger, "Stack " <<name_<< " ready.");
 }
 
 std::ostream& operator<< (std::ostream& out, const StackMobile& stk)

@@ -32,6 +32,12 @@ AX_BOOST_BASE([1.49.0])
 AX_PYTHON_DEVEL([>= 2.7])
 AX_BOOST_PYTHON
 
+# Log4cxx header must exist and library must exist
+AC_CHECK_HEADER([log4cxx/logger.h],,
+  AC_MSG_ERROR([log4cxx/logger.h not found.  Exiting.]))
+AC_CHECK_LIB([log4cxx], [main],,
+  AC_MSG_ERROR([log4cxx library not found.  Exiting.]))
+
 AC_CHECK_DEBUG
 
 AC_CONFIG_FILES([
@@ -57,13 +63,14 @@ src/udpgeneric/Makefile
 src/signatures/Makefile
 src/user/Makefile
 src/frequency/Makefile
+src/learner/Makefile
 ])
 
 
 AC_OUTPUT
 
 echo "
-  iaengine 
+  aiengine 
   ($PACKAGE_NAME) version $PACKAGE_VERSION
   Prefix.........: $prefix
   Debug Build....: $debug
