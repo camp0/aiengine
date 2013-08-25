@@ -333,6 +333,41 @@ BOOST_AUTO_TEST_CASE ( test11_frequencies )
         BOOST_CHECK(group_by_destination_ip_port.getTotalComputedFrequencies() == 1);
 }
 
+BOOST_AUTO_TEST_CASE ( test12_frequencies )
+{
+	char *cadena = "Buenos";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (cadena);
+	PacketFrequencies pfreq;
+
+	pfreq.addPayload(pkt,6);
+	BOOST_CHECK(pfreq.getLength() == 6);
+
+	pfreq.addPayload(pkt,6);
+	BOOST_CHECK(pfreq.getLength() == 12);
+
+	char *header = 	"GET /access/megustaelfary.mp4?version=4&lid=1187884873&token=JJz8QucMbPrjzSq4y7ffuLUTFO2Etiqu"
+			"Evd4Y34WVkhvAPWJK1%2F7nJlhnAkhXOPT9GCuPlZLgLnIxANviI%2FgtwRfJ9qh9QWwUS2WvW2JAOlS7bvHoIL9JbgA8"
+			"VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB"
+			"f7%2BndweWllFJWGr54vsfFJAZtBeEEE%2FZMlWJkvTpfDPJZSXmzzKZHbP6mm5u1jYBlJoDAKByHRjSUXRuauvzq1HDj"
+			"9QRoPmYJBXJvOlyH%2Fs6mNArj%2F7y0oT1UkApkjaGawH5zJBYkpq9&av=4.4 HTTP/1.1\r\n"
+                        "Connection: close\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Accept: */*\r\n"
+                        "User-Agent: LuisAgent CFNetwork/609 Darwin/13.0.0\r\n"
+                        "Accept-Language: en-gb\r\n"
+                        "Host: onedomain.com\r\n"
+                        "\r\n";
+	unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header);
+	pfreq.addPayload(pkt1,strlen(header));
+	BOOST_CHECK(pfreq.getLength() == 619);
+	for (int i = 0;i< 7;++i)
+		pfreq.addPayload(pkt1,strlen(header));
+	
+	BOOST_CHECK(pfreq.getLength() == 4868);
+
+	pfreq.addPayload(pkt1,strlen(header));
+	BOOST_CHECK(pfreq.getLength() == 5000);
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 

@@ -34,6 +34,7 @@
 #include "FrequencyProtocol.h"
 #include "FrequencyCounter.h"
 #include "FrequencyGroup.h"
+#include "PacketFrequencies.h"
 
 struct StackFrequencytest
 {

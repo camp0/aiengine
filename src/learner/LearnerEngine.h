@@ -38,13 +38,21 @@ class LearnerEngine
 {
 public:
 
-    	explicit LearnerEngine() {};
+    	explicit LearnerEngine(),freqs_(new PacketFrequencies()),items_(0),
+		raw_expression_("") {};
     	virtual ~LearnerEngine() {};
 
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};	
 
+	void agregatePacketFlow(PacketFrequenciesPtr pkt_freq) {};
+	
+	void compute() {};
+
 private:
+	PacketFrequenciesPtr freqs_;
+	int items_;
+	std::string raw_expression_;	
 };
 
 typedef std::shared_ptr<LearnerEngine> LearnerEnginePtr;

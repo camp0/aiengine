@@ -30,6 +30,7 @@
 
 #include "../Packet.h"
 #include "../frequency/Frequencies.h"
+#include "../frequency/PacketFrequencies.h"
 #include "../http/HTTPHost.h"
 #include "../http/HTTPUserAgent.h"
 #include <netinet/in.h>
@@ -71,6 +72,7 @@ public:
 	HTTPHostPtrWeak http_host;
 	HTTPUserAgentPtrWeak http_ua;	
 	FrequenciesPtrWeak frequencies;
+	PacketFrequenciesPtrWeak packet_frequencies;
 	FlowForwarderPtrWeak forwarder;
 
 	Packet *packet;

@@ -42,12 +42,14 @@
 #include <iostream>
 #include <cstring>
 #include "Frequencies.h"
+#include "PacketFrequencies.h"
 #include "../Cache.h"
 
 class FrequencyProtocol: public Protocol 
 {
 public:
     	explicit FrequencyProtocol():freqs_cache_(new Cache<Frequencies>),
+		packet_freqs_cache_(new Cache<PacketFrequencies>),
 		inspection_limit_(100),freq_header_(nullptr),total_bytes_(0) { name_="FrequencyProtocol";};
     	virtual ~FrequencyProtocol() {};
 	
@@ -86,8 +88,16 @@ public:
 		return true;
 	}
 
-        void createFrequencies(int number) { freqs_cache_->create(number);};
-        void destroyFrequencies(int number) { freqs_cache_->destroy(number);};
+        void createFrequencies(int number) 
+	{ 
+		freqs_cache_->create(number);
+		packet_freqs_cache_->create(number);
+	}
+        void destroyFrequencies(int number) 
+	{ 
+		freqs_cache_->destroy(number);
+		packet_freqs_cache_->destroy(number);
+	}
 
 private:
 	FlowForwarderPtrWeak flow_forwarder_;	
@@ -96,6 +106,7 @@ private:
         int64_t total_bytes_;
 	int inspection_limit_;
 	Cache<Frequencies>::CachePtr freqs_cache_;
+	Cache<PacketFrequencies>::CachePtr packet_freqs_cache_;
 };
 
 typedef std::shared_ptr<FrequencyProtocol> FrequencyProtocolPtr;

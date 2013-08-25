@@ -46,6 +46,20 @@ void FrequencyProtocol::processFlow(Flow *flow)
 			freq->addPayload(flow->packet->getPayload(),flow->packet->getLength());		
 		}
 
+                PacketFrequenciesPtr pkt_freq = flow->packet_frequencies.lock();
+
+                if(!pkt_freq) // There is no Frequency object attached to the flow
+                {
+                        pkt_freq = packet_freqs_cache_->acquire().lock();
+                        if(pkt_freq)
+                                flow->packet_frequencies = pkt_freq;
+                }
+
+                if(pkt_freq)
+                {
+                        pkt_freq->addPayload(flow->packet->getPayload(),flow->packet->getLength());
+                }
+
 	}
 }
 void FrequencyProtocol::statistics(std::basic_ostream<char>& out)
