@@ -31,6 +31,8 @@
 #include <iostream>
 #include <memory>
 #include <iomanip> // setw
+#include <unordered_map>
+#include "../frequency/PacketFrequencies.h"
 
 using namespace std;
 
@@ -38,19 +40,22 @@ class LearnerEngine
 {
 public:
 
-    	explicit LearnerEngine(),freqs_(new PacketFrequencies()),items_(0),
+    	explicit LearnerEngine():items_(0),length_(0),
 		raw_expression_("") {};
     	virtual ~LearnerEngine() {};
 
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};	
 
-	void agregatePacketFlow(PacketFrequenciesPtr pkt_freq) {};
+	void agregatePacketFlow(PacketFrequenciesPtr pkt_freq); 
 	
-	void compute() {};
+	void compute();
+
+	int getQualityByte(int offset);
 
 private:
-	PacketFrequenciesPtr freqs_;
+	std::array<std::unordered_map<int,int>,5000> q_array_;
+	int length_;
 	int items_;
 	std::string raw_expression_;	
 };

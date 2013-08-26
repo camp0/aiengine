@@ -28,10 +28,12 @@
 #include <iostream>
 #include <array>
 #include <unordered_map>
+#include <cmath>
 
 using namespace std;
 
-	static const int MAX_PACKET_FREQUENCIES_VALUES = 5000;
+static const int MAX_PACKET_FREQUENCIES_VALUES = 5000;
+
 class PacketFrequencies 
 {
 public:
@@ -94,6 +96,8 @@ public:
                 os_f << "]";
 		os << os_f.str() << std::endl;
 	}	
+
+	int index(int index) { return freqs_[index];};
 
 	int& operator [](const int index)
 	{

@@ -25,5 +25,58 @@
 
 void LearnerEngine::statistics(std::basic_ostream<char>& out)
 {
+	out << "Learner statistics" << std::endl;
+	for(int i = 0;i< 300;++i)
+	{
+		for (auto it = q_array_[i].begin(); it!=q_array_[i].end();++it)
+		{
+			out << "(" <<i <<")[" << hex << it->first << "," << dec << it->second << "]" <<std::endl;
+		}	
+	}
+}
+
+void LearnerEngine::agregatePacketFlow(PacketFrequenciesPtr pkt_freq)
+{
+	++items_;
+
+	for(int i = 0;i< pkt_freq->getLength();++i)
+	{
+		int value = pkt_freq->index(i);
+
+		auto it = q_array_[i].find(value);	
+		if(it == q_array_[i].end()) 
+		{
+			q_array_[i].insert(std::make_pair(value,1));
+		//	int *j = std::get<int>(it->first);	
+		}
+		else
+		{
+			auto leches = it->second;
+			int *j = &it->second;
+			++(*j);
+			//int *j = &std::get<1>(it->second);	
+		}		
+	}
+}
+
+int LearnerEngine::getQualityByte(int offset)
+{
+	int quality = 0;
+
+	if(offset < 5000)
+	{
+		int items = q_array_[offset].size();
+	
+		if(items_>0)
+		{
+			quality = (items*100)/items_;
+		}	
+	}
+	return quality;
+}
+
+void LearnerEngine::compute()
+{
+
 
 }

@@ -32,6 +32,20 @@
 BOOST_AUTO_TEST_CASE (test1_learner)
 {
 	LearnerEnginePtr le = LearnerEnginePtr(new LearnerEngine());
+	PacketFrequenciesPtr pkt_f = PacketFrequenciesPtr(new PacketFrequencies());
+
+	char *payload = "\x16\x04\xaa\xaa";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (payload);
+        int length = 4;
+
+	pkt_f->addPayload(pkt,length);
+
+	for (int i = 0;i< 10;++i)
+	{
+		le->agregatePacketFlow(pkt_f);
+	}
+	le->statistics();
+	std::cout << le->getQualityByte(0);
 }
 
 
