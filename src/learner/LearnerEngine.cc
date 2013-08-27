@@ -119,3 +119,31 @@ void LearnerEngine::compute()
         }
 	raw_expression_ = expr.str();
 }
+
+void LearnerEngine::agregateFlows(FlowManagerPtr flow_t, std::function <bool (FlowPtr&)> condition)
+{
+        auto ft = flow_t->getFlowTable();
+        for (auto it = ft.begin(); it!=ft.end();++it)
+        {
+                FlowPtr flow = *it;
+                if(flow->packet_frequencies.lock())
+                {
+			if(condition(flow))
+			{
+                        	PacketFrequenciesPtr pkt_freq = flow->packet_frequencies.lock();
+                        	if(pkt_freq)
+                        	{
+					agregatePacketFlow(pkt_freq);
+				}
+			}
+		}
+	}                        
+}
+
+void LearnerEngine::agregateFlowsBySourcePort(FlowManagerPtr flow_t) {};
+void LearnerEngine::agregateFlowsByDestinationPort(FlowManagerPtr flow_t) {};
+void LearnerEngine::agregateFlowsBySourceAddress(FlowManagerPtr flow_t) {};
+void LearnerEngine::agregateFlowsByDestinationAddress(FlowManagerPtr flow_t) {};
+void LearnerEngine::agregateFlowsByDestinationAddressAndPort(FlowManagerPtr flow_t) {};
+void LearnerEngine::agregateFlowsBySourceAddressAndPort(FlowManagerPtr flow_t) {};
+

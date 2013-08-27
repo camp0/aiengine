@@ -34,6 +34,7 @@
 #include <unordered_map>
 #include <boost/format.hpp>
 #include "../frequency/PacketFrequencies.h"
+#include "../flow/FlowManager.h"
 
 using namespace std;
 
@@ -55,7 +56,17 @@ public:
 	void compute();
 
 	int getQualityByte(int offset);
+
 	std::string &getRegularExpression() { return raw_expression_;};
+
+        void agregateFlows(FlowManagerPtr flow_t, std::function <bool (FlowPtr&)> condition);
+
+        void agregateFlowsBySourcePort(FlowManagerPtr flow_t);
+        void agregateFlowsByDestinationPort(FlowManagerPtr flow_t);
+        void agregateFlowsBySourceAddress(FlowManagerPtr flow_t);
+        void agregateFlowsByDestinationAddress(FlowManagerPtr flow_t);
+        void agregateFlowsByDestinationAddressAndPort(FlowManagerPtr flow_t);
+        void agregateFlowsBySourceAddressAndPort(FlowManagerPtr flow_t);
 
 private:
 	std::array<std::unordered_map<int,int>,5000> q_array_;
