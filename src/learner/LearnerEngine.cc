@@ -23,6 +23,15 @@
  */
 #include "LearnerEngine.h"
 
+void LearnerEngine::reset()
+{
+	items_ = 0;
+	length_ = 0;
+	raw_expression_="";
+	for (int i = 0;i<5000;++i) q_array_[i].clear();
+}
+
+
 void LearnerEngine::statistics(std::basic_ostream<char>& out)
 {
 	out << "Learner statistics" << std::endl;
@@ -47,29 +56,28 @@ void LearnerEngine::agregatePacketFlow(PacketFrequenciesPtr pkt_freq)
 		if(it == q_array_[i].end()) 
 		{
 			q_array_[i].insert(std::make_pair(value,1));
-		//	int *j = std::get<int>(it->first);	
 		}
 		else
 		{
-			auto leches = it->second;
 			int *j = &it->second;
 			++(*j);
-			//int *j = &std::get<1>(it->second);	
 		}		
 	}
+	if(length_< pkt_freq->getLength()) length_ = pkt_freq->getLength();
+
 }
 
 int LearnerEngine::getQualityByte(int offset)
 {
 	int quality = 0;
 
-	if(offset < 5000)
+	if(offset >=0 && offset < 5000)
 	{
 		int items = q_array_[offset].size();
-	
+
 		if(items_>0)
 		{
-			quality = (items*100)/items_;
+			quality = 100- ( ((items-1)*100)/items_);
 		}	
 	}
 	return quality;
@@ -77,6 +85,37 @@ int LearnerEngine::getQualityByte(int offset)
 
 void LearnerEngine::compute()
 {
+	std::ostringstream expr;
+	std::ostringstream token;	
 
+	expr << "^";
+	
+        for(int i = 0;i< length_;++i)
+        {
+		token.clear(); token.str("");
 
+		int quality = getQualityByte(i);
+	
+		if((quality > 80)&&(q_array_[i].size()>0))
+		{
+			int token_candidate = q_array_[i].begin()->first;
+			int quality_token = 0;
+	
+			for (auto it = q_array_[i].begin(); it!=q_array_[i].end();++it)
+			{
+				if(it->second > quality_token)
+				{
+					quality_token = it->second;
+					token_candidate = it->first;
+				}
+			}
+			token << boost::format("\\x%02x") % token_candidate;
+		}
+		else
+		{
+			token << ".?";
+		}
+		expr << token.str();
+        }
+	raw_expression_ = expr.str();
 }

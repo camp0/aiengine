@@ -178,7 +178,7 @@ StackLan::StackLan()
 	ff_udp_->addUpFlowForwarder(ff_dns_);
 	ff_udp_->addUpFlowForwarder(ff_udp_generic_);
 
-	LOG4CXX_INFO (logger, "Stack " <<name_<< " ready.");
+	LOG4CXX_INFO (logger, name_<< " ready.");
 
 }
 

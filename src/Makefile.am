@@ -28,7 +28,9 @@ noinst_HEADERS =        Packet.h \
                         ./flow/FlowManager.h \
                         ./flow/Flow.h \
 			./frequency/Frequencies.h \
+			./frequency/PacketFrequencies.h \
 			./frequency/FrequencyProtocol.h \
+			./learner/LearnerEngine.h \
 			System.h 
 
 aiengine_core_sources =	Multiplexer.cc \
@@ -51,6 +53,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			./signatures/Signature.cc \
 			./signatures/SignatureManager.cc \
 			./frequency/FrequencyProtocol.cc \
+			./learner/LearnerEngine.cc \
 			System.cc \
 			StackMobile.cc StackLan.cc 
 

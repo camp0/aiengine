@@ -32,6 +32,7 @@
 #include <memory>
 #include <iomanip> // setw
 #include <unordered_map>
+#include <boost/format.hpp>
 #include "../frequency/PacketFrequencies.h"
 
 using namespace std;
@@ -44,6 +45,8 @@ public:
 		raw_expression_("") {};
     	virtual ~LearnerEngine() {};
 
+	void reset(); 
+
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};	
 
@@ -52,6 +55,7 @@ public:
 	void compute();
 
 	int getQualityByte(int offset);
+	std::string &getRegularExpression() { return raw_expression_;};
 
 private:
 	std::array<std::unordered_map<int,int>,5000> q_array_;
