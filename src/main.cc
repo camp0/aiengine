@@ -33,6 +33,7 @@
 #include "log4cxx/basicconfigurator.h"
 #include "PacketDispatcher.h"
 #include "./frequency/FrequencyGroup.h"
+#include "./learner/LearnerEngine.h"
 #include "System.h"
 #include "StackLan.h"
 #include "StackMobile.h"
@@ -44,6 +45,8 @@ SystemPtr system_stats;
 PacketDispatcherPtr pktdis;
 NetworkStackPtr stack;
 SignatureManagerPtr sm;
+FrequencyGroup<std::string> group;
+LearnerEngine learner;
 
 std::string stack_name;
 std::string pcapfile;
@@ -71,8 +74,6 @@ void showFrequencyResults()
 
 	if(!flow_t)
 		return;
-
-	FrequencyGroup<std::string> group;
 
 	if(freqs_group_value.compare("src-port") == 0)
         {
@@ -183,6 +184,7 @@ int main(int argc, char* argv[])
 					"Groups frequencies by src-ip,dst-ip,src-port and dst-port.") 
                 ("flow-type,T",  	po::value<std::string>(&freqs_type_flows)->default_value("tcp"),
 					"Uses tcp or udp flows.") 
+                ("enable-learner,L",  	"Enables the Learner engine.") 
                 ;
 
 	mandatory_ops.add(optional_ops_tcp);

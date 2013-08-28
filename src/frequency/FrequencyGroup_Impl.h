@@ -28,6 +28,8 @@
 template <class A_Type>
 void FrequencyGroup<A_Type>::agregateFlows(FlowManagerPtr flow_t, std::function <A_Type (FlowPtr&)> condition)
 {
+	flow_list_.clear();
+
 	auto ft = flow_t->getFlowTable();
 	for (auto it = ft.begin(); it!=ft.end();++it)
 	{
@@ -58,6 +60,7 @@ void FrequencyGroup<A_Type>::agregateFlows(FlowManagerPtr flow_t, std::function 
 				fg_item->sumFrequencies(freq);
 
 				++total_process_flows_;
+				flow_list_.push_back(flow);
 			}
 		}
 	}

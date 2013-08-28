@@ -43,7 +43,7 @@ class LearnerEngine
 public:
 
     	explicit LearnerEngine():items_(0),length_(0),
-		raw_expression_("") {};
+		raw_expression_(""),max_raw_expression_(64) {};
     	virtual ~LearnerEngine() {};
 
 	void reset(); 
@@ -59,19 +59,14 @@ public:
 
 	std::string &getRegularExpression() { return raw_expression_;};
 
-        void agregateFlows(FlowManagerPtr flow_t, std::function <bool (FlowPtr&)> condition);
+        void agregateFlows(std::vector<FlowPtrWeak>& flows);
 
-        void agregateFlowsBySourcePort(FlowManagerPtr flow_t);
-        void agregateFlowsByDestinationPort(FlowManagerPtr flow_t);
-        void agregateFlowsBySourceAddress(FlowManagerPtr flow_t);
-        void agregateFlowsByDestinationAddress(FlowManagerPtr flow_t);
-        void agregateFlowsByDestinationAddressAndPort(FlowManagerPtr flow_t);
-        void agregateFlowsBySourceAddressAndPort(FlowManagerPtr flow_t);
-
+	void setMaxLenghtForRegularExpression(int value) { max_raw_expression_ = value;};
 private:
 	std::array<std::unordered_map<int,int>,5000> q_array_;
 	int length_;
 	int items_;
+	int max_raw_expression_;
 	std::string raw_expression_;	
 };
 

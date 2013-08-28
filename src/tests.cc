@@ -32,6 +32,7 @@
 #include "./ssl/SSLProtocol.h"
 #include "./http/HTTPProtocol.h"
 #include "./frequency/FrequencyGroup.h"
+#include "./learner/LearnerEngine.h"
 #include "StackLanTest.h"
 
 #define BOOST_TEST_DYN_LINK
@@ -405,6 +406,7 @@ BOOST_AUTO_TEST_CASE ( test_case_1 )
 	group_by_ip.agregateFlowsByDestinationAddress(stack->getTCPFlowManager().lock());
 	group_by_ip.compute();
 
+	BOOST_CHECK(group_by_ip.getReferenceFlows().size() == 2);
 	BOOST_CHECK(group_by_ip.getTotalProcessFlows() == 2);
 	BOOST_CHECK(group_by_ip.getTotalComputedFrequencies() == 2);
 
@@ -417,6 +419,40 @@ BOOST_AUTO_TEST_CASE ( test_case_1 )
 	BOOST_CHECK(group_by_port.getTotalProcessFlows() == 2);
 	BOOST_CHECK(group_by_port.getTotalComputedFrequencies() == 1);
 }
+
+BOOST_AUTO_TEST_CASE ( test_case_2 )
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        StackLanPtr stack = StackLanPtr(new StackLan());
+	LearnerEnginePtr learner = LearnerEnginePtr(new LearnerEngine());
+
+        stack->setTotalTCPFlows(2);
+        stack->enableFrequencyEngine(true);
+        pd->setStack(stack);
+        pd->openPcapFile("../pcapfiles/two_http_flows.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        FrequencyGroup<std::string> group_by_port;
+
+        group_by_port.setName("by destination port");
+        group_by_port.agregateFlowsByDestinationPort(stack->getTCPFlowManager().lock());
+        group_by_port.compute();
+
+        BOOST_CHECK(group_by_port.getTotalProcessFlows() == 2);
+        BOOST_CHECK(group_by_port.getTotalComputedFrequencies() == 1);
+
+	// pass the flows to the Learner engine
+	learner->agregateFlows(group_by_port.getReferenceFlows());	
+	learner->compute();
+	std::string header("^\\x47\\x45\\x54\\x20\\x2f");// a GET on hexa
+	std::string reg(learner->getRegularExpression());
+
+	BOOST_CHECK(header.compare(0,header.length(),reg)== 0);
+	std::cout << reg <<std::endl;
+}
+
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

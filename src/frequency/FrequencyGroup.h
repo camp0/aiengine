@@ -111,12 +111,14 @@ public:
 	int32_t getTotalProcessFlows() { return total_process_flows_;}
 	int32_t getTotalComputedFrequencies() { return total_computed_freqs_;}
 
+	std::vector<FlowPtrWeak> &getReferenceFlows() { return flow_list_;};
 private:
 	std::string name_;
 	int log_level_;
 	int32_t total_process_flows_;
 	int32_t total_computed_freqs_;
 	std::map <A_Type,FrequencyGroupItemPtr> group_map_;
+	std::vector<FlowPtrWeak> flow_list_;
 };
 
 #include "FrequencyGroup_Impl.h"
