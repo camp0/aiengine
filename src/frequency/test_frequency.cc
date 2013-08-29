@@ -308,6 +308,11 @@ BOOST_AUTO_TEST_CASE ( test10_frequencies )
 
 	BOOST_CHECK(group_by_destination_port.getTotalProcessFlows() == 1);
 	BOOST_CHECK(group_by_destination_port.getTotalComputedFrequencies() == 1);
+	
+	std::vector<FlowPtrWeak> flow_list;
+
+	flow_list = group_by_destination_port.getReferenceFlowsByKey("443");
+	BOOST_CHECK(flow_list.size() == 1);
 }
 
 BOOST_AUTO_TEST_CASE ( test11_frequencies )
@@ -331,6 +336,11 @@ BOOST_AUTO_TEST_CASE ( test11_frequencies )
 
         BOOST_CHECK(group_by_destination_ip_port.getTotalProcessFlows() == 1);
         BOOST_CHECK(group_by_destination_ip_port.getTotalComputedFrequencies() == 1);
+
+	std::vector<FlowPtrWeak> flow_list;
+
+	flow_list = group_by_destination_ip_port.getReferenceFlowsByKey("bla bla");
+	BOOST_CHECK(flow_list.size() == 0);
 }
 
 BOOST_AUTO_TEST_CASE ( test12_frequencies )

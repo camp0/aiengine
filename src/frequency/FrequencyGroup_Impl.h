@@ -26,6 +26,23 @@
 #endif
 
 template <class A_Type>
+std::vector<FlowPtrWeak> &FrequencyGroup<A_Type>::getReferenceFlowsByKey(A_Type key) 
+{ 
+	auto it = group_map_.find(key);
+
+	if(it != group_map_.end())
+	{
+		FrequencyGroupItemPtr fgitem = it->second;
+		return fgitem->getReferenceFlows();
+	}
+	else
+	{
+		static std::vector<FlowPtrWeak> empty_flow_list;
+		return empty_flow_list;	
+	}
+}
+
+template <class A_Type>
 void FrequencyGroup<A_Type>::agregateFlows(FlowManagerPtr flow_t, std::function <A_Type (FlowPtr&)> condition)
 {
 	flow_list_.clear();
@@ -61,6 +78,7 @@ void FrequencyGroup<A_Type>::agregateFlows(FlowManagerPtr flow_t, std::function 
 
 				++total_process_flows_;
 				flow_list_.push_back(flow);
+				fg_item->addFlow(flow);
 			}
 		}
 	}
@@ -71,11 +89,13 @@ void FrequencyGroup<A_Type>::compute()
 {
 	for (auto it = group_map_.begin(); it!=group_map_.end();++it)
 	{
-		
-	/*	Frequencies *freq_ptr = std::get<0>(it->second).get();
-		int items = std::get<1>(it->second);
+		FrequencyGroupItemPtr fg = it->second;
 
-		*freq_ptr = *freq_ptr / items; */
+		FrequenciesPtr freq = fg->getFrequencies();
+		int items = fg->getTotalItems();
+		Frequencies *freq_ptr = freq.get();
+			
+		*freq_ptr = *freq_ptr / items; 
 		++total_computed_freqs_;
 	}
 }

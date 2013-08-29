@@ -33,6 +33,7 @@
 #include <cstring>
 #include "Frequencies.h"
 #include "../flow/FlowManager.h"
+#include <boost/format.hpp>
 
 using namespace std;
 
@@ -59,14 +60,17 @@ public:
 
 				*freq_ptr = *freq_ptr + *freqs.get();
 			}
-		
+	
+			void addFlow(FlowPtr flow) { flow_list_.push_back(flow);};	
 			int getTotalItems() { return total_items_;};
 			int32_t getTotalFlowsBytes() { return total_flows_bytes_;};	
 			FrequenciesPtr getFrequencies() { return freqs_;};	
+			std::vector<FlowPtrWeak> &getReferenceFlows() { return flow_list_;};
 		private:		
 			int total_items_;
 			int32_t total_flows_bytes_;
 			FrequenciesPtr freqs_;
+			std::vector<FlowPtrWeak> flow_list_;
 	};
 	typedef std::shared_ptr<FrequencyGroupItem> FrequencyGroupItemPtr;
 	
@@ -85,14 +89,16 @@ public:
 		os << "Frequency Group(" << fg.name_ <<") total frequencies groups:" << fg.group_map_.size() << std::endl;
 		os << "\tTotal process flows:" << fg.total_process_flows_<< std::endl;
 		os << "\tTotal computed frequencies:" << fg.total_computed_freqs_<< std::endl;
+		os << boost::format("\t%-22s %-10s %-10s %-10s %-10s") % "Key" % "Flows" % "Bytes" % "Dispersion" % "Enthropy";
+		os << std::endl;
 		for (auto it = fg.group_map_.begin(); it!=fg.group_map_.end();++it)
 		{
 			FrequencyGroupItemPtr fgi = it->second;
-			
-			os << "\tGroup by:" << it->first <<  " items:" << fgi->getTotalItems();
-			os << " bytes:" << fgi->getTotalFlowsBytes();
-			os << " dispersion:" << fgi->getFrequencies()->getDispersion();
-			os << " enthropy:" << fgi->getFrequencies()->getEnthropy() <<std::endl;
+	
+			os << "\t";	
+			os << boost::format("%-22s %-10d %-10d %-10d %-10d") % it->first % fgi->getTotalItems() % fgi->getTotalFlowsBytes() \
+				% fgi->getFrequencies()->getDispersion() % fgi->getFrequencies()->getEnthropy();
+			os << std::endl;	
 			if(fg.log_level_>0)
 				os << "\t" << fgi->getFrequencies()->getFrequenciesString() << std::endl;
 		}
@@ -112,6 +118,8 @@ public:
 	int32_t getTotalComputedFrequencies() { return total_computed_freqs_;}
 
 	std::vector<FlowPtrWeak> &getReferenceFlows() { return flow_list_;};
+	std::vector<FlowPtrWeak> &getReferenceFlowsByKey(A_Type key);
+
 private:
 	std::string name_;
 	int log_level_;

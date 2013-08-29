@@ -27,5 +27,6 @@
 #include <string>
 #include "../../test/tests_packets.h"
 #include "LearnerEngine.h"
+#include "../frequency/FrequencyGroup.h"
 
 #endif

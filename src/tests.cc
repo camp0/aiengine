@@ -448,10 +448,54 @@ BOOST_AUTO_TEST_CASE ( test_case_2 )
 	std::string header("^\\x47\\x45\\x54\\x20\\x2f");// a GET on hexa
 	std::string reg(learner->getRegularExpression());
 
+	std::cout << header << " lenght=" << header.length() << std::endl;
 	BOOST_CHECK(header.compare(0,header.length(),reg)== 0);
 	std::cout << reg <<std::endl;
 }
 
+
+BOOST_AUTO_TEST_CASE ( test_case_3 )
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        StackLanPtr stack = StackLanPtr(new StackLan());
+        LearnerEnginePtr learner = LearnerEnginePtr(new LearnerEngine());
+	std::vector<FlowPtrWeak> flow_list;
+
+        stack->setTotalTCPFlows(2);
+        stack->enableFrequencyEngine(true);
+        pd->setStack(stack);
+        pd->openPcapFile("../pcapfiles/two_http_flows.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        FrequencyGroup<std::string> group_by_port;
+
+        group_by_port.setName("by destination port");
+        group_by_port.agregateFlowsByDestinationPort(stack->getTCPFlowManager().lock());
+        group_by_port.compute();
+
+        BOOST_CHECK(group_by_port.getTotalProcessFlows() == 2);
+        BOOST_CHECK(group_by_port.getTotalComputedFrequencies() == 1);
+
+        flow_list = group_by_port.getReferenceFlowsByKey("1443");
+
+        // The flow_list should contains zero entries
+        BOOST_CHECK(flow_list.size() == 0);
+
+	flow_list = group_by_port.getReferenceFlowsByKey("80");
+
+	// The flow_list should contains two entries
+        BOOST_CHECK(flow_list.size() == 2);
+
+        // pass the flows to the Learner engine
+        learner->agregateFlows(flow_list);
+        learner->compute();
+        std::string header("^\\x47\\x45\\x54\\x20\\x2f");// a GET on hexa
+        std::string reg(learner->getRegularExpression());
+
+        BOOST_CHECK(header.compare(0,header.length(),reg)== 0);
+        std::cout << reg <<std::endl;
+}
 
 
 BOOST_AUTO_TEST_SUITE_END( )

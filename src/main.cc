@@ -48,15 +48,17 @@ SignatureManagerPtr sm;
 FrequencyGroup<std::string> group;
 LearnerEngine learner;
 
-std::string stack_name;
-std::string pcapfile;
-std::string interface;
-std::string freqs_group_value;
-std::string freqs_type_flows;
-bool print_flows = false;
-bool enable_frequencies = false;
-bool show_statistics = false;
-bool show_pstatistics = false;
+std::string option_learner_key;
+std::string option_stack_name;
+std::string option_pcapfile;
+std::string option_interface;
+std::string option_freqs_group_value;
+std::string option_freqs_type_flows;
+bool option_show_flows = false;
+bool option_enable_frequencies = false;
+bool option_enable_learner = false;
+bool option_show_statistics = false;
+bool option_show_pstatistics = false;
 int tcp_flows_cache;
 int udp_flows_cache;
 
@@ -69,13 +71,13 @@ void showFrequencyResults()
 {
 	FlowManagerPtr flow_t;
 
-	if(freqs_type_flows.compare("tcp")==0) flow_t = stack->getTCPFlowManager().lock();
-	if(freqs_type_flows.compare("udp")==0) flow_t = stack->getUDPFlowManager().lock();
+	if(option_freqs_type_flows.compare("tcp")==0) flow_t = stack->getTCPFlowManager().lock();
+	if(option_freqs_type_flows.compare("udp")==0) flow_t = stack->getUDPFlowManager().lock();
 
 	if(!flow_t)
 		return;
 
-	if(freqs_group_value.compare("src-port") == 0)
+	if(option_freqs_group_value.compare("src-port") == 0)
         {
         	group.setName("by source port");
 		std::cout << "Agregating frequencies " << group.getName() << std::endl;
@@ -84,7 +86,7 @@ void showFrequencyResults()
 		group.compute();
 		std::cout << group;
 	}
-	if(freqs_group_value.compare("dst-port") == 0)
+	if(option_freqs_group_value.compare("dst-port") == 0)
         {
         	group.setName("by destination port");
 		std::cout << "Agregating frequencies " << group.getName() << std::endl;
@@ -93,7 +95,7 @@ void showFrequencyResults()
 		group.compute();
 		std::cout << group;
 	}
-	if(freqs_group_value.compare("src-ip") == 0)
+	if(option_freqs_group_value.compare("src-ip") == 0)
         {
         	group.setName("by source IP");
 		std::cout << "Agregating frequencies " << group.getName() << std::endl;
@@ -102,7 +104,7 @@ void showFrequencyResults()
 		group.compute();
 		std::cout << group;
 	}
-	if(freqs_group_value.compare("dst-ip") == 0)
+	if(option_freqs_group_value.compare("dst-ip") == 0)
         {
         	group.setName("by destination IP");
 		std::cout << "Agregating frequencies " << group.getName() << std::endl;
@@ -111,7 +113,7 @@ void showFrequencyResults()
 		group.compute();
 		std::cout << group;
 	}
-        if(freqs_group_value.compare("src-ip,src-port") == 0)
+        if(option_freqs_group_value.compare("src-ip,src-port") == 0)
         {
                 group.setName("by source IP and port");
                 std::cout << "Agregating frequencies " << group.getName() << std::endl;
@@ -120,7 +122,7 @@ void showFrequencyResults()
                 group.compute();
                 std::cout << group;
         }
-        if(freqs_group_value.compare("dst-ip,dst-port") == 0)
+        if(option_freqs_group_value.compare("dst-ip,dst-port") == 0)
         {
                 group.setName("by destination IP and port");
                 std::cout << "Agregating frequencies " << group.getName() << std::endl;
@@ -132,20 +134,40 @@ void showFrequencyResults()
 
 }
 
+void showLearnerResults()
+{
+	std::vector<FlowPtrWeak> flow_list;
+
+	flow_list = group.getReferenceFlowsByKey(option_learner_key);
+	if(flow_list.size()>0)
+	{
+		std::cout << "Agregating "<< flow_list.size() << " to the LearnerEngine" << std::endl;
+		learner.agregateFlows(flow_list);
+		learner.compute();
+		std::cout << "Regular expression generated with key:" << option_learner_key << std::endl;
+		std::cout << learner.getRegularExpression() <<std::endl;	
+	}
+}
+
+
 void iaengineExit()
 {
 	if(stack)
 	{
-		if(show_statistics)
+		if(option_show_statistics)
 			stack->statistics();
 		
-		if(print_flows)
+		if(option_show_flows)
               		stack->printFlows();
 
-		if(enable_frequencies)
+		if(option_enable_frequencies)
+		{
 			showFrequencyResults();
+			if(option_enable_learner)
+				showLearnerResults();
+		}
 
-		if(show_pstatistics)	
+		if(option_show_pstatistics)	
 			if(system_stats)	
 				system_stats->statistics();
        	}
@@ -159,9 +181,9 @@ int main(int argc, char* argv[])
 
 	po::options_description mandatory_ops("Mandatory arguments");
 	mandatory_ops.add_options()
-		("interface,i",   po::value<std::string>(&interface),
+		("interface,i",   po::value<std::string>(&option_interface),
 			"Sets the network interface.")
-		("pcapfile,f",   po::value<std::string>(&pcapfile),
+		("pcapfile,f",   po::value<std::string>(&option_pcapfile),
 			"Sets the pcap file.")
         	;
 
@@ -180,11 +202,13 @@ int main(int argc, char* argv[])
         po::options_description optional_ops_freq("Frequencies optional arguments");
         optional_ops_freq.add_options()
                 ("enable-frequencies,F",  	"Enables the Frequency engine.") 
-                ("group-by,g",  	po::value<std::string>(&freqs_group_value)->default_value("dst-port"),
+                ("group-by,g",  	po::value<std::string>(&option_freqs_group_value)->default_value("dst-port"),
 					"Groups frequencies by src-ip,dst-ip,src-port and dst-port.") 
-                ("flow-type,T",  	po::value<std::string>(&freqs_type_flows)->default_value("tcp"),
+                ("flow-type,T",  	po::value<std::string>(&option_freqs_type_flows)->default_value("tcp"),
 					"Uses tcp or udp flows.") 
                 ("enable-learner,L",  	"Enables the Learner engine.") 
+                ("key-learner,k",  	po::value<std::string>(&option_learner_key)->default_value("80"),
+					"Sets the key for the Learner engine.") 
                 ;
 
 	mandatory_ops.add(optional_ops_tcp);
@@ -193,7 +217,7 @@ int main(int argc, char* argv[])
 
 	po::options_description optional_ops("Optional arguments");
 	optional_ops.add_options()
-		("stack,s",	po::value<std::string>(&stack_name)->default_value("lan"),
+		("stack,s",	po::value<std::string>(&option_stack_name)->default_value("lan"),
 				      	"Sets the network stack (lan,mobile).")
 		("dumpflows,d",      	"Dump the flows to stdout.")
 		("statistics,S",      	"Show statistics of the network stack.")
@@ -226,9 +250,10 @@ int main(int argc, char* argv[])
 			return false;
 		}
 
-		if (var_map.count("dumpflows")) print_flows = true;
-		if (var_map.count("statistics")) show_statistics = true;
-		if (var_map.count("pstatistics")) show_pstatistics = true;
+		if (var_map.count("dumpflows")) option_show_flows = true;
+		if (var_map.count("statistics")) option_show_statistics = true;
+		if (var_map.count("pstatistics")) option_show_pstatistics = true;
+		if (var_map.count("enable-learner")) option_enable_learner = true;
 
         	po::notify(var_map);
     	}
@@ -254,17 +279,17 @@ int main(int argc, char* argv[])
 	
 	pktdis = PacketDispatcherPtr(new PacketDispatcher());
 
-	if(stack_name.compare("lan") == 0)
+	if(option_stack_name.compare("lan") == 0)
 	{
 		//StackLanPtr stack_lan = StackLanPtr(new StackLan());
 		//stack = stack_lan;
 		stack = NetworkStackPtr(new StackLan());
 	}else{
-		if (stack_name.compare("mobile") ==0)
+		if (option_stack_name.compare("mobile") ==0)
 		{
 			stack = NetworkStackPtr(new StackMobile());
 		}else{
-			std::cout << "iaengine: Unknown stack " << stack_name << std::endl;
+			std::cout << "iaengine: Unknown stack " << option_stack_name << std::endl;
 			exit(-1);
 		}
 	}
@@ -280,7 +305,7 @@ int main(int argc, char* argv[])
 	if(var_map.count("enable-frequencies") == 1)
 	{
 		stack->enableFrequencyEngine(true);
-		enable_frequencies = true;
+		option_enable_frequencies = true;
 	}
 
 	// connect with the stack
@@ -290,7 +315,7 @@ int main(int argc, char* argv[])
 
 	if(var_map.count("pcapfile") == 1)
 	{
-        	pktdis->openPcapFile(pcapfile.c_str());
+        	pktdis->openPcapFile(option_pcapfile.c_str());
 		try
 		{
 			atexit(iaengineExit);
@@ -306,7 +331,7 @@ int main(int argc, char* argv[])
 	{
 		if(var_map.count("interface") == 1)
 		{
-        		pktdis->openDevice(interface.c_str());
+        		pktdis->openDevice(option_interface.c_str());
 			try
 			{
 				atexit(iaengineExit);

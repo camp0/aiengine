@@ -106,7 +106,5 @@ BOOST_AUTO_TEST_CASE (test2_learner)
         BOOST_CHECK(cadena.compare(le->getRegularExpression()) == 0);
 }
 
-
-
 //BOOST_AUTO_TEST_SUITE_END( )
 
