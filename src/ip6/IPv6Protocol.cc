@@ -24,6 +24,15 @@
 #include "IPv6Protocol.h"
 #include <iomanip> // setw
 
+char* IPv6Protocol::getSrcAddrDotNotation()
+{
+	static char straddr[INET6_ADDRSTRLEN];
+
+	inet_ntop(AF_INET6,&ip6_header_->ip6_src,straddr,INET6_ADDRSTRLEN);
+
+	return straddr;
+}
+
 void IPv6Protocol::processPacket()
 {
         MultiplexerPtr mux = mux_.lock();

@@ -69,7 +69,7 @@ public:
 
         void setHeader(unsigned char *raw_packet)
         {
-                ip6_header_ = reinterpret_cast <struct ipv6hdr*> (raw_packet);
+                ip6_header_ = reinterpret_cast <struct ip6_hdr*> (raw_packet);
         }
 
 	// Condition for say that a packet is ipv6 
@@ -93,6 +93,7 @@ public:
 			return false;
 		}
 	}
+    	char* getSrcAddrDotNotation() ; 
 /*
     	u_int8_t getTTL() const { return ip_header_->ttl; }
     	u_int16_t getPacketLength() const { return ntohs(ip_header_->tot_len); }
@@ -111,7 +112,7 @@ public:
 */
 private:
 	MultiplexerPtrWeak mux_;
-	struct ipv6hdr *ip6_header_;
+	struct ip6_hdr *ip6_header_;
 };
 
 typedef std::shared_ptr<IPv6Protocol> IPv6ProtocolPtr;
