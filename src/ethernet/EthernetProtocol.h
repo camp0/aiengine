@@ -40,7 +40,8 @@
 class EthernetProtocol: public Protocol 
 {
 public:
-    	explicit EthernetProtocol():eth_header_(nullptr),total_bytes_(0){ name_ = "Ethernet";};
+    	explicit EthernetProtocol():eth_header_(nullptr),total_bytes_(0),
+		stats_level_(0){ name_ = "Ethernet";};
     	virtual ~EthernetProtocol() {};
 
 	static const u_int16_t id = 0x0000; //Ethernet dont need a id
@@ -56,6 +57,8 @@ public:
 
 	void processFlow(Flow *flow) {}; // This protocol dont generate any flow 
 	void processPacket(Packet &packet) ;
+
+	void setStatisticsLevel(int level) { stats_level_ = level;};
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
@@ -93,6 +96,7 @@ public:
 	struct ether_header *getEthernetHeader() const { return eth_header_;};
 
 private:
+	int stats_level_;
 	MultiplexerPtrWeak mux_;
 	struct ether_header *eth_header_;
 	int64_t total_bytes_;

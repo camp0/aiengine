@@ -62,6 +62,7 @@ public:
 	void printFlows(std::basic_ostream<char>& out);
 	void printFlows() { printFlows(std::cout);};
 
+	void setStatisticsLevel(int level);
         void statistics(std::basic_ostream<char>& out) { out << *this; };
         void statistics() { statistics(std::cout);} ;
 

@@ -64,7 +64,8 @@ struct ssl_header {
 class SSLProtocol: public Protocol 
 {
 public:
-    	explicit SSLProtocol():ssl_header_(nullptr),total_bytes_(0) { name_="SSLProtocol";};
+    	explicit SSLProtocol():ssl_header_(nullptr),total_bytes_(0),
+		stats_level_(0) { name_="SSLProtocol";};
     	virtual ~SSLProtocol() {};
 	
 	static const u_int16_t id = 0;
@@ -80,6 +81,8 @@ public:
 
 	void processPacket(Packet& packet){};
 	void processFlow(Flow *flow);
+
+	void setStatisticsLevel(int level) { stats_level_ = level;};
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
@@ -112,6 +115,7 @@ public:
 
 
 private:
+	int stats_level_;
 	FlowForwarderPtrWeak flow_forwarder_;	
 	MultiplexerPtrWeak mux_;
 	unsigned char *ssl_data_;

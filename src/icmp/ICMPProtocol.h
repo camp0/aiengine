@@ -41,7 +41,7 @@
 class ICMPProtocol: public Protocol 
 {
 public:
-    	explicit ICMPProtocol():icmp_header_(nullptr){ name_="ICMPProtocol";};
+    	explicit ICMPProtocol():icmp_header_(nullptr),stats_level_(0){ name_="ICMPProtocol";};
     	virtual ~ICMPProtocol() {};
 
 	static const u_int16_t id = IPPROTO_ICMP;
@@ -57,6 +57,8 @@ public:
 
 	void processFlow(Flow *flow) {}; // This protocol dont generate any flow 
 	void processPacket(Packet& packet);
+
+	void setStatisticsLevel(int level) { stats_level_ = level;};
 	void statistics(std::basic_ostream<char>& out) ;
 	void statistics() { statistics(std::cout);};
 
@@ -96,6 +98,7 @@ public:
         u_int16_t getSequence() const { return ntohs(icmp_header_->un.echo.sequence); }
 
 private:
+	int stats_level_;
 	MultiplexerPtrWeak mux_;
 	struct icmphdr *icmp_header_;
 };

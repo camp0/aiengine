@@ -57,10 +57,10 @@ std::string option_freqs_type_flows;
 bool option_show_flows = false;
 bool option_enable_frequencies = false;
 bool option_enable_learner = false;
-bool option_show_statistics = false;
 bool option_show_pstatistics = false;
 int tcp_flows_cache;
 int udp_flows_cache;
+int option_statistics_level = 0;
 
 void signalHandler( int signum )
 {
@@ -154,7 +154,7 @@ void iaengineExit()
 {
 	if(stack)
 	{
-		if(option_show_statistics)
+		if(option_statistics_level > 0)
 			stack->statistics();
 		
 		if(option_show_flows)
@@ -217,10 +217,11 @@ int main(int argc, char* argv[])
 
 	po::options_description optional_ops("Optional arguments");
 	optional_ops.add_options()
-		("stack,s",	po::value<std::string>(&option_stack_name)->default_value("lan"),
+		("stack,S",		po::value<std::string>(&option_stack_name)->default_value("lan"),
 				      	"Sets the network stack (lan,mobile).")
 		("dumpflows,d",      	"Dump the flows to stdout.")
-		("statistics,S",      	"Show statistics of the network stack.")
+		("statistics,s",	po::value<int>(&option_statistics_level)->default_value(0),
+					"Show statistics of the network stack.")
 		("pstatistics,p",      	"Show statistics of the process.")
 		("help,h",     		"Show help.")
 		("version,v",   	"Show version string.")
@@ -251,7 +252,6 @@ int main(int argc, char* argv[])
 		}
 
 		if (var_map.count("dumpflows")) option_show_flows = true;
-		if (var_map.count("statistics")) option_show_statistics = true;
 		if (var_map.count("pstatistics")) option_show_pstatistics = true;
 		if (var_map.count("enable-learner")) option_enable_learner = true;
 
@@ -293,6 +293,9 @@ int main(int argc, char* argv[])
 			exit(-1);
 		}
 	}
+
+	stack->setStatisticsLevel(option_statistics_level);
+
 	stack->setTotalTCPFlows(tcp_flows_cache);	
 	stack->setTotalUDPFlows(udp_flows_cache);	
 

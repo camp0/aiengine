@@ -52,7 +52,8 @@ public:
 		http_ua_("User-Agent: .*?\r\n"),
 		http_referer_("Referer: .*?\r\n"),
 		host_cache_(new Cache<HTTPHost>("Host cache")),
-		ua_cache_(new Cache<HTTPUserAgent>("UserAgent cache"))
+		ua_cache_(new Cache<HTTPUserAgent>("UserAgent cache")),
+		stats_level_(0)
 	{ 
 		name_="HTTPProtocol";
 	}
@@ -71,6 +72,8 @@ public:
 
 	void processPacket(Packet& packet){};
 	void processFlow(Flow *flow);
+
+	void setStatisticsLevel(int level) { stats_level_ = level;};
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
@@ -116,6 +119,7 @@ private:
 	void extractHostValue(Flow *flow, const char *header);
 	void extractUserAgentValue(Flow *flow, const char *header);
 
+	int stats_level_;
 	FlowForwarderPtrWeak flow_forwarder_;
 	boost::regex http_regex_,http_host_,http_ua_,http_referer_;
         boost::cmatch what_;

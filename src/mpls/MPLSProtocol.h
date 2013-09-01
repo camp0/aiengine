@@ -53,7 +53,8 @@
 class MPLSProtocol: public Protocol 
 {
 public:
-    	explicit MPLSProtocol():mpls_header_(nullptr),total_bytes_(0){ name_="MPLSProtocol";};
+    	explicit MPLSProtocol():mpls_header_(nullptr),total_bytes_(0),
+		stats_level_(0){ name_="MPLSProtocol";};
     	virtual ~MPLSProtocol() {};
 	
 	static const u_int16_t id = ETH_P_MPLS_UC;		// MPLS Unicast traffic	
@@ -69,6 +70,8 @@ public:
 
 	void processFlow(Flow *flow) {}; // No flow to process
 	void processPacket(Packet& packet) ;
+
+	void setStatisticsLevel(int level) { stats_level_ = level;};
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
@@ -104,6 +107,7 @@ public:
 	//unsigned char *getPayload() const { return mpls_header_;};
 
 private:
+	int stats_level_;
 	MultiplexerPtrWeak mux_;
 	unsigned char *mpls_header_;
 	int64_t total_bytes_;

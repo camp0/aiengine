@@ -139,7 +139,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
 	boost::python::class_<FlowManager,boost::shared_ptr<FlowManager>,boost::noncopyable >("FlowManager")
-		//.def("__iter__",iterator<FlowManager>())
 		.def("__iter__",range(&FlowManager::begin,&FlowManager::end))
 		.def(self_ns::str(self_ns::self))
 	;

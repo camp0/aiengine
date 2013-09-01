@@ -44,7 +44,8 @@
 class GPRSProtocol: public Protocol 
 {
 public:
-    	explicit GPRSProtocol():gprs_header_(nullptr),total_bytes_(0){ name_="GPRSProtocol";};
+    	explicit GPRSProtocol():gprs_header_(nullptr),total_bytes_(0),
+		stats_level_(0){ name_="GPRSProtocol";};
     	virtual ~GPRSProtocol() {};
 	
 	static const u_int16_t id = 0;
@@ -60,6 +61,8 @@ public:
 
 	void processFlow(Flow *flow);
 	void processPacket(Packet& packet) ;
+
+	void setStatisticsLevel(int level) { stats_level_ = level;};;
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
@@ -105,6 +108,7 @@ public:
 	unsigned char *getPayload() const { return gprs_header_;};
 
 private:
+	int stats_level_;
 	MultiplexerPtrWeak mux_;
 	unsigned char *gprs_header_;
 	int64_t total_bytes_;

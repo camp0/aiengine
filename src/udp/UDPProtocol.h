@@ -44,7 +44,8 @@
 class UDPProtocol: public Protocol 
 {
 public:
-    	explicit UDPProtocol(): udp_header_(nullptr),total_bytes_(0) { name_="UDPProtocol";};
+    	explicit UDPProtocol(): udp_header_(nullptr),total_bytes_(0),
+		stats_level_(0) { name_="UDPProtocol";};
     	virtual ~UDPProtocol() {};
 
 	static const u_int16_t id = IPPROTO_UDP;
@@ -67,6 +68,8 @@ public:
 
 	void processFlow(Flow *flow) {}; // This protocol generates flows but not for destination.
 	void processPacket(Packet& packet) ;
+
+	void setStatisticsLevel(int level) { stats_level_ = level;};
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
@@ -107,15 +110,14 @@ public:
 	FlowCachePtr getFlowCache() { return flow_cache_;};
 
 private:
-	
 	FlowPtr getFlow(); 
 
+	int stats_level_;	
 	MultiplexerPtrWeak mux_;
 	FlowManagerPtr flow_table_;
 	FlowCachePtr flow_cache_;
 	FlowForwarderPtrWeak flow_forwarder_;
 	struct udphdr *udp_header_;
-
 	int64_t total_bytes_;
 };
 

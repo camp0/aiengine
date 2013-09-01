@@ -39,6 +39,7 @@ public:
 	virtual void printFlows(std::basic_ostream<char>& out) = 0;
 	virtual void printFlows() = 0;
 
+	virtual void setStatisticsLevel(int level) = 0;
 	virtual void statistics(std::basic_ostream<char>& out) = 0;
 	virtual void statistics() = 0;
 

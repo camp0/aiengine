@@ -332,3 +332,22 @@ void StackMobile::enableFrequencyEngine(bool enable)
         }
 }
 
+void StackMobile::setStatisticsLevel(int level)
+{
+        eth_->setStatisticsLevel(level);
+        ip_low_->setStatisticsLevel(level);
+        udp_low_->setStatisticsLevel(level);
+        gprs_->setStatisticsLevel(level);
+        ip_high_->setStatisticsLevel(level);
+        tcp_->setStatisticsLevel(level);
+        udp_high_->setStatisticsLevel(level);
+        icmp_->setStatisticsLevel(level);
+        dns_->setStatisticsLevel(level);
+        udp_generic_->setStatisticsLevel(level);
+        freqs_udp_->setStatisticsLevel(level);
+        http_->setStatisticsLevel(level);
+        ssl_->setStatisticsLevel(level);
+        tcp_generic_->setStatisticsLevel(level);
+        freqs_tcp_->setStatisticsLevel(level);
+}
+

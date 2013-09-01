@@ -39,6 +39,7 @@ public:
     	virtual ~Protocol() {};
 
 	virtual void setHeader(unsigned char *raw_packet) = 0;
+	virtual void setStatisticsLevel(int level) = 0;
 	virtual void statistics(std::basic_ostream<char>& out) = 0;
 	virtual void statistics() = 0;
 	virtual const char* getName() = 0;

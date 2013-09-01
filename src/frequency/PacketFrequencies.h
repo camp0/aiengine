@@ -38,8 +38,6 @@ class PacketFrequencies
 {
 public:
 
-	//static int MAX_PACKET_FREQUENCIES_VALUES = 5000;
-
     	PacketFrequencies():freqs_() { reset(); };
     	virtual ~PacketFrequencies() {};
 
@@ -50,13 +48,12 @@ public:
 		int limit = length;
 
 		if(length_>= MAX_PACKET_FREQUENCIES_VALUES) return;
+		if(length < 0) return;
 
 		if(length_ + length > MAX_PACKET_FREQUENCIES_VALUES)
 		{
 			limit = MAX_PACKET_FREQUENCIES_VALUES  - length_ ;
 		}
-
-		if(length < 0) return;
 
 		for(int i=0;i< limit ;++i) freqs_[length_+i] = payload[i];
 		length_ += limit;

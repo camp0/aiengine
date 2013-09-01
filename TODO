@@ -8,4 +8,4 @@ http://linux.die.net/man/2/mlockall.
 add log4cxx for the messages. http://logging.apache.org/log4cxx/
 Add ip6 support.
 Add NDIS functionatly for inspect all the packets on the TCPGEneric and UDPGeneric, and also put the loggers.
-
+Add levels for output the statistics of the classes.DONE.

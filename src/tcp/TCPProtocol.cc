@@ -26,19 +26,31 @@
 
 void TCPProtocol::statistics(std::basic_ostream<char>& out)
 {
-        out << "TCPProtocol(" << this << ") statistics" << std::dec << std::endl;
-        out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
-        out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
-        out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
-        out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
-        if(mux_.lock())
-                mux_.lock()->statistics(out);
-        if(flow_table_)
-                flow_table_->statistics(out);
-        if(flow_cache_)
-                flow_cache_->statistics(out);
-        if(flow_forwarder_.lock())
-                flow_forwarder_.lock()->statistics(out);
+        if(stats_level_ > 0)
+        {
+                out << name_ << "(" << this << ") statistics" << std::dec << std::endl;
+                out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
+                out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
+                if( stats_level_ > 1)
+                {
+                        out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
+                        out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
+                        if(stats_level_ > 2)
+                        {
+                                if(mux_.lock())
+                                        mux_.lock()->statistics(out);
+                                if(flow_forwarder_.lock())
+                                        flow_forwarder_.lock()->statistics(out);
+                                if( stats_level_ > 3)
+                                {
+                                        if(flow_table_)
+                                                flow_table_->statistics(out);
+                                        if(flow_cache_)
+                                                flow_cache_->statistics(out);
+                                 }
+                        }
+                }
+        }
 }
 
 // This method its similar to the UDP, so maybe in future.....

@@ -34,27 +34,34 @@ void IPProtocol::processPacket(Packet& packet)
 	mux->ipdst = getDstAddr();
 	mux->total_length = packet.getLength();
 	total_bytes_ += packet.getLength();
+	
 	mux->setNextProtocolIdentifier(getProtocol());
-	//std::cout << __FILE__ <<":"<< this<< ":";
-	//std::cout << " ipsrc:" << mux->ipsrc << " ipdst:"<< mux->ipdst << " protocol:" << getProtocol() <<std::endl;
 	packet.setPrevHeaderSize(header_size);
 }
 
 
 void IPProtocol::processFlow(Flow *flow)
 {
-	std::cout << "IPProtocolo receive a flow" << std::endl;
-
+	std::cout << "IPProtocol receive a flow" << std::endl;
 }
+
 void IPProtocol::statistics(std::basic_ostream<char>& out)
 {
-        out << "IPProtocol(" << this << ") statistics" << std::dec <<  std::endl;
-        out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
-        out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
-        out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
-        out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
-        if(mux_.lock())
-                mux_.lock()->statistics(out);
-
+	if(stats_level_ > 0)
+	{
+		out << "IPProtocol(" << this << ") statistics" << std::dec <<  std::endl;
+		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
+		out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
+		if( stats_level_ > 1)
+		{
+			out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
+			out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
+			if( stats_level_ > 2)
+			{
+				if(mux_.lock())
+					mux_.lock()->statistics(out);
+			}
+		}
+	}
 }
 

@@ -44,7 +44,8 @@
 class TCPProtocol: public Protocol 
 {
 public:
-    	explicit TCPProtocol():tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0){ name_="TCPProtocol";};
+    	explicit TCPProtocol():tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
+		stats_level_(0){ name_="TCPProtocol";};
     	virtual ~TCPProtocol() {};
 
 	static const u_int16_t id = IPPROTO_TCP;
@@ -66,6 +67,8 @@ public:
 
 	void processFlow(Flow *flow) {}; // This protocol generates flows but not for destination.
 	void processPacket(Packet &packet);
+
+	void setStatisticsLevel(int level) { stats_level_ = level;};
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
@@ -116,6 +119,8 @@ public:
 	Flow *getCurrenFlow() { return current_flow_;};
 private:
         FlowPtr getFlow();
+
+	int stats_level_;
 	MultiplexerPtrWeak mux_;
 	FlowForwarderPtrWeak flow_forwarder_;
 	FlowManagerPtr flow_table_;
