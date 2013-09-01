@@ -1,6 +1,8 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS =	PacketFrequencies.h test_frequency.h FrequencyCounter.h FrequencyGroup.h FrequencyGroup_Impl.h
+noinst_HEADERS =	PacketFrequencies.h \
+			FrequencyGroupItem.h \
+			test_frequency.h FrequencyCounter.h FrequencyGroup.h FrequencyGroup_Impl.h
 
 TEST = test_frequency
 

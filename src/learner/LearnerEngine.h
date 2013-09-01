@@ -35,6 +35,7 @@
 #include <boost/format.hpp>
 #include "../frequency/PacketFrequencies.h"
 #include "../flow/FlowManager.h"
+#include "../frequency/FrequencyGroup.h"
 
 using namespace std;
 
@@ -62,12 +63,16 @@ public:
         void agregateFlows(std::vector<FlowPtrWeak>& flows);
 
 	void setMaxLenghtForRegularExpression(int value) { max_raw_expression_ = value;};
+
+	void setFrequencyGroup(FrequencyGroup<std::string>::Ptr fg) { freq_group_ = fg;};
+
 private:
 	std::array<std::unordered_map<int,int>,5000> q_array_;
 	int length_;
 	int items_;
 	int max_raw_expression_;
 	std::string raw_expression_;	
+	FrequencyGroup<std::string>::PtrWeak freq_group_;
 };
 
 typedef std::shared_ptr<LearnerEngine> LearnerEnginePtr;

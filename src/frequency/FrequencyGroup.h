@@ -34,46 +34,16 @@
 #include "Frequencies.h"
 #include "../flow/FlowManager.h"
 #include <boost/format.hpp>
+#include "FrequencyGroupItem.h"
 
 using namespace std;
 
 template <class A_Type> class FrequencyGroup 
 {
 public:
-	class FrequencyGroupItem
-	{
-		public:
-			explicit FrequencyGroupItem() 
-			{
-				freqs_ = FrequenciesPtr(new Frequencies());
-				total_items_ = 0;
-				total_flows_bytes_ = 0;
-			}	
-    			virtual ~FrequencyGroupItem() {};
-			
-			void incTotalItems() { ++total_items_;};
-			void addTotalFlowsBytes(int32_t bytes) { total_flows_bytes_ += bytes;};
 
-			void sumFrequencies(FrequenciesPtr freqs) 
-			{ 
-				Frequencies *freq_ptr = freqs_.get();
-
-				*freq_ptr = *freq_ptr + *freqs.get();
-			}
-	
-			void addFlow(FlowPtr flow) { flow_list_.push_back(flow);};	
-			int getTotalItems() { return total_items_;};
-			int32_t getTotalFlowsBytes() { return total_flows_bytes_;};	
-			FrequenciesPtr getFrequencies() { return freqs_;};	
-			std::vector<FlowPtrWeak> &getReferenceFlows() { return flow_list_;};
-		private:		
-			int total_items_;
-			int32_t total_flows_bytes_;
-			FrequenciesPtr freqs_;
-			std::vector<FlowPtrWeak> flow_list_;
-	};
-	typedef std::shared_ptr<FrequencyGroupItem> FrequencyGroupItemPtr;
-	
+	typedef std::shared_ptr< FrequencyGroup<A_Type> > Ptr;
+	typedef std::weak_ptr< FrequencyGroup<A_Type>> PtrWeak;
 
     	explicit FrequencyGroup(): name_(""),total_process_flows_(0),total_computed_freqs_(0),log_level_(0) {};
     	virtual ~FrequencyGroup() {};
@@ -125,7 +95,8 @@ private:
 	int log_level_;
 	int32_t total_process_flows_;
 	int32_t total_computed_freqs_;
-	std::map <A_Type,FrequencyGroupItemPtr> group_map_;
+	typedef std::map <A_Type,FrequencyGroupItemPtr> GroupMapType;
+	GroupMapType group_map_;
 	std::vector<FlowPtrWeak> flow_list_;
 };
 

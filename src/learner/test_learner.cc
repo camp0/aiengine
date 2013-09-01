@@ -102,7 +102,6 @@ BOOST_AUTO_TEST_CASE (test2_learner)
 
         std::string cadena("^.?\\xaa.?.?\\xff\\xff");
 
-	std::cout << le->getRegularExpression() <<std::endl;
         BOOST_CHECK(cadena.compare(le->getRegularExpression()) == 0);
 }
 
