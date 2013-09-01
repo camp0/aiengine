@@ -379,5 +379,32 @@ BOOST_AUTO_TEST_CASE ( test12_frequencies )
 	BOOST_CHECK(pfreq.getLength() == 5000);
 }
 
+BOOST_AUTO_TEST_CASE ( test13_frequencies ) // exercise the iterator
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
+        int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
+        Packet packet(pkt,length,0);
+
+        // Create one Frequency object
+        freq->createFrequencies(1);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        FrequencyGroup<std::string> group;
+
+        group.agregateFlowsByDestinationAddressAndPort(flow_mng);
+        group.compute();
+
+	for (auto it = group.begin(); it != group.end(); ++it)
+	{
+		std::string cadena("74.125.24.189:443");
+
+		BOOST_CHECK(cadena.compare(it->first) == 0);	
+	}
+}
+
 BOOST_AUTO_TEST_SUITE_END( )
 

@@ -90,12 +90,22 @@ public:
 	std::vector<FlowPtrWeak> &getReferenceFlows() { return flow_list_;};
 	std::vector<FlowPtrWeak> &getReferenceFlowsByKey(A_Type key);
 
+	typedef std::map <A_Type,FrequencyGroupItemPtr> GroupMapType;
+	typedef typename GroupMapType::iterator iterator;
+    	typedef typename GroupMapType::const_iterator const_iterator;
+
+    	iterator begin() {return group_map_.begin();}
+    	const_iterator begin() const {return group_map_.begin();}
+    	const iterator cbegin() const {return group_map_.cbegin();}
+    	iterator end() {return group_map_.end();}
+    	const_iterator end() const {return group_map_.end();}
+    	const iterator cend() const {return group_map_.cend();}
+
 private:
 	std::string name_;
 	int log_level_;
 	int32_t total_process_flows_;
 	int32_t total_computed_freqs_;
-	typedef std::map <A_Type,FrequencyGroupItemPtr> GroupMapType;
 	GroupMapType group_map_;
 	std::vector<FlowPtrWeak> flow_list_;
 };
