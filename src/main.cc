@@ -48,6 +48,8 @@ SignatureManagerPtr sm;
 FrequencyGroup<std::string> group;
 LearnerEngine learner;
 
+std::map<std::string,std::function <void(FlowManagerPtr)>> group_map_options;
+
 std::string option_learner_key;
 std::string option_stack_name;
 std::string option_pcapfile;
@@ -65,6 +67,13 @@ int option_statistics_level = 0;
 void signalHandler( int signum )
 {
         exit(signum);
+}
+
+
+void configureFrequencyGroupOptions()
+{
+
+
 }
 
 void showFrequencyResults()

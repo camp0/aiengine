@@ -129,6 +129,8 @@ void PacketDispatcher::idle_handler(boost::system::error_code error)
 		" usage seconds:" << difftime_user.tv_sec << ":"<< difftime_user.tv_usec <<
 		" sys:" << difftime_sys.tv_sec << ":" << difftime_sys.tv_usec ); 
 
+	idle_function_();
+
 	stats_.prev_total_packets_per_interval = total_packets_;
 	stats_.ru_utime.tv_sec = usage.ru_utime.tv_sec;
 	stats_.ru_utime.tv_usec = usage.ru_utime.tv_usec;

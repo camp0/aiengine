@@ -448,9 +448,7 @@ BOOST_AUTO_TEST_CASE ( test_case_2 )
 	std::string header("^\\x47\\x45\\x54\\x20\\x2f");// a GET on hexa
 	std::string reg(learner->getRegularExpression());
 
-	std::cout << header << " lenght=" << header.length() << std::endl;
-	BOOST_CHECK(header.compare(0,header.length(),reg)== 0);
-	std::cout << reg <<std::endl;
+	BOOST_CHECK(header.compare(0,header.length(),reg,0,header.length())== 0);
 }
 
 
@@ -493,10 +491,77 @@ BOOST_AUTO_TEST_CASE ( test_case_3 )
         std::string header("^\\x47\\x45\\x54\\x20\\x2f");// a GET on hexa
         std::string reg(learner->getRegularExpression());
 
-        BOOST_CHECK(header.compare(0,header.length(),reg)== 0);
-        std::cout << reg <<std::endl;
+        BOOST_CHECK(header.compare(0,header.length(),reg,0,header.length())== 0);
 }
 
+
+
+BOOST_AUTO_TEST_CASE ( test_case_4 ) // integrate the learner and the FrequencyGroups 
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        StackLanPtr stack = StackLanPtr(new StackLan());
+        LearnerEnginePtr learner = LearnerEnginePtr(new LearnerEngine());
+        std::vector<FlowPtrWeak> flow_list;
+
+        stack->setTotalTCPFlows(2);
+        stack->enableFrequencyEngine(true);
+        pd->setStack(stack);
+        pd->openPcapFile("../pcapfiles/two_http_flows.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        FrequencyGroup<std::string> group;
+
+        group.setName("by destination port");
+        group.agregateFlowsByDestinationAddressAndPort(stack->getTCPFlowManager().lock());
+        group.compute();
+
+        BOOST_CHECK(group.getTotalProcessFlows() == 2);
+        BOOST_CHECK(group.getTotalComputedFrequencies() == 2);
+
+	auto it = group.begin();
+
+	BOOST_CHECK( it != group.end());
+
+	FrequencyGroupItemPtr fg = it->second;
+	
+	flow_list = fg->getReferenceFlows();
+        BOOST_CHECK(flow_list.size() == 1);
+	
+	std::string cad_group("95.100.96.10:80");
+	BOOST_CHECK(cad_group.compare(it->first) == 0);
+
+        // pass the flows to the Learner engine
+	learner->reset();
+        learner->agregateFlows(flow_list);
+        learner->compute();
+        std::string header("^\\x47\\x45\\x54\\x20\\x2f\\x42");// a GET on hexa
+        std::string reg(learner->getRegularExpression());
+
+        BOOST_CHECK(header.compare(0,header.length(),reg,0,header.length())== 0);
+
+	++it;
+
+	cad_group = "95.100.96.48:80";
+
+	BOOST_CHECK( it != group.end());
+	BOOST_CHECK(cad_group.compare(it->first) == 0);
+	fg = it->second;
+	
+	flow_list = fg->getReferenceFlows();
+        BOOST_CHECK(flow_list.size() == 1);
+
+        learner->reset();
+        learner->agregateFlows(flow_list);
+        learner->compute();
+
+	header = "^\\x47\\x45\\x54\\x20\\x2f\\x63";
+	reg = learner->getRegularExpression();
+
+        BOOST_CHECK(header.compare(0,header.length(),reg,0,header.length())== 0);
+	++it;
+	BOOST_CHECK(it == group.end());
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 
