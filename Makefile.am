@@ -4,6 +4,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = 	src \
 		test \
+		man \
 		pcapfiles \
 		src/ethernet \
 		src/vlan \

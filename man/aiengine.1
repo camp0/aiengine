@@ -1,0 +1,86 @@
+.\" Manpage for AIEngine.
+.\" Contact luis.camp0.2009@gmail.com to correct errors or typos.
+.TH man 8 "23 Jun 2013" "1.0" "aiengine man page"
+.SH NAME
+aiengine \- AIEngine is a packet inspection engine with capabilities of learning without any human intervention
+.SH SYNOPSIS
+aiengine --help
+.SH DESCRIPTION
+AIEngine helps network/security profesionals to identify traffic and develop signatures for use them on NIDS, Firewalls, Traffic classifiers and so on.
+AIEngine system is based on c++11
+.SH OPTIONS
+.PP
+Mandatory arguments to long options are mandatory for short options too.
+.TP
+\fB\-i\fR, \fB\-\-interface\fR
+Sets the network interface.
+.TP
+\fB\-f\fR, \fB\-\-pcapfile\fR
+Sets the pcap file.
+.PP
+
+TCP optional arguments.
+.TP
+\fB\-t\fR, \fB\-\-tcp-flows\fR
+Sets the number of TCP flows on the pool. 32768 flows is the default value.
+.PP
+
+UDP optional arguments.
+.TP
+\fB\-t\fR, \fB\-\-udp-flows\fR
+Sets the number of UDP flows on the pool. 16384 flows is the default value.
+.PP
+
+Frequencies optional arguments.
+.TP
+\fB\-F\fR, \fB\-\-enable-frequencies\fR
+Enables the Frequency engine. This implies that all the payloads of the flows will be process by this engine.
+.TP
+\fB\-g\fR, \fB\-\-group-by\fR
+Groups frequencies by src-ip,dst-ip,src-port and dst-port. 
+
+
+
+.PP
+Optional arguments.
+\fB\-h\fR, \fB\-\-help\fR
+display this help and exit
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+output version information and exit
+
+
+
+
+.SH CONFIGURATION
+The following options are supporte by firesql on the config file. The configuration file is organized with two seccionts, the Server section for setup variables related to the server, and the Rules section, which contains the paths of the differente regex expressions.
+.TP 
+[Server]
+.TP 
+proxy_address=<local address of the proxy>
+.TP 
+proxy_port=<local port of the proxy>
+.TP 
+database_address =<remote address of the mysql database>
+.TP 
+database_port =<remote port of the mysql database>
+.TP 
+[Rules]
+.TP 
+# The rule files only contains regex of queries
+.TP 
+# The evaluation of the rules is linear, so order matters.
+.TP 
+print=./print.rule
+.TP 
+drop=./drop.rules
+.TP 
+reject=./reject.rules
+.TP 
+close=./close.rules
+
+.SH SEE ALSO
+.SH BUGS
+No known bugs.
+.SH AUTHOR
+Luis Campo Giralte (luis.camp0.2009@gmail.com)
