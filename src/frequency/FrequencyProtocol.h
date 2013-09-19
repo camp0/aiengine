@@ -96,6 +96,7 @@ public:
 		freqs_cache_->create(number);
 		packet_freqs_cache_->create(number);
 	}
+
         void destroyFrequencies(int number) 
 	{ 
 		freqs_cache_->destroy(number);

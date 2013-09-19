@@ -67,7 +67,8 @@ public:
 	void setFrequencyGroup(FrequencyGroup<std::string>::Ptr fg) { freq_group_ = fg;};
 
 private:
-	std::array<std::unordered_map<int,int>,5000> q_array_;
+	//std::array<std::unordered_map<int,int>,5000> q_array_;
+	std::array<std::unordered_map<int,int>,MAX_PACKET_FREQUENCIES_VALUES> q_array_;
 	int length_;
 	int items_;
 	int max_raw_expression_;

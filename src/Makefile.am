@@ -99,7 +99,7 @@ $(srcdir)/pyaiengine.so: py_wrapper.cc
 	g++ -fPIC -DPYTHON_BINDING $(aiengine_core_sources) \
         	py_wrapper.cc `pkg-config --cflags python-2.7` \
 		-I/usr/include/boost/python -std=c++11 -lpthread -lstdc++ -lboost_system \
-		-lboost_thread -lboost_regex -lboost_python -lpython2.7 -lpcap -o pyaiengine.so -shared
+		-lboost_thread -lboost_regex -lboost_python -lpython2.7 -lpcap -llog4cxx -o pyaiengine.so -shared
 
 CLEANFILES = *.o *.lo *.so
 

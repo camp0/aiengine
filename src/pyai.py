@@ -1,4 +1,4 @@
-"""Example script for integrate/configurate the iaengine """
+"""Example script for integrate/configurate the aiengine """
 __author__ = "Luis Campo Giralte"
 __copyright__ = "Copyright (C) 2013 by Luis Campo Giralte"
 __revision__ = "$Id$"
@@ -39,15 +39,16 @@ if __name__ == '__main__':
 	s_udp = loadSignaturesForUdp()
 	st.setUDPSignatureManager(s_udp)
 	
-	st.setTotalTCPFlows(350000)
-	st.setTotalUDPFlows(350000)
+	st.setTotalTCPFlows(32768)
+	st.setTotalUDPFlows(16384)
 
 	st.enableFrequencyEngine(True)
-
+	print "go"
 	directory = "/home/luis/pcapfiles/torrent/vuze"
 	directory = "/home/luis/pcapfiles/defcon18/"
 	directory = "/home/luis/pcapfiles/http/"
 	directory = "/home/luis/pcapfiles/vcom/"
+	print "Ready to process files."
 	for pfile in os.listdir(directory):
 		print "Processing ",pfile
 		fpath = "%s/%s" %(directory,pfile)

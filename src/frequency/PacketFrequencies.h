@@ -165,7 +165,6 @@ public:
 	int getLength() const { return length_;};
 
 private:
-	//std::array<int,5000> freqs_;
 	std::array<int,MAX_PACKET_FREQUENCIES_VALUES> freqs_;
 	int length_;
 };

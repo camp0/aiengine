@@ -43,6 +43,7 @@ AC_CHECK_DEBUG
 AC_CONFIG_FILES([
 Makefile
 test/Makefile
+man/Makefile
 pcapfiles/Makefile
 src/Makefile
 src/ethernet/Makefile

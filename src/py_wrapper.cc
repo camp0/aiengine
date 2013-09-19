@@ -30,6 +30,8 @@
 #include "./signatures/Signature.h"
 #include <boost/python.hpp>
 #include <boost/asio.hpp>
+#include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
 
 // http://multiplexer.googlecode.com/svn/trunk/src/multiplexer/_mxclientmodule.cc
 
@@ -40,6 +42,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         using namespace std;
 	using namespace boost::asio;
 	using self_ns::str;
+
+	BasicConfigurator::configure();
 
 	boost::python::class_< std::ostream, boost::noncopyable >( "std_ostream",no_init); 
 
