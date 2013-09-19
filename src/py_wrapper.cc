@@ -34,8 +34,13 @@
 #include "log4cxx/basicconfigurator.h"
 
 // http://multiplexer.googlecode.com/svn/trunk/src/multiplexer/_mxclientmodule.cc
+// http://stackoverflow.com/questions/6326757/conversion-from-boostshared-ptr-to-stdshared-ptr
 
+using namespace log4cxx;
+using namespace log4cxx::helpers;
 using namespace boost::python;
+
+typedef std::shared_ptr<Flow> pK;
 
 BOOST_PYTHON_MODULE(pyaiengine)
 {
@@ -147,7 +152,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def(self_ns::str(self_ns::self))
 	;
 	
-//	boost::python::class_<Flow,FlowPtr>("Flow")
+	boost::python::class_<Flow,boost::shared_ptr<Flow>>("Flow")
+		;
 //	;
 	// Templatize the FrequencyGroup
 	//	
