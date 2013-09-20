@@ -118,7 +118,7 @@ public:
 
 	Flow *getCurrenFlow() { return current_flow_;};
 private:
-        FlowPtr getFlow();
+        SharedPointer<Flow> getFlow();
 
 	int stats_level_;
 	MultiplexerPtrWeak mux_;

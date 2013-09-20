@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE (test2_http)
         int length = strlen(header);
         
 	Packet packet(pkt,length,0);
-	FlowPtr flow = FlowPtr(new Flow());
+	SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
 	flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE (test3_http)
         int length = strlen(header);
 
         Packet packet(pkt,length,0);
-        FlowPtr flow = FlowPtr(new Flow());
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         http->createHTTPHosts(10);
 
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE (test4_http)
         int length = strlen(header);
 
         Packet packet(pkt,length,0);
-        FlowPtr flow = FlowPtr(new Flow());
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         http->createHTTPHosts(1);
         http->createHTTPUserAgents(1);
@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE (test5_http)
         int length = strlen(header);
 
         Packet packet(pkt,length,0);
-        FlowPtr flow = FlowPtr(new Flow());
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         http->createHTTPHosts(1);
         http->createHTTPUserAgents(1);
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE (test6_http)
         int length = strlen(header);
 
         Packet packet(pkt,length,0);
-        FlowPtr flow = FlowPtr(new Flow());
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         http->createHTTPHosts(1);
         http->createHTTPUserAgents(1);
@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE (test7_http)
         int length = strlen(header);
 
         Packet packet(pkt,length,0);
-        FlowPtr flow = FlowPtr(new Flow());
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         http->createHTTPHosts(1);
         http->createHTTPUserAgents(1);
@@ -268,7 +268,7 @@ BOOST_AUTO_TEST_CASE (test8_http)
         int length1 = strlen(header1);
 
         Packet packet1(pkt1,length1,0);
-        FlowPtr flow1 = FlowPtr(new Flow());
+        SharedPointer<Flow> flow1 = SharedPointer<Flow>(new Flow());
 
         http->createHTTPHosts(2);
         http->createHTTPUserAgents(2);
@@ -300,7 +300,7 @@ BOOST_AUTO_TEST_CASE (test8_http)
         int length2 = strlen(header2);
 
         Packet packet2(pkt2,length2,0);
-        FlowPtr flow2 = FlowPtr(new Flow());
+        SharedPointer<Flow> flow2 = SharedPointer<Flow>(new Flow());
 
         flow2->packet = const_cast<Packet*>(&packet2);
         http->processFlow(flow2.get());
@@ -326,7 +326,7 @@ BOOST_AUTO_TEST_CASE (test9_http)
         int length1 = strlen(header1);
 
         Packet packet1(pkt1,length1,0);
-        FlowPtr flow1 = FlowPtr(new Flow());
+        SharedPointer<Flow> flow1 = SharedPointer<Flow>(new Flow());
 
         http->createHTTPHosts(2);
         http->createHTTPUserAgents(2);
@@ -358,7 +358,7 @@ BOOST_AUTO_TEST_CASE (test9_http)
         int length2 = strlen(header2);
 
         Packet packet2(pkt2,length2,0);
-        FlowPtr flow2 = FlowPtr(new Flow());
+        SharedPointer<Flow> flow2 = SharedPointer<Flow>(new Flow());
 
         flow2->packet = const_cast<Packet*>(&packet2);
         http->processFlow(flow2.get());

@@ -44,7 +44,7 @@ void LearnerEngine::statistics(std::basic_ostream<char>& out)
 	}
 }
 
-void LearnerEngine::agregatePacketFlow(PacketFrequenciesPtr pkt_freq)
+void LearnerEngine::agregatePacketFlow(SharedPointer<PacketFrequencies> pkt_freq)
 {
 	++items_;
 
@@ -126,17 +126,17 @@ void LearnerEngine::compute()
 	raw_expression_ = expr.str();
 }
 
-void LearnerEngine::agregateFlows(std::vector<FlowPtrWeak> &flows)
+void LearnerEngine::agregateFlows(std::vector<WeakPointer<Flow>> &flows)
 {
 
 	for(auto it = flows.begin();it!=flows.end();++it)
 	{
-		FlowPtr flow = (*it).lock();
+		SharedPointer<Flow> flow = (*it).lock();
 		if(flow)
 		{
                 	if(flow->packet_frequencies.lock())
                         {
-                                PacketFrequenciesPtr pkt_freq = flow->packet_frequencies.lock();
+                                SharedPointer<PacketFrequencies> pkt_freq = flow->packet_frequencies.lock();
                                 if(pkt_freq)
                                 {
                                         agregatePacketFlow(pkt_freq);

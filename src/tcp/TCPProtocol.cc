@@ -54,11 +54,11 @@ void TCPProtocol::statistics(std::basic_ostream<char>& out)
 }
 
 // This method its similar to the UDP, so maybe in future.....
-FlowPtr TCPProtocol::getFlow()
+SharedPointer<Flow> TCPProtocol::getFlow()
 {
         unsigned long h1;
         unsigned long h2;
-        FlowPtr flow;
+        SharedPointer<Flow> flow;
         MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();
         MultiplexerPtr ipmux = downmux.lock();
 
@@ -89,7 +89,7 @@ FlowPtr TCPProtocol::getFlow()
 
 void TCPProtocol::processPacket(Packet &packet)
 {
-	FlowPtr flow = getFlow();
+	SharedPointer<Flow> flow = getFlow();
 
 	++total_packets_;
 

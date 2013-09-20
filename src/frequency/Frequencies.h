@@ -147,7 +147,4 @@ private:
 	std::array<int,255> freqs_;
 };
 
-typedef std::shared_ptr<Frequencies> FrequenciesPtr;
-typedef std::weak_ptr<Frequencies> FrequenciesPtrWeak;
-
 #endif

@@ -83,8 +83,8 @@ BOOST_AUTO_TEST_CASE (test3_frequencies)
 	BOOST_CHECK(freqs4 != freqs2);	
 
 	// operations with shared pointers
-	FrequenciesPtr f1 = FrequenciesPtr(new Frequencies());
-	FrequenciesPtr f2 = FrequenciesPtr(new Frequencies());
+	SharedPointer<Frequencies> f1 = SharedPointer<Frequencies>(new Frequencies());
+	SharedPointer<Frequencies> f2 = SharedPointer<Frequencies>(new Frequencies());
 
 	f1->addPayload(pkt,length);
 
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE (test4_frequencies)
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
 	Cache<Frequencies>::CachePtr freqs_cache_(new Cache<Frequencies>);
 
-        FrequenciesPtr freqs = freqs_cache_->acquire().lock();
+        SharedPointer<Frequencies> freqs = freqs_cache_->acquire().lock();
 	BOOST_CHECK( freqs == nullptr);
 	
 	freqs_cache_->create(1);
@@ -176,10 +176,10 @@ BOOST_AUTO_TEST_CASE ( test6_frequencies )
 	auto ft = flow_mng->getFlowTable();
 	for (auto it = ft.begin(); it!=ft.end();++it)
 	{
-		FlowPtr flow = *it;
+		SharedPointer<Flow> flow = *it;
 		if(flow->frequencies.lock())
 		{
-			FrequenciesPtr freq = flow->frequencies.lock();
+			SharedPointer<Frequencies> freq = flow->frequencies.lock();
 
 			fcount->addFrequencyComponent(freq);
 		}
@@ -214,10 +214,10 @@ BOOST_AUTO_TEST_CASE ( test7_frequencies )
 	// There is only one flow on port 443
 	int port = 80;
 
-	auto fb = ([&] (const FlowPtr& flow) { return (flow->getDestinationPort()== port); });
+	auto fb = ([&] (const SharedPointer<Flow>& flow) { return (flow->getDestinationPort()== port); });
 
 	fcount->filterFrequencyComponent(flow_mng, 
-		([&] (const FlowPtr& flow) { return (flow->getDestinationPort()== port); })
+		([&] (const SharedPointer<Flow>& flow) { return (flow->getDestinationPort()== port); })
 	);
         fcount->compute();
 
@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE ( test7_frequencies )
         port = 443;
 	fcount->reset();
         fcount->filterFrequencyComponent(flow_mng,
-                ([&] (const FlowPtr& flow) { return (flow->getDestinationPort()== port); })
+                ([&] (const SharedPointer<Flow>& flow) { return (flow->getDestinationPort()== port); })
         );
         fcount->compute();
 
@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE ( test8_frequencies )
 	FrequencyGroup<uint16_t> group_by_port;
 
 	group_by_port.agregateFlows(flow_mng,
-		([] (const FlowPtr& flow) { return flow->getDestinationPort();})
+		([] (const SharedPointer<Flow>& flow) { return flow->getDestinationPort();})
 	);
 	group_by_port.compute();
 
@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE ( test9_frequencies )
         FrequencyGroup<char*> group_by_address;
 
         group_by_address.agregateFlows(flow_mng,
-                ([] (const FlowPtr& flow) { return flow->getDstAddrDotNotation();})
+                ([] (const SharedPointer<Flow>& flow) { return flow->getDstAddrDotNotation();})
         );
         group_by_address.compute();
 
@@ -309,7 +309,7 @@ BOOST_AUTO_TEST_CASE ( test10_frequencies )
 	BOOST_CHECK(group_by_destination_port.getTotalProcessFlows() == 1);
 	BOOST_CHECK(group_by_destination_port.getTotalComputedFrequencies() == 1);
 	
-	std::vector<FlowPtrWeak> flow_list;
+	std::vector<WeakPointer<Flow>> flow_list;
 
 	flow_list = group_by_destination_port.getReferenceFlowsByKey("443");
 	BOOST_CHECK(flow_list.size() == 1);
@@ -337,7 +337,7 @@ BOOST_AUTO_TEST_CASE ( test11_frequencies )
         BOOST_CHECK(group_by_destination_ip_port.getTotalProcessFlows() == 1);
         BOOST_CHECK(group_by_destination_ip_port.getTotalComputedFrequencies() == 1);
 
-	std::vector<FlowPtrWeak> flow_list;
+	std::vector<WeakPointer<Flow>> flow_list;
 
 	flow_list = group_by_destination_ip_port.getReferenceFlowsByKey("bla bla");
 	BOOST_CHECK(flow_list.size() == 0);

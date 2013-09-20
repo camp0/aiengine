@@ -26,7 +26,7 @@
 #endif
 
 template <class A_Type>
-std::vector<FlowPtrWeak> &FrequencyGroup<A_Type>::getReferenceFlowsByKey(A_Type key) 
+std::vector<WeakPointer<Flow>> &FrequencyGroup<A_Type>::getReferenceFlowsByKey(A_Type key) 
 { 
 	auto it = group_map_.find(key);
 
@@ -37,23 +37,23 @@ std::vector<FlowPtrWeak> &FrequencyGroup<A_Type>::getReferenceFlowsByKey(A_Type 
 	}
 	else
 	{
-		static std::vector<FlowPtrWeak> empty_flow_list;
+		static std::vector<WeakPointer<Flow>> empty_flow_list;
 		return empty_flow_list;	
 	}
 }
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlows(FlowManagerPtr flow_t, std::function <A_Type (FlowPtr&)> condition)
+void FrequencyGroup<A_Type>::agregateFlows(FlowManagerPtr flow_t, std::function <A_Type (SharedPointer<Flow>&)> condition)
 {
 	flow_list_.clear();
 
 	auto ft = flow_t->getFlowTable();
 	for (auto it = ft.begin(); it!=ft.end();++it)
 	{
-		FlowPtr flow = *it;
+		SharedPointer<Flow> flow = *it;
 		if(flow->frequencies.lock())
 		{
-			FrequenciesPtr freq = flow->frequencies.lock();
+			SharedPointer<Frequencies> freq = flow->frequencies.lock();
 			if(freq)
 			{
 				auto key = condition(flow);
@@ -91,7 +91,7 @@ void FrequencyGroup<A_Type>::compute()
 	{
 		FrequencyGroupItemPtr fg = it->second;
 
-		FrequenciesPtr freq = fg->getFrequencies();
+		SharedPointer<Frequencies> freq = fg->getFrequencies();
 		int items = fg->getTotalItems();
 		Frequencies *freq_ptr = freq.get();
 			
@@ -103,31 +103,31 @@ void FrequencyGroup<A_Type>::compute()
 template <class A_Type>
 void FrequencyGroup<A_Type>::agregateFlowsBySourcePort(FlowManagerPtr flow_t) 
 {
-	agregateFlows(flow_t, ([] (const FlowPtr& flow) { return std::to_string(flow->getSourcePort());}));
+	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { return std::to_string(flow->getSourcePort());}));
 }
 
 template <class A_Type>
 void FrequencyGroup<A_Type>::agregateFlowsByDestinationPort(FlowManagerPtr flow_t)
 {
-	agregateFlows(flow_t, ([] (const FlowPtr& flow) { return std::to_string(flow->getDestinationPort());}));
+	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { return std::to_string(flow->getDestinationPort());}));
 } 
 
 template <class A_Type>
 void FrequencyGroup<A_Type>::agregateFlowsBySourceAddress(FlowManagerPtr flow_t) 
 {
-	agregateFlows(flow_t, ([] (const FlowPtr& flow) { return flow->getSrcAddrDotNotation();}));
+	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { return flow->getSrcAddrDotNotation();}));
 } 
 	
 template <class A_Type>
 void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddress(FlowManagerPtr flow_t) 
 {
-	agregateFlows(flow_t, ([] (const FlowPtr& flow) { return flow->getDstAddrDotNotation();}));
+	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { return flow->getDstAddrDotNotation();}));
 } 
 
 template <class A_Type>
 void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddressAndPort(FlowManagerPtr flow_t)
 {
-	agregateFlows(flow_t, ([] (const FlowPtr& flow) 
+	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) 
 	{ 
 		std::ostringstream os;
 		
@@ -140,7 +140,7 @@ void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddressAndPort(FlowManage
 template <class A_Type>
 void FrequencyGroup<A_Type>::agregateFlowsBySourceAddressAndPort(FlowManagerPtr flow_t)
 {
-	agregateFlows(flow_t, ([] (const FlowPtr& flow) 
+	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) 
 	{ 	
 		std::ostringstream os;
 		

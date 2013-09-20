@@ -39,7 +39,7 @@
 using namespace boost::multi_index;
 
 typedef multi_index_container<
-	FlowPtr,
+	SharedPointer<Flow>,
 	indexed_by<
 		hashed_unique< const_mem_fun<Flow,unsigned long, &Flow::getId>>
 	>
@@ -53,9 +53,9 @@ public:
     	FlowManager();
     	virtual ~FlowManager();
 
-	void addFlow(FlowPtr flow);
-	void removeFlow(FlowPtr flow);
-	FlowPtr findFlow(unsigned long hash1,unsigned long hash2);
+	void addFlow(SharedPointer<Flow> flow);
+	void removeFlow(SharedPointer<Flow> flow);
+	SharedPointer<Flow> findFlow(unsigned long hash1,unsigned long hash2);
 
 	int getTotalFlows() const { return flowTable_.size();}
 

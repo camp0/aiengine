@@ -41,7 +41,4 @@ private:
 	std::string ua_name_;
 };
 
-typedef std::shared_ptr<HTTPUserAgent> HTTPUserAgentPtr;
-typedef std::weak_ptr<HTTPUserAgent> HTTPUserAgentPtrWeak;
-
 #endif

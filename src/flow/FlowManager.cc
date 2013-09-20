@@ -36,12 +36,12 @@ FlowManager::~FlowManager()
 	flowTable_.clear();
 }
 
-void FlowManager::addFlow(FlowPtr flow)
+void FlowManager::addFlow(SharedPointer<Flow> flow)
 {
 	flowTable_.insert(flow);
 }
 
-void FlowManager::removeFlow(FlowPtr flow)
+void FlowManager::removeFlow(SharedPointer<Flow> flow)
 {
 	FlowByID::iterator it = flowTable_.find(flow->getId());
 	
@@ -50,10 +50,10 @@ void FlowManager::removeFlow(FlowPtr flow)
 }
 
 
-FlowPtr FlowManager::findFlow(unsigned long hash1,unsigned long hash2)
+SharedPointer<Flow> FlowManager::findFlow(unsigned long hash1,unsigned long hash2)
 {
 	FlowByID::iterator it = flowTable_.find(hash1);
-	FlowPtr fp;
+	SharedPointer<Flow> fp;
 
 	if (it == flowTable_.end())
 	{
@@ -91,7 +91,7 @@ void FlowManager::printFlows(std::basic_ostream<char>& out)
 	out << std::endl;	
 	for(auto it = flowTable_.begin(); it!=flowTable_.end(); ++it)
 	{
-		FlowPtr flow = *it;
+		SharedPointer<Flow> flow = *it;
 
 		std::ostringstream fivetuple;
 		src_a.s_addr=flow->getSourceAddress();

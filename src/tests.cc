@@ -457,7 +457,7 @@ BOOST_AUTO_TEST_CASE ( test_case_3 )
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         StackLanPtr stack = StackLanPtr(new StackLan());
         LearnerEnginePtr learner = LearnerEnginePtr(new LearnerEngine());
-	std::vector<FlowPtrWeak> flow_list;
+	std::vector<WeakPointer<Flow>> flow_list;
 
         stack->setTotalTCPFlows(2);
         stack->enableFrequencyEngine(true);
@@ -501,7 +501,7 @@ BOOST_AUTO_TEST_CASE ( test_case_4 ) // integrate the learner and the FrequencyG
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         StackLanPtr stack = StackLanPtr(new StackLan());
         LearnerEnginePtr learner = LearnerEnginePtr(new LearnerEngine());
-        std::vector<FlowPtrWeak> flow_list;
+        std::vector<WeakPointer<Flow>> flow_list;
 
         stack->setTotalTCPFlows(2);
         stack->enableFrequencyEngine(true);

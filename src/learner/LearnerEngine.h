@@ -52,7 +52,7 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};	
 
-	void agregatePacketFlow(PacketFrequenciesPtr pkt_freq); 
+	void agregatePacketFlow(SharedPointer<PacketFrequencies> pkt_freq); 
 	
 	void compute();
 
@@ -60,7 +60,7 @@ public:
 
 	std::string &getRegularExpression() { return raw_expression_;};
 
-        void agregateFlows(std::vector<FlowPtrWeak>& flows);
+        void agregateFlows(std::vector<WeakPointer<Flow>>& flows);
 
 	void setMaxLenghtForRegularExpression(int value) { max_raw_expression_ = value;};
 

@@ -33,7 +33,7 @@ void HTTPProtocol::extractHostValue(Flow *flow, const char *header)
         	std::string host_raw(result[0].first, result[0].second);
                 std::string host(host_raw,6,host_raw.length()-8); // remove also the \r\n
 
-                HTTPHostPtr host_ptr = flow->http_host.lock();
+                SharedPointer<HTTPHost> host_ptr = flow->http_host.lock();
 
                 if(!host_ptr) // There is no Host object attached to the flow
                 {
@@ -67,7 +67,7 @@ void HTTPProtocol::extractUserAgentValue(Flow *flow, const char *header)
 		std::string ua_raw(result[0].first, result[0].second);
 		std::string ua(ua_raw,12,ua_raw.length()-14); // remove also the \r\n
 
-		HTTPUserAgentPtr ua_ptr = flow->http_ua.lock();
+		SharedPointer<HTTPUserAgent> ua_ptr = flow->http_ua.lock();
 
 		if(!ua_ptr) // There is no user agent attached
 		{
@@ -133,7 +133,7 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out)
 						out << "\tHTTP Hosts usage" << std::endl;
 						for(auto it = host_map_.begin(); it!=host_map_.end(); ++it)
 						{
-							HTTPHostPtr host = std::get<0>((*it).second);
+							SharedPointer<HTTPHost> host = std::get<0>((*it).second);
 							int count = std::get<1>((*it).second);
 							if(host)
 							out << "\t\tHost:" << host->getName() <<":" << count << std::endl;
@@ -141,7 +141,7 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out)
 						out << "\tHTTP UserAgents usage" << std::endl;
 						for(auto it = ua_map_.begin(); it!=ua_map_.end(); ++it)
 						{
-							HTTPUserAgentPtr ua = std::get<0>((*it).second);
+							SharedPointer<HTTPUserAgent> ua = std::get<0>((*it).second);
 							int count = std::get<1>((*it).second);
 							if(ua)
 								out << "\t\tUserAgent:" << ua->getName() <<":" << count << std::endl;

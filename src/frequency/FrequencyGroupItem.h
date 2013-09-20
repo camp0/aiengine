@@ -42,7 +42,7 @@ class FrequencyGroupItem
 public:
 	explicit FrequencyGroupItem() 
 	{
-		freqs_ = FrequenciesPtr(new Frequencies());
+		freqs_ = SharedPointer<Frequencies>(new Frequencies());
 		total_items_ = 0;
 		total_flows_bytes_ = 0;
 	}	
@@ -51,23 +51,23 @@ public:
 	void incTotalItems() { ++total_items_;};
 	void addTotalFlowsBytes(int32_t bytes) { total_flows_bytes_ += bytes;};
 
-	void sumFrequencies(FrequenciesPtr freqs) 
+	void sumFrequencies(SharedPointer<Frequencies> freqs) 
 	{ 
 		Frequencies *freq_ptr = freqs_.get();
 
 		*freq_ptr = *freq_ptr + *freqs.get();
 	}
 
-	void addFlow(FlowPtr flow) { flow_list_.push_back(flow);};	
+	void addFlow(SharedPointer<Flow> flow) { flow_list_.push_back(flow);};	
 	int getTotalItems() { return total_items_;};
 	int32_t getTotalFlowsBytes() { return total_flows_bytes_;};	
-	FrequenciesPtr getFrequencies() { return freqs_;};	
-	std::vector<FlowPtrWeak> &getReferenceFlows() { return flow_list_;};
+	SharedPointer<Frequencies> getFrequencies() { return freqs_;};	
+	std::vector<WeakPointer<Flow>> &getReferenceFlows() { return flow_list_;};
 private:		
 	int total_items_;
 	int32_t total_flows_bytes_;
-	FrequenciesPtr freqs_;
-	std::vector<FlowPtrWeak> flow_list_;
+	SharedPointer<Frequencies> freqs_;
+	std::vector<WeakPointer<Flow>> flow_list_;
 };
 
 typedef std::shared_ptr<FrequencyGroupItem> FrequencyGroupItemPtr;

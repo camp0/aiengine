@@ -38,11 +38,11 @@ using namespace std;
 class FrequencyCounter 
 {
 public:
-    	explicit FrequencyCounter() {freqs_ = FrequenciesPtr(new Frequencies());reset();};
+    	explicit FrequencyCounter() {freqs_ = SharedPointer<Frequencies>(new Frequencies());reset();};
     	virtual ~FrequencyCounter() {};
 
 	void reset() { items_ = 0;freqs_->reset(); };
-	void addFrequencyComponent(FrequenciesPtr freq)
+	void addFrequencyComponent(SharedPointer<Frequencies> freq)
 	{	
 		if(freq)
 		{
@@ -62,19 +62,19 @@ public:
 			*f_dest = *f_dest / items_;
 	}
 
-	FrequenciesPtrWeak getFrequencyComponent() { return freqs_;};	
+	WeakPointer<Frequencies> getFrequencyComponent() { return freqs_;};	
 
-	void filterFrequencyComponent(FlowManagerPtr flow_t, std::function <bool (FlowPtr&)> checker )
+	void filterFrequencyComponent(FlowManagerPtr flow_t, std::function <bool (SharedPointer<Flow>&)> checker )
 	{
 		auto ft = flow_t->getFlowTable();
 		for (auto it = ft.begin(); it!=ft.end();++it)
 		{
-			FlowPtr flow = *it;
+			SharedPointer<Flow> flow = *it;
 			if(flow->frequencies.lock())
 			{
 				if(checker(flow))
 				{
-					FrequenciesPtr freq = flow->frequencies.lock();
+					SharedPointer<Frequencies> freq = flow->frequencies.lock();
 
 					if(freq)
 						addFrequencyComponent(freq);
@@ -84,7 +84,7 @@ public:
 	}
 
 private:
-	FrequenciesPtr freqs_;
+	SharedPointer<Frequencies> freqs_;
      	int items_; 
 };
 

@@ -51,7 +51,7 @@ public:
 	const char* getName(){ return name_.c_str();} 
 	void setName(char *name) { name_ = name;}
 
-	void agregateFlows(FlowManagerPtr flow_t, std::function <A_Type (FlowPtr&)> condition);
+	void agregateFlows(FlowManagerPtr flow_t, std::function <A_Type (SharedPointer<Flow>&)> condition);
 	void compute();
 
 	friend ostream& operator<<(ostream& os, const FrequencyGroup& fg)
@@ -87,8 +87,8 @@ public:
 	int32_t getTotalProcessFlows() { return total_process_flows_;}
 	int32_t getTotalComputedFrequencies() { return total_computed_freqs_;}
 
-	std::vector<FlowPtrWeak> &getReferenceFlows() { return flow_list_;};
-	std::vector<FlowPtrWeak> &getReferenceFlowsByKey(A_Type key);
+	std::vector<WeakPointer<Flow>> &getReferenceFlows() { return flow_list_;};
+	std::vector<WeakPointer<Flow>> &getReferenceFlowsByKey(A_Type key);
 
 	typedef std::map <A_Type,FrequencyGroupItemPtr> GroupMapType;
 	typedef typename GroupMapType::iterator iterator;
@@ -107,7 +107,7 @@ private:
 	int32_t total_process_flows_;
 	int32_t total_computed_freqs_;
 	GroupMapType group_map_;
-	std::vector<FlowPtrWeak> flow_list_;
+	std::vector<WeakPointer<Flow>> flow_list_;
 };
 
 #include "FrequencyGroup_Impl.h"

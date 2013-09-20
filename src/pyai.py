@@ -26,8 +26,8 @@ def loadSignaturesForUdp():
 
 if __name__ == '__main__':
 
-#	st = pyaiengine.StackMobile()
-	st = pyaiengine.StackLan()
+	st = pyaiengine.StackMobile()
+#	st = pyaiengine.StackLan()
 
 	pdis = pyaiengine.PacketDispatcher()
 
@@ -47,7 +47,7 @@ if __name__ == '__main__':
 	directory = "/home/luis/pcapfiles/torrent/vuze"
 	directory = "/home/luis/pcapfiles/defcon18/"
 	directory = "/home/luis/pcapfiles/http/"
-#	directory = "/home/luis/pcapfiles/vcom/"
+	directory = "/home/luis/pcapfiles/vcom/"
 	print "Ready to process files."
 	for pfile in os.listdir(directory):
 		print "Processing ",pfile
@@ -58,14 +58,15 @@ if __name__ == '__main__':
 			pdis.runPcap()
 		except:
 			print "Error: capturing packets"
-			pass
+			break	
 
 	
 	flows = st.getTCPFlowManager()
 
-#	print "number of flows:", len(flows)
+	print "number of flows:", len(flows)
 	for flow in flows:
-		print flow
+		print flow #,flow.getSourcePort(),flow.getDestinationPort()
+		break
 
 	f = open("signatures_tcp.log","w")
 	f.write(str(s_tcp))
@@ -75,7 +76,7 @@ if __name__ == '__main__':
 	f.write(str(st))
 	f.close()
 
-	st.printFlows()
+	#st.printFlows()
 
 	pdis.closePcapFile()
 

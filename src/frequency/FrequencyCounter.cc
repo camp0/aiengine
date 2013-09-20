@@ -23,7 +23,7 @@
  */
 #include "FrequencyCounter.h"
 
-void FrequencyCounter::addFrequencyComponent(FrequenciesPtr freq)
+void FrequencyCounter::addFrequencyComponent(SharedPointer<Frequencies> freq)
 {	
 	if(freq)
 	{

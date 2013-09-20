@@ -32,7 +32,7 @@ void FrequencyProtocol::processFlow(Flow *flow)
 
 	if(flow->total_packets < inspection_limit_ ) 
 	{
-		FrequenciesPtr freq = flow->frequencies.lock();
+		SharedPointer<Frequencies> freq = flow->frequencies.lock();
 
 		if(!freq) // There is no Frequency object attached to the flow
 		{
@@ -46,7 +46,7 @@ void FrequencyProtocol::processFlow(Flow *flow)
 			freq->addPayload(flow->packet->getPayload(),flow->packet->getLength());		
 		}
 
-                PacketFrequenciesPtr pkt_freq = flow->packet_frequencies.lock();
+                SharedPointer<PacketFrequencies> pkt_freq = flow->packet_frequencies.lock();
 
                 if(!pkt_freq) // There is no Frequency object attached to the flow
                 {

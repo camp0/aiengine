@@ -145,7 +145,7 @@ void showFrequencyResults()
 
 void showLearnerResults()
 {
-	std::vector<FlowPtrWeak> flow_list;
+	std::vector<WeakPointer<Flow>> flow_list;
 
 	flow_list = group.getReferenceFlowsByKey(option_learner_key);
 	if(flow_list.size()>0)

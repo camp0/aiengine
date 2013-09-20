@@ -110,7 +110,7 @@ public:
 	FlowCachePtr getFlowCache() { return flow_cache_;};
 
 private:
-	FlowPtr getFlow(); 
+	SharedPointer<Flow> getFlow(); 
 
 	int stats_level_;	
 	MultiplexerPtrWeak mux_;

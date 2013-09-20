@@ -21,24 +21,26 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _HTTPHost_H_
-#define _HTTPHost_H_
+#ifndef _Pointer_H_
+#define _Pointer_H_
 
-#include <iostream>
+using namespace std;
 
-class HTTPHost 
-{
-public:
-    	explicit HTTPHost(const std::string& name):host_name_(name) {};
-    	explicit HTTPHost() { reset(); };
-    	virtual ~HTTPHost() {};
+#ifdef PYTHON_BINDING
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
+#endif
 
-	void reset() { host_name_ = "";};	
-	std::string &getName() { return host_name_; };
-	void setName(const std::string& name) { host_name_ = name;};
-
-private:
-	std::string host_name_;
-};
+#ifdef PYTHON_BINDING
+template <class T1>
+using SharedPointer = boost::shared_ptr<T1>;
+template <class T2>
+using WeakPointer = boost::weak_ptr<T2>;
+#else
+template <class T1>
+using SharedPointer = std::shared_ptr<T1>;
+template <class T2>
+using WeakPointer = std::weak_ptr<T2>;
+#endif
 
 #endif

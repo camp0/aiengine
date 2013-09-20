@@ -53,11 +53,11 @@ void UDPProtocol::statistics(std::basic_ostream<char>& out)
 	}
 }
 
-FlowPtr UDPProtocol::getFlow() 
+SharedPointer<Flow> UDPProtocol::getFlow() 
 {
 	unsigned long h1;
 	unsigned long h2;
-	FlowPtr flow;
+	SharedPointer<Flow> flow;
 	MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();	
 	MultiplexerPtr ipmux = downmux.lock();
 
@@ -86,7 +86,7 @@ FlowPtr UDPProtocol::getFlow()
 
 void UDPProtocol::processPacket(Packet& packet)
 {
-	FlowPtr flow = getFlow();
+	SharedPointer<Flow> flow = getFlow();
 	int bytes;
 
 	++total_packets_;

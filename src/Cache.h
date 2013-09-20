@@ -28,6 +28,11 @@
 #include <config.h>
 #endif
 
+#ifdef PYTHON_BINDING
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
+#endif
+
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <iomanip>
 
@@ -35,11 +40,15 @@ template <class A_Type> class Cache
 {
 public:
 
+#ifdef PYTHON_BINDING
+	typedef boost::shared_ptr <Cache<A_Type>> CachePtr;
+	typedef boost::shared_ptr <A_Type> A_TypePtr;
+	typedef boost::weak_ptr <A_Type> A_TypePtrWeak;
+#else
 	typedef std::shared_ptr <Cache<A_Type>> CachePtr;
-
 	typedef std::shared_ptr <A_Type> A_TypePtr;
 	typedef std::weak_ptr <A_Type> A_TypePtrWeak;
-
+#endif
     	Cache():total_(0),total_acquires_(0),total_releases_(0),total_fails_(0),name_("") {};
     	Cache(std::string name):total_(0),total_acquires_(0),total_releases_(0),total_fails_(0),name_(name) {};
     	virtual ~Cache() { items_.clear();};

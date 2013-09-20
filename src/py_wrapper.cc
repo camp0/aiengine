@@ -34,13 +34,10 @@
 #include "log4cxx/basicconfigurator.h"
 
 // http://multiplexer.googlecode.com/svn/trunk/src/multiplexer/_mxclientmodule.cc
-// http://stackoverflow.com/questions/6326757/conversion-from-boostshared-ptr-to-stdshared-ptr
 
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 using namespace boost::python;
-
-typedef std::shared_ptr<Flow> pK;
 
 BOOST_PYTHON_MODULE(pyaiengine)
 {
@@ -144,15 +141,26 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	boost::python::class_<SignatureManager,boost::shared_ptr<SignatureManager>,boost::noncopyable >("SignatureManager")
 		.def("addSignature",addSignature1)
 		.def("addSignature",addSignature2)
+		.def("__len__",&SignatureManager::getTotalSignatures)
 		.def(self_ns::str(self_ns::self))
 	;
 
 	boost::python::class_<FlowManager,boost::shared_ptr<FlowManager>,boost::noncopyable >("FlowManager")
 		.def("__iter__",range(&FlowManager::begin,&FlowManager::end))
+		.def("__len__", &FlowManager::getTotalFlows)
 		.def(self_ns::str(self_ns::self))
 	;
 	
-	boost::python::class_<Flow,boost::shared_ptr<Flow>>("Flow")
+	boost::python::class_<Flow,SharedPointer<Flow>>("Flow")
+		.def("getProtocol",&Flow::getProtocol)
+		.def("getDestinationPort",&Flow::getDestinationPort)
+		.def("getSourcePort",&Flow::getSourcePort)
+		.def("getDestinationAddress",&Flow::getDestinationAddress)
+		.def("getSourceAddress",&Flow::getSourceAddress)
+		.def("getTotalPacketsLayer7",&Flow::getTotalPacketsLayer7)
+		.def("getTotalPackets",&Flow::getTotalPackets)
+		.def("getTotalBytes",&Flow::getTotalBytes)
+		.def(self_ns::str(self_ns::self))
 		;
 //	;
 	// Templatize the FrequencyGroup

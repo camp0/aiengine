@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE (test2_flowcache)
 	BOOST_CHECK(fc->getTotalFlowsOnCache() == 1);
 	BOOST_CHECK(fc->getTotalFlows() == 1);
 
-	FlowPtr f1 = fc->acquireFlow().lock();
+	SharedPointer<Flow> f1 = fc->acquireFlow().lock();
 
 	BOOST_CHECK(fc->getTotalFlowsOnCache() == 0);
 	BOOST_CHECK(fc->getTotalFlows() == 1);
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE (test2_flowcache)
 	BOOST_CHECK(fc->getTotalAcquires() == 1);
 	BOOST_CHECK(fc->getTotalFails() == 0);
 
-	FlowPtr f2 = fc->acquireFlow().lock();
+	SharedPointer<Flow> f2 = fc->acquireFlow().lock();
 	BOOST_CHECK(fc->getTotalFlows() == 1);
 	BOOST_CHECK(fc->getTotalReleases() == 0);
 	BOOST_CHECK(fc->getTotalAcquires() == 1);
@@ -104,9 +104,9 @@ BOOST_AUTO_TEST_CASE (test3_flowcache)
         FlowCache *fc = new FlowCache();
         fc->createFlows(10);
 
-	FlowPtr f1 = fc->acquireFlow().lock();
-	FlowPtr f2 = fc->acquireFlow().lock();
-	FlowPtr f3 = fc->acquireFlow().lock();
+	SharedPointer<Flow> f1 = fc->acquireFlow().lock();
+	SharedPointer<Flow> f2 = fc->acquireFlow().lock();
+	SharedPointer<Flow> f3 = fc->acquireFlow().lock();
 	
 	BOOST_CHECK(fc->getTotalFlowsOnCache() == 7);
 	BOOST_CHECK(fc->getTotalFlows() == 10);
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE (test4_flowcache)
         FlowCache *fc = new FlowCache();
         fc->createFlows(1);
 
-        FlowPtr f1 = fc->acquireFlow().lock();
+        SharedPointer<Flow> f1 = fc->acquireFlow().lock();
 
 	BOOST_CHECK(fc->getTotalFlowsOnCache() == 0);
 	f1->setId(10);
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE (test4_flowcache)
 	BOOST_CHECK(fc->getTotalFlowsOnCache() == 1);
         BOOST_CHECK(fc->getTotalReleases() == 1);
 
-	FlowPtr f2 = fc->acquireFlow().lock();
+	SharedPointer<Flow> f2 = fc->acquireFlow().lock();
         fc->destroyFlows(fc->getTotalFlows());
         delete fc;
 }
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_SUITE (flowmanager) // name of the test suite is stringtest
 BOOST_AUTO_TEST_CASE (test1_flowmanager_lookups)
 {
 	FlowManager *fm = new FlowManager();
-	FlowPtr f1 = FlowPtr(new Flow());
+	SharedPointer<Flow> f1 = SharedPointer<Flow>(new Flow());
 
 	unsigned long h1 = 1^2^3^4^5;
 	unsigned long h2 = 4^5^3^1^2;
@@ -164,11 +164,11 @@ BOOST_AUTO_TEST_CASE (test1_flowmanager_lookups)
 	fm->addFlow(f1);
 	BOOST_CHECK(fm->getTotalFlows() == 1);
 
-	FlowPtr f2 = fm->findFlow(hfail,h2);
+	SharedPointer<Flow> f2 = fm->findFlow(hfail,h2);
 	BOOST_CHECK(f1 == f2);
 	BOOST_CHECK(f1.get() == f2.get());
 
-	FlowPtr f3 = fm->findFlow(hfail,hfail);
+	SharedPointer<Flow> f3 = fm->findFlow(hfail,hfail);
 	BOOST_CHECK(f3.get() == 0);
 	BOOST_CHECK(fm->getTotalFlows() == 1);
 	delete fm;
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE (test1_flowmanager_lookups)
 BOOST_AUTO_TEST_CASE (test2_flowmanager_lookups_remove)
 {
         FlowManager *fm = new FlowManager();
-        FlowPtr f1 = FlowPtr(new Flow());
+        SharedPointer<Flow> f1 = SharedPointer<Flow>(new Flow());
 
         unsigned long h1 = 1^2^3^4^5;
         unsigned long h2 = 4^5^3^1^2;
@@ -209,7 +209,7 @@ BOOST_AUTO_TEST_CASE (test1_flowcache_flowmanager)
 	FlowManager *fm = new FlowManager();
 
 	fc->createFlows(10);
-	FlowPtr f1 = fc->acquireFlow().lock();
+	SharedPointer<Flow> f1 = fc->acquireFlow().lock();
 	BOOST_CHECK(f1.use_count() == 2); // one is the cache and the other f1
         BOOST_CHECK(fm->getTotalFlows() == 0);
         
@@ -220,7 +220,7 @@ BOOST_AUTO_TEST_CASE (test1_flowcache_flowmanager)
 
 	fm->addFlow(f1);
         BOOST_CHECK(fm->getTotalFlows() == 1);
-	FlowPtr f2 = fm->findFlow(h1,hfail);
+	SharedPointer<Flow> f2 = fm->findFlow(h1,hfail);
 	BOOST_CHECK(f2.get() == f1.get());
 	fm->removeFlow(f1);
         BOOST_CHECK(fm->getTotalFlows() == 0);
@@ -233,13 +233,13 @@ BOOST_AUTO_TEST_CASE (test2_flowcache_flowmanager)
 {
         FlowCachePtr fc = FlowCachePtr(new FlowCache());
         FlowManagerPtr fm = FlowManagerPtr(new FlowManager());
-	std::vector<FlowPtr> v;
+	std::vector<SharedPointer<Flow>> v;
 	
         fc->createFlows(64);
 
 	for (int i = 0;i< 66; ++i)
 	{
-        	FlowPtr f1 = fc->acquireFlow().lock();
+        	SharedPointer<Flow> f1 = fc->acquireFlow().lock();
 
 		if(f1)
 		{
@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE (test2_flowcache_flowmanager)
         	unsigned long h1 = 1^2^3^4^i;
         	unsigned long h2 = 4^i^3^1^2;
 
-		FlowPtr f1 = fm->findFlow(h1,h2);
+		SharedPointer<Flow> f1 = fm->findFlow(h1,h2);
 		if(f1)
 		{
 			fm->removeFlow(f1);

@@ -28,6 +28,7 @@
 #include <config.h>
 #endif
 
+#include "../Pointer.h"
 #include "../Packet.h"
 #include "../frequency/Frequencies.h"
 #include "../frequency/PacketFrequencies.h"
@@ -35,6 +36,11 @@
 #include "../http/HTTPUserAgent.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
+
+#ifdef PYTHON_BINDING
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
+#endif
 
 class FlowForwarder;
 typedef std::weak_ptr<FlowForwarder> FlowForwarderPtrWeak;
@@ -69,10 +75,10 @@ public:
 	int32_t total_packets_l7;
 	int32_t total_packets;
 
-	HTTPHostPtrWeak http_host;
-	HTTPUserAgentPtrWeak http_ua;	
-	FrequenciesPtrWeak frequencies;
-	PacketFrequenciesPtrWeak packet_frequencies;
+	WeakPointer<HTTPHost> http_host;
+	WeakPointer<HTTPUserAgent> http_ua;	
+	WeakPointer<Frequencies> frequencies;
+	WeakPointer<PacketFrequencies> packet_frequencies;
 	FlowForwarderPtrWeak forwarder;
 
 	Packet *packet;
@@ -94,6 +100,21 @@ public:
 		http_ua.reset();
 		packet = nullptr;
 	};
+
+#ifdef PYTHON_BINDING
+	friend std::ostream& operator<< (std::ostream& out, const Flow& flow)
+	{
+		out << flow.getSrcAddrDotNotation() << ":" << flow.getSourcePort() << ":" << flow.getProtocol();
+		out << ":" << flow.getDstAddrDotNotation() << ":" << flow.getDestinationPort() << std::endl;
+        	return out;
+	}
+
+	int32_t getTotalBytes() const { return total_bytes;};
+	int32_t getTotalPacketsLayer7() const { return total_packets_l7;};
+	int32_t getTotalPackets() const { return total_packets;};
+
+#endif
+
 private:
 	unsigned long hash_;
 	u_int32_t source_address_;
@@ -102,8 +123,5 @@ private:
 	u_int16_t dest_port_;
 	u_int16_t protocol_;
 };
-
-typedef std::shared_ptr<Flow> FlowPtr;
-typedef std::weak_ptr<Flow> FlowPtrWeak;
 
 #endif

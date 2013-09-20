@@ -32,7 +32,7 @@
 BOOST_AUTO_TEST_CASE (test1_learner)
 {
 	LearnerEnginePtr le = LearnerEnginePtr(new LearnerEngine());
-	PacketFrequenciesPtr pkt_f1 = PacketFrequenciesPtr(new PacketFrequencies());
+	SharedPointer<PacketFrequencies> pkt_f1 = SharedPointer<PacketFrequencies>(new PacketFrequencies());
 
 	char *payload1 = "\x16\x04\xaa\xaa";
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (payload1);
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE (test1_learner)
 	
 	char *payload2 = "\x16\x02\xaa\x00";
         unsigned char *pkt2 = reinterpret_cast <unsigned char*> (payload2);
-	PacketFrequenciesPtr pkt_f2 = PacketFrequenciesPtr(new PacketFrequencies());
+	SharedPointer<PacketFrequencies> pkt_f2 = SharedPointer<PacketFrequencies>(new PacketFrequencies());
         int length2 = 4;
 
 	pkt_f2->addPayload(pkt2,length2);
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE (test1_learner)
 BOOST_AUTO_TEST_CASE (test2_learner)
 {
         LearnerEnginePtr le = LearnerEnginePtr(new LearnerEngine());
-        PacketFrequenciesPtr pkt_f1 = PacketFrequenciesPtr(new PacketFrequencies());
+        SharedPointer<PacketFrequencies> pkt_f1 = SharedPointer<PacketFrequencies>(new PacketFrequencies());
 
         char *payload1 = "\xaa\xaa\x01\x02\xff\xff";
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (payload1);
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE (test2_learner)
 
         char *payload2 = "\x16\xaa\xaa\x00";
         unsigned char *pkt2 = reinterpret_cast <unsigned char*> (payload2);
-        PacketFrequenciesPtr pkt_f2 = PacketFrequenciesPtr(new PacketFrequencies());
+        SharedPointer<PacketFrequencies> pkt_f2 = SharedPointer<PacketFrequencies>(new PacketFrequencies());
         int length2 = 4;
 
         pkt_f2->addPayload(pkt2,length2);

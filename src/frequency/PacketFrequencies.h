@@ -169,7 +169,4 @@ private:
 	int length_;
 };
 
-typedef std::shared_ptr<PacketFrequencies> PacketFrequenciesPtr;
-typedef std::weak_ptr<PacketFrequencies> PacketFrequenciesPtrWeak;
-
 #endif
