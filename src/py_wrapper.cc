@@ -160,6 +160,28 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getTotalPacketsLayer7",&Flow::getTotalPacketsLayer7)
 		.def("getTotalPackets",&Flow::getTotalPackets)
 		.def("getTotalBytes",&Flow::getTotalBytes)
+		.def("getHTTPHost",&Flow::getHTTPHost,return_internal_reference<>())
+		.def("getHTTPUserAgent",&Flow::getHTTPUserAgent,return_internal_reference<>())
+		.def("getFrequencies",&Flow::getFrequencies,return_internal_reference<>())
+		.def("getPacketFrequencies",&Flow::getPacketFrequencies,return_internal_reference<>())
+		.def(self_ns::str(self_ns::self))
+		;
+
+	boost::python::class_<HTTPHost, SharedPointer<HTTPHost>,boost::noncopyable>("HTTPHost")
+		.def(self_ns::str(self_ns::self))
+		;
+
+	boost::python::class_<HTTPUserAgent, SharedPointer<HTTPUserAgent>, boost::noncopyable>("HTTPUserAgent")
+		.def(self_ns::str(self_ns::self))
+		;
+
+	boost::python::class_<Frequencies, SharedPointer<Frequencies>, boost::noncopyable>("Frequencies")
+		.def("getDispersion",&Frequencies::getDispersion)
+		.def("getEnthropy",&Frequencies::getEnthropy)
+		.def(self_ns::str(self_ns::self))
+		;
+	
+	boost::python::class_<PacketFrequencies, SharedPointer<PacketFrequencies>, boost::noncopyable>("PacketFrequencies")
 		.def(self_ns::str(self_ns::self))
 		;
 //	;

@@ -37,6 +37,14 @@ public:
         void setName(const std::string& name) { ua_name_ = name;};
 	std::string &getName() { return ua_name_; };
 
+#ifdef PYTHON_BINDING
+        friend std::ostream& operator<< (std::ostream& out, const HTTPUserAgent& ua)
+        {
+                out << ua.ua_name_ ;
+                return out;
+        }
+#endif
+
 private:
 	std::string ua_name_;
 };

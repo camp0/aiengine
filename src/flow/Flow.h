@@ -105,13 +105,18 @@ public:
 	friend std::ostream& operator<< (std::ostream& out, const Flow& flow)
 	{
 		out << flow.getSrcAddrDotNotation() << ":" << flow.getSourcePort() << ":" << flow.getProtocol();
-		out << ":" << flow.getDstAddrDotNotation() << ":" << flow.getDestinationPort() << std::endl;
+		out << ":" << flow.getDstAddrDotNotation() << ":" << flow.getDestinationPort();
         	return out;
 	}
 
 	int32_t getTotalBytes() const { return total_bytes;};
 	int32_t getTotalPacketsLayer7() const { return total_packets_l7;};
 	int32_t getTotalPackets() const { return total_packets;};
+
+	HTTPHost& getHTTPHost() const { return *http_host.lock().get();};
+	HTTPUserAgent& getHTTPUserAgent() const { return *http_ua.lock().get();};
+	Frequencies& getFrequencies() const { return *frequencies.lock().get();};
+	PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.lock().get();};
 
 #endif
 

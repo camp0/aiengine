@@ -37,6 +37,14 @@ public:
 	std::string &getName() { return host_name_; };
 	void setName(const std::string& name) { host_name_ = name;};
 
+#ifdef PYTHON_BINDING
+	friend std::ostream& operator<< (std::ostream& out, const HTTPHost& host)
+	{
+		out << host.host_name_ ;
+        	return out;
+	}
+#endif
+
 private:
 	std::string host_name_;
 };
