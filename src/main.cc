@@ -50,6 +50,7 @@ LearnerEngine learner;
 
 std::map<std::string,std::function <void(FlowManagerPtr)>> group_map_options;
 
+std::string option_link_type_tag;
 std::string option_learner_key;
 std::string option_stack_name;
 std::string option_pcapfile;
@@ -196,6 +197,12 @@ int main(int argc, char* argv[])
 			"Sets the pcap file.")
         	;
 
+        po::options_description optional_ops_tag("Link Layer optional arguments");
+        optional_ops_tag.add_options()
+                ("tag,q",    po::value<std::string>(&option_link_type_tag)->default_value(""),
+                        "Selects the tag type of the ethernet layer (vlan,mpls).")
+                ;
+
 	po::options_description optional_ops_tcp("TCP optional arguments");
 	optional_ops_tcp.add_options()
 		("tcp-flows,t",    po::value<int>(&tcp_flows_cache)->default_value(32768),
@@ -220,6 +227,7 @@ int main(int argc, char* argv[])
 					"Sets the key for the Learner engine.") 
                 ;
 
+	mandatory_ops.add(optional_ops_tag);
 	mandatory_ops.add(optional_ops_tcp);
 	mandatory_ops.add(optional_ops_udp);
 	mandatory_ops.add(optional_ops_freq);
@@ -290,14 +298,16 @@ int main(int argc, char* argv[])
 
 	if(option_stack_name.compare("lan") == 0)
 	{
-		//StackLanPtr stack_lan = StackLanPtr(new StackLan());
-		//stack = stack_lan;
 		stack = NetworkStackPtr(new StackLan());
-	}else{
+	}
+	else
+	{
 		if (option_stack_name.compare("mobile") ==0)
 		{
 			stack = NetworkStackPtr(new StackMobile());
-		}else{
+		}
+		else
+		{
 			std::cout << "iaengine: Unknown stack " << option_stack_name << std::endl;
 			exit(-1);
 		}
@@ -319,6 +329,11 @@ int main(int argc, char* argv[])
 		stack->enableFrequencyEngine(true);
 		option_enable_frequencies = true;
 	}
+
+	if(option_link_type_tag.length() > 0)
+		stack->enableLinkLayerTagging(option_link_type_tag);	
+
+	
 
 	// connect with the stack
         pktdis->setStack(stack);

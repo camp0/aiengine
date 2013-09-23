@@ -34,6 +34,8 @@ StackMobile::StackMobile()
 
 	// Allocate all the Protocol objects
         eth_= EthernetProtocolPtr(new EthernetProtocol());
+        vlan_= VLanProtocolPtr(new VLanProtocol());
+        mpls_= MPLSProtocolPtr(new MPLSProtocol());
         ip_low_ = IPProtocolPtr(new IPProtocol());
 	ip_high_ = IPProtocolPtr(new IPProtocol());
         udp_low_ = UDPProtocolPtr(new UDPProtocol());
@@ -51,6 +53,8 @@ StackMobile::StackMobile()
 
 	// Allocate the Multiplexers
 	mux_eth_ = MultiplexerPtr(new Multiplexer());
+	mux_vlan_ = MultiplexerPtr(new Multiplexer());
+	mux_mpls_ = MultiplexerPtr(new Multiplexer());
 	mux_ip_low_ = MultiplexerPtr(new Multiplexer());
 	mux_ip_high_ = MultiplexerPtr(new Multiplexer());
 	mux_udp_low_ = MultiplexerPtr(new Multiplexer());
@@ -85,6 +89,20 @@ StackMobile::StackMobile()
 	mux_eth_->setProtocolIdentifier(0);
 	mux_eth_->setHeaderSize(eth_->getHeaderSize());
 	mux_eth_->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth_,std::placeholders::_1));
+
+        //configure the VLan tagging Layer
+        vlan_->setMultiplexer(mux_vlan_);
+        mux_vlan_->setProtocol(static_cast<ProtocolPtr>(vlan_));
+        mux_vlan_->setProtocolIdentifier(ETH_P_8021Q);
+        mux_vlan_->setHeaderSize(vlan_->getHeaderSize());
+        mux_vlan_->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan_,std::placeholders::_1));
+
+        //configure the MPLS Layer
+        mpls_->setMultiplexer(mux_mpls_);
+        mux_mpls_->setProtocol(static_cast<ProtocolPtr>(mpls_));
+        mux_mpls_->setProtocolIdentifier(ETH_P_MPLS_UC);
+        mux_mpls_->setHeaderSize(mpls_->getHeaderSize());
+        mux_mpls_->addChecker(std::bind(&MPLSProtocol::mplsChecker,mpls_,std::placeholders::_1));
 
 	// configure the low IP Layer 
 	ip_low_->setMultiplexer(mux_ip_low_);
@@ -320,6 +338,8 @@ void StackMobile::enableFrequencyEngine(bool enable)
 
                 ff_tcp_->insertUpFlowForwarder(ff_tcp_freqs_);
                 ff_udp_high_->insertUpFlowForwarder(ff_udp_freqs_);
+
+		LOG4CXX_INFO (logger, "Enable FrequencyEngine on " << name_ );
         }
         else
         {
@@ -351,3 +371,6 @@ void StackMobile::setStatisticsLevel(int level)
         freqs_tcp_->setStatisticsLevel(level);
 }
 
+void StackMobile::enableLinkLayerTagging(std::string type)
+{
+}

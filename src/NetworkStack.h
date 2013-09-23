@@ -58,6 +58,7 @@ public:
 	virtual void setUDPSignatureManager(SignatureManager& sig) = 0;	
 
 	virtual void enableFrequencyEngine(bool enable) = 0;
+	virtual void enableLinkLayerTagging(std::string type) = 0;
 
 #ifdef PYTHON_BINDING
 	virtual FlowManager& getTCPFlowManager() = 0;
@@ -66,6 +67,12 @@ public:
 	virtual FlowManagerPtrWeak getTCPFlowManager() = 0;
 	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;
 #endif
+
+private:
+	MultiplexerPtr mux_eth_;
+	MultiplexerPtr mux_vlan_;
+	MultiplexerPtr mux_mpls_;
+	MultiplexerPtr mux_ip_;
 };
 
 typedef std::shared_ptr <NetworkStack> NetworkStackPtr;

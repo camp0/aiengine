@@ -33,6 +33,8 @@
 #include "Multiplexer.h"
 #include "FlowForwarder.h"
 #include "./ethernet/EthernetProtocol.h"
+#include "./vlan/VLanProtocol.h"
+#include "./mpls/MPLSProtocol.h"
 #include "./ip/IPProtocol.h"
 #include "./udp/UDPProtocol.h"
 #include "./tcp/TCPProtocol.h"
@@ -80,6 +82,7 @@ public:
         void setUDPSignatureManager(SignatureManager& sig);
 
 	void enableFrequencyEngine(bool value);
+	void enableLinkLayerTagging(std::string type);
 
 #ifdef PYTHON_BINDING
         FlowManager &getTCPFlowManager() { return *flow_mng_tcp_.get();};
@@ -97,6 +100,8 @@ private:
 
         //Protocols
         EthernetProtocolPtr eth_;
+        VLanProtocolPtr vlan_;
+        MPLSProtocolPtr mpls_;
         IPProtocolPtr ip_low_,ip_high_;
         UDPProtocolPtr udp_low_,udp_high_;
         TCPProtocolPtr tcp_;
@@ -112,6 +117,8 @@ private:
 	
         // Multiplexers
         MultiplexerPtr mux_eth_;
+        MultiplexerPtr mux_vlan_;
+        MultiplexerPtr mux_mpls_;
         MultiplexerPtr mux_ip_low_,mux_ip_high_;
         MultiplexerPtr mux_udp_low_,mux_udp_high_;
         MultiplexerPtr mux_gprs_;

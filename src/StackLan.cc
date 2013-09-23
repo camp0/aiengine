@@ -33,12 +33,17 @@ StackLan::StackLan()
 	name_ = "Lan network stack";
 
 	// Allocate all the Protocol objects
+        eth_ = EthernetProtocolPtr(new EthernetProtocol());
+	vlan_ = VLanProtocolPtr(new VLanProtocol());
+	mpls_ = MPLSProtocolPtr(new MPLSProtocol());
+
+        ip_ = IPProtocolPtr(new IPProtocol());
+
         tcp_ = TCPProtocolPtr(new TCPProtocol());
         udp_ = UDPProtocolPtr(new UDPProtocol());
-        ip_ = IPProtocolPtr(new IPProtocol());
-        eth_ = EthernetProtocolPtr(new EthernetProtocol());
         icmp_ = ICMPProtocolPtr(new ICMPProtocol());
-        http_ = HTTPProtocolPtr(new HTTPProtocol());
+        
+	http_ = HTTPProtocolPtr(new HTTPProtocol());
         ssl_ = SSLProtocolPtr(new SSLProtocol());
         dns_ = DNSProtocolPtr(new DNSProtocol());
 	tcp_generic_ = TCPGenericProtocolPtr(new TCPGenericProtocol());
@@ -48,6 +53,8 @@ StackLan::StackLan()
 
 	// Allocate the Multiplexers
 	mux_eth_ = MultiplexerPtr(new Multiplexer());
+	mux_vlan_ = MultiplexerPtr(new Multiplexer());
+	mux_mpls_ = MultiplexerPtr(new Multiplexer());
 	mux_ip_ = MultiplexerPtr(new Multiplexer());
 	mux_udp_ = MultiplexerPtr(new Multiplexer());
 	mux_tcp_ = MultiplexerPtr(new Multiplexer());
@@ -75,6 +82,20 @@ StackLan::StackLan()
 	mux_eth_->setProtocolIdentifier(0);
 	mux_eth_->setHeaderSize(eth_->getHeaderSize());
 	mux_eth_->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth_,std::placeholders::_1));
+
+	//configure the VLan tagging Layer 
+	vlan_->setMultiplexer(mux_vlan_);
+	mux_vlan_->setProtocol(static_cast<ProtocolPtr>(vlan_));
+	mux_vlan_->setProtocolIdentifier(ETH_P_8021Q);
+	mux_vlan_->setHeaderSize(vlan_->getHeaderSize());
+	mux_vlan_->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan_,std::placeholders::_1));
+
+	//configure the MPLS Layer 
+	mpls_->setMultiplexer(mux_mpls_);
+	mux_mpls_->setProtocol(static_cast<ProtocolPtr>(mpls_));
+	mux_mpls_->setProtocolIdentifier(ETH_P_MPLS_UC);
+	mux_mpls_->setHeaderSize(mpls_->getHeaderSize());
+	mux_mpls_->addChecker(std::bind(&MPLSProtocol::mplsChecker,mpls_,std::placeholders::_1));
 
 	// configure the IP Layer 
 	ip_->setMultiplexer(mux_ip_);
@@ -261,6 +282,8 @@ void StackLan::enableFrequencyEngine(bool enable)
 
 		ff_tcp_->insertUpFlowForwarder(ff_tcp_freqs_);	
 		ff_udp_->insertUpFlowForwarder(ff_udp_freqs_);	
+	
+		LOG4CXX_INFO (logger, "Enable FrequencyEngine on " << name_ );
 	}
 	else
 	{
@@ -302,3 +325,4 @@ void StackLan::setStatisticsLevel(int level)
         tcp_generic_->setStatisticsLevel(level);
         freqs_tcp_->setStatisticsLevel(level);
 }
+

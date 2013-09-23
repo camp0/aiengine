@@ -24,10 +24,32 @@ def loadSignaturesForUdp():
 
 	return sm
 
+
+
+def processFlows(flowlist):
+
+        print "number of flows:", len(flowlist)
+        for flow in flowlist:
+                name = str(flow)
+                print name,flow.getTotalBytes() #,flow.getSourcePort(),flow.getDestinationPort()
+
+                if(flow.getHTTPHost()):
+			print "tiene"
+                        print flow.getHTTPHost()
+
+		if(flow.getFrequencies()):
+			freq = flow.getFrequencies()
+			print freq.getFrequenciesString()
+
+		if(flow.getPacketFrequencies()):
+			freq_pkt = flow.getPacketFrequencies()
+			print freq_pkt.getPacketFrequenciesString()
+
+
 if __name__ == '__main__':
 
-#	st = pyaiengine.StackMobile()
-	st = pyaiengine.StackLan()
+	st = pyaiengine.StackMobile()
+	#st = pyaiengine.StackLan()
 
 	pdis = pyaiengine.PacketDispatcher()
 
@@ -48,6 +70,7 @@ if __name__ == '__main__':
 	directory = "/home/luis/pcapfiles/defcon18/"
 	directory = "/home/luis/pcapfiles/http/"
 	#directory = "/home/luis/pcapfiles/vcom/"
+	directory = "/home/luis/pcapfiles/spotify/1/"
 	print "Ready to process files."
 	for pfile in os.listdir(directory):
 		print "Processing ",pfile
@@ -60,14 +83,9 @@ if __name__ == '__main__':
 			print "Error: capturing packets"
 			break	
 
-	
 	flows = st.getTCPFlowManager()
 
-	print "number of flows:", len(flows)
-	for flow in flows:
-		print flow #,flow.getSourcePort(),flow.getDestinationPort()
-		if(flow.getHTTPHost()):
-			print flow.getHTTPHost()	
+	processFlows(flows)
 
 	f = open("signatures_tcp.log","w")
 	f.write(str(s_tcp))

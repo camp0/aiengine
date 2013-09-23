@@ -178,10 +178,12 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	boost::python::class_<Frequencies, SharedPointer<Frequencies>, boost::noncopyable>("Frequencies")
 		.def("getDispersion",&Frequencies::getDispersion)
 		.def("getEnthropy",&Frequencies::getEnthropy)
+		.def("getFrequenciesString",&Frequencies::getFrequenciesString)
 		.def(self_ns::str(self_ns::self))
 		;
 	
 	boost::python::class_<PacketFrequencies, SharedPointer<PacketFrequencies>, boost::noncopyable>("PacketFrequencies")
+		.def("getPacketFrequenciesString",&PacketFrequencies::getPacketFrequenciesString)
 		.def(self_ns::str(self_ns::self))
 		;
 //	;
