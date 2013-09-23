@@ -68,11 +68,6 @@ public:
 	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;
 #endif
 
-private:
-	MultiplexerPtr mux_eth_;
-	MultiplexerPtr mux_vlan_;
-	MultiplexerPtr mux_mpls_;
-	MultiplexerPtr mux_ip_;
 };
 
 typedef std::shared_ptr <NetworkStack> NetworkStackPtr;

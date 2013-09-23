@@ -77,7 +77,7 @@ public:
         void setUDPSignatureManager(SignatureManager& sig) ;
 
 	void enableFrequencyEngine(bool enable);
-	void enableLinkLayerTagging(std::string type) {};
+	void enableLinkLayerTagging(std::string type);
 
 #ifdef PYTHON_BINDING
         FlowManager &getTCPFlowManager() { return *flow_table_tcp_.get();};
@@ -93,10 +93,10 @@ private:
 	static log4cxx::LoggerPtr logger;
 
         //Protocols
-        EthernetProtocolPtr eth_;
+	EthernetProtocolPtr eth_;
 	VLanProtocolPtr vlan_;
 	MPLSProtocolPtr mpls_;
-        IPProtocolPtr ip_;
+	IPProtocolPtr ip_;
         UDPProtocolPtr udp_;
         TCPProtocolPtr tcp_;
         ICMPProtocolPtr icmp_;

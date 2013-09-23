@@ -32,11 +32,10 @@ StackLan::StackLan()
 {
 	name_ = "Lan network stack";
 
-	// Allocate all the Protocol objects
+	// Allocate all the specific Protocol objects
         eth_ = EthernetProtocolPtr(new EthernetProtocol());
-	vlan_ = VLanProtocolPtr(new VLanProtocol());
-	mpls_ = MPLSProtocolPtr(new MPLSProtocol());
-
+        vlan_ = VLanProtocolPtr(new VLanProtocol());
+        mpls_ = MPLSProtocolPtr(new MPLSProtocol());
         ip_ = IPProtocolPtr(new IPProtocol());
 
         tcp_ = TCPProtocolPtr(new TCPProtocol());
@@ -52,10 +51,10 @@ StackLan::StackLan()
 	freqs_udp_ = FrequencyProtocolPtr(new FrequencyProtocol());
 
 	// Allocate the Multiplexers
-	mux_eth_ = MultiplexerPtr(new Multiplexer());
-	mux_vlan_ = MultiplexerPtr(new Multiplexer());
-	mux_mpls_ = MultiplexerPtr(new Multiplexer());
-	mux_ip_ = MultiplexerPtr(new Multiplexer());
+        mux_eth_ = MultiplexerPtr(new Multiplexer());
+        mux_vlan_ = MultiplexerPtr(new Multiplexer());
+        mux_mpls_ = MultiplexerPtr(new Multiplexer());
+        mux_ip_ = MultiplexerPtr(new Multiplexer());
 	mux_udp_ = MultiplexerPtr(new Multiplexer());
 	mux_tcp_ = MultiplexerPtr(new Multiplexer());
 	mux_icmp_ = MultiplexerPtr(new Multiplexer());
@@ -326,3 +325,25 @@ void StackLan::setStatisticsLevel(int level)
         freqs_tcp_->setStatisticsLevel(level);
 }
 
+void StackLan::enableLinkLayerTagging(std::string type)
+{
+	if(type.compare("vlan") == 0)
+        {
+                mux_eth_->addUpMultiplexer(mux_vlan_,ETH_P_8021Q);
+                mux_vlan_->addUpMultiplexer(mux_ip_,ETHERTYPE_IP);
+                mux_ip_->addDownMultiplexer(mux_vlan_);
+        }
+        else
+        {
+                if(type.compare("mpls") == 0)
+                {
+                        mux_eth_->addUpMultiplexer(mux_mpls_,ETH_P_MPLS_UC);
+                        mux_mpls_->addUpMultiplexer(mux_ip_,ETHERTYPE_IP);
+                        mux_ip_->addDownMultiplexer(mux_mpls_);
+                }
+                else
+                {
+                        LOG4CXX_WARN (logger, "Unknown tagging type " << type );
+                }
+        }
+}

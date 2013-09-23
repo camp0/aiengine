@@ -373,4 +373,25 @@ void StackMobile::setStatisticsLevel(int level)
 
 void StackMobile::enableLinkLayerTagging(std::string type)
 {
+        if(type.compare("vlan") == 0)
+        {
+                mux_eth_->addUpMultiplexer(mux_vlan_,ETH_P_8021Q);
+                mux_vlan_->addDownMultiplexer(mux_eth_);
+                mux_vlan_->addUpMultiplexer(mux_ip_low_,ETHERTYPE_IP);
+                mux_ip_low_->addDownMultiplexer(mux_vlan_);
+        }
+        else
+        {
+                if(type.compare("mpls") == 0)
+                {
+                        mux_eth_->addUpMultiplexer(mux_mpls_,ETH_P_MPLS_UC);
+                        mux_mpls_->addUpMultiplexer(mux_ip_low_,ETHERTYPE_IP);
+                        mux_ip_low_->addDownMultiplexer(mux_mpls_);
+                }
+                else
+                {
+                        LOG4CXX_WARN (logger, "Unknown tagging type " << type );
+                }
+        }
 }
+
