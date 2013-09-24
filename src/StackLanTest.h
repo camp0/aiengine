@@ -128,6 +128,7 @@ struct StackLanTest
 		mux_mpls->setProtocolIdentifier(ETH_P_MPLS_UC);
 		mux_mpls->setHeaderSize(mpls->getHeaderSize());
         	mux_mpls->addChecker(std::bind(&MPLSProtocol::mplsChecker,mpls,std::placeholders::_1));
+		mux_mpls->addPacketFunction(std::bind(&MPLSProtocol::processPacket,mpls,std::placeholders::_1));
 
                 // configure the ip
                 ip->setMultiplexer(mux_ip);

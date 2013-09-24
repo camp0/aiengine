@@ -441,6 +441,48 @@ BOOST_FIXTURE_TEST_CASE(test_case_10,StackLanTest)
 
 }
 
+BOOST_FIXTURE_TEST_CASE(test_case_11,StackLanTest)
+{
+
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+        this->enableLinkLayerTagging("mpls");
+
+        pd->openPcapFile("../pcapfiles/mpls_icmp.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        BOOST_CHECK(pd->getTotalPackets() == 10);
+        BOOST_CHECK(mux_eth->getTotalForwardPackets() == 10);
+        BOOST_CHECK(mux_eth->getTotalReceivedPackets() == 10);
+        BOOST_CHECK(mux_eth->getTotalFailPackets() == 0);
+
+        BOOST_CHECK(mux_mpls->getTotalForwardPackets() == 5);
+        BOOST_CHECK(mux_mpls->getTotalReceivedPackets() == 5);
+        BOOST_CHECK(mux_mpls->getTotalFailPackets() == 0);
+        BOOST_CHECK(mpls->getTotalValidatedPackets() == 5);
+        BOOST_CHECK(mpls->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(mpls->getTotalPackets() == 5);
+
+        BOOST_CHECK(mux_ip->getTotalForwardPackets() == 10);
+        BOOST_CHECK(mux_ip->getTotalReceivedPackets() == 10);
+        BOOST_CHECK(mux_ip->getTotalFailPackets() == 0);
+        BOOST_CHECK(ip->getTotalValidatedPackets() == 10);
+        BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(ip->getTotalPackets() == 10);
+
+        BOOST_CHECK(mux_icmp->getTotalForwardPackets() == 0);
+        BOOST_CHECK(mux_icmp->getTotalReceivedPackets() == 10);
+        BOOST_CHECK(mux_icmp->getTotalFailPackets() == 10);
+        BOOST_CHECK(icmp->getTotalValidatedPackets() == 10);
+        BOOST_CHECK(icmp->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(icmp->getTotalPackets() == 0);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END( )
 
 BOOST_AUTO_TEST_SUITE (test_real_stack) // Test cases for real stacks StackLan and Stack3G 
