@@ -60,5 +60,27 @@ BOOST_AUTO_TEST_CASE (test2_vlan)
        	BOOST_CHECK(vlan->getEthernetType() == ETH_P_IP);
 }
 
+BOOST_AUTO_TEST_CASE (test3_vlan)
+{
+        unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet_ethernet_vlan_ip_udp_netbios);
+        int length = raw_packet_ethernet_vlan_ip_udp_netbios_length;
+        Packet pkt(packet,length,0);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&pkt);
+        eth->setHeader(pkt.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(pkt);
+
+        BOOST_CHECK(mux_eth->getTotalForwardPackets() == 1);
+        BOOST_CHECK(mux_vlan->getTotalForwardPackets() == 0);
+        BOOST_CHECK(mux_vlan->getTotalFailPackets() == 1);
+
+        BOOST_CHECK(vlan->getEthernetType() == ETH_P_IP);
+}
+
+
+
 BOOST_AUTO_TEST_SUITE_END( )
 

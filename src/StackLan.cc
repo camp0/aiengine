@@ -88,6 +88,7 @@ StackLan::StackLan()
 	mux_vlan_->setProtocolIdentifier(ETH_P_8021Q);
 	mux_vlan_->setHeaderSize(vlan_->getHeaderSize());
 	mux_vlan_->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan_,std::placeholders::_1));
+	mux_vlan_->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan_,std::placeholders::_1));
 
 	//configure the MPLS Layer 
 	mpls_->setMultiplexer(mux_mpls_);

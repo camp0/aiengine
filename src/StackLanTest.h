@@ -28,6 +28,8 @@
 #include "Multiplexer.h"
 #include "FlowForwarder.h"
 #include "./ethernet/EthernetProtocol.h"
+#include "./vlan/VLanProtocol.h"
+#include "./mpls/MPLSProtocol.h"
 #include "./ip/IPProtocol.h"
 #include "./udp/UDPProtocol.h"
 #include "./tcp/TCPProtocol.h"
@@ -41,6 +43,8 @@ struct StackLanTest
 {
 	//Protocols
         EthernetProtocolPtr eth;
+	VLanProtocolPtr vlan;
+	MPLSProtocolPtr mpls;
         IPProtocolPtr ip;
         UDPProtocolPtr udp;
         TCPProtocolPtr tcp;
@@ -50,6 +54,8 @@ struct StackLanTest
 
 	// Multiplexers
         MultiplexerPtr mux_eth;
+        MultiplexerPtr mux_vlan;
+        MultiplexerPtr mux_mpls;
         MultiplexerPtr mux_ip;
         MultiplexerPtr mux_udp;
         MultiplexerPtr mux_tcp;
@@ -70,6 +76,8 @@ struct StackLanTest
         StackLanTest()
         {
 		// Allocate all the Protocol objects
+		vlan = VLanProtocolPtr(new VLanProtocol());
+		mpls = MPLSProtocolPtr(new MPLSProtocol());
                 tcp = TCPProtocolPtr(new TCPProtocol());
                 udp = UDPProtocolPtr(new UDPProtocol());
                 ip = IPProtocolPtr(new IPProtocol());
@@ -80,6 +88,8 @@ struct StackLanTest
 
 		// Allocate the Multiplexers
                 mux_eth = MultiplexerPtr(new Multiplexer());
+                mux_vlan = MultiplexerPtr(new Multiplexer());
+                mux_mpls = MultiplexerPtr(new Multiplexer());
                 mux_ip = MultiplexerPtr(new Multiplexer());
                 mux_udp = MultiplexerPtr(new Multiplexer());
                 mux_tcp = MultiplexerPtr(new Multiplexer());
@@ -102,6 +112,22 @@ struct StackLanTest
 		mux_eth->setProtocolIdentifier(0);
                 mux_eth->setHeaderSize(eth->getHeaderSize());
                 mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
+
+
+		//configure the VLan tagging Layer
+		vlan->setMultiplexer(mux_vlan);
+		mux_vlan->setProtocol(static_cast<ProtocolPtr>(vlan));
+		mux_vlan->setProtocolIdentifier(ETH_P_8021Q);
+		mux_vlan->setHeaderSize(vlan->getHeaderSize());
+		mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan,std::placeholders::_1));
+		mux_vlan->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan,std::placeholders::_1));
+
+		//configure the MPLS Layer
+		mpls->setMultiplexer(mux_mpls);
+		mux_mpls->setProtocol(static_cast<ProtocolPtr>(mpls));
+		mux_mpls->setProtocolIdentifier(ETH_P_MPLS_UC);
+		mux_mpls->setHeaderSize(mpls->getHeaderSize());
+        	mux_mpls->addChecker(std::bind(&MPLSProtocol::mplsChecker,mpls,std::placeholders::_1));
 
                 // configure the ip
                 ip->setMultiplexer(mux_ip);
@@ -199,6 +225,28 @@ struct StackLanTest
 		std::cout << "Flows on memory" << std::endl;
 		flow_table_tcp->printFlows(std::cout);
 		flow_table_udp->printFlows(std::cout);
+	}
+
+	void enableLinkLayerTagging(std::string type)
+	{
+		if(type.compare("vlan") == 0)
+		{
+
+			mux_eth->addUpMultiplexer(mux_vlan,ETH_P_8021Q);
+			mux_vlan->addDownMultiplexer(mux_eth);
+			mux_vlan->addUpMultiplexer(mux_ip,ETH_P_IP);
+			//mux_vlan->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
+			mux_ip->addDownMultiplexer(mux_vlan);
+		}
+		else
+		{
+			if(type.compare("mpls") == 0)
+			{
+				mux_eth->addUpMultiplexer(mux_mpls,ETH_P_MPLS_UC);
+				mux_mpls->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
+				mux_ip->addDownMultiplexer(mux_mpls);
+			}
+        	}
 	}
 
         ~StackLanTest()

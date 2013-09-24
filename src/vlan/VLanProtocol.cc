@@ -33,11 +33,13 @@ void VLanProtocol::processPacket(Packet &packet)
         if(mux)
         {
                 mux->setNextProtocolIdentifier(getEthernetType());
- //               std::cout << __FILE__ <<":"<< this<< ":";
-//                std::cout << "setting next proto to " << std::hex << getEthernetType() <<std::endl;
-
+                //std::cout << __FILE__ <<":"<< this<< ":";
+                //std::cout << "setting next proto to " << std::hex << getEthernetType() <<std::endl;
+                
+		mux->setHeaderSize(header_size);
+                packet.setPrevHeaderSize(header_size);
         }
-};
+}
 
 void VLanProtocol::statistics(std::basic_ostream<char>& out) 
 {

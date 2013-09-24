@@ -25,6 +25,7 @@
 #define _test_vlan_H_
 
 #include <string>
+#include "../../test/tests_packets.h"
 #include "../Protocol.h"
 #include "../Multiplexer.h"
 #include "../ethernet/EthernetProtocol.h"

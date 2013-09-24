@@ -90,7 +90,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		./learner/test_learner.cc \
 		tests.cc 
 
-tests_LDADD   = -lboost_system -lboost_unit_test_framework -lboost_regex -lpcap
+tests_LDADD   = -lboost_system -lboost_unit_test_framework -lboost_regex -lpcap -lpthread
 tests_LDFLAGS = -DBOOST_ASIO_DISABLE_EPOLL
 
 BUILT_SOURCES = $(srcdir)/pyaiengine.so

@@ -37,6 +37,9 @@ def processFlows(flowlist):
 			print "tiene"
                         print flow.getHTTPHost()
 
+                if(flow.getHTTPUserAgent()):
+                        print flow.getHTTPUserAgent()
+
 		if(flow.getFrequencies()):
 			freq = flow.getFrequencies()
 			print freq.getFrequenciesString()
@@ -65,6 +68,7 @@ if __name__ == '__main__':
 	st.setTotalUDPFlows(16384)
 
 	#st.enableFrequencyEngine(True)
+	st.enableLinkLayerTagging("vlan")
 
 	directory = "/home/luis/pcapfiles/torrent/vuze"
 	directory = "/home/luis/pcapfiles/defcon18/"

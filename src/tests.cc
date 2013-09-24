@@ -384,6 +384,63 @@ BOOST_FIXTURE_TEST_CASE(test_case_9,StackLanTest)
 	BOOST_CHECK(http_aux->getTotalBytes() == 1826);
 }
 
+BOOST_FIXTURE_TEST_CASE(test_case_10,StackLanTest)
+{
+
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+	this->enableLinkLayerTagging("vlan");
+
+	// Enable VLan Tagging but packets dont have the VLAN tag
+
+        pd->openPcapFile("../pcapfiles/4udppackets.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        BOOST_CHECK(pd->getTotalPackets() == 4);
+	BOOST_CHECK(mux_eth->getTotalForwardPackets() == 4);
+	BOOST_CHECK(mux_eth->getTotalReceivedPackets() == 4);
+	BOOST_CHECK(mux_eth->getTotalFailPackets() == 0);
+	
+	BOOST_CHECK(mux_vlan->getTotalForwardPackets() == 0);
+	BOOST_CHECK(mux_vlan->getTotalReceivedPackets() == 0);
+	BOOST_CHECK(mux_vlan->getTotalFailPackets() == 0);
+        BOOST_CHECK(vlan->getTotalValidatedPackets() == 0);
+        BOOST_CHECK(vlan->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(vlan->getTotalPackets() == 0);
+
+        BOOST_CHECK(ip->getTotalValidatedPackets() == 4);
+        BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(ip->getTotalPackets() == 4);
+
+	// Now inject pcap with VLan Tagging and netbios
+	// The trace contains 3 packets.
+        
+	pd->openPcapFile("../pcapfiles/flow_vlan_netbios.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        BOOST_CHECK(pd->getTotalPackets() == 7);
+        BOOST_CHECK(mux_eth->getTotalForwardPackets() == 7);
+        BOOST_CHECK(mux_eth->getTotalReceivedPackets() == 7);
+        BOOST_CHECK(mux_eth->getTotalFailPackets() == 0);
+
+        BOOST_CHECK(mux_vlan->getTotalForwardPackets() == 3);
+        BOOST_CHECK(mux_vlan->getTotalReceivedPackets() == 3);
+        BOOST_CHECK(mux_vlan->getTotalFailPackets() == 0);
+        BOOST_CHECK(vlan->getTotalValidatedPackets() == 3);
+        BOOST_CHECK(vlan->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(vlan->getTotalPackets() == 3);
+
+        BOOST_CHECK(ip->getTotalValidatedPackets() == 7);
+        BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(ip->getTotalPackets() == 7);
+
+}
+
 BOOST_AUTO_TEST_SUITE_END( )
 
 BOOST_AUTO_TEST_SUITE (test_real_stack) // Test cases for real stacks StackLan and Stack3G 
