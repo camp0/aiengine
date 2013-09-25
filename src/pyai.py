@@ -12,7 +12,8 @@ def loadSignaturesForTcp():
 	sm = pyaiengine.SignatureManager()
 	
 	sig = pyaiengine.Signature("bittorrent tcp","^\x13BitTorrent")
-
+	sm.addSignature(sig)
+	sig = pyaiengine.Signature("luis tcp","^\x80\x74\x01\x03\x01\x00\x4b")
 	sm.addSignature(sig)
 
 	return sm
@@ -56,7 +57,7 @@ def processFlows(flowlist):
 				freq_pkt = flow.getPacketFrequencies()
 				#print freq_pkt.getPacketFrequenciesString()
 
-			if(flow.getDestinationPort() == 80):	
+			if(flow.getDestinationPort() == 2525):	
 				candidate.append(flow)
 
 	""" Extract a valid signature for the flows of the list """
@@ -66,17 +67,15 @@ def processFlows(flowlist):
 	learner.compute()
 
 	print "Learning flows", learner.getTotalFlowsProcess()
-	print dir(learner)
-#	regex = learner.getRegularExpression()
-	learner.getRegularExpression()	
+	regex = learner.getRegularExpression()
 	print "Regex:",regex
 	
 
 if __name__ == '__main__':
 
 	# Load an instance of a Network Stack
-	st = pyaiengine.StackMobile()
-	#st = pyaiengine.StackLan()
+	#st = pyaiengine.StackMobile()
+	st = pyaiengine.StackLan()
 
 	# Create a instace of a PacketDispatcher 
 	pdis = pyaiengine.PacketDispatcher()
@@ -99,16 +98,16 @@ if __name__ == '__main__':
 	st.setTotalUDPFlows(16384)
 
 	# Enable FrequencyEngine if want to extract signatures from the flows
-	st.enableFrequencyEngine(True)
+	# st.enableFrequencyEngine(True)
 
 	# Enable VLAN tag if needed
-	st.enableLinkLayerTagging("vlan")
+	# st.enableLinkLayerTagging("vlan")
 
 	directory = "/home/luis/pcapfiles/torrent/vuze"
 	directory = "/home/luis/pcapfiles/defcon18/"
 	#directory = "/home/luis/pcapfiles/http/"
 	#directory = "/home/luis/pcapfiles/vcom/"
-	directory = "/home/luis/pcapfiles/spotify/"
+	#directory = "/home/luis/pcapfiles/spotify/"
 	print "Ready to process files."
 	for pfile in os.listdir(directory):
 		print "Processing ",pfile

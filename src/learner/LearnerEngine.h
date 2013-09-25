@@ -61,7 +61,7 @@ public:
 
 	int getQualityByte(int offset);
 
-	std::string& getRegularExpression() { return raw_expression_;};
+	std::string getRegularExpression() { return raw_expression_;};
 
 	void setMaxLenghtForRegularExpression(int value) { max_raw_expression_ = value;};
 
