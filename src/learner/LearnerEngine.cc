@@ -126,12 +126,21 @@ void LearnerEngine::compute()
 	raw_expression_ = expr.str();
 }
 
+
+#ifdef PYTHON_BINDING
+void LearnerEngine::agregateFlows(boost::python::list flows)
+{
+	boost::python::ssize_t len = boost::python::len(flows);
+    	for(int i=0; i<len;++i)
+	{
+		SharedPointer<Flow> flow = boost::python::extract<SharedPointer<Flow>>(flows[i]);
+#else
 void LearnerEngine::agregateFlows(std::vector<WeakPointer<Flow>> &flows)
 {
-
 	for(auto it = flows.begin();it!=flows.end();++it)
 	{
 		SharedPointer<Flow> flow = (*it).lock();
+#endif
 		if(flow)
 		{
                 	if(flow->packet_frequencies.lock())

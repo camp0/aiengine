@@ -28,6 +28,7 @@
 #include "NetworkStack.h"
 #include "./frequency/FrequencyGroup.h"
 #include "./signatures/Signature.h"
+#include "./learner/LearnerEngine.h"
 #include <boost/python.hpp>
 #include <boost/asio.hpp>
 #include "log4cxx/logger.h"
@@ -168,32 +169,33 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getFrequencies",&Flow::getFrequencies,return_internal_reference<>())
 		.def("getPacketFrequencies",&Flow::getPacketFrequencies,return_internal_reference<>())
 		.def(self_ns::str(self_ns::self))
-		;
+	;
 
 	boost::python::class_<HTTPHost, SharedPointer<HTTPHost>,boost::noncopyable>("HTTPHost")
 		.def(self_ns::str(self_ns::self))
-		;
+	;
 
 	boost::python::class_<HTTPUserAgent, SharedPointer<HTTPUserAgent>, boost::noncopyable>("HTTPUserAgent")
 		.def(self_ns::str(self_ns::self))
-		;
+	;
 
 	boost::python::class_<Frequencies, SharedPointer<Frequencies>, boost::noncopyable>("Frequencies")
 		.def("getDispersion",&Frequencies::getDispersion)
 		.def("getEnthropy",&Frequencies::getEnthropy)
 		.def("getFrequenciesString",&Frequencies::getFrequenciesString)
 		.def(self_ns::str(self_ns::self))
-		;
+	;
 	
 	boost::python::class_<PacketFrequencies, SharedPointer<PacketFrequencies>, boost::noncopyable>("PacketFrequencies")
 		.def("getPacketFrequenciesString",&PacketFrequencies::getPacketFrequenciesString)
 		.def(self_ns::str(self_ns::self))
-		;
-//	;
-	// Templatize the FrequencyGroup
-	//	
-	//boost::python::class_<FrequencyGroup,boost::noncopyable>("FrequencyGroup")
-	//;
-}
+	;
 
+	boost::python::class_<LearnerEngine,SharedPointer<LearnerEngine>>("LearnerEngine")
+		.def("getTotalFlowsProcess",&LearnerEngine::getTotalFlowsProcess)
+		.def("agregateFlows",&LearnerEngine::agregateFlows)
+		.def("getRegularExpression",&LearnerEngine::getRegularExpression)
+		.def("compute",&LearnerEngine::compute)
+	;
+}
 

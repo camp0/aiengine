@@ -33,6 +33,9 @@
 #include <iomanip> // setw
 #include <unordered_map>
 #include <boost/format.hpp>
+#ifdef PYTHON_BINDING
+#include <boost/python.hpp>
+#endif
 #include "../frequency/PacketFrequencies.h"
 #include "../flow/FlowManager.h"
 #include "../frequency/FrequencyGroup.h"
@@ -58,16 +61,20 @@ public:
 
 	int getQualityByte(int offset);
 
-	std::string &getRegularExpression() { return raw_expression_;};
-
-        void agregateFlows(std::vector<WeakPointer<Flow>>& flows);
+	std::string& getRegularExpression() { return raw_expression_;};
 
 	void setMaxLenghtForRegularExpression(int value) { max_raw_expression_ = value;};
 
 	void setFrequencyGroup(FrequencyGroup<std::string>::Ptr fg) { freq_group_ = fg;};
 
+#ifdef PYTHON_BINDING
+	int getTotalFlowsProcess() const { return items_;};
+	void agregateFlows(boost::python::list flows);
+#else
+	void agregateFlows(std::vector<WeakPointer<Flow>>& flows);
+#endif
+
 private:
-	//std::array<std::unordered_map<int,int>,5000> q_array_;
 	std::array<std::unordered_map<int,int>,MAX_PACKET_FREQUENCIES_VALUES> q_array_;
 	int length_;
 	int items_;
