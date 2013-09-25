@@ -30,6 +30,7 @@
 
 #include "../Pointer.h"
 #include "../Packet.h"
+#include "../signatures/Signature.h"
 #include "../frequency/Frequencies.h"
 #include "../frequency/PacketFrequencies.h"
 #include "../http/HTTPHost.h"
@@ -75,6 +76,7 @@ public:
 	int32_t total_packets_l7;
 	int32_t total_packets;
 
+	WeakPointer<Signature> signature;
 	WeakPointer<HTTPHost> http_host;
 	WeakPointer<HTTPUserAgent> http_ua;	
 	WeakPointer<Frequencies> frequencies;
@@ -98,6 +100,7 @@ public:
 		frequencies.reset();
 		http_host.reset();
 		http_ua.reset();
+		signature.reset();
 		packet = nullptr;
 	};
 

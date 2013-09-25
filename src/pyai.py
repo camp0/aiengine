@@ -13,7 +13,7 @@ def loadSignaturesForTcp():
 	
 	sig = pyaiengine.Signature("bittorrent tcp","^\x13BitTorrent")
 	sm.addSignature(sig)
-	sig = pyaiengine.Signature("luis tcp","^\x80\x74\x01\x03\x01\x00\x4b")
+	sig = pyaiengine.Signature("luis tcp","^\x80")
 	sm.addSignature(sig)
 
 	return sm

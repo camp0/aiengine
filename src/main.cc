@@ -57,8 +57,10 @@ std::string option_pcapfile;
 std::string option_interface;
 std::string option_freqs_group_value;
 std::string option_freqs_type_flows;
+std::string option_regex;
 bool option_show_flows = false;
 bool option_enable_frequencies = false;
+bool option_enable_signatures = false;
 bool option_enable_learner = false;
 bool option_show_pstatistics = false;
 int tcp_flows_cache;
@@ -215,6 +217,13 @@ int main(int argc, char* argv[])
 		  	"Sets the number of UDP flows on the pool.")
 		;
 
+	po::options_description optional_ops_sigs("Signature optional arguments");
+	optional_ops_sigs.add_options()
+                ("enable-signatures,R",  	"Enables the Signature engine.") 
+		("regex,r",    po::value<std::string>(&option_regex)->default_value(""),
+		  	"Sets the regex for evaluate agains the flows.")
+		;
+
         po::options_description optional_ops_freq("Frequencies optional arguments");
         optional_ops_freq.add_options()
                 ("enable-frequencies,F",  	"Enables the Frequency engine.") 
@@ -230,6 +239,7 @@ int main(int argc, char* argv[])
 	mandatory_ops.add(optional_ops_tag);
 	mandatory_ops.add(optional_ops_tcp);
 	mandatory_ops.add(optional_ops_udp);
+	mandatory_ops.add(optional_ops_sigs);
 	mandatory_ops.add(optional_ops_freq);
 
 	po::options_description optional_ops("Optional arguments");
