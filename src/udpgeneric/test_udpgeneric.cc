@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE (test2_udpgeneric) // Same case as test1_genericudp but wit
 
         BOOST_CHECK(sig->getTotalSignatures()  == 1);
         BOOST_CHECK(sig->getTotalMatchingSignatures() == 0);
-        BOOST_CHECK(sig->getMachtedSignature() == nullptr);
+        BOOST_CHECK(sig->getMatchedSignature() == nullptr);
 
 	// Add another true signature that matchs the packet
 	sig->addSignature("other","^d1");
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE (test2_udpgeneric) // Same case as test1_genericudp but wit
 	mux_eth->forwardPacket(packet);
         BOOST_CHECK(sig->getTotalSignatures()  == 2);
         BOOST_CHECK(sig->getTotalMatchingSignatures() == 1);
-        BOOST_CHECK(sig->getMachtedSignature() != nullptr);
+        BOOST_CHECK(sig->getMatchedSignature() != nullptr);
 
 	//std::cout << *sig;
 }

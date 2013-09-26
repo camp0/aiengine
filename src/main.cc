@@ -57,6 +57,7 @@ std::string option_pcapfile;
 std::string option_interface;
 std::string option_freqs_group_value;
 std::string option_freqs_type_flows;
+std::string option_regex_type_flows;
 std::string option_regex;
 bool option_show_flows = false;
 bool option_enable_frequencies = false;
@@ -193,9 +194,9 @@ int main(int argc, char* argv[])
 
 	po::options_description mandatory_ops("Mandatory arguments");
 	mandatory_ops.add_options()
-		("interface,i",   po::value<std::string>(&option_interface),
+		("interface,I",   po::value<std::string>(&option_interface),
 			"Sets the network interface.")
-		("pcapfile,f",   po::value<std::string>(&option_pcapfile),
+		("pcapfile,F",   po::value<std::string>(&option_pcapfile),
 			"Sets the pcap file.")
         	;
 
@@ -213,15 +214,17 @@ int main(int argc, char* argv[])
 	
 	po::options_description optional_ops_udp("UDP optional arguments");
 	optional_ops_udp.add_options()
-		("udp-flows,u",    po::value<int>(&udp_flows_cache)->default_value(16384),
-		  	"Sets the number of UDP flows on the pool.")
+		("udp-flows,u",    	po::value<int>(&udp_flows_cache)->default_value(16384),
+		  			"Sets the number of UDP flows on the pool.")
 		;
 
 	po::options_description optional_ops_sigs("Signature optional arguments");
 	optional_ops_sigs.add_options()
-                ("enable-signatures,R",  	"Enables the Signature engine.") 
-		("regex,r",    po::value<std::string>(&option_regex)->default_value(""),
-		  	"Sets the regex for evaluate agains the flows.")
+                ("enable-signatures,R", "Enables the Signature engine.") 
+		("regex,r",    		po::value<std::string>(&option_regex)->default_value(".*"),
+		  			"Sets the regex for evaluate agains the flows.")
+                ("flow-type,w",  	po::value<std::string>(&option_regex_type_flows)->default_value("all"),
+					"Uses tcp, udp or all for matches the signature on the flows.") 
 		;
 
         po::options_description optional_ops_freq("Frequencies optional arguments");
@@ -229,7 +232,7 @@ int main(int argc, char* argv[])
                 ("enable-frequencies,F",  	"Enables the Frequency engine.") 
                 ("group-by,g",  	po::value<std::string>(&option_freqs_group_value)->default_value("dst-port"),
 					"Groups frequencies by src-ip,dst-ip,src-port and dst-port.") 
-                ("flow-type,T",  	po::value<std::string>(&option_freqs_type_flows)->default_value("tcp"),
+                ("flow-type,f",  	po::value<std::string>(&option_freqs_type_flows)->default_value("tcp"),
 					"Uses tcp or udp flows.") 
                 ("enable-learner,L",  	"Enables the Learner engine.") 
                 ("key-learner,k",  	po::value<std::string>(&option_learner_key)->default_value("80"),
@@ -244,7 +247,7 @@ int main(int argc, char* argv[])
 
 	po::options_description optional_ops("Optional arguments");
 	optional_ops.add_options()
-		("stack,S",		po::value<std::string>(&option_stack_name)->default_value("lan"),
+		("stack,k",		po::value<std::string>(&option_stack_name)->default_value("lan"),
 				      	"Sets the network stack (lan,mobile).")
 		("dumpflows,d",      	"Dump the flows to stdout.")
 		("statistics,s",	po::value<int>(&option_statistics_level)->default_value(0),
@@ -328,11 +331,23 @@ int main(int argc, char* argv[])
 	stack->setTotalTCPFlows(tcp_flows_cache);	
 	stack->setTotalUDPFlows(udp_flows_cache);	
 
-        sm = SignatureManagerPtr(new SignatureManager());
 
-        sm->addSignature("bitorrent dht","^d1:ad2:id20");
-
-	stack->setUDPSignatureManager(sm);
+	// Check if AIEngine is gonna work as signature extractor or as a regular packet inspector
+	if(var_map.count("enable-signatures") == 1)
+	{
+        	sm = SignatureManagerPtr(new SignatureManager());
+        	sm->addSignature("experimental",option_regex);
+		if(option_regex_type_flows.compare("all") == 0)
+		{
+			stack->setUDPSignatureManager(sm);
+			stack->setTCPSignatureManager(sm);
+		}
+		else
+		{
+			if(option_regex_type_flows.compare("tcp") == 0) stack->setTCPSignatureManager(sm);
+			if(option_regex_type_flows.compare("udp") == 0) stack->setUDPSignatureManager(sm);
+		}
+	}
 
 	if(var_map.count("enable-frequencies") == 1)
 	{

@@ -24,13 +24,15 @@
 #include "TCPGenericProtocol.h"
 #include <iomanip> // setw
 
+LoggerPtr TCPGenericProtocol::logger(Logger::getLogger("aiengine.tcpgeneric"));
+
 void TCPGenericProtocol::processFlow(Flow *flow)
 {
 	SignatureManagerPtr sig = sigs_.lock();
 	++total_packets_;
 	total_bytes_ += flow->packet->getLength();
 
-	if(sig) // There is a SignatureManager attached
+	if((sig)&&(!flow->signature.lock())) // There is a SignatureManager attached and the flow have not been matched
 	{
 		bool result = false;
 		const unsigned char *payload = flow->packet->getPayload();
@@ -38,7 +40,10 @@ void TCPGenericProtocol::processFlow(Flow *flow)
 		sig->evaluate(payload,&result);
 		if(result)
 		{
-	//		std::cout << "The packet matchs!" << std::endl;
+			SignaturePtr signature = sig->getMatchedSignature();
+
+			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << signature->getName());
+			flow->signature = signature; 
 		}	
 	}
 }

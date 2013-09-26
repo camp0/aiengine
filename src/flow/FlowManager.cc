@@ -102,6 +102,9 @@ void FlowManager::printFlows(std::basic_ostream<char>& out)
 
 		out << boost::format("%-44s %-10d %-10d %p") % fivetuple.str() % flow->total_bytes % flow->total_packets % flow->forwarder.lock();
 
+		if(flow->signature.lock())	
+			out << "      Signature:" << flow->signature.lock()->getName();
+
 		if(flow->http_host.lock())	
 			out << "      Host:" << flow->http_host.lock()->getName();
 	

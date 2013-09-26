@@ -32,6 +32,7 @@
 #undef __FAVOR_BSD
 #endif // __FAVOR_BSD
 
+#include "log4cxx/logger.h"
 #include "../Multiplexer.h"
 #include "../FlowForwarder.h"
 #include "../Protocol.h"
@@ -42,6 +43,9 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include <cstring>
+
+using namespace log4cxx;
+using namespace log4cxx::helpers;
 
 class TCPGenericProtocol: public Protocol 
 {
@@ -91,6 +95,8 @@ public:
 	void setSignatureManager(SignatureManagerPtrWeak sig) { sigs_ = sig;}; 
 
 private:
+	static log4cxx::LoggerPtr logger;
+
 	int stats_level_;
 	FlowForwarderPtrWeak flow_forwarder_;	
 	MultiplexerPtrWeak mux_; // Not used;

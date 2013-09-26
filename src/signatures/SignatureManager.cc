@@ -60,11 +60,6 @@ void SignatureManager::evaluate(const unsigned char *payload, bool *result)
 	return;
 }
 
-SignaturePtr SignatureManager::getMachtedSignature() 
-{ 
-	return current_signature_;
-}
-
 std::ostream& operator<< (std::ostream& out, const SignatureManager& sig)
 {
 	out << "SignatureManager(" << &sig << ") statistics" << std::dec <<  std::endl;	

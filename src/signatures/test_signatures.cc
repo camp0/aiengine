@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE (test1_signature)
 
 	BOOST_CHECK(sigmng->getTotalSignatures()  ==0);
 	BOOST_CHECK(sigmng->getTotalMatchingSignatures() == 0);
-	BOOST_CHECK(sigmng->getMachtedSignature() == nullptr);
+	BOOST_CHECK(sigmng->getMatchedSignature() == nullptr);
 }
 
 BOOST_AUTO_TEST_CASE (test2_signature)
@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE (test2_signature)
 	sigmng->addSignature("hello","^hello");
         BOOST_CHECK(sigmng->getTotalSignatures()  == 1);
         BOOST_CHECK(sigmng->getTotalMatchingSignatures() == 0);
-        BOOST_CHECK(sigmng->getMachtedSignature() == nullptr);
+        BOOST_CHECK(sigmng->getMatchedSignature() == nullptr);
 
 	std::string cad("hello world");
 	bool value = false;
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE (test2_signature)
 
 	sigmng->evaluate(buffer,&value);
 	BOOST_CHECK(value == true);
-	BOOST_CHECK(sigmng->getMachtedSignature() != nullptr);
+	BOOST_CHECK(sigmng->getMatchedSignature() != nullptr);
         BOOST_CHECK(sigmng->getTotalMatchingSignatures() == 1);
 }
 
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE (test3_signature)
         sigmng->addSignature(sig);
         BOOST_CHECK(sigmng->getTotalSignatures()  == 1);
         BOOST_CHECK(sigmng->getTotalMatchingSignatures() == 0);
-        BOOST_CHECK(sigmng->getMachtedSignature() == nullptr);
+        BOOST_CHECK(sigmng->getMatchedSignature() == nullptr);
 
         std::string cad("hello world im not a hex, but some hex yes");
         bool value = false;
@@ -77,13 +77,14 @@ BOOST_AUTO_TEST_CASE (test3_signature)
 
         sigmng->evaluate(buffer,&value);
         BOOST_CHECK(value == true);
-        BOOST_CHECK(sigmng->getMachtedSignature() != nullptr);
-        BOOST_CHECK(sigmng->getMachtedSignature().get() != nullptr);
+        BOOST_CHECK(sigmng->getMatchedSignature() != nullptr);
+        BOOST_CHECK(sigmng->getMatchedSignature().get() != nullptr);
         BOOST_CHECK(sigmng->getTotalMatchingSignatures() == 1);
 
 	// Shared ptr and sig are stored on different places but should have the same regex
-	BOOST_CHECK(sig.getExpression().compare(sigmng->getMachtedSignature()->getExpression())== 0);
+	BOOST_CHECK(sig.getExpression().compare(sigmng->getMatchedSignature()->getExpression())== 0);
 
+	//BOOST_CHECK(sig == &sigmng->getMatchedSignature().get()); 
 	//std::cout << *sigmng;
 }
 

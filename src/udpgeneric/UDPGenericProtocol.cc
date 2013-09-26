@@ -24,6 +24,8 @@
 #include "UDPGenericProtocol.h"
 #include <iomanip> // setw
 
+LoggerPtr UDPGenericProtocol::logger(Logger::getLogger("aiengine.udpgeneric"));
+
 void UDPGenericProtocol::processFlow(Flow *flow)
 {
 	SignatureManagerPtr sig = sigs_.lock();
@@ -32,7 +34,7 @@ void UDPGenericProtocol::processFlow(Flow *flow)
 	total_bytes_ += flow->packet->getLength();
 	++flow->total_packets_l7;
 
-	if(sig) // There is a SignatureManager attached
+	if((sig)&&(!flow->signature.lock())) // There is a SignatureManager attached
 	{
 		bool result = false;
 		const unsigned char *payload = flow->packet->getPayload();
@@ -40,7 +42,10 @@ void UDPGenericProtocol::processFlow(Flow *flow)
 		sig->evaluate(payload,&result);
 		if(result)
 		{
-		//	std::cout << "The packet matchs!" << std::endl;
+			SignaturePtr signature = sig->getMatchedSignature();
+
+			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << signature->getName());
+			flow->signature = signature;
 		}	
 	}
 }

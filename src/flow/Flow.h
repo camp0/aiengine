@@ -104,7 +104,6 @@ public:
 		packet = nullptr;
 	};
 
-#ifdef PYTHON_BINDING
 	friend std::ostream& operator<< (std::ostream& out, const Flow& flow)
 	{
 		out << flow.getSrcAddrDotNotation() << ":" << flow.getSourcePort() << ":" << flow.getProtocol();
@@ -112,6 +111,7 @@ public:
         	return out;
 	}
 
+#ifdef PYTHON_BINDING
 	int32_t getTotalBytes() const { return total_bytes;};
 	int32_t getTotalPacketsLayer7() const { return total_packets_l7;};
 	int32_t getTotalPackets() const { return total_packets;};

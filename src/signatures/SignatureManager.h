@@ -51,7 +51,7 @@ public:
 	void addSignature(SignaturePtr sig);
 	void addSignature(Signature& sig);
 
-	SignaturePtr getMachtedSignature();
+	SignaturePtr getMatchedSignature() { return current_signature_;}
 
 	friend std::ostream& operator<< (std::ostream& out, const SignatureManager& sig);
 //	std::string toString() { std::ostringstream s; s << this; return s.str();}; // Wrapper for python 

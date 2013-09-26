@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE (test1_tcpgeneric)
 
         BOOST_CHECK(sig->getTotalSignatures()  == 1);
         BOOST_CHECK(sig->getTotalMatchingSignatures() == 1);
-        BOOST_CHECK(sig->getMachtedSignature() != nullptr);
+        BOOST_CHECK(sig->getMatchedSignature() != nullptr);
 
 }
 
