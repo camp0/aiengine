@@ -223,7 +223,7 @@ int main(int argc, char* argv[])
                 ("enable-signatures,R", "Enables the Signature engine.") 
 		("regex,r",    		po::value<std::string>(&option_regex)->default_value(".*"),
 		  			"Sets the regex for evaluate agains the flows.")
-                ("flow-type,w",  	po::value<std::string>(&option_regex_type_flows)->default_value("all"),
+                ("flow-class,c",  	po::value<std::string>(&option_regex_type_flows)->default_value("all"),
 					"Uses tcp, udp or all for matches the signature on the flows.") 
 		;
 
@@ -294,10 +294,10 @@ int main(int argc, char* argv[])
 		std::cout << mandatory_ops << std::endl;
         	return false;
     	}
-    	catch(...)
+	catch(std::exception& e)
     	{	
             	std::cout << "iaengine " VERSION << std::endl;
-        	std::cerr << "Unsupported option." << std::endl;
+        	std::cerr << "Unsupported option." << e.what() << std::endl;
 		std::cout << mandatory_ops << std::endl;
         	return false;
     	}

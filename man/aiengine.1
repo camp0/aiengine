@@ -18,7 +18,7 @@ Sets the network interface.
 \fB\-F\fR, \fB\-\-pcapfile\fR
 Sets the pcap file.
 .PP
-:
+
 Link Layer optional arguments.
 .TP
 \fB\-q\fR, \fB\-\-tag\fR
@@ -39,7 +39,14 @@ Sets the number of UDP flows on the pool. 16384 flows is the default value.
 
 Signature optional arguments.
 .TP
-TODO 
+\fB\-R\fR, \fB\-\-enable-signatures\fR
+Enables the Signature engine. This implies that all the payloads of the flows will be process by this engine.
+.TP
+\fB\-r\fR, \fB\-\-regex\fR
+Sets the regex for evaluate agains the flows..
+.TP
+\fB\-c\fR, \fB\-\-flow-class\fR
+Uses tcp, udp or all for matches the signature on the flows.
 .PP
 
 Frequencies optional arguments.
