@@ -30,13 +30,13 @@
 
 #include <vector>
 #include "Signature.h"
+#include "../Pointer.h"
 
 class SignatureManager
 {
 public:
         explicit SignatureManager():
-                total_matched_signatures_(0),
-		current_signature_(nullptr)
+                total_matched_signatures_(0)
         {
         }
 
@@ -48,18 +48,18 @@ public:
 	void evaluate(const unsigned char *payload,bool *result); 
 
 	void addSignature(const std::string name,const std::string expression);
-	void addSignature(SignaturePtr sig);
+	void addSignature(SharedPointer<Signature> sig);
 	void addSignature(Signature& sig);
 
-	SignaturePtr getMatchedSignature() { return current_signature_;}
+	SharedPointer<Signature> getMatchedSignature() { return current_signature_;}
 
 	friend std::ostream& operator<< (std::ostream& out, const SignatureManager& sig);
 //	std::string toString() { std::ostringstream s; s << this; return s.str();}; // Wrapper for python 
 
 private:
-	SignaturePtr current_signature_;
+	SharedPointer<Signature> current_signature_;
 	int32_t total_matched_signatures_;
-	std::vector<SignaturePtr> signatures_;
+	std::vector<SharedPointer<Signature>> signatures_;
 };
 
 typedef std::shared_ptr<SignatureManager> SignatureManagerPtr;

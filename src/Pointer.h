@@ -29,9 +29,11 @@ using namespace std;
 #ifdef PYTHON_BINDING
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
+#include <boost/make_shared.hpp>
 #endif
 
 #ifdef PYTHON_BINDING
+using namespace boost;
 template <class T1>
 using SharedPointer = boost::shared_ptr<T1>;
 template <class T2>

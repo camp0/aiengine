@@ -60,7 +60,5 @@ private:
 	boost::cmatch what;
 };
 
-typedef std::shared_ptr<Signature> SignaturePtr;
-
 #endif // _Signature_H_ 
 

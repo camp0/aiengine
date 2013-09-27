@@ -26,8 +26,23 @@
 
 void DNSProtocol::processFlow(Flow *flow)
 {
-	total_bytes_ += flow->packet->getLength();
+	int length = flow->packet->getLength();
+	total_bytes_ += length;
 	++total_packets_;
+	const unsigned char *payload = flow->packet->getPayload();
+
+	// Just get the standard queries
+	if(length > 10) // Minimum header size consider
+	{
+		// \x01 \x00 Standar query
+		if(std::memcmp("\x01\x00",&payload[2],2) == 0)
+		{
+			int queries = payload[5];
+			std::cout << "Standar query, queries:" << queries << "length:" << length<< std::endl;
+			++total_queries_;
+		}
+	}	
+
 }
 
 void DNSProtocol::statistics(std::basic_ostream<char>& out)
@@ -45,6 +60,10 @@ void DNSProtocol::statistics(std::basic_ostream<char>& out)
 			{	
 				if(flow_forwarder_.lock())
 					flow_forwarder_.lock()->statistics(out);
+				if(stats_level_ > 3)
+				{
+					out << "\t" << "Total standard queries:" << std::setw(10) << total_queries_ <<std::endl;
+				}
 			}
 		}
 	}

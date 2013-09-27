@@ -25,7 +25,7 @@
 #define _test_dns_H_
 
 #include <string>
-#include "../../test/tests_packets.h"
+#include "../../test/dns_test_packets.h"
 #include "../Protocol.h"
 #include "../Multiplexer.h"
 #include "../ethernet/EthernetProtocol.h"

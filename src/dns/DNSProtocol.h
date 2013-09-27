@@ -46,7 +46,7 @@ class DNSProtocol: public Protocol
 {
 public:
     	explicit DNSProtocol():ssl_header_(nullptr),total_bytes_(0),
-		stats_level_(0) { name_="DNSProtocol";};
+		total_queries_(0),stats_level_(0) { name_="DNSProtocol";};
     	virtual ~DNSProtocol() {};
 	
 	static const u_int16_t id = 0;
@@ -102,6 +102,7 @@ private:
 	MultiplexerPtrWeak mux_;
 	unsigned char *ssl_header_;
         int64_t total_bytes_;
+        int64_t total_queries_;
 };
 
 typedef std::shared_ptr<DNSProtocol> DNSProtocolPtr;

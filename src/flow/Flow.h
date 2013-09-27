@@ -120,6 +120,7 @@ public:
 	HTTPUserAgent& getHTTPUserAgent() const { return *http_ua.lock().get();};
 	Frequencies& getFrequencies() const { return *frequencies.lock().get();};
 	PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.lock().get();};
+	Signature& getSignature() const { return *signature.lock().get();};
 
 #endif
 

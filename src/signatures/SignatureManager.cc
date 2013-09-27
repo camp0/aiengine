@@ -26,17 +26,22 @@
 
 void SignatureManager::addSignature(Signature& sig)
 {
+	// TODO
+#ifdef PYTHON_BINDING
+	addSignature(boost::make_shared<Signature>(sig));
+#else
 	addSignature(std::make_shared<Signature>(sig));
+#endif
 }
 
 void SignatureManager::addSignature(const std::string name,const std::string expression)
 {
-	SignaturePtr sig = SignaturePtr(new Signature(name,expression));
+	SharedPointer<Signature> sig = SharedPointer<Signature>(new Signature(name,expression));
 
 	addSignature(sig);
 }
 
-void SignatureManager::addSignature(SignaturePtr sig)
+void SignatureManager::addSignature(SharedPointer<Signature> sig)
 {
 	signatures_.push_back(sig);
 }
@@ -45,7 +50,7 @@ void SignatureManager::evaluate(const unsigned char *payload, bool *result)
 {
 
         std::find_if(signatures_.begin(),
-                signatures_.end(),  [&](SignaturePtr& sig)
+                signatures_.end(),  [&](SharedPointer<Signature>& sig)
         {
 		if(sig->evaluate(payload))
 		{
@@ -65,7 +70,7 @@ std::ostream& operator<< (std::ostream& out, const SignatureManager& sig)
 	out << "SignatureManager(" << &sig << ") statistics" << std::dec <<  std::endl;	
 	for (auto it = sig.signatures_.begin(); it != sig.signatures_.end(); ++it)
 	{
-		SignaturePtr sig = (*it);
+		SharedPointer<Signature> sig = (*it);
 		out << "\t" << "Signature:" << sig->getName() << " matches:" << sig->getMatchs() << std::endl;
 	}
 	return out;

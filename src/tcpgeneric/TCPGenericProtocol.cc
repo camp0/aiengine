@@ -40,7 +40,7 @@ void TCPGenericProtocol::processFlow(Flow *flow)
 		sig->evaluate(payload,&result);
 		if(result)
 		{
-			SignaturePtr signature = sig->getMatchedSignature();
+			SharedPointer<Signature> signature = sig->getMatchedSignature();
 
 			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << signature->getName());
 			flow->signature = signature; 

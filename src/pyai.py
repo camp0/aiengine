@@ -13,8 +13,8 @@ def loadSignaturesForTcp():
 	
 	sig = pyaiengine.Signature("bittorrent tcp","^\x13BitTorrent")
 	sm.addSignature(sig)
-	sig = pyaiengine.Signature("luis tcp","^\x80")
-	sm.addSignature(sig)
+#	sig = pyaiengine.Signature("luis tcp","^\x80")
+#	sm.addSignature(sig)
 
 	return sm
 
@@ -74,8 +74,8 @@ def processFlows(flowlist):
 if __name__ == '__main__':
 
 	# Load an instance of a Network Stack
-	#st = pyaiengine.StackMobile()
-	st = pyaiengine.StackLan()
+	st = pyaiengine.StackMobile()
+	#st = pyaiengine.StackLan()
 
 	# Create a instace of a PacketDispatcher 
 	pdis = pyaiengine.PacketDispatcher()
@@ -94,20 +94,21 @@ if __name__ == '__main__':
 
 	# Allocate the TCP/UDP flows in order to keep memory
 	# under control and avoid allocations during the execution	
-	st.setTotalTCPFlows(32768)
-	st.setTotalUDPFlows(16384)
+	st.setTotalTCPFlows(327680)
+	st.setTotalUDPFlows(163840)
 
+	print "memory allocated"
 	# Enable FrequencyEngine if want to extract signatures from the flows
 	# st.enableFrequencyEngine(True)
 
-	# Enable VLAN tag if needed
+	# Enable VLAN tag if needed or MPLS
 	# st.enableLinkLayerTagging("vlan")
 
 	directory = "/home/luis/pcapfiles/torrent/vuze"
 	directory = "/home/luis/pcapfiles/defcon18/"
 	#directory = "/home/luis/pcapfiles/http/"
 	#directory = "/home/luis/pcapfiles/vcom/"
-	#directory = "/home/luis/pcapfiles/spotify/"
+	directory = "/home/luis/pcapfiles/spotify/"
 	print "Ready to process files."
 	for pfile in os.listdir(directory):
 		print "Processing ",pfile
@@ -126,7 +127,7 @@ if __name__ == '__main__':
 	# Do the work, analize, inspect, resolve DNS, etc...
 	processFlows(flows)
 
-	# Dump on files all the statistics of the Signatures
+	# Dump on files all the statistics of the TCP Signatures
 	f = open("signatures_tcp.log","w")
 	f.write(str(s_tcp))
 	f.close()
