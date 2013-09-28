@@ -15,7 +15,7 @@ Mandatory arguments to long options are mandatory for short options too.
 \fB\-I\fR, \fB\-\-interface\fR
 Sets the network interface.
 .TP
-\fB\-F\fR, \fB\-\-pcapfile\fR
+\fB\-P\fR, \fB\-\-pcapfile\fR
 Sets the pcap file.
 .PP
 
@@ -62,7 +62,7 @@ src-port stands for source port (UDP or TCP).
 dst-port stands for destination port (UDP or TCP).
 Also the parameter could be a combination of src-ip,src-port or dst-ip,dst-port.
 .TP
-\fB\-T\fR, \fB\-\-flow-type\fR
+\fB\-f\fR, \fB\-\-flow-type\fR
 Selects the flows process by the Frequency engine by using the protocol (TCP or UDP).
 .TP
 \fB\-L\fR, \fB\-\-enable-learner\fR
@@ -75,7 +75,7 @@ The Learner engine needs a key for analyze the flows that have been process by t
 .PP
 Optional arguments.
 .TP
-\fB\-S\fR, \fB\-\-stack\fR
+\fB\-n\fR, \fB\-\-stack\fR
 Selects the Network stack for the analysis. There is only two network stacks availables at the moment. The Stack Lans contains the configuration of a LAN network (ethernet,ip,tcp,udp), and the Stack mobile contains a 3G stack (ethernet,ip,upd,gprs,ip,udp,tcp). 
 .TP
 \fB\-d\fR, \fB\-\-dumpflows\fR

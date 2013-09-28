@@ -86,6 +86,7 @@ public:
 	void openPcapFile(std::string filename);
 	void closePcapFile();
 
+	void stop() { io_service_.stop();}
 	void run(); 
 	void runPcap(); 
 

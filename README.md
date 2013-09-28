@@ -56,18 +56,81 @@ Integrating AIEngine with other systems
 AIEngine have a python module in order to be more flexible in terms of integration with other systems and functionalities.
 The main objects that the python module provide are the following
 
-	StackLan()
-	StackMobile()
-	SignatureManager()
-		|--->Signature()
-	PacketDispatcher()
-	LearnerEngine()
-	FlowManager()
-		|--->Flow()
-			|--->PacketFrequencies()
-			|--->Frequencies()
-			|--->HTTPUserAgent()
-			|--->HTTPHost()
+	Flow
+	   |---> getDestinationAddress
+	   |---> getDestinationPort
+	   |---> getFrequencies
+	   |---> getHTTPHost
+	   |---> getHTTPUserAgent
+	   |---> getPacketFrequencies
+	   |---> getProtocol
+	   |---> getSourceAddress
+	   |---> getSourcePort
+	   |---> getTotalBytes
+	   |---> getTotalPackets
+	   |---> getTotalPacketsLayer7
+	FlowManager
+	Frequencies
+	   |---> getDispersion
+	   |---> getEnthropy
+	   |---> getFrequenciesString
+	HTTPHost
+	HTTPUserAgent
+	LearnerEngine
+	   |---> agregateFlows
+	   |---> compute
+	   |---> getRegularExpression
+	   |---> getTotalFlowsProcess
+	NetworkStack
+	   |---> enableFrequencyEngine
+	   |---> enableLinkLayerTagging
+	   |---> getTCPFlowManager
+	   |---> getUDPFlowManager
+	   |---> printFlows
+	   |---> setStatisticsLevel
+	   |---> setTCPSignatureManager
+	   |---> setTotalTCPFlows
+	   |---> setTotalUDPFlows
+	   |---> setUDPSignatureManager
+	PacketDispatcher
+	   |---> closeDevice
+	   |---> closePcapFile
+	   |---> openDevice
+	   |---> openPcapFile
+	   |---> run
+	   |---> runPcap
+	   |---> setStack
+	PacketFrequencies
+	   |---> getPacketFrequenciesString
+	Signature
+	   |---> getExpression
+	   |---> getMatchs
+	   |---> getName
+	SignatureManager
+	   |---> addSignature
+	StackLan
+	   |---> enableFrequencyEngine
+	   |---> enableLinkLayerTagging
+	   |---> getTCPFlowManager
+	   |---> getUDPFlowManager
+	   |---> printFlows
+	   |---> setStatisticsLevel
+	   |---> setTCPSignatureManager
+	   |---> setTotalTCPFlows
+	   |---> setTotalUDPFlows
+	   |---> setUDPSignatureManager
+	StackMobile
+	   |---> enableFrequencyEngine
+	   |---> enableLinkLayerTagging
+	   |---> getTCPFlowManager
+	   |---> getUDPFlowManager
+	   |---> printFlows
+	   |---> setStatisticsLevel
+	   |---> setTCPSignatureManager
+	   |---> setTotalTCPFlows
+	   |---> setTotalUDPFlows
+	   |---> setUDPSignatureManager
+
 
 Compile AIEngine
 ----------------

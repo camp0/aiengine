@@ -111,6 +111,9 @@ void FlowManager::printFlows(std::basic_ostream<char>& out)
 		if(flow->http_ua.lock())
 			out << " UserAgent:" << flow->http_ua.lock()->getName();	
 
+		if(flow->dns_domain.lock())	
+			out << "    Domain:" << flow->dns_domain.lock()->getName();
+		
 		if(flow->frequencies.lock())
 			out << boost::format("%-8s") % flow->frequencies.lock()->getFrequenciesString();
 

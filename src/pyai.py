@@ -107,8 +107,8 @@ if __name__ == '__main__':
 	directory = "/home/luis/pcapfiles/torrent/vuze"
 	directory = "/home/luis/pcapfiles/defcon18/"
 	#directory = "/home/luis/pcapfiles/http/"
-	#directory = "/home/luis/pcapfiles/vcom/"
-	directory = "/home/luis/pcapfiles/spotify/"
+	directory = "/home/luis/pcapfiles/vcom/"
+	#directory = "/home/luis/pcapfiles/spotify/"
 	print "Ready to process files."
 	for pfile in os.listdir(directory):
 		print "Processing ",pfile
@@ -133,6 +133,7 @@ if __name__ == '__main__':
 	f.close()
 
 	# Dump on file the statistics of the stack
+	st.setStatisticsLevel(5)
 	f = open("statistics.log","w")
 	f.write(str(st))
 	f.close()

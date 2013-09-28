@@ -35,18 +35,23 @@
 #include "../Multiplexer.h"
 #include "../FlowForwarder.h"
 #include "../Protocol.h"
+#include "DNSDomain.h"
 #include <net/ethernet.h>
 #include <netinet/ip.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
 #include <cstring>
+#include "../Cache.h"
+#include <unordered_map>
 
 class DNSProtocol: public Protocol 
 {
 public:
     	explicit DNSProtocol():ssl_header_(nullptr),total_bytes_(0),
-		total_queries_(0),stats_level_(0) { name_="DNSProtocol";};
+		total_queries_(0),stats_level_(0),
+		domain_cache_(new Cache<DNSDomain>("Domain cache")) { name_="DNSProtocol";};
+
     	virtual ~DNSProtocol() {};
 	
 	static const u_int16_t id = 0;
@@ -95,6 +100,9 @@ public:
 		}
 	}
 
+        void createDNSDomains(int number) { domain_cache_->create(number);};
+        void destroyDNSDomains(int number) { domain_cache_->destroy(number);};
+
 
 private:
 	int stats_level_;
@@ -103,6 +111,11 @@ private:
 	unsigned char *ssl_header_;
         int64_t total_bytes_;
         int64_t total_queries_;
+
+	Cache<DNSDomain>::CachePtr domain_cache_;
+
+	typedef std::map<std::string,std::pair<SharedPointer<DNSDomain>,int32_t>> DomainMapType;
+	DomainMapType domain_map_;	
 };
 
 typedef std::shared_ptr<DNSProtocol> DNSProtocolPtr;

@@ -167,6 +167,8 @@ void iaengineExit()
 {
 	if(stack)
 	{
+		pktdis->stop();
+
 		if(option_statistics_level > 0)
 			stack->statistics();
 		
@@ -247,7 +249,7 @@ int main(int argc, char* argv[])
 
 	po::options_description optional_ops("Optional arguments");
 	optional_ops.add_options()
-		("stack,k",		po::value<std::string>(&option_stack_name)->default_value("lan"),
+		("stack,n",		po::value<std::string>(&option_stack_name)->default_value("lan"),
 				      	"Sets the network stack (lan,mobile).")
 		("dumpflows,d",      	"Dump the flows to stdout.")
 		("statistics,s",	po::value<int>(&option_statistics_level)->default_value(0),

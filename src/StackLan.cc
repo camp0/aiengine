@@ -309,6 +309,7 @@ void StackLan::setTotalTCPFlows(int value)
 void StackLan::setTotalUDPFlows(int value) 
 { 
 	flow_cache_udp_->createFlows(value);
+	dns_->createDNSDomains(value/ 2);
 }
 
 void StackLan::setStatisticsLevel(int level)

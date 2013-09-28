@@ -231,9 +231,6 @@ StackMobile::StackMobile()
 	udp_low_->setFlowCache(flow_cache_udp_low_);
 	udp_low_->setFlowManager(flow_mng_udp_low_);
 	
-//	udp_high_->setFlowCache(flow_cache_udp_low_);
-//	udp_high_->setFlowManager(flow_mng_udp_low_);
-	
 	udp_high_->setFlowCache(flow_cache_udp_high_);
 	udp_high_->setFlowManager(flow_mng_udp_high_);
 

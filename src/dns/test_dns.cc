@@ -47,13 +47,13 @@ BOOST_AUTO_TEST_CASE (test1_dns)
         // Check the results
         BOOST_CHECK(ip->getTotalPackets() == 1);
         BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
-        BOOST_CHECK(ip->getTotalBytes() == 245);
+        BOOST_CHECK(ip->getTotalBytes() == 56);
         BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
 
-        // udp 
-        BOOST_CHECK(udp->getTotalPackets() == 1);
-        BOOST_CHECK(udp->getTotalBytes() == 225);
-        BOOST_CHECK(udp->getTotalMalformedPackets() == 0);
+        // dns 
+        BOOST_CHECK(dns->getTotalPackets() == 1);
+        BOOST_CHECK(dns->getTotalBytes() == 28);
+        BOOST_CHECK(dns->getTotalMalformedPackets() == 0);
 
 }
 

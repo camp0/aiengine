@@ -68,6 +68,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("enableLinkLayerTagging",pure_virtual(&NetworkStack::enableLinkLayerTagging))
 		.def("getTCPFlowManager",pure_virtual(&NetworkStack::getTCPFlowManager),return_internal_reference<>())
 		.def("getUDPFlowManager",pure_virtual(&NetworkStack::getUDPFlowManager),return_internal_reference<>())
+		.def("setStatisticsLevel",pure_virtual(&NetworkStack::setStatisticsLevel))
         ;
 
 	// for overload the methods with the class
@@ -91,6 +92,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("enableLinkLayerTagging",&StackLan::enableLinkLayerTagging)
 		.def("getTCPFlowManager",&StackLan::getTCPFlowManager,return_internal_reference<>())
 		.def("getUDPFlowManager",&StackLan::getUDPFlowManager,return_internal_reference<>())
+		.def("setStatisticsLevel",&StackLan::setStatisticsLevel)
 	;
 
         // for overload the methods with the class
@@ -114,6 +116,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("enableLinkLayerTagging",&StackMobile::enableLinkLayerTagging)
 		.def("getTCPFlowManager",&StackMobile::getTCPFlowManager,return_internal_reference<>())
 		.def("getUDPFlowManager",&StackMobile::getUDPFlowManager,return_internal_reference<>())
+		.def("setStatisticsLevel",&StackMobile::setStatisticsLevel)
         ;
 	
 	boost::python::class_<Signature>("Signature",init<const std::string&,const std::string&>())

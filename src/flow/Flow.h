@@ -35,6 +35,7 @@
 #include "../frequency/PacketFrequencies.h"
 #include "../http/HTTPHost.h"
 #include "../http/HTTPUserAgent.h"
+#include "../dns/DNSDomain.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -76,6 +77,7 @@ public:
 	int32_t total_packets_l7;
 	int32_t total_packets;
 
+	WeakPointer<DNSDomain> dns_domain;
 	WeakPointer<Signature> signature;
 	WeakPointer<HTTPHost> http_host;
 	WeakPointer<HTTPUserAgent> http_ua;	
@@ -101,6 +103,7 @@ public:
 		http_host.reset();
 		http_ua.reset();
 		signature.reset();
+		dns_domain.reset();
 		packet = nullptr;
 	};
 
@@ -121,6 +124,7 @@ public:
 	Frequencies& getFrequencies() const { return *frequencies.lock().get();};
 	PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.lock().get();};
 	Signature& getSignature() const { return *signature.lock().get();};
+	DNSDomain& getDNSDomain() const { return *dns_domain.lock().get();};
 
 #endif
 
