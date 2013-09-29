@@ -124,6 +124,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getName",&Signature::getName,return_internal_reference<>())
 		.def("getMatchs",&Signature::getMatchs)
 		.def(self_ns::str(self_ns::self))
+		.def("setCallback",&Signature::setCallback)
 	;
 
 	// for overload the methods with the class

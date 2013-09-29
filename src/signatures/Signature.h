@@ -30,6 +30,13 @@
 
 #include <boost/regex.hpp>
 
+#ifdef PYTHON_BINDING
+#include <boost/python.hpp>
+//#include <Python.h>
+//#include "Python.h"
+//#include <boost/Python.h>
+#endif
+
 class Signature
 {
 public:
@@ -40,6 +47,10 @@ public:
 		total_matchs_(0),
 		total_evaluates_(0)
 	{
+#ifdef PYTHON_BINDING
+		PyEval_InitThreads();
+		py_callback = nullptr;
+#endif
 	}
 
 	virtual ~Signature()=default;
@@ -50,6 +61,14 @@ public:
 	int32_t getMatchs() { return total_matchs_; };
 
 	friend std::ostream& operator<< (std::ostream& out, const Signature& sig);
+#ifdef PYTHON_BINDING
+
+	void setCallback(PyObject *callable)
+	{
+		py_callback = callable;
+	}
+
+#endif
 
 private:
 	int32_t total_matchs_;
@@ -58,6 +77,9 @@ private:
 	std::string name_;	
 	boost::regex exp_;
 	boost::cmatch what;
+#ifdef PYTHON_BINDING
+	PyObject *py_callback;
+#endif
 };
 
 #endif // _Signature_H_ 

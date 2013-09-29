@@ -25,7 +25,18 @@
 
 bool Signature::evaluate(const unsigned char *payload) 
 {
-	return boost::regex_search(reinterpret_cast<const char*>(payload), what, exp_);
+	bool result = boost::regex_search(reinterpret_cast<const char*>(payload), what, exp_);
+#ifdef PYTHON_BINDING
+	if((result)&&(py_callback != nullptr))
+	{
+		std::cout << "Ready to execute callback" << std::endl;
+
+		PyGILState_STATE state = PyGILState_Ensure();
+		boost::python::call<void>(py_callback);
+		PyGILState_Release(state);	
+	}
+#endif
+	return result; 
 }
 
 std::ostream& operator<< (std::ostream& out, const Signature& sig)

@@ -8,10 +8,18 @@ import signal
 import sys
 import pyaiengine
 
+
+def callback1(value):
+	print "holaaaaaaa "
+
+def callback2(value):
+	print "holaaaaaaa  a janderrrr"
+
 def loadSignaturesForTcp():
 	sm = pyaiengine.SignatureManager()
 	
 	sig = pyaiengine.Signature("bittorrent tcp","^\x13BitTorrent")
+	sig.setCallback(callback1)
 	sm.addSignature(sig)
 #	sig = pyaiengine.Signature("luis tcp","^\x80")
 #	sm.addSignature(sig)
@@ -21,7 +29,9 @@ def loadSignaturesForTcp():
 def loadSignaturesForUdp():
 	sm = pyaiengine.SignatureManager()
 
-	sm.addSignature("bittorrent udp","^d1:ad2:id20")
+	sig = pyaiengine.Signature("bittorrent udp","^d1:ad2:id20");
+	sig.setCallback(callback2)
+	sm.addSignature(sig)
 
 	return sm
 
@@ -74,8 +84,8 @@ def processFlows(flowlist):
 if __name__ == '__main__':
 
 	# Load an instance of a Network Stack
-	st = pyaiengine.StackMobile()
-	#st = pyaiengine.StackLan()
+	#st = pyaiengine.StackMobile()
+	st = pyaiengine.StackLan()
 
 	# Create a instace of a PacketDispatcher 
 	pdis = pyaiengine.PacketDispatcher()
@@ -104,10 +114,10 @@ if __name__ == '__main__':
 	# Enable VLAN tag if needed or MPLS
 	# st.enableLinkLayerTagging("vlan")
 
-	directory = "/home/luis/pcapfiles/torrent/vuze"
-	directory = "/home/luis/pcapfiles/defcon18/"
+	directory = "/home/luis/pcapfiles/torrent/"
+	#directory = "/home/luis/pcapfiles/defcon18/"
 	#directory = "/home/luis/pcapfiles/http/"
-	directory = "/home/luis/pcapfiles/vcom/"
+	#directory = "/home/luis/pcapfiles/vcom/"
 	#directory = "/home/luis/pcapfiles/spotify/"
 	print "Ready to process files."
 	for pfile in os.listdir(directory):
