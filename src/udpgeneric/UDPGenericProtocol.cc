@@ -46,6 +46,27 @@ void UDPGenericProtocol::processFlow(Flow *flow)
 
 			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << signature->getName());
 			flow->signature = signature;
+#ifdef PYTHON_BINDING
+        		if(signature->haveCallback())
+        		{
+                		PyGILState_STATE state(PyGILState_Ensure());
+                		/* Use the Python API */
+                		// http://toast.sourceforge.net/callback_8hpp-source.html
+                		// This method works PyRun_SimpleString(callback_name_.c_str());
+
+                		PyObject *ret = PyObject_CallFunction(signature->getCallback(), "O",&flow,NULL);
+                		if (ret == NULL)
+                        		std::cerr << "Callback call failed" << std::endl;
+                		else
+                        		Py_DECREF(ret);
+
+                		/* Restore the state of Python */
+                		PyGILState_Release(state);
+        }
+#endif
+
+
+
 		}	
 	}
 }

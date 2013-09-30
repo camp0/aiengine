@@ -9,17 +9,22 @@ import sys
 import pyaiengine
 
 
-def callback1(value):
-	print "holaaaaaaa "
+def python_callback():
+	print "holaaaaaaa ahora si que si "
 
-def callback2(value):
+def callback2():
 	print "holaaaaaaa  a janderrrr"
+
+def python_callback_flow(flow):
+
+	print "JAJAJJAJAA",flow
 
 def loadSignaturesForTcp():
 	sm = pyaiengine.SignatureManager()
 	
 	sig = pyaiengine.Signature("bittorrent tcp","^\x13BitTorrent")
-	sig.setCallback(callback1)
+#	sig.setCallback("python_callback()")
+	#sig.setPepe(callback2)
 	sm.addSignature(sig)
 #	sig = pyaiengine.Signature("luis tcp","^\x80")
 #	sm.addSignature(sig)
@@ -30,7 +35,8 @@ def loadSignaturesForUdp():
 	sm = pyaiengine.SignatureManager()
 
 	sig = pyaiengine.Signature("bittorrent udp","^d1:ad2:id20");
-	sig.setCallback(callback2)
+	sig.setCallback(python_callback_flow)
+	
 	sm.addSignature(sig)
 
 	return sm
@@ -114,7 +120,7 @@ if __name__ == '__main__':
 	# Enable VLAN tag if needed or MPLS
 	# st.enableLinkLayerTagging("vlan")
 
-	directory = "/home/luis/pcapfiles/torrent/"
+	directory = "/home/luis/pcapfiles/torrent/transmission/"
 	#directory = "/home/luis/pcapfiles/defcon18/"
 	#directory = "/home/luis/pcapfiles/http/"
 	#directory = "/home/luis/pcapfiles/vcom/"
@@ -128,7 +134,8 @@ if __name__ == '__main__':
 		try:
 			pdis.runPcap()
 		except:
-			print "Error: capturing packets"
+			e = sys.exc_info()[0]
+			print "Error: capturing packets:",e
 			break	
 
 	# Get the TCP or UDP flows processed

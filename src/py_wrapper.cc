@@ -46,6 +46,11 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	using namespace boost::asio;
 	using self_ns::str;
 
+	if (! PyEval_ThreadsInitialized()) {
+    		PyEval_InitThreads();
+	}
+//	PyEval_InitThreads();
+	
 	BasicConfigurator::configure();
 
 	boost::python::class_< std::ostream, boost::noncopyable >( "std_ostream",no_init); 

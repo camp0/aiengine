@@ -32,6 +32,7 @@
 
 #ifdef PYTHON_BINDING
 #include <boost/python.hpp>
+#include <boost/function.hpp>
 //#include <Python.h>
 //#include "Python.h"
 //#include <boost/Python.h>
@@ -48,8 +49,8 @@ public:
 		total_evaluates_(0)
 	{
 #ifdef PYTHON_BINDING
-		PyEval_InitThreads();
-		py_callback = nullptr;
+		callback_set_ = false;
+		callback_ = nullptr;	
 #endif
 	}
 
@@ -61,13 +62,28 @@ public:
 	int32_t getMatchs() { return total_matchs_; };
 
 	friend std::ostream& operator<< (std::ostream& out, const Signature& sig);
+
 #ifdef PYTHON_BINDING
 
-	void setCallback(PyObject *callable)
+	bool haveCallback() const { return callback_set_;}
+
+	void setCallback(PyObject *callback)
 	{
-		py_callback = callable;
+		if (!PyCallable_Check(callback))
+   		{
+      			std::cerr << "Object is not callable." << std::endl;
+   		}
+   		else
+   		{
+      			if ( callback_ ) Py_XDECREF(callback_);
+      			callback_ = callback;
+      			Py_XINCREF(callback_);
+			callback_set_ = true;
+   		}
 	}
 
+	PyObject *getCallback() { return callback_;};
+	
 #endif
 
 private:
@@ -78,7 +94,8 @@ private:
 	boost::regex exp_;
 	boost::cmatch what;
 #ifdef PYTHON_BINDING
-	PyObject *py_callback;
+	bool callback_set_;
+	PyObject *callback_;
 #endif
 };
 
