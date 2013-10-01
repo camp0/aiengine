@@ -93,6 +93,7 @@ private:
 	std::string name_;	
 	boost::regex exp_;
 	boost::cmatch what;
+
 #ifdef PYTHON_BINDING
 	bool callback_set_;
 	PyObject *callback_;

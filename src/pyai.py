@@ -8,26 +8,21 @@ import signal
 import sys
 import pyaiengine
 
+def callback_drop_packets(flow_name):
 
-def python_callback():
-	print "holaaaaaaa ahora si que si "
+	source_ip = flow_name.split(":")[0]
 
-def callback2():
-	print "holaaaaaaa  a janderrrr"
+#	sys.system("iptables -A INPUT -i eth0 -s %s -j DROP" % source_ip)
 
-def python_callback_flow(flow):
-
-	print "JAJAJJAJAA",flow
+	print "JAJAJJAJAA",flow_name, "source:",source_ip
 
 def loadSignaturesForTcp():
 	sm = pyaiengine.SignatureManager()
 	
-	sig = pyaiengine.Signature("bittorrent tcp","^\x13BitTorrent")
-#	sig.setCallback("python_callback()")
-	#sig.setPepe(callback2)
+	sig = pyaiengine.Signature("Shellcode Generic Exploit","\x90\x90\x90\x90\x90\x90\x90\x90\x90")
+
+	sig.setCallback(callback_drop_packets)
 	sm.addSignature(sig)
-#	sig = pyaiengine.Signature("luis tcp","^\x80")
-#	sm.addSignature(sig)
 
 	return sm
 
@@ -35,7 +30,7 @@ def loadSignaturesForUdp():
 	sm = pyaiengine.SignatureManager()
 
 	sig = pyaiengine.Signature("bittorrent udp","^d1:ad2:id20");
-	sig.setCallback(python_callback_flow)
+	sig.setCallback(callback_drop_packets)
 	
 	sm.addSignature(sig)
 

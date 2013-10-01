@@ -54,7 +54,12 @@ void UDPGenericProtocol::processFlow(Flow *flow)
                 		// http://toast.sourceforge.net/callback_8hpp-source.html
                 		// This method works PyRun_SimpleString(callback_name_.c_str());
 
-                		PyObject *ret = PyObject_CallFunction(signature->getCallback(), "O",&flow,NULL);
+				//PyObject *py_flow = PyObject
+				std::ostringstream oss;
+				oss << *flow; 
+				
+				std::string flow_name(oss.str());
+                		PyObject *ret = PyObject_CallFunction(signature->getCallback(), "(s)",flow_name.c_str());
                 		if (ret == NULL)
                         		std::cerr << "Callback call failed" << std::endl;
                 		else
@@ -62,11 +67,8 @@ void UDPGenericProtocol::processFlow(Flow *flow)
 
                 		/* Restore the state of Python */
                 		PyGILState_Release(state);
-        }
+        		}
 #endif
-
-
-
 		}	
 	}
 }
