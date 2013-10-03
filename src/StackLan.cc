@@ -296,6 +296,28 @@ void StackLan::enableFrequencyEngine(bool enable)
 	}
 }
 
+void StackLan::enableNIDSEngine(bool enable)
+{
+	if(enable)
+	{
+		ff_tcp_->removeUpFlowForwarder(ff_http_);
+		ff_tcp_->removeUpFlowForwarder(ff_ssl_);
+		ff_udp_->removeUpFlowForwarder(ff_dns_);
+	
+		LOG4CXX_INFO (logger, "Enable NIDSEngine on " << name_ );
+	}
+	else
+	{
+		ff_tcp_->removeUpFlowForwarder(ff_tcp_generic_);
+		ff_udp_->removeUpFlowForwarder(ff_udp_generic_);
+
+       		ff_tcp_->addUpFlowForwarder(ff_http_);
+        	ff_tcp_->addUpFlowForwarder(ff_ssl_);
+        	ff_tcp_->addUpFlowForwarder(ff_tcp_generic_);
+        	ff_udp_->addUpFlowForwarder(ff_dns_);
+        	ff_udp_->addUpFlowForwarder(ff_udp_generic_);
+	}
+}
 
 void StackLan::setTotalTCPFlows(int value) 
 { 

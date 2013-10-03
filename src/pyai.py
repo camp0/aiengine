@@ -10,11 +10,10 @@ import pyaiengine
 
 def callback_drop_packets(flow_name):
 
-	source_ip = flow_name.split(":")[0]
+	print "hola", str(flow_name).split(":")[0]
 
 #	sys.system("iptables -A INPUT -i eth0 -s %s -j DROP" % source_ip)
 
-	print "JAJAJJAJAA",flow_name, "source:",source_ip
 
 def loadSignaturesForTcp():
 	sm = pyaiengine.SignatureManager()

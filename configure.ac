@@ -65,6 +65,7 @@ src/signatures/Makefile
 src/user/Makefile
 src/frequency/Makefile
 src/learner/Makefile
+src/names/Makefile
 ])
 
 

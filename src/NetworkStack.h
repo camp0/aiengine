@@ -58,6 +58,7 @@ public:
 	virtual void setUDPSignatureManager(SignatureManager& sig) = 0;	
 
 	virtual void enableFrequencyEngine(bool enable) = 0;
+	virtual void enableNIDSEngine(bool enable) = 0;
 	virtual void enableLinkLayerTagging(std::string type) = 0;
 
 #ifdef PYTHON_BINDING

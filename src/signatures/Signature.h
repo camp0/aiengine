@@ -69,6 +69,7 @@ public:
 
 	void setCallback(PyObject *callback)
 	{
+		// TODO: Verify that the callback have at least one parameter
 		if (!PyCallable_Check(callback))
    		{
       			std::cerr << "Object is not callable." << std::endl;

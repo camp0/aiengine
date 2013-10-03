@@ -23,7 +23,9 @@ SUBDIRS = 	src \
 		src/udpgeneric \
 		src/signatures \
 		src/user \
-		src/frequency  
+		src/frequency \
+		src/learner \
+		src/names 
 
 dist_noinst_SCRIPTS = autogen.sh
 

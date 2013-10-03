@@ -82,6 +82,7 @@ public:
         void setTCPSignatureManager(SignatureManager& sig);
         void setUDPSignatureManager(SignatureManager& sig);
 
+	void enableNIDSEngine(bool value);
 	void enableFrequencyEngine(bool value);
 	void enableLinkLayerTagging(std::string type);
 

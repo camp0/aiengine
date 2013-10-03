@@ -48,22 +48,14 @@ void TCPGenericProtocol::processFlow(Flow *flow)
                         if(signature->haveCallback())
                         {
                                 PyGILState_STATE state(PyGILState_Ensure());
-                                /* Use the Python API */
-                                // http://toast.sourceforge.net/callback_8hpp-source.html
-                                // This method works PyRun_SimpleString(callback_name_.c_str());
-
-                                //PyObject *py_flow = PyObject
-                                std::ostringstream oss;
-                                oss << *flow;
-
-                                std::string flow_name(oss.str());
-                                PyObject *ret = PyObject_CallFunction(signature->getCallback(), "(s)",flow_name.c_str());
-                                if (ret == NULL)
-                                        std::cerr << "Callback call failed" << std::endl;
-                                else
-                                        Py_DECREF(ret);
-
-                                /* Restore the state of Python */
+                                try
+                                {
+                                        boost::python::call<void>(signature->getCallback(),boost::python::ptr(flow));
+                                }
+                                catch(std::exception &e)
+                                {
+                                        std::cout << "ERROR:" << e.what() << std::endl;
+                                }
                                 PyGILState_Release(state);
                         }
 #endif
