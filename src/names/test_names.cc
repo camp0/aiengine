@@ -29,11 +29,14 @@
 #endif
 #include <boost/test/unit_test.hpp>
 
+using namespace std;
+
 BOOST_AUTO_TEST_SUITE (testnames) 
 
 BOOST_AUTO_TEST_CASE (test1_names)
 {
-	std::cout << "hello" << std::endl;
+	SharedPointer<DomainName> domain = SharedPointer<DomainName>(new DomainName());
+	//SharedPointer<DomainName> domain = SharedPointer<DomainName>(new DomainName());
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

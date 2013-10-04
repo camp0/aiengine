@@ -27,7 +27,7 @@
 #include "PacketDispatcher.h"
 #include "NetworkStack.h"
 #include "./frequency/FrequencyGroup.h"
-#include "./signatures/Signature.h"
+#include "./regex/Regex.h"
 #include "./learner/LearnerEngine.h"
 #include <boost/python.hpp>
 #include <boost/asio.hpp>
@@ -49,7 +49,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	if (! PyEval_ThreadsInitialized()) {
     		PyEval_InitThreads();
 	}
-//	PyEval_InitThreads();
 	
 	BasicConfigurator::configure();
 
@@ -58,14 +57,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
         // for overload the methods with the class
       	void (NetworkStack::*printFlowsNetworkStack)() = &NetworkStack::printFlows;
 
-	void (NetworkStack::*setUDPSignatureManager1)(SignatureManager&) = &NetworkStack::setUDPSignatureManager;
-	void (NetworkStack::*setTCPSignatureManager1)(SignatureManager&) = &NetworkStack::setTCPSignatureManager;
-	void (NetworkStack::*setUDPSignatureManager2)(SignatureManagerPtrWeak) = &NetworkStack::setUDPSignatureManager;
-	void (NetworkStack::*setTCPSignatureManager2)(SignatureManagerPtrWeak) = &NetworkStack::setTCPSignatureManager;
+	void (NetworkStack::*setUDPRegexManager1)(RegexManager&) = &NetworkStack::setUDPRegexManager;
+	void (NetworkStack::*setTCPRegexManager1)(RegexManager&) = &NetworkStack::setTCPRegexManager;
+	void (NetworkStack::*setUDPRegexManager2)(RegexManagerPtrWeak) = &NetworkStack::setUDPRegexManager;
+	void (NetworkStack::*setTCPRegexManager2)(RegexManagerPtrWeak) = &NetworkStack::setTCPRegexManager;
 
         boost::python::class_<NetworkStack, boost::noncopyable>("NetworkStack",no_init)
-                .def("setUDPSignatureManager",pure_virtual(setUDPSignatureManager1))
-                .def("setTCPSignatureManager",pure_virtual(setTCPSignatureManager1))
+                .def("setUDPRegexManager",pure_virtual(setUDPRegexManager1))
+                .def("setTCPRegexManager",pure_virtual(setTCPRegexManager1))
                 .def("setTotalTCPFlows",pure_virtual(&NetworkStack::setTotalTCPFlows))
                 .def("setTotalUDPFlows",pure_virtual(&NetworkStack::setTotalUDPFlows))
               	.def("printFlows",pure_virtual(printFlowsNetworkStack))
@@ -79,16 +78,16 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	// for overload the methods with the class
 	void (StackLan::*printFlowsLan)() = &StackLan::printFlows;
 
-	void (StackLan::*setUDPSignatureManagerLan1)(SignatureManager&) = &StackLan::setUDPSignatureManager;
-	void (StackLan::*setTCPSignatureManagerLan1)(SignatureManager&) = &StackLan::setTCPSignatureManager;
-	void (StackLan::*setUDPSignatureManagerLan2)(SignatureManagerPtrWeak) = &StackLan::setUDPSignatureManager;
-	void (StackLan::*setTCPSignatureManagerLan2)(SignatureManagerPtrWeak) = &StackLan::setTCPSignatureManager;
+	void (StackLan::*setUDPRegexManagerLan1)(RegexManager&) = &StackLan::setUDPRegexManager;
+	void (StackLan::*setTCPRegexManagerLan1)(RegexManager&) = &StackLan::setTCPRegexManager;
+	void (StackLan::*setUDPRegexManagerLan2)(RegexManagerPtrWeak) = &StackLan::setUDPRegexManager;
+	void (StackLan::*setTCPRegexManagerLan2)(RegexManagerPtrWeak) = &StackLan::setTCPRegexManager;
 
 	boost::python::class_<StackLan, bases<NetworkStack> >("StackLan")
-		.def("setUDPSignatureManager",setUDPSignatureManagerLan1)	
-		.def("setTCPSignatureManager",setTCPSignatureManagerLan1)	
-		.def("setUDPSignatureManager",setUDPSignatureManagerLan2)	
-		.def("setTCPSignatureManager",setTCPSignatureManagerLan2)	
+		.def("setUDPRegexManager",setUDPRegexManagerLan1)	
+		.def("setTCPRegexManager",setTCPRegexManagerLan1)	
+		.def("setUDPRegexManager",setUDPRegexManagerLan2)	
+		.def("setTCPRegexManager",setTCPRegexManagerLan2)	
 		.def("setTotalTCPFlows",&StackLan::setTotalTCPFlows)
 		.def("setTotalUDPFlows",&StackLan::setTotalUDPFlows)
 		.def(self_ns::str(self_ns::self))
@@ -103,16 +102,16 @@ BOOST_PYTHON_MODULE(pyaiengine)
         // for overload the methods with the class
         void (StackMobile::*printFlowsMobile)() = &StackMobile::printFlows;
 
-	void (StackMobile::*setUDPSignatureManagerMobile1)(SignatureManager&) = &StackMobile::setUDPSignatureManager;
-	void (StackMobile::*setTCPSignatureManagerMobile1)(SignatureManager&) = &StackMobile::setTCPSignatureManager;
-	void (StackMobile::*setUDPSignatureManagerMobile2)(SignatureManagerPtrWeak) = &StackMobile::setUDPSignatureManager;
-	void (StackMobile::*setTCPSignatureManagerMobile2)(SignatureManagerPtrWeak) = &StackMobile::setTCPSignatureManager;
+	void (StackMobile::*setUDPRegexManagerMobile1)(RegexManager&) = &StackMobile::setUDPRegexManager;
+	void (StackMobile::*setTCPRegexManagerMobile1)(RegexManager&) = &StackMobile::setTCPRegexManager;
+	void (StackMobile::*setUDPRegexManagerMobile2)(RegexManagerPtrWeak) = &StackMobile::setUDPRegexManager;
+	void (StackMobile::*setTCPRegexManagerMobile2)(RegexManagerPtrWeak) = &StackMobile::setTCPRegexManager;
 
         boost::python::class_<StackMobile, bases<NetworkStack> >("StackMobile")
-		.def("setUDPSignatureManager",setUDPSignatureManagerMobile1)	
-		.def("setTCPSignatureManager",setTCPSignatureManagerMobile1)	
-		.def("setUDPSignatureManager",setUDPSignatureManagerMobile2)	
-		.def("setTCPSignatureManager",setTCPSignatureManagerMobile2)	
+		.def("setUDPRegexManager",setUDPRegexManagerMobile1)	
+		.def("setTCPRegexManager",setTCPRegexManagerMobile1)	
+		.def("setUDPRegexManager",setUDPRegexManagerMobile2)	
+		.def("setTCPRegexManager",setTCPRegexManagerMobile2)	
                 .def("setTotalTCPFlows",&StackMobile::setTotalTCPFlows)
                 .def("setTotalUDPFlows",&StackMobile::setTotalUDPFlows)
 		.def(self_ns::str(self_ns::self))
@@ -124,12 +123,12 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setStatisticsLevel",&StackMobile::setStatisticsLevel)
         ;
 	
-	boost::python::class_<Signature>("Signature",init<const std::string&,const std::string&>())
-		.def("getExpression",&Signature::getExpression,return_internal_reference<>())
-		.def("getName",&Signature::getName,return_internal_reference<>())
-		.def("getMatchs",&Signature::getMatchs)
+	boost::python::class_<Regex>("Regex",init<const std::string&,const std::string&>())
+		.def("getExpression",&Regex::getExpression,return_internal_reference<>())
+		.def("getName",&Regex::getName,return_internal_reference<>())
+		.def("getMatchs",&Regex::getMatchs)
 		.def(self_ns::str(self_ns::self))
-		.def("setCallback",&Signature::setCallback)
+		.def("setCallback",&Regex::setCallback)
 	;
 
 	// for overload the methods with the class
@@ -148,13 +147,13 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
 
-	void (SignatureManager::*addSignature1)(const std::string,const std::string) = &SignatureManager::addSignature;
-	void (SignatureManager::*addSignature2)(Signature&) = &SignatureManager::addSignature;
+	void (RegexManager::*addRegex1)(const std::string,const std::string) = &RegexManager::addRegex;
+	void (RegexManager::*addRegex2)(Regex&) = &RegexManager::addRegex;
 
-	boost::python::class_<SignatureManager,boost::shared_ptr<SignatureManager>,boost::noncopyable >("SignatureManager")
-		.def("addSignature",addSignature1)
-		.def("addSignature",addSignature2)
-		.def("__len__",&SignatureManager::getTotalSignatures)
+	boost::python::class_<RegexManager,boost::shared_ptr<RegexManager>,boost::noncopyable >("RegexManager")
+		.def("addRegex",addRegex1)
+		.def("addRegex",addRegex2)
+		.def("__len__",&RegexManager::getTotalRegexs)
 		.def(self_ns::str(self_ns::self))
 	;
 

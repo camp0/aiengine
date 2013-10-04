@@ -295,32 +295,32 @@ void StackMobile::printFlows(std::basic_ostream<char>& out)
 	flow_mng_udp_high_->printFlows(out);
 }
 
-void StackMobile::setTCPSignatureManager(SignatureManagerPtrWeak sig)
+void StackMobile::setTCPRegexManager(RegexManagerPtrWeak sig)
 {
         if(sig.lock())
 	{
-                tcp_generic_->setSignatureManager(sig.lock());
+                tcp_generic_->setRegexManager(sig.lock());
 	}
 }
 
-void StackMobile::setUDPSignatureManager(SignatureManagerPtrWeak sig)
+void StackMobile::setUDPRegexManager(RegexManagerPtrWeak sig)
 {
         if(sig.lock())
 	{
-                udp_generic_->setSignatureManager(sig.lock());
+                udp_generic_->setRegexManager(sig.lock());
 	}
 }
 
-void StackMobile::setTCPSignatureManager(SignatureManager& sig)
+void StackMobile::setTCPRegexManager(RegexManager& sig)
 {
-	sigs_tcp_ = std::make_shared<SignatureManager>(sig);
-        setTCPSignatureManager(sigs_tcp_);
+	sigs_tcp_ = std::make_shared<RegexManager>(sig);
+        setTCPRegexManager(sigs_tcp_);
 }
 
-void StackMobile::setUDPSignatureManager(SignatureManager& sig)
+void StackMobile::setUDPRegexManager(RegexManager& sig)
 {
-	sigs_udp_ = std::make_shared<SignatureManager>(sig);
-        setUDPSignatureManager(sigs_udp_);
+	sigs_udp_ = std::make_shared<RegexManager>(sig);
+        setUDPRegexManager(sigs_udp_);
 }
 
 void StackMobile::setTotalTCPFlows(int value)

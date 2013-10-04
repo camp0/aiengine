@@ -25,6 +25,7 @@
 #define _test_names_H_
 
 #include <string>
-
+#include "../Pointer.h"
+#include "DomainName.h"
 
 #endif

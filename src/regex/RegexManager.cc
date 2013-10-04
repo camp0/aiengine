@@ -22,35 +22,35 @@
  *
  */
 #include <iostream>
-#include "SignatureManager.h"
+#include "RegexManager.h"
 
-void SignatureManager::addSignature(Signature& sig)
+void RegexManager::addRegex(Regex& sig)
 {
 	// TODO
 #ifdef PYTHON_BINDING
-	addSignature(boost::make_shared<Signature>(sig));
+	addRegex(boost::make_shared<Regex>(sig));
 #else
-	addSignature(std::make_shared<Signature>(sig));
+	addRegex(std::make_shared<Regex>(sig));
 #endif
 }
 
-void SignatureManager::addSignature(const std::string name,const std::string expression)
+void RegexManager::addRegex(const std::string name,const std::string expression)
 {
-	SharedPointer<Signature> sig = SharedPointer<Signature>(new Signature(name,expression));
+	SharedPointer<Regex> sig = SharedPointer<Regex>(new Regex(name,expression));
 
-	addSignature(sig);
+	addRegex(sig);
 }
 
-void SignatureManager::addSignature(SharedPointer<Signature> sig)
+void RegexManager::addRegex(SharedPointer<Regex> sig)
 {
 	signatures_.push_back(sig);
 }
 
-void SignatureManager::evaluate(const unsigned char *payload, bool *result)
+void RegexManager::evaluate(const unsigned char *payload, bool *result)
 {
 
         std::find_if(signatures_.begin(),
-                signatures_.end(),  [&](SharedPointer<Signature>& sig)
+                signatures_.end(),  [&](SharedPointer<Regex>& sig)
         {
 		if(sig->evaluate(payload))
 		{
@@ -65,13 +65,13 @@ void SignatureManager::evaluate(const unsigned char *payload, bool *result)
 	return;
 }
 
-std::ostream& operator<< (std::ostream& out, const SignatureManager& sig)
+std::ostream& operator<< (std::ostream& out, const RegexManager& sig)
 {
-	out << "SignatureManager(" << &sig << ") statistics" << std::dec <<  std::endl;	
+	out << "RegexManager(" << &sig << ") statistics" << std::dec <<  std::endl;	
 	for (auto it = sig.signatures_.begin(); it != sig.signatures_.end(); ++it)
 	{
-		SharedPointer<Signature> sig = (*it);
-		out << "\t" << "Signature:" << sig->getName() << " matches:" << sig->getMatchs() << std::endl;
+		SharedPointer<Regex> sig = (*it);
+		out << "\t" << "Regex:" << sig->getName() << " matches:" << sig->getMatchs() << std::endl;
 	}
 	return out;
 }

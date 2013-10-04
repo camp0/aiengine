@@ -30,7 +30,7 @@
 
 #include "../Pointer.h"
 #include "../Packet.h"
-#include "../signatures/Signature.h"
+#include "../regex/Regex.h"
 #include "../frequency/Frequencies.h"
 #include "../frequency/PacketFrequencies.h"
 #include "../http/HTTPHost.h"
@@ -78,7 +78,7 @@ public:
 	int32_t total_packets;
 
 	WeakPointer<DNSDomain> dns_domain;
-	WeakPointer<Signature> signature;
+	WeakPointer<Regex> regex;
 	WeakPointer<HTTPHost> http_host;
 	WeakPointer<HTTPUserAgent> http_ua;	
 	WeakPointer<Frequencies> frequencies;
@@ -102,7 +102,7 @@ public:
 		frequencies.reset();
 		http_host.reset();
 		http_ua.reset();
-		signature.reset();
+		regex.reset();
 		dns_domain.reset();
 		packet = nullptr;
 	};
@@ -123,7 +123,7 @@ public:
 	HTTPUserAgent& getHTTPUserAgent() const { return *http_ua.lock().get();};
 	Frequencies& getFrequencies() const { return *frequencies.lock().get();};
 	PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.lock().get();};
-	Signature& getSignature() const { return *signature.lock().get();};
+	Regex& getRegex() const { return *regex.lock().get();};
 	DNSDomain& getDNSDomain() const { return *dns_domain.lock().get();};
 
 #endif

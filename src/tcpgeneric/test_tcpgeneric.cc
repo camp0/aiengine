@@ -37,10 +37,10 @@ BOOST_AUTO_TEST_CASE (test1_tcpgeneric)
         int length = raw_packet_ethernet_ip_tcp_torrent_length;
         Packet packet(pkt,length,0);
 
-        SignatureManagerPtr sig = SignatureManagerPtr(new SignatureManager());
+        RegexManagerPtr sig = RegexManagerPtr(new RegexManager());
 
-        sig->addSignature("bittorrent tcp","\\x13BitTorrent");
-        gtcp->setSignatureManager(sig);
+        sig->addRegex("bittorrent tcp","\\x13BitTorrent");
+        gtcp->setRegexManager(sig);
 
         // executing the packet
         // forward the packet through the multiplexers
@@ -49,9 +49,9 @@ BOOST_AUTO_TEST_CASE (test1_tcpgeneric)
         mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forwardPacket(packet);
 
-        BOOST_CHECK(sig->getTotalSignatures()  == 1);
-        BOOST_CHECK(sig->getTotalMatchingSignatures() == 1);
-        BOOST_CHECK(sig->getMatchedSignature() != nullptr);
+        BOOST_CHECK(sig->getTotalRegexs()  == 1);
+        BOOST_CHECK(sig->getTotalMatchingRegexs() == 1);
+        BOOST_CHECK(sig->getMatchedRegex() != nullptr);
 
 }
 

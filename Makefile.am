@@ -21,7 +21,7 @@ SUBDIRS = 	src \
 		src/flow \
 		src/tcpgeneric \
 		src/udpgeneric \
-		src/signatures \
+		src/regex \
 		src/user \
 		src/frequency \
 		src/learner \

@@ -22,8 +22,8 @@
  *
  */
 #include <string>
-#include "SignatureManager.h"
-#include "Signature.h"
+#include "RegexManager.h"
+#include "Regex.h"
 
 #define BOOST_TEST_DYN_LINK
 #ifdef STAND_ALONE
@@ -35,21 +35,21 @@ BOOST_AUTO_TEST_SUITE(signature_suite)
 
 BOOST_AUTO_TEST_CASE (test1_signature)
 {
-	SignatureManagerPtr sigmng = SignatureManagerPtr( new SignatureManager());
+	RegexManagerPtr sigmng = RegexManagerPtr( new RegexManager());
 
-	BOOST_CHECK(sigmng->getTotalSignatures()  ==0);
-	BOOST_CHECK(sigmng->getTotalMatchingSignatures() == 0);
-	BOOST_CHECK(sigmng->getMatchedSignature() == nullptr);
+	BOOST_CHECK(sigmng->getTotalRegexs()  ==0);
+	BOOST_CHECK(sigmng->getTotalMatchingRegexs() == 0);
+	BOOST_CHECK(sigmng->getMatchedRegex() == nullptr);
 }
 
 BOOST_AUTO_TEST_CASE (test2_signature)
 {
-	SignatureManagerPtr sigmng = SignatureManagerPtr( new SignatureManager());
+	RegexManagerPtr sigmng = RegexManagerPtr( new RegexManager());
 
-	sigmng->addSignature("hello","^hello");
-        BOOST_CHECK(sigmng->getTotalSignatures()  == 1);
-        BOOST_CHECK(sigmng->getTotalMatchingSignatures() == 0);
-        BOOST_CHECK(sigmng->getMatchedSignature() == nullptr);
+	sigmng->addRegex("hello","^hello");
+        BOOST_CHECK(sigmng->getTotalRegexs()  == 1);
+        BOOST_CHECK(sigmng->getTotalMatchingRegexs() == 0);
+        BOOST_CHECK(sigmng->getMatchedRegex() == nullptr);
 
 	std::string cad("hello world");
 	bool value = false;
@@ -57,19 +57,19 @@ BOOST_AUTO_TEST_CASE (test2_signature)
 
 	sigmng->evaluate(buffer,&value);
 	BOOST_CHECK(value == true);
-	BOOST_CHECK(sigmng->getMatchedSignature() != nullptr);
-        BOOST_CHECK(sigmng->getTotalMatchingSignatures() == 1);
+	BOOST_CHECK(sigmng->getMatchedRegex() != nullptr);
+        BOOST_CHECK(sigmng->getTotalMatchingRegexs() == 1);
 }
 
 BOOST_AUTO_TEST_CASE (test3_signature)
 {
-        SignatureManagerPtr sigmng = SignatureManagerPtr( new SignatureManager());
-	Signature sig("name","some hex");
+        RegexManagerPtr sigmng = RegexManagerPtr( new RegexManager());
+	Regex sig("name","some hex");
 
-        sigmng->addSignature(sig);
-        BOOST_CHECK(sigmng->getTotalSignatures()  == 1);
-        BOOST_CHECK(sigmng->getTotalMatchingSignatures() == 0);
-        BOOST_CHECK(sigmng->getMatchedSignature() == nullptr);
+        sigmng->addRegex(sig);
+        BOOST_CHECK(sigmng->getTotalRegexs()  == 1);
+        BOOST_CHECK(sigmng->getTotalMatchingRegexs() == 0);
+        BOOST_CHECK(sigmng->getMatchedRegex() == nullptr);
 
         std::string cad("hello world im not a hex, but some hex yes");
         bool value = false;
@@ -77,14 +77,14 @@ BOOST_AUTO_TEST_CASE (test3_signature)
 
         sigmng->evaluate(buffer,&value);
         BOOST_CHECK(value == true);
-        BOOST_CHECK(sigmng->getMatchedSignature() != nullptr);
-        BOOST_CHECK(sigmng->getMatchedSignature().get() != nullptr);
-        BOOST_CHECK(sigmng->getTotalMatchingSignatures() == 1);
+        BOOST_CHECK(sigmng->getMatchedRegex() != nullptr);
+        BOOST_CHECK(sigmng->getMatchedRegex().get() != nullptr);
+        BOOST_CHECK(sigmng->getTotalMatchingRegexs() == 1);
 
 	// Shared ptr and sig are stored on different places but should have the same regex
-	BOOST_CHECK(sig.getExpression().compare(sigmng->getMatchedSignature()->getExpression())== 0);
+	BOOST_CHECK(sig.getExpression().compare(sigmng->getMatchedRegex()->getExpression())== 0);
 
-	//BOOST_CHECK(sig == &sigmng->getMatchedSignature().get()); 
+	//BOOST_CHECK(sig == &sigmng->getMatchedRegex().get()); 
 	//std::cout << *sigmng;
 }
 

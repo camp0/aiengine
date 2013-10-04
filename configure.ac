@@ -61,7 +61,7 @@ src/ssl/Makefile
 src/dns/Makefile
 src/tcpgeneric/Makefile
 src/udpgeneric/Makefile
-src/signatures/Makefile
+src/regex/Makefile
 src/user/Makefile
 src/frequency/Makefile
 src/learner/Makefile

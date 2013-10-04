@@ -77,10 +77,10 @@ public:
 		dns_->createDNSDomains(value / 2);
 	};
 
-        void setTCPSignatureManager(SignatureManagerPtrWeak sig); 
-        void setUDPSignatureManager(SignatureManagerPtrWeak sig);
-        void setTCPSignatureManager(SignatureManager& sig);
-        void setUDPSignatureManager(SignatureManager& sig);
+        void setTCPRegexManager(RegexManagerPtrWeak sig); 
+        void setUDPRegexManager(RegexManagerPtrWeak sig);
+        void setTCPRegexManager(RegexManager& sig);
+        void setUDPRegexManager(RegexManager& sig);
 
 	void enableNIDSEngine(bool value);
 	void enableFrequencyEngine(bool value);
@@ -148,12 +148,12 @@ private:
 	FlowForwarderPtr ff_tcp_freqs_;
 	FlowForwarderPtr ff_udp_freqs_;
 
-        // References to the SignaturesManagers
+        // References to the RegexsManagers
         // This references are created on the python side, so we need
         // to have them on a shared_ptr, because weak_ptr dont have
         // the ownership of them.
-        SignatureManagerPtr sigs_tcp_;
-        SignatureManagerPtr sigs_udp_;
+        RegexManagerPtr sigs_tcp_;
+        RegexManagerPtr sigs_udp_;
 };
 
 

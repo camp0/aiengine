@@ -21,49 +21,49 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _SignatureManager_H_
-#define _SignatureManager_H_
+#ifndef _RegexManager_H_
+#define _RegexManager_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
 #include <vector>
-#include "Signature.h"
+#include "Regex.h"
 #include "../Pointer.h"
 
-class SignatureManager
+class RegexManager
 {
 public:
-        explicit SignatureManager():
+        explicit RegexManager():
                 total_matched_signatures_(0)
         {
         }
 
-        virtual ~SignatureManager()=default;
+        virtual ~RegexManager()=default;
 
-	int32_t getTotalSignatures() { return signatures_.size();}
-	int32_t getTotalMatchingSignatures() { return total_matched_signatures_;}
+	int32_t getTotalRegexs() { return signatures_.size();}
+	int32_t getTotalMatchingRegexs() { return total_matched_signatures_;}
 
 	void evaluate(const unsigned char *payload,bool *result); 
 
-	void addSignature(const std::string name,const std::string expression);
-	void addSignature(SharedPointer<Signature> sig);
-	void addSignature(Signature& sig);
+	void addRegex(const std::string name,const std::string expression);
+	void addRegex(SharedPointer<Regex> sig);
+	void addRegex(Regex& sig);
 
-	SharedPointer<Signature> getMatchedSignature() { return current_signature_;}
+	SharedPointer<Regex> getMatchedRegex() { return current_signature_;}
 
-	friend std::ostream& operator<< (std::ostream& out, const SignatureManager& sig);
+	friend std::ostream& operator<< (std::ostream& out, const RegexManager& sig);
 //	std::string toString() { std::ostringstream s; s << this; return s.str();}; // Wrapper for python 
 
 private:
-	SharedPointer<Signature> current_signature_;
+	SharedPointer<Regex> current_signature_;
 	int32_t total_matched_signatures_;
-	std::vector<SharedPointer<Signature>> signatures_;
+	std::vector<SharedPointer<Regex>> signatures_;
 };
 
-typedef std::shared_ptr<SignatureManager> SignatureManagerPtr;
-typedef std::weak_ptr<SignatureManager> SignatureManagerPtrWeak;
+typedef std::shared_ptr<RegexManager> RegexManagerPtr;
+typedef std::weak_ptr<RegexManager> RegexManagerPtrWeak;
 
-#endif // _SignatureManager_H_
+#endif // _RegexManager_H_
 

@@ -21,16 +21,29 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#include "Signature.h"
+#ifndef _DomainName_H_
+#define _DomainName_H_
 
-bool Signature::evaluate(const unsigned char *payload) 
-{
-	bool result = boost::regex_search(reinterpret_cast<const char*>(payload), what, exp_);
-	return result; 
-}
+#include <iostream>
+#include "../Signature.h"
 
-std::ostream& operator<< (std::ostream& out, const Signature& sig)
+class DomainName: public Signature 
 {
-	out << "\t" << "Signature:" << sig.name_ << " matches:" << sig.total_matchs_ << std::endl;	
-	return out;
-}
+public:
+    	explicit DomainName() {};
+    	virtual ~DomainName() {};
+
+//	std::string &getName() { return name_; };
+//	void setName(const std::string& name) { name_ = name;};
+
+#ifdef PYTHON_BINDING
+	friend std::ostream& operator<< (std::ostream& out, const DomainName& domain)
+	{
+		out << domain.name_ ;
+        	return out;
+	}
+#endif
+
+};
+
+#endif

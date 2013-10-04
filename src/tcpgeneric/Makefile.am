@@ -11,8 +11,8 @@ test_tcpgeneric_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 				../ip/IPProtocol.cc \
 				../tcp/TCPProtocol.cc \
 				../flow/FlowManager.cc \
-				../signatures/SignatureManager.cc \
-				../signatures/Signature.cc \
+				../regex/RegexManager.cc \
+				../regex/Regex.cc \
 				TCPGenericProtocol.cc test_tcpgeneric.cc
 
 test_tcpgeneric_CPPFLAGS = -DSTAND_ALONE

@@ -28,11 +28,11 @@ LoggerPtr TCPGenericProtocol::logger(Logger::getLogger("aiengine.tcpgeneric"));
 
 void TCPGenericProtocol::processFlow(Flow *flow)
 {
-	SignatureManagerPtr sig = sigs_.lock();
+	RegexManagerPtr sig = sigs_.lock();
 	++total_packets_;
 	total_bytes_ += flow->packet->getLength();
 
-	if((sig)&&(!flow->signature.lock())) // There is a SignatureManager attached and the flow have not been matched
+	if((sig)&&(!flow->regex.lock())) // There is a RegexManager attached and the flow have not been matched
 	{
 		bool result = false;
 		const unsigned char *payload = flow->packet->getPayload();
@@ -40,17 +40,17 @@ void TCPGenericProtocol::processFlow(Flow *flow)
 		sig->evaluate(payload,&result);
 		if(result)
 		{
-			SharedPointer<Signature> signature = sig->getMatchedSignature();
+			SharedPointer<Regex> regex = sig->getMatchedRegex();
 
-			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << signature->getName());
-			flow->signature = signature;
+			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << regex->getName());
+			flow->regex = regex; 
 #ifdef PYTHON_BINDING
-                        if(signature->haveCallback())
+                        if(regex->haveCallback())
                         {
                                 PyGILState_STATE state(PyGILState_Ensure());
                                 try
                                 {
-                                        boost::python::call<void>(signature->getCallback(),boost::python::ptr(flow));
+                                        boost::python::call<void>(regex->getCallback(),boost::python::ptr(flow));
                                 }
                                 catch(std::exception &e)
                                 {

@@ -44,7 +44,7 @@ using namespace log4cxx::helpers;
 SystemPtr system_stats;
 PacketDispatcherPtr pktdis;
 NetworkStackPtr stack;
-SignatureManagerPtr sm;
+RegexManagerPtr sm;
 FrequencyGroup<std::string> group;
 LearnerEngine learner;
 
@@ -220,9 +220,9 @@ int main(int argc, char* argv[])
 		  			"Sets the number of UDP flows on the pool.")
 		;
 
-	po::options_description optional_ops_sigs("Signature optional arguments");
+	po::options_description optional_ops_sigs("Regex optional arguments");
 	optional_ops_sigs.add_options()
-                ("enable-signatures,R", "Enables the Signature engine.") 
+                ("enable-regex,R", 	"Enables the Regex engine.") 
 		("regex,r",    		po::value<std::string>(&option_regex)->default_value(".*"),
 		  			"Sets the regex for evaluate agains the flows.")
                 ("flow-class,c",  	po::value<std::string>(&option_regex_type_flows)->default_value("all"),
@@ -337,17 +337,17 @@ int main(int argc, char* argv[])
 	// Check if AIEngine is gonna work as signature extractor or as a regular packet inspector
 	if(var_map.count("enable-signatures") == 1)
 	{
-        	sm = SignatureManagerPtr(new SignatureManager());
-        	sm->addSignature("experimental",option_regex);
+        	sm = RegexManagerPtr(new RegexManager());
+        	sm->addRegex("experimental",option_regex);
 		if(option_regex_type_flows.compare("all") == 0)
 		{
-			stack->setUDPSignatureManager(sm);
-			stack->setTCPSignatureManager(sm);
+			stack->setUDPRegexManager(sm);
+			stack->setTCPRegexManager(sm);
 		}
 		else
 		{
-			if(option_regex_type_flows.compare("tcp") == 0) stack->setTCPSignatureManager(sm);
-			if(option_regex_type_flows.compare("udp") == 0) stack->setUDPSignatureManager(sm);
+			if(option_regex_type_flows.compare("tcp") == 0) stack->setTCPRegexManager(sm);
+			if(option_regex_type_flows.compare("udp") == 0) stack->setUDPRegexManager(sm);
 		}
 	}
 

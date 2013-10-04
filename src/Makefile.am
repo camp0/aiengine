@@ -11,6 +11,7 @@ noinst_HEADERS =        Packet.h \
 			StackMobile.h \
 			Multiplexer.h \
 			FlowForwarder.h \
+			Signature.h \
 			./ethernet/EthernetProtocol.h \
 			./vlan/VLanProtocol.h \
 			./mpls/MPLSProtocol.h \
@@ -50,8 +51,8 @@ aiengine_core_sources =	Multiplexer.cc \
 			./http/HTTPProtocol.cc \
 			./ssl/SSLProtocol.cc \
 			./dns/DNSProtocol.cc \
-			./signatures/Signature.cc \
-			./signatures/SignatureManager.cc \
+			./regex/Regex.cc \
+			./regex/RegexManager.cc \
 			./frequency/FrequencyProtocol.cc \
 			./learner/LearnerEngine.cc \
 			System.cc \
@@ -84,7 +85,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		./http/test_http.cc \
 		./icmp/test_icmp.cc \
 		./frequency/test_frequency.cc \
-		./signatures/test_signatures.cc \
+		./regex/test_regex.cc \
 		./ssl/test_ssl.cc \
 		./user/test_users.cc \
 		./learner/test_learner.cc \

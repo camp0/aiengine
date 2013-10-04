@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS =	test_names.h DomainNameTable.h
+noinst_HEADERS =	test_names.h DomainNameTable.h DomainName.h
 
 TEST = test_names
 

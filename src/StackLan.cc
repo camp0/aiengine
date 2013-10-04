@@ -240,32 +240,32 @@ void StackLan::printFlows(std::basic_ostream<char>& out)
 	flow_table_udp_->printFlows(out);
 }
 
-void StackLan::setTCPSignatureManager(SignatureManagerPtrWeak sig) 
+void StackLan::setTCPRegexManager(RegexManagerPtrWeak sig) 
 {
 	if(sig.lock())
 	{
-		tcp_generic_->setSignatureManager(sig.lock());
+		tcp_generic_->setRegexManager(sig.lock());
 	}
 }
 
-void StackLan::setUDPSignatureManager(SignatureManagerPtrWeak sig) 
+void StackLan::setUDPRegexManager(RegexManagerPtrWeak sig) 
 {
 	if(sig.lock())
 	{
-		udp_generic_->setSignatureManager(sig.lock());
+		udp_generic_->setRegexManager(sig.lock());
 	}
 }
 
-void StackLan::setTCPSignatureManager(SignatureManager& sig) 
+void StackLan::setTCPRegexManager(RegexManager& sig) 
 { 
-	sigs_tcp_ = std::make_shared<SignatureManager>(sig);
-	setTCPSignatureManager(sigs_tcp_);
+	sigs_tcp_ = std::make_shared<RegexManager>(sig);
+	setTCPRegexManager(sigs_tcp_);
 } 
 
-void StackLan::setUDPSignatureManager(SignatureManager& sig) 
+void StackLan::setUDPRegexManager(RegexManager& sig) 
 { 
-	sigs_udp_ = std::make_shared<SignatureManager>(sig);
-	setUDPSignatureManager(sigs_udp_);
+	sigs_udp_ = std::make_shared<RegexManager>(sig);
+	setUDPRegexManager(sigs_udp_);
 } 
 
 

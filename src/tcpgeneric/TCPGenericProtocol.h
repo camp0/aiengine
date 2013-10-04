@@ -36,7 +36,7 @@
 #include "../Multiplexer.h"
 #include "../FlowForwarder.h"
 #include "../Protocol.h"
-#include "../signatures/SignatureManager.h"
+#include "../regex/RegexManager.h"
 #include <net/ethernet.h>
 #include <netinet/ip.h>
 #include <netinet/in.h>
@@ -92,7 +92,7 @@ public:
 		return true;
 	}
 
-	void setSignatureManager(SignatureManagerPtrWeak sig) { sigs_ = sig;}; 
+	void setRegexManager(RegexManagerPtrWeak sig) { sigs_ = sig;}; 
 
 private:
 	static log4cxx::LoggerPtr logger;
@@ -102,7 +102,7 @@ private:
 	MultiplexerPtrWeak mux_; // Not used;
 	unsigned char *tcp_generic_header_;
         int64_t total_bytes_;
-	SignatureManagerPtrWeak sigs_;
+	RegexManagerPtrWeak sigs_;
 };
 
 typedef std::shared_ptr<TCPGenericProtocol> TCPGenericProtocolPtr;

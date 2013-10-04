@@ -62,10 +62,10 @@ BOOST_AUTO_TEST_CASE (test2_udpgeneric) // Same case as test1_genericudp but wit
         int length = raw_packet_ethernet_ip_udp_torrent_dht_length;
         Packet packet(pkt,length,0);
 
-	SignatureManagerPtr sig = SignatureManagerPtr(new SignatureManager());
+	RegexManagerPtr sig = RegexManagerPtr(new RegexManager());
 
-        sig->addSignature("a signature","^hello");
-	gudp->setSignatureManager(sig);
+        sig->addRegex("a signature","^hello");
+	gudp->setRegexManager(sig);
 
         // executing the packet
         // forward the packet through the multiplexers
@@ -74,17 +74,17 @@ BOOST_AUTO_TEST_CASE (test2_udpgeneric) // Same case as test1_genericudp but wit
         mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forwardPacket(packet);
 
-        BOOST_CHECK(sig->getTotalSignatures()  == 1);
-        BOOST_CHECK(sig->getTotalMatchingSignatures() == 0);
-        BOOST_CHECK(sig->getMatchedSignature() == nullptr);
+        BOOST_CHECK(sig->getTotalRegexs()  == 1);
+        BOOST_CHECK(sig->getTotalMatchingRegexs() == 0);
+        BOOST_CHECK(sig->getMatchedRegex() == nullptr);
 
 	// Add another true signature that matchs the packet
-	sig->addSignature("other","^d1");
+	sig->addRegex("other","^d1");
         
 	mux_eth->forwardPacket(packet);
-        BOOST_CHECK(sig->getTotalSignatures()  == 2);
-        BOOST_CHECK(sig->getTotalMatchingSignatures() == 1);
-        BOOST_CHECK(sig->getMatchedSignature() != nullptr);
+        BOOST_CHECK(sig->getTotalRegexs()  == 2);
+        BOOST_CHECK(sig->getTotalMatchingRegexs() == 1);
+        BOOST_CHECK(sig->getMatchedRegex() != nullptr);
 
 	//std::cout << *sig;
 }

@@ -27,7 +27,7 @@
 #include <iostream>
 #include <fstream>
 #include "Multiplexer.h"
-#include "./signatures/SignatureManager.h"
+#include "./regex/RegexManager.h"
 #include "./flow/FlowManager.h"
 
 class NetworkStack 
@@ -52,10 +52,10 @@ public:
 	virtual void setTotalTCPFlows(int value) = 0;
 	virtual void setTotalUDPFlows(int value) = 0;
 
-	virtual void setTCPSignatureManager(SignatureManagerPtrWeak sig) = 0;	
-	virtual void setUDPSignatureManager(SignatureManagerPtrWeak sig) = 0;	
-	virtual void setTCPSignatureManager(SignatureManager& sig) = 0;	
-	virtual void setUDPSignatureManager(SignatureManager& sig) = 0;	
+	virtual void setTCPRegexManager(RegexManagerPtrWeak sig) = 0;	
+	virtual void setUDPRegexManager(RegexManagerPtrWeak sig) = 0;	
+	virtual void setTCPRegexManager(RegexManager& sig) = 0;	
+	virtual void setUDPRegexManager(RegexManager& sig) = 0;	
 
 	virtual void enableFrequencyEngine(bool enable) = 0;
 	virtual void enableNIDSEngine(bool enable) = 0;

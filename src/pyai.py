@@ -15,23 +15,23 @@ def callback_drop_packets(flow_name):
 #	sys.system("iptables -A INPUT -i eth0 -s %s -j DROP" % source_ip)
 
 
-def loadSignaturesForTcp():
-	sm = pyaiengine.SignatureManager()
+def loadRegexForTcp():
+	sm = pyaiengine.RegexManager()
 	
-	sig = pyaiengine.Signature("Shellcode Generic Exploit","\x90\x90\x90\x90\x90\x90\x90\x90\x90")
+	reg = pyaiengine.Regex("Shellcode Generic Exploit","\x90\x90\x90\x90\x90\x90\x90\x90\x90")
 
-	sig.setCallback(callback_drop_packets)
-	sm.addSignature(sig)
+	reg.setCallback(callback_drop_packets)
+	sm.addRegex(reg)
 
 	return sm
 
-def loadSignaturesForUdp():
-	sm = pyaiengine.SignatureManager()
+def loadRegexForUdp():
+	sm = pyaiengine.RegexManager()
 
-	sig = pyaiengine.Signature("bittorrent udp","^d1:ad2:id20");
-	sig.setCallback(callback_drop_packets)
+	reg = pyaiengine.Regex("bittorrent udp","^d1:ad2:id20");
+	reg.setCallback(callback_drop_packets)
 	
-	sm.addSignature(sig)
+	sm.addRegex(reg)
 
 	return sm
 
@@ -96,11 +96,11 @@ if __name__ == '__main__':
 	# Load Signatures/Rules in order to detect the traffic
 	# Use OpenDPI rules, Snort, L7Filter, etc...
 	#	
-	s_tcp = loadSignaturesForTcp()
-	st.setTCPSignatureManager(s_tcp)
+	s_tcp = loadRegexForTcp()
+	st.setTCPRegexManager(s_tcp)
 
-	s_udp = loadSignaturesForUdp()
-	st.setUDPSignatureManager(s_udp)
+	s_udp = loadRegexForUdp()
+	st.setUDPRegexManager(s_udp)
 
 	# Allocate the TCP/UDP flows in order to keep memory
 	# under control and avoid allocations during the execution	

@@ -21,30 +21,16 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _Pointer_H_
-#define _Pointer_H_
+#include "Regex.h"
 
-using namespace std;
+bool Regex::evaluate(const unsigned char *payload) 
+{
+	bool result = boost::regex_search(reinterpret_cast<const char*>(payload), what, exp_);
+	return result; 
+}
 
-#ifdef PYTHON_BINDING
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-#include <boost/make_shared.hpp>
-#else
-#include <memory>
-#endif
-
-#ifdef PYTHON_BINDING
-using namespace boost;
-template <class T1>
-using SharedPointer = boost::shared_ptr<T1>;
-template <class T2>
-using WeakPointer = boost::weak_ptr<T2>;
-#else
-template <class T1>
-using SharedPointer = std::shared_ptr<T1>;
-template <class T2>
-using WeakPointer = std::weak_ptr<T2>;
-#endif
-
-#endif
+std::ostream& operator<< (std::ostream& out, const Regex& sig)
+{
+	out << "\t" << "Regex:" << sig.name_ << " matches:" << sig.total_matchs_ << std::endl;	
+	return out;
+}

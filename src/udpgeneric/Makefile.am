@@ -11,8 +11,8 @@ test_udpgeneric_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 				../ip/IPProtocol.cc \
 				../udp/UDPProtocol.cc \
 				../flow/FlowManager.cc \
-				../signatures/SignatureManager.cc \
-				../signatures/Signature.cc \
+				../regex/RegexManager.cc \
+				../regex/Regex.cc \
 				UDPGenericProtocol.cc test_udpgeneric.cc
 
 test_udpgeneric_CPPFLAGS = -DSTAND_ALONE
