@@ -31,10 +31,15 @@ class DomainName: public Signature
 {
 public:
     	explicit DomainName() {};
+    	explicit DomainName(const std::string name,const std::string expression)
+	{
+		name_= name;
+		expression_ = expression;
+	}
     	virtual ~DomainName() {};
 
-//	std::string &getName() { return name_; };
-//	void setName(const std::string& name) { name_ = name;};
+	std::string &getName() { return name_; };
+	std::string &getExpression() { return expression_; };
 
 #ifdef PYTHON_BINDING
 	friend std::ostream& operator<< (std::ostream& out, const DomainName& domain)

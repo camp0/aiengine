@@ -35,7 +35,10 @@ BOOST_AUTO_TEST_SUITE (testnames)
 
 BOOST_AUTO_TEST_CASE (test1_names)
 {
-	SharedPointer<DomainName> domain = SharedPointer<DomainName>(new DomainName());
+	SharedPointer<DomainName> domain = SharedPointer<DomainName>(new DomainName("one domain","cdn.domain.com"));
+
+	std::cout << domain->getName() << std::endl;
+	std::cout << domain->getExpression() << std::endl;
 	//SharedPointer<DomainName> domain = SharedPointer<DomainName>(new DomainName());
 }
 
