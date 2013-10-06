@@ -44,13 +44,16 @@
 #include <cstring>
 #include "../Cache.h"
 #include <unordered_map>
+//#include "../names/DomainNameTable.h"
 
 class DNSProtocol: public Protocol 
 {
 public:
     	explicit DNSProtocol():ssl_header_(nullptr),total_bytes_(0),
 		total_queries_(0),stats_level_(0),
-		domain_cache_(new Cache<DNSDomain>("Domain cache")) { name_="DNSProtocol";};
+		domain_cache_(new Cache<DNSDomain>("Domain cache"))
+		//domain_table_(new DomainNameTable()) 
+		{ name_="DNSProtocol";};
 
     	virtual ~DNSProtocol() {};
 	
@@ -111,6 +114,8 @@ private:
 	unsigned char *ssl_header_;
         int64_t total_bytes_;
         int64_t total_queries_;
+
+//	SharedPointer<DomainNameTable> domain_table_;
 
 	Cache<DNSDomain>::CachePtr domain_cache_;
 

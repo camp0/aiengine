@@ -35,11 +35,76 @@ BOOST_AUTO_TEST_SUITE (testnames)
 
 BOOST_AUTO_TEST_CASE (test1_names)
 {
-	SharedPointer<DomainName> domain = SharedPointer<DomainName>(new DomainName("one domain","cdn.domain.com"));
+	SharedPointer<DomainNameManager> dom_table = SharedPointer<DomainNameManager>(new DomainNameManager());
+	SharedPointer<DomainName> domain = SharedPointer<DomainName>(new DomainName("one domain","com"));
+	SharedPointer<DomainName> domain_candidate;
 
-	std::cout << domain->getName() << std::endl;
-	std::cout << domain->getExpression() << std::endl;
-	//SharedPointer<DomainName> domain = SharedPointer<DomainName>(new DomainName());
+	dom_table->addDomainName(domain);
+
+	domain_candidate = dom_table->getDomainName("com");
+
+	BOOST_CHECK(domain_candidate == domain);
 }
+
+BOOST_AUTO_TEST_CASE (test2_names)
+{
+        SharedPointer<DomainNameManager> dom_table = SharedPointer<DomainNameManager>(new DomainNameManager());
+        SharedPointer<DomainName> domain = SharedPointer<DomainName>(new DomainName("one domain","pepe.com"));
+        SharedPointer<DomainName> domain_candidate;
+
+        dom_table->addDomainName(domain);
+
+        domain_candidate = dom_table->getDomainName("pepe.com");
+
+        BOOST_CHECK(domain_candidate == domain);
+        domain_candidate = dom_table->getDomainName(".pepe.com");
+        BOOST_CHECK(domain_candidate == domain);
+}
+
+BOOST_AUTO_TEST_CASE (test3_names)
+{
+        SharedPointer<DomainNameManager> dom_table = SharedPointer<DomainNameManager>(new DomainNameManager());
+        SharedPointer<DomainName> domain = SharedPointer<DomainName>(new DomainName("one domain",".specific.pepe.com"));
+        SharedPointer<DomainName> domain_candidate;
+
+        dom_table->addDomainName(domain);
+
+        domain_candidate = dom_table->getDomainName("pepe.com");
+        BOOST_CHECK(domain_candidate != domain);
+        domain_candidate = dom_table->getDomainName("jose.com");
+	BOOST_CHECK(domain_candidate == nullptr);
+}
+
+
+BOOST_AUTO_TEST_CASE (test4_names)
+{
+        SharedPointer<DomainNameManager> dom_table = SharedPointer<DomainNameManager>(new DomainNameManager());
+        SharedPointer<DomainName> domain1 = SharedPointer<DomainName>(new DomainName("one domain",".specific.pepe.com"));
+        SharedPointer<DomainName> domain2 = SharedPointer<DomainName>(new DomainName("one domain",".cdn.pepe.com"));
+        SharedPointer<DomainName> domain3 = SharedPointer<DomainName>(new DomainName("one domain",".specific.jose.es"));
+        SharedPointer<DomainName> domain4 = SharedPointer<DomainName>(new DomainName("one domain",".specific.jose.com"));
+        SharedPointer<DomainName> domain_candidate;
+
+        dom_table->addDomainName(domain1);
+        dom_table->addDomainName(domain2);
+        dom_table->addDomainName(domain3);
+        dom_table->addDomainName(domain4);
+
+        domain_candidate = dom_table->getDomainName("ppepe.com");
+       	BOOST_CHECK(domain_candidate == nullptr); 
+
+        domain_candidate = dom_table->getDomainName(".cdn.pepe.com");
+       	BOOST_CHECK(domain_candidate == domain2); 
+        
+	domain_candidate = dom_table->getDomainName(".pepe.com");
+       	BOOST_CHECK(domain_candidate == nullptr); 
+
+	domain_candidate = dom_table->getDomainName(".pepe.jose.com");
+       	BOOST_CHECK(domain_candidate == nullptr); 
+
+	domain_candidate = dom_table->getDomainName(".specific.jose.com");
+       	BOOST_CHECK(domain_candidate == domain4); 
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )

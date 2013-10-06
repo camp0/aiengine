@@ -21,31 +21,47 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _DomainNameTable_H_
-#define _DomainNameTable_H_
+#ifndef _DomainNode_H_
+#define _DomainNode_H_
 
+#include "../Pointer.h"
+#include <unordered_map>
 #include <iostream>
 
-class DomainNameTable 
+using namespace std;
+
+class DomainNode 
 {
 public:
-    	explicit DomainNameTable() {};
-    	virtual ~DomainNameTable() {};
+    	explicit DomainNode(const std::string key):
+		key_(key),domain_() {};
+    	
+	virtual ~DomainNode() {};
 
-	void reset() { domain_name_ = "";};	
-	std::string &getName() { return domain_name_; };
-	void setName(const std::string& name) { domain_name_ = name;};
-
-#ifdef PYTHON_BINDING
-	friend std::ostream& operator<< (std::ostream& out, const DNSDomain& domain)
+	SharedPointer<DomainNode> haveKey(std::string key)
 	{
-		out << domain.domain_name_ ;
-        	return out;
+		auto it = map_.find(key);
+		SharedPointer<DomainNode> node;
+
+		if(it!=map_.end())
+			node = it->second;
+		return node;
 	}
-#endif
+
+	void addKey(SharedPointer<DomainNode> node)
+	{
+		map_.insert(std::pair<std::string,SharedPointer<DomainNode>>(node->getKey(),node));
+	}	
+
+	void setDomainName(SharedPointer<DomainName> domain) { domain_ = domain;};
+	SharedPointer<DomainName> getDomainName() { return domain_;};
+
+	std::string &getKey() { return key_;};
 
 private:
-	std::string domain_name_;
+	std::unordered_map<std::string,SharedPointer<DomainNode>> map_;
+	std::string key_;
+	SharedPointer<DomainName> domain_;
 };
 
 #endif

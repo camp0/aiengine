@@ -21,11 +21,30 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _test_names_H_
-#define _test_names_H_
+#ifndef _DomainNameManager_H_
+#define _DomainNameManager_H_
 
-#include <string>
-#include "../Pointer.h"
-#include "DomainNameManager.h"
+#include <iostream>
+#include "DomainName.h"
+#include "DomainNode.h"
+#include <boost/algorithm/string.hpp>
+
+class DomainNameManager 
+{
+public:
+    	explicit DomainNameManager():root_(new DomainNode("root")),total_domains_(0){};
+    	virtual ~DomainNameManager() {};
+
+	void addDomainName(SharedPointer<DomainName> domain); 
+
+	SharedPointer<DomainName> getDomainName(std::string name);
+
+	friend std::ostream& operator<< (std::ostream& out, const DomainNameManager& domain);
+
+private:
+	std::string domain_name_;
+	SharedPointer<DomainNode> root_;
+	int32_t total_domains_;
+};
 
 #endif

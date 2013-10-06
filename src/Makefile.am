@@ -32,6 +32,9 @@ noinst_HEADERS =        Packet.h \
 			./frequency/PacketFrequencies.h \
 			./frequency/FrequencyProtocol.h \
 			./learner/LearnerEngine.h \
+			./names/DomainName.h \
+			./names/DomainNode.h \
+			./names/DomainNameManager.h \
 			System.h 
 
 aiengine_core_sources =	Multiplexer.cc \
@@ -55,6 +58,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			./regex/RegexManager.cc \
 			./frequency/FrequencyProtocol.cc \
 			./learner/LearnerEngine.cc \
+			./names/DomainNameManager.cc \
 			System.cc \
 			StackMobile.cc StackLan.cc 
 
@@ -89,6 +93,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		./ssl/test_ssl.cc \
 		./user/test_users.cc \
 		./learner/test_learner.cc \
+		./names/test_names.cc \
 		tests.cc 
 
 tests_LDADD   = -lboost_system -lboost_unit_test_framework -lboost_regex -lpcap -lpthread

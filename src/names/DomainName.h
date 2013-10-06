@@ -41,6 +41,7 @@ public:
 	std::string &getName() { return name_; };
 	std::string &getExpression() { return expression_; };
 
+/*
 #ifdef PYTHON_BINDING
 	friend std::ostream& operator<< (std::ostream& out, const DomainName& domain)
 	{
@@ -48,7 +49,7 @@ public:
         	return out;
 	}
 #endif
-
+*/
 };
 
 #endif

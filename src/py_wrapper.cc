@@ -34,8 +34,6 @@
 #include "log4cxx/logger.h"
 #include "log4cxx/basicconfigurator.h"
 
-// http://multiplexer.googlecode.com/svn/trunk/src/multiplexer/_mxclientmodule.cc
-
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 using namespace boost::python;

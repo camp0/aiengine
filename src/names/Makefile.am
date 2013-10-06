@@ -1,12 +1,12 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS =	test_names.h DomainNameTable.h DomainName.h
+noinst_HEADERS =	test_names.h DomainNameManager.h DomainName.h
 
 TEST = test_names
 
 check_PROGRAMS = test_names
 
-test_names_SOURCES = 	test_names.cc
+test_names_SOURCES = 	DomainNameManager.cc test_names.cc
 
 test_names_CPPFLAGS = -DSTAND_ALONE
 test_names_LDADD   = -lboost_unit_test_framework
