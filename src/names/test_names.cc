@@ -41,7 +41,9 @@ BOOST_AUTO_TEST_CASE (test1_names)
 
 	dom_table->addDomainName(domain);
 
-	domain_candidate = dom_table->getDomainName("com");
+	std::string value("com");
+
+	domain_candidate = dom_table->getDomainName(value);
 
 	BOOST_CHECK(domain_candidate == domain);
 }
@@ -53,11 +55,13 @@ BOOST_AUTO_TEST_CASE (test2_names)
         SharedPointer<DomainName> domain_candidate;
 
         dom_table->addDomainName(domain);
+	std::string value("pepe.com");
 
-        domain_candidate = dom_table->getDomainName("pepe.com");
+        domain_candidate = dom_table->getDomainName(value);
 
         BOOST_CHECK(domain_candidate == domain);
-        domain_candidate = dom_table->getDomainName(".pepe.com");
+	value = ".pepe.com";
+        domain_candidate = dom_table->getDomainName(value);
         BOOST_CHECK(domain_candidate == domain);
 }
 
@@ -68,10 +72,12 @@ BOOST_AUTO_TEST_CASE (test3_names)
         SharedPointer<DomainName> domain_candidate;
 
         dom_table->addDomainName(domain);
+	std::string value("pepe.com");
 
-        domain_candidate = dom_table->getDomainName("pepe.com");
+        domain_candidate = dom_table->getDomainName(value);
         BOOST_CHECK(domain_candidate != domain);
-        domain_candidate = dom_table->getDomainName("jose.com");
+	value = "jose.com";
+        domain_candidate = dom_table->getDomainName(value);
 	BOOST_CHECK(domain_candidate == nullptr);
 }
 
@@ -89,20 +95,25 @@ BOOST_AUTO_TEST_CASE (test4_names)
         dom_table->addDomainName(domain2);
         dom_table->addDomainName(domain3);
         dom_table->addDomainName(domain4);
+	std::string value("ppepe.com");
 
-        domain_candidate = dom_table->getDomainName("ppepe.com");
+        domain_candidate = dom_table->getDomainName(value);
        	BOOST_CHECK(domain_candidate == nullptr); 
 
-        domain_candidate = dom_table->getDomainName(".cdn.pepe.com");
+	value = ".cdn.pepe.com";
+        domain_candidate = dom_table->getDomainName(value);
        	BOOST_CHECK(domain_candidate == domain2); 
         
-	domain_candidate = dom_table->getDomainName(".pepe.com");
+	value = ".pepe.com";
+	domain_candidate = dom_table->getDomainName(value);
        	BOOST_CHECK(domain_candidate == nullptr); 
 
-	domain_candidate = dom_table->getDomainName(".pepe.jose.com");
+	value = ".pepe.jose.com";
+	domain_candidate = dom_table->getDomainName(value);
        	BOOST_CHECK(domain_candidate == nullptr); 
 
-	domain_candidate = dom_table->getDomainName(".specific.jose.com");
+	value = ".specific.jose.com";
+	domain_candidate = dom_table->getDomainName(value);
        	BOOST_CHECK(domain_candidate == domain4); 
 }
 

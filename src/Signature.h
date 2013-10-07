@@ -28,6 +28,8 @@
 #include <config.h>
 #endif
 
+#include <string>
+
 #ifdef PYTHON_BINDING
 #include <boost/python.hpp>
 #include <boost/function.hpp>
@@ -58,7 +60,10 @@ public:
 
 	virtual ~Signature(){};
 
-	//friend std::ostream& operator<< (std::ostream& out, const Signature& sig);
+      	std::string &getName() { return name_; };
+        std::string &getExpression() { return expression_; };
+        void incrementMatchs() { ++total_matchs_; };
+        int32_t getMatchs() { return total_matchs_; };
 
 #ifdef PYTHON_BINDING
 

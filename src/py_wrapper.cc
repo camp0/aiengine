@@ -29,6 +29,8 @@
 #include "./frequency/FrequencyGroup.h"
 #include "./regex/Regex.h"
 #include "./learner/LearnerEngine.h"
+//#include "./names/DomainNameManager.h"
+#include "./Signature.h"
 #include <boost/python.hpp>
 #include <boost/asio.hpp>
 #include "log4cxx/logger.h"
@@ -122,6 +124,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
         ;
 	
 	boost::python::class_<Regex>("Regex",init<const std::string&,const std::string&>())
+	//boost::python::class_<Regex, bases<Signature> >("Regex",init<const std::string&,const std::string&>())
 		.def("getExpression",&Regex::getExpression,return_internal_reference<>())
 		.def("getName",&Regex::getName,return_internal_reference<>())
 		.def("getMatchs",&Regex::getMatchs)
@@ -144,6 +147,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setStack",setStackMobile)
 	;
 
+	//boost::python::class_<Signature, boost::noncopyable>("Signature",no_init)
+	//;
 
 	void (RegexManager::*addRegex1)(const std::string,const std::string) = &RegexManager::addRegex;
 	void (RegexManager::*addRegex2)(Regex&) = &RegexManager::addRegex;
@@ -203,5 +208,17 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getRegularExpression",&LearnerEngine::getRegularExpression)
 		.def("compute",&LearnerEngine::compute)
 	;
+
+
+/*
+        boost::python::class_<DomainName>("DomainName",init<const std::string&,const std::string&>())
+                .def("getExpression",&DomainName::getExpression,return_internal_reference<>())
+                .def("getName",&DomainName::getName,return_internal_reference<>())
+                .def("getMatchs",&DomainName::getMatchs)
+//                .def(self_ns::str(self_ns::self))
+                .def("setCallback",&DomainName::setCallback)
+        ;
+
+*/
 }
 

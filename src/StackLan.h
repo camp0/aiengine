@@ -73,8 +73,11 @@ public:
 
 	void setTCPRegexManager(RegexManagerPtrWeak sig); 
 	void setUDPRegexManager(RegexManagerPtrWeak sig);
-        void setTCPRegexManager(RegexManager& sig) ;
-        void setUDPRegexManager(RegexManager& sig) ;
+        void setTCPRegexManager(RegexManager& sig);
+        void setUDPRegexManager(RegexManager& sig); 
+	//void setDNSDomainNameManager(DomainNameManagerPtrWeak dnm) {};
+	//void setDNSDomainNameManager(DomainNameManager& dnm) {};
+
 
 	void enableNIDSEngine(bool enable);
 	void enableFrequencyEngine(bool enable);

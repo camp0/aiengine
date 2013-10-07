@@ -28,77 +28,33 @@
 #include <config.h>
 #endif
 
+#include "../Signature.h"
 #include <boost/regex.hpp>
 
-#ifdef PYTHON_BINDING
-#include <boost/python.hpp>
-#include <boost/function.hpp>
-//#include <Python.h>
-//#include "Python.h"
-//#include <boost/Python.h>
-#endif
-
-class Regex
+class Regex: public Signature
 {
 public:
 	explicit Regex(const std::string &name, const std::string& exp):
-		name_(name),
-		expression_(exp),
-		exp_(exp,boost::regex::icase),
-		total_matchs_(0),
-		total_evaluates_(0)
+		exp_(exp,boost::regex::icase) 
 	{
-#ifdef PYTHON_BINDING
-		callback_set_ = false;
-		callback_ = nullptr;	
-#endif
+		name_ = name;
+		expression_ = exp;
 	}
 
 	virtual ~Regex()=default;
 	bool evaluate(const unsigned char *payload);
-	std::string &getExpression() { return expression_;};	
+
+/*	std::string &getExpression() { return expression_;};	
 	std::string &getName() { return name_;};	
 	void incrementMatchs() { ++total_matchs_; };
 	int32_t getMatchs() { return total_matchs_; };
-
+*/
 	friend std::ostream& operator<< (std::ostream& out, const Regex& sig);
 
-#ifdef PYTHON_BINDING
-
-	bool haveCallback() const { return callback_set_;}
-
-	void setCallback(PyObject *callback)
-	{
-		// TODO: Verify that the callback have at least one parameter
-		if (!PyCallable_Check(callback))
-   		{
-      			std::cerr << "Object is not callable." << std::endl;
-   		}
-   		else
-   		{
-      			if ( callback_ ) Py_XDECREF(callback_);
-      			callback_ = callback;
-      			Py_XINCREF(callback_);
-			callback_set_ = true;
-   		}
-	}
-
-	PyObject *getCallback() { return callback_;};
-	
-#endif
-
 private:
-	int32_t total_matchs_;
-	int32_t total_evaluates_;
-	std::string expression_;	
-	std::string name_;	
 	boost::regex exp_;
 	boost::cmatch what;
 
-#ifdef PYTHON_BINDING
-	bool callback_set_;
-	PyObject *callback_;
-#endif
 };
 
 #endif // _Regex_H_ 

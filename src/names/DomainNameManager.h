@@ -32,19 +32,23 @@
 class DomainNameManager 
 {
 public:
-    	explicit DomainNameManager():root_(new DomainNode("root")),total_domains_(0){};
+    	explicit DomainNameManager():root_(SharedPointer<DomainNode>(new DomainNode("root"))),total_domains_(0){};
     	virtual ~DomainNameManager() {};
 
 	void addDomainName(SharedPointer<DomainName> domain); 
+	void addDomainName(const std::string name,const std::string expression);
+	void addDomainName(DomainName& name);
 
-	SharedPointer<DomainName> getDomainName(std::string name);
+	SharedPointer<DomainName> getDomainName(std::string& name);
 
 	friend std::ostream& operator<< (std::ostream& out, const DomainNameManager& domain);
 
 private:
-	std::string domain_name_;
 	SharedPointer<DomainNode> root_;
 	int32_t total_domains_;
 };
+
+typedef std::shared_ptr<DomainNameManager> DomainNameManagerPtr;
+typedef std::weak_ptr<DomainNameManager> DomainNameManagerPtrWeak;
 
 #endif

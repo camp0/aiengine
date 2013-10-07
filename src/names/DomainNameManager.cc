@@ -23,6 +23,24 @@
  */
 #include "DomainNameManager.h"
 
+void DomainNameManager::addDomainName(DomainName& domain)
+{
+	// TODO
+#ifdef PYTHON_BINDING
+	addDomainName(boost::make_shared<DomainName>(domain));
+#else
+	addDomainName(std::make_shared<DomainName>(domain));
+#endif
+}
+
+
+void DomainNameManager::addDomainName(const std::string name,const std::string expression)
+{
+	SharedPointer<DomainName> dom = SharedPointer<DomainName>(new DomainName(name,expression));
+
+	addDomainName(dom);
+}
+
 
 void DomainNameManager::addDomainName(SharedPointer<DomainName> domain)
 {
@@ -54,7 +72,7 @@ void DomainNameManager::addDomainName(SharedPointer<DomainName> domain)
 	++total_domains_;
 } 
 
-SharedPointer<DomainName> DomainNameManager::getDomainName(std::string name)
+SharedPointer<DomainName> DomainNameManager::getDomainName(std::string& name)
 {
 	std::vector<std::string> tokens;
 	SharedPointer<DomainName> domain_candidate;
