@@ -75,6 +75,29 @@ void DNSProtocol::processFlow(Flow *flow)
 					flow->dns_domain = std::get<0>(it->second);	
 				}
 			}
+			if(domain_mng_)
+			{
+				SharedPointer<DomainName> domain_candidate = domain_mng_->getDomainName(domain);
+
+#ifdef PYTHON_BINDING
+				if(domain_candidate)
+				{
+					if(domain_candidate->haveCallback())
+					{
+						PyGILState_STATE state(PyGILState_Ensure());
+                                		try
+                                		{
+                                        		boost::python::call<void>(domain_candidate->getCallback(),boost::python::ptr(flow));
+                                		}
+                                		catch(std::exception &e)
+                                		{
+                                        		std::cout << "ERROR:" << e.what() << std::endl;
+                                		}
+                                		PyGILState_Release(state);
+					}							
+				}
+#endif
+			}
 		}
 	}	
 

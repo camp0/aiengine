@@ -29,7 +29,7 @@
 #include "./frequency/FrequencyGroup.h"
 #include "./regex/Regex.h"
 #include "./learner/LearnerEngine.h"
-//#include "./names/DomainNameManager.h"
+#include "./names/DomainNameManager.h"
 #include "./Signature.h"
 #include <boost/python.hpp>
 #include <boost/asio.hpp>
@@ -61,10 +61,13 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (NetworkStack::*setTCPRegexManager1)(RegexManager&) = &NetworkStack::setTCPRegexManager;
 	void (NetworkStack::*setUDPRegexManager2)(RegexManagerPtrWeak) = &NetworkStack::setUDPRegexManager;
 	void (NetworkStack::*setTCPRegexManager2)(RegexManagerPtrWeak) = &NetworkStack::setTCPRegexManager;
+	void (NetworkStack::*setDNSDomainNameManager1)(DomainNameManager&) = &NetworkStack::setDNSDomainNameManager;
+	void (NetworkStack::*setDNSDomainNameManager2)(DomainNameManagerPtrWeak) = &NetworkStack::setDNSDomainNameManager;
 
         boost::python::class_<NetworkStack, boost::noncopyable>("NetworkStack",no_init)
                 .def("setUDPRegexManager",pure_virtual(setUDPRegexManager1))
                 .def("setTCPRegexManager",pure_virtual(setTCPRegexManager1))
+                .def("setDNSDomainNameManager",pure_virtual(setDNSDomainNameManager1))
                 .def("setTotalTCPFlows",pure_virtual(&NetworkStack::setTotalTCPFlows))
                 .def("setTotalUDPFlows",pure_virtual(&NetworkStack::setTotalUDPFlows))
               	.def("printFlows",pure_virtual(printFlowsNetworkStack))
@@ -82,12 +85,16 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (StackLan::*setTCPRegexManagerLan1)(RegexManager&) = &StackLan::setTCPRegexManager;
 	void (StackLan::*setUDPRegexManagerLan2)(RegexManagerPtrWeak) = &StackLan::setUDPRegexManager;
 	void (StackLan::*setTCPRegexManagerLan2)(RegexManagerPtrWeak) = &StackLan::setTCPRegexManager;
+        void (StackLan::*setDNSDomainNameManagerLan1)(DomainNameManager&) = &StackLan::setDNSDomainNameManager;
+        void (StackLan::*setDNSDomainNameManagerLan2)(DomainNameManagerPtrWeak) = &StackLan::setDNSDomainNameManager;
 
 	boost::python::class_<StackLan, bases<NetworkStack> >("StackLan")
 		.def("setUDPRegexManager",setUDPRegexManagerLan1)	
 		.def("setTCPRegexManager",setTCPRegexManagerLan1)	
 		.def("setUDPRegexManager",setUDPRegexManagerLan2)	
 		.def("setTCPRegexManager",setTCPRegexManagerLan2)	
+                .def("setDNSDomainNameManager",setDNSDomainNameManagerLan1)
+                .def("setDNSDomainNameManager",setDNSDomainNameManagerLan2)
 		.def("setTotalTCPFlows",&StackLan::setTotalTCPFlows)
 		.def("setTotalUDPFlows",&StackLan::setTotalUDPFlows)
 		.def(self_ns::str(self_ns::self))
@@ -106,12 +113,16 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (StackMobile::*setTCPRegexManagerMobile1)(RegexManager&) = &StackMobile::setTCPRegexManager;
 	void (StackMobile::*setUDPRegexManagerMobile2)(RegexManagerPtrWeak) = &StackMobile::setUDPRegexManager;
 	void (StackMobile::*setTCPRegexManagerMobile2)(RegexManagerPtrWeak) = &StackMobile::setTCPRegexManager;
+        void (StackMobile::*setDNSDomainNameManagerMobile1)(DomainNameManager&) = &StackMobile::setDNSDomainNameManager;
+        void (StackMobile::*setDNSDomainNameManagerMobile2)(DomainNameManagerPtrWeak) = &StackMobile::setDNSDomainNameManager;
 
         boost::python::class_<StackMobile, bases<NetworkStack> >("StackMobile")
 		.def("setUDPRegexManager",setUDPRegexManagerMobile1)	
 		.def("setTCPRegexManager",setTCPRegexManagerMobile1)	
 		.def("setUDPRegexManager",setUDPRegexManagerMobile2)	
 		.def("setTCPRegexManager",setTCPRegexManagerMobile2)	
+                .def("setDNSDomainNameManager",setDNSDomainNameManagerMobile1)
+                .def("setDNSDomainNameManager",setDNSDomainNameManagerMobile2)
                 .def("setTotalTCPFlows",&StackMobile::setTotalTCPFlows)
                 .def("setTotalUDPFlows",&StackMobile::setTotalUDPFlows)
 		.def(self_ns::str(self_ns::self))
@@ -124,7 +135,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
         ;
 	
 	boost::python::class_<Regex>("Regex",init<const std::string&,const std::string&>())
-	//boost::python::class_<Regex, bases<Signature> >("Regex",init<const std::string&,const std::string&>())
 		.def("getExpression",&Regex::getExpression,return_internal_reference<>())
 		.def("getName",&Regex::getName,return_internal_reference<>())
 		.def("getMatchs",&Regex::getMatchs)
@@ -147,9 +157,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setStack",setStackMobile)
 	;
 
-	//boost::python::class_<Signature, boost::noncopyable>("Signature",no_init)
-	//;
-
 	void (RegexManager::*addRegex1)(const std::string,const std::string) = &RegexManager::addRegex;
 	void (RegexManager::*addRegex2)(Regex&) = &RegexManager::addRegex;
 
@@ -161,7 +168,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
 	boost::python::class_<FlowManager,boost::shared_ptr<FlowManager>,boost::noncopyable >("FlowManager")
-		.def("__iter__",range(&FlowManager::begin,&FlowManager::end))
+		.def("__iter__",boost::python::range(&FlowManager::begin,&FlowManager::end))
 		.def("__len__", &FlowManager::getTotalFlows)
 		.def(self_ns::str(self_ns::self))
 	;
@@ -210,7 +217,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
 
-/*
+
         boost::python::class_<DomainName>("DomainName",init<const std::string&,const std::string&>())
                 .def("getExpression",&DomainName::getExpression,return_internal_reference<>())
                 .def("getName",&DomainName::getName,return_internal_reference<>())
@@ -219,6 +226,16 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setCallback",&DomainName::setCallback)
         ;
 
-*/
+
+        void (DomainNameManager::*addDomainName1)(const std::string,const std::string) = &DomainNameManager::addDomainName;
+        void (DomainNameManager::*addDomainName2)(DomainName&) = &DomainNameManager::addDomainName;
+
+        boost::python::class_<DomainNameManager,boost::shared_ptr<DomainNameManager>,boost::noncopyable >("DomainNameManager")
+                .def("addDomainName",addRegex1)
+                .def("addDomainName",addRegex2)
+                //.def("__len__",&RegexManager::getTotalRegexs)
+                //.def(self_ns::str(self_ns::self))
+        ;
+
 }
 

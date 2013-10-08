@@ -75,8 +75,8 @@ public:
 	void setUDPRegexManager(RegexManagerPtrWeak sig);
         void setTCPRegexManager(RegexManager& sig);
         void setUDPRegexManager(RegexManager& sig); 
-	//void setDNSDomainNameManager(DomainNameManagerPtrWeak dnm) {};
-	//void setDNSDomainNameManager(DomainNameManager& dnm) {};
+	void setDNSDomainNameManager(DomainNameManagerPtrWeak dnm) {};
+	void setDNSDomainNameManager(DomainNameManager& dnm) {};
 
 
 	void enableNIDSEngine(bool enable);

@@ -27,7 +27,7 @@
 #include <iostream>
 #include <fstream>
 #include "Multiplexer.h"
-//#include "./names/DomainNameManager.h"
+#include "./names/DomainNameManager.h"
 #include "./regex/RegexManager.h"
 #include "./flow/FlowManager.h"
 
@@ -57,8 +57,8 @@ public:
 	virtual void setUDPRegexManager(RegexManagerPtrWeak sig) = 0;	
 	virtual void setTCPRegexManager(RegexManager& sig) = 0;	
 	virtual void setUDPRegexManager(RegexManager& sig) = 0;	
-//	virtual void setDNSDomainNameManager(DomainNameManagerPtrWeak dnm) = 0;
-//	virtual void setDNSDomainNameManager(DomainNameManager& dnm) = 0;
+	virtual void setDNSDomainNameManager(DomainNameManagerPtrWeak dnm) = 0;
+	virtual void setDNSDomainNameManager(DomainNameManager& dnm) = 0;
 
 	virtual void enableFrequencyEngine(bool enable) = 0;
 	virtual void enableNIDSEngine(bool enable) = 0;
