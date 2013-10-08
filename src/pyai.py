@@ -35,6 +35,13 @@ def loadRegexForUdp():
 
 	return sm
 
+def loadBadDomains():
+	
+	dm = pyaiengine.DomainNameManager()
+
+	dom = pyaiengine.DomainName("root domain","orG")
+
+
 
 
 def processFlows(flowlist):
@@ -115,7 +122,7 @@ if __name__ == '__main__':
 	# st.enableLinkLayerTagging("vlan")
 
 	directory = "/home/luis/pcapfiles/torrent/transmission/"
-	#directory = "/home/luis/pcapfiles/torrent/"
+	directory = "/home/luis/pcapfiles/torrent/"
 	#directory = "/home/luis/pcapfiles/defcon18/"
 	#directory = "/home/luis/pcapfiles/http/"
 	#directory = "/home/luis/pcapfiles/vcom/"

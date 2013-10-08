@@ -231,8 +231,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (DomainNameManager::*addDomainName2)(DomainName&) = &DomainNameManager::addDomainName;
 
         boost::python::class_<DomainNameManager,boost::shared_ptr<DomainNameManager>,boost::noncopyable >("DomainNameManager")
-                .def("addDomainName",addRegex1)
-                .def("addDomainName",addRegex2)
+                .def("addDomainName",addDomainName1)
+                .def("addDomainName",addDomainName2)
                 //.def("__len__",&RegexManager::getTotalRegexs)
                 //.def(self_ns::str(self_ns::self))
         ;

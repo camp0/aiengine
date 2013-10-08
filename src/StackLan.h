@@ -75,8 +75,8 @@ public:
 	void setUDPRegexManager(RegexManagerPtrWeak sig);
         void setTCPRegexManager(RegexManager& sig);
         void setUDPRegexManager(RegexManager& sig); 
-	void setDNSDomainNameManager(DomainNameManagerPtrWeak dnm) {};
-	void setDNSDomainNameManager(DomainNameManager& dnm) {};
+	void setDNSDomainNameManager(DomainNameManagerPtrWeak dnm); 
+	void setDNSDomainNameManager(DomainNameManager& dnm);
 
 
 	void enableNIDSEngine(bool enable);
@@ -144,6 +144,8 @@ private:
 	// the ownership of them.
 	RegexManagerPtr sigs_tcp_;
 	RegexManagerPtr sigs_udp_;
+	// Also for the DomainNameManager on the DNSProtocol
+	DomainNameManagerPtr domains_udp_;
 };
 
 typedef std::shared_ptr<StackLan> StackLanPtr;

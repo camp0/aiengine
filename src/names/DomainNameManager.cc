@@ -58,7 +58,7 @@ void DomainNameManager::addDomainName(SharedPointer<DomainName> domain)
 			if(!node)
 			{
 				SharedPointer<DomainNode> new_node = SharedPointer<DomainNode>(new DomainNode(token));
-
+		
 				curr_node->addKey(new_node);
 				curr_node = new_node;
 			}

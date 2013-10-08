@@ -51,8 +51,7 @@ class DNSProtocol: public Protocol
 public:
     	explicit DNSProtocol():ssl_header_(nullptr),total_bytes_(0),
 		total_queries_(0),stats_level_(0),
-		domain_cache_(new Cache<DNSDomain>("Domain cache")),
-		domain_mng_(SharedPointer<DomainNameManager>(new DomainNameManager())) 
+		domain_cache_(new Cache<DNSDomain>("Domain cache"))
 		{ name_="DNSProtocol";};
 
     	virtual ~DNSProtocol() {};
@@ -106,6 +105,7 @@ public:
         void createDNSDomains(int number) { domain_cache_->create(number);};
         void destroyDNSDomains(int number) { domain_cache_->destroy(number);};
 
+	void setDomainNameManager(DomainNameManagerPtrWeak dnm) { domain_mng_ = dnm;};
 
 private:
 	int stats_level_;
@@ -115,7 +115,7 @@ private:
         int64_t total_bytes_;
         int64_t total_queries_;
 
-	SharedPointer<DomainNameManager> domain_mng_;
+	DomainNameManagerPtrWeak domain_mng_;
 
 	Cache<DNSDomain>::CachePtr domain_cache_;
 

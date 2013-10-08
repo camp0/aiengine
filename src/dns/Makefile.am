@@ -11,6 +11,7 @@ test_dns_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ip/IPProtocol.cc \
 			../udp/UDPProtocol.cc \
 			../flow/FlowManager.cc \
+			../names/DomainNameManager.cc \
 			DNSProtocol.cc test_dns.cc
 
 test_dns_CPPFLAGS = -DSTAND_ALONE

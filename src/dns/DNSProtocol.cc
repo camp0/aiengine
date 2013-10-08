@@ -26,6 +26,7 @@
 
 void DNSProtocol::processFlow(Flow *flow)
 {
+	DomainNameManagerPtr dnm;
 	int length = flow->packet->getLength();
 	total_bytes_ += length;
 	++total_packets_;
@@ -75,10 +76,10 @@ void DNSProtocol::processFlow(Flow *flow)
 					flow->dns_domain = std::get<0>(it->second);	
 				}
 			}
-			if(domain_mng_)
+			dnm = domain_mng_.lock();
+			if(dnm)
 			{
-				SharedPointer<DomainName> domain_candidate = domain_mng_->getDomainName(domain);
-
+				SharedPointer<DomainName> domain_candidate = dnm->getDomainName(domain);
 #ifdef PYTHON_BINDING
 				if(domain_candidate)
 				{

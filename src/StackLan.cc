@@ -268,6 +268,21 @@ void StackLan::setUDPRegexManager(RegexManager& sig)
 	setUDPRegexManager(sigs_udp_);
 } 
 
+void StackLan::setDNSDomainNameManager(DomainNameManagerPtrWeak dnm)
+{
+        if(dnm.lock())
+        {
+                dns_->setDomainNameManager(dnm.lock());
+        }
+}
+
+void StackLan::setDNSDomainNameManager(DomainNameManager& dnm)
+{
+	domains_udp_ = std::make_shared<DomainNameManager>(dnm);
+        setDNSDomainNameManager(domains_udp_);
+}
+
+
 
 void StackLan::enableFrequencyEngine(bool enable)
 {
