@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _StackLan_H_
-#define _StackLan_H_
+#ifndef SRC_STACKLAN_H_
+#define SRC_STACKLAN_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -53,20 +53,20 @@ class StackLan: public NetworkStack
 {
 public:
 	explicit StackLan();
-        virtual ~StackLan() {};
+        virtual ~StackLan() {}
 
-        const char* getName() { return name_.c_str();}; 
-        void setName(char *name) { name_ = name;};
+        const char* getName() { return name_.c_str();} 
+        void setName(char *name) { name_ = name;}
 
-        void setLinkLayerMultiplexer(MultiplexerPtrWeak mux) { };
-        MultiplexerPtrWeak getLinkLayerMultiplexer() { return mux_eth_;};
+        void setLinkLayerMultiplexer(MultiplexerPtrWeak mux) { }
+        MultiplexerPtrWeak getLinkLayerMultiplexer() { return mux_eth_;}
 	
 	void printFlows(std::basic_ostream<char>& out);
-	void printFlows() { printFlows(std::cout);};
+	void printFlows() { printFlows(std::cout);}
 
 	void setStatisticsLevel(int level);
-        void statistics(std::basic_ostream<char>& out) { out << *this; };
-        void statistics() { statistics(std::cout);} ;
+        void statistics(std::basic_ostream<char>& out) { out << *this; }
+        void statistics() { statistics(std::cout);} 
 
 	void setTotalTCPFlows(int value);
 	void setTotalUDPFlows(int value);
@@ -84,11 +84,11 @@ public:
 	void enableLinkLayerTagging(std::string type);
 
 #ifdef PYTHON_BINDING
-        FlowManager &getTCPFlowManager() { return *flow_table_tcp_.get();};
-        FlowManager &getUDPFlowManager() { return *flow_table_udp_.get();};
+        FlowManager &getTCPFlowManager() { return *flow_table_tcp_.get();}
+        FlowManager &getUDPFlowManager() { return *flow_table_udp_.get();}
 #else
-        FlowManagerPtrWeak getTCPFlowManager() { return flow_table_tcp_;};
-        FlowManagerPtrWeak getUDPFlowManager() { return flow_table_udp_;};
+        FlowManagerPtrWeak getTCPFlowManager() { return flow_table_tcp_;}
+        FlowManagerPtrWeak getUDPFlowManager() { return flow_table_udp_;}
 #endif
 	friend std::ostream& operator<< (std::ostream& out, const StackLan& stk);
 
@@ -150,4 +150,4 @@ private:
 
 typedef std::shared_ptr<StackLan> StackLanPtr;
 
-#endif
+#endif  // SRC_STACKLAN_H_

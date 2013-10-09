@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _Signature_H_
-#define _Signature_H_
+#ifndef SRC_SIGNATURE_H_
+#define SRC_SIGNATURE_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -42,42 +42,37 @@ public:
 		name_(name),
 		expression_(exp),
 		total_matchs_(0),
-		total_evaluates_(0)
-	{
+		total_evaluates_(0) {
 #ifdef PYTHON_BINDING
 		callback_set_ = false;
 		callback_ = nullptr;	
 #endif
 	}
 
-	Signature():name_(""),expression_(""),total_matchs_(0),total_evaluates_(0)
-	{
+	Signature():name_(""),expression_(""),total_matchs_(0),total_evaluates_(0) {
 #ifdef PYTHON_BINDING
 		callback_set_ = false;
 		callback_ = nullptr;	
 #endif
-	};
+	}
 
-	virtual ~Signature(){};
+	virtual ~Signature() {}
 
-      	std::string &getName() { return name_; };
-        std::string &getExpression() { return expression_; };
-        void incrementMatchs() { ++total_matchs_; };
-        int32_t getMatchs() { return total_matchs_; };
+      	std::string &getName() { return name_; }
+        std::string &getExpression() { return expression_; }
+        void incrementMatchs() { ++total_matchs_; }
+        int32_t getMatchs() { return total_matchs_; }
 
 #ifdef PYTHON_BINDING
 
 	bool haveCallback() const { return callback_set_;}
 
-	void setCallback(PyObject *callback)
-	{
+	void setCallback(PyObject *callback) {
+	
 		// TODO: Verify that the callback have at least one parameter
-		if (!PyCallable_Check(callback))
-   		{
+		if (!PyCallable_Check(callback)) {
       			std::cerr << "Object is not callable." << std::endl;
-   		}
-   		else
-   		{
+   		} else {
       			if ( callback_ ) Py_XDECREF(callback_);
       			callback_ = callback;
       			Py_XINCREF(callback_);
@@ -85,7 +80,7 @@ public:
    		}
 	}
 
-	PyObject *getCallback() { return callback_;};
+	PyObject *getCallback() { return callback_;}
 	
 #endif
 
@@ -100,5 +95,5 @@ public:
 #endif
 };
 
-#endif // _Signature_H_ 
+#endif  // SRC_SIGNATURE_H_
 

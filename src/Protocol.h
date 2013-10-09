@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _Protocol_H_
-#define _Protocol_H_
+#ifndef SRC_PROTOCOL_H_
+#define SRC_PROTOCOL_H_
 
 #include <iostream>
 #include <fstream>
@@ -35,8 +35,8 @@ class Protocol
 {
 public:
     	Protocol():total_malformed_packets_(0),total_validated_packets_(0),
-		total_packets_(0),name_(""){};
-    	virtual ~Protocol() {};
+		total_packets_(0),name_("") {}
+    	virtual ~Protocol() {}
 
 	virtual void setHeader(unsigned char *raw_packet) = 0;
 	virtual void setStatisticsLevel(int level) = 0;
@@ -63,4 +63,4 @@ private:
 
 typedef std::shared_ptr <Protocol> ProtocolPtr;
 
-#endif
+#endif  // SRC_PROTOCOL_H_

@@ -12,8 +12,11 @@ def callback_drop_packets(flow_name):
 
 	print "hola", str(flow_name).split(":")[0]
 
-#	sys.system("iptables -A INPUT -i eth0 -s %s -j DROP" % source_ip)
+def callback_domain(flow_name):
 
+	ip = str(flow_name).split(":")[0]
+	
+	print "Suspicious Domain(%s) from %s" % (flow_name.getDNSDomain(),ip)
 
 def loadRegexForTcp():
 	sm = pyaiengine.RegexManager()
@@ -39,9 +42,27 @@ def loadBadDomains():
 	
 	dm = pyaiengine.DomainNameManager()
 
-	dom = pyaiengine.DomainName("root domain","orG")
+	dom = pyaiengine.DomainName("root domain","CoM")
+	dom.setCallback(callback_domain)
+	dm.addDomainName(dom)	
 
+	dom = pyaiengine.DomainName("root domain","coM")
+	dom.setCallback(callback_domain)
+	dm.addDomainName(dom)	
 
+	dom = pyaiengine.DomainName("root domain","cOm")
+	dom.setCallback(callback_domain)
+	dm.addDomainName(dom)	
+
+	dom = pyaiengine.DomainName("root domain","cOM")
+	dom.setCallback(callback_domain)
+	dm.addDomainName(dom)	
+
+	dom = pyaiengine.DomainName("root domain",".COM")
+	dom.setCallback(callback_domain)
+	dm.addDomainName(dom)	
+
+	return dm
 
 
 def processFlows(flowlist):
@@ -91,8 +112,8 @@ def processFlows(flowlist):
 if __name__ == '__main__':
 
 	# Load an instance of a Network Stack
-	#st = pyaiengine.StackMobile()
-	st = pyaiengine.StackLan()
+	st = pyaiengine.StackMobile()
+	#st = pyaiengine.StackLan()
 
 	# Create a instace of a PacketDispatcher 
 	pdis = pyaiengine.PacketDispatcher()
@@ -103,11 +124,13 @@ if __name__ == '__main__':
 	# Load Signatures/Rules in order to detect the traffic
 	# Use OpenDPI rules, Snort, L7Filter, etc...
 	#	
-	s_tcp = loadRegexForTcp()
-	st.setTCPRegexManager(s_tcp)
+	#s_tcp = loadRegexForTcp()
+	#st.setTCPRegexManager(s_tcp)
 
-	s_udp = loadRegexForUdp()
-	st.setUDPRegexManager(s_udp)
+	#s_udp = loadRegexForUdp()
+	#st.setUDPRegexManager(s_udp)
+
+	st.setDNSDomainNameManager(loadBadDomains())
 
 	# Allocate the TCP/UDP flows in order to keep memory
 	# under control and avoid allocations during the execution	
@@ -122,10 +145,10 @@ if __name__ == '__main__':
 	# st.enableLinkLayerTagging("vlan")
 
 	directory = "/home/luis/pcapfiles/torrent/transmission/"
-	directory = "/home/luis/pcapfiles/torrent/"
+	#directory = "/home/luis/pcapfiles/torrent/"
 	#directory = "/home/luis/pcapfiles/defcon18/"
 	#directory = "/home/luis/pcapfiles/http/"
-	#directory = "/home/luis/pcapfiles/vcom/"
+	directory = "/home/luis/pcapfiles/vcom/"
 	#directory = "/home/luis/pcapfiles/spotify/"
 	print "Ready to process files."
 	for pfile in os.listdir(directory):
@@ -141,15 +164,15 @@ if __name__ == '__main__':
 			break	
 
 	# Get the TCP or UDP flows processed
-	flows = st.getTCPFlowManager()
+	# flows = st.getTCPFlowManager()
 
 	# Do the work, analize, inspect, resolve DNS, etc...
-	processFlows(flows)
+	# processFlows(flows)
 
 	# Dump on files all the statistics of the TCP Signatures
-	f = open("signatures_tcp.log","w")
-	f.write(str(s_tcp))
-	f.close()
+	#f = open("signatures_tcp.log","w")
+	#f.write(str(s_tcp))
+	#f.close()
 
 	# Dump on file the statistics of the stack
 	st.setStatisticsLevel(5)

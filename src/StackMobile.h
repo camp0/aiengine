@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _StackMobile_H_
-#define _StackMobile_H_
+#ifndef SRC_STACKMOBILE_H_
+#define SRC_STACKMOBILE_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -54,46 +54,46 @@ class StackMobile: public NetworkStack
 {
 public:
 	explicit StackMobile();
-        virtual ~StackMobile() {};
+        virtual ~StackMobile() {}
 
-        const char* getName() { return name_.c_str();}; 
-        void setName(char *name) { name_ = name;};
+        const char* getName() { return name_.c_str();} 
+        void setName(char *name) { name_ = name;}
 
-        void setLinkLayerMultiplexer(MultiplexerPtrWeak mux) { };
-        MultiplexerPtrWeak getLinkLayerMultiplexer() { return mux_eth_;};
+        void setLinkLayerMultiplexer(MultiplexerPtrWeak mux) { }
+        MultiplexerPtrWeak getLinkLayerMultiplexer() { return mux_eth_;}
 	
 	void printFlows(std::basic_ostream<char>& out);
-	void printFlows() { printFlows(std::cout);};
+	void printFlows() { printFlows(std::cout);}
 
 	void setStatisticsLevel(int level);
-        void statistics(std::basic_ostream<char>& out) { out << *this; };
-        void statistics() { statistics(std::cout);} ;
+        void statistics(std::basic_ostream<char>& out) { out << *this; }
+        void statistics() { statistics(std::cout);} 
 
 	void setTotalTCPFlows(int value);
-	void setTotalUDPFlows(int value) 
-	{ 	
+	void setTotalUDPFlows(int value) { 
+
 		flow_cache_udp_high_->createFlows(value);
 		flow_cache_udp_low_->createFlows(value/8);
 		dns_->createDNSDomains(value / 2);
-	};
+	}
 
         void setTCPRegexManager(RegexManagerPtrWeak sig); 
         void setUDPRegexManager(RegexManagerPtrWeak sig);
         void setTCPRegexManager(RegexManager& sig);
         void setUDPRegexManager(RegexManager& sig);
-	void setDNSDomainNameManager(DomainNameManagerPtrWeak dnm){};
-	void setDNSDomainNameManager(DomainNameManager& dnm) {};
+	void setDNSDomainNameManager(DomainNameManagerPtrWeak dnm);
+	void setDNSDomainNameManager(DomainNameManager& dnm);
 
 	void enableNIDSEngine(bool value);
 	void enableFrequencyEngine(bool value);
 	void enableLinkLayerTagging(std::string type);
 
 #ifdef PYTHON_BINDING
-        FlowManager &getTCPFlowManager() { return *flow_mng_tcp_.get();};
-        FlowManager &getUDPFlowManager() { return *flow_mng_udp_high_.get();};
+        FlowManager &getTCPFlowManager() { return *flow_mng_tcp_.get();}
+        FlowManager &getUDPFlowManager() { return *flow_mng_udp_high_.get();}
 #else
-        FlowManagerPtrWeak getTCPFlowManager() { return flow_mng_tcp_;};
-        FlowManagerPtrWeak getUDPFlowManager() { return flow_mng_udp_high_;};
+        FlowManagerPtrWeak getTCPFlowManager() { return flow_mng_tcp_;}
+        FlowManagerPtrWeak getUDPFlowManager() { return flow_mng_udp_high_;}
 #endif
 
         friend std::ostream& operator<< (std::ostream& out, const StackMobile& stk);
@@ -156,7 +156,9 @@ private:
         // the ownership of them.
         RegexManagerPtr sigs_tcp_;
         RegexManagerPtr sigs_udp_;
+	// Also for the DomainNameManager on the DNSProtocol
+        DomainNameManagerPtr domains_udp_;
 };
 
 
-#endif
+#endif  // SRC_STACKMOBILE_H_

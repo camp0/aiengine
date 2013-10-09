@@ -21,25 +21,25 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _DomainNode_H_
-#define _DomainNode_H_
+#ifndef SRC_NAMES_DOMAINNODE_H_
+#define SRC_NAMES_DOMAINNODE_H_
 
 #include "../Pointer.h"
 #include <unordered_map>
 #include <iostream>
 
-using namespace std;
+//using namespace std;
 
 class DomainNode 
 {
 public:
     	explicit DomainNode(const std::string key):
-		key_(key),domain_() {};
+		key_(key),domain_() {}
     	
-	virtual ~DomainNode() {};
+	virtual ~DomainNode() {}
 
-	SharedPointer<DomainNode> haveKey(std::string key)
-	{
+	SharedPointer<DomainNode> haveKey(std::string key) {
+	
 		auto it = map_.find(key);
 		SharedPointer<DomainNode> node;
 
@@ -48,15 +48,15 @@ public:
 		return node;
 	}
 
-	void addKey(SharedPointer<DomainNode> node)
-	{
+	void addKey(SharedPointer<DomainNode> node) {
+	
 		map_.insert(std::pair<std::string,SharedPointer<DomainNode>>(node->getKey(),node));
 	}	
 
-	void setDomainName(SharedPointer<DomainName> domain) { domain_ = domain;};
-	SharedPointer<DomainName> getDomainName() { return domain_;};
+	void setDomainName(SharedPointer<DomainName> domain) { domain_ = domain;}
+	SharedPointer<DomainName> getDomainName() { return domain_;}
 
-	std::string &getKey() { return key_;};
+	std::string &getKey() { return key_;}
 
 private:
 	std::unordered_map<std::string,SharedPointer<DomainNode>> map_;
@@ -64,4 +64,4 @@ private:
 	SharedPointer<DomainName> domain_;
 };
 
-#endif
+#endif  // SRC_NAMES_DOMAINNODE_H_

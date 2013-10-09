@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _EthernetProtocol_H_
-#define _EthernetProtocol_H_
+#ifndef SRC_ETHERNET_ETHERNETPROTOCOL_H_
+#define SRC_ETHERNET_ETHERNETPROTOCOL_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -41,59 +41,56 @@ class EthernetProtocol: public Protocol
 {
 public:
     	explicit EthernetProtocol():eth_header_(nullptr),total_bytes_(0),
-		stats_level_(0){ name_ = "Ethernet";};
-    	virtual ~EthernetProtocol() {};
+		stats_level_(0) { name_ = "Ethernet";}
+    	virtual ~EthernetProtocol() {}
 
 	static const u_int16_t id = 0x0000; //Ethernet dont need a id
 	static const int header_size = 14;
-	int getHeaderSize() const { return header_size;};
+	int getHeaderSize() const { return header_size;}
 
-	int64_t getTotalBytes() const { return total_bytes_;};
-	int64_t getTotalPackets() const { return total_packets_;};
-	int64_t getTotalValidatedPackets() const { return total_validated_packets_;};
-	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
+	int64_t getTotalBytes() const { return total_bytes_;}
+	int64_t getTotalPackets() const { return total_packets_;}
+	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
+	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
 
-	const char *getName() { return name_.c_str();};
+	const char *getName() { return name_.c_str();}
 
-	void processFlow(Flow *flow) {}; // This protocol dont generate any flow 
+	void processFlow(Flow *flow) {} // This protocol dont generate any flow 
 	void processPacket(Packet &packet) ;
 
-	void setStatisticsLevel(int level) { stats_level_ = level;};
+	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
-        MultiplexerPtrWeak getMultiplexer() { mux_;};
+        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
+        MultiplexerPtrWeak getMultiplexer() { mux_;}
 
-        void setFlowForwarder(FlowForwarderPtrWeak ff) {};
-        FlowForwarderPtrWeak getFlowForwarder() {};
+        void setFlowForwarder(FlowForwarderPtrWeak ff) {}
+        FlowForwarderPtrWeak getFlowForwarder() {}
 
-	void setHeader(unsigned char *raw_packet) 
-	{ 
+	void setHeader(unsigned char *raw_packet) { 
+
 		eth_header_ = reinterpret_cast <struct ether_header*> (raw_packet);
 	} 
 
 	// Condition for say that a packet is ethernet 
-	bool ethernetChecker(Packet &packet) 
-	{
+	bool ethernetChecker(Packet &packet) { 
+	
 		int length = packet.getLength();
 
-		if(ETHER_IS_VALID_LEN(length))
-		{
+		if (ETHER_IS_VALID_LEN(length)) {
 			setHeader(packet.getPayload());
 			++total_validated_packets_;
 			total_bytes_ += length; 
 			return true;
-		}
-		else
-		{
+		} else {
 			++total_malformed_packets_;
 			return false;
 		}
 	}
 
-	u_int16_t getEthernetType() const { return ntohs(eth_header_->ether_type);};
-	struct ether_header *getEthernetHeader() const { return eth_header_;};
+	u_int16_t getEthernetType() const { return ntohs(eth_header_->ether_type);}
+	struct ether_header *getEthernetHeader() const { return eth_header_;}
 
 private:
 	int stats_level_;
@@ -104,4 +101,4 @@ private:
 
 typedef std::shared_ptr<EthernetProtocol> EthernetProtocolPtr;
 
-#endif
+#endif  // SRC_ETHERNET_ETHERNETPROTOCOL_H_

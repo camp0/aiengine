@@ -24,37 +24,36 @@
 #include "Multiplexer.h"
 #include <iomanip> // setw
 
-MultiplexerPtrWeak Multiplexer::getDownMultiplexer() const 
-{ 
+MultiplexerPtrWeak Multiplexer::getDownMultiplexer() const { 
+
 	return muxDown_;
 }
 
-MultiplexerPtrWeak Multiplexer::getUpMultiplexer(int key) const 
-{
+MultiplexerPtrWeak Multiplexer::getUpMultiplexer(int key) const { 
+
 	MuxMap::const_iterator it = muxUpMap_.find(key);
 	MultiplexerPtrWeak mp;
 
-	if(it != muxUpMap_.end())
-	{
+	if(it != muxUpMap_.end()) {
 		mp = it->second;
 	} 
 	return mp;
 } 
 
-void Multiplexer::setPacketInfo(unsigned char *packet, int length, int prev_header_size) 
-{
+void Multiplexer::setPacketInfo(unsigned char *packet, int length, int prev_header_size) { 
+
 	packet_.setPayload(packet);
 	packet_.setPayloadLength(length);
 	packet_.setPrevHeaderSize(prev_header_size);
 }
 
-void Multiplexer::setPacket(Packet *pkt)
-{
+void Multiplexer::setPacket(Packet *pkt) {
+
 	setPacketInfo(pkt->getPayload(),pkt->getLength(),pkt->getPrevHeaderSize());
 }
 
-void Multiplexer::forwardPacket(Packet &packet)
-{
+void Multiplexer::forwardPacket(Packet &packet) {
+
 	MultiplexerPtrWeak next_mux;
 	MultiplexerPtr mux;
 
@@ -63,35 +62,32 @@ void Multiplexer::forwardPacket(Packet &packet)
 #endif
         ++total_received_packets_;
 	next_mux = getUpMultiplexer(next_protocol_id_);
-	if(!next_mux.expired())
-	{
+	if(!next_mux.expired()) {
                 mux = next_mux.lock();
-                if(mux)
-                {
+                if (mux) {
 			int offset = mux->header_size_;
 			int prev_header_size = packet.getPrevHeaderSize();
                       	Packet pkt_candidate(&packet.getPayload()[header_size_],packet.getLength() - header_size_, prev_header_size);
 
-			if(mux->acceptPacket(pkt_candidate)) // The packet is accepted by the destination mux
-			{
+			if(mux->acceptPacket(pkt_candidate)) { // The packet is accepted by the destination mux
     				mux->packet_func_(pkt_candidate);
                         	++total_forward_packets_;
                         	mux->forwardPacket(pkt_candidate);
 #ifdef DEBUG
-			}else{
+			} else {
 				std::cout << "WARNING: PACKET NO ACCEPTED by Multiplexer(" << this <<")" << std::endl;
 				std::cout << pkt_candidate;
 #endif
 			}
                 }
-        }else{
+        } else {
                 ++total_fail_packets_;
         }
 }
 
 
-void Multiplexer::statistics(std::basic_ostream<char>& out)
-{
+void Multiplexer::statistics(std::basic_ostream<char>& out) {
+
       	out << "Multiplexer(" << this << ") statistics" <<std::endl;
 	out << "\t" << "Plugged to object("<< proto_ << ")" << std::endl;
         out << "\t" << "Total forward packets:  " << std::setw(10) << total_forward_packets_ <<std::endl;

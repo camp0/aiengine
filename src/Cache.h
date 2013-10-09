@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _Cache_H_
-#define _Cache_H_
+#ifndef SRC_CACHE_H_
+#define SRC_CACHE_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -49,47 +49,44 @@ public:
 	typedef std::shared_ptr <A_Type> A_TypePtr;
 	typedef std::weak_ptr <A_Type> A_TypePtrWeak;
 #endif
-    	Cache():total_(0),total_acquires_(0),total_releases_(0),total_fails_(0),name_("") {};
-    	Cache(std::string name):total_(0),total_acquires_(0),total_releases_(0),total_fails_(0),name_(name) {};
-    	virtual ~Cache() { items_.clear();};
+    	explicit Cache():total_(0),total_acquires_(0),total_releases_(0),total_fails_(0),name_("") {}
+    	explicit Cache(std::string name):total_(0),total_acquires_(0),total_releases_(0),total_fails_(0),name_(name) {}
+    	virtual ~Cache() { items_.clear();}
 
-	void release(A_TypePtr a) 
-	{         
-		if(total_ < items_.size())
-		{
+	void release(A_TypePtr a) {  
+	         
+		if(total_ < items_.size()) {
 		       	++total_releases_;
                 	++total_;
                 	items_[total_-1] = a;
 		}
-	};
+	}
 
-	A_TypePtrWeak acquire()
-	{
+	A_TypePtrWeak acquire() {
+	
 		A_TypePtrWeak a;
 
-		if(total_ > 0)
-		{
+		if(total_ > 0) {
 			a = items_[total_-1];
 			a.lock()->reset();
 			++total_acquires_;
 			--total_;
-		}else{
+		} else {
 			++total_fails_;
 		}
         	return a;
-	};
+	}
 
-	void create(int number)
-	{
-		for( int i = 0;i<number;++i)
-		{
+	void create(int number ) {
+	
+		for (int i = 0; i<number; ++i) {
 			items_.push_back(A_TypePtr(new A_Type()));
 			++total_;
 		}
-	};
+	}
 
-	void destroy(int number)
-	{
+	void destroy(int number) {
+	
 		int real_items = 0;
 
 		if(number > total_)
@@ -97,30 +94,29 @@ public:
 		else
 			real_items = number;
 
-		for (int i = 0;i<real_items ;++i)
-		{
+		for (int i = 0;i<real_items ;++i) {
 			items_[total_-1].reset();
 			items_.erase(items_.begin()+total_-1);
                         --total_;
 		}
-        };
+        }
 
-	int32_t getTotalOnCache() const { return total_;};
-	int32_t getTotal() const { return items_.size();};
-	int32_t getTotalAcquires() const { return total_acquires_;};
-	int32_t getTotalReleases() const { return total_releases_;};
-	int32_t getTotalFails() const { return total_fails_;};
+	int32_t getTotalOnCache() const { return total_;}
+	int32_t getTotal() const { return items_.size();}
+	int32_t getTotalAcquires() const { return total_acquires_;}
+	int32_t getTotalReleases() const { return total_releases_;}
+	int32_t getTotalFails() const { return total_fails_;}
 
-        void statistics(std::basic_ostream<char>& out)
-	{
+        void statistics(std::basic_ostream<char>& out) {
+	
 		out << name_ << " statistics" << std::endl;
 		out << "\t" << "Total items:            " << std::setw(10) << items_.size() <<std::endl;
 		out << "\t" << "Total acquires:         " << std::setw(10) << total_acquires_ <<std::endl;
 		out << "\t" << "Total releases:         " << std::setw(10) << total_releases_ <<std::endl;
 		out << "\t" << "Total fails:            " << std::setw(10) << total_fails_ <<std::endl;
-	};
+	}
 
-        void statistics() { statistics(std::cout);};
+        void statistics() { statistics(std::cout);}
 
 private:
 	int32_t total_;
@@ -132,4 +128,4 @@ private:
 	std::vector<A_TypePtr> items_;
 };
 
-#endif
+#endif  // SRC_CACHE_H_

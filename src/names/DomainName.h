@@ -21,23 +21,22 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _DomainName_H_
-#define _DomainName_H_
+#ifndef SRC_NAMES_DOMAINNAME_H__
+#define SRC_NAMES_DOMAINNAME_H__
 
 #include <iostream>
 #include "../Signature.h"
 
 class DomainName: public Signature 
-{
+{ 
 public:
-    	explicit DomainName(const std::string &name,const std::string &expression)
-	{
+    	explicit DomainName(const std::string &name,const std::string &expression) {
 		name_= name;
 		expression_ = expression;
 	}
-    	virtual ~DomainName() {};
+    	virtual ~DomainName() {}
 
 	// The rest form the base class
 };
 
-#endif
+#endif  // SRC_NAMES_DOMAINNAME_H_

@@ -186,6 +186,11 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getHTTPUserAgent",&Flow::getHTTPUserAgent,return_internal_reference<>())
 		.def("getFrequencies",&Flow::getFrequencies,return_internal_reference<>())
 		.def("getPacketFrequencies",&Flow::getPacketFrequencies,return_internal_reference<>())
+		.def("getDNSDomain",&Flow::getDNSDomain,return_internal_reference<>())
+		.def(self_ns::str(self_ns::self))
+	;
+
+	boost::python::class_<DNSDomain, SharedPointer<DNSDomain>,boost::noncopyable>("DNSDomain")
 		.def(self_ns::str(self_ns::self))
 	;
 

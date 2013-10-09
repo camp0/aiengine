@@ -23,8 +23,7 @@
  */
 #include "DomainNameManager.h"
 
-void DomainNameManager::addDomainName(DomainName& domain)
-{
+void DomainNameManager::addDomainName(DomainName& domain) {
 	// TODO
 #ifdef PYTHON_BINDING
 	addDomainName(boost::make_shared<DomainName>(domain));
@@ -34,70 +33,61 @@ void DomainNameManager::addDomainName(DomainName& domain)
 }
 
 
-void DomainNameManager::addDomainName(const std::string name,const std::string expression)
-{
+void DomainNameManager::addDomainName(const std::string name,const std::string expression) {
+
 	SharedPointer<DomainName> dom = SharedPointer<DomainName>(new DomainName(name,expression));
 
 	addDomainName(dom);
 }
 
 
-void DomainNameManager::addDomainName(SharedPointer<DomainName> domain)
-{
+void DomainNameManager::addDomainName(SharedPointer<DomainName> domain) {
+
 	std::vector<std::string> tokens;
 	boost::split(tokens,domain->getExpression(),boost::is_any_of("."));
 	SharedPointer<DomainNode> curr_node = root_;
 
-	for(auto it = tokens.rbegin(); it != tokens.rend(); ++it)
-	{
+	for(auto it = tokens.rbegin(); it != tokens.rend(); ++it) {
 		std::string token(*it);
 
-		if(token.length() > 0) 
-		{	
+		if (token.length() > 0) {
 			SharedPointer<DomainNode> node = curr_node->haveKey(token);
-			if(!node)
-			{
+			if(!node) {
 				SharedPointer<DomainNode> new_node = SharedPointer<DomainNode>(new DomainNode(token));
-		
+
 				curr_node->addKey(new_node);
 				curr_node = new_node;
-			}
-			else
-			{
+			} else {
 				curr_node = node;
 			}
 		}
 	}
 	curr_node->setDomainName(domain);
 	++total_domains_;
-} 
+}
 
-SharedPointer<DomainName> DomainNameManager::getDomainName(std::string& name)
-{
+SharedPointer<DomainName> DomainNameManager::getDomainName(std::string& name) {
+
 	std::vector<std::string> tokens;
 	SharedPointer<DomainName> domain_candidate;
 	boost::split(tokens,name,boost::is_any_of("."));
 
 	SharedPointer<DomainNode> curr_node = root_;
 
-	for(auto it = tokens.rbegin(); it != tokens.rend(); ++it)
-	{
+	for(auto it = tokens.rbegin(); it != tokens.rend(); ++it) {
 		SharedPointer<DomainNode> node = curr_node->haveKey(*it);
-		if(node)
-		{
+		if(node) {
 			curr_node = node;
 			domain_candidate = node->getDomainName();				
-		}
-		else
-		{
+		} else {
 			return domain_candidate;	
 		}
 	}
 	return domain_candidate;
 }
 
-std::ostream& operator<< (std::ostream& out, const DomainNameManager& domain)
-{
+std::ostream& operator<< (std::ostream& out, const DomainNameManager& domain) {
+
         out << "DomainNameManager" << std::endl;
 	out << "\tDomains:" << domain.total_domains_;
 

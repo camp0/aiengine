@@ -23,13 +23,13 @@
  */
 #include "StackLan.h"
 
-using namespace log4cxx;
-using namespace log4cxx::helpers;
+//using namespace log4cxx;
+//using namespace log4cxx::helpers;
 
 LoggerPtr StackLan::logger(Logger::getLogger("aiengine.stacklan"));
 
-StackLan::StackLan()
-{
+StackLan::StackLan() {
+
 	name_ = "Lan network stack";
 
 	// Allocate all the specific Protocol objects
@@ -204,8 +204,8 @@ StackLan::StackLan()
 
 }
 
-std::ostream& operator<< (std::ostream& out, const StackLan& stk)
-{
+std::ostream& operator<< (std::ostream& out, const StackLan& stk) {
+
 	stk.eth_->statistics(out);
 	out << std::endl;
 	stk.ip_->statistics(out);
@@ -233,66 +233,62 @@ std::ostream& operator<< (std::ostream& out, const StackLan& stk)
 	return out;
 }
 
-void StackLan::printFlows(std::basic_ostream<char>& out)
-{
+void StackLan::printFlows(std::basic_ostream<char>& out) {
+
 	out << "Flows on memory" << std::endl;
 	flow_table_tcp_->printFlows(out);
 	flow_table_udp_->printFlows(out);
 }
 
-void StackLan::setTCPRegexManager(RegexManagerPtrWeak sig) 
-{
-	if(sig.lock())
-	{
+void StackLan::setTCPRegexManager(RegexManagerPtrWeak sig) {
+
+	if(sig.lock()) {
 		tcp_generic_->setRegexManager(sig.lock());
 	}
 }
 
-void StackLan::setUDPRegexManager(RegexManagerPtrWeak sig) 
-{
-	if(sig.lock())
-	{
+void StackLan::setUDPRegexManager(RegexManagerPtrWeak sig) { 
+
+	if(sig.lock()) {
 		udp_generic_->setRegexManager(sig.lock());
 	}
 }
 
-void StackLan::setTCPRegexManager(RegexManager& sig) 
-{ 
+void StackLan::setTCPRegexManager(RegexManager& sig) {
+
 	sigs_tcp_ = std::make_shared<RegexManager>(sig);
 	setTCPRegexManager(sigs_tcp_);
 } 
 
-void StackLan::setUDPRegexManager(RegexManager& sig) 
-{ 
+void StackLan::setUDPRegexManager(RegexManager& sig) {
+
 	sigs_udp_ = std::make_shared<RegexManager>(sig);
 	setUDPRegexManager(sigs_udp_);
 } 
 
-void StackLan::setDNSDomainNameManager(DomainNameManagerPtrWeak dnm)
-{
-        if(dnm.lock())
-        {
+void StackLan::setDNSDomainNameManager(DomainNameManagerPtrWeak dnm) {
+
+        if (dnm.lock()) {
                 dns_->setDomainNameManager(dnm.lock());
         }
 }
 
-void StackLan::setDNSDomainNameManager(DomainNameManager& dnm)
-{
+void StackLan::setDNSDomainNameManager(DomainNameManager& dnm) {
+
 	domains_udp_ = std::make_shared<DomainNameManager>(dnm);
         setDNSDomainNameManager(domains_udp_);
 }
 
 
 
-void StackLan::enableFrequencyEngine(bool enable)
-{
+void StackLan::enableFrequencyEngine(bool enable) {
+
 	int tcp_flows_created = flow_cache_tcp_->getTotalFlows();
 	int udp_flows_created = flow_cache_udp_->getTotalFlows();
 
 	ff_udp_->removeUpFlowForwarder();
 	ff_tcp_->removeUpFlowForwarder();
-	if(enable)
-	{
+	if (enable) {
 		freqs_tcp_->createFrequencies(tcp_flows_created);	
 		freqs_udp_->createFrequencies(udp_flows_created);	
 
@@ -300,9 +296,7 @@ void StackLan::enableFrequencyEngine(bool enable)
 		ff_udp_->insertUpFlowForwarder(ff_udp_freqs_);	
 	
 		LOG4CXX_INFO (logger, "Enable FrequencyEngine on " << name_ );
-	}
-	else
-	{
+	} else {
 		freqs_tcp_->destroyFrequencies(tcp_flows_created);	
 		freqs_udp_->destroyFrequencies(udp_flows_created);	
 		
@@ -311,18 +305,15 @@ void StackLan::enableFrequencyEngine(bool enable)
 	}
 }
 
-void StackLan::enableNIDSEngine(bool enable)
-{
-	if(enable)
-	{
+void StackLan::enableNIDSEngine(bool enable) {
+
+	if (enable) {
 		ff_tcp_->removeUpFlowForwarder(ff_http_);
 		ff_tcp_->removeUpFlowForwarder(ff_ssl_);
 		ff_udp_->removeUpFlowForwarder(ff_dns_);
 	
 		LOG4CXX_INFO (logger, "Enable NIDSEngine on " << name_ );
-	}
-	else
-	{
+	} else {
 		ff_tcp_->removeUpFlowForwarder(ff_tcp_generic_);
 		ff_udp_->removeUpFlowForwarder(ff_udp_generic_);
 
@@ -334,8 +325,8 @@ void StackLan::enableNIDSEngine(bool enable)
 	}
 }
 
-void StackLan::setTotalTCPFlows(int value) 
-{ 
+void StackLan::setTotalTCPFlows(int value) {
+
 	flow_cache_tcp_->createFlows(value);
 	// The bast mayority of the traffic of internet is HTTP
 	// so create 75% of the value received for the http caches
@@ -343,14 +334,14 @@ void StackLan::setTotalTCPFlows(int value)
 	http_->createHTTPUserAgents(value * 0.75);
 }
 
-void StackLan::setTotalUDPFlows(int value) 
-{ 
+void StackLan::setTotalUDPFlows(int value) {
+
 	flow_cache_udp_->createFlows(value);
 	dns_->createDNSDomains(value/ 2);
 }
 
-void StackLan::setStatisticsLevel(int level)
-{
+void StackLan::setStatisticsLevel(int level) {
+
         eth_->setStatisticsLevel(level);
         ip_->setStatisticsLevel(level);
         tcp_->setStatisticsLevel(level);
@@ -365,26 +356,20 @@ void StackLan::setStatisticsLevel(int level)
         freqs_tcp_->setStatisticsLevel(level);
 }
 
-void StackLan::enableLinkLayerTagging(std::string type)
-{
-	if(type.compare("vlan") == 0)
-        {
+void StackLan::enableLinkLayerTagging(std::string type) {
+
+	if (type.compare("vlan") == 0) {
                 mux_eth_->addUpMultiplexer(mux_vlan_,ETH_P_8021Q);
                 mux_vlan_->addDownMultiplexer(mux_eth_);
                 mux_vlan_->addUpMultiplexer(mux_ip_,ETHERTYPE_IP);
                 mux_ip_->addDownMultiplexer(mux_vlan_);
-        }
-        else
-        {
-                if(type.compare("mpls") == 0)
-                {
+        } else {
+                if (type.compare("mpls") == 0) {
                         mux_eth_->addUpMultiplexer(mux_mpls_,ETH_P_MPLS_UC);
                 	mux_mpls_->addDownMultiplexer(mux_eth_);
                         mux_mpls_->addUpMultiplexer(mux_ip_,ETHERTYPE_IP);
                         mux_ip_->addDownMultiplexer(mux_mpls_);
-                }
-                else
-                {
+                } else {
                         LOG4CXX_WARN (logger, "Unknown tagging type " << type );
                 }
         }

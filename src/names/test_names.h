@@ -21,11 +21,11 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _test_names_H_
-#define _test_names_H_
+#ifndef SRC_NAMES_TEST_NAMES_H_
+#define SRC_NAMES_TEST_NAMES_H_
 
 #include <string>
 #include "../Pointer.h"
 #include "DomainNameManager.h"
 
-#endif
+#endif  // SRC_NAMES_TEST_NAMES_H_

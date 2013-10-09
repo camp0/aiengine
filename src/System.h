@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _System_H_
-#define _System_H_
+#ifndef SRC_SYSTEM_H_
+#define SRC_SYSTEM_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -33,16 +33,17 @@
 #include <sys/resource.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-using namespace std;
+//using namespace std;
 
 class System
 {
 public:
 
-    	System()
-	{ start_time_ = boost::posix_time::microsec_clock::local_time();
-		getrusage(RUSAGE_SELF,&usage_);};
-    	virtual ~System() {};
+    	System() {
+		start_time_ = boost::posix_time::microsec_clock::local_time();
+		getrusage(RUSAGE_SELF,&usage_);
+	}
+    	virtual ~System() {}
 
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};	
@@ -54,4 +55,5 @@ private:
 };
 
 typedef std::shared_ptr<System> SystemPtr;
-#endif
+
+#endif  // SRC_SYSTEM_H_

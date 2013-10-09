@@ -23,13 +23,13 @@
  */
 #include "StackMobile.h"
 
-using namespace log4cxx;
-using namespace log4cxx::helpers;
+//using namespace log4cxx;
+//using namespace log4cxx::helpers;
 
 LoggerPtr StackMobile::logger(Logger::getLogger("aiengine.stackmobile"));
 
-StackMobile::StackMobile()
-{
+StackMobile::StackMobile() {
+
 	name_ = "Mobile Network Stack";
 
 	// Allocate all the Protocol objects
@@ -250,9 +250,8 @@ StackMobile::StackMobile()
 	LOG4CXX_INFO (logger, name_<< " ready.");
 }
 
-std::ostream& operator<< (std::ostream& out, const StackMobile& stk)
-{
-	
+std::ostream& operator<< (std::ostream& out, const StackMobile& stk) {
+
 	stk.eth_->statistics(out);
 	out << std::endl;
 	stk.ip_low_->statistics(out);
@@ -287,44 +286,55 @@ std::ostream& operator<< (std::ostream& out, const StackMobile& stk)
 	return out;
 }
 
-void StackMobile::printFlows(std::basic_ostream<char>& out)
-{
+void StackMobile::printFlows(std::basic_ostream<char>& out) {
+
 	out << "Flows on memory" << std::endl;
 	flow_mng_udp_low_->printFlows(out);
 	flow_mng_tcp_->printFlows(out);
 	flow_mng_udp_high_->printFlows(out);
 }
 
-void StackMobile::setTCPRegexManager(RegexManagerPtrWeak sig)
-{
-        if(sig.lock())
-	{
+void StackMobile::setTCPRegexManager(RegexManagerPtrWeak sig) {
+
+        if (sig.lock()) {
                 tcp_generic_->setRegexManager(sig.lock());
 	}
 }
 
-void StackMobile::setUDPRegexManager(RegexManagerPtrWeak sig)
-{
-        if(sig.lock())
-	{
+void StackMobile::setUDPRegexManager(RegexManagerPtrWeak sig ) {
+
+        if (sig.lock()) {
                 udp_generic_->setRegexManager(sig.lock());
 	}
 }
 
-void StackMobile::setTCPRegexManager(RegexManager& sig)
-{
+void StackMobile::setTCPRegexManager(RegexManager& sig) {
+
 	sigs_tcp_ = std::make_shared<RegexManager>(sig);
         setTCPRegexManager(sigs_tcp_);
 }
 
-void StackMobile::setUDPRegexManager(RegexManager& sig)
-{
+void StackMobile::setUDPRegexManager(RegexManager& sig) {
+
 	sigs_udp_ = std::make_shared<RegexManager>(sig);
         setUDPRegexManager(sigs_udp_);
 }
 
-void StackMobile::setTotalTCPFlows(int value)
+void StackMobile::setDNSDomainNameManager(DomainNameManagerPtrWeak dnm) {
+
+        if (dnm.lock()) {
+                dns_->setDomainNameManager(dnm.lock());
+        }
+}
+
+void StackMobile::setDNSDomainNameManager(DomainNameManager& dnm)
 {
+        domains_udp_ = std::make_shared<DomainNameManager>(dnm);
+        setDNSDomainNameManager(domains_udp_);
+}
+
+void StackMobile::setTotalTCPFlows(int value) {
+
         flow_cache_tcp_->createFlows(value);
         // The bast mayority of the traffic of internet is HTTP
         // so create 75% of the value received for the http caches
@@ -332,15 +342,14 @@ void StackMobile::setTotalTCPFlows(int value)
         http_->createHTTPUserAgents(value * 0.75);
 }
 
-void StackMobile::enableFrequencyEngine(bool enable)
-{
+void StackMobile::enableFrequencyEngine(bool enable) {
+
         int tcp_flows_created = flow_cache_tcp_->getTotalFlows();
         int udp_flows_created = flow_cache_udp_high_->getTotalFlows();
 
         ff_udp_high_->removeUpFlowForwarder();
         ff_tcp_->removeUpFlowForwarder();
-        if(enable)
-        {
+        if (enable) {
                 freqs_tcp_->createFrequencies(tcp_flows_created);
                 freqs_udp_->createFrequencies(udp_flows_created);
 
@@ -348,30 +357,24 @@ void StackMobile::enableFrequencyEngine(bool enable)
                 ff_udp_high_->insertUpFlowForwarder(ff_udp_freqs_);
 
 		LOG4CXX_INFO (logger, "Enable FrequencyEngine on " << name_ );
-        }
-        else
-        {
+        } else {
                 freqs_tcp_->destroyFrequencies(tcp_flows_created);
                 freqs_udp_->destroyFrequencies(udp_flows_created);
-
 
                 ff_tcp_->removeUpFlowForwarder(ff_tcp_freqs_);
                 ff_udp_high_->removeUpFlowForwarder(ff_udp_freqs_);
         }
 }
 
-void StackMobile::enableNIDSEngine(bool enable)
-{
-        if(enable)
-        {
+void StackMobile::enableNIDSEngine(bool enable) {
+
+        if (enable) {
                 ff_tcp_->removeUpFlowForwarder(ff_http_);
                 ff_tcp_->removeUpFlowForwarder(ff_ssl_);
                 ff_udp_high_->removeUpFlowForwarder(ff_dns_);
 
                 LOG4CXX_INFO (logger, "Enable NIDSEngine on " << name_ );
-        }
-        else
-        {
+        } else {
                 ff_tcp_->removeUpFlowForwarder(ff_tcp_generic_);
                 ff_udp_high_->removeUpFlowForwarder(ff_udp_generic_);
 
@@ -384,8 +387,8 @@ void StackMobile::enableNIDSEngine(bool enable)
 }
 
 
-void StackMobile::setStatisticsLevel(int level)
-{
+void StackMobile::setStatisticsLevel(int level) {
+
         eth_->setStatisticsLevel(level);
         ip_low_->setStatisticsLevel(level);
         udp_low_->setStatisticsLevel(level);
@@ -403,26 +406,20 @@ void StackMobile::setStatisticsLevel(int level)
         freqs_tcp_->setStatisticsLevel(level);
 }
 
-void StackMobile::enableLinkLayerTagging(std::string type)
-{
-        if(type.compare("vlan") == 0)
-        {
+void StackMobile::enableLinkLayerTagging(std::string type) {
+
+        if (type.compare("vlan") == 0) {
                 mux_eth_->addUpMultiplexer(mux_vlan_,ETH_P_8021Q);
                 mux_vlan_->addDownMultiplexer(mux_eth_);
                 mux_vlan_->addUpMultiplexer(mux_ip_low_,ETHERTYPE_IP);
                 mux_ip_low_->addDownMultiplexer(mux_vlan_);
-        }
-        else
-        {
-                if(type.compare("mpls") == 0)
-                {
+        } else {
+                if (type.compare("mpls") == 0) {
                         mux_eth_->addUpMultiplexer(mux_mpls_,ETH_P_MPLS_UC);
                 	mux_mpls_->addDownMultiplexer(mux_eth_);
                         mux_mpls_->addUpMultiplexer(mux_ip_low_,ETHERTYPE_IP);
                         mux_ip_low_->addDownMultiplexer(mux_mpls_);
-                }
-                else
-                {
+                } else {
                         LOG4CXX_WARN (logger, "Unknown tagging type " << type );
                 }
         }

@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _PacketDispatcher_H_
-#define _PacketDispatcher_H_
+#ifndef SRC_PACKETDISPATCHER_H_
+#define SRC_PACKETDISPATCHER_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -54,12 +54,12 @@ public:
 	class Statistics
 	{
 		public:
-			explicit Statistics():interval(0),prev_total_packets_per_interval(0)
-			{
+			explicit Statistics():interval(0),prev_total_packets_per_interval(0) {
+			
 				ru_utime.tv_sec = 0; ru_utime.tv_usec = 0; 
 				ru_stime.tv_sec = 0; ru_stime.tv_usec = 0; 
 			}
-			virtual ~Statistics() {};
+			virtual ~Statistics() {}
 			int interval;
 			struct timeval ru_utime;
 			struct timeval ru_stime;
@@ -74,12 +74,12 @@ public:
 		total_packets_(0),
 		total_bytes_(0),
 		pcap_file_ready_(false),
-		device_is_ready_(false)
-	{
+		device_is_ready_(false) {
+	
 		setIdleFunction(std::bind(&PacketDispatcher::default_idle_function,this));
 	}
 
-    	virtual ~PacketDispatcher() { io_service_.stop(); };
+    	virtual ~PacketDispatcher() { io_service_.stop(); }
 
 	void openDevice(std::string device);
 	void closeDevice();
@@ -90,15 +90,15 @@ public:
 	void run(); 
 	void runPcap(); 
 
-	uint64_t getTotalBytes() const { return total_bytes_;};
-	uint64_t getTotalPackets() const { return total_packets_;};
+	uint64_t getTotalBytes() const { return total_bytes_;}
+	uint64_t getTotalPackets() const { return total_packets_;}
 
-	void setStack(NetworkStackPtr stack) { setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());};
-	void setStack(StackLan& stack) { setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}; 
-	void setStack(StackMobile& stack) { setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());};
+	void setStack(NetworkStackPtr stack) { setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());}
+	void setStack(StackLan& stack) { setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
+	void setStack(StackMobile& stack) { setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
 
 	void setDefaultMultiplexer(MultiplexerPtr mux); // just use for the unit tests
-	void setIdleFunction(std::function <void ()> idle_function) { idle_function_ = idle_function;};
+	void setIdleFunction(std::function <void ()> idle_function) { idle_function_ = idle_function;}
 private:
 	void start_operations();
 	void handle_receive(boost::system::error_code error);
@@ -131,4 +131,4 @@ private:
 
 typedef std::shared_ptr<PacketDispatcher> PacketDispatcherPtr;
 
-#endif
+#endif  // SRC_PACKETDISPATCHER_H_

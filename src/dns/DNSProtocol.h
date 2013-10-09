@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _DNSProtocol_H_
-#define _DNSProtocol_H_
+#ifndef SRC_DNS_DNSPROTOCOL_H_ 
+#define SRC_DNS_DNSPROTOCOL_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -89,8 +89,7 @@ public:
 	bool dnsChecker(Packet &packet) 
 	{
 		// I dont like this idea of ports but...
-		if((packet.getSourcePort() == 53)||(packet.getDestinationPort() == 53))
-		{
+		if((packet.getSourcePort() == 53)||(packet.getDestinationPort() == 53)) {
 			setHeader(packet.getPayload());
 			++total_validated_packets_; 
 			return true;
@@ -102,12 +101,13 @@ public:
 		}
 	}
 
-        void createDNSDomains(int number) { domain_cache_->create(number);};
-        void destroyDNSDomains(int number) { domain_cache_->destroy(number);};
+        void createDNSDomains(int number) { domain_cache_->create(number);}
+        void destroyDNSDomains(int number) { domain_cache_->destroy(number);}
 
-	void setDomainNameManager(DomainNameManagerPtrWeak dnm) { domain_mng_ = dnm;};
+	void setDomainNameManager(DomainNameManagerPtrWeak dnm) { domain_mng_ = dnm;}
 
 private:
+
 	int stats_level_;
 	FlowForwarderPtrWeak flow_forwarder_;	
 	MultiplexerPtrWeak mux_;
@@ -125,4 +125,4 @@ private:
 
 typedef std::shared_ptr<DNSProtocol> DNSProtocolPtr;
 
-#endif
+#endif  // SRC_DNS_DNSPROTOCOL_H_

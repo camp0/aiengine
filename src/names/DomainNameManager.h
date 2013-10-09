@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _DomainNameManager_H_
-#define _DomainNameManager_H_
+#ifndef SRC_NAMES_DOMAINNAMEMANAGER_H_ 
+#define SRC_NAMES_DOMAINNAMEMANAGER_H_
 
 #include <iostream>
 #include "DomainName.h"
@@ -32,8 +32,8 @@
 class DomainNameManager 
 {
 public:
-    	explicit DomainNameManager():root_(SharedPointer<DomainNode>(new DomainNode("root"))),total_domains_(0){};
-    	virtual ~DomainNameManager() {};
+    	explicit DomainNameManager():root_(SharedPointer<DomainNode>(new DomainNode("root"))),total_domains_(0) {}
+    	virtual ~DomainNameManager() {}
 
 	void addDomainName(SharedPointer<DomainName> domain); 
 	void addDomainName(const std::string name,const std::string expression);
@@ -51,4 +51,4 @@ private:
 typedef std::shared_ptr<DomainNameManager> DomainNameManagerPtr;
 typedef std::weak_ptr<DomainNameManager> DomainNameManagerPtrWeak;
 
-#endif
+#endif  // SRC_NAMES_DOMAINNAMEMANAGER_H_

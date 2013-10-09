@@ -21,10 +21,10 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _Pointer_H_
-#define _Pointer_H_
+#ifndef SRC_POINTER_H_ 
+#define SRC_POINTER_H_
 
-using namespace std;
+//using namespace std;
 
 #ifdef PYTHON_BINDING
 #include <boost/shared_ptr.hpp>
@@ -35,7 +35,7 @@ using namespace std;
 #endif
 
 #ifdef PYTHON_BINDING
-using namespace boost;
+//using namespace boost;
 template <class T1>
 using SharedPointer = boost::shared_ptr<T1>;
 template <class T2>
@@ -47,4 +47,4 @@ template <class T2>
 using WeakPointer = std::weak_ptr<T2>;
 #endif
 
-#endif
+#endif  // SRC_POINTER_H_

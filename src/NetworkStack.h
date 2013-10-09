@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _NetworkStack_H_
-#define _NetworkStack_H_
+#ifndef SRC_NETWORKSTACK_H_
+#define SRC_NETWORKSTACK_H_
 
 #include <iostream>
 #include <fstream>
@@ -34,8 +34,8 @@
 class NetworkStack 
 {
 public:
-    	NetworkStack() {};
-    	virtual ~NetworkStack() {};
+    	NetworkStack() {}
+    	virtual ~NetworkStack() {}
 
 	virtual void printFlows(std::basic_ostream<char>& out) = 0;
 	virtual void printFlows() = 0;
@@ -76,4 +76,4 @@ public:
 
 typedef std::shared_ptr <NetworkStack> NetworkStackPtr;
 
-#endif
+#endif  // SRC_NETWORKSTACK_H_
