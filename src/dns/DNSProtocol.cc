@@ -24,8 +24,29 @@
 #include "DNSProtocol.h"
 #include <iomanip> // setw
 
-void DNSProtocol::processFlow(Flow *flow)
-{
+void DNSProtocol::attachDNStoFlow(Flow *flow, std::string &domain) {
+
+	SharedPointer<DNSDomain> dom_ptr = flow->dns_domain.lock();
+
+        if (!dom_ptr) { // There is no DNS attached
+		DomainMapType::iterator it = domain_map_.find(domain);
+                if (it == domain_map_.end()) {
+                	dom_ptr = domain_cache_->acquire().lock();
+                        if (dom_ptr) {
+                        	dom_ptr->setName(domain);
+                                flow->dns_domain = dom_ptr;
+                                domain_map_.insert(std::make_pair(domain,std::make_pair(dom_ptr,1)));
+                        }
+		} else {
+			int *counter = &std::get<1>(it->second);
+                        ++(*counter);
+			flow->dns_domain = std::get<0>(it->second);
+		}
+	}
+}
+
+void DNSProtocol::processFlow(Flow *flow) {
+
 	DomainNameManagerPtr dnm;
 	int length = flow->packet->getLength();
 	total_bytes_ += length;
@@ -33,18 +54,15 @@ void DNSProtocol::processFlow(Flow *flow)
 	const unsigned char *payload = flow->packet->getPayload();
 
 	// Just get the standard queries
-	if(length > 10) // Minimum header size consider
-	{
+	if (length > 10) { // Minimum header size consider
 		// \x01 \x00 Standar query
-		if(std::memcmp("\x01\x00",&payload[2],2) == 0)
-		{
+		if (std::memcmp("\x01\x00",&payload[2],2) == 0) {
 			int queries = payload[5];
 			std::string domain;
 			int i = 13,value;
 		
 			// Probably i will need to do it better :(	
-			while(payload[i] != '\x00')
-			{
+			while (payload[i] != '\x00') {
 				if(payload[i] < '\x17' )
 					domain += ".";
 				else
@@ -54,44 +72,19 @@ void DNSProtocol::processFlow(Flow *flow)
 			}
 
 			++total_queries_;
-			SharedPointer<DNSDomain> dom_ptr = flow->dns_domain.lock();
-
-			if(!dom_ptr) // There is no DNS attached
-			{
-				DomainMapType::iterator it = domain_map_.find(domain);
-				if(it == domain_map_.end())
-				{
-			        	dom_ptr = domain_cache_->acquire().lock();
-                        		if(dom_ptr)
-                        		{
-                                		dom_ptr->setName(domain);
-                                		flow->dns_domain = dom_ptr;
-                				domain_map_.insert(std::make_pair(domain,std::make_pair(dom_ptr,1)));
-                        		}	
-				}
-				else
-				{
-					int *counter = &std::get<1>(it->second);
-					++(*counter);
-					flow->dns_domain = std::get<0>(it->second);	
-				}
-			}
+		
+			attachDNStoFlow(flow,domain);	
+			
 			dnm = domain_mng_.lock();
-			if(dnm)
-			{
+			if (dnm) {
 				SharedPointer<DomainName> domain_candidate = dnm->getDomainName(domain);
 #ifdef PYTHON_BINDING
-				if(domain_candidate)
-				{
-					if(domain_candidate->haveCallback())
-					{
+				if (domain_candidate) {
+					if(domain_candidate->haveCallback()) {
 						PyGILState_STATE state(PyGILState_Ensure());
-                                		try
-                                		{
+                                		try {
                                         		boost::python::call<void>(domain_candidate->getCallback(),boost::python::ptr(flow));
-                                		}
-                                		catch(std::exception &e)
-                                		{
+                                		} catch (std::exception &e) {
                                         		std::cout << "ERROR:" << e.what() << std::endl;
                                 		}
                                 		PyGILState_Release(state);
