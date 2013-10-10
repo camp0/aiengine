@@ -24,10 +24,7 @@
 #include "PacketDispatcher.h"
 //#include <iostream>
 
-//using namespace log4cxx;
-//using namespace log4cxx::helpers;
-
-LoggerPtr PacketDispatcher::logger(Logger::getLogger("aiengine.packetdispatcher"));
+log4cxx::LoggerPtr PacketDispatcher::logger(log4cxx::Logger::getLogger("aiengine.packetdispatcher"));
 
 void PacketDispatcher::setDefaultMultiplexer(MultiplexerPtr mux) {
 

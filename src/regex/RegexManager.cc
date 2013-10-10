@@ -24,9 +24,8 @@
 #include <iostream>
 #include "RegexManager.h"
 
-void RegexManager::addRegex(Regex& sig)
-{
-	// TODO
+void RegexManager::addRegex(Regex& sig) {
+
 #ifdef PYTHON_BINDING
 	addRegex(boost::make_shared<Regex>(sig));
 #else
@@ -34,26 +33,24 @@ void RegexManager::addRegex(Regex& sig)
 #endif
 }
 
-void RegexManager::addRegex(const std::string name,const std::string expression)
-{
+void RegexManager::addRegex(const std::string name,const std::string expression) {
+
 	SharedPointer<Regex> sig = SharedPointer<Regex>(new Regex(name,expression));
 
 	addRegex(sig);
 }
 
-void RegexManager::addRegex(SharedPointer<Regex> sig)
-{
+void RegexManager::addRegex(SharedPointer<Regex> sig) {
+
 	signatures_.push_back(sig);
 }
 
-void RegexManager::evaluate(const unsigned char *payload, bool *result)
-{
+void RegexManager::evaluate(const unsigned char *payload, bool *result) {
 
         std::find_if(signatures_.begin(),
-                signatures_.end(),  [&](SharedPointer<Regex>& sig)
-        {
-		if(sig->evaluate(payload))
-		{
+                signatures_.end(),  [&](SharedPointer<Regex>& sig) {
+		
+		if (sig->evaluate(payload)) {
 			++total_matched_signatures_;
 			current_signature_ = sig;
 			sig->incrementMatchs();
@@ -61,15 +58,13 @@ void RegexManager::evaluate(const unsigned char *payload, bool *result)
 			return true;
 		}
         });
-
 	return;
 }
 
-std::ostream& operator<< (std::ostream& out, const RegexManager& sig)
-{
+std::ostream& operator<< (std::ostream& out, const RegexManager& sig) {
+
 	out << "RegexManager(" << &sig << ") statistics" << std::dec <<  std::endl;	
-	for (auto it = sig.signatures_.begin(); it != sig.signatures_.end(); ++it)
-	{
+	for (auto it = sig.signatures_.begin(); it != sig.signatures_.end(); ++it) {
 		SharedPointer<Regex> sig = (*it);
 		out << "\t" << "Regex:" << sig->getName() << " matches:" << sig->getMatchs() << std::endl;
 	}

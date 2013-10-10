@@ -24,8 +24,8 @@
 #include "IPProtocol.h"
 #include <iomanip> // setw
 
-void IPProtocol::processPacket(Packet& packet)
-{
+void IPProtocol::processPacket(Packet& packet) {
+
         MultiplexerPtr mux = mux_.lock();
 
 	++total_packets_;
@@ -40,24 +40,21 @@ void IPProtocol::processPacket(Packet& packet)
 }
 
 
-void IPProtocol::processFlow(Flow *flow)
-{
-	std::cout << "IPProtocol receive a flow" << std::endl;
+void IPProtocol::processFlow(Flow *flow) {
+
+	// TODO: Encapsulations such as ip over ip	
 }
 
-void IPProtocol::statistics(std::basic_ostream<char>& out)
-{
-	if(stats_level_ > 0)
-	{
+void IPProtocol::statistics(std::basic_ostream<char>& out){
+
+	if (stats_level_ > 0) {
 		out << "IPProtocol(" << this << ") statistics" << std::dec <<  std::endl;
 		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
 		out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
-		if( stats_level_ > 1)
-		{
+		if (stats_level_ > 1) {
 			out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
 			out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
-			if( stats_level_ > 2)
-			{
+			if (stats_level_ > 2) {
 				if(mux_.lock())
 					mux_.lock()->statistics(out);
 			}

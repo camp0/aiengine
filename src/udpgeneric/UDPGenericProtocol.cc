@@ -24,38 +24,33 @@
 #include "UDPGenericProtocol.h"
 #include <iomanip> // setw
 
-LoggerPtr UDPGenericProtocol::logger(Logger::getLogger("aiengine.udpgeneric"));
+log4cxx::LoggerPtr UDPGenericProtocol::logger(log4cxx::Logger::getLogger("aiengine.udpgeneric"));
 
-void UDPGenericProtocol::processFlow(Flow *flow)
-{
+void UDPGenericProtocol::processFlow(Flow *flow) {
+
 	RegexManagerPtr sig = sigs_.lock();
 
 	++total_packets_;
 	total_bytes_ += flow->packet->getLength();
 	++flow->total_packets_l7;
 
-	if((sig)&&(!flow->regex.lock())) // There is a RegexManager attached
-	{
+	if ((sig)&&(!flow->regex.lock())){ // There is a RegexManager attached
+	
 		bool result = false;
 		const unsigned char *payload = flow->packet->getPayload();
 	
 		sig->evaluate(payload,&result);
-		if(result)
-		{
+		if (result) {
 			SharedPointer<Regex> regex = sig->getMatchedRegex();
 
 			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << regex->getName());
 			flow->regex = regex;
 #ifdef PYTHON_BINDING
-        		if(regex->haveCallback())
-        		{
+        		if(regex->haveCallback()) {
                 		PyGILState_STATE state(PyGILState_Ensure());
-				try
-				{
+				try {
 					boost::python::call<void>(regex->getCallback(),boost::python::ptr(flow));
-				}
-				catch(std::exception &e)
-				{
+				} catch(std::exception &e) {
 					std::cout << "ERROR:" << e.what() << std::endl;
 				}	
                 		PyGILState_Release(state);
@@ -65,23 +60,19 @@ void UDPGenericProtocol::processFlow(Flow *flow)
 	}
 }
 
-void UDPGenericProtocol::statistics(std::basic_ostream<char>& out)
-{
-        if(stats_level_ > 0)
-        {
+void UDPGenericProtocol::statistics(std::basic_ostream<char>& out) {
+
+        if (stats_level_ > 0) {
                 out << name_ << "(" << this << ") statistics" << std::dec << std::endl;
                 out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
                 out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
-                if( stats_level_ > 1) 
-                {
+                if (stats_level_ > 1){ 
                         out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
                         out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
-                        if(stats_level_ > 2)
-                        {
+                        if (stats_level_ > 2) {
                                 if(flow_forwarder_.lock())
                                         flow_forwarder_.lock()->statistics(out);
-                                if(stats_level_ > 3)
-                                {
+                                if(stats_level_ > 3) {
                                         if(sigs_.lock())
                                                 out << *sigs_.lock();
                                 }

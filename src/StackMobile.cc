@@ -23,10 +23,7 @@
  */
 #include "StackMobile.h"
 
-//using namespace log4cxx;
-//using namespace log4cxx::helpers;
-
-LoggerPtr StackMobile::logger(Logger::getLogger("aiengine.stackmobile"));
+log4cxx::LoggerPtr StackMobile::logger(log4cxx::Logger::getLogger("aiengine.stackmobile"));
 
 StackMobile::StackMobile() {
 

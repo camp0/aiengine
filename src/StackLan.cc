@@ -23,10 +23,7 @@
  */
 #include "StackLan.h"
 
-//using namespace log4cxx;
-//using namespace log4cxx::helpers;
-
-LoggerPtr StackLan::logger(Logger::getLogger("aiengine.stacklan"));
+log4cxx::LoggerPtr StackLan::logger(log4cxx::Logger::getLogger("aiengine.stacklan"));
 
 StackLan::StackLan() {
 

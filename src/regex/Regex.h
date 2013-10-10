@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _Regex_H_
-#define _Regex_H_
+#ifndef SRC_REGEX_REGEX_H_
+#define SRC_REGEX_REGEX_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -44,18 +44,12 @@ public:
 	virtual ~Regex()=default;
 	bool evaluate(const unsigned char *payload);
 
-/*	std::string &getExpression() { return expression_;};	
-	std::string &getName() { return name_;};	
-	void incrementMatchs() { ++total_matchs_; };
-	int32_t getMatchs() { return total_matchs_; };
-*/
 	friend std::ostream& operator<< (std::ostream& out, const Regex& sig);
 
 private:
 	boost::regex exp_;
 	boost::cmatch what;
-
 };
 
-#endif // _Regex_H_ 
+#endif  // SRC_REGEX_REGEX_H_
 

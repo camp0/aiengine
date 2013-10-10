@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _RegexManager_H_
-#define _RegexManager_H_
+#ifndef SRC_REGEX_REGEXMANAGER_H_
+#define SRC_REGEX_REGEXMANAGER_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -36,9 +36,7 @@ class RegexManager
 {
 public:
         explicit RegexManager():
-                total_matched_signatures_(0)
-        {
-        }
+                total_matched_signatures_(0) {}
 
         virtual ~RegexManager()=default;
 
@@ -54,7 +52,6 @@ public:
 	SharedPointer<Regex> getMatchedRegex() { return current_signature_;}
 
 	friend std::ostream& operator<< (std::ostream& out, const RegexManager& sig);
-//	std::string toString() { std::ostringstream s; s << this; return s.str();}; // Wrapper for python 
 
 private:
 	SharedPointer<Regex> current_signature_;
@@ -65,5 +62,4 @@ private:
 typedef std::shared_ptr<RegexManager> RegexManagerPtr;
 typedef std::weak_ptr<RegexManager> RegexManagerPtrWeak;
 
-#endif // _RegexManager_H_
-
+#endif  // SRC_REGEX_REGEXMANAGER_H_

@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _ICMPProtocol_H_
-#define _ICMPProtocol_H_
+#ifndef SRC_ICMP_ICMPPROTOCOL_H_
+#define SRC_ICMP_ICMPPROTOCOL_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -41,52 +41,49 @@
 class ICMPProtocol: public Protocol 
 {
 public:
-    	explicit ICMPProtocol():icmp_header_(nullptr),stats_level_(0){ name_="ICMPProtocol";};
-    	virtual ~ICMPProtocol() {};
+    	explicit ICMPProtocol():icmp_header_(nullptr),stats_level_(0) { name_="ICMPProtocol";}
+    	virtual ~ICMPProtocol() {}
 
 	static const u_int16_t id = IPPROTO_ICMP;
 	static const int header_size = 8;
 
-	int getHeaderSize() const { return header_size;};
+	int getHeaderSize() const { return header_size;}
 
-	int64_t getTotalPackets() const { return total_packets_;};
-	int64_t getTotalValidatedPackets() const { return total_validated_packets_;};
-	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
+	int64_t getTotalPackets() const { return total_packets_;}
+	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
+	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
 
-        const char *getName() { return name_.c_str();};
+        const char *getName() { return name_.c_str();}
 
-	void processFlow(Flow *flow) {}; // This protocol dont generate any flow 
+	void processFlow(Flow *flow) { /* No flow to manager */ } 
 	void processPacket(Packet& packet);
 
-	void setStatisticsLevel(int level) { stats_level_ = level;};
-	void statistics(std::basic_ostream<char>& out) ;
-	void statistics() { statistics(std::cout);};
+	void setStatisticsLevel(int level) { stats_level_ = level;}
+	void statistics(std::basic_ostream<char>& out);
+	void statistics() { statistics(std::cout);}
 
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
-        MultiplexerPtrWeak getMultiplexer() { mux_;};
+        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
+        MultiplexerPtrWeak getMultiplexer() { mux_;}
 
-        void setFlowForwarder(FlowForwarderPtrWeak ff) {};
-        FlowForwarderPtrWeak getFlowForwarder() {};
+        void setFlowForwarder(FlowForwarderPtrWeak ff) {}
+        FlowForwarderPtrWeak getFlowForwarder() {}
 
-        void setHeader(unsigned char *raw_packet)
-        {
+        void setHeader(unsigned char *raw_packet) { 
+        
                 icmp_header_ = reinterpret_cast <struct icmphdr*> (raw_packet);
         }
 
-	// Condition for say that a packet its icmp 
-	bool icmpChecker(Packet &packet) 
-	{
+	// Condition for say that a packet is icmp 
+	bool icmpChecker(Packet &packet) { 
+	
                 int length = packet.getLength();
 
                 setHeader(packet.getPayload());
 
-		if(length >= header_size)
-		{
+		if (length >= header_size) {
 			++total_validated_packets_; 
 			return true;
-		}
-		else
-		{
+		} else {
 			++total_malformed_packets_;
 			return false;
 		}
@@ -105,4 +102,4 @@ private:
 
 typedef std::shared_ptr<ICMPProtocol> ICMPProtocolPtr;
 
-#endif
+#endif  // SRC_ICMP_ICMPPROTOCOL_H_
