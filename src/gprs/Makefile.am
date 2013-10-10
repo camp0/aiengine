@@ -13,6 +13,7 @@ test_gprs_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ip/IPProtocol.cc \
 			../udp/UDPProtocol.cc \
 			../icmp/ICMPProtocol.cc \
+			../names/DomainNameManager.cc \
 			../dns/DNSProtocol.cc \
 			GPRSProtocol.cc test_gprs.cc
 

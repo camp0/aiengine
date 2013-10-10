@@ -13,7 +13,7 @@ test_frequency_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ip/IPProtocol.cc \
 			../tcp/TCPProtocol.cc \
 			../flow/FlowManager.cc \
-			FrequencyProtocol.cc test_frequency.cc
+			FrequencyProtocol.cc FrequencyCounter.cc test_frequency.cc
 
 test_frequency_CPPFLAGS = -DSTAND_ALONE
 test_frequency_LDADD   = -lboost_unit_test_framework

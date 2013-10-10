@@ -21,31 +21,30 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _Frequencies_H_
-#define _Frequencies_H_
+#ifndef SRC_FREQUENCY_FREQUENCIES_H_
+#define SRC_FREQUENCY_FREQUENCIES_H_
 
 #include <sstream>
 #include <iostream>
 #include <array>
 #include <unordered_map>
-
-using namespace std;
+#include <cmath>
 
 class Frequencies 
 {
 public:
-    	Frequencies():freqs_() { reset(); };
-    	virtual ~Frequencies() {};
+    	Frequencies():freqs_() { reset(); }
+    	virtual ~Frequencies() {}
 
-	void reset() { for(auto& value: freqs_) value = 0;};
+	void reset() { for (auto& value: freqs_) value = 0;}
 
-	void addPayload(unsigned char *payload, int length)
-	{
+	void addPayload(unsigned char *payload, int length) {
+	
 		for(int i=0;i< length;++i) ++freqs_[payload[i]];
 	}
 
-	std::string getFrequenciesString() const 
-	{
+	std::string getFrequenciesString() const { 
+	
 		std::ostringstream os;
 
 		os << "[";
@@ -60,8 +59,8 @@ public:
 		return os.str();
 	}
 
-	friend ostream& operator<<(ostream& os, const Frequencies& fq)
-	{
+	friend std::ostream& operator<<(std::ostream& os, const Frequencies& fq) {
+	
 		std::ostringstream os_f;
 
 		os << "Begin frequencies" << std::endl;
@@ -77,68 +76,66 @@ public:
 		os << os_f.str() << std::endl;
 	}	
 
-	int& operator [](const int index)
-	{
+	int& operator[](const int index) {
+	
 		return freqs_[index];
 	}
 
-	Frequencies operator +(const Frequencies& fq)
-	{
+	Frequencies operator+(const Frequencies& fq) {
+	
 		Frequencies freqs;
 
 		for(int i = 0;i<255;++i) freqs[i] = freqs_[i] + fq.freqs_[i];
 		return freqs;
 	}	
 
-	Frequencies operator +(const int& value)
-	{
+	Frequencies operator+(const int& value) {
+	
 		Frequencies freqs;
 
 		for(int i = 0;i<255;++i) freqs[i] = freqs_[i] + value;
 		return freqs;
 	}
 
-        Frequencies operator /(const int& value)
-        {
+        Frequencies operator /(const int& value) {
+        
                 Frequencies freqs;
 
-                for(int i = 0;i<255;++i) freqs[i] = freqs_[i] / value;
+                for (int i = 0;i<255;++i) freqs[i] = freqs_[i] / value;
                 return freqs;
         }
 
-        bool operator ==(const Frequencies& fq)
-        {
-                for(int i = 0;i<255;++i)
-			if(freqs_[i] != fq.freqs_[i])
+        bool operator==(const Frequencies& fq) {
+        
+                for (int i = 0;i<255;++i)
+			if (freqs_[i] != fq.freqs_[i])
 				return false;	
 		return true;
         }
 
-        bool operator !=(const Frequencies& fq)
-        {
-                for(int i = 0;i<255;++i)
-                        if(freqs_[i] != fq.freqs_[i])
+        bool operator!=(const Frequencies& fq) {
+        
+                for (int i = 0;i<255;++i)
+                        if (freqs_[i] != fq.freqs_[i])
                                 return true;
                 return false;
         }
 
-	int getDispersion() 
-	{
+	int getDispersion() { 
+	
 		std::unordered_map<int,int> values;
 
                 for (auto& value: freqs_) values[value] = 1; 
 		return values.size();
 	}
 
-	double getEnthropy()
-	{
+	double getEnthropy() {
+	
 		double h = 0, x;
 
-		for(auto& value: freqs_)
-		{
+		for (auto& value: freqs_) {
 			x = value / 255;
-			if(x>0)
-				h += - x * log2(x);	
+			if (x>0) h += - x * std::log2(x);	
 		}
 		return h;
 	}
@@ -147,4 +144,4 @@ private:
 	std::array<int,255> freqs_;
 };
 
-#endif
+#endif  // SRC_FREQUENCY_FREQUENCIES_H_

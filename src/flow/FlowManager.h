@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _FlowManager_H_
-#define _FlowManager_H_
+#ifndef SRC_FLOW_FLOWMANAGER_H_
+#define SRC_FLOW_FLOWMANAGER_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -36,12 +36,12 @@
 
 #include "Flow.h"
 
-using namespace boost::multi_index;
+//using namespace boost::multi_index;
 
-typedef multi_index_container<
+typedef boost::multi_index::multi_index_container<
 	SharedPointer<Flow>,
-	indexed_by<
-		hashed_unique< const_mem_fun<Flow,unsigned long, &Flow::getId>>
+	boost::multi_index::indexed_by<
+		boost::multi_index::hashed_unique< boost::multi_index::const_mem_fun<Flow,unsigned long, &Flow::getId>>
 	>
 >FlowTable;
 
@@ -60,18 +60,18 @@ public:
 	int getTotalFlows() const { return flowTable_.size();}
 
 	void printFlows(std::basic_ostream<char>& out);
-	void printFlows() { printFlows(std::cout);};      
+	void printFlows() { printFlows(std::cout);}      
 	void statistics(std::basic_ostream<char>& out);
-        void statistics() { statistics(std::cout);};
+        void statistics() { statistics(std::cout);}
 
 	friend std::ostream& operator<< (std::ostream& out, const FlowManager& fm);
 
-	FlowTable getFlowTable() const { return flowTable_;};	
+	FlowTable getFlowTable() const { return flowTable_;}	
 
 #ifdef PYTHON_BINDING
 	// Methods for exposing the class to python iterable methods
-	FlowTable::iterator begin() { return flowTable_.begin(); };
-	FlowTable::iterator end() { return flowTable_.end(); };
+	FlowTable::iterator begin() { return flowTable_.begin(); }
+	FlowTable::iterator end() { return flowTable_.end(); }
 #endif
 
 private:
@@ -83,4 +83,4 @@ private:
 typedef std::shared_ptr<FlowManager> FlowManagerPtr;
 typedef std::weak_ptr<FlowManager> FlowManagerPtrWeak;
 
-#endif
+#endif  // SRC_FLOW_FLOWMANAGER_H_

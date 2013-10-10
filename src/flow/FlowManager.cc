@@ -27,22 +27,22 @@
 #include <arpa/inet.h>
 #include <boost/format.hpp>
 
-FlowManager::FlowManager() 
-{
+FlowManager::FlowManager() { 
+
 }
 
-FlowManager::~FlowManager()
-{
+FlowManager::~FlowManager() {
+
 	flowTable_.clear();
 }
 
-void FlowManager::addFlow(SharedPointer<Flow> flow)
-{
+void FlowManager::addFlow(SharedPointer<Flow> flow) {
+
 	flowTable_.insert(flow);
 }
 
-void FlowManager::removeFlow(SharedPointer<Flow> flow)
-{
+void FlowManager::removeFlow(SharedPointer<Flow> flow) {
+
 	FlowByID::iterator it = flowTable_.find(flow->getId());
 	
 	flowTable_.erase(it);
@@ -50,16 +50,14 @@ void FlowManager::removeFlow(SharedPointer<Flow> flow)
 }
 
 
-SharedPointer<Flow> FlowManager::findFlow(unsigned long hash1,unsigned long hash2)
-{
+SharedPointer<Flow> FlowManager::findFlow(unsigned long hash1,unsigned long hash2) {
+
 	FlowByID::iterator it = flowTable_.find(hash1);
 	SharedPointer<Flow> fp;
 
-	if (it == flowTable_.end())
-	{
+	if (it == flowTable_.end()) {
 		it = flowTable_.find(hash2);
-		if (it == flowTable_.end()) 
-		{
+		if (it == flowTable_.end()) { 
 			return fp;
 		}
 	}
@@ -68,29 +66,28 @@ SharedPointer<Flow> FlowManager::findFlow(unsigned long hash1,unsigned long hash
 }
 
 
-std::ostream& operator<< (std::ostream& out, const FlowManager& fm)
-{
+std::ostream& operator<< (std::ostream& out, const FlowManager& fm) {
+
         out << "FlowManager statistics" << std::endl;
         out << "\t" << "Total flows:            " << std::setw(10) << fm.flowTable_.size() <<std::endl;
 }
 
-void FlowManager::statistics(std::basic_ostream<char>& out)
-{
+void FlowManager::statistics(std::basic_ostream<char>& out) {
+
         out << "FlowManager statistics" << std::endl;
         out << "\t" << "Total flows:            " << std::setw(10) << flowTable_.size() <<std::endl;
 
 }
 
-void FlowManager::printFlows(std::basic_ostream<char>& out)
-{
+void FlowManager::printFlows(std::basic_ostream<char>& out) {
+
 	in_addr src_a,dst_a; 
 
 	// Print a header
 	out << std::endl;
 	out << boost::format("%-44s %-10s %-10s %-13s %-12s") % "Flow" % "Bytes" % "Packets" % "FlowForwarder" % "Info";
 	out << std::endl;	
-	for(auto it = flowTable_.begin(); it!=flowTable_.end(); ++it)
-	{
+	for(auto it = flowTable_.begin(); it!=flowTable_.end(); ++it) {
 		SharedPointer<Flow> flow = *it;
 
 		std::ostringstream fivetuple;
@@ -118,7 +115,5 @@ void FlowManager::printFlows(std::basic_ostream<char>& out)
 			out << boost::format("%-8s") % flow->frequencies.lock()->getFrequenciesString();
 
 		out << std::endl;
-			
 	}
-
 }

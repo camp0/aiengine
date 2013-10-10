@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _LearnerEngine_H_
-#define _LearnerEngine_H_
+#ifndef SRC_LEARNER_LEARNERENGINE_H_
+#define SRC_LEARNER_LEARNERENGINE_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -33,14 +33,16 @@
 #include <iomanip> // setw
 #include <unordered_map>
 #include <boost/format.hpp>
+
 #ifdef PYTHON_BINDING
 #include <boost/python.hpp>
 #endif
+
 #include "../frequency/PacketFrequencies.h"
 #include "../flow/FlowManager.h"
 #include "../frequency/FrequencyGroup.h"
 
-using namespace std;
+//using namespace std;
 
 class LearnerEngine
 {
@@ -85,4 +87,4 @@ private:
 
 typedef std::shared_ptr<LearnerEngine> LearnerEnginePtr;
 
-#endif
+#endif  // SRC_LEARNER_LEARNERENGINE_H_

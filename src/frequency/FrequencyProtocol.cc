@@ -24,57 +24,50 @@
 #include "FrequencyProtocol.h"
 #include <iomanip> // setw
 
-void FrequencyProtocol::processFlow(Flow *flow)
-{
+void FrequencyProtocol::processFlow(Flow *flow) {
+
 	++total_packets_;
 	total_bytes_ += flow->packet->getLength();
 	++flow->total_packets_l7;
 
-	if(flow->total_packets < inspection_limit_ ) 
-	{
+	if (flow->total_packets < inspection_limit_) {
+
 		SharedPointer<Frequencies> freq = flow->frequencies.lock();
 
-		if(!freq) // There is no Frequency object attached to the flow
-		{
+		if (!freq) { // There is no Frequency object attached to the flow
 			freq = freqs_cache_->acquire().lock();
-			if(freq)
+			if (freq)
 				flow->frequencies = freq;
-		}
-		
-		if(freq)
-		{
+		} 
+
+		if (freq) 
 			freq->addPayload(flow->packet->getPayload(),flow->packet->getLength());		
-		}
 
                 SharedPointer<PacketFrequencies> pkt_freq = flow->packet_frequencies.lock();
 
-                if(!pkt_freq) // There is no Frequency object attached to the flow
-                {
+                if (!pkt_freq) { // There is no Frequency object attached to the flow
                         pkt_freq = packet_freqs_cache_->acquire().lock();
-                        if(pkt_freq)
+                        if (pkt_freq)
                                 flow->packet_frequencies = pkt_freq;
                 }
-
-                if(pkt_freq)
-                {
+		if (freq) 
                         pkt_freq->addPayload(flow->packet->getPayload(),flow->packet->getLength());
-                }
-
 	}
 }
-void FrequencyProtocol::statistics(std::basic_ostream<char>& out)
-{
-	if(stats_level_ > 0)
-	{
+
+void FrequencyProtocol::statistics(std::basic_ostream<char>& out) {
+
+	if (stats_level_ > 0) {
+	
         	out << "FrequencyProtocol(" << this << ") statistics" << std::dec <<  std::endl;
 		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
 		out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
-		if( stats_level_ > 1)
-		{
+		if (stats_level_ > 1) {
+		
 			out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
 			out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
-			if( stats_level_ > 2)
-			{
+			if (stats_level_ > 2) {
+			
         			if(flow_forwarder_.lock())
                 			flow_forwarder_.lock()->statistics(out);
 			}

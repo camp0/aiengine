@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _Flow_H
-#define _Flow_H
+#ifndef SRC_FLOW_FLOW_H_
+#define SRC_FLOW_FLOW_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -49,14 +49,14 @@ typedef std::weak_ptr<FlowForwarder> FlowForwarderPtrWeak;
 
 class Flow {
 public:
-    	Flow() {reset();};
-    	virtual ~Flow(){};
+    	Flow() {reset();}
+    	virtual ~Flow() {}
 
-	void setId(unsigned long hash) { hash_=hash;};
-	unsigned long getId() const { return hash_;};
+	void setId(unsigned long hash) { hash_=hash;}
+	unsigned long getId() const { return hash_;}
 
-	inline void setFiveTuple(u_int32_t src_a,u_int16_t src_p,u_int16_t proto,u_int32_t dst_a,u_int16_t dst_p)
-	{
+	inline void setFiveTuple(u_int32_t src_a,u_int16_t src_p,u_int16_t proto,u_int32_t dst_a,u_int16_t dst_p) {
+	
 		source_address_ = src_a;
 		dest_address_ = dst_a;
 		source_port_ = src_p;
@@ -64,11 +64,11 @@ public:
 		protocol_ = proto;
 	}
 
-	u_int32_t getSourceAddress() const { return source_address_;};
-	u_int32_t getDestinationAddress() const { return dest_address_;};
-	u_int16_t getSourcePort() const { return source_port_;};
-	u_int16_t getDestinationPort() const { return dest_port_;};
-	u_int16_t getProtocol() const { return protocol_;};
+	u_int32_t getSourceAddress() const { return source_address_;}
+	u_int32_t getDestinationAddress() const { return dest_address_;}
+	u_int16_t getSourcePort() const { return source_port_;}
+	u_int16_t getDestinationPort() const { return dest_port_;}
+	u_int16_t getProtocol() const { return protocol_;}
 
 	char* getSrcAddrDotNotation() const { in_addr a; a.s_addr=source_address_; return inet_ntoa(a); }
 	char* getDstAddrDotNotation() const { in_addr a; a.s_addr=dest_address_; return inet_ntoa(a); }
@@ -87,8 +87,8 @@ public:
 
 	Packet *packet;
 	
-	inline void reset()
-	{
+	inline void reset() {
+	
 		hash_ = 0;
 		total_bytes = 0;
 		total_packets = 0;
@@ -105,26 +105,26 @@ public:
 		regex.reset();
 		dns_domain.reset();
 		packet = nullptr;
-	};
+	}
 
-	friend std::ostream& operator<< (std::ostream& out, const Flow& flow)
-	{
+	friend std::ostream& operator<< (std::ostream& out, const Flow& flow) {
+	
 		out << flow.getSrcAddrDotNotation() << ":" << flow.getSourcePort() << ":" << flow.getProtocol();
 		out << ":" << flow.getDstAddrDotNotation() << ":" << flow.getDestinationPort();
         	return out;
 	}
 
 #ifdef PYTHON_BINDING
-	int32_t getTotalBytes() const { return total_bytes;};
-	int32_t getTotalPacketsLayer7() const { return total_packets_l7;};
-	int32_t getTotalPackets() const { return total_packets;};
+	int32_t getTotalBytes() const { return total_bytes;}
+	int32_t getTotalPacketsLayer7() const { return total_packets_l7;}
+	int32_t getTotalPackets() const { return total_packets;}
 
-	HTTPHost& getHTTPHost() const { return *http_host.lock().get();};
-	HTTPUserAgent& getHTTPUserAgent() const { return *http_ua.lock().get();};
-	Frequencies& getFrequencies() const { return *frequencies.lock().get();};
-	PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.lock().get();};
-	Regex& getRegex() const { return *regex.lock().get();};
-	DNSDomain& getDNSDomain() const { return *dns_domain.lock().get();};
+	HTTPHost& getHTTPHost() const { return *http_host.lock().get();}
+	HTTPUserAgent& getHTTPUserAgent() const { return *http_ua.lock().get();}
+	Frequencies& getFrequencies() const { return *frequencies.lock().get();}
+	PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.lock().get();}
+	Regex& getRegex() const { return *regex.lock().get();}
+	DNSDomain& getDNSDomain() const { return *dns_domain.lock().get();}
 
 #endif
 
@@ -137,4 +137,4 @@ private:
 	u_int16_t protocol_;
 };
 
-#endif
+#endif  // SRC_FLOW_FLOW_H_

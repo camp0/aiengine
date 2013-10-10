@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _FrequencyGroup_H_
-#define _FrequencyGroup_H_
+#ifndef SRC_FREQUENCY_FREQUENCYGROUP_H_
+#define SRC_FREQUENCY_FREQUENCYGROUP_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -36,7 +36,7 @@
 #include <boost/format.hpp>
 #include "FrequencyGroupItem.h"
 
-using namespace std;
+//using namespace std;
 
 template <class A_Type> class FrequencyGroup 
 {
@@ -45,24 +45,23 @@ public:
 	typedef std::shared_ptr< FrequencyGroup<A_Type> > Ptr;
 	typedef std::weak_ptr< FrequencyGroup<A_Type>> PtrWeak;
 
-    	explicit FrequencyGroup(): name_(""),total_process_flows_(0),total_computed_freqs_(0),log_level_(0) {};
-    	virtual ~FrequencyGroup() {};
+    	explicit FrequencyGroup(): name_(""),total_process_flows_(0),total_computed_freqs_(0),log_level_(0) {}
+    	virtual ~FrequencyGroup() {}
 
-	const char* getName(){ return name_.c_str();} 
+	const char* getName() { return name_.c_str();} 
 	void setName(char *name) { name_ = name;}
 
 	void agregateFlows(FlowManagerPtr flow_t, std::function <A_Type (SharedPointer<Flow>&)> condition);
 	void compute();
 
-	friend ostream& operator<<(ostream& os, const FrequencyGroup& fg)
-	{
+	friend std::ostream& operator<<(std::ostream& os, const FrequencyGroup& fg) {
+	
 		os << "Frequency Group(" << fg.name_ <<") total frequencies groups:" << fg.group_map_.size() << std::endl;
 		os << "\tTotal process flows:" << fg.total_process_flows_<< std::endl;
 		os << "\tTotal computed frequencies:" << fg.total_computed_freqs_<< std::endl;
 		os << boost::format("\t%-22s %-10s %-10s %-10s %-10s") % "Key" % "Flows" % "Bytes" % "Dispersion" % "Enthropy";
 		os << std::endl;
-		for (auto it = fg.group_map_.begin(); it!=fg.group_map_.end();++it)
-		{
+		for (auto it = fg.group_map_.begin(); it!=fg.group_map_.end();++it) {
 			FrequencyGroupItemPtr fgi = it->second;
 	
 			os << "\t";	
@@ -75,7 +74,7 @@ public:
 		os << std::endl; 
 	}	
 
-	void setLogLevel(int level) { log_level_ = level;};
+	void setLogLevel(int level) { log_level_ = level;}
 
 	void agregateFlowsBySourcePort(FlowManagerPtr flow_t);
 	void agregateFlowsByDestinationPort(FlowManagerPtr flow_t);
@@ -111,4 +110,4 @@ private:
 };
 
 #include "FrequencyGroup_Impl.h"
-#endif
+#endif  // SRC_FREQUENCY_FREQUENCYGROUP_H_

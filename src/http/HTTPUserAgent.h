@@ -21,26 +21,26 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _HTTPUserAgent_H_
-#define _HTTPUserAgent_H_
+#ifndef SRC_HTTP_HTTPUSERAGENT_H_ 
+#define SRC_HTTP_HTTPUSERAGENT_H_
 
 #include <iostream>
 
 class HTTPUserAgent 
 {
 public:
-    	explicit HTTPUserAgent(const std::string& name):ua_name_(name) {};
-    	explicit HTTPUserAgent():ua_name_("") {};
-    	virtual ~HTTPUserAgent() {};
+    	explicit HTTPUserAgent(const std::string& name):ua_name_(name) {}
+    	explicit HTTPUserAgent():ua_name_("") {}
+    	virtual ~HTTPUserAgent() {}
 
-        void reset() { ua_name_ = "";};
-        void setName(const std::string& name) { ua_name_ = name;};
-	std::string &getName() { return ua_name_; };
+        void reset() { ua_name_ = "";}
+        void setName(const std::string& name) { ua_name_ = name;}
+	std::string &getName() { return ua_name_; }
 
 #ifdef PYTHON_BINDING
-        friend std::ostream& operator<< (std::ostream& out, const HTTPUserAgent& ua)
-        {
-                out << ua.ua_name_ ;
+        friend std::ostream& operator<< (std::ostream& out, const HTTPUserAgent& ua) {
+        
+                out << ua.ua_name_;
                 return out;
         }
 #endif
@@ -49,4 +49,4 @@ private:
 	std::string ua_name_;
 };
 
-#endif
+#endif  // SRC_HTTP_HTTPUSERAGENT_H_

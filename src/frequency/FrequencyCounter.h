@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _FrequencyCounter_H_
-#define _FrequencyCounter_H_
+#ifndef SRC_FREQUENCY_FREQUENCYCOUNTER_H_
+#define SRC_FREQUENCY_FREQUENCYCOUNTER_H_ 
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -33,55 +33,23 @@
 #include "Frequencies.h"
 #include "../flow/FlowManager.h"
 
-using namespace std;
+//using namespace std;
 
 class FrequencyCounter 
 {
 public:
-    	explicit FrequencyCounter() {freqs_ = SharedPointer<Frequencies>(new Frequencies());reset();};
-    	virtual ~FrequencyCounter() {};
+    	explicit FrequencyCounter() {freqs_ = SharedPointer<Frequencies>(new Frequencies());reset();}
+    	virtual ~FrequencyCounter() {}
 
-	void reset() { items_ = 0;freqs_->reset(); };
-	void addFrequencyComponent(SharedPointer<Frequencies> freq)
-	{	
-		if(freq)
-		{
-        		Frequencies *f1_dest = freqs_.get();
-        		Frequencies *f2_src = freq.get();
-        
-			*f1_dest = *f1_dest + *f2_src;
-			++items_;
-		}
-	} 
+	void reset() { items_ = 0; freqs_->reset(); }
 
-	void compute()
-	{
-        	Frequencies *f_dest = freqs_.get();
+	void addFrequencyComponent(SharedPointer<Frequencies> freq);
 
-		if(items_ > 0)
-			*f_dest = *f_dest / items_;
-	}
+	void compute();
 
-	WeakPointer<Frequencies> getFrequencyComponent() { return freqs_;};	
+	WeakPointer<Frequencies> getFrequencyComponent() { return freqs_;}	
 
-	void filterFrequencyComponent(FlowManagerPtr flow_t, std::function <bool (SharedPointer<Flow>&)> checker )
-	{
-		auto ft = flow_t->getFlowTable();
-		for (auto it = ft.begin(); it!=ft.end();++it)
-		{
-			SharedPointer<Flow> flow = *it;
-			if(flow->frequencies.lock())
-			{
-				if(checker(flow))
-				{
-					SharedPointer<Frequencies> freq = flow->frequencies.lock();
-
-					if(freq)
-						addFrequencyComponent(freq);
-				}
-			}
-		}	
-	}
+	void filterFrequencyComponent(FlowManagerPtr flow_t, std::function <bool (SharedPointer<Flow>&)> checker );
 
 private:
 	SharedPointer<Frequencies> freqs_;
@@ -90,4 +58,4 @@ private:
 
 typedef std::shared_ptr<FrequencyCounter> FrequencyCounterPtr;
 
-#endif
+#endif  // SRC_FREQUENCY_FREQUENCYCOUNTER_H_

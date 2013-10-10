@@ -57,6 +57,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			./regex/Regex.cc \
 			./regex/RegexManager.cc \
 			./frequency/FrequencyProtocol.cc \
+			./frequency/FrequencyCounter.cc \
 			./learner/LearnerEngine.cc \
 			./names/DomainNameManager.cc \
 			System.cc \

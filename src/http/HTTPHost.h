@@ -21,26 +21,26 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _HTTPHost_H_
-#define _HTTPHost_H_
+#ifndef SRC_HTTP_HTTPHOST_H_
+#define SRC_HTTP_HTTPHOST_H_
 
 #include <iostream>
 
 class HTTPHost 
 {
 public:
-    	explicit HTTPHost(const std::string& name):host_name_(name) {};
-    	explicit HTTPHost() { reset(); };
-    	virtual ~HTTPHost() {};
+    	explicit HTTPHost(const std::string& name):host_name_(name) {}
+    	explicit HTTPHost() { reset(); }
+    	virtual ~HTTPHost() {}
 
-	void reset() { host_name_ = "";};	
-	std::string &getName() { return host_name_; };
-	void setName(const std::string& name) { host_name_ = name;};
+	void reset() { host_name_ = "";}	
+	std::string &getName() { return host_name_; }
+	void setName(const std::string& name) { host_name_ = name;}
 
 #ifdef PYTHON_BINDING
-	friend std::ostream& operator<< (std::ostream& out, const HTTPHost& host)
-	{
-		out << host.host_name_ ;
+	friend std::ostream& operator<< (std::ostream& out, const HTTPHost& host) {
+	
+		out << host.host_name_;
         	return out;
 	}
 #endif
@@ -49,4 +49,4 @@ private:
 	std::string host_name_;
 };
 
-#endif
+#endif  // SRC_HTTP_HTTPHOST_H_

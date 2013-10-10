@@ -21,54 +21,46 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _FrequencyGroup_H_
+#ifndef SRC_FREQUENCY_FREQUENCYGROUP_H_ 
 #error 'FrequencyGroup_Impl.h' is not supposed to be included directly. Include 'FrequencyGroup.h' instead.
 #endif
 
 template <class A_Type>
-std::vector<WeakPointer<Flow>> &FrequencyGroup<A_Type>::getReferenceFlowsByKey(A_Type key) 
-{ 
+std::vector<WeakPointer<Flow>> &FrequencyGroup<A_Type>::getReferenceFlowsByKey(A_Type key) { 
+
 	auto it = group_map_.find(key);
 
-	if(it != group_map_.end())
-	{
+	if (it != group_map_.end()) {
 		FrequencyGroupItemPtr fgitem = it->second;
 		return fgitem->getReferenceFlows();
-	}
-	else
-	{
+	} else {
 		static std::vector<WeakPointer<Flow>> empty_flow_list;
 		return empty_flow_list;	
 	}
 }
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlows(FlowManagerPtr flow_t, std::function <A_Type (SharedPointer<Flow>&)> condition)
-{
+void FrequencyGroup<A_Type>::agregateFlows(FlowManagerPtr flow_t, std::function <A_Type (SharedPointer<Flow>&)> condition) {
+
 	flow_list_.clear();
 
 	auto ft = flow_t->getFlowTable();
-	for (auto it = ft.begin(); it!=ft.end();++it)
-	{
+	for (auto it = ft.begin(); it!=ft.end();++it) {
+
 		SharedPointer<Flow> flow = *it;
-		if(flow->frequencies.lock())
-		{
+		if (flow->frequencies.lock()) {
 			SharedPointer<Frequencies> freq = flow->frequencies.lock();
-			if(freq)
-			{
+			if(freq) {
 				auto key = condition(flow);
 				auto it2 = group_map_.find(key);
 				FrequencyGroupItemPtr fg_item = nullptr;
 	
-				if(it2 == group_map_.end())
-				{
+				if (it2 == group_map_.end()) {
 					FrequencyGroupItemPtr fgitem = FrequencyGroupItemPtr(new FrequencyGroupItem());
 			
 					fg_item = fgitem;	
 					group_map_.insert(std::make_pair(key,fgitem));
-				}
-				else
-				{
+				} else {
 					fg_item = it2->second;
 				}
 				
@@ -85,10 +77,9 @@ void FrequencyGroup<A_Type>::agregateFlows(FlowManagerPtr flow_t, std::function 
 }
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::compute()
-{
-	for (auto it = group_map_.begin(); it!=group_map_.end();++it)
-	{
+void FrequencyGroup<A_Type>::compute() {
+
+	for (auto it = group_map_.begin(); it!=group_map_.end();++it) {
 		FrequencyGroupItemPtr fg = it->second;
 
 		SharedPointer<Frequencies> freq = fg->getFrequencies();
@@ -101,34 +92,33 @@ void FrequencyGroup<A_Type>::compute()
 }
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsBySourcePort(FlowManagerPtr flow_t) 
-{
+void FrequencyGroup<A_Type>::agregateFlowsBySourcePort(FlowManagerPtr flow_t) {
+
 	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { return std::to_string(flow->getSourcePort());}));
 }
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsByDestinationPort(FlowManagerPtr flow_t)
-{
+void FrequencyGroup<A_Type>::agregateFlowsByDestinationPort(FlowManagerPtr flow_t) {
+
 	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { return std::to_string(flow->getDestinationPort());}));
 } 
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsBySourceAddress(FlowManagerPtr flow_t) 
-{
+void FrequencyGroup<A_Type>::agregateFlowsBySourceAddress(FlowManagerPtr flow_t) { 
+
 	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { return flow->getSrcAddrDotNotation();}));
 } 
 	
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddress(FlowManagerPtr flow_t) 
-{
+void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddress(FlowManagerPtr flow_t) { 
+
 	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { return flow->getDstAddrDotNotation();}));
 } 
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddressAndPort(FlowManagerPtr flow_t)
-{
-	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) 
-	{ 
+void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddressAndPort(FlowManagerPtr flow_t) {
+
+	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { 
 		std::ostringstream os;
 		
 		os << flow->getDstAddrDotNotation() << ":" << std::to_string(flow->getDestinationPort());	
@@ -138,10 +128,9 @@ void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddressAndPort(FlowManage
 }
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsBySourceAddressAndPort(FlowManagerPtr flow_t)
-{
-	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) 
-	{ 	
+void FrequencyGroup<A_Type>::agregateFlowsBySourceAddressAndPort(FlowManagerPtr flow_t) {
+
+	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { 
 		std::ostringstream os;
 		
 		os << flow->getSrcAddrDotNotation() << ":" << std::to_string(flow->getSourcePort());

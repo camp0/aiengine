@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _HTTPProtocol_H_
-#define _HTTPProtocol_H_
+#ifndef SRC_HTTP_HTTPPROTOCOL_H_
+#define SRC_HTTP_HTTPPROTOCOL_H_
 
 #ifdef __FAVOR_BSD
 #undef __FAVOR_BSD
@@ -53,66 +53,61 @@ public:
 		http_referer_("Referer: .*?\r\n"),
 		host_cache_(new Cache<HTTPHost>("Host cache")),
 		ua_cache_(new Cache<HTTPUserAgent>("UserAgent cache")),
-		stats_level_(0)
-	{ 
-		name_="HTTPProtocol";
-	}
-    	virtual ~HTTPProtocol() {};
+		stats_level_(0) { name_="HTTPProtocol";}
+
+    	virtual ~HTTPProtocol() {}
 	
 	static const u_int16_t id = 0;
 	static const int header_size = 0;
-	int getHeaderSize() const { return header_size;};
+	int getHeaderSize() const { return header_size;}
 
-	int64_t getTotalBytes() const { return total_bytes_; };
-	int64_t getTotalPackets() const { return total_packets_;};
-	int64_t getTotalValidatedPackets() const { return total_validated_packets_;};
-	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
+	int64_t getTotalBytes() const { return total_bytes_; }
+	int64_t getTotalPackets() const { return total_packets_;}
+	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
+	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
 
-        const char *getName() { return name_.c_str();};
+        const char *getName() { return name_.c_str();}
 
-	void processPacket(Packet& packet){};
+	void processPacket(Packet& packet) { /* Nothing to process at packet level*/ }
 	void processFlow(Flow *flow);
 
-	void setStatisticsLevel(int level) { stats_level_ = level;};
+	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
-	void statistics() { statistics(std::cout);};
+	void statistics() { statistics(std::cout);}
 
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
-        MultiplexerPtrWeak getMultiplexer() { mux_;};
+        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
+        MultiplexerPtrWeak getMultiplexer() { mux_;}
 
-        void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; };
-        FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;};
+        void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
+        FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
 
-        void setHeader(unsigned char *raw_packet)
-        {
+        void setHeader(unsigned char *raw_packet) {
+        
                 http_header_ = reinterpret_cast <unsigned char*> (raw_packet);
         }
 
 
         // Condition for say that a payload is HTTP 
-        bool httpChecker(Packet& packet)
-        {
+        bool httpChecker(Packet& packet) {
+        
 		const char * paco = reinterpret_cast<const char*>(packet.getPayload());
 		
-		if(boost::regex_search(paco, what_, http_regex_)) 
-                {
+		if (boost::regex_search(paco, what_, http_regex_)){
 			setHeader(packet.getPayload());
                         ++total_validated_packets_;
                         return true;
-                }
-                else
-                {
+                } else {
                         ++total_malformed_packets_;
                         return false;
                 }
         }
 
-	unsigned char *getPayload() { return http_header_; };
+	unsigned char *getPayload() { return http_header_; }
 
-        void createHTTPHosts(int number) { host_cache_->create(number);};
-        void destroyHTTPHosts(int number) { host_cache_->destroy(number);};
-        void createHTTPUserAgents(int number) { ua_cache_->create(number);};
-        void destroyHTTPUserAgents(int number) { ua_cache_->destroy(number);};
+        void createHTTPHosts(int number) { host_cache_->create(number);}
+        void destroyHTTPHosts(int number) { host_cache_->destroy(number);}
+        void createHTTPUserAgents(int number) { ua_cache_->create(number);}
+        void destroyHTTPUserAgents(int number) { ua_cache_->destroy(number);}
 
 private:
 
@@ -138,4 +133,4 @@ private:
 
 typedef std::shared_ptr<HTTPProtocol> HTTPProtocolPtr;
 
-#endif
+#endif  // SRC_HTTP_HTTPPROTOCOL_H_

@@ -23,10 +23,9 @@
  */
 #include "FrequencyCounter.h"
 
-void FrequencyCounter::addFrequencyComponent(SharedPointer<Frequencies> freq)
-{	
-	if(freq)
-	{
+void FrequencyCounter::addFrequencyComponent(SharedPointer<Frequencies> freq) {
+
+	if(freq) {
 		Frequencies *f1_dest = freqs_.get();
 		Frequencies *f2_src = freq.get();
 
@@ -35,16 +34,29 @@ void FrequencyCounter::addFrequencyComponent(SharedPointer<Frequencies> freq)
 	}
 } 
 
-void FrequencyCounter::compute()
-{
+void FrequencyCounter::compute() {
+
 	Frequencies *f_dest = freqs_.get();
 
-	if(items_ > 0)
+	if (items_ > 0) {
 		*f_dest = *f_dest / items_;
+	}
 }
 
-void filterFrequencyComponent(FlowManager ptr,std::function <bool (Packet&)> condition) 
-{
+void FrequencyCounter::filterFrequencyComponent(FlowManagerPtr flow_t, std::function <bool (SharedPointer<Flow>&)> checker ) {
 
+	auto ft = flow_t->getFlowTable();
+
+	for (auto it = ft.begin(); it!=ft.end();++it) {
+		SharedPointer<Flow> flow = *it;
+		if (flow->frequencies.lock()) {
+			if (checker(flow)) {
+				SharedPointer<Frequencies> freq = flow->frequencies.lock();
+
+				if(freq)
+					addFrequencyComponent(freq);
+			}
+		}
+	}
 }
- 
+
