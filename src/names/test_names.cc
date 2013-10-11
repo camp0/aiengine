@@ -86,9 +86,9 @@ BOOST_AUTO_TEST_CASE (test4_names)
 {
         SharedPointer<DomainNameManager> dom_table = SharedPointer<DomainNameManager>(new DomainNameManager());
         SharedPointer<DomainName> domain1 = SharedPointer<DomainName>(new DomainName("one domain",".specific.pepe.com"));
-        SharedPointer<DomainName> domain2 = SharedPointer<DomainName>(new DomainName("one domain",".cdn.pepe.com"));
-        SharedPointer<DomainName> domain3 = SharedPointer<DomainName>(new DomainName("one domain",".specific.jose.es"));
-        SharedPointer<DomainName> domain4 = SharedPointer<DomainName>(new DomainName("one domain",".specific.jose.com"));
+        SharedPointer<DomainName> domain2 = SharedPointer<DomainName>(new DomainName("two domain",".cdn.pepe.com"));
+        SharedPointer<DomainName> domain3 = SharedPointer<DomainName>(new DomainName("three domain",".specific.jose.es"));
+        SharedPointer<DomainName> domain4 = SharedPointer<DomainName>(new DomainName("four domain",".specific.jose.com"));
         SharedPointer<DomainName> domain_candidate;
 
         dom_table->addDomainName(domain1);
@@ -115,6 +115,8 @@ BOOST_AUTO_TEST_CASE (test4_names)
 	value = ".specific.jose.com";
 	domain_candidate = dom_table->getDomainName(value);
        	BOOST_CHECK(domain_candidate == domain4); 
+
+	//cout << *dom_table;
 }
 
 

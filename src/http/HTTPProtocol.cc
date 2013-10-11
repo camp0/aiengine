@@ -34,9 +34,9 @@ void HTTPProtocol::extractHostValue(Flow *flow, const char *header) {
 
                 SharedPointer<HTTPHost> host_ptr = flow->http_host.lock();
 
-                if (!host_ptr){ // There is no Host object attached to the flow
+                if (!host_ptr) { // There is no Host object attached to the flow
                 	HostMapType::iterator it = host_map_.find(host);
-                	if (it == host_map_.end()){ 
+                	if (it == host_map_.end()) { 
                 		host_ptr = host_cache_->acquire().lock();
                         	if (host_ptr) {
                       			host_ptr->setName(host); 
@@ -56,13 +56,13 @@ void HTTPProtocol::extractUserAgentValue(Flow *flow, const char *header) {
 
 	boost::cmatch result;
 
-	if (boost::regex_search(header,result,http_ua_)){
+	if (boost::regex_search(header,result,http_ua_)) {
 		std::string ua_raw(result[0].first, result[0].second);
 		std::string ua(ua_raw,12,ua_raw.length()-14); // remove also the \r\n
 
 		SharedPointer<HTTPUserAgent> ua_ptr = flow->http_ua.lock();
 
-		if (!ua_ptr){ // There is no user agent attached
+		if (!ua_ptr) { // There is no user agent attached
 			UAMapType::iterator it = ua_map_.find(ua);
 			if (it == ua_map_.end()) {
 			        ua_ptr = ua_cache_->acquire().lock();
@@ -88,7 +88,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
 	++flow->total_packets_l7;
 
 	// Is the first packet accepted and processed
-	if (flow->total_packets_l7 == 1){ 
+	if (flow->total_packets_l7 == 1) { 
 		const char *header = reinterpret_cast <const char*> (flow->packet->getPayload());
 	
 		extractHostValue(flow,header);	
@@ -98,15 +98,15 @@ void HTTPProtocol::processFlow(Flow *flow) {
 
 void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 
-	if (stats_level_ > 0){
+	if (stats_level_ > 0) {
 		out << "HTTPProtocol(" << this << ") statistics" << std::dec <<  std::endl;
 		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
 		out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
-		if (stats_level_ > 1){
+		if (stats_level_ > 1) {
         		out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
         		out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
-			if (stats_level_ > 2){
-				if(flow_forwarder_.lock())
+			if (stats_level_ > 2) {
+				if (flow_forwarder_.lock())
 					flow_forwarder_.lock()->statistics(out);
 				if (stats_level_ > 3) {
 					host_cache_->statistics(out);

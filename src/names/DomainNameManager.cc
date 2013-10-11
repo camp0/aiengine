@@ -80,16 +80,37 @@ SharedPointer<DomainName> DomainNameManager::getDomainName(std::string& name) {
 			curr_node = node;
 			domain_candidate = node->getDomainName();				
 		} else {
+			if (domain_candidate) 
+				domain_candidate->incrementMatchs();
+	
 			return domain_candidate;	
 		}
 	}
+ 
 	return domain_candidate;
 }
+
+void printDomainNode(std::ostream& out, SharedPointer<DomainNode> node) {
+
+        for (auto it = node->begin() ; it != node->end(); ++it ){
+                SharedPointer<DomainNode> node_in = it->second;
+                SharedPointer<DomainName> name = node_in->getDomainName();
+
+                if (!name) {
+                        printDomainNode(out,node_in);
+                } else {
+                        out << *name; 
+                }
+        }
+}
+
 
 std::ostream& operator<< (std::ostream& out, const DomainNameManager& domain) {
 
         out << "DomainNameManager" << std::endl;
-	out << "\tDomains:" << domain.total_domains_;
+	out << "\tDomains:" << domain.total_domains_ << std::endl;
+
+	printDomainNode(out,domain.root_);
 
 	return out;
 }

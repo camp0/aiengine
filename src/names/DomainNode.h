@@ -38,6 +38,8 @@ public:
     	
 	virtual ~DomainNode() {}
 
+	typedef std::unordered_map<std::string,SharedPointer<DomainNode>> DomainMapType;
+
 	SharedPointer<DomainNode> haveKey(std::string key) {
 	
 		auto it = map_.find(key);
@@ -58,8 +60,11 @@ public:
 
 	std::string &getKey() { return key_;}
 
+        DomainMapType::iterator begin() { return map_.begin(); }
+        DomainMapType::iterator end() { return map_.end(); }
+
 private:
-	std::unordered_map<std::string,SharedPointer<DomainNode>> map_;
+	DomainMapType map_;
 	std::string key_;
 	SharedPointer<DomainName> domain_;
 };

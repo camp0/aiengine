@@ -8,6 +8,8 @@ import signal
 import sys
 import pyaiengine
 
+# http://www.abuse.ch/zeustracker/blocklist.php?download=domainblocklist
+
 def callback_drop_packets(flow_name):
 
 	print "hola", str(flow_name).split(":")[0]

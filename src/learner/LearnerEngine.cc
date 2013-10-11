@@ -23,8 +23,8 @@
  */
 #include "LearnerEngine.h"
 
-void LearnerEngine::reset()
-{
+void LearnerEngine::reset() {
+
 	items_ = 0;
 	length_ = 0;
 	raw_expression_="";
@@ -32,33 +32,27 @@ void LearnerEngine::reset()
 }
 
 
-void LearnerEngine::statistics(std::basic_ostream<char>& out)
-{
+void LearnerEngine::statistics(std::basic_ostream<char>& out) {
+
 	out << "Learner statistics" << std::endl;
-	for(int i = 0;i< 300;++i)
-	{
-		for (auto it = q_array_[i].begin(); it!=q_array_[i].end();++it)
-		{
+	for (int i = 0;i< 300;++i) {
+		for (auto it = q_array_[i].begin(); it!=q_array_[i].end();++it) {
 			out << "(" <<i <<")[" << hex << it->first << "," << dec << it->second << "]" <<std::endl;
 		}	
 	}
 }
 
-void LearnerEngine::agregatePacketFlow(SharedPointer<PacketFrequencies> pkt_freq)
-{
+void LearnerEngine::agregatePacketFlow(SharedPointer<PacketFrequencies> pkt_freq) {
+
 	++items_;
 
-	for(int i = 0;i< pkt_freq->getLength();++i)
-	{
+	for (int i = 0;i< pkt_freq->getLength();++i) {
 		int value = pkt_freq->index(i);
 
 		auto it = q_array_[i].find(value);	
-		if(it == q_array_[i].end()) 
-		{
+		if (it == q_array_[i].end()) { 
 			q_array_[i].insert(std::make_pair(value,1));
-		}
-		else
-		{
+		} else {
 			int *j = &it->second;
 			++(*j);
 		}		
@@ -67,24 +61,22 @@ void LearnerEngine::agregatePacketFlow(SharedPointer<PacketFrequencies> pkt_freq
 
 }
 
-int LearnerEngine::getQualityByte(int offset)
-{
+int LearnerEngine::getQualityByte(int offset) {
+
 	int quality = 0;
 
-	if(offset >=0 && offset < 5000)
-	{
+	if (offset >=0 && offset < 5000) {
 		int items = q_array_[offset].size();
 
-		if(items_>0)
-		{
+		if (items_>0) {
 			quality = 100- ( ((items-1)*100)/items_);
 		}	
 	}
 	return quality;
 }
 
-void LearnerEngine::compute()
-{
+void LearnerEngine::compute() {
+
 	std::ostringstream expr;
 	std::ostringstream token;	
 	int length = 0;
@@ -96,29 +88,24 @@ void LearnerEngine::compute()
 
 	expr << "^";
 	
-        for(int i = 0;i< length;++i)
-        {
+        for (int i = 0;i< length;++i) {
+        
 		token.clear(); token.str("");
 
 		int quality = getQualityByte(i);
 	
-		if((quality > 80)&&(q_array_[i].size()>0))
-		{
+		if ((quality > 80)&&(q_array_[i].size()>0)) {
 			int token_candidate = q_array_[i].begin()->first;
 			int quality_token = 0;
 	
-			for (auto it = q_array_[i].begin(); it!=q_array_[i].end();++it)
-			{
-				if(it->second > quality_token)
-				{
+			for (auto it = q_array_[i].begin(); it!=q_array_[i].end();++it) {
+				if(it->second > quality_token) {
 					quality_token = it->second;
 					token_candidate = it->first;
 				}
 			}
 			token << boost::format("\\x%02x") % token_candidate;
-		}
-		else
-		{
+		} else {
 			token << ".?";
 		}
 		expr << token.str();
@@ -128,28 +115,25 @@ void LearnerEngine::compute()
 
 
 #ifdef PYTHON_BINDING
-void LearnerEngine::agregateFlows(boost::python::list flows)
-{
+void LearnerEngine::agregateFlows(boost::python::list flows) {
+
 	boost::python::ssize_t len = boost::python::len(flows);
-    	for(int i=0; i<len;++i)
-	{
+    	for (int i=0; i<len;++i) {
+	
 		SharedPointer<Flow> flow = boost::python::extract<SharedPointer<Flow>>(flows[i]);
 #else
-void LearnerEngine::agregateFlows(std::vector<WeakPointer<Flow>> &flows)
-{
-	for(auto it = flows.begin();it!=flows.end();++it)
-	{
+void LearnerEngine::agregateFlows(std::vector<WeakPointer<Flow>> &flows) {
+
+	for (auto it = flows.begin();it!=flows.end();++it) {
+	
 		SharedPointer<Flow> flow = (*it).lock();
 #endif
-		if(flow)
-		{
-                	if(flow->packet_frequencies.lock())
-                        {
+		if (flow) {
+		
+                	if(flow->packet_frequencies.lock()) {
                                 SharedPointer<PacketFrequencies> pkt_freq = flow->packet_frequencies.lock();
-                                if(pkt_freq)
-                                {
+                                if (pkt_freq)
                                         agregatePacketFlow(pkt_freq);
-                                }
                         }
                 }
 	}

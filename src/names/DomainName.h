@@ -36,7 +36,13 @@ public:
 	}
     	virtual ~DomainName() {}
 
-	// The rest form the base class
+	friend std::ostream& operator<< (std::ostream& out, const DomainName& dom) {
+        
+		out << "\t" << "DomainName:" << dom.name_ << " matches:" << dom.total_matchs_ << std::endl;
+        	return out;
+	}
+
+	// The rest from the base class
 };
 
 #endif  // SRC_NAMES_DOMAINNAME_H_
