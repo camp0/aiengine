@@ -41,7 +41,7 @@ public:
 		expression_ = exp;
 	}
 
-	virtual ~Regex()=default;
+	virtual ~Regex() = default; 
 	bool evaluate(const unsigned char *payload);
 
 	friend std::ostream& operator<< (std::ostream& out, const Regex& sig);

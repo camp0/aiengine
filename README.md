@@ -54,7 +54,7 @@ Integrating AIEngine with other systems
 ---------------------------------------
 
 AIEngine have a python module in order to be more flexible in terms of integration with other systems and functionalities.
-The main objects that the python module provide are the following
+The main objects that the python module provide are the followin. Check the wiki pages in order to have more examples.
 
 	Flow
 	   |---> getDestinationAddress
