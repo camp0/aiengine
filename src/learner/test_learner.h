@@ -29,4 +29,6 @@
 #include "LearnerEngine.h"
 #include "../frequency/FrequencyGroup.h"
 
+using namespace aiengine;
+
 #endif

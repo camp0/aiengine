@@ -33,6 +33,8 @@
 #include "../ip/IPProtocol.h"
 #include "ICMPProtocol.h"
 
+using namespace aiengine;
+
 struct StackIcmp
 {
         EthernetProtocolPtr eth;

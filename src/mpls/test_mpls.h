@@ -35,6 +35,8 @@
 #include "../icmp/ICMPProtocol.h"
 #include "MPLSProtocol.h"
 
+using namespace aiengine;
+
 struct StackMPLStest
 {
         EthernetProtocolPtr eth;

@@ -38,6 +38,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+namespace aiengine {
+
 class ICMPProtocol: public Protocol 
 {
 public:
@@ -101,5 +103,7 @@ private:
 };
 
 typedef std::shared_ptr<ICMPProtocol> ICMPProtocolPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_ICMP_ICMPPROTOCOL_H_

@@ -30,7 +30,7 @@
 #include <unordered_map>
 #include <cmath>
 
-using namespace std;
+namespace aiengine {
 
 static const int MAX_PACKET_FREQUENCIES_VALUES = 5000;
 
@@ -76,7 +76,7 @@ public:
 		return os.str();
 	}
 
-	friend ostream& operator<<(ostream& os, const PacketFrequencies& fq)
+	friend std::ostream& operator<<(std::ostream& os, const PacketFrequencies& fq)
 	{
 		std::ostringstream os_f;
 
@@ -168,5 +168,7 @@ private:
 	std::array<int,MAX_PACKET_FREQUENCIES_VALUES> freqs_;
 	int length_;
 };
+
+} // namespace aiengine
 
 #endif

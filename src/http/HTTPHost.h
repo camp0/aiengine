@@ -26,6 +26,8 @@
 
 #include <iostream>
 
+namespace aiengine {
+
 class HTTPHost 
 {
 public:
@@ -48,5 +50,7 @@ public:
 private:
 	std::string host_name_;
 };
+
+} // namespace aiengine  
 
 #endif  // SRC_HTTP_HTTPHOST_H_

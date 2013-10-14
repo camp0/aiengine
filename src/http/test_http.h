@@ -33,6 +33,8 @@
 #include "../tcp/TCPProtocol.h"
 #include "HTTPProtocol.h"
 
+using namespace aiengine;
+
 struct StackHTTPtest
 {
         //Protocols

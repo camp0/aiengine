@@ -33,7 +33,7 @@
 #include <sys/resource.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-//using namespace std;
+namespace aiengine {
 
 class System
 {
@@ -55,5 +55,7 @@ private:
 };
 
 typedef std::shared_ptr<System> SystemPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_SYSTEM_H_

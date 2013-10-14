@@ -23,6 +23,8 @@
  */
 #include "DomainNameManager.h"
 
+namespace aiengine {
+
 void DomainNameManager::addDomainName(DomainName& domain) {
 	// TODO
 #ifdef PYTHON_BINDING
@@ -115,3 +117,4 @@ std::ostream& operator<< (std::ostream& out, const DomainNameManager& domain) {
 	return out;
 }
 
+} // namespace aiengine

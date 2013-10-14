@@ -23,6 +23,8 @@
  */
 #include "FrequencyCounter.h"
 
+namespace aiengine {
+
 void FrequencyCounter::addFrequencyComponent(SharedPointer<Frequencies> freq) {
 
 	if(freq) {
@@ -60,3 +62,4 @@ void FrequencyCounter::filterFrequencyComponent(FlowManagerPtr flow_t, std::func
 	}
 }
 
+} // namespace aiengine

@@ -30,6 +30,8 @@
 #include <unordered_map>
 #include <cmath>
 
+namespace aiengine {
+
 class Frequencies 
 {
 public:
@@ -143,5 +145,7 @@ public:
 private:
 	std::array<int,255> freqs_;
 };
+
+} // namespace aiengine
 
 #endif  // SRC_FREQUENCY_FREQUENCIES_H_

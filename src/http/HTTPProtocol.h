@@ -43,6 +43,8 @@
 #include "../Cache.h"
 #include <unordered_map>
 
+namespace aiengine {
+
 class HTTPProtocol: public Protocol 
 {
 public:
@@ -132,5 +134,7 @@ private:
 };
 
 typedef std::shared_ptr<HTTPProtocol> HTTPProtocolPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_HTTP_HTTPPROTOCOL_H_

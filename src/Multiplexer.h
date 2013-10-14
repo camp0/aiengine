@@ -34,6 +34,8 @@
 #include <map>
 #include "Packet.h"
 
+namespace aiengine {
+
 class Protocol;
 typedef std::shared_ptr<Protocol> ProtocolPtr;
 
@@ -126,5 +128,6 @@ private:
 	std::function <void (Packet&)> packet_func_;	
 };
 
+} // namespace aiengine
 
 #endif  // SRC_MULTIPLEXER_H_

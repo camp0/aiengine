@@ -26,6 +26,8 @@
 
 #include <iostream>
 
+namespace aiengine {
+
 class HTTPReferer 
 {
 public:
@@ -39,5 +41,7 @@ private:
 };
 
 typedef std::shared_ptr<HTTPReferer> HTTPRefererPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_HTTP_HTTPREFERER_H_

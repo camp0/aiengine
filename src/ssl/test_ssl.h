@@ -33,6 +33,8 @@
 #include "../tcp/TCPProtocol.h"
 #include "SSLProtocol.h"
 
+using namespace aiengine;
+
 struct StackSSLtest
 {
         //Protocols

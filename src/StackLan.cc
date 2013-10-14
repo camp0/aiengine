@@ -23,6 +23,8 @@
  */
 #include "StackLan.h"
 
+namespace aiengine {
+
 log4cxx::LoggerPtr StackLan::logger(log4cxx::Logger::getLogger("aiengine.stacklan"));
 
 StackLan::StackLan() {
@@ -371,3 +373,5 @@ void StackLan::enableLinkLayerTagging(std::string type) {
                 }
         }
 }
+
+} // namespace aiengine

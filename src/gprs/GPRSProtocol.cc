@@ -24,6 +24,8 @@
 #include "GPRSProtocol.h"
 #include <iomanip> // setw
 
+namespace aiengine {
+
 void GPRSProtocol::processPacket(Packet& packet) {
 
 	// Nothing to process
@@ -75,3 +77,6 @@ void GPRSProtocol::statistics(std::basic_ostream<char>& out) {
 		}
 	}
 }
+
+} // namespace aiengine 
+

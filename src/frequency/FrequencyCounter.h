@@ -33,7 +33,7 @@
 #include "Frequencies.h"
 #include "../flow/FlowManager.h"
 
-//using namespace std;
+namespace aiengine {
 
 class FrequencyCounter 
 {
@@ -57,5 +57,7 @@ private:
 };
 
 typedef std::shared_ptr<FrequencyCounter> FrequencyCounterPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_FREQUENCY_FREQUENCYCOUNTER_H_

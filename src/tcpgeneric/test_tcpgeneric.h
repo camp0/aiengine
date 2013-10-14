@@ -33,6 +33,8 @@
 #include "../tcp/TCPProtocol.h"
 #include "TCPGenericProtocol.h"
 
+using namespace aiengine;
+
 struct StackTCPGenericTest {
 
         EthernetProtocolPtr eth;

@@ -31,6 +31,8 @@
 #include "./regex/RegexManager.h"
 #include "./flow/FlowManager.h"
 
+namespace aiengine {
+
 class NetworkStack 
 {
 public:
@@ -75,5 +77,7 @@ public:
 };
 
 typedef std::shared_ptr <NetworkStack> NetworkStackPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_NETWORKSTACK_H_

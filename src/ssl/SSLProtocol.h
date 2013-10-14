@@ -42,6 +42,8 @@
 #include <iostream>
 #include <cstring>
 
+namespace aiengine {
+
 // Minium SSL header
 struct ssl_header {
 	int8_t record_type; // SSL record type 
@@ -120,5 +122,7 @@ private:
 };
 
 typedef std::shared_ptr<SSLProtocol> SSLProtocolPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_SSL_SSLPROTOCOL_H_

@@ -36,6 +36,8 @@
 #include "FrequencyGroup.h"
 #include "PacketFrequencies.h"
 
+using namespace aiengine;
+
 struct StackFrequencytest
 {
         //Protocols

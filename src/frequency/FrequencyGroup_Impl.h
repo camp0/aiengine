@@ -25,6 +25,8 @@
 #error 'FrequencyGroup_Impl.h' is not supposed to be included directly. Include 'FrequencyGroup.h' instead.
 #endif
 
+namespace aiengine {
+
 template <class A_Type>
 std::vector<WeakPointer<Flow>> &FrequencyGroup<A_Type>::getReferenceFlowsByKey(A_Type key) { 
 
@@ -138,3 +140,4 @@ void FrequencyGroup<A_Type>::agregateFlowsBySourceAddressAndPort(FlowManagerPtr 
 	}));
 }
 
+} // namespace aiengine

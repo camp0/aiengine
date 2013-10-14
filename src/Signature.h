@@ -35,6 +35,8 @@
 #include <boost/function.hpp>
 #endif
 
+namespace aiengine {
+
 class Signature
 {
 public:
@@ -94,6 +96,8 @@ public:
 	PyObject *callback_;
 #endif
 };
+
+} // namespace aiengine
 
 #endif  // SRC_SIGNATURE_H_
 

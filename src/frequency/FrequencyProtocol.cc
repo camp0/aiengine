@@ -24,6 +24,8 @@
 #include "FrequencyProtocol.h"
 #include <iomanip> // setw
 
+namespace aiengine {
+
 void FrequencyProtocol::processFlow(Flow *flow) {
 
 	++total_packets_;
@@ -75,3 +77,4 @@ void FrequencyProtocol::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
+} // namespace aiengine

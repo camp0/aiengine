@@ -33,6 +33,8 @@
 #include "../udp/UDPProtocol.h"
 #include "DNSProtocol.h"
 
+using namespace aiengine;
+
 struct StackDNStest
 {
         //Protocols

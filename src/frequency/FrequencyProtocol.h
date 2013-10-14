@@ -45,6 +45,8 @@
 #include "PacketFrequencies.h"
 #include "../Cache.h"
 
+namespace aiengine {
+
 class FrequencyProtocol: public Protocol 
 {
 public:
@@ -116,5 +118,7 @@ private:
 };
 
 typedef std::shared_ptr<FrequencyProtocol> FrequencyProtocolPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_FREQUENCY_FREQUENCYPROTOCOL_H_

@@ -50,6 +50,8 @@
 #include "./frequency/FrequencyProtocol.h"
 #include "NetworkStack.h"
 
+namespace aiengine {
+
 class StackMobile: public NetworkStack
 {
 public:
@@ -160,5 +162,6 @@ private:
         DomainNameManagerPtr domains_udp_;
 };
 
+} // namespace aiengine
 
 #endif  // SRC_STACKMOBILE_H_

@@ -27,6 +27,8 @@
 #include <iostream>
 #include "../Signature.h"
 
+namespace aiengine {
+
 class DomainName: public Signature 
 { 
 public:
@@ -44,5 +46,7 @@ public:
 
 	// The rest from the base class
 };
+
+} // namespace aiengine
 
 #endif  // SRC_NAMES_DOMAINNAME_H_

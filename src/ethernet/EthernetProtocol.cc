@@ -24,6 +24,8 @@
 #include "EthernetProtocol.h"
 #include <iomanip> // setw
 
+namespace aiengine {
+
 void EthernetProtocol::processPacket(Packet& packet) { 
 
 	++total_packets_;
@@ -47,3 +49,4 @@ void EthernetProtocol::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
+} // namespace aiengine 

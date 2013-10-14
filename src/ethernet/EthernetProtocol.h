@@ -34,6 +34,8 @@
 #include <net/ethernet.h>
 #include <arpa/inet.h>
 
+namespace aiengine {
+
 /// ETHER_MAX_LEN and ETHER_MIN_LEN are the limits for a ethernet header
 /// Check on the ETHER_IS_VALID_LEN macro
 
@@ -100,5 +102,7 @@ private:
 };
 
 typedef std::shared_ptr<EthernetProtocol> EthernetProtocolPtr;
+
+} // namespace aiengine 
 
 #endif  // SRC_ETHERNET_ETHERNETPROTOCOL_H_

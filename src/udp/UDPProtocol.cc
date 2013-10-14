@@ -24,6 +24,8 @@
 #include "UDPProtocol.h"
 #include <iomanip> // setw
 
+namespace aiengine {
+
 void UDPProtocol::statistics(std::basic_ostream<char>& out) {
 
 	if (stats_level_ > 0) {
@@ -106,4 +108,6 @@ void UDPProtocol::processPacket(Packet& packet) {
                         ff->forwardFlow(flow.get());
 		}	
 	}
-} 
+}
+
+} // namespace aiengine

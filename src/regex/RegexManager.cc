@@ -24,6 +24,8 @@
 #include <iostream>
 #include "RegexManager.h"
 
+namespace aiengine {
+
 void RegexManager::addRegex(Regex& sig) {
 
 #ifdef PYTHON_BINDING
@@ -71,3 +73,5 @@ std::ostream& operator<< (std::ostream& out, const RegexManager& sig) {
 	}
 	return out;
 }
+
+} // namespace aiengine

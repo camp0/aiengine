@@ -28,7 +28,7 @@
 #include <unordered_map>
 #include <iostream>
 
-//using namespace std;
+namespace aiengine {
 
 class DomainNode 
 {
@@ -68,5 +68,7 @@ private:
 	std::string key_;
 	SharedPointer<DomainName> domain_;
 };
+
+} // namespace aiengine
 
 #endif  // SRC_NAMES_DOMAINNODE_H_

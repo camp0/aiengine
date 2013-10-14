@@ -27,9 +27,7 @@
 #include <arpa/inet.h>
 #include <boost/format.hpp>
 
-FlowManager::FlowManager() { 
-
-}
+namespace aiengine {
 
 FlowManager::~FlowManager() {
 
@@ -117,3 +115,5 @@ void FlowManager::printFlows(std::basic_ostream<char>& out) {
 		out << std::endl;
 	}
 }
+
+} // namespace aiengine 

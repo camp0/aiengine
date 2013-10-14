@@ -41,6 +41,8 @@
 #include "StackMobile.h"
 #include <sys/resource.h>
 
+namespace aiengine {
+
 #define PACKET_RECVBUFSIZE    2048        /// receive_from buffer size for a single datagram
 
 #define BOOST_ASIO_DISABLE_EPOLL
@@ -130,5 +132,7 @@ private:
 };
 
 typedef std::shared_ptr<PacketDispatcher> PacketDispatcherPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_PACKETDISPATCHER_H_

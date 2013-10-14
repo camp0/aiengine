@@ -39,6 +39,8 @@
 #define BOOST_TEST_MODULE Main 
 #include <boost/test/unit_test.hpp>
 
+using namespace aiengine;
+
 BOOST_AUTO_TEST_SUITE (test_suite_1) 
 
 BOOST_AUTO_TEST_CASE ( test_case_1 )

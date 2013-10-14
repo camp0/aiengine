@@ -26,6 +26,8 @@
 
 #include <iostream>
 
+namespace aiengine {
+
 class DNSDomain 
 {
 public:
@@ -48,5 +50,7 @@ public:
 private:
 	std::string domain_name_;
 };
+
+} // namespace aiengine
 
 #endif

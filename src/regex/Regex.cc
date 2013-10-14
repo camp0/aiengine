@@ -23,14 +23,18 @@
  */
 #include "Regex.h"
 
-bool Regex::evaluate(const unsigned char *payload) 
-{
+namespace aiengine {
+
+bool Regex::evaluate(const unsigned char *payload) { 
+
 	bool result = boost::regex_search(reinterpret_cast<const char*>(payload), what, exp_);
 	return result; 
 }
 
-std::ostream& operator<< (std::ostream& out, const Regex& sig)
-{
+std::ostream& operator<< (std::ostream& out, const Regex& sig) {
+
 	out << "\t" << "Regex:" << sig.name_ << " matches:" << sig.total_matchs_ << std::endl;	
 	return out;
 }
+
+} // namespace aiengine

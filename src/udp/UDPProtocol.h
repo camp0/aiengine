@@ -41,6 +41,8 @@
 #include "../flow/FlowCache.h"
 #include "../FlowForwarder.h"
 
+namespace aiengine {
+
 class UDPProtocol: public Protocol 
 {
 public:
@@ -118,5 +120,7 @@ private:
 };
 
 typedef std::shared_ptr<UDPProtocol> UDPProtocolPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_UDP_UDPPROTOCOL_H_

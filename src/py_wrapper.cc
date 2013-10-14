@@ -39,6 +39,7 @@
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 using namespace boost::python;
+using namespace aiengine;
 
 BOOST_PYTHON_MODULE(pyaiengine)
 {

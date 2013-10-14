@@ -32,6 +32,8 @@
 #endif
 #include <boost/test/unit_test.hpp>
 
+using namespace aiengine;
+
 BOOST_AUTO_TEST_CASE (test1_ethernet)
 {
 	EthernetProtocolPtr eth = EthernetProtocolPtr(new EthernetProtocol());

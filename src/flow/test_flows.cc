@@ -31,6 +31,8 @@
 #endif
 #include <boost/test/unit_test.hpp>
 
+using namespace aiengine;
+
 BOOST_AUTO_TEST_SUITE (flowcache) // name of the test suite is stringtest
 
 BOOST_AUTO_TEST_CASE (test1_flowcache)

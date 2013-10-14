@@ -24,6 +24,8 @@
 #include "IPv6Protocol.h"
 #include <iomanip> // setw
 
+namespace aiengine {
+
 char* IPv6Protocol::getSrcAddrDotNotation()
 {
 	static char straddr[INET6_ADDRSTRLEN];
@@ -54,3 +56,4 @@ void IPv6Protocol::statistics(std::basic_ostream<char>& out)
         out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
 }
 
+} // namespace aiengine

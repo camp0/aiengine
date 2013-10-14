@@ -32,6 +32,8 @@
 #include "VLanProtocol.h"
 #include <cstring>
 
+using namespace aiengine;
+
 struct StackTestVlan
 {
         EthernetProtocolPtr eth;

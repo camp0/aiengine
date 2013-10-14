@@ -44,6 +44,8 @@
 #include <boost/weak_ptr.hpp>
 #endif
 
+namespace aiengine {
+
 class FlowForwarder;
 typedef std::weak_ptr<FlowForwarder> FlowForwarderPtrWeak;
 
@@ -136,5 +138,7 @@ private:
 	u_int16_t dest_port_;
 	u_int16_t protocol_;
 };
+
+} // namespace aiengine 
 
 #endif  // SRC_FLOW_FLOW_H_

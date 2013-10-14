@@ -34,6 +34,8 @@
 #include "../Cache.h" 
 #include "Flow.h"
 
+namespace aiengine {
+
 // Simple wrapper for hide the flow management
 class FlowCache
 {
@@ -69,5 +71,7 @@ private:
 };
 
 typedef std::shared_ptr<FlowCache> FlowCachePtr;
+
+} // namespace aiengine
 
 #endif  // SRC_FLOW_FLOWCACHE_H_

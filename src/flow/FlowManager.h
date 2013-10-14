@@ -31,12 +31,10 @@
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/hashed_index.hpp>
 #include <boost/multi_index/mem_fun.hpp>
-
 #include <fstream>
-
 #include "Flow.h"
 
-//using namespace boost::multi_index;
+namespace aiengine {
 
 typedef boost::multi_index::multi_index_container<
 	SharedPointer<Flow>,
@@ -50,7 +48,7 @@ typedef FlowTable::nth_index<0>::type FlowByID;
 class FlowManager
 {
 public:
-    	FlowManager();
+    	FlowManager() {}
     	virtual ~FlowManager();
 
 	void addFlow(SharedPointer<Flow> flow);
@@ -82,5 +80,7 @@ private:
 
 typedef std::shared_ptr<FlowManager> FlowManagerPtr;
 typedef std::weak_ptr<FlowManager> FlowManagerPtrWeak;
+
+} // namespace aiengine
 
 #endif  // SRC_FLOW_FLOWMANAGER_H_

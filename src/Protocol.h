@@ -29,6 +29,8 @@
 #include "FlowForwarder.h"
 #include "Multiplexer.h"
 
+namespace aiengine {
+
 class Flow;
 
 class Protocol 
@@ -62,5 +64,7 @@ private:
 };
 
 typedef std::shared_ptr <Protocol> ProtocolPtr;
+
+} // namespace aiengine  
 
 #endif  // SRC_PROTOCOL_H_

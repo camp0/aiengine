@@ -31,6 +31,8 @@
 #include "../Signature.h"
 #include <boost/regex.hpp>
 
+namespace aiengine {
+
 class Regex: public Signature
 {
 public:
@@ -50,6 +52,8 @@ private:
 	boost::regex exp_;
 	boost::cmatch what;
 };
+
+} // namespace aiengine
 
 #endif  // SRC_REGEX_REGEX_H_
 

@@ -24,6 +24,8 @@
 #include "TCPProtocol.h"
 #include <iomanip> // setw
 
+namespace aiengine {
+
 void TCPProtocol::statistics(std::basic_ostream<char>& out) {
 
         if (stats_level_ > 0) {
@@ -110,3 +112,4 @@ void TCPProtocol::processPacket(Packet &packet) {
         }
 }
 
+} // namespace aiengine

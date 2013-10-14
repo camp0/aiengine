@@ -24,6 +24,8 @@
 #include "HTTPProtocol.h"
 #include <iomanip> // setw
 
+namespace aiengine {
+
 void HTTPProtocol::extractHostValue(Flow *flow, const char *header) {
 
 	boost::cmatch result;
@@ -133,3 +135,4 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
+} // namespace aiengine 

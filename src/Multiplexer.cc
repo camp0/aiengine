@@ -24,6 +24,8 @@
 #include "Multiplexer.h"
 #include <iomanip> // setw
 
+namespace aiengine {
+
 MultiplexerPtrWeak Multiplexer::getDownMultiplexer() const { 
 
 	return muxDown_;
@@ -95,3 +97,4 @@ void Multiplexer::statistics(std::basic_ostream<char>& out) {
         out << "\t" << "Total fail packets:     " << std::setw(10) << total_fail_packets_ <<std::endl;
 }
 
+} // namespace aiengine

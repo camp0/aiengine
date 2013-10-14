@@ -37,6 +37,8 @@
 #include "../dns/DNSProtocol.h"
 #include "GPRSProtocol.h"
 
+using namespace aiengine;
+
 struct Stack3Gtest
 {
         EthernetProtocolPtr eth;

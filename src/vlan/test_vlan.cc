@@ -29,6 +29,8 @@
 #endif
 #include <boost/test/unit_test.hpp>
 
+using namespace aiengine;
+
 BOOST_FIXTURE_TEST_SUITE(vlan_suite,StackTestVlan)
 
 BOOST_AUTO_TEST_CASE (test1_vlan)

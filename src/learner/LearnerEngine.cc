@@ -23,6 +23,8 @@
  */
 #include "LearnerEngine.h"
 
+namespace aiengine {
+
 void LearnerEngine::reset() {
 
 	items_ = 0;
@@ -37,7 +39,7 @@ void LearnerEngine::statistics(std::basic_ostream<char>& out) {
 	out << "Learner statistics" << std::endl;
 	for (int i = 0;i< 300;++i) {
 		for (auto it = q_array_[i].begin(); it!=q_array_[i].end();++it) {
-			out << "(" <<i <<")[" << hex << it->first << "," << dec << it->second << "]" <<std::endl;
+			out << "(" <<i <<")[" << std::hex << it->first << "," << std::dec << it->second << "]" <<std::endl;
 		}	
 	}
 }
@@ -139,3 +141,4 @@ void LearnerEngine::agregateFlows(std::vector<WeakPointer<Flow>> &flows) {
 	}
 }
 
+} // namespace aiengine 

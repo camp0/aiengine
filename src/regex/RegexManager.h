@@ -32,6 +32,8 @@
 #include "Regex.h"
 #include "../Pointer.h"
 
+namespace aiengine {
+
 class RegexManager
 {
 public:
@@ -61,5 +63,7 @@ private:
 
 typedef std::shared_ptr<RegexManager> RegexManagerPtr;
 typedef std::weak_ptr<RegexManager> RegexManagerPtrWeak;
+
+} // namespace aiengine
 
 #endif  // SRC_REGEX_REGEXMANAGER_H_

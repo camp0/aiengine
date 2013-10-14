@@ -30,6 +30,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+using namespace aiengine;
+
 BOOST_FIXTURE_TEST_SUITE(ip_suite,StackEthernetIP)
 
 // check a IP header values

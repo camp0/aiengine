@@ -35,7 +35,7 @@
 #include "../flow/FlowManager.h"
 #include <boost/format.hpp>
 
-using namespace std;
+namespace aiengine {
 
 class FrequencyGroupItem
 {
@@ -71,5 +71,7 @@ private:
 };
 
 typedef std::shared_ptr<FrequencyGroupItem> FrequencyGroupItemPtr;
+
+} // namespace aiengine
 
 #endif

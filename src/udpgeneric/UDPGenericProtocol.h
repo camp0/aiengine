@@ -44,6 +44,8 @@
 #include <iostream>
 #include <cstring>
 
+namespace aiengine {
+
 class UDPGenericProtocol: public Protocol 
 {
 public:
@@ -103,5 +105,7 @@ private:
 };
 
 typedef std::shared_ptr<UDPGenericProtocol> UDPGenericProtocolPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_UDPGENERIC_UDPGENERICPROTOCOL_H_

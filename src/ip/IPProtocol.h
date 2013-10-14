@@ -40,6 +40,8 @@
 #include <arpa/inet.h>
 #include <iostream>
 
+namespace aiengine {
+
 class IPProtocol: public Protocol 
 {
 public:
@@ -114,5 +116,7 @@ private:
 };
 
 typedef std::shared_ptr<IPProtocol> IPProtocolPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_IP_IPPROTOCOL_H_

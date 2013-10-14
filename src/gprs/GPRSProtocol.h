@@ -41,6 +41,8 @@
 #include <arpa/inet.h>
 #include <iostream>
 
+namespace aiengine {
+
 class GPRSProtocol: public Protocol 
 {
 public:
@@ -112,5 +114,7 @@ private:
 };
 
 typedef std::shared_ptr<GPRSProtocol> GPRSProtocolPtr;
+
+} // namespace aiengine 
 
 #endif  // SRC_GPRS_GPRSPROTOCOL_H_

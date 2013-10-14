@@ -29,6 +29,8 @@
 #include "DomainNode.h"
 #include <boost/algorithm/string.hpp>
 
+namespace aiengine {
+
 class DomainNameManager 
 {
 public:
@@ -50,5 +52,7 @@ private:
 
 typedef std::shared_ptr<DomainNameManager> DomainNameManagerPtr;
 typedef std::weak_ptr<DomainNameManager> DomainNameManagerPtrWeak;
+
+} // namespace aiengine
 
 #endif  // SRC_NAMES_DOMAINNAMEMANAGER_H_

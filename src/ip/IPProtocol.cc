@@ -24,6 +24,8 @@
 #include "IPProtocol.h"
 #include <iomanip> // setw
 
+namespace aiengine {
+
 void IPProtocol::processPacket(Packet& packet) {
 
         MultiplexerPtr mux = mux_.lock();
@@ -62,3 +64,4 @@ void IPProtocol::statistics(std::basic_ostream<char>& out){
 	}
 }
 
+} // namespace aiengine

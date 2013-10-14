@@ -38,6 +38,7 @@
 #include "StackLan.h"
 #include "StackMobile.h"
 
+using namespace aiengine;
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 

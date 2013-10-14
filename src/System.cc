@@ -23,6 +23,8 @@
  */
 #include "System.h"
 
+namespace aiengine {
+
 void System::statistics(std::basic_ostream<char>& out)
 {
 	struct rusage usage;
@@ -49,5 +51,6 @@ void System::statistics(std::basic_ostream<char>& out)
         out << "\t" << "Voluntary context switches:  " << std::setw(5) << usage.ru_nvcsw <<std::endl;
         out << "\t" << "Involuntary context switches:" << std::setw(5) << usage.ru_nivcsw <<std::endl;
 
-
 }
+
+} // namespace aiengine

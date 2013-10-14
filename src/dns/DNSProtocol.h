@@ -46,6 +46,8 @@
 #include <unordered_map>
 #include "../names/DomainNameManager.h"
 
+namespace aiengine {
+
 class DNSProtocol: public Protocol 
 {
 public:
@@ -123,5 +125,7 @@ private:
 };
 
 typedef std::shared_ptr<DNSProtocol> DNSProtocolPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_DNS_DNSPROTOCOL_H_

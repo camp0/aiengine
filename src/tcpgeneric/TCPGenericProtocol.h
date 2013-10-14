@@ -44,6 +44,8 @@
 #include <iostream>
 #include <cstring>
 
+namespace aiengine {
+
 class TCPGenericProtocol: public Protocol 
 {
 public:
@@ -104,5 +106,7 @@ private:
 
 typedef std::shared_ptr<TCPGenericProtocol> TCPGenericProtocolPtr;
 typedef std::weak_ptr<TCPGenericProtocol> TCPGenericProtocolPtrWeak;
+
+} // namespace aiengine
 
 #endif  // SRC_TCPGENERIC_TCPGENERICPROTOCOL_H_

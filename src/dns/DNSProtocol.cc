@@ -24,6 +24,8 @@
 #include "DNSProtocol.h"
 #include <iomanip> // setw
 
+namespace aiengine {
+
 void DNSProtocol::attachDNStoFlow(Flow *flow, std::string &domain) {
 
 	SharedPointer<DNSDomain> dom_ptr = flow->dns_domain.lock();
@@ -135,4 +137,6 @@ void DNSProtocol::statistics(std::basic_ostream<char>& out)
 		}
 	}
 }
+
+} // namespace aiengine
 

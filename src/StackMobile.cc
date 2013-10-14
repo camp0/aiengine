@@ -23,6 +23,8 @@
  */
 #include "StackMobile.h"
 
+namespace aiengine {
+
 log4cxx::LoggerPtr StackMobile::logger(log4cxx::Logger::getLogger("aiengine.stackmobile"));
 
 StackMobile::StackMobile() {
@@ -422,3 +424,4 @@ void StackMobile::enableLinkLayerTagging(std::string type) {
         }
 }
 
+} // namespace aiengine

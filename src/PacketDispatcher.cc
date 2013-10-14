@@ -22,7 +22,8 @@
  *
  */
 #include "PacketDispatcher.h"
-//#include <iostream>
+
+namespace aiengine {
 
 log4cxx::LoggerPtr PacketDispatcher::logger(log4cxx::Logger::getLogger("aiengine.packetdispatcher"));
 
@@ -222,6 +223,6 @@ void PacketDispatcher::handle_receive(boost::system::error_code err) {
 		++total_packets_;
 	}
 */
-
-
 }
+
+} // namespace aiengine

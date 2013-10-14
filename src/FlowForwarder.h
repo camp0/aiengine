@@ -36,6 +36,8 @@
 #include "./flow/Flow.h"
 #include "Packet.h"
 
+namespace aiengine {
+
 class Protocol;
 typedef std::shared_ptr<Protocol> ProtocolPtr;
 
@@ -101,5 +103,6 @@ private:
 	std::function <bool (Packet&)> check_func_;	
 };
 
+} // namespace aiengine
 
 #endif  // SRC_FLOWFORWARDER_H_

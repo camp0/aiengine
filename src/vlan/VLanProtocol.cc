@@ -24,6 +24,8 @@
 #include "VLanProtocol.h"
 #include <iomanip>
 
+namespace aiengine {
+
 void VLanProtocol::processPacket(Packet &packet) { 
 
 	++total_packets_;
@@ -55,3 +57,4 @@ void VLanProtocol::statistics(std::basic_ostream<char>& out){
 	}
 }
 
+} // namespace aiengine

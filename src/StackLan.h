@@ -49,6 +49,8 @@
 #include "./frequency/FrequencyProtocol.h"
 #include "NetworkStack.h"
 
+namespace aiengine {
+
 class StackLan: public NetworkStack
 {
 public:
@@ -149,5 +151,7 @@ private:
 };
 
 typedef std::shared_ptr<StackLan> StackLanPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_STACKLAN_H_

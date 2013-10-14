@@ -36,7 +36,7 @@
 #include <boost/format.hpp>
 #include "FrequencyGroupItem.h"
 
-//using namespace std;
+namespace aiengine {
 
 template <class A_Type> class FrequencyGroup 
 {
@@ -108,6 +108,8 @@ private:
 	GroupMapType group_map_;
 	std::vector<WeakPointer<Flow>> flow_list_;
 };
+
+} // namespace aiengine
 
 #include "FrequencyGroup_Impl.h"
 #endif  // SRC_FREQUENCY_FREQUENCYGROUP_H_

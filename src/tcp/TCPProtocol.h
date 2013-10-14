@@ -41,6 +41,8 @@
 #include "../flow/FlowCache.h"
 #include "../FlowForwarder.h"
 
+namespace aiengine {
+
 class TCPProtocol: public Protocol 
 {
 public:
@@ -128,5 +130,7 @@ private:
 };
 
 typedef std::shared_ptr<TCPProtocol> TCPProtocolPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_TCP_TCPPROTOCOL_H_

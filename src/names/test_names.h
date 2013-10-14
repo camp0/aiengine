@@ -28,4 +28,6 @@
 #include "../Pointer.h"
 #include "DomainNameManager.h"
 
+using namespace aiengine;
+
 #endif  // SRC_NAMES_TEST_NAMES_H_

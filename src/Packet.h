@@ -26,6 +26,8 @@
 
 #include <iostream>
 
+namespace aiengine {
+
 class Packet 
 {
 public:
@@ -68,5 +70,7 @@ private:
 };
 
 typedef std::shared_ptr<Packet> PacketPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_PACKET_H_

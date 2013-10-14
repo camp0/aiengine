@@ -24,6 +24,8 @@
 #include "UDPGenericProtocol.h"
 #include <iomanip> // setw
 
+namespace aiengine {
+
 log4cxx::LoggerPtr UDPGenericProtocol::logger(log4cxx::Logger::getLogger("aiengine.udpgeneric"));
 
 void UDPGenericProtocol::processFlow(Flow *flow) {
@@ -81,3 +83,4 @@ void UDPGenericProtocol::statistics(std::basic_ostream<char>& out) {
         }
 }
 
+} // namespace aiengine

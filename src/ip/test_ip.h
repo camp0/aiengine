@@ -32,6 +32,8 @@
 #include "../vlan/VLanProtocol.h"
 #include "IPProtocol.h"
 
+using namespace aiengine;
+
 struct StackEthernetIP
 {
         EthernetProtocolPtr eth;

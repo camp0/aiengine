@@ -25,6 +25,8 @@
 #include <iomanip> // setw
 #include <algorithm>
 
+namespace aiengine {
+
 void FlowForwarder::statistics(std::basic_ostream<char>& out) {
 
       	out << "FlowForwarder(" << this << ") statistics" <<std::endl;
@@ -62,3 +64,5 @@ void FlowForwarder::forwardFlow(Flow *flow) {
 	}
 	++total_fail_flows_;	
 }
+
+} // namespace aiengine

@@ -39,6 +39,8 @@
 #include "./flow/FlowManager.h"
 #include "./flow/FlowCache.h"
 
+using namespace aiengine;
+
 struct StackLanTest
 {
 	//Protocols

@@ -24,6 +24,8 @@
 #include "TCPGenericProtocol.h"
 #include <iomanip> // setw
 
+namespace aiengine {
+
 log4cxx::LoggerPtr TCPGenericProtocol::logger(log4cxx::Logger::getLogger("aiengine.tcpgeneric"));
 
 void TCPGenericProtocol::processFlow(Flow *flow) {
@@ -79,3 +81,4 @@ void TCPGenericProtocol::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
+} // namespace aiengine

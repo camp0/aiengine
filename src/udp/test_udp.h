@@ -33,6 +33,8 @@
 #include "../ip/IPProtocol.h"
 #include "UDPProtocol.h"
 
+using namespace aiengine;
+
 struct StackUDPTest 
 {
 	EthernetProtocolPtr eth;

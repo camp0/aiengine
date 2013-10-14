@@ -26,6 +26,8 @@
 
 #include <iostream>
 
+namespace aiengine {
+
 class HTTPUserAgent 
 {
 public:
@@ -48,5 +50,8 @@ public:
 private:
 	std::string ua_name_;
 };
+
+} // namespace aiengine
+ 
 
 #endif  // SRC_HTTP_HTTPUSERAGENT_H_

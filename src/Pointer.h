@@ -24,8 +24,6 @@
 #ifndef SRC_POINTER_H_ 
 #define SRC_POINTER_H_
 
-//using namespace std;
-
 #ifdef PYTHON_BINDING
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
@@ -34,8 +32,9 @@
 #include <memory>
 #endif
 
+namespace aiengine {
+
 #ifdef PYTHON_BINDING
-//using namespace boost;
 template <class T1>
 using SharedPointer = boost::shared_ptr<T1>;
 template <class T2>
@@ -46,5 +45,7 @@ using SharedPointer = std::shared_ptr<T1>;
 template <class T2>
 using WeakPointer = std::weak_ptr<T2>;
 #endif
+
+} // namespace aiengine
 
 #endif  // SRC_POINTER_H_

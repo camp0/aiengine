@@ -24,6 +24,8 @@
 #include "SSLProtocol.h"
 #include <iomanip> // setw
 
+namespace aiengine {
+
 void SSLProtocol::processFlow(Flow *flow) {
 
 	++total_packets_;
@@ -65,3 +67,4 @@ void SSLProtocol::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
+} // namespace aiengine

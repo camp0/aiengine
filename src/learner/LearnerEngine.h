@@ -42,7 +42,7 @@
 #include "../flow/FlowManager.h"
 #include "../frequency/FrequencyGroup.h"
 
-//using namespace std;
+namespace aiengine {
 
 class LearnerEngine
 {
@@ -86,5 +86,7 @@ private:
 };
 
 typedef std::shared_ptr<LearnerEngine> LearnerEnginePtr;
+
+} // namespace aiengine
 
 #endif  // SRC_LEARNER_LEARNERENGINE_H_

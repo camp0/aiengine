@@ -33,6 +33,8 @@
 #include "../udp/UDPProtocol.h"
 #include "UDPGenericProtocol.h"
 
+using namespace aiengine;
+
 struct StackUDPGenericTest
 {
         EthernetProtocolPtr eth;

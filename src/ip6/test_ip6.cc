@@ -33,6 +33,8 @@
 #define BOOST_TEST_MODULE iptest 
 #include <boost/test/unit_test.hpp>
 
+using namespace aiengine;
+
 BOOST_AUTO_TEST_CASE (test1_ip)
 {
 	std::string localip("192.168.1.25");	

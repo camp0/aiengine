@@ -33,6 +33,8 @@
 #include "../ip/IPProtocol.h"
 #include "TCPProtocol.h"
 
+using namespace aiengine;
+
 struct StackTCPTest
 {
         EthernetProtocolPtr eth;

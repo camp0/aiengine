@@ -34,6 +34,8 @@
 #include <net/ethernet.h>
 #include <arpa/inet.h>
 
+namespace aiengine {
+
 class VLanProtocol: public Protocol 
 {
 public:
@@ -97,5 +99,7 @@ private:
 };
 
 typedef std::shared_ptr<VLanProtocol> VLanProtocolPtr;
+
+} // namespace aiengine
 
 #endif  // SRC_VLAN_VLANPROTOCOL_H_

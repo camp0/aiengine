@@ -24,6 +24,8 @@
 #include "ICMPProtocol.h"
 #include <iomanip> // setw
 
+namespace aiengine {
+
 void ICMPProtocol::statistics(std::basic_ostream<char>& out) {
 
 	if (stats_level_ > 0) {
@@ -43,4 +45,7 @@ void ICMPProtocol::statistics(std::basic_ostream<char>& out) {
 void ICMPProtocol::processPacket(Packet &packet) {
 
 	++total_packets_;
-} 
+}
+
+} // namespace aiengine
+ 
