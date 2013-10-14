@@ -66,7 +66,8 @@ aiengine_core_sources =	Multiplexer.cc \
 aiengine_SOURCES =      $(aiengine_core_sources) main.cc
 
 aiengine_CPPFLAGS = $(BOOST_CPPFLAGS)
-aiengine_LDFLAGS = -DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ -lboost_system -lboost_thread -lboost_program_options -lboost_regex -lpcap
+aiengine_LDFLAGS = -DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ -lboost_system -lboost_thread -lboost_program_options -lboost_regex -lpcap -lboost_filesystem
+
 aiengine_LDADD = $(BOOST_LIBS)
 
 bin_PROGRAMS = aiengine

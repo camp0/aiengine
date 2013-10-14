@@ -27,6 +27,7 @@
 
 #include <csignal>
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 #include <fstream>
 #include <boost/variant.hpp>
 #include "log4cxx/logger.h"
@@ -42,12 +43,12 @@ using namespace aiengine;
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 
-SystemPtr system_stats;
-PacketDispatcherPtr pktdis;
-NetworkStackPtr stack;
-RegexManagerPtr sm;
-FrequencyGroup<std::string> group;
-LearnerEngine learner;
+aiengine::SystemPtr system_stats;
+aiengine::PacketDispatcherPtr pktdis;
+aiengine::NetworkStackPtr stack;
+aiengine::RegexManagerPtr sm;
+aiengine::FrequencyGroup<std::string> group;
+aiengine::LearnerEngine learner;
 
 std::map<std::string,std::function <void(FlowManagerPtr)>> group_map_options;
 
@@ -69,30 +70,27 @@ int tcp_flows_cache;
 int udp_flows_cache;
 int option_statistics_level = 0;
 
-void signalHandler( int signum )
-{
+void signalHandler( int signum ){
+
         exit(signum);
 }
 
 
-void configureFrequencyGroupOptions()
-{
+void configureFrequencyGroupOptions() { 
 
-
+	// TODO
 }
 
-void showFrequencyResults()
-{
+void showFrequencyResults() {
+
 	FlowManagerPtr flow_t;
 
 	if(option_freqs_type_flows.compare("tcp")==0) flow_t = stack->getTCPFlowManager().lock();
 	if(option_freqs_type_flows.compare("udp")==0) flow_t = stack->getUDPFlowManager().lock();
 
-	if(!flow_t)
-		return;
+	if (!flow_t) return;
 
-	if(option_freqs_group_value.compare("src-port") == 0)
-        {
+	if (option_freqs_group_value.compare("src-port") == 0) { 
         	group.setName("by source port");
 		std::cout << "Agregating frequencies " << group.getName() << std::endl;
 		group.agregateFlowsBySourcePort(flow_t);
@@ -100,8 +98,7 @@ void showFrequencyResults()
 		group.compute();
 		std::cout << group;
 	}
-	if(option_freqs_group_value.compare("dst-port") == 0)
-        {
+	if (option_freqs_group_value.compare("dst-port") == 0) { 
         	group.setName("by destination port");
 		std::cout << "Agregating frequencies " << group.getName() << std::endl;
 		group.agregateFlowsByDestinationPort(flow_t);
@@ -109,8 +106,7 @@ void showFrequencyResults()
 		group.compute();
 		std::cout << group;
 	}
-	if(option_freqs_group_value.compare("src-ip") == 0)
-        {
+	if (option_freqs_group_value.compare("src-ip") == 0) {
         	group.setName("by source IP");
 		std::cout << "Agregating frequencies " << group.getName() << std::endl;
 		group.agregateFlowsBySourceAddress(flow_t);
@@ -118,8 +114,7 @@ void showFrequencyResults()
 		group.compute();
 		std::cout << group;
 	}
-	if(option_freqs_group_value.compare("dst-ip") == 0)
-        {
+	if (option_freqs_group_value.compare("dst-ip") == 0) {
         	group.setName("by destination IP");
 		std::cout << "Agregating frequencies " << group.getName() << std::endl;
 		group.agregateFlowsByDestinationAddress(flow_t);
@@ -127,8 +122,7 @@ void showFrequencyResults()
 		group.compute();
 		std::cout << group;
 	}
-        if(option_freqs_group_value.compare("src-ip,src-port") == 0)
-        {
+        if (option_freqs_group_value.compare("src-ip,src-port") == 0) {
                 group.setName("by source IP and port");
                 std::cout << "Agregating frequencies " << group.getName() << std::endl;
                 group.agregateFlowsBySourceAddressAndPort(flow_t);
@@ -136,8 +130,7 @@ void showFrequencyResults()
                 group.compute();
                 std::cout << group;
         }
-        if(option_freqs_group_value.compare("dst-ip,dst-port") == 0)
-        {
+        if (option_freqs_group_value.compare("dst-ip,dst-port") == 0) {
                 group.setName("by destination IP and port");
                 std::cout << "Agregating frequencies " << group.getName() << std::endl;
                 group.agregateFlowsByDestinationAddressAndPort(flow_t);
@@ -148,13 +141,12 @@ void showFrequencyResults()
 
 }
 
-void showLearnerResults()
-{
+void showLearnerResults() {
+
 	std::vector<WeakPointer<Flow>> flow_list;
 
 	flow_list = group.getReferenceFlowsByKey(option_learner_key);
-	if(flow_list.size()>0)
-	{
+	if (flow_list.size()>0) {
 		std::cout << "Agregating "<< flow_list.size() << " to the LearnerEngine" << std::endl;
 		learner.agregateFlows(flow_list);
 		learner.compute();
@@ -164,34 +156,32 @@ void showLearnerResults()
 }
 
 
-void iaengineExit()
-{
-	if(stack)
-	{
+void iaengineExit() {
+
+	if (stack) {
 		pktdis->stop();
 
-		if(option_statistics_level > 0)
+		if (option_statistics_level > 0)
 			stack->statistics();
 		
-		if(option_show_flows)
+		if (option_show_flows)
               		stack->printFlows();
 
-		if(option_enable_frequencies)
-		{
+		if (option_enable_frequencies) {
 			showFrequencyResults();
-			if(option_enable_learner)
+			if (option_enable_learner)
 				showLearnerResults();
 		}
 
-		if(option_show_pstatistics)	
-			if(system_stats)	
+		if (option_show_pstatistics)	
+			if (system_stats)	
 				system_stats->statistics();
        	}
 }
 
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
+
 	namespace po = boost::program_options;
 	po::variables_map var_map;
 
@@ -200,7 +190,7 @@ int main(int argc, char* argv[])
 		("interface,I",   po::value<std::string>(&option_interface),
 			"Sets the network interface.")
 		("pcapfile,P",   po::value<std::string>(&option_pcapfile),
-			"Sets the pcap file.")
+			"Sets the pcap file or directory with pcap files.")
         	;
 
         po::options_description optional_ops_tag("Link Layer optional arguments");
@@ -262,23 +252,20 @@ int main(int argc, char* argv[])
 
 	mandatory_ops.add(optional_ops);
 
-	try
-	{
+	try {
+	
         	po::store(po::parse_command_line(argc, argv, mandatory_ops), var_map);
 
-        	if (var_map.count("help"))
-        	{
+        	if (var_map.count("help")) {
             		std::cout << "iaengine " VERSION << std::endl;
             		std::cout << mandatory_ops << std::endl;
             		return false;
         	}
-        	if (var_map.count("version"))
-        	{
+        	if (var_map.count("version")) {
             		std::cout << "iaengine " VERSION << std::endl;
             		return false;
         	}
-		if((var_map.count("interface") == 0)&&(var_map.count("pcapfile") == 0))
-		{
+		if ((var_map.count("interface") == 0)&&(var_map.count("pcapfile") == 0)) {
             		std::cout << "iaengine " VERSION << std::endl;
             		std::cout << mandatory_ops << std::endl;
 			return false;
@@ -289,22 +276,18 @@ int main(int argc, char* argv[])
 		if (var_map.count("enable-learner")) option_enable_learner = true;
 
         	po::notify(var_map);
-    	}
-	catch(boost::program_options::required_option& e)
-    	{
+    	
+	} catch(boost::program_options::required_option& e) {
             	std::cout << "iaengine " VERSION << std::endl;
         	std::cerr << "Error: " << e.what() << std::endl;
 		std::cout << mandatory_ops << std::endl;
         	return false;
-    	}
-	catch(std::exception& e)
-    	{	
+	} catch(std::exception& e) {
             	std::cout << "iaengine " VERSION << std::endl;
         	std::cerr << "Unsupported option." << e.what() << std::endl;
 		std::cout << mandatory_ops << std::endl;
         	return false;
     	}
-
 
     	signal(SIGINT, signalHandler);  
 
@@ -312,18 +295,14 @@ int main(int argc, char* argv[])
 	
 	pktdis = PacketDispatcherPtr(new PacketDispatcher());
 
-	if(option_stack_name.compare("lan") == 0)
-	{
+	if (option_stack_name.compare("lan") == 0) {
+	
 		stack = NetworkStackPtr(new StackLan());
-	}
-	else
-	{
-		if (option_stack_name.compare("mobile") ==0)
-		{
+	} else {
+		if (option_stack_name.compare("mobile") ==0) {
+		
 			stack = NetworkStackPtr(new StackMobile());
-		}
-		else
-		{
+		} else {
 			std::cout << "iaengine: Unknown stack " << option_stack_name << std::endl;
 			exit(-1);
 		}
@@ -334,34 +313,26 @@ int main(int argc, char* argv[])
 	stack->setTotalTCPFlows(tcp_flows_cache);	
 	stack->setTotalUDPFlows(udp_flows_cache);	
 
-
 	// Check if AIEngine is gonna work as signature extractor or as a regular packet inspector
-	if(var_map.count("enable-signatures") == 1)
-	{
+	if (var_map.count("enable-signatures") == 1) {
         	sm = RegexManagerPtr(new RegexManager());
         	sm->addRegex("experimental",option_regex);
-		if(option_regex_type_flows.compare("all") == 0)
-		{
+		if (option_regex_type_flows.compare("all") == 0) {
 			stack->setUDPRegexManager(sm);
 			stack->setTCPRegexManager(sm);
-		}
-		else
-		{
+		} else {
 			if(option_regex_type_flows.compare("tcp") == 0) stack->setTCPRegexManager(sm);
 			if(option_regex_type_flows.compare("udp") == 0) stack->setUDPRegexManager(sm);
 		}
 	}
 
-	if(var_map.count("enable-frequencies") == 1)
-	{
+	if (var_map.count("enable-frequencies") == 1) {
 		stack->enableFrequencyEngine(true);
 		option_enable_frequencies = true;
 	}
 
 	if(option_link_type_tag.length() > 0)
 		stack->enableLinkLayerTagging(option_link_type_tag);	
-
-	
 
 	// connect with the stack
         pktdis->setStack(stack);
@@ -370,37 +341,50 @@ int main(int argc, char* argv[])
 
 	if(var_map.count("pcapfile") == 1)
 	{
-        	pktdis->openPcapFile(option_pcapfile.c_str());
-		try
-		{
-			atexit(iaengineExit);
-			pktdis->runPcap();
+		std::vector<std::string> files;
+		namespace fs = boost::filesystem;
+
+		if (fs::is_directory(option_pcapfile.c_str())) {
+			fs::recursive_directory_iterator it(option_pcapfile.c_str());
+    			fs::recursive_directory_iterator endit;
+    
+			while (it != endit) {
+      				if (fs::is_regular_file(*it) and it->path().extension() == ".pcap") {
+					std::ostringstream os;
+					
+					os << option_pcapfile.c_str() << "/" << it->path().filename().c_str();
+      					files.push_back(os.str());
+				}
+				++it;
+			}
+		} else {
+			files.push_back (option_pcapfile.c_str());
 		}
-		catch(std::exception& e)
-		{
-			std::cerr << "Error: " << e.what() << std::endl;
+
+		for (auto& entry: files) {
+
+        		pktdis->openPcapFile(entry);
+			try {
+				atexit(iaengineExit);
+				pktdis->runPcap();
+		
+			}catch(std::exception& e) {
+				std::cerr << "Error: " << e.what() << std::endl;
+			}
+			pktdis->closePcapFile();
 		}
-		pktdis->closePcapFile();
-	}
-	else
-	{
-		if(var_map.count("interface") == 1)
-		{
+	} else {
+		if (var_map.count("interface") == 1) {
         		pktdis->openDevice(option_interface.c_str());
-			try
-			{
+			try {
 				atexit(iaengineExit);
 				pktdis->run();
-			}
-			catch(std::exception& e)
-			{
+			} catch(std::exception& e) {
 				std::cerr << "Error: " << e.what() << std::endl;
 			}
 			pktdis->closeDevice();
-
 		}
 	}
-
 	return 0;
 }
 

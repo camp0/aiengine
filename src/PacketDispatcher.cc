@@ -54,6 +54,7 @@ void PacketDispatcher::openDevice(std::string device) {
 			
 	stream_->assign(::dup(ifd));
 	device_is_ready_ = true;
+	LOG4CXX_INFO(logger,"processing packets from:" <<device.c_str());	
 }
 
 
@@ -76,7 +77,8 @@ void PacketDispatcher::openPcapFile(std::string filename) {
 		LOG4CXX_ERROR(logger,"Unknown pcapfile:" << filename.c_str());
 		exit(-1);
 	} else {	
-		pcap_file_ready_ = true;	
+		pcap_file_ready_ = true;
+		LOG4CXX_INFO(logger,"processing packets from:" <<filename.c_str());	
 	}
 }
 
