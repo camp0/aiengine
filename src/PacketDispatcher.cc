@@ -123,6 +123,10 @@ void PacketDispatcher::idle_handler(boost::system::error_code error) {
 		" usage seconds:" << difftime_user.tv_sec << ":"<< difftime_user.tv_usec <<
 		" sys:" << difftime_sys.tv_sec << ":" << difftime_sys.tv_usec ); 
 
+	// Some statistics
+	// 3% cpu comsumption with 4000 packets on 5 seconds. usage seconds:0:4001 sys:0:168010
+
+
 	idle_function_();
 
 	stats_.prev_total_packets_per_interval = total_packets_;

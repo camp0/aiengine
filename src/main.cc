@@ -338,6 +338,8 @@ int main(int argc, char* argv[]) {
         pktdis->setStack(stack);
 
 	system_stats = SystemPtr(new System());
+	
+	atexit(iaengineExit);
 
 	if(var_map.count("pcapfile") == 1)
 	{
@@ -365,7 +367,6 @@ int main(int argc, char* argv[]) {
 
         		pktdis->openPcapFile(entry);
 			try {
-				atexit(iaengineExit);
 				pktdis->runPcap();
 		
 			}catch(std::exception& e) {
@@ -377,7 +378,6 @@ int main(int argc, char* argv[]) {
 		if (var_map.count("interface") == 1) {
         		pktdis->openDevice(option_interface.c_str());
 			try {
-				atexit(iaengineExit);
 				pktdis->run();
 			} catch(std::exception& e) {
 				std::cerr << "Error: " << e.what() << std::endl;
