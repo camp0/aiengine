@@ -4,6 +4,8 @@ TEST = test_users
 
 check_PROGRAMS = test_users 
 
+noinst_HEADERS = User.h UserManager.h
+
 test_users_SOURCES = test_users.cc
 
 test_users_CPPFLAGS = -DSTAND_ALONE

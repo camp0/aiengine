@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS = gnu
 
 EXTRA_DIST = py_wrapper.cc setup.py
 
-noinst_HEADERS =        Packet.h \
+noinst_HEADERS =        Packet.h Pointer.h \
 			Protocol.h \
 			PacketDispatcher.h \
 			NetworkStack.h \
@@ -35,7 +35,7 @@ noinst_HEADERS =        Packet.h \
 			./names/DomainName.h \
 			./names/DomainNode.h \
 			./names/DomainNameManager.h \
-			System.h 
+			System.h StackLanTest.h 
 
 aiengine_core_sources =	Multiplexer.cc \
 			FlowForwarder.cc \

@@ -4,6 +4,8 @@ TEST = test_regex
 
 check_PROGRAMS = test_regex
 
+noinst_HEADERS =	Regex.h RegexManager.h 
+
 test_regex_SOURCES =		Regex.cc RegexManager.cc \
 				test_regex.cc
 
