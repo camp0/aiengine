@@ -30,6 +30,7 @@ void LearnerEngine::reset() {
 	items_ = 0;
 	length_ = 0;
 	raw_expression_="";
+	regex_expression_="";
 	for (int i = 0;i<5000;++i) q_array_[i].clear();
 }
 
@@ -79,8 +80,10 @@ int LearnerEngine::getQualityByte(int offset) {
 
 void LearnerEngine::compute() {
 
+	std::ostringstream raw_expr;
 	std::ostringstream expr;
-	std::ostringstream token;	
+	std::ostringstream token;
+	std::ostringstream raw_token;	
 	int length = 0;
 
 	if(length_ > max_raw_expression_)
@@ -93,9 +96,12 @@ void LearnerEngine::compute() {
         for (int i = 0;i< length;++i) {
         
 		token.clear(); token.str("");
+		raw_token.clear(); raw_token.str("");
 
 		int quality = getQualityByte(i);
-	
+
+		// TODO: The quality of the regex generated should be bigger
+		// than 80 percent.	
 		if ((quality > 80)&&(q_array_[i].size()>0)) {
 			int token_candidate = q_array_[i].begin()->first;
 			int quality_token = 0;
@@ -107,12 +113,15 @@ void LearnerEngine::compute() {
 				}
 			}
 			token << boost::format("\\x%02x") % token_candidate;
+			raw_token << boost::format("%02x") % token_candidate;
 		} else {
 			token << ".?";
 		}
 		expr << token.str();
+		raw_expr << raw_token.str();
         }
-	raw_expression_ = expr.str();
+	regex_expression_ = expr.str();
+	raw_expression_ = raw_expr.str();
 }
 
 
@@ -139,6 +148,22 @@ void LearnerEngine::agregateFlows(std::vector<WeakPointer<Flow>> &flows) {
                         }
                 }
 	}
+}
+
+std::string LearnerEngine::getAsciiExpression() {
+	std::ostringstream out;
+
+	for(int i = 0;i<raw_expression_.length(); i=i+2){
+		int a = (raw_expression_[i] - 48)*16;
+		int b = raw_expression_[i+1];
+		if((b>=97)&&(b<=102))
+			b -= 32;
+		if (b<65)
+			out << char(a+b-48);
+		else
+			out << char(a+b-55);
+	} 
+	return out.str();
 }
 
 } // namespace aiengine 

@@ -151,7 +151,8 @@ void showLearnerResults() {
 		learner.agregateFlows(flow_list);
 		learner.compute();
 		std::cout << "Regular expression generated with key:" << option_learner_key << std::endl;
-		std::cout << learner.getRegularExpression() <<std::endl;	
+		std::cout << "Regex:" << learner.getRegularExpression() <<std::endl;
+		std::cout << "Ascii buffer:" << learner.getAsciiExpression() << std::endl;	
 	}
 }
 

@@ -49,7 +49,7 @@ class LearnerEngine
 public:
 
     	explicit LearnerEngine():items_(0),length_(0),
-		raw_expression_(""),max_raw_expression_(64) {};
+		raw_expression_(""),regex_expression_(""),max_raw_expression_(64) {};
     	virtual ~LearnerEngine() {};
 
 	void reset(); 
@@ -63,7 +63,9 @@ public:
 
 	int getQualityByte(int offset);
 
-	std::string getRegularExpression() { return raw_expression_;};
+	std::string getRegularExpression() { return regex_expression_;};
+	std::string getRawExpression() { return raw_expression_;};
+	std::string getAsciiExpression();
 
 	void setMaxLenghtForRegularExpression(int value) { max_raw_expression_ = value;};
 
@@ -82,6 +84,7 @@ private:
 	int items_;
 	int max_raw_expression_;
 	std::string raw_expression_;	
+	std::string regex_expression_;	
 	FrequencyGroup<std::string>::PtrWeak freq_group_;
 };
 
