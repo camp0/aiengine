@@ -361,6 +361,7 @@ int main(int argc, char* argv[]) {
 				}
 				++it;
 			}
+			sort(files.begin(),files.end());
 		} else {
 			files.push_back (option_pcapfile.c_str());
 		}
