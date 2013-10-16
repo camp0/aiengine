@@ -314,7 +314,7 @@ int main(int argc, char* argv[]) {
 	stack->setTotalUDPFlows(udp_flows_cache);	
 
 	// Check if AIEngine is gonna work as signature extractor or as a regular packet inspector
-	if (var_map.count("enable-signatures") == 1) {
+	if (var_map.count("enable-regex") == 1) {
         	sm = RegexManagerPtr(new RegexManager());
         	sm->addRegex("experimental",option_regex);
 		if (option_regex_type_flows.compare("all") == 0) {
@@ -351,7 +351,8 @@ int main(int argc, char* argv[]) {
     			fs::recursive_directory_iterator endit;
     
 			while (it != endit) {
-      				if (fs::is_regular_file(*it) and it->path().extension() == ".pcap") {
+      				if (fs::is_regular_file(*it)and((it->path().extension() == ".pcap")
+					or(it->path().extension() == ".cap"))) {
 					std::ostringstream os;
 					
 					os << option_pcapfile.c_str() << "/" << it->path().filename().c_str();

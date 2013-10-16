@@ -66,7 +66,6 @@ void RegexManager::evaluate(const unsigned char *payload, bool *result) {
 std::ostream& operator<< (std::ostream& out, const RegexManager& sig) {
 
 	out << "RegexManager(" << &sig << ") statistics" << std::dec <<  std::endl;	
-	out << "items :" << std::dec << sig.signatures_.size() <<  std::endl;	
 	for (auto it = sig.signatures_.begin(); it != sig.signatures_.end(); ++it) {
 		SharedPointer<Regex> sig = (*it);
 		out << "\t" << "Regex:" << sig->getName() << " matches:" << sig->getMatchs() << std::endl;
