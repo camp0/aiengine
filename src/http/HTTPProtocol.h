@@ -28,6 +28,7 @@
 #undef __FAVOR_BSD
 #endif // __FAVOR_BSD
 
+#include "log4cxx/logger.h"
 #include "../Multiplexer.h"
 #include "../FlowForwarder.h"
 #include "../Protocol.h"
@@ -42,6 +43,7 @@
 #include "HTTPReferer.h"
 #include "../Cache.h"
 #include <unordered_map>
+#include "../names/DomainNameManager.h"
 
 namespace aiengine {
 
@@ -111,6 +113,7 @@ public:
         void createHTTPUserAgents(int number) { ua_cache_->create(number);}
         void destroyHTTPUserAgents(int number) { ua_cache_->destroy(number);}
 
+	void setHostNameManager(DomainNameManagerPtrWeak dnm) { host_mng_ = dnm;}
 private:
 
 	void extractHostValue(Flow *flow, const char *header);
@@ -131,6 +134,10 @@ private:
 	typedef std::map<std::string,std::pair<SharedPointer<HTTPUserAgent>,int32_t>> UAMapType;
 	UAMapType ua_map_;	
 	HostMapType host_map_;	
+
+	DomainNameManagerPtrWeak host_mng_;
+
+	static log4cxx::LoggerPtr logger;
 };
 
 typedef std::shared_ptr<HTTPProtocol> HTTPProtocolPtr;

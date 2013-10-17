@@ -11,6 +11,7 @@ test_http_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ip/IPProtocol.cc \
 			../tcp/TCPProtocol.cc \
 			../flow/FlowManager.cc \
+			../names/DomainNameManager.cc \
 			HTTPProtocol.cc test_http.cc
 
 test_http_CPPFLAGS = -DSTAND_ALONE

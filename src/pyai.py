@@ -40,6 +40,16 @@ def loadRegexForUdp():
 
 	return sm
 
+def loadDomains():
+
+        dm = pyaiengine.DomainNameManager()
+
+        dom = pyaiengine.DomainName("facebook","facebook.com")
+	dom.setCallback(callback_domain)
+        dm.addDomainName(dom)
+
+	return dm
+
 def loadBadDomains():
 	
 	dm = pyaiengine.DomainNameManager()
@@ -132,7 +142,8 @@ if __name__ == '__main__':
 	#s_udp = loadRegexForUdp()
 	#st.setUDPRegexManager(s_udp)
 
-	st.setDNSDomainNameManager(loadBadDomains())
+	st.setHTTPHostNameManager(loadDomains())
+	#st.setDNSDomainNameManager(loadBadDomains())
 
 	# Allocate the TCP/UDP flows in order to keep memory
 	# under control and avoid allocations during the execution	

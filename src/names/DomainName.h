@@ -25,7 +25,9 @@
 #define SRC_NAMES_DOMAINNAME_H__
 
 #include <iostream>
+#include <iomanip>
 #include "../Signature.h"
+#include <boost/format.hpp>
 
 namespace aiengine {
 
@@ -39,8 +41,9 @@ public:
     	virtual ~DomainName() {}
 
 	friend std::ostream& operator<< (std::ostream& out, const DomainName& dom) {
-        
-		out << "\t" << "DomainName:" << dom.name_ << " matches:" << dom.total_matchs_ << std::endl;
+       
+		out << "\t" <<  boost::format("Name:%-25s Domain:%-30s matchs:%-10d") % dom.name_ % dom.expression_ % dom.total_matchs_;
+		out << std::endl; 
         	return out;
 	}
 

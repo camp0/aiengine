@@ -79,7 +79,8 @@ public:
         void setUDPRegexManager(RegexManager& sig); 
 	void setDNSDomainNameManager(DomainNameManagerPtrWeak dnm); 
 	void setDNSDomainNameManager(DomainNameManager& dnm);
-
+	void setHTTPHostNameManager(DomainNameManagerPtrWeak dnm); 
+	void setHTTPHostNameManager(DomainNameManager& dnm);
 
 	void enableNIDSEngine(bool enable);
 	void enableFrequencyEngine(bool enable);
@@ -148,6 +149,7 @@ private:
 	RegexManagerPtr sigs_udp_;
 	// Also for the DomainNameManager on the DNSProtocol
 	DomainNameManagerPtr domains_udp_;
+	DomainNameManagerPtr http_host_domains_;
 };
 
 typedef std::shared_ptr<StackLan> StackLanPtr;

@@ -26,6 +26,8 @@
 
 namespace aiengine {
 
+log4cxx::LoggerPtr DNSProtocol::logger(log4cxx::Logger::getLogger("aiengine.dns"));
+
 void DNSProtocol::attachDNStoFlow(Flow *flow, std::string &domain) {
 
 	SharedPointer<DNSDomain> dom_ptr = flow->dns_domain.lock();
@@ -80,8 +82,9 @@ void DNSProtocol::processFlow(Flow *flow) {
 			dnm = domain_mng_.lock();
 			if (dnm) {
 				SharedPointer<DomainName> domain_candidate = dnm->getDomainName(domain);
-#ifdef PYTHON_BINDING
 				if (domain_candidate) {
+					LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << domain_candidate->getName());
+#ifdef PYTHON_BINDING
 					if(domain_candidate->haveCallback()) {
 						PyGILState_STATE state(PyGILState_Ensure());
                                 		try {
@@ -91,8 +94,8 @@ void DNSProtocol::processFlow(Flow *flow) {
                                 		}
                                 		PyGILState_Release(state);
 					}							
-				}
 #endif
+				}
 			}
 		}
 	}	

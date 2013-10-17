@@ -26,6 +26,8 @@
 
 namespace aiengine {
 
+log4cxx::LoggerPtr HTTPProtocol::logger(log4cxx::Logger::getLogger("aiengine.http"));
+
 void HTTPProtocol::extractHostValue(Flow *flow, const char *header) {
 
 	boost::cmatch result;
@@ -85,6 +87,8 @@ void HTTPProtocol::extractUserAgentValue(Flow *flow, const char *header) {
 
 void HTTPProtocol::processFlow(Flow *flow) {
 
+	DomainNameManagerPtr host_mng;
+
 	++total_packets_;	
 	total_bytes_ += flow->packet->getLength();
 	++flow->total_packets_l7;
@@ -94,7 +98,31 @@ void HTTPProtocol::processFlow(Flow *flow) {
 		const char *header = reinterpret_cast <const char*> (flow->packet->getPayload());
 	
 		extractHostValue(flow,header);	
+
 		extractUserAgentValue(flow,header);
+
+                host_mng = host_mng_.lock();
+                if (host_mng) {
+			SharedPointer<HTTPHost> host_name = flow->http_host.lock();
+
+			if (host_name) {
+                		SharedPointer<DomainName> host_candidate = host_mng->getDomainName(host_name->getName());
+				if (host_candidate) {
+#ifdef PYTHON_BINDING
+					LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());	
+					if(host_candidate->haveCallback()) {
+						PyGILState_STATE state(PyGILState_Ensure());
+						try {
+							boost::python::call<void>(host_candidate->getCallback(),boost::python::ptr(flow));
+						} catch (std::exception &e) {
+							std::cout << "ERROR:" << e.what() << std::endl;
+                                        	}
+                                        	PyGILState_Release(state);
+                                	}
+#endif
+                        	}
+			}
+		}
 	}
 }
 

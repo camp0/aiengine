@@ -85,6 +85,8 @@ public:
         void setUDPRegexManager(RegexManager& sig);
 	void setDNSDomainNameManager(DomainNameManagerPtrWeak dnm);
 	void setDNSDomainNameManager(DomainNameManager& dnm);
+        void setHTTPHostNameManager(DomainNameManagerPtrWeak dnm);
+        void setHTTPHostNameManager(DomainNameManager& dnm);
 
 	void enableNIDSEngine(bool value);
 	void enableFrequencyEngine(bool value);
@@ -160,6 +162,7 @@ private:
         RegexManagerPtr sigs_udp_;
 	// Also for the DomainNameManager on the DNSProtocol
         DomainNameManagerPtr domains_udp_;
+        DomainNameManagerPtr http_host_domains_;
 };
 
 } // namespace aiengine

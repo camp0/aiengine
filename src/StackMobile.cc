@@ -332,6 +332,20 @@ void StackMobile::setDNSDomainNameManager(DomainNameManager& dnm)
         setDNSDomainNameManager(domains_udp_);
 }
 
+void StackMobile::setHTTPHostNameManager(DomainNameManagerPtrWeak dnm) {
+
+        if (dnm.lock()) {
+                http_->setHostNameManager(dnm.lock());
+        }
+}
+
+void StackMobile::setHTTPHostNameManager(DomainNameManager& dnm) {
+
+        http_host_domains_ = std::make_shared<DomainNameManager>(dnm);
+        setHTTPHostNameManager(http_host_domains_);
+}
+
+
 void StackMobile::setTotalTCPFlows(int value) {
 
         flow_cache_tcp_->createFlows(value);

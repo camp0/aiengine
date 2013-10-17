@@ -278,6 +278,19 @@ void StackLan::setDNSDomainNameManager(DomainNameManager& dnm) {
         setDNSDomainNameManager(domains_udp_);
 }
 
+void StackLan::setHTTPHostNameManager(DomainNameManagerPtrWeak dnm) {
+
+        if (dnm.lock()) {
+                http_->setHostNameManager(dnm.lock());
+        }
+}
+
+void StackLan::setHTTPHostNameManager(DomainNameManager& dnm) {
+
+        http_host_domains_ = std::make_shared<DomainNameManager>(dnm);
+        setHTTPHostNameManager(http_host_domains_);
+}
+
 
 
 void StackLan::enableFrequencyEngine(bool enable) {

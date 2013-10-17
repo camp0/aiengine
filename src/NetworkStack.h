@@ -61,6 +61,8 @@ public:
 	virtual void setUDPRegexManager(RegexManager& sig) = 0;	
 	virtual void setDNSDomainNameManager(DomainNameManagerPtrWeak dnm) = 0;
 	virtual void setDNSDomainNameManager(DomainNameManager& dnm) = 0;
+	virtual void setHTTPHostNameManager(DomainNameManagerPtrWeak dnm) = 0;
+	virtual void setHTTPHostNameManager(DomainNameManager& dnm) = 0;
 
 	virtual void enableFrequencyEngine(bool enable) = 0;
 	virtual void enableNIDSEngine(bool enable) = 0;

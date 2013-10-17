@@ -377,5 +377,126 @@ BOOST_AUTO_TEST_CASE (test9_http)
 
 }
 
+// Test the HTTPProtocol with the DomainNameManager attached
+BOOST_AUTO_TEST_CASE (test10_http)
+{
+        char *header =  "GET /access/megustaelfary.mp4?version=4&lid=1187884873&token=JJz8QucMbPrjzSq4y7ffuLUTFO2Etiqu"
+                        "Evd4Y34WVkhvAPWJK1%2F7nJlhnAkhXOPT9GCuPlZLgLnIxANviI%2FgtwRfJ9qh9QWwUS2WvW2JAOlS7bvHoIL9JbgA8"
+                        "VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB"
+                        "f7%2BndweWllFJWGr54vsfFJAZtBeEEE%2FZMlWJkvTpfDPJZSXmzzKZHbP6mm5u1jYBlJoDAKByHRjSUXRuauvzq1HDj"
+                        "9QRoPmYJBXJvOlyH%2Fs6mNArj%2F7y0oT1UkApkjaGawH5zJBYkpq9&av=4.4 HTTP/1.1\r\n"
+                        "Connection: close\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Accept: */*\r\n"
+                        "User-Agent: LuisAgent CFNetwork/609 Darwin/13.0.0\r\n"
+                        "Accept-Language: en-gb\r\n"
+                        "Host: onedomain.com\r\n"
+                        "\r\n";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+
+	SharedPointer<DomainNameManager> host_mng = SharedPointer<DomainNameManager>(new DomainNameManager());
+	WeakPointer<DomainNameManager> host_mng_weak = host_mng;
+	SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("example",".bu.ba.com"));
+
+        Packet packet(pkt,length,0);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+	http->setHostNameManager(host_mng_weak);
+	host_mng->addDomainName(host_name);
+
+	// Dont create any items on the cache
+        http->createHTTPHosts(0);
+        http->createHTTPUserAgents(0);
+
+        flow->packet = const_cast<Packet*>(&packet);
+        http->processFlow(flow.get());
+
+	BOOST_CHECK(flow->http_host.lock() == nullptr);
+	BOOST_CHECK(host_name->getMatchs() == 0);
+}
+
+// Test the HTTPProtocol with the DomainNameManager attached
+BOOST_AUTO_TEST_CASE (test11_http)
+{
+        char *header =  "GET /access/megustaelfary.mp4?version=4&lid=1187884873&token=JJz8QucMbPrjzSq4y7ffuLUTFO2Etiqu"
+                        "Evd4Y34WVkhvAPWJK1%2F7nJlhnAkhXOPT9GCuPlZLgLnIxANviI%2FgtwRfJ9qh9QWwUS2WvW2JAOlS7bvHoIL9JbgA8"
+                        "VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB"
+                        "f7%2BndweWllFJWGr54vsfFJAZtBeEEE%2FZMlWJkvTpfDPJZSXmzzKZHbP6mm5u1jYBlJoDAKByHRjSUXRuauvzq1HDj"
+                        "9QRoPmYJBXJvOlyH%2Fs6mNArj%2F7y0oT1UkApkjaGawH5zJBYkpq9&av=4.4 HTTP/1.1\r\n"
+                        "Connection: close\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Accept: */*\r\n"
+                        "User-Agent: LuisAgent CFNetwork/609 Darwin/13.0.0\r\n"
+                        "Accept-Language: en-gb\r\n"
+                        "Host: onedomain.com\r\n"
+                        "\r\n";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+
+        SharedPointer<DomainNameManager> host_mng = SharedPointer<DomainNameManager>(new DomainNameManager());
+        WeakPointer<DomainNameManager> host_mng_weak = host_mng;
+        SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("example",".bu.ba.com"));
+
+        Packet packet(pkt,length,0);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->setHostNameManager(host_mng_weak);
+        host_mng->addDomainName(host_name);
+
+        // Dont create any items on the cache
+        http->createHTTPHosts(1);
+        http->createHTTPUserAgents(0);
+
+        flow->packet = const_cast<Packet*>(&packet);
+        http->processFlow(flow.get());
+
+        BOOST_CHECK(flow->http_host.lock() != nullptr);
+        BOOST_CHECK(host_name->getMatchs() == 0);
+}
+
+// Test the HTTPProtocol with the DomainNameManager attached
+BOOST_AUTO_TEST_CASE (test12_http)
+{
+        char *header =  "GET /access/megustaelfary.mp4?version=4&lid=1187884873&token=JJz8QucMbPrjzSq4y7ffuLUTFO2Etiqu"
+                        "Evd4Y34WVkhvAPWJK1%2F7nJlhnAkhXOPT9GCuPlZLgLnIxANviI%2FgtwRfJ9qh9QWwUS2WvW2JAOlS7bvHoIL9JbgA8"
+                        "VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB"
+                        "f7%2BndweWllFJWGr54vsfFJAZtBeEEE%2FZMlWJkvTpfDPJZSXmzzKZHbP6mm5u1jYBlJoDAKByHRjSUXRuauvzq1HDj"
+                        "9QRoPmYJBXJvOlyH%2Fs6mNArj%2F7y0oT1UkApkjaGawH5zJBYkpq9&av=4.4 HTTP/1.1\r\n"
+                        "Connection: close\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Accept: */*\r\n"
+                        "User-Agent: LuisAgent CFNetwork/609 Darwin/13.0.0\r\n"
+                        "Accept-Language: en-gb\r\n"
+                        "Host: onedomain.com\r\n"
+                        "\r\n";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+
+        SharedPointer<DomainNameManager> host_mng = SharedPointer<DomainNameManager>(new DomainNameManager());
+        WeakPointer<DomainNameManager> host_mng_weak = host_mng;
+        SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("example","onedomain.com"));
+
+        Packet packet(pkt,length,0);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->setHostNameManager(host_mng_weak);
+        host_mng->addDomainName(host_name);
+
+        // Dont create any items on the cache
+        http->createHTTPHosts(1);
+        http->createHTTPUserAgents(0);
+
+        flow->packet = const_cast<Packet*>(&packet);
+        http->processFlow(flow.get());
+
+        BOOST_CHECK(flow->http_host.lock() != nullptr);
+        BOOST_CHECK(host_name->getMatchs() == 1);
+}
+
+
+
+
+
 BOOST_AUTO_TEST_SUITE_END( )
 
