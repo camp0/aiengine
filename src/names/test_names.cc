@@ -29,7 +29,7 @@
 #endif
 #include <boost/test/unit_test.hpp>
 
-using namespace std;
+//using namespace std;
 
 BOOST_AUTO_TEST_SUITE (testnames) 
 
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE (test4_names)
 	domain_candidate = dom_table->getDomainName(value);
        	BOOST_CHECK(domain_candidate == domain4); 
 
-	cout << *dom_table;
+	//cout << *dom_table;
 }
 
 

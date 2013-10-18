@@ -81,64 +81,71 @@ void configureFrequencyGroupOptions() {
 	// TODO
 }
 
-void showFrequencyResults() {
 
-	FlowManagerPtr flow_t;
+bool computeFrequencyGroup () {
 
-	if(option_freqs_type_flows.compare("tcp")==0) flow_t = stack->getTCPFlowManager().lock();
-	if(option_freqs_type_flows.compare("udp")==0) flow_t = stack->getUDPFlowManager().lock();
+	bool computed = false;
+        FlowManagerPtr flow_t;
 
-	if (!flow_t) return;
+        if(option_freqs_type_flows.compare("tcp")==0) flow_t = stack->getTCPFlowManager().lock();
+        if(option_freqs_type_flows.compare("udp")==0) flow_t = stack->getUDPFlowManager().lock();
 
-	if (option_freqs_group_value.compare("src-port") == 0) { 
-        	group.setName("by source port");
-		std::cout << "Agregating frequencies " << group.getName() << std::endl;
-		group.agregateFlowsBySourcePort(flow_t);
-		std::cout << "Computing frequencies " << group.getName() << std::endl;
-		group.compute();
-		std::cout << group;
-	}
-	if (option_freqs_group_value.compare("dst-port") == 0) { 
-        	group.setName("by destination port");
-		std::cout << "Agregating frequencies " << group.getName() << std::endl;
-		group.agregateFlowsByDestinationPort(flow_t);
-		std::cout << "Computing frequencies " << group.getName() << std::endl;
-		group.compute();
-		std::cout << group;
-	}
-	if (option_freqs_group_value.compare("src-ip") == 0) {
-        	group.setName("by source IP");
-		std::cout << "Agregating frequencies " << group.getName() << std::endl;
-		group.agregateFlowsBySourceAddress(flow_t);
-		std::cout << "Computing frequencies " << group.getName() << std::endl;
-		group.compute();
-		std::cout << group;
-	}
-	if (option_freqs_group_value.compare("dst-ip") == 0) {
-        	group.setName("by destination IP");
-		std::cout << "Agregating frequencies " << group.getName() << std::endl;
-		group.agregateFlowsByDestinationAddress(flow_t);
-		std::cout << "Computing frequencies " << group.getName() << std::endl;
-		group.compute();
-		std::cout << group;
-	}
+        if (!flow_t) return computed;
+
+	group.reset();
+
+        if (option_freqs_group_value.compare("src-port") == 0) {
+                group.setName("by source port");
+                std::cout << "Agregating frequencies " << group.getName() << std::endl;
+                group.agregateFlowsBySourcePort(flow_t);
+              	computed = true; 
+        }
+        if (option_freqs_group_value.compare("dst-port") == 0) {
+                group.setName("by destination port");
+                std::cout << "Agregating frequencies " << group.getName() << std::endl;
+                group.agregateFlowsByDestinationPort(flow_t);
+              	computed = true; 
+        }
+        if (option_freqs_group_value.compare("src-ip") == 0) {
+                group.setName("by source IP");
+                std::cout << "Agregating frequencies " << group.getName() << std::endl;
+                group.agregateFlowsBySourceAddress(flow_t);
+              	computed = true; 
+        }
+        if (option_freqs_group_value.compare("dst-ip") == 0) {
+                group.setName("by destination IP");
+                std::cout << "Agregating frequencies " << group.getName() << std::endl;
+                group.agregateFlowsByDestinationAddress(flow_t);
+              	computed = true; 
+        }
         if (option_freqs_group_value.compare("src-ip,src-port") == 0) {
                 group.setName("by source IP and port");
                 std::cout << "Agregating frequencies " << group.getName() << std::endl;
                 group.agregateFlowsBySourceAddressAndPort(flow_t);
-                std::cout << "Computing frequencies " << group.getName() << std::endl;
-                group.compute();
-                std::cout << group;
+              	computed = true; 
         }
         if (option_freqs_group_value.compare("dst-ip,dst-port") == 0) {
                 group.setName("by destination IP and port");
                 std::cout << "Agregating frequencies " << group.getName() << std::endl;
                 group.agregateFlowsByDestinationAddressAndPort(flow_t);
-                std::cout << "Computing frequencies " << group.getName() << std::endl;
-                group.compute();
-                std::cout << group;
+              	computed = true; 
         }
 
+	if (computed) {
+                std::cout << "Computing "<< group.getTotalProcessFlows() << " frequencies " << group.getName() << std::endl;
+                group.compute();
+	}
+
+	return computed;
+}
+
+void showFrequencyResults() {
+
+	if (computeFrequencyGroup()) {
+		std::cout << group;
+	} else {
+		std::cout << "Can not compute the frequencies" << std::endl;
+	}
 }
 
 void showLearnerResults() {
@@ -147,6 +154,7 @@ void showLearnerResults() {
 
 	flow_list = group.getReferenceFlowsByKey(option_learner_key);
 	if (flow_list.size()>0) {
+		learner.reset();
 		std::cout << "Agregating "<< flow_list.size() << " to the LearnerEngine" << std::endl;
 		learner.agregateFlows(flow_list);
 		learner.compute();
@@ -156,6 +164,12 @@ void showLearnerResults() {
 	}
 }
 
+void learnerCallback() {
+
+	if( computeFrequencyGroup()) {
+		showLearnerResults();
+	}
+}
 
 void iaengineExit() {
 
@@ -260,6 +274,11 @@ int main(int argc, char* argv[]) {
         	if (var_map.count("help")) {
             		std::cout << "iaengine " VERSION << std::endl;
             		std::cout << mandatory_ops << std::endl;
+			std::cout << "Please report bugs to <" << PACKAGE_BUGREPORT << ">" << std::endl;
+			std::cout << "Copyright (C) 2009-2013 Luis Campo Giralte <" PACKAGE_BUGREPORT <<">" << std::endl;
+			std::cout << "License: GNU GPL version 2" << std::endl;
+			std::cout << "This is free software: you are free to change and redistribute it." << std::endl;
+			std::cout << "There is NO WARRANTY, to the extent permitted by law." << std::endl;
             		return false;
         	}
         	if (var_map.count("version")) {
@@ -379,6 +398,10 @@ int main(int argc, char* argv[]) {
 		}
 	} else {
 		if (var_map.count("interface") == 1) {
+
+			if (option_enable_frequencies) // Sets the callback for learn.
+				pktdis->setIdleFunction(std::bind(learnerCallback));
+			
         		pktdis->openDevice(option_interface.c_str());
 			try {
 				pktdis->run();

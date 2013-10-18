@@ -53,7 +53,8 @@ class Flow {
 public:
     	Flow() {reset();}
     	virtual ~Flow() {}
-
+	
+	// Common fields of the Flow
 	void setId(unsigned long hash) { hash_=hash;}
 	unsigned long getId() const { return hash_;}
 
@@ -79,6 +80,7 @@ public:
 	int32_t total_packets_l7;
 	int32_t total_packets;
 
+	// Objects that links with the Flow
 	WeakPointer<DNSDomain> dns_domain;
 	WeakPointer<Regex> regex;
 	WeakPointer<HTTPHost> http_host;
@@ -86,8 +88,11 @@ public:
 	WeakPointer<Frequencies> frequencies;
 	WeakPointer<PacketFrequencies> packet_frequencies;
 	FlowForwarderPtrWeak forwarder;
-
 	Packet *packet;
+
+
+	// specific values for a specific Engine
+	bool frequency_engine_inspected;
 	
 	inline void reset() {
 	
@@ -107,6 +112,7 @@ public:
 		regex.reset();
 		dns_domain.reset();
 		packet = nullptr;
+		frequency_engine_inspected = false;
 	}
 
 	friend std::ostream& operator<< (std::ostream& out, const Flow& flow) {

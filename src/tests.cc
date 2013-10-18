@@ -517,8 +517,8 @@ BOOST_AUTO_TEST_CASE ( test_case_1 )
         group_by_port.agregateFlowsByDestinationPort(stack->getTCPFlowManager().lock());
         group_by_port.compute();
 
-	BOOST_CHECK(group_by_port.getTotalProcessFlows() == 2);
-	BOOST_CHECK(group_by_port.getTotalComputedFrequencies() == 1);
+	BOOST_CHECK(group_by_port.getTotalProcessFlows() == 0);
+	BOOST_CHECK(group_by_port.getTotalComputedFrequencies() == 0);
 }
 
 BOOST_AUTO_TEST_CASE ( test_case_2 )

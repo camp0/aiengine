@@ -53,6 +53,7 @@ public:
 
 	void agregateFlows(FlowManagerPtr flow_t, std::function <A_Type (SharedPointer<Flow>&)> condition);
 	void compute();
+	void reset();
 
 	friend std::ostream& operator<<(std::ostream& os, const FrequencyGroup& fg) {
 	

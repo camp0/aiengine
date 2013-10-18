@@ -40,29 +40,36 @@ namespace aiengine {
 class FrequencyGroupItem
 {
 public:
-	explicit FrequencyGroupItem() 
-	{
+	explicit FrequencyGroupItem() { 
+	
 		freqs_ = SharedPointer<Frequencies>(new Frequencies());
-		total_items_ = 0;
-		total_flows_bytes_ = 0;
+		reset();
 	}	
-	virtual ~FrequencyGroupItem() {};
+	virtual ~FrequencyGroupItem() {}
 		
-	void incTotalItems() { ++total_items_;};
-	void addTotalFlowsBytes(int32_t bytes) { total_flows_bytes_ += bytes;};
+	void incTotalItems() { ++total_items_;}
+	void addTotalFlowsBytes(int32_t bytes) { total_flows_bytes_ += bytes;}
 
-	void sumFrequencies(SharedPointer<Frequencies> freqs) 
-	{ 
+	void sumFrequencies(SharedPointer<Frequencies> freqs) { 
+	 
 		Frequencies *freq_ptr = freqs_.get();
 
 		*freq_ptr = *freq_ptr + *freqs.get();
 	}
 
-	void addFlow(SharedPointer<Flow> flow) { flow_list_.push_back(flow);};	
-	int getTotalItems() { return total_items_;};
-	int32_t getTotalFlowsBytes() { return total_flows_bytes_;};	
-	SharedPointer<Frequencies> getFrequencies() { return freqs_;};	
-	std::vector<WeakPointer<Flow>> &getReferenceFlows() { return flow_list_;};
+	void reset() {
+	
+		total_items_ = 0;
+		total_flows_bytes_ = 0;
+		flow_list_.clear();
+		freqs_->reset();
+	}	
+
+	void addFlow(SharedPointer<Flow> flow) { flow_list_.push_back(flow);}	
+	int getTotalItems() { return total_items_;}
+	int32_t getTotalFlowsBytes() { return total_flows_bytes_;}	
+	SharedPointer<Frequencies> getFrequencies() { return freqs_;}	
+	std::vector<WeakPointer<Flow>> &getReferenceFlows() { return flow_list_;}
 private:		
 	int total_items_;
 	int32_t total_flows_bytes_;

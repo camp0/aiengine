@@ -27,6 +27,23 @@
 
 namespace aiengine {
 
+
+template <class A_Type>
+void FrequencyGroup<A_Type>::reset() {
+
+	flow_list_.clear();
+
+	// Need to iterate and destroy de FrequencyGroupItems
+	for (auto it = group_map_.begin(); it != group_map_.end(); ++it) {
+		FrequencyGroupItemPtr fgitem = it->second;
+
+		fgitem->reset();
+	}
+	group_map_.clear();
+	total_process_flows_ = 0;
+	total_computed_freqs_ = 0;
+}
+
 template <class A_Type>
 std::vector<WeakPointer<Flow>> &FrequencyGroup<A_Type>::getReferenceFlowsByKey(A_Type key) { 
 
@@ -50,7 +67,7 @@ void FrequencyGroup<A_Type>::agregateFlows(FlowManagerPtr flow_t, std::function 
 	for (auto it = ft.begin(); it!=ft.end();++it) {
 
 		SharedPointer<Flow> flow = *it;
-		if (flow->frequencies.lock()) {
+		if ((flow->frequency_engine_inspected == false)and(flow->frequencies.lock())) {
 			SharedPointer<Frequencies> freq = flow->frequencies.lock();
 			if(freq) {
 				auto key = condition(flow);
@@ -70,6 +87,8 @@ void FrequencyGroup<A_Type>::agregateFlows(FlowManagerPtr flow_t, std::function 
 				fg_item->addTotalFlowsBytes(flow->total_bytes);
 				fg_item->sumFrequencies(freq);
 
+				flow->frequency_engine_inspected = true;
+				
 				++total_process_flows_;
 				flow_list_.push_back(flow);
 				fg_item->addFlow(flow);
