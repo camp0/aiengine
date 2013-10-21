@@ -25,7 +25,9 @@
 
 namespace aiengine {
 
+#ifdef HAVE_LIBLOG4CXX
 log4cxx::LoggerPtr StackLan::logger(log4cxx::Logger::getLogger("aiengine.stacklan"));
+#endif
 
 StackLan::StackLan() {
 
@@ -199,7 +201,11 @@ StackLan::StackLan() {
 	ff_udp_->addUpFlowForwarder(ff_dns_);
 	ff_udp_->addUpFlowForwarder(ff_udp_generic_);
 
+#ifdef HAVE_LIBLOG4CXX
 	LOG4CXX_INFO (logger, name_<< " ready.");
+#else
+	std::cout << name_ << " ready." << std::endl;
+#endif
 
 }
 
@@ -306,8 +312,11 @@ void StackLan::enableFrequencyEngine(bool enable) {
 
 		ff_tcp_->insertUpFlowForwarder(ff_tcp_freqs_);	
 		ff_udp_->insertUpFlowForwarder(ff_udp_freqs_);	
-	
+#ifdef HAVE_LIBLOG4CXX	
 		LOG4CXX_INFO (logger, "Enable FrequencyEngine on " << name_ );
+#else
+		std::cout << "Enable FrequencyEngine on " << name_ << std::endl;
+#endif
 	} else {
 		freqs_tcp_->destroyFrequencies(tcp_flows_created);	
 		freqs_udp_->destroyFrequencies(udp_flows_created);	
@@ -323,8 +332,11 @@ void StackLan::enableNIDSEngine(bool enable) {
 		ff_tcp_->removeUpFlowForwarder(ff_http_);
 		ff_tcp_->removeUpFlowForwarder(ff_ssl_);
 		ff_udp_->removeUpFlowForwarder(ff_dns_);
-	
+#ifdef HAVE_LIBLOG4CXX
 		LOG4CXX_INFO (logger, "Enable NIDSEngine on " << name_ );
+#else
+		std::cout << "Enable NIDSEngine on " << name_ << std::endl;
+#endif
 	} else {
 		ff_tcp_->removeUpFlowForwarder(ff_tcp_generic_);
 		ff_udp_->removeUpFlowForwarder(ff_udp_generic_);
@@ -382,7 +394,11 @@ void StackLan::enableLinkLayerTagging(std::string type) {
                         mux_mpls_->addUpMultiplexer(mux_ip_,ETHERTYPE_IP);
                         mux_ip_->addDownMultiplexer(mux_mpls_);
                 } else {
+#ifdef HAVE_LIBLOG4CXX
                         LOG4CXX_WARN (logger, "Unknown tagging type " << type );
+#else
+			std::cout << "Unknown tagging type " << type << std::endl;
+#endif
                 }
         }
 }

@@ -24,11 +24,17 @@
 #ifndef SRC_HTTP_HTTPPROTOCOL_H_
 #define SRC_HTTP_HTTPPROTOCOL_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifdef __FAVOR_BSD
 #undef __FAVOR_BSD
 #endif // __FAVOR_BSD
 
+#ifdef HAVE_LIBLOG4CXX
 #include "log4cxx/logger.h"
+#endif
 #include "../Multiplexer.h"
 #include "../FlowForwarder.h"
 #include "../Protocol.h"
@@ -137,7 +143,9 @@ private:
 
 	DomainNameManagerPtrWeak host_mng_;
 
+#ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
+#endif
 };
 
 typedef std::shared_ptr<HTTPProtocol> HTTPProtocolPtr;

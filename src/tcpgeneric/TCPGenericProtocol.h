@@ -32,7 +32,9 @@
 #undef __FAVOR_BSD
 #endif // __FAVOR_BSD
 
+#ifdef HAVE_LIBLOG4CXX
 #include "log4cxx/logger.h"
+#endif
 #include "../Multiplexer.h"
 #include "../FlowForwarder.h"
 #include "../Protocol.h"
@@ -94,8 +96,9 @@ public:
 	void setRegexManager(RegexManagerPtrWeak sig) { sigs_ = sig;} 
 
 private:
+#ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
-
+#endif
 	int stats_level_;
 	FlowForwarderPtrWeak flow_forwarder_;	
 	MultiplexerPtrWeak mux_; // Not used;

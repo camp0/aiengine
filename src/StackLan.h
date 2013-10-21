@@ -29,7 +29,9 @@
 #endif
 
 #include <string>
+#ifdef HAVE_LIBLOG4CXX
 #include "log4cxx/logger.h"
+#endif
 #include "Multiplexer.h"
 #include "FlowForwarder.h"
 #include "./ethernet/EthernetProtocol.h"
@@ -97,8 +99,9 @@ public:
 
 private:
 	std::string name_;
+#ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
-
+#endif
         //Protocols
 	EthernetProtocolPtr eth_;
 	VLanProtocolPtr vlan_;

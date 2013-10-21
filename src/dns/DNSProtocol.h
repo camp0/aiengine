@@ -32,7 +32,9 @@
 #undef __FAVOR_BSD
 #endif // __FAVOR_BSD
 
+#ifdef HAVE_LIBLOG4CXX
 #include "log4cxx/logger.h"
+#endif
 #include "../Multiplexer.h"
 #include "../FlowForwarder.h"
 #include "../Protocol.h"
@@ -123,8 +125,9 @@ private:
 
 	typedef std::map<std::string,std::pair<SharedPointer<DNSDomain>,int32_t>> DomainMapType;
 	DomainMapType domain_map_;	
-
+#ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
+#endif
 };
 
 typedef std::shared_ptr<DNSProtocol> DNSProtocolPtr;

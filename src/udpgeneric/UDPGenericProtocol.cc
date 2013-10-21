@@ -26,7 +26,9 @@
 
 namespace aiengine {
 
+#ifdef HAVE_LIBLOG4CXX
 log4cxx::LoggerPtr UDPGenericProtocol::logger(log4cxx::Logger::getLogger("aiengine.udpgeneric"));
+#endif
 
 void UDPGenericProtocol::processFlow(Flow *flow) {
 
@@ -44,8 +46,9 @@ void UDPGenericProtocol::processFlow(Flow *flow) {
 		sig->evaluate(payload,&result);
 		if (result) {
 			SharedPointer<Regex> regex = sig->getMatchedRegex();
-
+#ifdef HAVE_LIBLOG4CXX
 			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << regex->getName());
+#endif
 			flow->regex = regex;
 #ifdef PYTHON_BINDING
         		if(regex->haveCallback()) {

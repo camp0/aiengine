@@ -25,7 +25,9 @@
 
 namespace aiengine {
 
+#ifdef HAVE_LIBLOG4CXX
 log4cxx::LoggerPtr PacketDispatcher::logger(log4cxx::Logger::getLogger("aiengine.packetdispatcher"));
+#endif
 
 void PacketDispatcher::setDefaultMultiplexer(MultiplexerPtr mux) {
 
@@ -39,8 +41,12 @@ void PacketDispatcher::openDevice(std::string device) {
 	char errorbuf[PCAP_ERRBUF_SIZE];
 
 	pcap_ = pcap_open_live(device.c_str(), PACKET_RECVBUFSIZE, 0, -1, errorbuf);
-	if(pcap_ == nullptr) { 
+	if(pcap_ == nullptr) {
+#ifdef HAVE_LIBLOG4CXX 
 		LOG4CXX_ERROR(logger,"Unknown device:" <<device.c_str());
+#else
+		std::cerr << "Unkown device:" << device.c_str() << std::endl;
+#endif
 		device_is_ready_ = false;
 		exit(-1);
 		return;
@@ -54,7 +60,11 @@ void PacketDispatcher::openDevice(std::string device) {
 			
 	stream_->assign(::dup(ifd));
 	device_is_ready_ = true;
+#ifdef HAVE_LIBLOG4CXX 
 	LOG4CXX_INFO(logger,"processing packets from:" <<device.c_str());	
+#else
+	std::cout << "processing packets from:" << device.c_str() << std::endl;
+#endif
 }
 
 
@@ -74,11 +84,19 @@ void PacketDispatcher::openPcapFile(std::string filename) {
         pcap_ = pcap_open_offline(filename.c_str(),errorbuf);
         if (pcap_ == nullptr) {
 		pcap_file_ready_ = false;
+#ifdef HAVE_LIBLOG4CXX 
 		LOG4CXX_ERROR(logger,"Unknown pcapfile:" << filename.c_str());
+#else
+		std::cerr << "Unkown pcapfile:" << filename.c_str() << std::endl;
+#endif
 		exit(-1);
 	} else {	
 		pcap_file_ready_ = true;
-		LOG4CXX_INFO(logger,"processing packets from:" <<filename.c_str());	
+#ifdef HAVE_LIBLOG4CXX 
+		LOG4CXX_INFO(logger,"processing packets from:" << filename.c_str());	
+#else
+		std::cout << "processing packets from:" <<  filename.c_str() << std::endl;
+#endif
 	}
 }
 
@@ -117,11 +135,12 @@ void PacketDispatcher::idle_handler(boost::system::error_code error) {
 	idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(idle_work_interval_));
         idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
         	boost::asio::placeholders::error));
-
+#ifdef HAVE_LIBLOG4CXX
 	LOG4CXX_DEBUG(logger,
 		"Packets per interval:" << total_packets_ - stats_.prev_total_packets_per_interval <<  
 		" usage seconds:" << difftime_user.tv_sec << ":"<< difftime_user.tv_usec <<
 		" sys:" << difftime_sys.tv_sec << ":" << difftime_sys.tv_usec ); 
+#endif
 
 	// TODO: Some statistics
 	// 3% cpu comsumption with 4000 packets on 5 seconds. usage seconds:0:4001 sys:0:168010
@@ -210,7 +229,6 @@ void PacketDispatcher::handle_receive(boost::system::error_code err) {
 	read_in_progress_ = false;
 
     	if (!err) {
-		std::cout << "yeah" <<std::endl;
 		++total_packets_;
 	}
 

@@ -26,7 +26,9 @@
 
 namespace aiengine {
 
+#ifdef HAVE_LIBLOG4CXX
 log4cxx::LoggerPtr DNSProtocol::logger(log4cxx::Logger::getLogger("aiengine.dns"));
+#endif
 
 void DNSProtocol::attachDNStoFlow(Flow *flow, std::string &domain) {
 
@@ -83,7 +85,9 @@ void DNSProtocol::processFlow(Flow *flow) {
 			if (dnm) {
 				SharedPointer<DomainName> domain_candidate = dnm->getDomainName(domain);
 				if (domain_candidate) {
+#ifdef HAVE_LIBLOG4CXX
 					LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << domain_candidate->getName());
+#endif
 #ifdef PYTHON_BINDING
 					if(domain_candidate->haveCallback()) {
 						PyGILState_STATE state(PyGILState_Ensure());

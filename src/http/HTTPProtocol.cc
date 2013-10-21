@@ -26,7 +26,9 @@
 
 namespace aiengine {
 
+#ifdef HAVE_LIBLOG4CXX
 log4cxx::LoggerPtr HTTPProtocol::logger(log4cxx::Logger::getLogger("aiengine.http"));
+#endif
 
 void HTTPProtocol::extractHostValue(Flow *flow, const char *header) {
 
@@ -109,7 +111,9 @@ void HTTPProtocol::processFlow(Flow *flow) {
                 		SharedPointer<DomainName> host_candidate = host_mng->getDomainName(host_name->getName());
 				if (host_candidate) {
 #ifdef PYTHON_BINDING
-					LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());	
+#ifdef HAVE_LIBLOG4CXX
+					LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
+#endif	
 					if(host_candidate->haveCallback()) {
 						PyGILState_STATE state(PyGILState_Ensure());
 						try {

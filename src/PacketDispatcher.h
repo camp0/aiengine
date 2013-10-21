@@ -32,7 +32,9 @@
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
+#ifdef HAVE_LIBLOG4CXX
 #include "log4cxx/logger.h"
+#endif
 #include "NetworkStack.h"
 #include "Multiplexer.h"
 #include "./ethernet/EthernetProtocol.h"
@@ -109,7 +111,9 @@ private:
 	void idle_handler(boost::system::error_code error);
 	void default_idle_function() const {};
 
+#ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
+#endif
 	PcapStreamPtr stream_;
 	bool pcap_file_ready_;
 	bool read_in_progress_;
