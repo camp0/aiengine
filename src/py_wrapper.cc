@@ -21,6 +21,10 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "NetworkStack.h"
 #include "StackLan.h"
 #include "StackMobile.h"
@@ -33,11 +37,15 @@
 #include "./Signature.h"
 #include <boost/python.hpp>
 #include <boost/asio.hpp>
+
+#ifdef HAVE_LIBLOG4CXX
 #include "log4cxx/logger.h"
 #include "log4cxx/basicconfigurator.h"
 
 using namespace log4cxx;
 using namespace log4cxx::helpers;
+#endif
+
 using namespace boost::python;
 using namespace aiengine;
 
@@ -50,9 +58,9 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	if (! PyEval_ThreadsInitialized()) {
     		PyEval_InitThreads();
 	}
-	
+#ifdef HAVE_LIBLOG4CXX	
 	BasicConfigurator::configure();
-
+#endif
 	boost::python::class_< std::ostream, boost::noncopyable >( "std_ostream",no_init); 
 
         // for overload the methods with the class

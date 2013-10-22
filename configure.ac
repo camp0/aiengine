@@ -33,10 +33,10 @@ AX_PYTHON_DEVEL([>= 2.7])
 AX_BOOST_PYTHON
 
 # Log4cxx header must exist and library must exist
-AC_CHECK_HEADER([log4cxx/logger.h],,
-  AC_MSG_ERROR([log4cxx/logger.h not found.  Exiting.]))
-AC_CHECK_LIB([log4cxx], [main],,
-  AC_MSG_ERROR([log4cxx library not found.  Exiting.]))
+AC_CHECK_HEADER([log4cxx/logger.h])
+AC_CHECK_LIB([log4cxx], [main],have_log4cxx=yes,have_log4cxx=no)
+
+AM_CONDITIONAL(SUPPORT_LOG4CXX, test "$have_log4cxx" = yes)
 
 AC_CHECK_DEBUG
 
@@ -80,5 +80,6 @@ echo "
   Linker.........: $LD $LDFLAGS $LIBS
   Boost..........: $boost_lib_version_req
   Python.........: $ax_python_bin
+  Log4cxx........: $have_log4cxx
 "
 

@@ -63,12 +63,19 @@ aiengine_core_sources =	Multiplexer.cc \
 			System.cc \
 			StackMobile.cc StackLan.cc 
 
-aiengine_SOURCES =      $(aiengine_core_sources) main.cc
+if SUPPORT_LOG4CXX
+  LOG4CXX_FLAGS = -llog4cxx
+else
+  LOG4CXX_FLAGS = 
+endif
 
+BOOST_LINK_CORE = -lboost_system -lboost_thread -lboost_regex
+
+aiengine_SOURCES =      $(aiengine_core_sources) main.cc
 aiengine_CPPFLAGS = $(BOOST_CPPFLAGS)
-aiengine_LDFLAGS = -DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ -lboost_system \
-			-lboost_thread -lboost_program_options -lboost_regex \
-			-lboost_filesystem -lpcap 
+aiengine_LDFLAGS = -DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ $(BOOST_LINK_CORE) \
+			-lboost_program_options \
+			-lboost_filesystem -lpcap $(LOG4CXX_FLAGS) 
 
 aiengine_LDADD = $(BOOST_LIBS)
 
@@ -100,7 +107,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		./names/test_names.cc \
 		tests.cc 
 
-tests_LDADD   = -lboost_system -lboost_unit_test_framework -lboost_regex -lpcap -lpthread
+tests_LDADD   = $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread
 tests_LDFLAGS = -DBOOST_ASIO_DISABLE_EPOLL
 
 BUILT_SOURCES = $(srcdir)/pyaiengine.so
@@ -108,8 +115,9 @@ BUILT_SOURCES = $(srcdir)/pyaiengine.so
 $(srcdir)/pyaiengine.so: py_wrapper.cc
 	g++ -fPIC -DPYTHON_BINDING $(aiengine_core_sources) \
         	py_wrapper.cc `pkg-config --cflags python-2.7` \
-		-I/usr/include/boost/python -std=c++11 -lpthread -lstdc++ -lboost_system \
-		-lboost_thread -lboost_regex -lboost_python -lpython2.7 -lpcap -llog4cxx -o pyaiengine.so -shared
+		-I/usr/include/boost/python -std=c++11 -lpthread -lstdc++ \
+		$(BOOST_LINK_CORE) -lboost_python -lpython2.7 -lpcap \
+		$(LOG4CXX_FLAGS) -o pyaiengine.so -shared
 
 CLEANFILES = *.o *.lo *.so
 

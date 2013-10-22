@@ -30,8 +30,10 @@
 #include <boost/filesystem.hpp>
 #include <fstream>
 #include <boost/variant.hpp>
+#ifdef HAVE_LIBLOG4CXX
 #include "log4cxx/logger.h"
 #include "log4cxx/basicconfigurator.h"
+#endif
 #include "PacketDispatcher.h"
 #include "./frequency/FrequencyGroup.h"
 #include "./learner/LearnerEngine.h"
@@ -40,8 +42,11 @@
 #include "StackMobile.h"
 
 using namespace aiengine;
+
+#ifdef HAVE_LIBLOG4CXX
 using namespace log4cxx;
 using namespace log4cxx::helpers;
+#endif
 
 aiengine::SystemPtr system_stats;
 aiengine::PacketDispatcherPtr pktdis;
@@ -311,8 +316,9 @@ int main(int argc, char* argv[]) {
 
     	signal(SIGINT, signalHandler);  
 
+#ifdef HAVE_LIBLOG4CXX
 	BasicConfigurator::configure();
-	
+#endif	
 	pktdis = PacketDispatcherPtr(new PacketDispatcher());
 
 	if (option_stack_name.compare("lan") == 0) {
