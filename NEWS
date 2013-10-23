@@ -1,0 +1,1 @@
+It seems that on g++4.7.2 there is a bug with the optimization, so we keep the code on -O0.

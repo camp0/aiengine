@@ -251,7 +251,8 @@ StackMobile::StackMobile() {
 #ifdef HAVE_LIBLOG4CXX
 	LOG4CXX_INFO (logger, name_<< " ready.");
 #else
-	std::cout << name_ << " ready." << std::endl;
+        boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+        std::cout << "[" << now << "] " << name_ << " ready." << std::endl; 
 #endif
 }
 

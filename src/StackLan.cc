@@ -204,7 +204,8 @@ StackLan::StackLan() {
 #ifdef HAVE_LIBLOG4CXX
 	LOG4CXX_INFO (logger, name_<< " ready.");
 #else
-	std::cout << name_ << " ready." << std::endl;
+	boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+	std::cout << "[" << now << "] " << name_ << " ready." << std::endl;
 #endif
 
 }
@@ -315,7 +316,8 @@ void StackLan::enableFrequencyEngine(bool enable) {
 #ifdef HAVE_LIBLOG4CXX	
 		LOG4CXX_INFO (logger, "Enable FrequencyEngine on " << name_ );
 #else
-		std::cout << "Enable FrequencyEngine on " << name_ << std::endl;
+		boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+        	std::cout << "[" << now << "] " << "Enable FrequencyEngine on " << name_ << std::endl;
 #endif
 	} else {
 		freqs_tcp_->destroyFrequencies(tcp_flows_created);	
@@ -335,7 +337,8 @@ void StackLan::enableNIDSEngine(bool enable) {
 #ifdef HAVE_LIBLOG4CXX
 		LOG4CXX_INFO (logger, "Enable NIDSEngine on " << name_ );
 #else
-		std::cout << "Enable NIDSEngine on " << name_ << std::endl;
+		boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+                std::cout << "[" << now << "] " << "Enable NIDSEngine on " << name_ << std::endl;
 #endif
 	} else {
 		ff_tcp_->removeUpFlowForwarder(ff_tcp_generic_);
@@ -397,7 +400,8 @@ void StackLan::enableLinkLayerTagging(std::string type) {
 #ifdef HAVE_LIBLOG4CXX
                         LOG4CXX_WARN (logger, "Unknown tagging type " << type );
 #else
-			std::cout << "Unknown tagging type " << type << std::endl;
+                	boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+                	std::cout << "[" << now << "] " << "Unknown tagging type " << type << std::endl; 
 #endif
                 }
         }

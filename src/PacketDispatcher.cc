@@ -61,9 +61,10 @@ void PacketDispatcher::openDevice(std::string device) {
 	stream_->assign(::dup(ifd));
 	device_is_ready_ = true;
 #ifdef HAVE_LIBLOG4CXX 
-	LOG4CXX_INFO(logger,"processing packets from:" <<device.c_str());	
+	LOG4CXX_INFO(logger,"Processing packets from:" <<device.c_str());	
 #else
-	std::cout << "processing packets from:" << device.c_str() << std::endl;
+       	boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+       	std::cout << "[" << now << "] " << "Processing packets from:" <<  device.c_str() << std::endl; 
 #endif
 }
 
@@ -93,9 +94,10 @@ void PacketDispatcher::openPcapFile(std::string filename) {
 	} else {	
 		pcap_file_ready_ = true;
 #ifdef HAVE_LIBLOG4CXX 
-		LOG4CXX_INFO(logger,"processing packets from:" << filename.c_str());	
+		LOG4CXX_INFO(logger,"Processing packets from:" << filename.c_str());	
 #else
-		std::cout << "processing packets from:" <<  filename.c_str() << std::endl;
+        	boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+        	std::cout << "[" << now << "] " << "Processing packets from:" <<  filename.c_str() << std::endl; 
 #endif
 	}
 }

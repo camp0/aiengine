@@ -8,37 +8,81 @@ AC_CONFIG_MACRO_DIR([m4])
 m4_include([m4/ax_python_devel.m4])
 m4_include([m4/ax_boost_base.m4])
 m4_include([m4/ax_boost_python.m4])
-m4_include([m4/debug.m4])
+m4_include([m4/ax_boost_asio.m4])
+m4_include([m4/ax_boost_filesystem.m4])
+m4_include([m4/ax_boost_regex.m4])
+m4_include([m4/ax_boost_system.m4])
+m4_include([m4/ax_boost_unit_test_framework.m4])
+m4_include([m4/ax_boost_program_options.m4])
 m4_include([m4/ac_c++11.m4])
 
 AC_PREREQ(2.59)
 
 AC_PROG_INSTALL
 
+
 AC_LANG([C++])
-AC_PROG_CXX
+AC_PROG_CXX([g++ c++])
 AC_PROG_MAKE_SET
 AC_HEADER_STDC
 
-CXXFLAGS="-O0 -g -std=c++11 -Wno-write-strings"
-AC_COMPILE_STDCXX_11
+AC_COMPILE_STDCXX_11([ext],[mandatory])
 
+if test "$ac_cv_cxx_compile_cxx11_cxx" = no ||
+    test "$ac_cv_cxx_compile_cxx11_gxx" = no; then
+    AC_MSG_ERROR([C++11 support is an essential dependency for AIEngine, install it.])
+else
+    AM_CXXFLAGS="$AM_CXXFLAGS -std=c++11"
+fi
+
+AM_CXXFLAGS="$AM_CXXFLAGS -Wno-write-strings"
+# Dont use it unless you know what you are doing
 # CXXFLAGS="-std=c++11"
 # CXXFLAGS="-std=c++0x"
 
+
 dnl BOOST
 AX_BOOST_BASE([1.49.0])
+AX_BOOST_ASIO
+AX_BOOST_SYSTEM
+AX_BOOST_REGEX
+AX_BOOST_FILESYSTEM
+AX_BOOST_PROGRAM_OPTIONS
 
 AX_PYTHON_DEVEL([>= 2.7])
 AX_BOOST_PYTHON
 
-# Log4cxx header must exist and library must exist
+##########################################################################
+# Log4cxx support 
+##########################################################################
 AC_CHECK_HEADER([log4cxx/logger.h])
 AC_CHECK_LIB([log4cxx], [main],have_log4cxx=yes,have_log4cxx=no)
 
 AM_CONDITIONAL(SUPPORT_LOG4CXX, test "$have_log4cxx" = yes)
 
-AC_CHECK_DEBUG
+##########################################################################
+# debug compilation support
+##########################################################################
+
+AC_MSG_CHECKING([whether to build with debug information])
+AC_ARG_ENABLE([debug],
+    [AS_HELP_STRING([--enable-debug],
+        [enable debug data generation (def=no)])],
+    [debugit="$enableval"],
+    [debugit=no])
+AC_MSG_RESULT([$debugit])
+
+if test x"$debugit" = x"yes"; then
+    AC_DEFINE([DEBUG],[],[Debug Mode])
+    AM_CXXFLAGS="$AM_CXXFLAGS -g -Wall -Werror -Wno-uninitialized -O0"
+else
+    AC_DEFINE([NDEBUG],[],[No-debug Mode])
+    AM_CXXFLAGS="$AM_CXXFLAGS -O0"
+fi
+
+CXXFLAGS=$AM_CXXFLAGS
+
+##########################################################################
 
 AC_CONFIG_FILES([
 Makefile
@@ -75,8 +119,9 @@ echo "
   aiengine 
   ($PACKAGE_NAME) version $PACKAGE_VERSION
   Prefix.........: $prefix
-  Debug Build....: $debug
-  C++ Compiler...: $CXX $CXXFLAGS $CPPFLAGS
+  Debug Build....: $debugit
+  C++ Compiler...: $CXX $AM_CXXFLAGS $CPPFLAGS 
+  C++11 support..: $ac_cv_cxx_compile_cxx11_cxx
   Linker.........: $LD $LDFLAGS $LIBS
   Boost..........: $boost_lib_version_req
   Python.........: $ax_python_bin
