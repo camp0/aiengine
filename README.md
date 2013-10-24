@@ -135,7 +135,7 @@ The main objects that the python module provide are the followin. Check the wiki
 Compile AIEngine
 ----------------
 
-    $ git clone git://bitbucket.com/camp0/aiengine
+    $ git clone https://bitbucket.com/camp0/aiengine
     $ ./autogen.sh
     $ ./configure
     $ make
@@ -147,5 +147,5 @@ AIEngine is under the terms of GPLv2 and is under develop.
 
 Check out the AIEngine source with 
 
-    $ git clone git://bitbucket.com/camp0/aiengine
+    $ git clone https://bitbucket.com/camp0/aiengine
 
