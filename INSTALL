@@ -1,4 +1,14 @@
+Installing on Linux systems.
+----------------------------
+
+- Notice that g++ with c++11 is available on compilers up to 4.7.6 versions.
+- Boost also is need on versions 1.48 or greater.
+- Libpcap 0.8 
+- Log4cxx is optional
+
 ./configure
 make 
 make install
+
+
 

@@ -51,7 +51,7 @@ AC_CHECK_LIB([pcap], [main],,
 # Boost support
 ##########################################################################
 dnl BOOST
-AX_BOOST_BASE([1.49.0])
+AX_BOOST_BASE([1.48.0])
 AX_BOOST_ASIO
 AX_BOOST_SYSTEM
 AX_BOOST_REGEX
@@ -137,9 +137,5 @@ echo "
   Python..............: $PYTHON_VERSION $ax_python_bin 
   Python include path.: $python_path
   Log4cxx.............: $have_log4cxx
-  pepe: $ax_python_lib
-  pep2: $with_boost_python
-  pepe4: $ax_boost_python_lib
- boost flags: $BOOST_CPPFLAGS
 "
 
