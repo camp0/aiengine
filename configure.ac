@@ -20,7 +20,6 @@ AC_PREREQ(2.59)
 
 AC_PROG_INSTALL
 
-
 AC_LANG([C++])
 AC_PROG_CXX([g++ c++])
 AC_PROG_MAKE_SET
@@ -40,7 +39,17 @@ AM_CXXFLAGS="$AM_CXXFLAGS -Wno-write-strings"
 # CXXFLAGS="-std=c++11"
 # CXXFLAGS="-std=c++0x"
 
+##########################################################################
+# Pcap support
+##########################################################################
+AC_CHECK_HEADER([pcap.h])
+AC_CHECK_LIB([pcap], [main],,
+    AC_MSG_ERROR([Pcap support is an essential dependency for AIEngine, install it.]))
 
+
+##########################################################################
+# Boost support
+##########################################################################
 dnl BOOST
 AX_BOOST_BASE([1.49.0])
 AX_BOOST_ASIO
@@ -61,7 +70,7 @@ AC_CHECK_LIB([log4cxx], [main],have_log4cxx=yes,have_log4cxx=no)
 AM_CONDITIONAL(SUPPORT_LOG4CXX, test "$have_log4cxx" = yes)
 
 ##########################################################################
-# debug compilation support
+# Debug compilation support
 ##########################################################################
 
 AC_MSG_CHECKING([whether to build with debug information])
@@ -118,13 +127,19 @@ AC_OUTPUT
 echo "
   aiengine 
   ($PACKAGE_NAME) version $PACKAGE_VERSION
-  Prefix.........: $prefix
-  Debug Build....: $debugit
-  C++ Compiler...: $CXX $AM_CXXFLAGS $CPPFLAGS 
-  C++11 support..: $ac_cv_cxx_compile_cxx11_cxx
-  Linker.........: $LD $LDFLAGS $LIBS
-  Boost..........: $boost_lib_version_req
-  Python.........: $ax_python_bin
-  Log4cxx........: $have_log4cxx
+  Prefix..............: $prefix
+  Debug Build.........: $debugit
+  C++ Compiler........: $CXX $AM_CXXFLAGS $CPPFLAGS 
+  C++11 support.......: $ac_cv_cxx_compile_cxx11_cxx
+  Linker..............: $LD $LDFLAGS $LIBS
+  Boost include.......: $BOOST_CPPFLAGS/boost
+  Boost...............: $boost_lib_version_req
+  Python..............: $PYTHON_VERSION $ax_python_bin 
+  Python include path.: $python_path
+  Log4cxx.............: $have_log4cxx
+  pepe: $ax_python_lib
+  pep2: $with_boost_python
+  pepe4: $ax_boost_python_lib
+ boost flags: $BOOST_CPPFLAGS
 "
 
