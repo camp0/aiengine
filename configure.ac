@@ -25,7 +25,7 @@ AC_PROG_CXX([g++ c++])
 AC_PROG_MAKE_SET
 AC_HEADER_STDC
 
-AC_COMPILE_STDCXX_11([ext],[mandatory])
+AC_COMPILE_STDCXX_11([noext],[mandatory])
 
 if test "$ac_cv_cxx_compile_cxx11_cxx" = no ||
     test "$ac_cv_cxx_compile_cxx11_gxx" = no; then

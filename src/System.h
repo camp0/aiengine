@@ -31,6 +31,7 @@
 #include <iostream>
 #include <iomanip> // setw
 #include <sys/resource.h>
+#include <sys/utsname.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace aiengine {
@@ -42,16 +43,24 @@ public:
     	System() {
 		start_time_ = boost::posix_time::microsec_clock::local_time();
 		getrusage(RUSAGE_SELF,&usage_);
+		uname(&system_info_);
 	}
     	virtual ~System() {}
 
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};	
 
+	std::string getOSName() const;
+	std::string getNodeName() const;
+	std::string getReleaseName() const;
+	std::string getVersionName() const;
+	std::string getMachineName() const;
+
 private:
 	boost::posix_time::ptime start_time_;
 	boost::posix_time::ptime end_time_;
 	struct rusage usage_;
+	struct utsname system_info_;
 };
 
 typedef std::shared_ptr<System> SystemPtr;

@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _IPv6Protocol_H_
-#define _IPv6Protocol_H_
+#ifndef SRC_IP6_IPV6PROTOCOL_H_
+#define SRC_IP6_IPV6PROTOCOL_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -45,23 +45,28 @@ namespace aiengine {
 class IPv6Protocol: public Protocol 
 {
 public:
-    	explicit IPv6Protocol():ip6_header_(nullptr){ name_="IPv6Protocol";};
-    	virtual ~IPv6Protocol() {};
+    	explicit IPv6Protocol():ip6_header_(nullptr),total_bytes_(0)
+		{ name_="IPv6Protocol";}
+    	virtual ~IPv6Protocol() {}
 	
 	static const u_int16_t id = ETHERTYPE_IPV6;
-	static const int header_size = 20;
-	int getHeaderSize() const { return header_size;};
+	static const int header_size = 40;
+	int getHeaderSize() const { return header_size;}
 
-	uint64_t getTotalPackets() const { return total_packets_;};
-	uint64_t getTotalValidatedPackets() const { return total_validated_packets_;};
-	uint64_t getTotalMalformedPackets() const { return total_malformed_packets_;};
+        int64_t getTotalBytes() const { return total_bytes_;}
+	int64_t getTotalPackets() const { return total_packets_;}
+	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
+	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
 
         const char *getName() { return name_.c_str();};
 
 	void processFlow(Flow *flow) {}; // This protocol dont generate any flow 
-	void processPacket();
+        void processPacket(Packet& packet);
+
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
+
+	void setStatisticsLevel(int level) {}
 
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
         MultiplexerPtrWeak getMultiplexer() { mux_;};
@@ -69,34 +74,35 @@ public:
         void setFlowForwarder(FlowForwarderPtrWeak ff) {};
         FlowForwarderPtrWeak getFlowForwarder() {};
 
-        void setHeader(unsigned char *raw_packet)
-        {
+        void setHeader(unsigned char *raw_packet) {
+        
                 ip6_header_ = reinterpret_cast <struct ip6_hdr*> (raw_packet);
         }
 
-	// Condition for say that a packet is ipv6 
-	bool ip6Checker() 
-	{
-		Packet *pkt = mux_.lock()->getCurrentPacket();
-		int length = pkt->getLength();
+        // Condition for say that a packet is IPv6
+        bool ip6Checker(Packet &packet) {
 
-		// extra check
-		setHeader(pkt->getPayload());
+                int length = packet.getLength();
 
-		if((length >= header_size))
-		//if((length >= header_size)&&(isIPver4()))
-		{
-			++total_validated_packets_; 
-			return true;
-		}
-		else
-		{
-			++total_malformed_packets_;
-			return false;
-		}
-	}
+                setHeader(packet.getPayload());
+                if ((length >= header_size)&&(isIPver6())) {
+                        ++total_validated_packets_;
+                        return true;
+                } else {
+                        ++total_malformed_packets_;
+                        return false;
+                }
+        }
+
+	bool isIPver6() const { return ip6_header_->ip6_vfc >> 4 == 6 ;}
+	u_int8_t getProtocol() const { return ip6_header_->ip6_nxt;}
+    	u_int16_t getPayloadLength() const { return ntohs(ip6_header_->ip6_plen); }
     	char* getSrcAddrDotNotation() ; 
+    	char* getDstAddrDotNotation() ; 
 /*
+
+
+
     	u_int8_t getTTL() const { return ip_header_->ttl; }
     	u_int16_t getPacketLength() const { return ntohs(ip_header_->tot_len); }
     	u_int16_t getIPHeaderLength() const { return ip_header_->ihl * 4; }
@@ -115,10 +121,11 @@ public:
 private:
 	MultiplexerPtrWeak mux_;
 	struct ip6_hdr *ip6_header_;
+	int64_t total_bytes_;
 };
 
 typedef std::shared_ptr<IPv6Protocol> IPv6ProtocolPtr;
 
 } // namespace aiengine
 
-#endif
+#endif // SRC_IP6_IPV6PROTOCOL_H_

@@ -26,26 +26,47 @@
 
 namespace aiengine {
 
+/*
+printf("%s > ", inet_ntop(AF_INET6, (struct in6_addr *)&(ip6h->ip6_src), ipaddr, sizeof(ipaddr)));
+    printf("%s", inet_ntop(AF_INET6, (struct in6_addr *)&(ip6h->ip6_dst), ipaddr, sizeof(ipaddr)));
+    pt = getprotobynumber(ip6h->ip6_nxt);   // get protocol name
+    printf(" %s HopLim:%d TC:%d PayloadLen:%d\n",
+          pt->p_name, ip6h->ip6_hlim,
+          ((ip6h->ip6_flow >> 20) & 0xFF), ntohs(ip6h->ip6_plen));
+*/
+
 char* IPv6Protocol::getSrcAddrDotNotation()
 {
-	static char straddr[INET6_ADDRSTRLEN];
+	static char straddr_src[INET6_ADDRSTRLEN];
 
-	inet_ntop(AF_INET6,&ip6_header_->ip6_src,straddr,INET6_ADDRSTRLEN);
+	inet_ntop(AF_INET6,(struct in6_addr*)&(ip6_header_->ip6_src),straddr_src,INET6_ADDRSTRLEN);
 
-	return straddr;
+	return straddr_src;
 }
 
-void IPv6Protocol::processPacket()
+char* IPv6Protocol::getDstAddrDotNotation()
+{
+        static char straddr_dst[INET6_ADDRSTRLEN];
+
+        inet_ntop(AF_INET6,&ip6_header_->ip6_dst,straddr_dst,INET6_ADDRSTRLEN);
+
+        return straddr_dst;
+}
+
+void IPv6Protocol::processPacket(Packet& packet)
 {
         MultiplexerPtr mux = mux_.lock();
 
+        ++total_packets_;
+
+        //mux->ipsrc = getSrcAddr();
+        //mux->ipdst = getDstAddr();
+        //mux->total_length = packet.getLength();
+        total_bytes_ += packet.getLength();
+
+        mux->setNextProtocolIdentifier(getProtocol());
+        packet.setPrevHeaderSize(header_size);
 	
-	//mux->ipsrc = getSrcAddr();
-	//mux->ipdst = getDstAddr();
-	//mux->total_length = getPacketLength();
-	//mux->setNextProtocolIdentifier(getProtocol());
-	//std::cout << __FILE__ <<":"<< this<< ":";
-	//std::cout << " ipsrc:" << mux->ipsrc << " ipdst:"<< mux->ipdst <<std::endl;
 
 }
 void IPv6Protocol::statistics(std::basic_ostream<char>& out)

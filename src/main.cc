@@ -316,6 +316,15 @@ int main(int argc, char* argv[]) {
 
     	signal(SIGINT, signalHandler);  
 
+        system_stats = SystemPtr(new System());
+
+        // Some cool banners
+        std::cout << "AIEngine running on " << system_stats->getOSName();
+        std::cout << " kernel " << system_stats->getReleaseName();
+        std::cout << " " << system_stats->getVersionName();
+        std::cout << " " << system_stats->getMachineName();
+        std::cout << std::endl;
+
 #ifdef HAVE_LIBLOG4CXX
 	BasicConfigurator::configure();
 #endif	
@@ -363,8 +372,6 @@ int main(int argc, char* argv[]) {
 	// connect with the stack
         pktdis->setStack(stack);
 
-	system_stats = SystemPtr(new System());
-	
 	atexit(iaengineExit);
 
 	if(var_map.count("pcapfile") == 1)

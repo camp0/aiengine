@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = 	tests_packets.h README.txt mpls_test_packets.h torrent_test_packets.h dns_test_packets.h 
+EXTRA_DIST = 	tests_packets.h README.txt mpls_test_packets.h torrent_test_packets.h dns_test_packets.h ipv6_test_packets.h 
 
 MAINTAINERCLEANFILES = Makefile.in 
 

@@ -25,8 +25,8 @@
 
 namespace aiengine {
 
-void System::statistics(std::basic_ostream<char>& out)
-{
+void System::statistics(std::basic_ostream<char>& out) {
+
 	struct rusage usage;
 
 	getrusage(RUSAGE_SELF,&usage);
@@ -51,6 +51,41 @@ void System::statistics(std::basic_ostream<char>& out)
         out << "\t" << "Voluntary context switches:  " << std::setw(5) << usage.ru_nvcsw <<std::endl;
         out << "\t" << "Involuntary context switches:" << std::setw(5) << usage.ru_nivcsw <<std::endl;
 
+}
+
+std::string System::getOSName() const {
+	std::ostringstream os;
+
+        os << system_info_.sysname;
+	return os.str();
+}
+
+std::string System::getNodeName() const {
+	std::ostringstream os;
+
+        os << system_info_.nodename;
+	return os.str();
+}
+
+std::string System::getReleaseName() const {
+	std::ostringstream os;
+
+        os << system_info_.release;
+	return os.str();
+}
+
+std::string System::getVersionName() const {
+	std::ostringstream os;
+
+        os << system_info_.version;
+	return os.str();
+}
+
+std::string System::getMachineName() const {
+	std::ostringstream os;
+
+        os << system_info_.machine;
+	return os.str();
 }
 
 } // namespace aiengine
