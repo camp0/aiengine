@@ -35,8 +35,8 @@ printf("%s > ", inet_ntop(AF_INET6, (struct in6_addr *)&(ip6h->ip6_src), ipaddr,
           ((ip6h->ip6_flow >> 20) & 0xFF), ntohs(ip6h->ip6_plen));
 */
 
-char* IPv6Protocol::getSrcAddrDotNotation()
-{
+char* IPv6Protocol::getSrcAddrDotNotation() const {
+
 	static char straddr_src[INET6_ADDRSTRLEN];
 
 	inet_ntop(AF_INET6,(struct in6_addr*)&(ip6_header_->ip6_src),straddr_src,INET6_ADDRSTRLEN);
@@ -44,8 +44,8 @@ char* IPv6Protocol::getSrcAddrDotNotation()
 	return straddr_src;
 }
 
-char* IPv6Protocol::getDstAddrDotNotation()
-{
+char* IPv6Protocol::getDstAddrDotNotation() const {
+
         static char straddr_dst[INET6_ADDRSTRLEN];
 
         inet_ntop(AF_INET6,&ip6_header_->ip6_dst,straddr_dst,INET6_ADDRSTRLEN);
@@ -53,8 +53,8 @@ char* IPv6Protocol::getDstAddrDotNotation()
         return straddr_dst;
 }
 
-void IPv6Protocol::processPacket(Packet& packet)
-{
+void IPv6Protocol::processPacket(Packet& packet) {
+
         MultiplexerPtr mux = mux_.lock();
 
         ++total_packets_;
@@ -66,11 +66,10 @@ void IPv6Protocol::processPacket(Packet& packet)
 
         mux->setNextProtocolIdentifier(getProtocol());
         packet.setPrevHeaderSize(header_size);
-	
-
 }
-void IPv6Protocol::statistics(std::basic_ostream<char>& out)
-{
+
+void IPv6Protocol::statistics(std::basic_ostream<char>& out) {
+
         out << "IPv6Protocol(" << this << ") statistics" << std::dec <<  std::endl;
         out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
         out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;

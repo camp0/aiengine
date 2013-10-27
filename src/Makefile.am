@@ -16,6 +16,7 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			./vlan/VLanProtocol.h \
 			./mpls/MPLSProtocol.h \
 			./ip/IPProtocol.h \
+			./ip6/IPv6Protocol.h \
 			./icmp/ICMPProtocol.h \
 			./udp/UDPProtocol.h \
 			./tcp/TCPProtocol.h \
@@ -45,6 +46,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			./vlan/VLanProtocol.cc \
 			./mpls/MPLSProtocol.cc \
 			./ip/IPProtocol.cc \
+			./ip6/IPv6Protocol.cc \
 			./icmp/ICMPProtocol.cc \
 			./udp/UDPProtocol.cc \
 			./tcp/TCPProtocol.cc \
@@ -91,6 +93,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		./mpls/test_mpls.cc \
 		./flow/test_flows.cc \
 		./ip/test_ip.cc \
+		./ip6/test_ip6.cc \
 		./udp/test_udp.cc \
 		./tcp/test_tcp.cc \
 		./tcpgeneric/test_tcpgeneric.cc \

@@ -36,62 +36,9 @@ BOOST_FIXTURE_TEST_SUITE(ip6_suite,StackEthernetIPv6)
 
 BOOST_AUTO_TEST_CASE (test1_ip6)
 {
-        std::string dstip("2002:4637:d5d3::4637:d5d3");
-        std::string srctip("2001:4860:0:2001::68");
+        std::string dstip("ff02::1:3");
+        std::string srcip("fe80::9c09:b416:768:ff42");
 
-        unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get);
-        int length = raw_packet_ethernet_ipv6_tcp_http_get_length;
-
-        ip6->setHeader(packet);
-
-	std::cout << "is ipv6:" << ip6->isIPver6() << std::endl;
-	std::cout << ip6->getSrcAddrDotNotation() << std::endl;
-	std::cout << ip6->getDstAddrDotNotation() << std::endl;
-	std::cout << ip6->getProtocol() << std::endl;
-	std::cout << "length:" << ip6->getPayloadLength() << std::endl;
-/*        BOOST_CHECK(ip->getTotalPackets() == 0);
-        BOOST_CHECK(ip->getTTL() == 128);
-        BOOST_CHECK(ip->getIPHeaderLength() == 20);
-        BOOST_CHECK(ip->getProtocol() == IPPROTO_TCP);
-        BOOST_CHECK(ip->getPacketLength() == length);
-
-        BOOST_CHECK(localip.compare(ip->getSrcAddrDotNotation())==0);
-        BOOST_CHECK(remoteip.compare(ip->getDstAddrDotNotation())==0);
-
-*/
-
-}
-
-BOOST_AUTO_TEST_CASE (test2_ip6)
-{
-        std::string dstip("2002:4637:d5d3::4637:d5d3");
-        std::string srctip("2001:4860:0:2001::68");
-
-        unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_udp_llmnr);
-        int length = raw_packet_ethernet_ipv6_udp_llmnr_length;
-
-        ip6->setHeader(packet);
-
-	std::cout << "is ipv6:" << ip6->isIPver6() << std::endl;
-        std::cout << ip6->getSrcAddrDotNotation() << std::endl;
-        std::cout << ip6->getDstAddrDotNotation() << std::endl;
-	std::cout << ip6->getProtocol() << std::endl;
-	std::cout << "length:" << ip6->getPayloadLength() << std::endl;
-/*        BOOST_CHECK(ip->getTotalPackets() == 0);
-        BOOST_CHECK(ip->getTTL() == 128);
-        BOOST_CHECK(ip->getIPHeaderLength() == 20);
-        BOOST_CHECK(ip->getProtocol() == IPPROTO_TCP);
-        BOOST_CHECK(ip->getPacketLength() == length);
-
-        BOOST_CHECK(localip.compare(ip->getSrcAddrDotNotation())==0);
-        BOOST_CHECK(remoteip.compare(ip->getDstAddrDotNotation())==0);
-
-*/
-
-}
-
-BOOST_AUTO_TEST_CASE (test3_ip6) // ethernet -> ip
-{
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_udp_llmnr);
         int length = raw_packet_ethernet_ipv6_udp_llmnr_length;
 
@@ -108,12 +55,76 @@ BOOST_AUTO_TEST_CASE (test3_ip6) // ethernet -> ip
         mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forwardPacket(packet);
 
+        BOOST_CHECK(ip6->isIPver6() == true);
+	BOOST_CHECK(ip6->getPayloadLength() == 41);
+	BOOST_CHECK(srcip.compare(ip6->getSrcAddrDotNotation()) == 0);
+	BOOST_CHECK(dstip.compare(ip6->getDstAddrDotNotation()) == 0);
+	BOOST_CHECK(ip6->getProtocol() == IPPROTO_UDP);
+}
+
+BOOST_AUTO_TEST_CASE (test2_ip6)
+{
+        std::string srcip("2001:470:d37b:1:214:2aff:fe33:747e");
+        std::string dstip("2001:470:d37b:2::6");
+
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_icmpv6_ping_request);
+        int length = raw_packet_ethernet_ipv6_icmpv6_ping_request_length;
+
+        Packet packet(pkt,length,0);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        // Sets the raw packet to a valid ethernet header
+        BOOST_CHECK(eth->getEthernetType() == ETH_P_IPV6);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        //mux_eth->setPacketInfo(0,packet,length);
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        BOOST_CHECK(ip6->isIPver6() == true);
+	BOOST_CHECK(ip6->getPayloadLength() == 64);
+	BOOST_CHECK(srcip.compare(ip6->getSrcAddrDotNotation()) == 0);
+	BOOST_CHECK(dstip.compare(ip6->getDstAddrDotNotation()) == 0);
+	BOOST_CHECK(ip6->getProtocol() == IPPROTO_ICMPV6);
+}
+
+BOOST_AUTO_TEST_CASE (test3_ip6) // ethernet -> ip
+{
+        std::string srcip("2002:4637:d5d3::4637:d5d3");
+        std::string dstip("2001:4860:0:2001::68");
+        
+	unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get);
+        int length = raw_packet_ethernet_ipv6_tcp_http_get_length;
+
+        Packet packet(pkt,length,0);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        // Sets the raw packet to a valid ethernet header
+        BOOST_CHECK(eth->getEthernetType() == ETH_P_IPV6);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        //mux_eth->setPacketInfo(0,packet,length);
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+	BOOST_CHECK(ip6->isIPver6() == true);
+	
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
 
         BOOST_CHECK(ip6->getTotalPackets() == 1);
         BOOST_CHECK(ip6->getTotalValidatedPackets() == 1);
         BOOST_CHECK(ip6->getTotalMalformedPackets() == 0);
         BOOST_CHECK(ip6->getTotalBytes() == length -14);
+
+        BOOST_CHECK(ip6->isIPver6() == true);
+        BOOST_CHECK(ip6->getPayloadLength() == 797+20);
+        BOOST_CHECK(srcip.compare(ip6->getSrcAddrDotNotation()) == 0);
+        BOOST_CHECK(dstip.compare(ip6->getDstAddrDotNotation()) == 0);
+        BOOST_CHECK(ip6->getProtocol() == IPPROTO_TCP);
 
 }
 

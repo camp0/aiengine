@@ -85,7 +85,7 @@ public:
                 int length = packet.getLength();
 
                 setHeader(packet.getPayload());
-                if ((length >= header_size)&&(isIPver6())) {
+	        if ((length >= header_size)&&(isIPver6())) {
                         ++total_validated_packets_;
                         return true;
                 } else {
@@ -94,11 +94,11 @@ public:
                 }
         }
 
-	bool isIPver6() const { return ip6_header_->ip6_vfc >> 4 == 6 ;}
+	bool isIPver6() const { return (ip6_header_->ip6_vfc >> 4) == 6 ;}
 	u_int8_t getProtocol() const { return ip6_header_->ip6_nxt;}
     	u_int16_t getPayloadLength() const { return ntohs(ip6_header_->ip6_plen); }
-    	char* getSrcAddrDotNotation() ; 
-    	char* getDstAddrDotNotation() ; 
+    	char* getSrcAddrDotNotation() const ; 
+    	char* getDstAddrDotNotation() const ; 
 /*
 
 
