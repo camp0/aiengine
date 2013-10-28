@@ -30,6 +30,7 @@
 
 #include "../Pointer.h"
 #include "../Packet.h"
+#include "../IPAddress.h"
 #include "../regex/Regex.h"
 #include "../frequency/Frequencies.h"
 #include "../frequency/PacketFrequencies.h"
@@ -60,21 +61,21 @@ public:
 
 	inline void setFiveTuple(u_int32_t src_a,u_int16_t src_p,u_int16_t proto,u_int32_t dst_a,u_int16_t dst_p) {
 	
-		source_address_ = src_a;
-		dest_address_ = dst_a;
+		address_.setSourceAddress(src_a);
+		address_.setDestinationAddress(dst_a);
 		source_port_ = src_p;
 		dest_port_ = dst_p;
 		protocol_ = proto;
 	}
 
-	u_int32_t getSourceAddress() const { return source_address_;}
-	u_int32_t getDestinationAddress() const { return dest_address_;}
+	u_int32_t getSourceAddress() const { return address_.getSourceAddress();}
+	u_int32_t getDestinationAddress() const { return address_.getDestinationAddress();}
 	u_int16_t getSourcePort() const { return source_port_;}
 	u_int16_t getDestinationPort() const { return dest_port_;}
 	u_int16_t getProtocol() const { return protocol_;}
 
-	char* getSrcAddrDotNotation() const { in_addr a; a.s_addr=source_address_; return inet_ntoa(a); }
-	char* getDstAddrDotNotation() const { in_addr a; a.s_addr=dest_address_; return inet_ntoa(a); }
+	char* getSrcAddrDotNotation() const { in_addr a; a.s_addr=address_.getSourceAddress(); return inet_ntoa(a); }
+	char* getDstAddrDotNotation() const { in_addr a; a.s_addr=address_.getDestinationAddress(); return inet_ntoa(a); }
 
 	int32_t total_bytes;
 	int32_t total_packets_l7;
@@ -100,8 +101,7 @@ public:
 		total_bytes = 0;
 		total_packets = 0;
 		total_packets_l7 = 0;
-		source_address_ =0;
-		dest_address_ = 0;
+		address_.reset();
 		source_port_ = 0;
 		dest_port_ = 0;
 		protocol_ = 0;		
@@ -138,8 +138,7 @@ public:
 
 private:
 	unsigned long hash_;
-	u_int32_t source_address_;
-	u_int32_t dest_address_;
+	IPAddress address_;
 	u_int16_t source_port_;
 	u_int16_t dest_port_;
 	u_int16_t protocol_;

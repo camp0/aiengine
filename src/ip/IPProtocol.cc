@@ -32,8 +32,8 @@ void IPProtocol::processPacket(Packet& packet) {
 
 	++total_packets_;
 
-	mux->ipsrc = getSrcAddr();
-	mux->ipdst = getDstAddr();
+	mux->address.setSourceAddress(getSrcAddr());
+	mux->address.setDestinationAddress(getDstAddr());
 	mux->total_length = packet.getLength();
 	total_bytes_ += packet.getLength();
 	

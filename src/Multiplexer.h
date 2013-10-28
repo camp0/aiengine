@@ -32,6 +32,7 @@
 #include <memory>
 #include <functional>
 #include <map>
+#include "IPAddress.h"
 #include "Packet.h"
 
 namespace aiengine {
@@ -48,7 +49,7 @@ typedef std::weak_ptr<Multiplexer> MultiplexerPtrWeak;
 class Multiplexer 
 {
 public:
-    	Multiplexer(): packet_() {
+    	Multiplexer(): packet_(),address() {
 	
 		total_forward_packets_ = 0;
 		total_received_packets_ = 0;
@@ -105,6 +106,7 @@ public:
 
 	bool acceptPacket(Packet &packet) const { return check_func_(packet);}
 
+	IPAddress address;
 	// This is realy uggly puagggggg
 	u_int32_t ipsrc;
 	u_int32_t ipdst;

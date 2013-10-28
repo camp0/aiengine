@@ -61,8 +61,8 @@ SharedPointer<Flow> TCPProtocol::getFlow() {
         MultiplexerPtr ipmux = downmux.lock();
 
         if (flow_table_) {
-        	h1 = ipmux->ipsrc ^ getSrcPort() ^ 6 ^ ipmux->ipdst ^ getDstPort();
-        	h2 = ipmux->ipdst ^ getDstPort() ^ 6 ^ ipmux->ipsrc ^ getSrcPort();
+        	h1 = ipmux->address.getHash(getSrcPort(),6,getDstPort());
+        	h2 = ipmux->address.getHash(getDstPort(),6,getSrcPort());
               
 		flow = flow_table_->findFlow(h1,h2);
                 if (!flow) {
@@ -70,7 +70,10 @@ SharedPointer<Flow> TCPProtocol::getFlow() {
                                 flow = flow_cache_->acquireFlow().lock();
                                 if (flow) {
                                         flow->setId(h1);
-					flow->setFiveTuple(ipmux->ipsrc,getSrcPort(),6,ipmux->ipdst,getDstPort());
+                                       	flow->setFiveTuple(ipmux->address.getSourceAddress(),
+                                        	getSrcPort(),6,
+                                                ipmux->address.getDestinationAddress(),
+                                                getDstPort());
                                         flow_table_->addFlow(flow);
                                 }
                         }
