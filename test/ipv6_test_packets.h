@@ -5,7 +5,7 @@
 // srcip = 2001:470:d37b:1:214:2aff:fe33:747e
 // dstip = 2001:470:d37b:2::6
 // iplenght = 64
-char *raw_packet_ethernet_ipv6_icmpv6_ping_request = 
+static char *raw_packet_ethernet_ipv6_icmpv6_ping_request = 
 "\x00\x50\x56\x09\xec\x32\x00\x14\x2a\x33\x74\x7e\x86\xdd\x60\x00"
 "\x00\x00\x00\x40\x3a\x40\x20\x01\x04\x70\xd3\x7b\x00\x01\x02\x14"
 "\x2a\xff\xfe\x33\x74\x7e\x20\x01\x04\x70\xd3\x7b\x00\x02\x00\x00"
@@ -15,12 +15,12 @@ char *raw_packet_ethernet_ipv6_icmpv6_ping_request =
 "\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30\x31"
 "\x32\x33\x34\x35\x36\x37";
 
-int raw_packet_ethernet_ipv6_icmpv6_ping_request_length = 118;
+static int raw_packet_ethernet_ipv6_icmpv6_ping_request_length = 118;
 
 
 // ethernet,ipv6, tcp,and HTTP GET"
 
-char *raw_packet_ethernet_ipv6_tcp_http_get=
+static char *raw_packet_ethernet_ipv6_tcp_http_get=
 // ethernet header
 "\x00\x90\x1a\x41\x65\x41\x00\x16\xcf\x41\x9c\x20\x86\xdd"		//14
 // ipv6 header size 40,payload length 817,x
@@ -84,12 +84,12 @@ char *raw_packet_ethernet_ipv6_tcp_http_get=
 "\x67\x73\x37\x39\x4c\x5f\x76\x33\x42\x53\x64\x75\x65\x49\x67\x5f"
 "\x4f\x4f\x66\x6a\x70\x53\x63\x53\x68\x0d\x0a\x0d\x0a";
 
-int raw_packet_ethernet_ipv6_tcp_http_get_length = 14+40+20+797;
+static int raw_packet_ethernet_ipv6_tcp_http_get_length = 14+40+20+797;
 
 // Source ip fe80::9c09:b416:768:ff42
 // dest ip: ff02::1:3
 // payload length 41 from ip
-char *raw_packet_ethernet_ipv6_udp_llmnr = 
+static char *raw_packet_ethernet_ipv6_udp_llmnr = 
 "\x33\x33\x00\x01\x00\x03\x00\x12\x3f\x97\x92\x01\x86\xdd\x60\x00"
 "\x00\x00\x00\x29\x11\x01\xfe\x80\x00\x00\x00\x00\x00\x00\x9c\x09"
 "\xb4\x16\x07\x68\xff\x42\xff\x02\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -97,7 +97,26 @@ char *raw_packet_ethernet_ipv6_udp_llmnr =
 "\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x0f\x63\x68\x6d\x75\x74"
 "\x68\x75\x2d\x77\x37\x2d\x74\x65\x73\x74\x00\x00\xff\x00\x01";
 
-int raw_packet_ethernet_ipv6_udp_llmnr_length = 95;
+static int raw_packet_ethernet_ipv6_udp_llmnr_length = 95;
+
+
+// ethernet,ipv6, tcp,and HTTP GET"
+static char *raw_packet_ethernet_ipv6_tcp_http_get2=
+// ethernet header
+"\x00\x90\x1a\x41\x65\x41\x00\x16\xcf\x41\x9c\x20\x86\xdd"              //14
+// ipv6 header size 40,payload length 4
+// dstip = 2002:4637:d5d3::4637:d5d3
+// srcip= 2001:4860:0:2001::68
+"\x60\x00\x00\x00\x00\x18\x06\x80" // header
+"\x20\x01\x48\x60\x00\x00\x20\x01\x00\x00\x00\x00\x00\x00\x00\x68"
+"\x20\x02\x46\x37\xd5\xd3\x00\x00\x00\x00\x00\x00\x46\x37\xd5\xd3"      
+// tcp header,source port 1287 and dest port 80
+"\x05\x07\x00\x50\x22\xec\x55\x11\x3a\xc0\x0d\x61\x50\x18\x41\xcb"      //20
+"\x66\x18\x00\x00"
+// HTTP GET
+"\x47\x45\x54\x20";
+
+static int raw_packet_ethernet_ipv6_tcp_http_get2_length = 14+40+20+4;
 
 
 #endif

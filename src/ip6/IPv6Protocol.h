@@ -99,25 +99,9 @@ public:
     	u_int16_t getPayloadLength() const { return ntohs(ip6_header_->ip6_plen); }
     	char* getSrcAddrDotNotation() const ; 
     	char* getDstAddrDotNotation() const ; 
-/*
+	struct in6_addr *getSourceAddress() const { return (struct in6_addr*)&(ip6_header_->ip6_src);}
+	struct in6_addr *getDestinationAddress() const { return (struct in6_addr*)&(ip6_header_->ip6_dst);}
 
-
-
-    	u_int8_t getTTL() const { return ip_header_->ttl; }
-    	u_int16_t getPacketLength() const { return ntohs(ip_header_->tot_len); }
-    	u_int16_t getIPHeaderLength() const { return ip_header_->ihl * 4; }
-    	bool isIP() const { return ip_header_ ? true : false ; }
-    	bool isIPver4() const { return ip_header_->version == 4; }
-    	bool isFragment() const { return (ntohs(ip_header_->frag_off) & 0x3fff); }
-    	u_int16_t getID() const { return ntohs(ip_header_->id); }
-    	int getVersion() const { return ip_header_->version; }
-    	u_int16_t getProtocol () const { return ip_header_->protocol; }
-    	u_int32_t getSrcAddr() const { return ip_header_->saddr; }
-    	u_int32_t getDstAddr() const { return ip_header_->daddr; }
-    	const char* getSrcAddrDotNotation() const { in_addr a; a.s_addr=ip_header_->saddr; return inet_ntoa(a); }
-    	const char* getDstAddrDotNotation() const { in_addr a; a.s_addr=ip_header_->daddr; return inet_ntoa(a); }
-    	u_int32_t getIPPayloadLength() const { return getPacketLength() - getIPHeaderLength(); }
-*/
 private:
 	MultiplexerPtrWeak mux_;
 	struct ip6_hdr *ip6_header_;

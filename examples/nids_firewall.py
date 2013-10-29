@@ -40,13 +40,13 @@ def callback_drop_packets(flow_name):
 def loadSignaturesForTcp():
      """ Load the signatures from source, Snort, Suricata, etc. """
 
-     sm = pyaiengine.SignatureManager()
+     sm = pyaiengine.RegexManager()
 
-     sig = pyaiengine.Signature("Shellcode Generic Exploit","\x90\x90\x90\x90\x90\x90\x90\x90\x90")
+     sig = pyaiengine.Regex("Shellcode Generic Exploit","\x90\x90\x90\x90\x90\x90\x90\x90\x90")
 
      """ Sets a specific callback to the signature created """
      sig.setCallback(callback_drop_packets)
-     sm.addSignature(sig)
+     sm.addRegex(sig)
 
      return sm
 
@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
      # Load Signatures/Rules in order to detect the traffic
      s_tcp = loadSignaturesForTcp()
-     st.setTCPSignatureManager(s_tcp)
+     st.setTCPRegexManager(s_tcp)
 
      st.setTotalTCPFlows(327680)
      st.setTotalUDPFlows(163840)

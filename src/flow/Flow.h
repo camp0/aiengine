@@ -59,6 +59,7 @@ public:
 	void setId(unsigned long hash) { hash_=hash;}
 	unsigned long getId() const { return hash_;}
 
+	// IP functions
 	inline void setFiveTuple(u_int32_t src_a,u_int16_t src_p,u_int16_t proto,u_int32_t dst_a,u_int16_t dst_p) {
 	
 		address_.setSourceAddress(src_a);
@@ -76,6 +77,16 @@ public:
 
 	char* getSrcAddrDotNotation() const { in_addr a; a.s_addr=address_.getSourceAddress(); return inet_ntoa(a); }
 	char* getDstAddrDotNotation() const { in_addr a; a.s_addr=address_.getDestinationAddress(); return inet_ntoa(a); }
+
+	// IPv6 functtions
+        inline void setFiveTuple(struct in6_addr *src_a,u_int16_t src_p,u_int16_t proto,struct in6_addr *dst_a,u_int16_t dst_p) {
+
+                address_.setSourceAddress6(src_a);
+                address_.setDestinationAddress6(dst_a);
+                source_port_ = src_p;
+                dest_port_ = dst_p;
+                protocol_ = proto;
+        }
 
 	int32_t total_bytes;
 	int32_t total_packets_l7;

@@ -29,7 +29,7 @@
 #endif
 #include <boost/test/unit_test.hpp>
 
-BOOST_FIXTURE_TEST_SUITE(tcp_suite,StackTCPTest)
+BOOST_FIXTURE_TEST_SUITE(tcp_suite1,StackTCPTest)
 
 // check a TCP header values
 //
@@ -69,6 +69,29 @@ BOOST_AUTO_TEST_CASE (test2_tcp)
         BOOST_CHECK(tcp->getSrcPort() == 44265);
         BOOST_CHECK(tcp->getDstPort() == 443);
         BOOST_CHECK(tcp->getTotalBytes() == 225);
+}
+
+BOOST_AUTO_TEST_SUITE_END( )
+
+BOOST_FIXTURE_TEST_SUITE(tcp_suite2,StackIPv6TCPTest)
+
+BOOST_AUTO_TEST_CASE (test1_tcp)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get);
+        int length = raw_packet_ethernet_ipv6_tcp_http_get_length;
+        Packet packet(pkt,length,0);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        // Check the TCP integrity
+        BOOST_CHECK(tcp->getSrcPort() == 1287);
+        BOOST_CHECK(tcp->getDstPort() == 80);
+        BOOST_CHECK(tcp->getTotalBytes() == 797+20);
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

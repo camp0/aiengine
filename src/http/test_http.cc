@@ -29,7 +29,7 @@
 #endif
 #include <boost/test/unit_test.hpp>
 
-BOOST_FIXTURE_TEST_SUITE(http_suite,StackHTTPtest)
+BOOST_FIXTURE_TEST_SUITE(http_suite1,StackHTTPtest)
 
 BOOST_AUTO_TEST_CASE (test1_http)
 {
@@ -494,9 +494,92 @@ BOOST_AUTO_TEST_CASE (test12_http)
         BOOST_CHECK(host_name->getMatchs() == 1);
 }
 
+BOOST_AUTO_TEST_SUITE_END( )
 
+BOOST_FIXTURE_TEST_SUITE(http_suite2,StackIPv6HTTPtest)
+
+BOOST_AUTO_TEST_CASE (test1_http)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get);
+        int length = raw_packet_ethernet_ipv6_tcp_http_get_length;
+        Packet packet(pkt,length,0);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        BOOST_CHECK(ip6->getTotalPackets() == 1);
+        BOOST_CHECK(ip6->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(ip6->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(ip6->getTotalBytes() == 797 + 20 + 40);
+
+        BOOST_CHECK(mux_ip->getTotalForwardPackets() == 1);
+        BOOST_CHECK(mux_ip->getTotalReceivedPackets() == 1);
+        BOOST_CHECK(mux_ip->getTotalFailPackets() == 0);
+
+        BOOST_CHECK(tcp->getTotalPackets() == 1);
+        BOOST_CHECK(tcp->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(tcp->getTotalBytes() == 797 + 20);
+
+        BOOST_CHECK(flow_mng->getTotalFlows() == 1);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 1);
+        BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
+        BOOST_CHECK(flow_cache->getTotalReleases() == 0);
+
+        BOOST_CHECK(http->getTotalPackets() == 1);
+        BOOST_CHECK(http->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(http->getTotalBytes() == 797);
+
+        std::string cad("GET / HTTP/1.1");
+        std::ostringstream h;
+
+        h << http->getPayload();
+
+        BOOST_CHECK(cad.compare(0,14,h.str()));
+}
+
+BOOST_AUTO_TEST_CASE (test2_http)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get);
+        int length1 = raw_packet_ethernet_ipv6_tcp_http_get_length;
+        Packet packet1(pkt1,length1,0);
+
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get2);
+        int length2 = raw_packet_ethernet_ipv6_tcp_http_get2_length;
+        Packet packet2(pkt2,length2,0);
+
+        mux_eth->setPacket(&packet2);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet2);
+
+        BOOST_CHECK(ip6->getTotalPackets() == 2);
+        BOOST_CHECK(ip6->getTotalValidatedPackets() == 2);
+        BOOST_CHECK(ip6->getTotalMalformedPackets() == 0);
+
+        BOOST_CHECK(mux_ip->getTotalForwardPackets() == 2);
+        BOOST_CHECK(mux_ip->getTotalReceivedPackets() == 2);
+        BOOST_CHECK(mux_ip->getTotalFailPackets() == 0);
+
+        BOOST_CHECK(tcp->getTotalPackets() == 2);
+        BOOST_CHECK(tcp->getTotalValidatedPackets() == 2);
+        BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
+
+        BOOST_CHECK(flow_mng->getTotalFlows() == 1);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 1);
+        BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
+        BOOST_CHECK(flow_cache->getTotalReleases() == 0);
+
+	// Probably need to improve more.
+}
 
 
 
 BOOST_AUTO_TEST_SUITE_END( )
-

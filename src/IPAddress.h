@@ -47,7 +47,16 @@ public:
 		if (type_ == 4) {
 			h = ip4_src_ ^ srcport ^ protocol ^ ip4_dst_ ^ dstport;
 		} else {
+			unsigned long sh1 = ip6_src_->s6_addr[0];
+			unsigned long sh2 = ip6_src_->s6_addr[4];
+			unsigned long sh3 = ip6_src_->s6_addr[8];
+			unsigned long sh4 = ip6_src_->s6_addr[12];
+			unsigned long dh1 = ip6_dst_->s6_addr[0];
+			unsigned long dh2 = ip6_dst_->s6_addr[4];
+			unsigned long dh3 = ip6_dst_->s6_addr[8];
+			unsigned long dh4 = ip6_dst_->s6_addr[12];
 
+			h = sh1 ^ sh2 ^ sh3 ^ sh4 ^ srcport ^ protocol ^ dh1 ^ dh2 ^ dh3 ^ dh4 ^ dstport; 
 		} 
 		return h;
 	}
@@ -55,9 +64,10 @@ public:
 	u_int32_t getSourceAddress() const { return ip4_src_;}
 	u_int32_t getDestinationAddress() const { return ip4_dst_;}
 	void setSourceAddress(u_int32_t address) { ip4_src_ = address;type_=4;}
-	//void setSourceAddress(struct in6_addr *address) { ip6_src_ = address->s_addr;type_=6;}
 	void setDestinationAddress(u_int32_t address) { ip4_dst_ = address;type_=4;}
-	//void setDestinationAddress(struct in6_addr *address) { in6_addr_dst_ = address->s_addr;type_=6;}
+	
+	void setSourceAddress6(struct in6_addr *address) { ip6_src_ = address;type_=6;}
+	void setDestinationAddress6(struct in6_addr *address) { ip6_dst_ = address;type_=6;}
 
 private:
 	struct in6_addr *ip6_src_;

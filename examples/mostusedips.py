@@ -65,15 +65,15 @@ if __name__ == '__main__':
     st.setTotalTCPFlows(327680)
     st.setTotalUDPFlows(163840)
 
-    pdis.openDevice("wlan0")
+    pdis.openPcapFile("/home/luis/some.pcap")
 
     try:
-        pdis.run()
+        pdis.runPcap()
     except:
         e = sys.exc_info()[0]
         print "Interrupt during capturing packets:",e
 
-    pdis.closeDevice()
+    pdis.closePcapFile()
 
     # Dump on file the statistics of the stack
     st.setStatisticsLevel(5)

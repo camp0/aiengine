@@ -59,10 +59,11 @@ void IPv6Protocol::processPacket(Packet& packet) {
 
         ++total_packets_;
 
-        //mux->ipsrc = getSrcAddr();
-        //mux->ipdst = getDstAddr();
-        //mux->total_length = packet.getLength();
+        mux->total_length = packet.getLength();
         total_bytes_ += packet.getLength();
+
+	mux->address.setSourceAddress6(getSourceAddress());
+	mux->address.setDestinationAddress6(getDestinationAddress());
 
         mux->setNextProtocolIdentifier(getProtocol());
         packet.setPrevHeaderSize(header_size);

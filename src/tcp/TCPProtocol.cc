@@ -91,7 +91,7 @@ void TCPProtocol::processPacket(Packet &packet) {
         if (flow) {
         	MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();
         	MultiplexerPtr ipmux = downmux.lock();
-                
+               
 		int bytes = (ipmux->total_length - 20 - getTcpHdrLength());
 
                 flow->total_bytes += bytes;
