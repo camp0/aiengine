@@ -38,7 +38,7 @@ def callback_drop_packets(flow_name):
 #    os.system("iptables -A INPUT -i eth0 -s %s -j DROP" % source_ip)
 
 def loadSignaturesForTcp():
-    """ Load the signatures from source, Snort, Suricata, etc. """
+     """ Load the signatures from source, Snort, Suricata, etc. """
 
      sm = pyaiengine.SignatureManager()
 
@@ -76,13 +76,13 @@ if __name__ == '__main__':
          e = sys.exc_info()[0]
          print "Interrupt during capturing packets:",e
      
-    pdis.closeDevice()
+     pdis.closeDevice()
 
-    # Dump on file the statistics of the stack
-    st.setStatisticsLevel(5)
-    f = open("statistics.log","w")
-    f.write(str(st))
-    f.close()
+     # Dump on file the statistics of the stack
+     st.setStatisticsLevel(5)
+     f = open("statistics.log","w")
+     f.write(str(st))
+     f.close()
 
-    sys.exit(0)
+     sys.exit(0)
 
