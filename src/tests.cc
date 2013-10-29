@@ -484,6 +484,35 @@ BOOST_FIXTURE_TEST_CASE(test_case_11,StackLanTest)
         BOOST_CHECK(icmp->getTotalPackets() == 0);
 }
 
+BOOST_FIXTURE_TEST_CASE(test_case_12,StackLanTest)
+{
+
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+        pd->openPcapFile("../pcapfiles/ipv6_tcp_stream.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        BOOST_CHECK(pd->getTotalPackets() == 13);
+        BOOST_CHECK(mux_eth->getTotalForwardPackets() == 13);
+        BOOST_CHECK(mux_eth->getTotalReceivedPackets() == 13);
+        BOOST_CHECK(mux_eth->getTotalFailPackets() == 0);
+
+        BOOST_CHECK(mux_ip6->getTotalForwardPackets() == 13);
+        BOOST_CHECK(mux_ip6->getTotalReceivedPackets() == 13);
+        BOOST_CHECK(mux_ip6->getTotalFailPackets() == 0);
+
+        BOOST_CHECK(ip6->getTotalValidatedPackets() == 13);
+        BOOST_CHECK(ip6->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(ip6->getTotalPackets() == 13);
+
+        BOOST_CHECK(tcp->getTotalValidatedPackets() == 13);
+        BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(tcp->getTotalPackets() == 13);
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 

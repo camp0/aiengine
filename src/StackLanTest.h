@@ -31,6 +31,7 @@
 #include "./vlan/VLanProtocol.h"
 #include "./mpls/MPLSProtocol.h"
 #include "./ip/IPProtocol.h"
+#include "./ip6/IPv6Protocol.h"
 #include "./udp/UDPProtocol.h"
 #include "./tcp/TCPProtocol.h"
 #include "./icmp/ICMPProtocol.h"
@@ -48,6 +49,7 @@ struct StackLanTest
 	VLanProtocolPtr vlan;
 	MPLSProtocolPtr mpls;
         IPProtocolPtr ip;
+        IPv6ProtocolPtr ip6;
         UDPProtocolPtr udp;
         TCPProtocolPtr tcp;
         ICMPProtocolPtr icmp;
@@ -59,6 +61,7 @@ struct StackLanTest
         MultiplexerPtr mux_vlan;
         MultiplexerPtr mux_mpls;
         MultiplexerPtr mux_ip;
+        MultiplexerPtr mux_ip6;
         MultiplexerPtr mux_udp;
         MultiplexerPtr mux_tcp;
         MultiplexerPtr mux_icmp;
@@ -83,6 +86,7 @@ struct StackLanTest
                 tcp = TCPProtocolPtr(new TCPProtocol());
                 udp = UDPProtocolPtr(new UDPProtocol());
                 ip = IPProtocolPtr(new IPProtocol());
+                ip6 = IPv6ProtocolPtr(new IPv6Protocol());
                 eth = EthernetProtocolPtr(new EthernetProtocol());
 		icmp = ICMPProtocolPtr(new ICMPProtocol());
 		http = HTTPProtocolPtr(new HTTPProtocol());
@@ -93,6 +97,7 @@ struct StackLanTest
                 mux_vlan = MultiplexerPtr(new Multiplexer());
                 mux_mpls = MultiplexerPtr(new Multiplexer());
                 mux_ip = MultiplexerPtr(new Multiplexer());
+                mux_ip6 = MultiplexerPtr(new Multiplexer());
                 mux_udp = MultiplexerPtr(new Multiplexer());
                 mux_tcp = MultiplexerPtr(new Multiplexer());
                 mux_icmp = MultiplexerPtr(new Multiplexer());
@@ -114,7 +119,6 @@ struct StackLanTest
 		mux_eth->setProtocolIdentifier(0);
                 mux_eth->setHeaderSize(eth->getHeaderSize());
                 mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
-
 
 		//configure the VLan tagging Layer
 		vlan->setMultiplexer(mux_vlan);
@@ -139,6 +143,14 @@ struct StackLanTest
                 mux_ip->setHeaderSize(ip->getHeaderSize());
                 mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip,std::placeholders::_1));
                 mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip,std::placeholders::_1));
+
+                // configure the ip6
+                ip6->setMultiplexer(mux_ip6);
+                mux_ip6->setProtocol(static_cast<ProtocolPtr>(ip6));
+                mux_ip6->setProtocolIdentifier(ETHERTYPE_IPV6);
+                mux_ip6->setHeaderSize(ip6->getHeaderSize());
+                mux_ip6->addChecker(std::bind(&IPv6Protocol::ip6Checker,ip6,std::placeholders::_1));
+                mux_ip6->addPacketFunction(std::bind(&IPv6Protocol::processPacket,ip6,std::placeholders::_1));
 
                 //configure the icmp
                 icmp->setMultiplexer(mux_icmp);
@@ -179,9 +191,15 @@ struct StackLanTest
 
 		// configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
-                mux_ip->addDownMultiplexer(mux_eth);
+                mux_eth->addUpMultiplexer(mux_ip6,ETHERTYPE_IPV6);
+            	mux_ip6->addDownMultiplexer(mux_eth); 
+                mux_ip6->addUpMultiplexer(mux_udp,IPPROTO_UDP);
+                mux_ip6->addUpMultiplexer(mux_tcp,IPPROTO_TCP);
+		
+		mux_ip->addDownMultiplexer(mux_eth);
                 mux_ip->addUpMultiplexer(mux_udp,IPPROTO_UDP);
-                mux_udp->addDownMultiplexer(mux_ip);
+                
+		mux_udp->addDownMultiplexer(mux_ip);
                 mux_ip->addUpMultiplexer(mux_tcp,IPPROTO_TCP);
                 mux_tcp->addDownMultiplexer(mux_ip);
                 mux_ip->addUpMultiplexer(mux_icmp,IPPROTO_ICMP);
