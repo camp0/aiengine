@@ -26,10 +26,12 @@
 
 #include <string>
 #include "../../test/torrent_test_packets.h"
+#include "../../test/ipv6_test_packets.h"
 #include "../Protocol.h"
 #include "../Multiplexer.h"
 #include "../ethernet/EthernetProtocol.h"
 #include "../ip/IPProtocol.h"
+#include "../ip6/IPv6Protocol.h"
 #include "../tcp/TCPProtocol.h"
 #include "TCPGenericProtocol.h"
 
@@ -39,11 +41,16 @@ struct StackTCPGenericTest {
 
         EthernetProtocolPtr eth;
         IPProtocolPtr ip;
+        IPv6ProtocolPtr ip6;
         TCPProtocolPtr tcp;
         TCPGenericProtocolPtr gtcp;
+        TCPProtocolPtr tcp6;
+        TCPGenericProtocolPtr gtcp6;
         MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
+        MultiplexerPtr mux_ip6;
         MultiplexerPtr mux_tcp;
+        MultiplexerPtr mux_tcp6;
 
        // FlowManager and FlowCache
         FlowManagerPtr flow_mng;
@@ -52,18 +59,28 @@ struct StackTCPGenericTest {
         // FlowForwarders
         FlowForwarderPtr ff_tcp;
         FlowForwarderPtr ff_gtcp;
+        FlowForwarderPtr ff_tcp6;
+        FlowForwarderPtr ff_gtcp6;
 
         StackTCPGenericTest()
         {
                 ip = IPProtocolPtr(new IPProtocol());
+                ip6 = IPv6ProtocolPtr(new IPv6Protocol());
                 eth = EthernetProtocolPtr(new EthernetProtocol());
                 tcp = TCPProtocolPtr(new TCPProtocol());
                 gtcp = TCPGenericProtocolPtr(new TCPGenericProtocol());
+                tcp6 = TCPProtocolPtr(new TCPProtocol());
+                gtcp6 = TCPGenericProtocolPtr(new TCPGenericProtocol());
                 mux_ip = MultiplexerPtr(new Multiplexer());
+                mux_ip6 = MultiplexerPtr(new Multiplexer());
                 mux_tcp = MultiplexerPtr(new Multiplexer());
+                mux_tcp6 = MultiplexerPtr(new Multiplexer());
+                mux_tcp6 = MultiplexerPtr(new Multiplexer());
                 mux_eth = MultiplexerPtr(new Multiplexer());
                 ff_tcp = FlowForwarderPtr(new FlowForwarder());
                 ff_gtcp = FlowForwarderPtr(new FlowForwarder());
+                ff_tcp6 = FlowForwarderPtr(new FlowForwarder());
+                ff_gtcp6 = FlowForwarderPtr(new FlowForwarder());
 
                 // Allocate the flow caches and tables
                 flow_mng = FlowManagerPtr(new FlowManager());
@@ -84,6 +101,14 @@ struct StackTCPGenericTest {
                 mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip,std::placeholders::_1));
                 mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip,std::placeholders::_1));
 
+                // configure the ip6
+                ip6->setMultiplexer(mux_ip6);
+                mux_ip6->setProtocol(static_cast<ProtocolPtr>(ip6));
+                mux_ip6->setProtocolIdentifier(ETHERTYPE_IPV6);
+                mux_ip6->setHeaderSize(ip6->getHeaderSize());
+                mux_ip6->addChecker(std::bind(&IPv6Protocol::ip6Checker,ip6,std::placeholders::_1));
+                mux_ip6->addPacketFunction(std::bind(&IPv6Protocol::processPacket,ip6,std::placeholders::_1));
+
                 //configure the tcp 
                 tcp->setMultiplexer(mux_tcp);
                 mux_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
@@ -98,22 +123,46 @@ struct StackTCPGenericTest {
                 ff_gtcp->addChecker(std::bind(&TCPGenericProtocol::tcpGenericChecker,gtcp,std::placeholders::_1));
                 ff_gtcp->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,gtcp,std::placeholders::_1));
 
+                //configure the tcp for ipv6
+                tcp6->setMultiplexer(mux_tcp6);
+                mux_tcp6->setProtocol(static_cast<ProtocolPtr>(tcp6));
+                mux_tcp6->setProtocolIdentifier(IPPROTO_TCP);
+                mux_tcp6->setHeaderSize(tcp6->getHeaderSize());
+                mux_tcp6->addChecker(std::bind(&TCPProtocol::tcpChecker,tcp6,std::placeholders::_1));
+                mux_tcp6->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp6,std::placeholders::_1));
+
+                // configure the generic tcp for ipv6
+                gtcp6->setFlowForwarder(ff_gtcp6);
+                ff_gtcp6->setProtocol(static_cast<ProtocolPtr>(gtcp6));
+                ff_gtcp6->addChecker(std::bind(&TCPGenericProtocol::tcpGenericChecker,gtcp6,std::placeholders::_1));
+                ff_gtcp6->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,gtcp6,std::placeholders::_1));
+
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
-                mux_ip->addDownMultiplexer(mux_eth);
+                mux_eth->addUpMultiplexer(mux_ip6,ETHERTYPE_IPV6);
+                
+		mux_ip->addDownMultiplexer(mux_eth);
                 mux_ip->addUpMultiplexer(mux_tcp,IPPROTO_TCP);
-                mux_tcp->addDownMultiplexer(mux_ip);
+                
+		mux_ip6->addDownMultiplexer(mux_eth);
+                mux_ip6->addUpMultiplexer(mux_tcp6,IPPROTO_TCP);
+                
+		mux_tcp->addDownMultiplexer(mux_ip);
+                mux_tcp6->addDownMultiplexer(mux_ip6);
 
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(1);
 
                 tcp->setFlowCache(flow_cache);
                 tcp->setFlowManager(flow_mng);
+                tcp6->setFlowCache(flow_cache);
+                tcp6->setFlowManager(flow_mng);
 
                 // Configure the FlowForwarders
                 tcp->setFlowForwarder(ff_tcp);
-
                 ff_tcp->addUpFlowForwarder(ff_gtcp);
 
+                tcp6->setFlowForwarder(ff_tcp6);
+                ff_tcp6->addUpFlowForwarder(ff_gtcp6);
         }
 
         ~StackTCPGenericTest() {

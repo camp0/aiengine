@@ -33,7 +33,9 @@
 #include "./ip/IPProtocol.h"
 #include "./ip6/IPv6Protocol.h"
 #include "./udp/UDPProtocol.h"
+#include "./udpgeneric/UDPGenericProtocol.h"
 #include "./tcp/TCPProtocol.h"
+#include "./tcpgeneric/TCPGenericProtocol.h"
 #include "./icmp/ICMPProtocol.h"
 #include "./http/HTTPProtocol.h"
 #include "./ssl/SSLProtocol.h"
@@ -52,6 +54,10 @@ struct StackLanTest
         IPv6ProtocolPtr ip6;
         UDPProtocolPtr udp;
         TCPProtocolPtr tcp;
+        TCPProtocolPtr tcp6;
+        UDPGenericProtocolPtr udp_generic;
+        TCPGenericProtocolPtr tcp_generic;
+        TCPGenericProtocolPtr tcp_generic6;
         ICMPProtocolPtr icmp;
 	HTTPProtocolPtr http;
 	SSLProtocolPtr ssl;
@@ -64,6 +70,7 @@ struct StackLanTest
         MultiplexerPtr mux_ip6;
         MultiplexerPtr mux_udp;
         MultiplexerPtr mux_tcp;
+        MultiplexerPtr mux_tcp6;
         MultiplexerPtr mux_icmp;
 
 	// FlowManager and FlowCache
@@ -74,7 +81,11 @@ struct StackLanTest
 
 	// FlowForwarders
 	FlowForwarderPtr ff_tcp;
+	FlowForwarderPtr ff_tcp6;
 	FlowForwarderPtr ff_udp;
+	FlowForwarderPtr ff_tcp_generic6;
+	FlowForwarderPtr ff_tcp_generic;
+	FlowForwarderPtr ff_udp_generic;
 	FlowForwarderPtr ff_http;
 	FlowForwarderPtr ff_ssl;
 
@@ -84,7 +95,11 @@ struct StackLanTest
 		vlan = VLanProtocolPtr(new VLanProtocol());
 		mpls = MPLSProtocolPtr(new MPLSProtocol());
                 tcp = TCPProtocolPtr(new TCPProtocol());
+                tcp6 = TCPProtocolPtr(new TCPProtocol());
                 udp = UDPProtocolPtr(new UDPProtocol());
+                tcp_generic = TCPGenericProtocolPtr(new TCPGenericProtocol());
+                tcp_generic6 = TCPGenericProtocolPtr(new TCPGenericProtocol());
+                udp_generic = UDPGenericProtocolPtr(new UDPGenericProtocol());
                 ip = IPProtocolPtr(new IPProtocol());
                 ip6 = IPv6ProtocolPtr(new IPv6Protocol());
                 eth = EthernetProtocolPtr(new EthernetProtocol());
@@ -100,6 +115,7 @@ struct StackLanTest
                 mux_ip6 = MultiplexerPtr(new Multiplexer());
                 mux_udp = MultiplexerPtr(new Multiplexer());
                 mux_tcp = MultiplexerPtr(new Multiplexer());
+                mux_tcp6 = MultiplexerPtr(new Multiplexer());
                 mux_icmp = MultiplexerPtr(new Multiplexer());
 
 		// Allocate the flow caches and tables
@@ -109,9 +125,13 @@ struct StackLanTest
 		flow_cache_tcp = FlowCachePtr(new FlowCache());
 
 		ff_tcp = FlowForwarderPtr(new FlowForwarder());
+		ff_tcp6 = FlowForwarderPtr(new FlowForwarder());
 		ff_udp = FlowForwarderPtr(new FlowForwarder());
 		ff_http = FlowForwarderPtr(new FlowForwarder());
 		ff_ssl = FlowForwarderPtr(new FlowForwarder());
+		ff_tcp_generic = FlowForwarderPtr(new FlowForwarder());
+		ff_tcp_generic6 = FlowForwarderPtr(new FlowForwarder());
+		ff_udp_generic = FlowForwarderPtr(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);
@@ -170,12 +190,23 @@ struct StackLanTest
 
                 //configure the tcp 
                 tcp->setMultiplexer(mux_tcp);
+		tcp->setFlowForwarder(ff_tcp);	
                 mux_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
         	ff_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
 		mux_tcp->setProtocolIdentifier(IPPROTO_TCP);
                 mux_tcp->setHeaderSize(tcp->getHeaderSize());
                 mux_tcp->addChecker(std::bind(&TCPProtocol::tcpChecker,tcp,std::placeholders::_1));
                 mux_tcp->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp,std::placeholders::_1));
+
+                //configure the tcp for ip6
+                tcp6->setMultiplexer(mux_tcp6);
+                tcp6->setFlowForwarder(ff_tcp6);
+                mux_tcp6->setProtocol(static_cast<ProtocolPtr>(tcp6));
+                ff_tcp6->setProtocol(static_cast<ProtocolPtr>(tcp6));
+                mux_tcp6->setProtocolIdentifier(IPPROTO_TCP);
+                mux_tcp6->setHeaderSize(tcp6->getHeaderSize());
+                mux_tcp6->addChecker(std::bind(&TCPProtocol::tcpChecker,tcp6,std::placeholders::_1));
+                mux_tcp6->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp6,std::placeholders::_1));
 
 		// configure the http 
 		http->setFlowForwarder(ff_http);
@@ -189,12 +220,32 @@ struct StackLanTest
         	ff_ssl->addChecker(std::bind(&SSLProtocol::sslChecker,ssl,std::placeholders::_1));
         	ff_ssl->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl,std::placeholders::_1));
 
+                // configure the generic udp 
+                udp_generic->setFlowForwarder(ff_udp_generic);
+                ff_udp_generic->setProtocol(static_cast<ProtocolPtr>(udp_generic));
+                ff_udp_generic->addChecker(std::bind(&UDPGenericProtocol::udpGenericChecker,udp_generic,std::placeholders::_1));
+                ff_udp_generic->addFlowFunction(std::bind(&UDPGenericProtocol::processFlow,udp_generic,std::placeholders::_1));
+
+                // configure the generic tcp 
+                tcp_generic->setFlowForwarder(ff_tcp_generic);
+                ff_tcp_generic->setProtocol(static_cast<ProtocolPtr>(tcp_generic));
+                ff_tcp_generic->addChecker(std::bind(&TCPGenericProtocol::tcpGenericChecker,tcp_generic,std::placeholders::_1));
+                ff_tcp_generic->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,tcp_generic,std::placeholders::_1));
+
+                // configure the generic tcp
+                tcp_generic6->setFlowForwarder(ff_tcp_generic6);
+                ff_tcp_generic6->setProtocol(static_cast<ProtocolPtr>(tcp_generic6));
+                ff_tcp_generic6->addChecker(std::bind(&TCPGenericProtocol::tcpGenericChecker,tcp_generic6,std::placeholders::_1));
+                ff_tcp_generic6->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,tcp_generic6,std::placeholders::_1));
+
+
 		// configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
                 mux_eth->addUpMultiplexer(mux_ip6,ETHERTYPE_IPV6);
-            	mux_ip6->addDownMultiplexer(mux_eth); 
-                mux_ip6->addUpMultiplexer(mux_udp,IPPROTO_UDP);
-                mux_ip6->addUpMultiplexer(mux_tcp,IPPROTO_TCP);
+            	
+		mux_ip6->addDownMultiplexer(mux_eth); 
+                mux_ip6->addUpMultiplexer(mux_tcp6,IPPROTO_TCP);
+                mux_tcp6->addDownMultiplexer(mux_ip6);
 		
 		mux_ip->addDownMultiplexer(mux_eth);
                 mux_ip->addUpMultiplexer(mux_udp,IPPROTO_UDP);
@@ -211,6 +262,8 @@ struct StackLanTest
 		
 		tcp->setFlowCache(flow_cache_tcp);
 		tcp->setFlowManager(flow_table_tcp);
+		tcp6->setFlowCache(flow_cache_tcp);
+		tcp6->setFlowManager(flow_table_tcp);
 				
 		udp->setFlowCache(flow_cache_udp);
 		udp->setFlowManager(flow_table_udp);
@@ -221,6 +274,8 @@ struct StackLanTest
 	
 		ff_tcp->addUpFlowForwarder(ff_http);
 		ff_tcp->addUpFlowForwarder(ff_ssl);
+		ff_tcp->addUpFlowForwarder(ff_tcp_generic);
+		ff_tcp6->addUpFlowForwarder(ff_tcp_generic6);
 
         }
 

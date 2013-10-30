@@ -32,6 +32,7 @@
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
+#include <boost/asio/signal_set.hpp>
 #ifdef HAVE_LIBLOG4CXX
 #include "log4cxx/logger.h"
 #endif
@@ -75,12 +76,15 @@ public:
 		stats_(),
 		idle_work_interval_(5),
 		idle_work_(io_service_,boost::posix_time::seconds(0)),
+		signals_(io_service_, SIGINT, SIGTERM),
 		total_packets_(0),
 		total_bytes_(0),
 		pcap_file_ready_(false),
 		device_is_ready_(false) {
-	
+			
 		setIdleFunction(std::bind(&PacketDispatcher::default_idle_function,this));
+		signals_.async_wait(
+    			boost::bind(&boost::asio::io_service::stop, &io_service_));
 	}
 
     	virtual ~PacketDispatcher() { io_service_.stop(); }
@@ -124,6 +128,7 @@ private:
     	pcap_t* pcap_;
 	boost::asio::io_service io_service_;
 	boost::asio::deadline_timer idle_work_;
+	boost::asio::signal_set signals_;
 	int idle_work_interval_;
 	Statistics stats_;
 	struct pcap_pkthdr *header;
@@ -133,6 +138,9 @@ private:
 	EthernetProtocolPtr eth_;	
 	Packet current_packet_;
 	MultiplexerPtr defMux_;
+
+
+
 };
 
 typedef std::shared_ptr<PacketDispatcher> PacketDispatcherPtr;

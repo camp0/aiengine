@@ -56,7 +56,7 @@ if __name__ == '__main__':
     dm = pyaiengine.DomainNameManager()
 
     dom = pyaiengine.DomainName("Service to analyze",
-        "facebook.com")
+        "marca.com")
     dom.setCallback(callback_host)
     dm.addDomainName(dom)
 
@@ -65,22 +65,22 @@ if __name__ == '__main__':
     st.setTotalTCPFlows(327680)
     st.setTotalUDPFlows(163840)
 
-    pdis.openPcapFile("/home/luis/some.pcap")
+    pdis.openDevice("eth0")
 
     try:
-        pdis.runPcap()
+        pdis.run()
     except:
         e = sys.exc_info()[0]
         print "Interrupt during capturing packets:",e
 
-    pdis.closePcapFile()
+    pdis.closeDevice()
 
     # Dump on file the statistics of the stack
     st.setStatisticsLevel(5)
     f = open("statistics.log","w")
     f.write(str(st))
     f.close()
-
+    
     print top_ips
 
     sys.exit(0)

@@ -55,6 +55,39 @@ BOOST_AUTO_TEST_CASE (test1_tcpgeneric)
 
 }
 
+// Test case integrated with IPv6
+BOOST_AUTO_TEST_CASE (test2_tcpgeneric)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_port_6941);
+        int length = raw_packet_ethernet_ipv6_tcp_port_6941_length;
+        Packet packet(pkt,length,0);
+
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+	BOOST_CHECK(ip6->getTotalPackets() == 1);
+	BOOST_CHECK(ip6->getTotalValidatedPackets() == 1);
+
+	BOOST_CHECK(tcp6->getTotalPackets() == 1);
+	BOOST_CHECK(tcp6->getTotalBytes() == 63);
+	BOOST_CHECK(tcp6->getTotalValidatedPackets() == 1);
+	BOOST_CHECK(tcp6->getSrcPort() == 40667);
+	BOOST_CHECK(tcp6->getDstPort() == 6941);
+
+	BOOST_CHECK(gtcp6->getTotalPackets() == 1);
+	BOOST_CHECK(gtcp6->getTotalBytes() == 31);
+	BOOST_CHECK(gtcp6->getTotalValidatedPackets() == 1);
+
+	std::string message("its peanut butter & semem time.");
+
+	char *msg = reinterpret_cast <char*> (gtcp6->getPayload());
+
+	BOOST_CHECK(message.compare(msg));
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

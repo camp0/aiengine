@@ -27,15 +27,15 @@
 
 #define BOOST_TEST_DYN_LINK
 #ifdef STAND_ALONE
-#define BOOST_TEST_MODULE signaturetest
+#define BOOST_TEST_MODULE regextest
 #endif
 #include <boost/test/unit_test.hpp>
 
 using namespace aiengine;
 
-BOOST_AUTO_TEST_SUITE(signature_suite)
+BOOST_AUTO_TEST_SUITE(regex_suite)
 
-BOOST_AUTO_TEST_CASE (test1_signature)
+BOOST_AUTO_TEST_CASE (test1_regex)
 {
 	RegexManagerPtr sigmng = RegexManagerPtr( new RegexManager());
 
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE (test1_signature)
 	BOOST_CHECK(sigmng->getMatchedRegex() == nullptr);
 }
 
-BOOST_AUTO_TEST_CASE (test2_signature)
+BOOST_AUTO_TEST_CASE (test2_regex)
 {
 	RegexManagerPtr sigmng = RegexManagerPtr( new RegexManager());
 
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE (test2_signature)
         BOOST_CHECK(sigmng->getTotalMatchingRegexs() == 1);
 }
 
-BOOST_AUTO_TEST_CASE (test3_signature)
+BOOST_AUTO_TEST_CASE (test3_regex)
 {
         RegexManagerPtr sigmng = RegexManagerPtr( new RegexManager());
 	Regex sig("name","some hex");
@@ -90,6 +90,12 @@ BOOST_AUTO_TEST_CASE (test3_signature)
 	//std::cout << *sigmng;
 }
 
+BOOST_AUTO_TEST_CASE (test4_regex)
+{
+        RegexManagerPtr sigmng = RegexManagerPtr( new RegexManager());
+	Regex sig("name","some hex");
+
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 

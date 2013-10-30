@@ -509,9 +509,15 @@ BOOST_FIXTURE_TEST_CASE(test_case_12,StackLanTest)
         BOOST_CHECK(ip6->getTotalMalformedPackets() == 0);
         BOOST_CHECK(ip6->getTotalPackets() == 13);
 
-        BOOST_CHECK(tcp->getTotalValidatedPackets() == 13);
-        BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
-        BOOST_CHECK(tcp->getTotalPackets() == 13);
+        BOOST_CHECK(tcp6->getTotalValidatedPackets() == 13);
+        BOOST_CHECK(tcp6->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(tcp6->getTotalPackets() == 13);
+
+        BOOST_CHECK(tcp_generic6->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(tcp_generic6->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(tcp_generic6->getTotalPackets() == 13);
+        BOOST_CHECK(tcp_generic6->getTotalBytes() == 213);
+
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

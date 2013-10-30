@@ -94,6 +94,7 @@ public:
 	}
 
 	void setRegexManager(RegexManagerPtrWeak sig) { sigs_ = sig;} 
+	unsigned char *getPayload() const { return tcp_generic_header_;}
 
 private:
 #ifdef HAVE_LIBLOG4CXX

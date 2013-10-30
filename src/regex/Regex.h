@@ -36,11 +36,14 @@ namespace aiengine {
 class Regex: public Signature
 {
 public:
+	typedef std::shared_ptr<Regex> RegexPtr;
+
 	explicit Regex(const std::string &name, const std::string& exp):
-		exp_(exp,boost::regex::icase) 
+		exp_(exp,boost::regex::icase),next_regex_(nullptr) 
 	{
 		name_ = name;
 		expression_ = exp;
+		is_terminal_ = true;
 	}
 
 	virtual ~Regex() = default; 
@@ -48,9 +51,15 @@ public:
 
 	friend std::ostream& operator<< (std::ostream& out, const Regex& sig);
 
+	bool isTerminal() const { return is_terminal_;}
+	void setNextRegex(RegexPtr reg) { next_regex_ = reg;is_terminal_ = false;}
+	RegexPtr getNextRegex() { return next_regex_;}
+
 private:
 	boost::regex exp_;
 	boost::cmatch what;
+	RegexPtr next_regex_;
+	bool is_terminal_;
 };
 
 } // namespace aiengine

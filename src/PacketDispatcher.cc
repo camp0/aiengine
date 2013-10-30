@@ -163,7 +163,6 @@ void PacketDispatcher::do_read(boost::system::error_code ec) {
 	if(len >= 0) { 
 		forwardRawPacket((unsigned char*)pkt_data,header->len);
 	}
-
 	if (!ec || ec == boost::asio::error::would_block)
       		start_operations();
 	// else error but not handler
