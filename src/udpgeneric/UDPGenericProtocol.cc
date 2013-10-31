@@ -32,37 +32,45 @@ log4cxx::LoggerPtr UDPGenericProtocol::logger(log4cxx::Logger::getLogger("aiengi
 
 void UDPGenericProtocol::processFlow(Flow *flow) {
 
-	RegexManagerPtr sig = sigs_.lock();
+        RegexManagerPtr sig = sigs_.lock();
+        ++total_packets_;
+        total_bytes_ += flow->packet->getLength();
 
-	++total_packets_;
-	total_bytes_ += flow->packet->getLength();
-	++flow->total_packets_l7;
+        if (sig) { // There is a RegexManager attached
+                SharedPointer<Regex> regex = flow->regex.lock();
+                const unsigned char *payload = flow->packet->getPayload();
+                bool result = false;
 
-	if ((sig)&&(!flow->regex.lock())){ // There is a RegexManager attached
-	
-		bool result = false;
-		const unsigned char *payload = flow->packet->getPayload();
-	
-		sig->evaluate(payload,&result);
-		if (result) {
-			SharedPointer<Regex> regex = sig->getMatchedRegex();
+                if (regex) {
+                        if (regex->isTerminal() == false) {
+                                regex = regex->getNextRegex();
+                                if (regex) // There is no need but....
+                                        result = regex->evaluate(payload);
+                        }
+                } else {
+                        sig->evaluate(payload,&result);
+                        regex = sig->getMatchedRegex();
+                }
+
+                if((result)and(regex)) {
+
 #ifdef HAVE_LIBLOG4CXX
-			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << regex->getName());
+                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << regex->getName());
 #endif
-			flow->regex = regex;
+                        flow->regex = regex;
 #ifdef PYTHON_BINDING
-        		if(regex->haveCallback()) {
-                		PyGILState_STATE state(PyGILState_Ensure());
-				try {
-					boost::python::call<void>(regex->getCallback(),boost::python::ptr(flow));
-				} catch(std::exception &e) {
-					std::cout << "ERROR:" << e.what() << std::endl;
-				}	
-                		PyGILState_Release(state);
-        		}
+                        if(regex->haveCallback()) {
+                                PyGILState_STATE state(PyGILState_Ensure());
+                                try {
+                                        boost::python::call<void>(regex->getCallback(),boost::python::ptr(flow));
+                                } catch(std::exception &e) {
+                                        std::cout << "ERROR:" << e.what() << std::endl;
+                                }
+                                PyGILState_Release(state);
+                        }
 #endif
-		}	
-	}
+                }
+        }
 }
 
 void UDPGenericProtocol::statistics(std::basic_ostream<char>& out) {

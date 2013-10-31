@@ -33,6 +33,8 @@
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
 #include <boost/asio/signal_set.hpp>
+#include <boost/version.hpp> 
+#include <exception>
 #ifdef HAVE_LIBLOG4CXX
 #include "log4cxx/logger.h"
 #endif

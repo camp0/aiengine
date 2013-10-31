@@ -29,6 +29,7 @@
 #endif
 
 #include "../Signature.h"
+#include "../Pointer.h"
 #include <boost/regex.hpp>
 
 namespace aiengine {
@@ -36,10 +37,9 @@ namespace aiengine {
 class Regex: public Signature
 {
 public:
-	typedef std::shared_ptr<Regex> RegexPtr;
 
 	explicit Regex(const std::string &name, const std::string& exp):
-		exp_(exp,boost::regex::icase),next_regex_(nullptr) 
+		exp_(exp,boost::regex::icase),next_regex_() 
 	{
 		name_ = name;
 		expression_ = exp;
@@ -52,13 +52,13 @@ public:
 	friend std::ostream& operator<< (std::ostream& out, const Regex& sig);
 
 	bool isTerminal() const { return is_terminal_;}
-	void setNextRegex(RegexPtr reg) { next_regex_ = reg;is_terminal_ = false;}
-	RegexPtr getNextRegex() { return next_regex_;}
+	void setNextRegex(SharedPointer<Regex> reg) { next_regex_ = reg;is_terminal_ = false;}
+	SharedPointer<Regex> getNextRegex() { return next_regex_;}
 
 private:
 	boost::regex exp_;
 	boost::cmatch what;
-	RegexPtr next_regex_;
+	SharedPointer<Regex> next_regex_;
 	bool is_terminal_;
 };
 

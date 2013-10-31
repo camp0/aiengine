@@ -175,6 +175,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setStack",setStackMobile)
 	;
 
+
 	void (RegexManager::*addRegex1)(const std::string,const std::string) = &RegexManager::addRegex;
 	void (RegexManager::*addRegex2)(Regex&) = &RegexManager::addRegex;
 

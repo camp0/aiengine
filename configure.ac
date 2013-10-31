@@ -43,8 +43,8 @@ AM_CXXFLAGS="$AM_CXXFLAGS -Wno-write-strings"
 # Pcap support
 ##########################################################################
 AC_CHECK_HEADER([pcap.h])
-AC_CHECK_LIB([pcap], [main],,
-    AC_MSG_ERROR([Pcap support is an essential dependency for AIEngine, install it.]))
+AC_CHECK_LIB([pcap],[main],,
+	AC_MSG_ERROR([Pcap support is an essential dependency for AIEngine, install it.]))
 
 
 ##########################################################################

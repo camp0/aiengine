@@ -28,6 +28,8 @@ namespace aiengine {
 bool Regex::evaluate(const unsigned char *payload) { 
 
 	bool result = boost::regex_search(reinterpret_cast<const char*>(payload), what, exp_);
+	if (result) total_matchs_++;
+	total_evaluates_++;
 	return result; 
 }
 

@@ -36,14 +36,23 @@ void TCPGenericProtocol::processFlow(Flow *flow) {
 	++total_packets_;
 	total_bytes_ += flow->packet->getLength();
 
-	if((sig)&&(!flow->regex.lock())) {// There is a RegexManager attached and the flow have not been matched
-	
-		bool result = false;
+	if (sig) { //&&(!flow->regex.lock())) {// There is a RegexManager attached and the flow have not been matched
+		SharedPointer<Regex> regex = flow->regex.lock();
 		const unsigned char *payload = flow->packet->getPayload();
+		bool result = false;
+		
+		if (regex) {
+			if (regex->isTerminal() == false) {
+				regex = regex->getNextRegex();
+				if (regex) // There is no need but.... 
+					result = regex->evaluate(payload);
+			}
+		} else {
+			sig->evaluate(payload,&result);
+			regex = sig->getMatchedRegex();
+		}
 
-		sig->evaluate(payload,&result);
-		if (result) {
-			SharedPointer<Regex> regex = sig->getMatchedRegex();
+		if((result)and(regex)) {
 
 #ifdef HAVE_LIBLOG4CXX
 			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << regex->getName());

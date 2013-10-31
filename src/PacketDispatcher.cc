@@ -163,6 +163,17 @@ void PacketDispatcher::do_read(boost::system::error_code ec) {
 	if(len >= 0) { 
 		forwardRawPacket((unsigned char*)pkt_data,header->len);
 	}
+
+// This prevents a problem on the boost asio signal
+// remove this if when boost will be bigger than 1.50
+#ifdef PYTHON_BINDING
+#if BOOST_VERSION >= 104800 && BOOST_VERSION < 105000
+	if(PyErr_CheckSignals() == -1) {
+		std::cout << "Throwing exception from python." << std::endl;
+		throw std::runtime_error("Python exception\n");
+       	}
+#endif
+#endif
 	if (!ec || ec == boost::asio::error::would_block)
       		start_operations();
 	// else error but not handler
@@ -222,32 +233,6 @@ void PacketDispatcher::run() {
 	catch (std::exception& e) {
         	std::cerr << e.what() << std::endl;
         }
-}
-
-
-void PacketDispatcher::handle_receive(boost::system::error_code err) {
-
-	read_in_progress_ = false;
-
-    	if (!err) {
-		++total_packets_;
-	}
-
-    	// The third party library successfully performed a read on the socket.
-    	// Start new read or write operations based on what it now wants.
-    	if (!err || err == boost::asio::error::would_block)
-      		start_operations();
-	else
-		std::cout << "------------------------------" << std::endl;
-
-/*
-
-	std::cout << "receive " << bytes_transfered <<std::endl;
-	if ((bytes_transfered > 0) && (!err || err == boost::asio::error::message_size)) {
-		std::cout << "*" <<std::endl;
-		++total_packets_;
-	}
-*/
 }
 
 } // namespace aiengine

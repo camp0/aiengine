@@ -49,13 +49,15 @@ void RegexManager::addRegex(SharedPointer<Regex> sig) {
 
 void RegexManager::evaluate(const unsigned char *payload, bool *result) {
 
+	current_signature_.reset();
+
         std::find_if(signatures_.begin(),
                 signatures_.end(),  [&](SharedPointer<Regex>& sig) {
 		
 		if (sig->evaluate(payload)) {
 			++total_matched_signatures_;
 			current_signature_ = sig;
-			sig->incrementMatchs();
+			//sig->incrementMatchs();
 			(*result) = true;
 			return true;
 		}

@@ -92,9 +92,19 @@ BOOST_AUTO_TEST_CASE (test3_regex)
 
 BOOST_AUTO_TEST_CASE (test4_regex)
 {
-        RegexManagerPtr sigmng = RegexManagerPtr( new RegexManager());
-	Regex sig("name","some hex");
+        RegexManagerPtr sigmng = RegexManagerPtr(new RegexManager());
+	SharedPointer<Regex> sig1 = SharedPointer<Regex>(new Regex("name","some hex"));
+	SharedPointer<Regex> sig2 = SharedPointer<Regex>(new Regex("name","some hex"));
 
+	BOOST_CHECK(sig1->isTerminal() == true);
+	BOOST_CHECK(sig2->isTerminal() == true);
+
+	sig1->setNextRegex(sig2);
+
+	BOOST_CHECK(sig1->isTerminal() == false);
+	BOOST_CHECK(sig2->isTerminal() == true);
+
+	BOOST_CHECK(sig1->getNextRegex() == sig2);
 }
 
 BOOST_AUTO_TEST_SUITE_END( )
