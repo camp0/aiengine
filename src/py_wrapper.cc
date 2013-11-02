@@ -158,6 +158,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getMatchs",&Regex::getMatchs)
 		.def(self_ns::str(self_ns::self))
 		.def("setCallback",&Regex::setCallback)
+		.def("setNextRegex",&Regex::setNextRegex)
 	;
 
 	// for overload the methods with the class
@@ -206,6 +207,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getFrequencies",&Flow::getFrequencies,return_internal_reference<>())
 		.def("getPacketFrequencies",&Flow::getPacketFrequencies,return_internal_reference<>())
 		.def("getDNSDomain",&Flow::getDNSDomain,return_internal_reference<>())
+		.def("getRegex",&Flow::getRegex,return_internal_reference<>())
 		.def(self_ns::str(self_ns::self))
 	;
 
