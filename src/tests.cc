@@ -515,10 +515,43 @@ BOOST_FIXTURE_TEST_CASE(test_case_12,StackLanTest)
 
         BOOST_CHECK(tcp_generic6->getTotalValidatedPackets() == 1);
         BOOST_CHECK(tcp_generic6->getTotalMalformedPackets() == 0);
-        BOOST_CHECK(tcp_generic6->getTotalPackets() == 13);
+        BOOST_CHECK(tcp_generic6->getTotalPackets() == 4);
         BOOST_CHECK(tcp_generic6->getTotalBytes() == 213);
 
 }
+
+// test a chainign regex with one flow that matchs on the first and
+// on the last packet
+BOOST_FIXTURE_TEST_CASE(test_case_13,StackLanTest)
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
+
+        SharedPointer<Regex> r_head = SharedPointer<Regex>(new Regex("r1","^(its peanut)"));
+        SharedPointer<Regex> r_tail = SharedPointer<Regex>(new Regex("r2","^(invalid command)"));
+
+        r_head->setNextRegex(r_tail);
+
+        rmng->addRegex(r_head);
+
+        tcp_generic6->setRegexManager(rmng);
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+        pd->openPcapFile("../pcapfiles/ipv6_tcp_stream.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+	// Check pcap file for see the results
+	BOOST_CHECK(r_head->getMatchs() == 1);
+	BOOST_CHECK(r_head->getTotalEvaluates() == 1);
+
+	BOOST_CHECK(r_tail->getMatchs() == 1);
+	BOOST_CHECK(r_tail->getTotalEvaluates() == 3);
+}
+
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

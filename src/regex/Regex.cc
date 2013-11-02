@@ -35,7 +35,8 @@ bool Regex::evaluate(const unsigned char *payload) {
 
 std::ostream& operator<< (std::ostream& out, const Regex& sig) {
 
-	out << "\t" << "Regex:" << sig.name_ << " matches:" << sig.total_matchs_ << std::endl;	
+	out << "\t" << "Regex:" << sig.name_ << " matches:" << sig.total_matchs_;	
+	out << " evaluates:" << sig.total_evaluates_ << std::endl;	
 	return out;
 }
 

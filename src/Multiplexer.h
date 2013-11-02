@@ -90,7 +90,8 @@ public:
 	void setProtocol(ProtocolPtr proto) { proto_ = proto; }
 	ProtocolPtr getProtocol() { return proto_;}
 
-	void setHeaderSize(int size) { header_size_ = size;};
+	void setHeaderSize(int size) { header_size_ = size;}
+	int getHeaderSize() { return header_size_;}
 
 	void setPacketInfo(unsigned char *packet, int length, int prev_header_size);
 	void setPacket(Packet *packet);

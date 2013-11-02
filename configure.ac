@@ -42,15 +42,16 @@ AM_CXXFLAGS="$AM_CXXFLAGS -Wno-write-strings"
 ##########################################################################
 # Pcap support
 ##########################################################################
-AC_CHECK_HEADER([pcap.h])
-AC_CHECK_LIB([pcap],[main],,
-	AC_MSG_ERROR([Pcap support is an essential dependency for AIEngine, install it.]))
-
+#AC_CHECK_HEADER([pcap.h])
+#AC_CHECK_LIB(pcap,main,,AC_MSG_ERROR([Pcap support is an essential dependency for AIEngine, install it.]))
+AC_CHECK_HEADER(pcap.h,
+      AC_CHECK_LIB(pcap, main,
+      [have_libpcap=yes LIBS="-lpcap $LIBS"]))
 
 ##########################################################################
 # Boost support
 ##########################################################################
-dnl BOOST
+
 AX_BOOST_BASE([1.48.0])
 AX_BOOST_ASIO
 AX_BOOST_SYSTEM
@@ -65,7 +66,7 @@ AX_BOOST_PYTHON
 # Log4cxx support 
 ##########################################################################
 AC_CHECK_HEADER([log4cxx/logger.h])
-AC_CHECK_LIB([log4cxx], [main],have_log4cxx=yes,have_log4cxx=no)
+AC_CHECK_LIB([log4cxx],[main],,have_log4cxx=no)
 
 AM_CONDITIONAL(SUPPORT_LOG4CXX, test "$have_log4cxx" = yes)
 
@@ -136,6 +137,7 @@ echo "
   Boost...............: $boost_lib_version_req
   Python..............: $PYTHON_VERSION $ax_python_bin 
   Python include path.: $python_path
-  Log4cxx.............: $have_log4cxx
+  Log4cxx.............: $ac_cv_lib_log4cxx_main
+  Libpcap.............: $ac_cv_lib_pcap_main
 "
 

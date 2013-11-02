@@ -27,6 +27,7 @@
 #include <iostream>
 #include <netinet/in.h>
 #include <netinet/ip6.h>
+#include <arpa/inet.h>
 
 namespace aiengine {
 
@@ -69,6 +70,36 @@ public:
 	void setSourceAddress6(struct in6_addr *address) { ip6_src_ = address;type_=6;}
 	void setDestinationAddress6(struct in6_addr *address) { ip6_dst_ = address;type_=6;}
 
+	char* getSrcAddrDotNotation() const { 
+		if (type_ == 4) {
+			in_addr a; 
+
+			a.s_addr = ip4_src_;
+			return inet_ntoa(a); 
+		} else {
+			static char straddr_src[INET6_ADDRSTRLEN];
+
+        		inet_ntop(AF_INET6,(struct in6_addr*)&(ip6_src_),straddr_src,INET6_ADDRSTRLEN);
+
+        		return straddr_src;
+		}
+	}
+       
+        char* getDstAddrDotNotation() const {
+                if (type_ == 4) {
+                        in_addr a;
+
+                        a.s_addr = ip4_dst_;
+                        return inet_ntoa(a);
+                } else {
+                        static char straddr_dst[INET6_ADDRSTRLEN];
+
+                        inet_ntop(AF_INET6,(struct in6_addr*)&(ip6_dst_),straddr_dst,INET6_ADDRSTRLEN);
+
+                        return straddr_dst;
+                }
+        }
+ 
 private:
 	struct in6_addr *ip6_src_;
 	struct in6_addr *ip6_dst_;

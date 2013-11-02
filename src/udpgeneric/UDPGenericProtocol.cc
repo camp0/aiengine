@@ -36,6 +36,8 @@ void UDPGenericProtocol::processFlow(Flow *flow) {
         ++total_packets_;
         total_bytes_ += flow->packet->getLength();
 
+	++flow->total_packets_l7;
+
         if (sig) { // There is a RegexManager attached
                 SharedPointer<Regex> regex = flow->regex.lock();
                 const unsigned char *payload = flow->packet->getPayload();

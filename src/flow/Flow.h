@@ -75,8 +75,8 @@ public:
 	u_int16_t getDestinationPort() const { return dest_port_;}
 	u_int16_t getProtocol() const { return protocol_;}
 
-	char* getSrcAddrDotNotation() const { in_addr a; a.s_addr=address_.getSourceAddress(); return inet_ntoa(a); }
-	char* getDstAddrDotNotation() const { in_addr a; a.s_addr=address_.getDestinationAddress(); return inet_ntoa(a); }
+        char* getSrcAddrDotNotation() const { return address_.getSrcAddrDotNotation();}
+        char* getDstAddrDotNotation() const { return address_.getDstAddrDotNotation();}
 
 	// IPv6 functtions
         inline void setFiveTuple(struct in6_addr *src_a,u_int16_t src_p,u_int16_t proto,struct in6_addr *dst_a,u_int16_t dst_p) {
@@ -128,8 +128,8 @@ public:
 
 	friend std::ostream& operator<< (std::ostream& out, const Flow& flow) {
 	
-		out << flow.getSrcAddrDotNotation() << ":" << flow.getSourcePort() << ":" << flow.getProtocol();
-		out << ":" << flow.getDstAddrDotNotation() << ":" << flow.getDestinationPort();
+		out << flow.address_.getSrcAddrDotNotation() << ":" << flow.getSourcePort() << ":" << flow.getProtocol();
+		out << ":" << flow.address_.getDstAddrDotNotation() << ":" << flow.getDestinationPort();
         	return out;
 	}
 
