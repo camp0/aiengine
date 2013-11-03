@@ -14,10 +14,11 @@ To use AIEngine just execute the binary aiengine:
 
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
-	iaengine 0.1
+	iaengine 0.2
 	Mandatory arguments:
 	  -I [ --interface ] arg            Sets the network interface.
-	  -P [ --pcapfile ] arg             Sets the pcap file.
+	  -P [ --pcapfile ] arg             Sets the pcap file or directory with pcap 
+                                    	    files.
 
 	Link Layer optional arguments:
 	  -q [ --tag ] arg      Selects the tag type of the ethernet layer (vlan,mpls).
@@ -28,7 +29,7 @@ To use AIEngine just execute the binary aiengine:
 	UDP optional arguments:
 	  -u [ --udp-flows ] arg (=16384) Sets the number of UDP flows on the pool.
 
-	Signature optional arguments:
+	Regex optional arguments:
 	  -R [ --enable-signatures ]     Enables the Signature engine.
 	  -r [ --regex ] arg (=.*)       Sets the regex for evaluate agains the flows.
 	  -c [ --flow-class ] arg (=all) Uses tcp, udp or all for matches the signature
@@ -45,7 +46,7 @@ To use AIEngine just execute the binary aiengine:
 	Optional arguments:
 	  -k [ --stack ] arg (=lan)    Sets the network stack (lan,mobile).
 	  -d [ --dumpflows ]           Dump the flows to stdout.
-	  -s [ --statistics ] arg (=0) Show statistics of the network stack.
+	  -s [ --statistics ] arg (=0) Show statistics of the network stack (5 levels).
 	  -p [ --pstatistics ]         Show statistics of the process.
 	  -h [ --help ]                Show help.
 	  -v [ --version ]             Show version string.
@@ -54,9 +55,18 @@ Integrating AIEngine with other systems
 ---------------------------------------
 
 AIEngine have a python module in order to be more flexible in terms of integration with other systems and functionalities.
-The main objects that the python module provide are the followin. Check the wiki pages in order to have more examples.
+The main objects that the python module provide are the following ones.
 
+	DNSDomain
+	DomainName
+	   |---> getExpression
+	   |---> getMatchs
+	   |---> getName
+	   |---> setCallback
+	DomainNameManager
+	   |---> addDomainName
 	Flow
+	   |---> getDNSDomain
 	   |---> getDestinationAddress
 	   |---> getDestinationPort
 	   |---> getFrequencies
@@ -64,6 +74,7 @@ The main objects that the python module provide are the followin. Check the wiki
 	   |---> getHTTPUserAgent
 	   |---> getPacketFrequencies
 	   |---> getProtocol
+	   |---> getRegex
 	   |---> getSourceAddress
 	   |---> getSourcePort
 	   |---> getTotalBytes
@@ -87,11 +98,13 @@ The main objects that the python module provide are the followin. Check the wiki
 	   |---> getTCPFlowManager
 	   |---> getUDPFlowManager
 	   |---> printFlows
+	   |---> setDNSDomainNameManager
+	   |---> setHTTPHostNameManager
 	   |---> setStatisticsLevel
-	   |---> setTCPSignatureManager
+	   |---> setTCPRegexManager
 	   |---> setTotalTCPFlows
 	   |---> setTotalUDPFlows
-	   |---> setUDPSignatureManager
+	   |---> setUDPRegexManager
 	PacketDispatcher
 	   |---> closeDevice
 	   |---> closePcapFile
@@ -102,35 +115,42 @@ The main objects that the python module provide are the followin. Check the wiki
 	   |---> setStack
 	PacketFrequencies
 	   |---> getPacketFrequenciesString
-	Signature
+	Regex
 	   |---> getExpression
 	   |---> getMatchs
 	   |---> getName
-	SignatureManager
-	   |---> addSignature
+	   |---> setCallback
+	   |---> setNextRegex
+	RegexManager
+	   |---> addRegex
 	StackLan
 	   |---> enableFrequencyEngine
 	   |---> enableLinkLayerTagging
 	   |---> getTCPFlowManager
 	   |---> getUDPFlowManager
 	   |---> printFlows
+	   |---> setDNSDomainNameManager
+	   |---> setHTTPHostNameManager
 	   |---> setStatisticsLevel
-	   |---> setTCPSignatureManager
+	   |---> setTCPRegexManager
 	   |---> setTotalTCPFlows
 	   |---> setTotalUDPFlows
-	   |---> setUDPSignatureManager
+	   |---> setUDPRegexManager
 	StackMobile
 	   |---> enableFrequencyEngine
 	   |---> enableLinkLayerTagging
 	   |---> getTCPFlowManager
 	   |---> getUDPFlowManager
 	   |---> printFlows
+	   |---> setDNSDomainNameManager
+	   |---> setHTTPHostNameManager
 	   |---> setStatisticsLevel
-	   |---> setTCPSignatureManager
+	   |---> setTCPRegexManager
 	   |---> setTotalTCPFlows
 	   |---> setTotalUDPFlows
-	   |---> setUDPSignatureManager
+	   |---> setUDPRegexManager
 
+Check the wiki pages in order to have more examples.
 
 Compile AIEngine
 ----------------
@@ -148,4 +168,11 @@ AIEngine is under the terms of GPLv2 and is under develop.
 Check out the AIEngine source with 
 
     $ git clone https://bitbucket.com/camp0/aiengine
+
+Develop new functionality
+-------------------------
+
+AIEngine have been develop using test driven development. So in order to maintain the same life cicle, the new functionatly
+ should have unit test on the directory created of the new functionality and for integrate with all the system, later integrate
+with the main tests.cc file on the /src directory
 

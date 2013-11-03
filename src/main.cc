@@ -264,7 +264,7 @@ int main(int argc, char* argv[]) {
 				      	"Sets the network stack (lan,mobile).")
 		("dumpflows,d",      	"Dump the flows to stdout.")
 		("statistics,s",	po::value<int>(&option_statistics_level)->default_value(0),
-					"Show statistics of the network stack.")
+					"Show statistics of the network stack (5 leves).")
 		("pstatistics,p",      	"Show statistics of the process.")
 		("help,h",     		"Show help.")
 		("version,v",   	"Show version string.")
