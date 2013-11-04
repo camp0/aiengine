@@ -28,6 +28,7 @@
 #include <netinet/in.h>
 #include <netinet/ip6.h>
 #include <arpa/inet.h>
+#include <cstring>
 
 namespace aiengine {
 
@@ -40,7 +41,11 @@ public:
 	void reset() {
 		type_ = 4; ip6_src_= nullptr; ip6_dst_= nullptr;
 		ip4_src_ = 0; ip4_dst_= 0;
+		std::memset(src_address_6_,0,INET6_ADDRSTRLEN); 
+		std::memset(dst_address_6_,0,INET6_ADDRSTRLEN);
 	}
+
+	short getType() const { return type_;} // 4 and 6 values
 
 	unsigned long getHash(uint16_t srcport, uint16_t protocol, uint16_t dstport) {
 		unsigned long h;
@@ -69,6 +74,8 @@ public:
 	
 	void setSourceAddress6(struct in6_addr *address) { ip6_src_ = address;type_=6;}
 	void setDestinationAddress6(struct in6_addr *address) { ip6_dst_ = address;type_=6;}
+	struct in6_addr *getSourceAddress6() const { return ip6_src_;}
+	struct in6_addr *getDestinationAddress6() const { return ip6_dst_;}
 
 	char* getSrcAddrDotNotation() const { 
 		if (type_ == 4) {
@@ -77,11 +84,9 @@ public:
 			a.s_addr = ip4_src_;
 			return inet_ntoa(a); 
 		} else {
-			static char straddr_src[INET6_ADDRSTRLEN];
+        		inet_ntop(AF_INET6,ip6_src_,src_address_6_,INET6_ADDRSTRLEN);
 
-        		inet_ntop(AF_INET6,(struct in6_addr*)&(ip6_src_),straddr_src,INET6_ADDRSTRLEN);
-
-        		return straddr_src;
+        		return src_address_6_;
 		}
 	}
        
@@ -92,11 +97,9 @@ public:
                         a.s_addr = ip4_dst_;
                         return inet_ntoa(a);
                 } else {
-                        static char straddr_dst[INET6_ADDRSTRLEN];
+                        inet_ntop(AF_INET6,ip6_dst_,dst_address_6_,INET6_ADDRSTRLEN);
 
-                        inet_ntop(AF_INET6,(struct in6_addr*)&(ip6_dst_),straddr_dst,INET6_ADDRSTRLEN);
-
-                        return straddr_dst;
+                        return dst_address_6_;
                 }
         }
  
@@ -106,6 +109,8 @@ private:
 	u_int32_t ip4_src_;
 	u_int32_t ip4_dst_;
 	short type_;
+	mutable char src_address_6_[INET6_ADDRSTRLEN];
+	mutable char dst_address_6_[INET6_ADDRSTRLEN];
 };
 
 typedef std::shared_ptr<IPAddress> IPAddressPtr;

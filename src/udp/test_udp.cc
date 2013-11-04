@@ -107,3 +107,38 @@ BOOST_AUTO_TEST_CASE(test4_udp)
 
 BOOST_AUTO_TEST_SUITE_END( )
 
+BOOST_FIXTURE_TEST_SUITE(udp_ipv6_suite,StackIPv6UDPTest)
+
+BOOST_AUTO_TEST_CASE (test1_udp)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_udp_dns);
+        int length = raw_packet_ethernet_ipv6_udp_dns_length;
+
+        Packet packet(pkt,length,0);
+
+        FlowCachePtr flow_cache = FlowCachePtr(new FlowCache());
+        FlowManagerPtr flow_mng = FlowManagerPtr(new FlowManager());
+        FlowForwarderPtr ff_udp = FlowForwarderPtr(new FlowForwarder());
+
+        udp->setFlowCache(flow_cache);
+        udp->setFlowManager(flow_mng);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        // ip6
+        BOOST_CHECK(ip6->getTotalPackets() == 1);
+        BOOST_CHECK(ip6->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(ip6->getTotalMalformedPackets() == 0);
+
+        // Check the udp integrity
+        BOOST_CHECK(udp->getSrcPort() == 2415);
+        BOOST_CHECK(udp->getDstPort() == 53);
+
+}
+
+BOOST_AUTO_TEST_SUITE_END( )

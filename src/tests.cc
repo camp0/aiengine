@@ -549,6 +549,8 @@ BOOST_FIXTURE_TEST_CASE(test_case_13,StackLanTest)
 
 	BOOST_CHECK(r_tail->getMatchs() == 1);
 	BOOST_CHECK(r_tail->getTotalEvaluates() == 3);
+
+	//dumpFlows();
 }
 
 

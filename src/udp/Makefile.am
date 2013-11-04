@@ -12,6 +12,7 @@ test_udp_SOURCES = 	../Multiplexer.cc \
 			../FlowForwarder.cc \
 			../vlan/VLanProtocol.cc \
 			../ip/IPProtocol.cc \
+			../ip6/IPv6Protocol.cc \
 			UDPProtocol.cc \
 			test_udp.cc
 

@@ -48,6 +48,8 @@ class TCPProtocol: public Protocol
 public:
     	explicit TCPProtocol():tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
 		stats_level_(0) { name_="TCPProtocol";}
+    	explicit TCPProtocol(std::string name):tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
+		stats_level_(0) { name_ = name;}
     	virtual ~TCPProtocol() {}
 
 	static const u_int16_t id = IPPROTO_TCP;

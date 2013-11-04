@@ -48,6 +48,8 @@ class UDPProtocol: public Protocol
 public:
     	explicit UDPProtocol(): udp_header_(nullptr),total_bytes_(0),
 		stats_level_(0) { name_="UDPProtocol";}
+    	explicit UDPProtocol(std::string name): udp_header_(nullptr),total_bytes_(0),
+		stats_level_(0) { name_=name;}
     	virtual ~UDPProtocol() {}
 
 	static const u_int16_t id = IPPROTO_UDP;

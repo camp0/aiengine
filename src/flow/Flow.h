@@ -79,7 +79,7 @@ public:
         char* getDstAddrDotNotation() const { return address_.getDstAddrDotNotation();}
 
 	// IPv6 functtions
-        inline void setFiveTuple(struct in6_addr *src_a,u_int16_t src_p,u_int16_t proto,struct in6_addr *dst_a,u_int16_t dst_p) {
+        inline void setFiveTuple6(struct in6_addr *src_a,u_int16_t src_p,u_int16_t proto,struct in6_addr *dst_a,u_int16_t dst_p) {
 
                 address_.setSourceAddress6(src_a);
                 address_.setDestinationAddress6(dst_a);

@@ -79,29 +79,25 @@ void FlowManager::statistics(std::basic_ostream<char>& out) {
 
 void FlowManager::printFlows(std::basic_ostream<char>& out) {
 
-	in_addr src_a,dst_a; 
-
 	// Print a header
 	out << std::endl;
-	out << boost::format("%-44s %-10s %-10s %-13s %-12s") % "Flow" % "Bytes" % "Packets" % "FlowForwarder" % "Info";
+	out << boost::format("%-64s %-10s %-10s %-13s %-12s") % "Flow" % "Bytes" % "Packets" % "FlowForwarder" % "Info";
 	out << std::endl;	
 	for(auto it = flowTable_.begin(); it!=flowTable_.end(); ++it) {
 		SharedPointer<Flow> flow = *it;
 
 		std::ostringstream fivetuple;
-		src_a.s_addr=flow->getSourceAddress();
-		dst_a.s_addr=flow->getDestinationAddress();
 
-		fivetuple << inet_ntoa(src_a) << ":" << flow->getSourcePort() << ":" << flow->getProtocol();
-		fivetuple << ":" << inet_ntoa(dst_a) << ":" << flow->getDestinationPort();
+		fivetuple << "[" << flow->getSrcAddrDotNotation() << "]:" << flow->getSourcePort() << ":" << flow->getProtocol();
+		fivetuple << ":[" << flow->getDstAddrDotNotation() << "]:" << flow->getDestinationPort();
 
-		out << boost::format("%-44s %-10d %-10d %p") % fivetuple.str() % flow->total_bytes % flow->total_packets % flow->forwarder.lock();
+		out << boost::format("%-64s %-10d %-10d %p") % fivetuple.str() % flow->total_bytes % flow->total_packets % flow->forwarder.lock();
 
 		if(flow->regex.lock())	
-			out << "      Regex:" << flow->regex.lock()->getName();
+			out << "     Regex:" << flow->regex.lock()->getName();
 
 		if(flow->http_host.lock())	
-			out << "      Host:" << flow->http_host.lock()->getName();
+			out << "     Host:" << flow->http_host.lock()->getName();
 	
 		if(flow->http_ua.lock())
 			out << " UserAgent:" << flow->http_ua.lock()->getName();	

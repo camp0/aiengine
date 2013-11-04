@@ -70,10 +70,17 @@ SharedPointer<Flow> TCPProtocol::getFlow() {
                                 flow = flow_cache_->acquireFlow().lock();
                                 if (flow) {
                                         flow->setId(h1);
-                                       	flow->setFiveTuple(ipmux->address.getSourceAddress(),
-                                        	getSrcPort(),6,
-                                                ipmux->address.getDestinationAddress(),
-                                                getDstPort());
+					if (ipmux->address.getType() == 4) {
+                                       		flow->setFiveTuple(ipmux->address.getSourceAddress(),
+                                        		getSrcPort(),6,
+                                                	ipmux->address.getDestinationAddress(),
+                                                	getDstPort());
+					} else {
+                                       		flow->setFiveTuple6(ipmux->address.getSourceAddress6(),
+                                        		getSrcPort(),6,
+                                                	ipmux->address.getDestinationAddress6(),
+                                                	getDstPort());
+					}
                                         flow_table_->addFlow(flow);
                                 }
                         }
