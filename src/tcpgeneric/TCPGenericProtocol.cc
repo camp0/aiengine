@@ -38,11 +38,11 @@ void TCPGenericProtocol::processFlow(Flow *flow) {
 
 	++flow->total_packets_l7;
 
-	if (sig) { //&&(!flow->regex.lock())) {// There is a RegexManager attached and the flow have not been matched
+	if (sig) { // There is a RegexManager attached and the flow have not been matched
 		SharedPointer<Regex> regex = flow->regex.lock();
 		const unsigned char *payload = flow->packet->getPayload();
 		bool result = false;
-		// std::cout << *flow << " packet:" << flow->total_packets << " pkt7:" <<flow->total_packets_l7 << std::endl;
+		//std::cout << *flow << " packet:" << flow->total_packets << " pkt7:" <<flow->total_packets_l7 << std::endl;
 
 		if (regex) {
 			if (regex->isTerminal() == false) {
@@ -56,7 +56,6 @@ void TCPGenericProtocol::processFlow(Flow *flow) {
 		}
 
 		if((result)and(regex)) {
-
 #ifdef HAVE_LIBLOG4CXX
 			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << regex->getName());
 #endif

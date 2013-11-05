@@ -39,8 +39,17 @@ public:
     	virtual ~IPAddress() {}
 
 	void reset() {
-		type_ = 4; ip6_src_= nullptr; ip6_dst_= nullptr;
+		type_ = 4; 
 		ip4_src_ = 0; ip4_dst_= 0;
+		ip6_src_.s6_addr32[0] = 0;
+		ip6_src_.s6_addr32[1] = 0;
+		ip6_src_.s6_addr32[2] = 0;
+		ip6_src_.s6_addr32[3] = 0;
+		ip6_dst_.s6_addr32[0] = 0;
+		ip6_dst_.s6_addr32[1] = 0;
+		ip6_dst_.s6_addr32[2] = 0;
+		ip6_dst_.s6_addr32[3] = 0;
+		// Review: maybe there is no need to store
 		std::memset(src_address_6_,0,INET6_ADDRSTRLEN); 
 		std::memset(dst_address_6_,0,INET6_ADDRSTRLEN);
 	}
@@ -53,14 +62,14 @@ public:
 		if (type_ == 4) {
 			h = ip4_src_ ^ srcport ^ protocol ^ ip4_dst_ ^ dstport;
 		} else {
-			unsigned long sh1 = ip6_src_->s6_addr[0];
-			unsigned long sh2 = ip6_src_->s6_addr[4];
-			unsigned long sh3 = ip6_src_->s6_addr[8];
-			unsigned long sh4 = ip6_src_->s6_addr[12];
-			unsigned long dh1 = ip6_dst_->s6_addr[0];
-			unsigned long dh2 = ip6_dst_->s6_addr[4];
-			unsigned long dh3 = ip6_dst_->s6_addr[8];
-			unsigned long dh4 = ip6_dst_->s6_addr[12];
+			unsigned long sh1 = ip6_src_.s6_addr32[0];
+			unsigned long sh2 = ip6_src_.s6_addr32[1];
+			unsigned long sh3 = ip6_src_.s6_addr32[2];
+			unsigned long sh4 = ip6_src_.s6_addr32[3];
+			unsigned long dh1 = ip6_dst_.s6_addr32[0];
+			unsigned long dh2 = ip6_dst_.s6_addr32[1];
+			unsigned long dh3 = ip6_dst_.s6_addr32[2];
+			unsigned long dh4 = ip6_dst_.s6_addr32[3];
 
 			h = sh1 ^ sh2 ^ sh3 ^ sh4 ^ srcport ^ protocol ^ dh1 ^ dh2 ^ dh3 ^ dh4 ^ dstport; 
 		} 
@@ -72,10 +81,26 @@ public:
 	void setSourceAddress(u_int32_t address) { ip4_src_ = address;type_=4;}
 	void setDestinationAddress(u_int32_t address) { ip4_dst_ = address;type_=4;}
 	
-	void setSourceAddress6(struct in6_addr *address) { ip6_src_ = address;type_=6;}
-	void setDestinationAddress6(struct in6_addr *address) { ip6_dst_ = address;type_=6;}
-	struct in6_addr *getSourceAddress6() const { return ip6_src_;}
-	struct in6_addr *getDestinationAddress6() const { return ip6_dst_;}
+	void setSourceAddress6(struct in6_addr *address) {
+ 
+		type_=6;
+		ip6_src_.s6_addr32[0] = address->s6_addr32[0];
+		ip6_src_.s6_addr32[1] = address->s6_addr32[1];
+		ip6_src_.s6_addr32[2] = address->s6_addr32[2];
+		ip6_src_.s6_addr32[3] = address->s6_addr32[3];
+	}
+
+	void setDestinationAddress6(struct in6_addr *address) {
+ 
+		type_=6;
+		ip6_dst_.s6_addr32[0] = address->s6_addr32[0];
+		ip6_dst_.s6_addr32[1] = address->s6_addr32[1];
+		ip6_dst_.s6_addr32[2] = address->s6_addr32[2];
+		ip6_dst_.s6_addr32[3] = address->s6_addr32[3];
+	}
+	
+	struct in6_addr *getSourceAddress6() const { return const_cast<struct in6_addr*>(&ip6_src_);}
+	struct in6_addr *getDestinationAddress6() const { return const_cast<struct in6_addr*>(&ip6_dst_);}
 
 	char* getSrcAddrDotNotation() const { 
 		if (type_ == 4) {
@@ -84,7 +109,7 @@ public:
 			a.s_addr = ip4_src_;
 			return inet_ntoa(a); 
 		} else {
-        		inet_ntop(AF_INET6,ip6_src_,src_address_6_,INET6_ADDRSTRLEN);
+        		inet_ntop(AF_INET6,&ip6_src_,src_address_6_,INET6_ADDRSTRLEN);
 
         		return src_address_6_;
 		}
@@ -97,15 +122,15 @@ public:
                         a.s_addr = ip4_dst_;
                         return inet_ntoa(a);
                 } else {
-                        inet_ntop(AF_INET6,ip6_dst_,dst_address_6_,INET6_ADDRSTRLEN);
+                        inet_ntop(AF_INET6,&ip6_dst_,dst_address_6_,INET6_ADDRSTRLEN);
 
                         return dst_address_6_;
                 }
         }
  
 private:
-	struct in6_addr *ip6_src_;
-	struct in6_addr *ip6_dst_;
+	struct in6_addr ip6_src_;
+	struct in6_addr ip6_dst_;
 	u_int32_t ip4_src_;
 	u_int32_t ip4_dst_;
 	short type_;

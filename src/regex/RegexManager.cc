@@ -57,7 +57,6 @@ void RegexManager::evaluate(const unsigned char *payload, bool *result) {
 		if (sig->evaluate(payload)) {
 			++total_matched_signatures_;
 			current_signature_ = sig;
-			//sig->incrementMatchs();
 			(*result) = true;
 			return true;
 		}

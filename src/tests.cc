@@ -520,7 +520,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_12,StackLanTest)
 
 }
 
-// test a chainign regex with one flow that matchs on the first and
+// test a chaining regex with one flow that matchs on the first and
 // on the last packet
 BOOST_FIXTURE_TEST_CASE(test_case_13,StackLanTest)
 {
@@ -549,10 +549,122 @@ BOOST_FIXTURE_TEST_CASE(test_case_13,StackLanTest)
 
 	BOOST_CHECK(r_tail->getMatchs() == 1);
 	BOOST_CHECK(r_tail->getTotalEvaluates() == 3);
-
-	//dumpFlows();
 }
 
+// Test with a generic ipv6 exploit
+BOOST_FIXTURE_TEST_CASE(test_case_14,StackLanTest)
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
+        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("generic exploit","\x90\x90\x90\x90\x90\x90\x90\x90"));
+
+        rmng->addRegex(r_generic);
+
+        tcp_generic6->setRegexManager(rmng);
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+        pd->openPcapFile("../pcapfiles/generic_exploit_ipv6_defcon20.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        // Check pcap file for see the results
+        BOOST_CHECK(r_generic->getMatchs() == 1);
+        BOOST_CHECK(r_generic->getTotalEvaluates() == 2);
+
+	BOOST_CHECK(tcp6->getTotalPackets() == 86);
+	BOOST_CHECK(tcp6->getTotalBytes() == 68823);
+	BOOST_CHECK(tcp6->getTotalValidatedPackets() == 86);
+	BOOST_CHECK(tcp6->getTotalMalformedPackets() == 0);
+
+	BOOST_CHECK(flow_table_tcp->getTotalFlows() == 1);
+	BOOST_CHECK(flow_cache_tcp->getTotalAcquires() == 1);
+	BOOST_CHECK(flow_cache_tcp->getTotalFails() == 0);
+
+        BOOST_CHECK(tcp_generic6->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(tcp_generic6->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(tcp_generic6->getTotalPackets() == 49);
+        BOOST_CHECK(tcp_generic6->getTotalBytes() == 66067);
+}
+
+// Test dual stack 
+// use the same TCPGenericProtocol for IPv4 and IPv6
+BOOST_FIXTURE_TEST_CASE(test_case_15,StackLanTest)
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
+        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("generic exploit","(\x90\x90\x90\x90\x90\x90\x90\x90)"));
+
+        ff_tcp->removeUpFlowForwarder(ff_tcp_generic6);
+        ff_tcp6->removeUpFlowForwarder(ff_tcp_generic6);
+        ff_tcp6->addUpFlowForwarder(ff_tcp_generic);
+
+        rmng->addRegex(r_generic);
+        tcp_generic->setRegexManager(rmng);
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+        pd->openPcapFile("../pcapfiles/generic_exploit_ipv6_defcon20.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        // Check pcap file for see the results
+        BOOST_CHECK(r_generic->getMatchs() == 1);
+        BOOST_CHECK(r_generic->getTotalEvaluates() == 2);
+
+        BOOST_CHECK(tcp->getTotalPackets() == 0);
+        BOOST_CHECK(tcp->getTotalBytes() == 0);
+        BOOST_CHECK(tcp->getTotalValidatedPackets() == 0);
+        BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
+
+        BOOST_CHECK(tcp6->getTotalPackets() == 86);
+        BOOST_CHECK(tcp6->getTotalBytes() == 68823);
+        BOOST_CHECK(tcp6->getTotalValidatedPackets() == 86);
+        BOOST_CHECK(tcp6->getTotalMalformedPackets() == 0);
+
+        BOOST_CHECK(flow_table_tcp->getTotalFlows() == 1);
+        BOOST_CHECK(flow_cache_tcp->getTotalAcquires() == 1);
+        BOOST_CHECK(flow_cache_tcp->getTotalFails() == 0);
+
+        BOOST_CHECK(tcp_generic->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(tcp_generic->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(tcp_generic->getTotalPackets() == 49);
+        BOOST_CHECK(tcp_generic->getTotalBytes() == 66067);
+
+	// Inject IPv4 pcap file
+	// polymorphic_clet32bits_port1986.pcap
+        pd->openPcapFile("../pcapfiles/polymorphic_clet32bits_port1986.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        // Check pcap file for see the results
+        std::cout << "mathcs of generic:" << r_generic->getMatchs() << std::endl;
+        BOOST_CHECK(r_generic->getMatchs() == 0);
+        BOOST_CHECK(r_generic->getTotalEvaluates() == 3);
+
+        BOOST_CHECK(tcp->getTotalPackets() == 8);
+        BOOST_CHECK(tcp->getTotalBytes() == 620);
+        BOOST_CHECK(tcp->getTotalValidatedPackets() == 8);
+        BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
+
+        BOOST_CHECK(tcp6->getTotalPackets() == 86);
+        BOOST_CHECK(tcp6->getTotalBytes() == 68823);
+        BOOST_CHECK(tcp6->getTotalValidatedPackets() == 86);
+        BOOST_CHECK(tcp6->getTotalMalformedPackets() == 0);
+
+        BOOST_CHECK(flow_table_tcp->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache_tcp->getTotalAcquires() == 2);
+        BOOST_CHECK(flow_cache_tcp->getTotalFails() == 0);
+
+        BOOST_CHECK(tcp_generic->getTotalValidatedPackets() == 2);
+        BOOST_CHECK(tcp_generic->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(tcp_generic->getTotalPackets() == 49 + 1);
+        BOOST_CHECK(tcp_generic->getTotalBytes() == 66067 + 348);
+
+	dumpFlows();
+}
 
 
 BOOST_AUTO_TEST_SUITE_END( )

@@ -59,6 +59,17 @@ AX_BOOST_REGEX
 AX_BOOST_FILESYSTEM
 AX_BOOST_PROGRAM_OPTIONS
 
+AC_MSG_CHECKING([whether to build with unit tests.])
+AC_ARG_ENABLE([tests],
+    [AS_HELP_STRING([--enable-tests],
+        [enable tests generation (def=no)])],
+    [unittestsit="$enableval"],
+    [unittestsit=no])
+
+if test x"$unittestsit" = x"yes"; then
+    AX_BOOST_UNIT_TEST_FRAMEWORK
+fi
+
 AX_PYTHON_DEVEL([>= 2.7])
 AX_BOOST_PYTHON
 
@@ -98,6 +109,7 @@ AC_CONFIG_FILES([
 Makefile
 test/Makefile
 man/Makefile
+examples/Makefile
 pcapfiles/Makefile
 src/Makefile
 src/ethernet/Makefile
@@ -135,6 +147,7 @@ echo "
   Linker..............: $LD $LDFLAGS $LIBS
   Boost include.......: $BOOST_CPPFLAGS/boost
   Boost...............: $boost_lib_version_req
+  Boost unit tests....: $unittestsit
   Python..............: $PYTHON_VERSION $ax_python_bin 
   Python include path.: $python_path
   Log4cxx.............: $ac_cv_lib_log4cxx_main

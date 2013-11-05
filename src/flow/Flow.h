@@ -102,7 +102,6 @@ public:
 	FlowForwarderPtrWeak forwarder;
 	Packet *packet;
 
-
 	// specific values for a specific Engine
 	bool frequency_engine_inspected;
 	
@@ -144,7 +143,6 @@ public:
 	PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.lock().get();}
 	Regex& getRegex() const { return *regex.lock().get();}
 	DNSDomain& getDNSDomain() const { return *dns_domain.lock().get();}
-
 #endif
 
 private:
