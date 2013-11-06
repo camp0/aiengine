@@ -30,6 +30,12 @@
 #include <arpa/inet.h>
 #include <cstring>
 
+#ifdef FREEBSD 
+#define s6_addr32 __u6_addr.__u6_addr32
+#else 
+#define s6_addr32 __in6_u.__u6_addr32
+#endif
+
 namespace aiengine {
 
 class IPAddress
