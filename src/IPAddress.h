@@ -24,13 +24,20 @@
 #ifndef SRC_IPADDRESS_H_
 #define SRC_IPADDRESS_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef __FREEBSD__
+#include <sys/socket.h>
+#endif
 #include <iostream>
 #include <netinet/in.h>
 #include <netinet/ip6.h>
 #include <arpa/inet.h>
 #include <cstring>
 
-#ifdef FREEBSD 
+#ifdef __FREEBSD__ 
 #define s6_addr32 __u6_addr.__u6_addr32
 #else 
 #define s6_addr32 __in6_u.__u6_addr32

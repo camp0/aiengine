@@ -1,5 +1,5 @@
 AC_INIT([aiengine],[0.2],[luis.camp0.2009@gmail.com],[],[https://bitbucket.org/camp0/aiengine])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([subdir-objects])
 AM_PROG_LIBTOOL
 
 AM_CONFIG_HEADER(config.h)
@@ -19,6 +19,20 @@ m4_include([m4/ac_c++11.m4])
 AC_PREREQ(2.59)
 
 AC_PROG_INSTALL
+
+AC_CANONICAL_HOST
+AM_CONDITIONAL([__FREEBSD__],false)
+AM_CONDITIONAL([__LINUX__],false)
+case $host in
+    *free*)    
+    	AC_DEFINE([__FREEBSD__],[1],[FreeBSD Host])
+    	AM_CONDITIONAL([__FREEBSD__],true)
+    ;;
+    *linux*)
+	AC_DEFINE([__LINUX__],[1],[Linux Host])
+    	AM_CONDITIONAL([__LINUX__],true)
+    ;;
+esac
 
 AC_LANG([C++])
 AC_PROG_CXX([g++ c++])
@@ -140,6 +154,7 @@ AC_OUTPUT
 echo "
   aiengine 
   ($PACKAGE_NAME) version $PACKAGE_VERSION
+  Host................: $host 
   Prefix..............: $prefix
   Debug Build.........: $debugit
   C++ Compiler........: $CXX $AM_CXXFLAGS $CPPFLAGS 

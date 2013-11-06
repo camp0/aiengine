@@ -28,6 +28,9 @@
 #include <config.h>
 #endif
 
+#ifdef __FREEBSD__
+#include <sys/socket.h>
+#endif
 #include <iostream>
 #include <memory>
 #include <functional>
