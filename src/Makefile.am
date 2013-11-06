@@ -75,7 +75,8 @@ BOOST_LINK_CORE = -lboost_system -lboost_thread -lboost_regex
 
 aiengine_SOURCES =      $(aiengine_core_sources) main.cc
 aiengine_CPPFLAGS = $(BOOST_CPPFLAGS)
-aiengine_LDFLAGS = -DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ $(BOOST_LINK_CORE) \
+aiengine_LDFLAGS = -DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ \
+			$(BOOST_LDFLAGS) $(BOOST_LINK_CORE) \
 			-lboost_program_options \
 			-lboost_filesystem -lpcap $(LOG4CXX_FLAGS) 
 

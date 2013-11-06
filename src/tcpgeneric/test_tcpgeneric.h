@@ -25,6 +25,7 @@
 #define _test_tcpgeneric_H_
 
 #include <string>
+#include "../../test/tests_packets.h"
 #include "../../test/torrent_test_packets.h"
 #include "../../test/ipv6_test_packets.h"
 #include "../Protocol.h"

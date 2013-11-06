@@ -556,7 +556,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_14,StackLanTest)
 {
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
-        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("generic exploit","\x90\x90\x90\x90\x90\x90\x90\x90"));
+        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("generic exploit","\\x90\\x90\\x90\\x90\\x90\\x90\\x90\\x90"));
 
         rmng->addRegex(r_generic);
 
@@ -588,13 +588,46 @@ BOOST_FIXTURE_TEST_CASE(test_case_14,StackLanTest)
         BOOST_CHECK(tcp_generic6->getTotalBytes() == 66067);
 }
 
-// Test dual stack 
-// use the same TCPGenericProtocol for IPv4 and IPv6
+// A true negative test 
 BOOST_FIXTURE_TEST_CASE(test_case_15,StackLanTest)
 {
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
-        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("generic exploit","(\x90\x90\x90\x90\x90\x90\x90\x90)"));
+        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("generic exploit","\x90\x90\x90\x90\x90\x90\x90\x90"));
+
+        rmng->addRegex(r_generic);
+
+        tcp_generic->setRegexManager(rmng);
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+        pd->openPcapFile("../pcapfiles/polymorphic_clet32bits_port1986.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        // Check pcap file for see the results
+        BOOST_CHECK(r_generic->getMatchs() == 0);
+        BOOST_CHECK(r_generic->getTotalEvaluates() == 1);
+
+        BOOST_CHECK(tcp->getTotalPackets() == 8);
+        BOOST_CHECK(tcp->getTotalBytes() == 620);
+        BOOST_CHECK(tcp->getTotalValidatedPackets() == 8);
+        BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
+
+       	BOOST_CHECK(tcp_generic->getTotalBytes() == 348);
+        BOOST_CHECK(tcp_generic->getTotalPackets() == 1);
+}
+
+
+
+// Test dual stack 
+// use the same TCPGenericProtocol for IPv4 and IPv6
+BOOST_FIXTURE_TEST_CASE(test_case_16,StackLanTest)
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
+        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("generic exploit","\x90\x90\x90\x90"));
 
         ff_tcp->removeUpFlowForwarder(ff_tcp_generic6);
         ff_tcp6->removeUpFlowForwarder(ff_tcp_generic6);
@@ -641,7 +674,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_15,StackLanTest)
 
         // Check pcap file for see the results
         std::cout << "mathcs of generic:" << r_generic->getMatchs() << std::endl;
-        BOOST_CHECK(r_generic->getMatchs() == 0);
+        BOOST_CHECK(r_generic->getMatchs() == 1);
         BOOST_CHECK(r_generic->getTotalEvaluates() == 3);
 
         BOOST_CHECK(tcp->getTotalPackets() == 8);

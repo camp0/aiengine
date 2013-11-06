@@ -38,13 +38,12 @@ void TCPGenericProtocol::processFlow(Flow *flow) {
 
 	++flow->total_packets_l7;
 
-	if (sig) { // There is a RegexManager attached and the flow have not been matched
+	if (sig) { // There is a RegexManager attached on the protocol 
 		SharedPointer<Regex> regex = flow->regex.lock();
 		const unsigned char *payload = flow->packet->getPayload();
 		bool result = false;
-		//std::cout << *flow << " packet:" << flow->total_packets << " pkt7:" <<flow->total_packets_l7 << std::endl;
 
-		if (regex) {
+		if (regex) { // The flow have been matched with some regex
 			if (regex->isTerminal() == false) {
 				regex = regex->getNextRegex();
 				if (regex) // There is no need but.... 
