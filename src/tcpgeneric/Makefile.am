@@ -16,8 +16,8 @@ test_tcpgeneric_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 				../regex/Regex.cc \
 				TCPGenericProtocol.cc test_tcpgeneric.cc
 
-test_tcpgeneric_CPPFLAGS = -DSTAND_ALONE
-test_tcpgeneric_LDADD   = -lboost_unit_test_framework -lboost_regex
+test_tcpgeneric_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
+test_tcpgeneric_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework -lboost_regex
 
 CLEANFILES = *.o *.lo *.so
 

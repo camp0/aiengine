@@ -24,6 +24,10 @@
 #ifndef SRC_NAMES_DOMAINNAMEMANAGER_H_ 
 #define SRC_NAMES_DOMAINNAMEMANAGER_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <iostream>
 #include "DomainName.h"
 #include "DomainNode.h"

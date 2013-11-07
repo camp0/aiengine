@@ -15,8 +15,8 @@ test_http_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../names/DomainNameManager.cc \
 			HTTPProtocol.cc test_http.cc
 
-test_http_CPPFLAGS = -DSTAND_ALONE
-test_http_LDADD   = -lboost_unit_test_framework -lboost_regex
+test_http_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
+test_http_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework -lboost_regex
 
 CLEANFILES = *.o *.lo *.so
 

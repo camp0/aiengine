@@ -10,8 +10,8 @@ test_ip6_SOURCES = 	../Multiplexer.cc \
 			../ethernet/EthernetProtocol.cc \
 			IPv6Protocol.cc test_ip6.cc
 
-test_ip6_CPPFLAGS = -I../../test -DSTAND_ALONE
-test_ip6_LDADD   = -lboost_unit_test_framework
+test_ip6_CPPFLAGS = $(BOOST_CPPFLAGS) -I../../test -DSTAND_ALONE
+test_ip6_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so
 

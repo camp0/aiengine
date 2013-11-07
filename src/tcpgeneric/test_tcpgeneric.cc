@@ -327,5 +327,88 @@ BOOST_AUTO_TEST_CASE (test7_tcpgeneric)
 
 }
 
+// Another Regex test case
+BOOST_AUTO_TEST_CASE (test8_tcpgeneric)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_nopsled);
+        int length1 = raw_packet_ethernet_ipv6_tcp_nopsled_length;
+        Packet packet1(pkt1,length1,0);
+
+        SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("generic nop exploit tcp ","\\x90\\x90\\x90\x90"));
+        RegexManagerPtr sig = RegexManagerPtr(new RegexManager());
+
+	flow_cache->createFlows(1); // allocate space for another flow
+
+	// Shares the same generic tcp
+        ff_tcp->removeUpFlowForwarder(ff_gtcp6);
+        ff_tcp6->removeUpFlowForwarder(ff_gtcp6);
+        ff_tcp6->addUpFlowForwarder(ff_gtcp);
+
+        sig->addRegex(r1);
+        gtcp->setRegexManager(sig);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+        // Check stack integrity
+        BOOST_CHECK(tcp6->getTotalPackets() == 1);
+        BOOST_CHECK(tcp6->getTotalBytes() == 103+32);
+        BOOST_CHECK(tcp6->getTotalValidatedPackets() == 1);
+
+        BOOST_CHECK(gtcp->getTotalPackets() == 1);
+        BOOST_CHECK(gtcp->getTotalBytes() == 103);
+        BOOST_CHECK(gtcp->getTotalValidatedPackets() == 1);
+
+        // Check regex stuff
+        BOOST_CHECK(r1->getMatchs() == 1);
+        BOOST_CHECK(r1->getTotalEvaluates() == 1);
+        BOOST_CHECK(sig->getMatchedRegex() == r1);
+
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_polymorphic_clet);
+        int length2 = raw_packet_ethernet_ip_tcp_polymorphic_clet_length;
+        Packet packet2(pkt2,length2,0);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet2);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet2);
+
+        // Check stack integrity
+        BOOST_CHECK(tcp->getTotalPackets() == 1);
+        BOOST_CHECK(tcp->getTotalBytes() == 380);
+        BOOST_CHECK(tcp->getTotalValidatedPackets() == 1);
+
+        BOOST_CHECK(gtcp->getTotalPackets() == 2);
+        BOOST_CHECK(gtcp->getTotalBytes() == 103 + 348);
+        BOOST_CHECK(gtcp->getTotalValidatedPackets() == 2);
+
+        // Check regex stuff
+        BOOST_CHECK(r1->getMatchs() == 1);
+        BOOST_CHECK(r1->getTotalEvaluates() == 2);
+        BOOST_CHECK(sig->getMatchedRegex() == nullptr);
+
+	// Inject the last packet 5 times
+	for (int i = 0; i< 5; ++i ) mux_eth->forwardPacket(packet2);
+
+        BOOST_CHECK(r1->getMatchs() == 1);
+        BOOST_CHECK(r1->getTotalEvaluates() == 7);
+        BOOST_CHECK(sig->getMatchedRegex() == nullptr);
+
+	for (int i = 0; i< 5; ++i ) mux_eth->forwardPacket(packet1);
+
+        BOOST_CHECK(r1->getMatchs() == 1);
+        BOOST_CHECK(r1->getTotalEvaluates() == 7);
+        BOOST_CHECK(sig->getMatchedRegex() == nullptr);
+
+}
+
+
+
 BOOST_AUTO_TEST_SUITE_END( )
 

@@ -8,8 +8,8 @@ noinst_HEADERS = User.h UserManager.h
 
 test_users_SOURCES = test_users.cc
 
-test_users_CPPFLAGS = -DSTAND_ALONE
-test_users_LDADD   = -lboost_unit_test_framework
+test_users_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
+test_users_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so
 

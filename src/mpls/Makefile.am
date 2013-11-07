@@ -12,8 +12,8 @@ test_mpls_SOURCES = 	../Multiplexer.cc \
 			../icmp/ICMPProtocol.cc \
 			MPLSProtocol.cc test_mpls.cc
 
-test_mpls_CPPFLAGS = -DSTAND_ALONE
-test_mpls_LDADD   = -lboost_unit_test_framework
+test_mpls_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
+test_mpls_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so
 

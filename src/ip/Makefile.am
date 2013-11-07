@@ -11,8 +11,9 @@ test_ip_SOURCES = 	../Multiplexer.cc \
 			../vlan/VLanProtocol.cc \
 			IPProtocol.cc test_ip.cc
 
-test_ip_CPPFLAGS = -I../../test -DSTAND_ALONE
-test_ip_LDADD   = -lboost_unit_test_framework
+test_ip_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
+#test_ip_CPPFLAGS = -I../../test -DSTAND_ALONE
+test_ip_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so
 

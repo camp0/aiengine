@@ -24,6 +24,10 @@
 #ifndef SRC_NAMES_DOMAINNODE_H_
 #define SRC_NAMES_DOMAINNODE_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "../Pointer.h"
 #include <unordered_map>
 #include <iostream>

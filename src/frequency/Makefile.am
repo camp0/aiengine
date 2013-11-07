@@ -15,8 +15,8 @@ test_frequency_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../flow/FlowManager.cc \
 			FrequencyProtocol.cc FrequencyCounter.cc test_frequency.cc
 
-test_frequency_CPPFLAGS = -DSTAND_ALONE
-test_frequency_LDADD   = -lboost_unit_test_framework
+test_frequency_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
+test_frequency_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so
 

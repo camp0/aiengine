@@ -24,6 +24,10 @@
 #ifndef SRC_POINTER_H_ 
 #define SRC_POINTER_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifdef PYTHON_BINDING
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>

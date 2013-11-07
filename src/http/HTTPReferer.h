@@ -24,6 +24,10 @@
 #ifndef SRC_HTTP_HTTPREFERER_H_
 #define SRC_HTTP_HTTPREFERER_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <iostream>
 
 namespace aiengine {

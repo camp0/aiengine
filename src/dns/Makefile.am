@@ -14,8 +14,8 @@ test_dns_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../names/DomainNameManager.cc \
 			DNSProtocol.cc test_dns.cc
 
-test_dns_CPPFLAGS = -DSTAND_ALONE
-test_dns_LDADD   = -lboost_unit_test_framework
+test_dns_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
+test_dns_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so
 

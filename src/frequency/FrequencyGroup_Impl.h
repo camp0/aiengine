@@ -27,7 +27,6 @@
 
 namespace aiengine {
 
-
 template <class A_Type>
 void FrequencyGroup<A_Type>::reset() {
 

@@ -13,8 +13,8 @@ test_ssl_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../flow/FlowManager.cc \
 			SSLProtocol.cc test_ssl.cc
 
-test_ssl_CPPFLAGS = -DSTAND_ALONE
-test_ssl_LDADD   = -lboost_unit_test_framework
+test_ssl_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
+test_ssl_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so
 

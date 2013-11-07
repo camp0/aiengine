@@ -16,8 +16,8 @@ test_udp_SOURCES = 	../Multiplexer.cc \
 			UDPProtocol.cc \
 			test_udp.cc
 
-test_udp_CPPFLAGS = -DSTAND_ALONE
-test_udp_LDADD   = -lboost_unit_test_framework
+test_udp_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
+test_udp_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so
 

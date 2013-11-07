@@ -16,8 +16,8 @@ test_tcp_SOURCES = 	../Multiplexer.cc  \
 			TCPProtocol.cc \
 			test_tcp.cc
 
-test_tcp_CPPFLAGS = -DSTAND_ALONE
-test_tcp_LDADD   = -lboost_unit_test_framework
+test_tcp_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
+test_tcp_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so
 

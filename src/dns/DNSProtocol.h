@@ -57,7 +57,7 @@ public:
     	explicit DNSProtocol():ssl_header_(nullptr),total_bytes_(0),
 		total_queries_(0),stats_level_(0),
 		domain_cache_(new Cache<DNSDomain>("Domain cache"))
-		{ name_="DNSProtocol";};
+		 { name_ = "DNSProtocol"; }
 
     	virtual ~DNSProtocol() {}
 	
@@ -72,7 +72,7 @@ public:
 
         const char *getName() { return name_.c_str();}
 
-	void processPacket(Packet& packet){}
+	void processPacket(Packet& packet) {}
 	void processFlow(Flow *flow);
 
 	void setStatisticsLevel(int level) { stats_level_ = level;}

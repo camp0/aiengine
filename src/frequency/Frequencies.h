@@ -24,6 +24,10 @@
 #ifndef SRC_FREQUENCY_FREQUENCIES_H_
 #define SRC_FREQUENCY_FREQUENCIES_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <sstream>
 #include <iostream>
 #include <array>

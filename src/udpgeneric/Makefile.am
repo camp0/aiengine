@@ -15,8 +15,8 @@ test_udpgeneric_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 				../regex/Regex.cc \
 				UDPGenericProtocol.cc test_udpgeneric.cc
 
-test_udpgeneric_CPPFLAGS = -DSTAND_ALONE
-test_udpgeneric_LDADD   = -lboost_unit_test_framework -lboost_regex
+test_udpgeneric_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
+test_udpgeneric_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework -lboost_regex
 
 CLEANFILES = *.o *.lo *.so
 

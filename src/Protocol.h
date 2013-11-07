@@ -24,6 +24,10 @@
 #ifndef SRC_PROTOCOL_H_
 #define SRC_PROTOCOL_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <iostream>
 #include <fstream>
 #include "FlowForwarder.h"

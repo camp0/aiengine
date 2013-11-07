@@ -21,8 +21,12 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _DNSDomain_H_
-#define _DNSDomain_H_
+#ifndef SRC_DNS_DNSDOMAIN_H_
+#define SRC_DNS_DNSDOMAIN_H_
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <iostream>
 
@@ -31,18 +35,18 @@ namespace aiengine {
 class DNSDomain 
 {
 public:
-    	explicit DNSDomain(const std::string& name):domain_name_(name) {};
-    	explicit DNSDomain() { reset(); };
-    	virtual ~DNSDomain() {};
+    	explicit DNSDomain(const std::string& name):domain_name_(name) {}
+    	explicit DNSDomain() { reset(); }
+    	virtual ~DNSDomain() {}
 
-	void reset() { domain_name_ = "";};	
-	std::string &getName() { return domain_name_; };
-	void setName(const std::string& name) { domain_name_ = name;};
+	void reset() { domain_name_ = "";}
+	std::string &getName() { return domain_name_; }
+	void setName(const std::string& name) { domain_name_ = name;}
 
 #ifdef PYTHON_BINDING
-	friend std::ostream& operator<< (std::ostream& out, const DNSDomain& domain)
-	{
-		out << domain.domain_name_ ;
+	friend std::ostream& operator<< (std::ostream& out, const DNSDomain& domain) {
+	
+		out << domain.domain_name_;
         	return out;
 	}
 #endif
@@ -53,4 +57,4 @@ private:
 
 } // namespace aiengine
 
-#endif
+#endif  // SRC_DNS_DNSDOMAIN_H_
