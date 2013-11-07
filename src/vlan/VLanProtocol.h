@@ -34,6 +34,10 @@
 #include <net/ethernet.h>
 #include <arpa/inet.h>
 
+//#ifdef __LINUX__
+//#define ETHERTYPE_VLAN ETH_P_8021Q
+//#endif
+
 namespace aiengine {
 
 class VLanProtocol: public Protocol 
@@ -43,7 +47,7 @@ public:
 		stats_level_(0) { name_="VLanProtocol"; }
     	virtual ~VLanProtocol() {}
 
-	static const u_int16_t id = ETH_P_8021Q;	
+	static const u_int16_t id = ETHERTYPE_VLAN;	
 	static const int header_size = VLAN_TAG_LEN;
 
 	int getHeaderSize() const { return header_size;}

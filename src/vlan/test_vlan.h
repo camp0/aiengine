@@ -57,12 +57,12 @@ struct StackTestVlan
         	// configure the vlan handler
         	vlan->setMultiplexer(mux_vlan);
 		mux_vlan->setProtocol(static_cast<ProtocolPtr>(vlan));
-		mux_vlan->setProtocolIdentifier(ETH_P_8021Q);
+		mux_vlan->setProtocolIdentifier(ETHERTYPE_VLAN);
         	mux_vlan->setHeaderSize(vlan->getHeaderSize());
         	mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan,std::placeholders::_1));
 
 		// configure the multiplexers
-		mux_eth->addUpMultiplexer(mux_vlan,ETH_P_8021Q);
+		mux_eth->addUpMultiplexer(mux_vlan,ETHERTYPE_VLAN);
 		mux_vlan->addDownMultiplexer(mux_eth);
 
 	}

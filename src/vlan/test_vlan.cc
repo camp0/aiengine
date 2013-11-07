@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE (test2_vlan)
 	
         // Sets the raw packet to a valid ethernet header
         eth->setHeader(packet);
-        BOOST_CHECK(eth->getEthernetType() == ETH_P_8021Q);
+        BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_VLAN);
 	// forward the packet through the multiplexers
 	mux_eth->setPacket(&pkt);
 	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE (test2_vlan)
 	BOOST_CHECK(mux_vlan->getTotalForwardPackets() == 0);
 	BOOST_CHECK(mux_vlan->getTotalFailPackets() == 1);
 
-       	BOOST_CHECK(vlan->getEthernetType() == ETH_P_IP);
+       	BOOST_CHECK(vlan->getEthernetType() == ETHERTYPE_IP);
 }
 
 BOOST_AUTO_TEST_CASE (test3_vlan)
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE (test3_vlan)
         BOOST_CHECK(mux_vlan->getTotalForwardPackets() == 0);
         BOOST_CHECK(mux_vlan->getTotalFailPackets() == 1);
 
-        BOOST_CHECK(vlan->getEthernetType() == ETH_P_IP);
+        BOOST_CHECK(vlan->getEthernetType() == ETHERTYPE_IP);
 }
 
 

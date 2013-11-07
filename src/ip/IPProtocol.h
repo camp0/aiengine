@@ -75,7 +75,7 @@ public:
 
         void setHeader(unsigned char *raw_packet) {
         
-                ip_header_ = reinterpret_cast <struct iphdr*> (raw_packet);
+                ip_header_ = reinterpret_cast <struct ip*> (raw_packet);
         }
 
 	// Condition for say that a packet is IP 
@@ -93,25 +93,25 @@ public:
 		}
 	}
 
-    	u_int8_t getTTL() const { return ip_header_->ttl; }
-    	u_int16_t getPacketLength() const { return ntohs(ip_header_->tot_len); }
-    	u_int16_t getIPHeaderLength() const { return ip_header_->ihl * 4; }
+    	u_int8_t getTTL() const { return ip_header_->ip_ttl; }
+    	u_int16_t getPacketLength() const { return ntohs(ip_header_->ip_len); }
+    	u_int16_t getIPHeaderLength() const { return ip_header_->ip_hl * 4; }
     	bool isIP() const { return ip_header_ ? true : false ; }
-    	bool isIPver4() const { return ip_header_->version == 4; }
-    	bool isFragment() const { return (ntohs(ip_header_->frag_off) & 0x3fff); }
-    	u_int16_t getID() const { return ntohs(ip_header_->id); }
-    	int getVersion() const { return ip_header_->version; }
-    	u_int16_t getProtocol () const { return ip_header_->protocol; }
-    	u_int32_t getSrcAddr() const { return ip_header_->saddr; }
-    	u_int32_t getDstAddr() const { return ip_header_->daddr; }
-    	const char* getSrcAddrDotNotation() const { in_addr a; a.s_addr=ip_header_->saddr; return inet_ntoa(a); }
-    	const char* getDstAddrDotNotation() const { in_addr a; a.s_addr=ip_header_->daddr; return inet_ntoa(a); }
+    	bool isIPver4() const { return ip_header_->ip_v == 4; }
+    	//bool isFragment() const { return (ntohs(ip_header_->frag_off) & 0x3fff); }
+    	//u_int16_t getID() const { return ntohs(ip_header_->id); }
+    	int getVersion() const { return ip_header_->ip_v; }
+    	u_int16_t getProtocol () const { return ip_header_->ip_p; }
+    	u_int32_t getSrcAddr() const { return ip_header_->ip_src.s_addr; }
+    	u_int32_t getDstAddr() const { return ip_header_->ip_dst.s_addr; }
+    	const char* getSrcAddrDotNotation() const { return inet_ntoa(ip_header_->ip_src); }
+    	const char* getDstAddrDotNotation() const { return inet_ntoa(ip_header_->ip_dst); }
     	u_int32_t getIPPayloadLength() const { return getPacketLength() - getIPHeaderLength(); }
 
 private:
 	int stats_level_;
 	MultiplexerPtrWeak mux_;
-	struct iphdr *ip_header_;
+	struct ip *ip_header_;
 	int64_t total_bytes_;
 };
 
