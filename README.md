@@ -149,21 +149,21 @@ The main objects that the python module provide are the following ones.
 	   |---> setTotalTCPFlows
 	   |---> setTotalUDPFlows
 	   |---> setUDPRegexManager
-        StackLanIPv6
-           |---> enableFrequencyEngine
-           |---> enableLinkLayerTagging
-           |---> getTCPFlowManager
-           |---> getUDPFlowManager
-           |---> printFlows
-           |---> setDNSDomainNameManager
-           |---> setHTTPHostNameManager
-           |---> setStatisticsLevel
-           |---> setTCPRegexManager
-           |---> setTotalTCPFlows
-           |---> setTotalUDPFlows
-           |---> setUDPRegexManager
+    StackLanIPv6
+       |---> enableFrequencyEngine
+       |---> enableLinkLayerTagging
+       |---> getTCPFlowManager
+       |---> getUDPFlowManager
+       |---> printFlows
+       |---> setDNSDomainNameManager
+       |---> setHTTPHostNameManager
+       |---> setStatisticsLevel
+       |---> setTCPRegexManager
+       |---> setTotalTCPFlows
+       |---> setTotalUDPFlows
+       |---> setUDPRegexManager
 
-Check the wiki pages in order to have more examples.
+Check the wiki pages in order to have more complex examples.
 
 Compile AIEngine
 ----------------
