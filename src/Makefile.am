@@ -7,6 +7,7 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			PacketDispatcher.h \
 			NetworkStack.h \
 			StackLan.h \
+			StackLanIPv6.h \
 			Cache.h \
 			StackMobile.h \
 			Multiplexer.h \
@@ -63,7 +64,8 @@ aiengine_core_sources =	Multiplexer.cc \
 			./learner/LearnerEngine.cc \
 			./names/DomainNameManager.cc \
 			System.cc \
-			StackMobile.cc StackLan.cc 
+			StackMobile.cc StackLan.cc \
+			StackLanIPv6.cc  
 
 if SUPPORT_LOG4CXX
   LOG4CXX_FLAGS = -llog4cxx

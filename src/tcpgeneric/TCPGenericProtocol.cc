@@ -61,6 +61,7 @@ void TCPGenericProtocol::processFlow(Flow *flow) {
 			flow->regex = regex; 
 #ifdef PYTHON_BINDING
                         if(regex->haveCallback()) {
+				// TODO: http://stackoverflow.com/questions/18618333/boost-python-wrap-functions-to-release-the-gil
                                 PyGILState_STATE state(PyGILState_Ensure());
                                 try {
                                         boost::python::call<void>(regex->getCallback(),boost::python::ptr(flow));

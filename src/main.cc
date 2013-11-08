@@ -25,6 +25,7 @@
 #include <config.h>
 #endif
 
+#include <functional>
 #include <csignal>
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -40,6 +41,7 @@
 #include "System.h"
 #include "StackLan.h"
 #include "StackMobile.h"
+#include "StackLanIPv6.h"
 
 using namespace aiengine;
 
@@ -56,6 +58,13 @@ aiengine::FrequencyGroup<std::string> group;
 aiengine::LearnerEngine learner;
 
 std::map<std::string,std::function <void(FlowManagerPtr)>> group_map_options;
+
+/* Factory of NetworkStacks implemented with lambdas */
+std::map<std::string, std::function<aiengine::NetworkStackPtr()>> stack_factory {
+	{ "lan",	[](){return aiengine::NetworkStackPtr(new aiengine::StackLan());}},
+	{ "mobile",	[](){return aiengine::NetworkStackPtr(new aiengine::StackMobile());}},
+	{ "lan6",	[](){return aiengine::NetworkStackPtr(new aiengine::StackLanIPv6());}}
+};
 
 std::string option_link_type_tag;
 std::string option_learner_key;
@@ -261,7 +270,7 @@ int main(int argc, char* argv[]) {
 	po::options_description optional_ops("Optional arguments");
 	optional_ops.add_options()
 		("stack,n",		po::value<std::string>(&option_stack_name)->default_value("lan"),
-				      	"Sets the network stack (lan,mobile).")
+				      	"Sets the network stack (lan,mobile,lan6).")
 		("dumpflows,d",      	"Dump the flows to stdout.")
 		("statistics,s",	po::value<int>(&option_statistics_level)->default_value(0),
 					"Show statistics of the network stack (5 leves).")
@@ -330,19 +339,13 @@ int main(int argc, char* argv[]) {
 #endif	
 	pktdis = PacketDispatcherPtr(new PacketDispatcher());
 
-	if (option_stack_name.compare("lan") == 0) {
-	
-		stack = NetworkStackPtr(new StackLan());
-	} else {
-		if (option_stack_name.compare("mobile") ==0) {
-		
-			stack = NetworkStackPtr(new StackMobile());
-		} else {
-			std::cout << "iaengine: Unknown stack " << option_stack_name << std::endl;
-			exit(-1);
-		}
+	try {
+		stack = stack_factory[option_stack_name]();
+	} catch (std::bad_function_call& e) {
+		std::cout << "iaengine: Unknown stack " << option_stack_name << std::endl;
+		exit(-1);
 	}
-
+	
 	stack->setStatisticsLevel(option_statistics_level);
 
 	stack->setTotalTCPFlows(tcp_flows_cache);	

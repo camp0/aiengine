@@ -30,15 +30,17 @@
 
 #include "../Multiplexer.h"
 #include "../Protocol.h"
-#include <pcap/vlan.h>
 #include <net/ethernet.h>
 #include <arpa/inet.h>
 
-//#ifdef __LINUX__
-//#define ETHERTYPE_VLAN ETH_P_8021Q
-//#endif
-
 namespace aiengine {
+
+struct vlan_tag {
+        u_int16_t       vlan_tpid;              /* ETH_P_8021Q */
+        u_int16_t       vlan_tci;               /* VLAN TCI */
+};
+
+#define VLAN_TAG_LEN    4
 
 class VLanProtocol: public Protocol 
 {
