@@ -44,7 +44,7 @@ To use AIEngine just execute the binary aiengine:
 	  -k [ --key-learner ] arg (=80)    Sets the key for the Learner engine.
 
 	Optional arguments:
-	  -k [ --stack ] arg (=lan)    Sets the network stack (lan,mobile).
+	  -k [ --stack ] arg (=lan)    Sets the network stack (lan,mobile,lan6).
 	  -d [ --dumpflows ]           Dump the flows to stdout.
 	  -s [ --statistics ] arg (=0) Show statistics of the network stack (5 levels).
 	  -p [ --pstatistics ]         Show statistics of the process.
@@ -149,6 +149,19 @@ The main objects that the python module provide are the following ones.
 	   |---> setTotalTCPFlows
 	   |---> setTotalUDPFlows
 	   |---> setUDPRegexManager
+        StackLanIPv6
+           |---> enableFrequencyEngine
+           |---> enableLinkLayerTagging
+           |---> getTCPFlowManager
+           |---> getUDPFlowManager
+           |---> printFlows
+           |---> setDNSDomainNameManager
+           |---> setHTTPHostNameManager
+           |---> setStatisticsLevel
+           |---> setTCPRegexManager
+           |---> setTotalTCPFlows
+           |---> setTotalUDPFlows
+           |---> setUDPRegexManager
 
 Check the wiki pages in order to have more examples.
 

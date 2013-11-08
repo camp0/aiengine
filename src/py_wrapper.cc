@@ -27,6 +27,7 @@
 
 #include "NetworkStack.h"
 #include "StackLan.h"
+#include "StackLanIPv6.h"
 #include "StackMobile.h"
 #include "PacketDispatcher.h"
 #include "NetworkStack.h"
@@ -150,6 +151,38 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getTCPFlowManager",&StackMobile::getTCPFlowManager,return_internal_reference<>())
 		.def("getUDPFlowManager",&StackMobile::getUDPFlowManager,return_internal_reference<>())
 		.def("setStatisticsLevel",&StackMobile::setStatisticsLevel)
+        ;
+
+        // for overload the methods with the class
+        void (StackLanIPv6::*printFlowsLanIPv6)() = &StackLanIPv6::printFlows;
+
+        void (StackLanIPv6::*setUDPRegexManagerLanIPv61)(RegexManager&) = &StackLanIPv6::setUDPRegexManager;
+        void (StackLanIPv6::*setTCPRegexManagerLanIPv61)(RegexManager&) = &StackLanIPv6::setTCPRegexManager;
+        void (StackLanIPv6::*setUDPRegexManagerLanIPv62)(RegexManagerPtrWeak) = &StackLanIPv6::setUDPRegexManager;
+        void (StackLanIPv6::*setTCPRegexManagerLanIPv62)(RegexManagerPtrWeak) = &StackLanIPv6::setTCPRegexManager;
+        void (StackLanIPv6::*setDNSDomainNameManagerLanIPv61)(DomainNameManager&) = &StackLanIPv6::setDNSDomainNameManager;
+        void (StackLanIPv6::*setDNSDomainNameManagerLanIPv62)(DomainNameManagerPtrWeak) = &StackLanIPv6::setDNSDomainNameManager;
+        void (StackLanIPv6::*setHTTPHostNameManagerLanIPv61)(DomainNameManager&) = &StackLanIPv6::setHTTPHostNameManager;
+        void (StackLanIPv6::*setHTTPHostNameManagerLanIPv62)(DomainNameManagerPtrWeak) = &StackLanIPv6::setHTTPHostNameManager;
+
+        boost::python::class_<StackLanIPv6, bases<NetworkStack> >("StackLanIPv6")
+                .def("setUDPRegexManager",setUDPRegexManagerLanIPv61)
+                .def("setTCPRegexManager",setTCPRegexManagerLanIPv61)
+                .def("setUDPRegexManager",setUDPRegexManagerLanIPv62)
+                .def("setTCPRegexManager",setTCPRegexManagerLanIPv62)
+                .def("setDNSDomainNameManager",setDNSDomainNameManagerLanIPv61)
+                .def("setDNSDomainNameManager",setDNSDomainNameManagerLanIPv62)
+                .def("setHTTPHostNameManager",setHTTPHostNameManagerLanIPv61)
+                .def("setHTTPHostNameManager",setHTTPHostNameManagerLanIPv62)
+                .def("setTotalTCPFlows",&StackLanIPv6::setTotalTCPFlows)
+                .def("setTotalUDPFlows",&StackLanIPv6::setTotalUDPFlows)
+                .def(self_ns::str(self_ns::self))
+                .def("printFlows",printFlowsLanIPv6)
+                .def("enableFrequencyEngine",&StackLanIPv6::enableFrequencyEngine)
+                .def("enableLinkLayerTagging",&StackLanIPv6::enableLinkLayerTagging)
+                .def("getTCPFlowManager",&StackLanIPv6::getTCPFlowManager,return_internal_reference<>())
+                .def("getUDPFlowManager",&StackLanIPv6::getUDPFlowManager,return_internal_reference<>())
+                .def("setStatisticsLevel",&StackLanIPv6::setStatisticsLevel)
         ;
 	
 	boost::python::class_<Regex>("Regex",init<const std::string&,const std::string&>())
