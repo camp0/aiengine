@@ -44,6 +44,7 @@ BOOST_AUTO_TEST_CASE (test1_ssl)
         mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forwardPacket(packet);
 
+
 	// Check the results
 	BOOST_CHECK(ip->getTotalPackets() == 1);
 	BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
@@ -61,6 +62,52 @@ BOOST_AUTO_TEST_CASE (test1_ssl)
 	BOOST_CHECK(ssl->getTotalMalformedPackets() == 0);
 	BOOST_CHECK(ssl->getTotalBytes() == 193);
 	BOOST_CHECK(ssl->getTotalMalformedPackets() == 0);
+}
+
+BOOST_AUTO_TEST_CASE (test2_ssl)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
+        int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
+        Packet packet(pkt,length,0);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        // Check the results
+        BOOST_CHECK(ssl->getTotalClientHellos() == 1);
+        BOOST_CHECK(ssl->getTotalServerHellos() == 0);
+        BOOST_CHECK(ssl->getTotalCertificates() == 0);
+        BOOST_CHECK(ssl->getTotalRecords() == 1);
+}
+
+BOOST_AUTO_TEST_CASE (test3_ssl)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_tor);
+        int length = raw_packet_ethernet_ip_tcp_ssl_tor_length;
+        Packet packet(pkt,length,0);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        BOOST_CHECK(ssl->getTotalPackets() == 1);
+        BOOST_CHECK(ssl->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(ssl->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(ssl->getTotalBytes() == 923);
+        BOOST_CHECK(ssl->getTotalMalformedPackets() == 0);
+
+        // Check the results
+        BOOST_CHECK(ssl->getTotalClientHellos() == 0);
+        BOOST_CHECK(ssl->getTotalServerHellos() == 1);
+        BOOST_CHECK(ssl->getTotalCertificates() == 1);
+        BOOST_CHECK(ssl->getTotalRecords() == 2); // The packet contains 4 records, but we only process 3 types;
 }
 
 

@@ -315,7 +315,12 @@ BOOST_FIXTURE_TEST_CASE(test_case_8,StackLanTest)
 	BOOST_CHECK(ff_tcp_aux->getTotalReceivedFlows() == 56); // just 56 packets with payload;
 	BOOST_CHECK(ff_tcp_aux->getTotalFailFlows() == 0);
 
+	// Verify the SSLProtocol values
 	BOOST_CHECK(ssl_aux->getTotalBytes() == 41821);
+	BOOST_CHECK(ssl_aux->getTotalRecords() == 3);
+	BOOST_CHECK(ssl_aux->getTotalClientHellos() == 1);
+	BOOST_CHECK(ssl_aux->getTotalServerHellos() == 1);
+	BOOST_CHECK(ssl_aux->getTotalCertificates() == 1);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_case_9,StackLanTest)
@@ -627,7 +632,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_16,StackLanTest)
 {
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
-        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("generic exploit","\x90\x90\x90\x90"));
+        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("generic exploit","\\x90\\x90\\x90\\x90"));
 
         ff_tcp->removeUpFlowForwarder(ff_tcp_generic6);
         ff_tcp6->removeUpFlowForwarder(ff_tcp_generic6);
