@@ -41,16 +41,17 @@ void UDPGenericProtocol::processFlow(Flow *flow) {
         if (sig) { // There is a RegexManager attached
                 SharedPointer<Regex> regex = flow->regex.lock();
                 const unsigned char *payload = flow->packet->getPayload();
+		std::string data(reinterpret_cast<const char*>(payload),flow->packet->getLength());
                 bool result = false;
 
                 if (regex) {
                         if (regex->isTerminal() == false) {
                                 regex = regex->getNextRegex();
                                 if (regex) // There is no need but....
-                                        result = regex->evaluate(payload);
+                                        result = regex->evaluate(data);
                         }
                 } else {
-                        sig->evaluate(payload,&result);
+                        sig->evaluate(data,&result);
                         regex = sig->getMatchedRegex();
                 }
 

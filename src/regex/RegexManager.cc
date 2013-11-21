@@ -47,14 +47,14 @@ void RegexManager::addRegex(SharedPointer<Regex> sig) {
 	signatures_.push_back(sig);
 }
 
-void RegexManager::evaluate(const unsigned char *payload, bool *result) {
+void RegexManager::evaluate(const std::string& data, bool *result) {
 
 	current_signature_.reset();
 
         std::find_if(signatures_.begin(),
                 signatures_.end(),  [&](SharedPointer<Regex>& sig) {
 		
-		if (sig->evaluate(payload)) {
+		if (sig->evaluate(data)) {
 			++total_matched_signatures_;
 			current_signature_ = sig;
 			(*result) = true;

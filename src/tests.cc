@@ -532,8 +532,8 @@ BOOST_FIXTURE_TEST_CASE(test_case_13,StackLanTest)
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
 
-        SharedPointer<Regex> r_head = SharedPointer<Regex>(new Regex("r1","^(its peanut)"));
-        SharedPointer<Regex> r_tail = SharedPointer<Regex>(new Regex("r2","^(invalid command)"));
+        SharedPointer<Regex> r_head = SharedPointer<Regex>(new Regex("r1","^(its peanut).*$"));
+        SharedPointer<Regex> r_tail = SharedPointer<Regex>(new Regex("r2","^(invalid command).*$"));
 
         r_head->setNextRegex(r_tail);
 
@@ -561,7 +561,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_14,StackLanTest)
 {
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
-        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("generic exploit","\\x90\\x90\\x90\\x90\\x90\\x90\\x90\\x90"));
+        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("generic exploit","^.*\\x90\\x90\\x90\\x90\\x90\\x90\\x90\\x90.*$"));
 
         rmng->addRegex(r_generic);
 
@@ -576,7 +576,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_14,StackLanTest)
 
         // Check pcap file for see the results
         BOOST_CHECK(r_generic->getMatchs() == 1);
-        BOOST_CHECK(r_generic->getTotalEvaluates() == 2);
+        BOOST_CHECK(r_generic->getTotalEvaluates() == 1);
 
 	BOOST_CHECK(tcp6->getTotalPackets() == 86);
 	BOOST_CHECK(tcp6->getTotalBytes() == 68823);
@@ -598,7 +598,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_15,StackLanTest)
 {
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
-        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("generic exploit","\x90\x90\x90\x90\x90\x90\x90\x90"));
+        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("generic exploit","^.*\x90\x90\x90\x90\x90\x90\x90\x90.*$"));
 
         rmng->addRegex(r_generic);
 
@@ -632,7 +632,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_16,StackLanTest)
 {
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
-        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("generic exploit","\\x90\\x90\\x90\\x90"));
+        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("generic exploit","^.*\\x90\\x90\\x90\\x90.*$"));
 
         ff_tcp->removeUpFlowForwarder(ff_tcp_generic6);
         ff_tcp6->removeUpFlowForwarder(ff_tcp_generic6);
@@ -650,7 +650,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_16,StackLanTest)
 
         // Check pcap file for see the results
         BOOST_CHECK(r_generic->getMatchs() == 1);
-        BOOST_CHECK(r_generic->getTotalEvaluates() == 2);
+        BOOST_CHECK(r_generic->getTotalEvaluates() == 1);
 
         BOOST_CHECK(tcp->getTotalPackets() == 0);
         BOOST_CHECK(tcp->getTotalBytes() == 0);
@@ -678,9 +678,8 @@ BOOST_FIXTURE_TEST_CASE(test_case_16,StackLanTest)
         pd->closePcapFile();
 
         // Check pcap file for see the results
-        std::cout << "mathcs of generic:" << r_generic->getMatchs() << std::endl;
         BOOST_CHECK(r_generic->getMatchs() == 1);
-        BOOST_CHECK(r_generic->getTotalEvaluates() == 3);
+        BOOST_CHECK(r_generic->getTotalEvaluates() == 2);
 
         BOOST_CHECK(tcp->getTotalPackets() == 8);
         BOOST_CHECK(tcp->getTotalBytes() == 620);
@@ -701,7 +700,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_16,StackLanTest)
         BOOST_CHECK(tcp_generic->getTotalPackets() == 49 + 1);
         BOOST_CHECK(tcp_generic->getTotalBytes() == 66067 + 348);
 
-	dumpFlows();
+	//dumpFlows();
 }
 
 

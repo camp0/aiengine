@@ -25,9 +25,13 @@
 
 namespace aiengine {
 
-bool Regex::evaluate(const unsigned char *payload) { 
+bool Regex::evaluate(const std::string& data) { 
 
-	bool result = boost::regex_search(reinterpret_cast<const char*>(payload), what, exp_);
+        std::string::const_iterator start = data.begin();
+        std::string::const_iterator end = data.end();
+	
+	bool result = boost::regex_match(start,end, what_, exp_);
+	//bool result = boost::regex_search(reinterpret_cast<const char*>(payload), what, exp_);
 	if (result) total_matchs_++;
 	total_evaluates_++;
 	return result; 

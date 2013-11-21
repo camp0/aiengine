@@ -3,4 +3,8 @@ It seems that on g++4.7.2 there is a bug with the optimization, so we keep the c
 features of 0.2.
 - Support for chainging regex.
 - HTTP domain accesing.
-- Support for IPv6 with a new NetworkStack 
+- Support for IPv6 with a new NetworkStack
+
+features of 0.3.
+- Regex bug of \x00 charater.
+- Integration of IPv4 and IPv6 stack on one. 

@@ -39,7 +39,7 @@ class Regex: public Signature
 public:
 
 	explicit Regex(const std::string &name, const std::string& exp):
-		exp_(exp,boost::regex::icase),next_regex_() 
+		exp_(exp,boost::regex_constants::perl|boost::regex::icase),next_regex_()
 	{
 		name_ = name;
 		expression_ = exp;
@@ -47,7 +47,7 @@ public:
 	}
 
 	virtual ~Regex() = default; 
-	bool evaluate(const unsigned char *payload);
+	bool evaluate(const std::string& data);
 
 	friend std::ostream& operator<< (std::ostream& out, const Regex& sig);
 
@@ -57,7 +57,7 @@ public:
 
 private:
 	boost::regex exp_;
-	boost::cmatch what;
+	boost::match_results<std::string::const_iterator> what_;
 	SharedPointer<Regex> next_regex_;
 	bool is_terminal_;
 };

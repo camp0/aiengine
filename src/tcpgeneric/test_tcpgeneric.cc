@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE (test1_tcpgeneric)
 
         RegexManagerPtr sig = RegexManagerPtr(new RegexManager());
 
-        sig->addRegex("bittorrent tcp","\\x13BitTorrent");
+        sig->addRegex("bittorrent tcp","^(\x13)BitTorrent.*$");
         gtcp->setRegexManager(sig);
 
         // executing the packet
@@ -95,8 +95,8 @@ BOOST_AUTO_TEST_CASE (test3_tcpgeneric)
         int length = raw_packet_ethernet_ip_tcp_torrent_length;
         Packet packet(pkt,length,0);
 
-	SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("bittorrent tcp 1","\\x13BitTorrent"));
-	SharedPointer<Regex> r2 = SharedPointer<Regex>(new Regex("bittorrent tcp 2","\\x13BitTorrent"));
+	SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("bittorrent tcp 1","^\\x13BitTorrent.*$"));
+	SharedPointer<Regex> r2 = SharedPointer<Regex>(new Regex("bittorrent tcp 2","^\\x13BitTorrent.*$"));
         RegexManagerPtr sig = RegexManagerPtr(new RegexManager());
 
 	r1->setNextRegex(r2);
@@ -139,8 +139,8 @@ BOOST_AUTO_TEST_CASE (test4_tcpgeneric)
         int length = raw_packet_ethernet_ip_tcp_torrent_length;
         Packet packet(pkt,length,0);
 
-        SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("bittorrent tcp 1","\\x13BitTorrent"));
-        SharedPointer<Regex> r2 = SharedPointer<Regex>(new Regex("bittorrent tcp 2","hello paco"));
+        SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("bittorrent tcp 1","^\\x13BitTorrent.*$"));
+        SharedPointer<Regex> r2 = SharedPointer<Regex>(new Regex("bittorrent tcp 2","^.*(hello paco).*$"));
         RegexManagerPtr sig = RegexManagerPtr(new RegexManager());
 
         r1->setNextRegex(r2);
@@ -182,8 +182,8 @@ BOOST_AUTO_TEST_CASE (test5_tcpgeneric)
         int length1 = raw_packet_ethernet_ip_tcp_torrent_length;
         Packet packet1(pkt1,length1,0);
 
-        SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("bittorrent tcp 1","\\x13BitTorrent"));
-        SharedPointer<Regex> r2 = SharedPointer<Regex>(new Regex("defcon20 regex","^(its peanut butter)"));
+        SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("bittorrent tcp 1","^.*\\x13BitTorrent.*$"));
+        SharedPointer<Regex> r2 = SharedPointer<Regex>(new Regex("defcon20 regex","^(its peanut butter).*$"));
         RegexManagerPtr sig = RegexManagerPtr(new RegexManager());
 
 	// Both tcp6 and tcp will point to one TCPGenericProtocol, so they will share the same RegexManager
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE (test6_tcpgeneric)
         int length1 = raw_packet_ethernet_ip_tcp_torrent_length;
         Packet packet1(pkt1,length1,0);
 
-        SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("bittorrent tcp 1","\\x13BitTorrent"));
+        SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("bittorrent tcp 1","^\\x13BitTorrent.*$"));
         RegexManagerPtr sig = RegexManagerPtr(new RegexManager());
 
         sig->addRegex(r1);
@@ -289,9 +289,9 @@ BOOST_AUTO_TEST_CASE (test7_tcpgeneric)
         int length1 = raw_packet_ethernet_ip_tcp_polymorphic_clet_length;
         Packet packet1(pkt1,length1,0);
 
-        SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("bittorrent tcp 1","\\x13BitTorrent"));
-        SharedPointer<Regex> r2 = SharedPointer<Regex>(new Regex("generic nop exploit tcp ","\\x90\\x90\\x90\x90"));
-        SharedPointer<Regex> r3 = SharedPointer<Regex>(new Regex("clet tcp ","\\xe9\\xfe\\xff\\xff\xff"));
+        SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("bittorrent tcp 1","^\\x13BitTorrent.*$"));
+        SharedPointer<Regex> r2 = SharedPointer<Regex>(new Regex("generic nop exploit tcp ","^.*\\x90\\x90\\x90\x90.*$"));
+        SharedPointer<Regex> r3 = SharedPointer<Regex>(new Regex("clet tcp ","^.*\\xe9\\xfe\\xff\\xff\xff.*$"));
         RegexManagerPtr sig = RegexManagerPtr(new RegexManager());
 
         sig->addRegex(r1);
@@ -334,7 +334,7 @@ BOOST_AUTO_TEST_CASE (test8_tcpgeneric)
         int length1 = raw_packet_ethernet_ipv6_tcp_nopsled_length;
         Packet packet1(pkt1,length1,0);
 
-        SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("generic nop exploit tcp ","\\x90\\x90\\x90\x90"));
+        SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("generic nop exploit tcp ","^.*\\x90\\x90\\x90\x90.*$"));
         RegexManagerPtr sig = RegexManagerPtr(new RegexManager());
 
 	flow_cache->createFlows(1); // allocate space for another flow
