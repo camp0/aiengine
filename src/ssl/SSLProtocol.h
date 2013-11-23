@@ -28,10 +28,6 @@
 #include <config.h>
 #endif
 
-#ifdef __FAVOR_BSD
-#undef __FAVOR_BSD
-#endif // __FAVOR_BSD
-
 #include "../Multiplexer.h"
 #include "../FlowForwarder.h"
 #include "../Protocol.h"

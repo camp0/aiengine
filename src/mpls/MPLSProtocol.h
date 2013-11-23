@@ -28,10 +28,6 @@
 #include <config.h>
 #endif
 
-#ifdef __FAVOR_BSD
-#undef __FAVOR_BSD
-#endif // __FAVOR_BSD
-
 #include "../Multiplexer.h"
 #include "../FlowForwarder.h"
 #include "../Protocol.h"
@@ -40,6 +36,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
+
+#ifndef ETHERTYPE_MPLS
+#define ETHERTYPE_MPLS ETH_P_MPLS_UC 
+#endif
 
 namespace aiengine {
 
@@ -59,7 +59,7 @@ public:
 		stats_level_(0) { name_="MPLSProtocol";}
     	virtual ~MPLSProtocol() {}
 	
-	static const u_int16_t id = ETH_P_MPLS_UC;		// MPLS Unicast traffic	
+	static const u_int16_t id = ETHERTYPE_MPLS;		// MPLS Unicast traffic	
 	static const int header_size = MPLS_HEADER_LEN; 	// one header 
 	int getHeaderSize() const { return header_size;}
 

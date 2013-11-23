@@ -69,7 +69,7 @@ struct StackMPLStest
                 // configure the mpls handler
                 mpls->setMultiplexer(mux_mpls);
                 mux_mpls->setProtocol(static_cast<ProtocolPtr>(mpls));
-                mux_mpls->setProtocolIdentifier(ETH_P_MPLS_UC);
+                mux_mpls->setProtocolIdentifier(ETHERTYPE_MPLS);
                 mux_mpls->setHeaderSize(mpls->getHeaderSize());
                 mux_mpls->addChecker(std::bind(&MPLSProtocol::mplsChecker,mpls,std::placeholders::_1));
 		mux_mpls->addPacketFunction(std::bind(&MPLSProtocol::processPacket,mpls,std::placeholders::_1));
@@ -90,7 +90,7 @@ struct StackMPLStest
                 mux_icmp->addChecker(std::bind(&ICMPProtocol::icmpChecker,icmp,std::placeholders::_1));
 
                 // configure the multiplexers of the first part
-                mux_eth->addUpMultiplexer(mux_mpls,ETH_P_MPLS_UC);
+                mux_eth->addUpMultiplexer(mux_mpls,ETHERTYPE_MPLS);
 		mux_mpls->addDownMultiplexer(mux_eth);
 		mux_mpls->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
                 mux_ip->addDownMultiplexer(mux_mpls);

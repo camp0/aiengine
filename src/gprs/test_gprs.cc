@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
 	BOOST_CHECK(eth->getTotalBytes() == 0); // The check is only on the PacketDispatcher!!!! 
 
-        BOOST_CHECK(eth->getEthernetType() == ETH_P_IP);
+        BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IP);
         BOOST_CHECK(mux_eth->getTotalForwardPackets() == 1);
         BOOST_CHECK(mux_eth->getTotalFailPackets() == 0);
 

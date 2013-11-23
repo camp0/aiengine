@@ -28,15 +28,10 @@
 #include <config.h>
 #endif
 
-#ifdef __FAVOR_BSD
-#undef __FAVOR_BSD
-#endif // __FAVOR_BSD
-
 #include "../Multiplexer.h"
 #include "../FlowForwarder.h"
 #include "../Protocol.h"
 #include <net/ethernet.h>
-#include <netinet/ip.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>

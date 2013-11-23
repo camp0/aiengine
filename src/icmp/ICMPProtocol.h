@@ -30,6 +30,7 @@
 
 #include "../Multiplexer.h"
 #include "../Protocol.h"
+#include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -67,8 +68,12 @@ public:
         FlowForwarderPtrWeak getFlowForwarder() {}
 
         void setHeader(unsigned char *raw_packet) { 
-        
+       
+#ifdef __FREEBSD__ 
+                icmp_header_ = reinterpret_cast <struct icmp*> (raw_packet);
+#else
                 icmp_header_ = reinterpret_cast <struct icmphdr*> (raw_packet);
+#endif
         }
 
 	// Condition for say that a packet is icmp 
@@ -90,8 +95,8 @@ public:
 #ifdef __FREEBSD__
         u_int8_t getType() const { return icmp_header_->icmp_type; }
         u_int8_t getCode() const { return icmp_header_->icmp_code; }
-        // u_int16_t getId() const { return ntohs(icmp_header_->un.echo.id); }
-        // u_int16_t getSequence() const { return ntohs(icmp_header_->un.echo.sequence); }
+        u_int16_t getId() const { return ntohs(icmp_header_->icmp_id); }
+        u_int16_t getSequence() const { return ntohs(icmp_header_->icmp_seq); }
 #else
         u_int8_t getType() const { return icmp_header_->type; }
         u_int8_t getCode() const { return icmp_header_->code; }
@@ -102,7 +107,11 @@ public:
 private:
 	int stats_level_;
 	MultiplexerPtrWeak mux_;
+#ifdef __FREEBSD__
+	struct icmp *icmp_header_;
+#else
 	struct icmphdr *icmp_header_;
+#endif 
 };
 
 typedef std::shared_ptr<ICMPProtocol> ICMPProtocolPtr;

@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE (test1_mpls)
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
 	BOOST_CHECK(eth->getTotalBytes() == 0); // The check is only on the PacketDispatcher!!!! 
 
-        BOOST_CHECK(eth->getEthernetType() == ETH_P_MPLS_UC);
+        BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_MPLS);
         BOOST_CHECK(mux_eth->getTotalForwardPackets() == 1);
         BOOST_CHECK(mux_eth->getTotalFailPackets() == 0);
 
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE (test2_mpls)
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
         BOOST_CHECK(eth->getTotalBytes() == 0); // The check is only on the PacketDispatcher!!!!
 
-        BOOST_CHECK(eth->getEthernetType() == ETH_P_MPLS_UC);
+        BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_MPLS);
         BOOST_CHECK(mux_eth->getTotalForwardPackets() == 1);
         BOOST_CHECK(mux_eth->getTotalFailPackets() == 0);
 
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE (test3_mpls)
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length1);
         BOOST_CHECK(eth->getTotalBytes() == 0); // The check is only on the PacketDispatcher!!!!
 
-        BOOST_CHECK(eth->getEthernetType() == ETH_P_MPLS_UC);
+        BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_MPLS);
         BOOST_CHECK(mux_eth->getTotalForwardPackets() == 1);
         BOOST_CHECK(mux_eth->getTotalFailPackets() == 0);
 
@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE (test3_mpls)
 
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length2);
 
-        BOOST_CHECK(eth->getEthernetType() == ETH_P_MPLS_UC);
+        BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_MPLS);
         BOOST_CHECK(mux_eth->getTotalForwardPackets() == 2);
         BOOST_CHECK(mux_eth->getTotalFailPackets() == 0);
 
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE (test3_mpls)
 
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length1);
 
-        BOOST_CHECK(eth->getEthernetType() == ETH_P_MPLS_UC);
+        BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_MPLS);
         BOOST_CHECK(mux_eth->getTotalForwardPackets() == 3);
         BOOST_CHECK(mux_eth->getTotalFailPackets() == 0);
 

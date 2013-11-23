@@ -38,7 +38,7 @@ namespace aiengine {
 struct vlan_tag {
         u_int16_t       vlan_tpid;              /* ETH_P_8021Q */
         u_int16_t       vlan_tci;               /* VLAN TCI */
-};
+} __attribute__((packed));
 
 #define VLAN_TAG_LEN    4
 
