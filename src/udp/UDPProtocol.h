@@ -28,10 +28,6 @@
 #include <config.h>
 #endif
 
-#ifdef __FAVOR_BSD
-#undef __FAVOR_BSD
-#endif // __FAVOR_BSD
-
 #include "../Multiplexer.h"
 #include "../Protocol.h"
 #include <netinet/udp.h>
@@ -97,10 +93,18 @@ public:
 		}
 	}
 
+#ifdef __FREEBSD__
+	u_int16_t getSrcPort() const { return ntohs(udp_header_->uh_sport); }
+    	u_int16_t getDstPort() const { return ntohs(udp_header_->uh_dport); }
+    	u_int16_t getLength() const { return ntohs(udp_header_->uh_ulen); }
+    	unsigned int getPayloadLength() const { return ntohs(udp_header_->uh_ulen) - sizeof(udphdr); }
+    	unsigned int getHeaderLength() const { return sizeof(udphdr); }
+#else
 	u_int16_t getSrcPort() const { return ntohs(udp_header_->source); }
     	u_int16_t getDstPort() const { return ntohs(udp_header_->dest); }
     	u_int16_t getLength() const { return ntohs(udp_header_->len); }
     	unsigned int getPayloadLength() const { return ntohs(udp_header_->len) - sizeof(udphdr); }
+#endif
     	unsigned int getHeaderLength() const { return sizeof(udphdr); }
 	unsigned char* getPayload() const { return (unsigned char*)udp_header_ +getHeaderLength(); }
 

@@ -28,10 +28,6 @@
 #include <config.h>
 #endif
 
-#ifdef __FAVOR_BSD
-#undef __FAVOR_BSD
-#endif // __FAVOR_BSD
-
 #include "../Multiplexer.h"
 #include "../Protocol.h"
 #include <netinet/ip_icmp.h>
@@ -91,10 +87,17 @@ public:
 		}
 	}
 
+#ifdef __FREEBSD__
+        u_int8_t getType() const { return icmp_header_->icmp_type; }
+        u_int8_t getCode() const { return icmp_header_->icmp_code; }
+        // u_int16_t getId() const { return ntohs(icmp_header_->un.echo.id); }
+        // u_int16_t getSequence() const { return ntohs(icmp_header_->un.echo.sequence); }
+#else
         u_int8_t getType() const { return icmp_header_->type; }
         u_int8_t getCode() const { return icmp_header_->code; }
         u_int16_t getId() const { return ntohs(icmp_header_->un.echo.id); }
         u_int16_t getSequence() const { return ntohs(icmp_header_->un.echo.sequence); }
+#endif
 
 private:
 	int stats_level_;

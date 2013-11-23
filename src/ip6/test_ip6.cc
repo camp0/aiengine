@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE (test1_ip6)
         mux_eth->setPacket(&packet);
         eth->setHeader(packet.getPayload());
         // Sets the raw packet to a valid ethernet header
-        BOOST_CHECK(eth->getEthernetType() == ETH_P_IPV6);
+        BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IPV6);
 
         // executing the packet
         // forward the packet through the multiplexers
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE (test2_ip6)
         mux_eth->setPacket(&packet);
         eth->setHeader(packet.getPayload());
         // Sets the raw packet to a valid ethernet header
-        BOOST_CHECK(eth->getEthernetType() == ETH_P_IPV6);
+        BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IPV6);
 
         // executing the packet
         // forward the packet through the multiplexers
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE (test3_ip6) // ethernet -> ip
         mux_eth->setPacket(&packet);
         eth->setHeader(packet.getPayload());
         // Sets the raw packet to a valid ethernet header
-        BOOST_CHECK(eth->getEthernetType() == ETH_P_IPV6);
+        BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IPV6);
 
         // executing the packet
         // forward the packet through the multiplexers

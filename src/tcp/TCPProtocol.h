@@ -28,10 +28,6 @@
 #include <config.h>
 #endif
 
-#ifdef __FAVOR_BSD
-#undef __FAVOR_BSD
-#endif // __FAVOR_BSD
-
 #include "../Multiplexer.h"
 #include <netinet/tcp.h>
 #include <netinet/in.h>
@@ -97,21 +93,28 @@ public:
 		}
 	}
 
+
+#ifdef __FREEBSD__
+    	u_int16_t getSrcPort() const { return ntohs(tcp_header_->th_sport); }
+    	u_int16_t getDstPort() const { return ntohs(tcp_header_->th_dport); }
+    	// u_int32_t getSequence() const  { return ntohl(tcp_header_->th_seq); }
+    	// u_int32_t getAckSequence() const  { return ntohl(tcp_header_->ack_seq); }
+    	// u_int16_t getWindow() const { return tcp_header_->window; }
+    	// bool isSyn() const { return tcp_header_->syn; }
+    	// bool isFin() const { return tcp_header_->fin; }
+    	// bool isAck() const { return tcp_header_->ack; }
+    	// bool isRst() const { return tcp_header_->rst; }
+    	// bool isPushSet() const { return tcp_header_->psh; }
+    	// unsigned int getTcpSegmentLength() const { return ntohs(ip->tot_len) - ip->ihl * 4; }
+    	// unsigned int getPayloadLength() const { return ntohs(ip->tot_len) - 20 /* ip->ihl * 4 */ - tcp->doff * 4; }
+    	unsigned int getTcpHdrLength() const { return tcp_header_->th_off * 4; }
+    	unsigned char* getPayload() const { return (unsigned char*)tcp_header_ +getTcpHdrLength(); }
+#else
     	u_int16_t getSrcPort() const { return ntohs(tcp_header_->source); }
     	u_int16_t getDstPort() const { return ntohs(tcp_header_->dest); }
-    	u_int32_t getSequence() const  { return ntohl(tcp_header_->seq); }
-    	u_int32_t getAckSequence() const  { return ntohl(tcp_header_->ack_seq); }
-    	u_int16_t getWindow() const { return tcp_header_->window; }
-    	bool isSyn() const { return tcp_header_->syn; }
-    	bool isFin() const { return tcp_header_->fin; }
-    	bool isAck() const { return tcp_header_->ack; }
-    	bool isRst() const { return tcp_header_->rst; }
-    	bool isPushSet() const { return tcp_header_->psh; }
-    	//unsigned int getTcpSegmentLength() const { return ntohs(ip->tot_len) - ip->ihl * 4; }
-    	//unsigned int getPayloadLength() const { return ntohs(ip->tot_len) - 20 /* ip->ihl * 4 */ - tcp->doff * 4; }
     	unsigned int getTcpHdrLength() const { return tcp_header_->doff * 4; }
     	unsigned char* getPayload() const { return (unsigned char*)tcp_header_ +getTcpHdrLength(); }
-
+#endif
         void setFlowManager(FlowManagerPtr flow_mng) { flow_table_ = flow_mng;}
         FlowManagerPtr getFlowManager() { return flow_table_; }
         void setFlowCache(FlowCachePtr flow_cache) { flow_cache_ = flow_cache;}

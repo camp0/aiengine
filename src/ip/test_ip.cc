@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE (test2_ip) // ethernet -> ip
 	mux_eth->setPacket(&packet);
 	eth->setHeader(packet.getPayload());     
 	// Sets the raw packet to a valid ethernet header
-        BOOST_CHECK(eth->getEthernetType() == ETH_P_IP);
+        BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IP);
 
 	// executing the packet
 	// forward the packet through the multiplexers
@@ -108,8 +108,8 @@ BOOST_FIXTURE_TEST_CASE (test3_ip, StackEthernetVLanIP) // ethernet -> vlan -> i
 	BOOST_CHECK(ip->getTotalBytes() == length - 18);
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
 
-        BOOST_CHECK(eth->getEthernetType() == ETH_P_8021Q);
-        BOOST_CHECK(vlan->getEthernetType() == ETH_P_IP);
+        BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_VLAN);
+        BOOST_CHECK(vlan->getEthernetType() == ETHERTYPE_IP);
 }
 
 // Multiplexers configuration for test4_ip
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         // configure the vlan handler
         vlan->setMultiplexer(mux_vlan);
         mux_vlan->setProtocol(static_cast<ProtocolPtr>(vlan));
-        mux_vlan->setProtocolIdentifier(ETH_P_8021Q);
+        mux_vlan->setProtocolIdentifier(ETHERTYPE_VLAN);
         mux_vlan->setHeaderSize(vlan->getHeaderSize());
         mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan,std::placeholders::_1));
         mux_vlan->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan,std::placeholders::_1));
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         mux_ip2->addPacketFunction(std::bind(&IPProtocol::processPacket,ip2,std::placeholders::_1));
 
         // configure the multiplexers
-        mux_eth->addUpMultiplexer(mux_vlan,ETH_P_8021Q);
+       	mux_eth->addUpMultiplexer(mux_vlan,ETHERTYPE_VLAN);
         mux_vlan->addDownMultiplexer(mux_eth);
         mux_eth->addUpMultiplexer(mux_ip1,ETHERTYPE_IP);
         mux_ip1->addDownMultiplexer(mux_eth);
@@ -236,7 +236,7 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         BOOST_CHECK(mux_ip2->getTotalFailPackets() == 1);
 
 	// check the integrity of the ethernet
-        BOOST_CHECK(eth->getEthernetType() == ETH_P_IP);
+        BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IP);
 
 	// check the integrity of the first ip header
         BOOST_CHECK(ip1->getTTL() == 64);
