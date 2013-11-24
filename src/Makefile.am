@@ -113,8 +113,13 @@ tests_SOURCES = $(aiengine_core_sources) \
 		./names/test_names.cc \
 		tests.cc 
 
-tests_LDADD   = $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread
-tests_LDFLAGS = -DBOOST_ASIO_DISABLE_EPOLL
+tests_LDFLAGS = 	-DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ \
+			$(BOOST_LDFLAGS) $(BOOST_LINK_CORE) \
+			-lboost_program_options \
+			-lboost_filesystem -lpcap $(LOG4CXX_FLAGS) 
+
+tests_CPPFLAGS = $(BOOST_CPPFLAGS)
+tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread
 
 BUILT_SOURCES = $(srcdir)/pyaiengine.so
 

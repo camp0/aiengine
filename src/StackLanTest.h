@@ -143,7 +143,7 @@ struct StackLanTest
 		//configure the VLan tagging Layer
 		vlan->setMultiplexer(mux_vlan);
 		mux_vlan->setProtocol(static_cast<ProtocolPtr>(vlan));
-		mux_vlan->setProtocolIdentifier(ETH_P_8021Q);
+		mux_vlan->setProtocolIdentifier(ETHERTYPE_VLAN);
 		mux_vlan->setHeaderSize(vlan->getHeaderSize());
 		mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan,std::placeholders::_1));
 		mux_vlan->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan,std::placeholders::_1));
@@ -151,7 +151,7 @@ struct StackLanTest
 		//configure the MPLS Layer
 		mpls->setMultiplexer(mux_mpls);
 		mux_mpls->setProtocol(static_cast<ProtocolPtr>(mpls));
-		mux_mpls->setProtocolIdentifier(ETH_P_MPLS_UC);
+		mux_mpls->setProtocolIdentifier(ETHERTYPE_MPLS);
 		mux_mpls->setHeaderSize(mpls->getHeaderSize());
         	mux_mpls->addChecker(std::bind(&MPLSProtocol::mplsChecker,mpls,std::placeholders::_1));
 		mux_mpls->addPacketFunction(std::bind(&MPLSProtocol::processPacket,mpls,std::placeholders::_1));
@@ -308,9 +308,9 @@ struct StackLanTest
 		if(type.compare("vlan") == 0)
 		{
 
-			mux_eth->addUpMultiplexer(mux_vlan,ETH_P_8021Q);
+			mux_eth->addUpMultiplexer(mux_vlan,ETHERTYPE_VLAN);
 			mux_vlan->addDownMultiplexer(mux_eth);
-			mux_vlan->addUpMultiplexer(mux_ip,ETH_P_IP);
+			mux_vlan->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
 			//mux_vlan->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
 			mux_ip->addDownMultiplexer(mux_vlan);
 		}
@@ -318,7 +318,7 @@ struct StackLanTest
 		{
 			if(type.compare("mpls") == 0)
 			{
-				mux_eth->addUpMultiplexer(mux_mpls,ETH_P_MPLS_UC);
+				mux_eth->addUpMultiplexer(mux_mpls,ETHERTYPE_MPLS);
 				mux_mpls->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
 				mux_ip->addDownMultiplexer(mux_mpls);
 			}

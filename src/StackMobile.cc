@@ -94,7 +94,7 @@ StackMobile::StackMobile() {
         //configure the VLan tagging Layer
         vlan_->setMultiplexer(mux_vlan_);
         mux_vlan_->setProtocol(static_cast<ProtocolPtr>(vlan_));
-        mux_vlan_->setProtocolIdentifier(ETH_P_8021Q);
+        mux_vlan_->setProtocolIdentifier(ETHERTYPE_VLAN);
         mux_vlan_->setHeaderSize(vlan_->getHeaderSize());
         mux_vlan_->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan_,std::placeholders::_1));
 	mux_vlan_->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan_,std::placeholders::_1));
@@ -102,7 +102,7 @@ StackMobile::StackMobile() {
         //configure the MPLS Layer
         mpls_->setMultiplexer(mux_mpls_);
         mux_mpls_->setProtocol(static_cast<ProtocolPtr>(mpls_));
-        mux_mpls_->setProtocolIdentifier(ETH_P_MPLS_UC);
+        mux_mpls_->setProtocolIdentifier(ETHERTYPE_MPLS);
         mux_mpls_->setHeaderSize(mpls_->getHeaderSize());
         mux_mpls_->addChecker(std::bind(&MPLSProtocol::mplsChecker,mpls_,std::placeholders::_1));
 	mux_mpls_->addPacketFunction(std::bind(&MPLSProtocol::processPacket,mpls_,std::placeholders::_1));
@@ -436,13 +436,13 @@ void StackMobile::setStatisticsLevel(int level) {
 void StackMobile::enableLinkLayerTagging(std::string type) {
 
         if (type.compare("vlan") == 0) {
-                mux_eth_->addUpMultiplexer(mux_vlan_,ETH_P_8021Q);
+                mux_eth_->addUpMultiplexer(mux_vlan_,ETHERTYPE_VLAN);
                 mux_vlan_->addDownMultiplexer(mux_eth_);
                 mux_vlan_->addUpMultiplexer(mux_ip_low_,ETHERTYPE_IP);
                 mux_ip_low_->addDownMultiplexer(mux_vlan_);
         } else {
                 if (type.compare("mpls") == 0) {
-                        mux_eth_->addUpMultiplexer(mux_mpls_,ETH_P_MPLS_UC);
+                        mux_eth_->addUpMultiplexer(mux_mpls_,ETHERTYPE_MPLS);
                 	mux_mpls_->addDownMultiplexer(mux_eth_);
                         mux_mpls_->addUpMultiplexer(mux_ip_low_,ETHERTYPE_IP);
                         mux_ip_low_->addDownMultiplexer(mux_mpls_);
