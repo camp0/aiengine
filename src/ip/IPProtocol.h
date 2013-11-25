@@ -64,10 +64,10 @@ public:
 	void statistics() { statistics(std::cout);}
 
         void setFlowForwarder(FlowForwarderPtrWeak ff) {}
-        FlowForwarderPtrWeak getFlowForwarder() {}
+        FlowForwarderPtrWeak getFlowForwarder() { FlowForwarderPtrWeak ptr; return ptr; }
 
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { mux_;}
+        MultiplexerPtrWeak getMultiplexer() { return mux_;}
 
         void setHeader(unsigned char *raw_packet) {
         

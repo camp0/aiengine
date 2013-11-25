@@ -61,7 +61,7 @@ public:
         FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
 
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { mux_;}
+        MultiplexerPtrWeak getMultiplexer() { return mux_;}
 
         const char *getName() { return name_.c_str();}
 

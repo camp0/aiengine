@@ -81,8 +81,8 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { mux_;}
+        void setMultiplexer(MultiplexerPtrWeak mux) { }
+      	MultiplexerPtrWeak getMultiplexer() { MultiplexerPtrWeak mux; return mux;}
 
         void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
         FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
@@ -125,7 +125,6 @@ private:
 	FlowForwarderPtrWeak flow_forwarder_;
 	boost::regex http_regex_,http_host_,http_ua_,http_referer_;
         boost::cmatch what_;
-	MultiplexerPtrWeak mux_;
 	unsigned char *http_header_;
 	int64_t total_bytes_;
 

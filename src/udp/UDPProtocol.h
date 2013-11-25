@@ -59,7 +59,7 @@ public:
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
 
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { mux_;}
+        MultiplexerPtrWeak getMultiplexer() { return mux_;}
 
 	void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
 	FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}

@@ -64,11 +64,11 @@ public:
 
 	void setStatisticsLevel(int level) {}
 
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; };
-        MultiplexerPtrWeak getMultiplexer() { mux_;};
+        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
+        MultiplexerPtrWeak getMultiplexer() { return mux_;}
 
-        void setFlowForwarder(FlowForwarderPtrWeak ff) {};
-        FlowForwarderPtrWeak getFlowForwarder() {};
+        void setFlowForwarder(FlowForwarderPtrWeak ff) {}
+        FlowForwarderPtrWeak getFlowForwarder() { FlowForwarderPtrWeak ptr; return ptr; }
 
         void setHeader(unsigned char *raw_packet) {
         

@@ -106,8 +106,6 @@ void SSLProtocol::statistics(std::basic_ostream<char>& out) {
 				out << "\t" << "Total records:          " << std::setw(10) << total_records_ <<std::endl;
 			}
 			if (stats_level_ > 2) {
-				if(mux_.lock())
-					mux_.lock()->statistics(out);
 				if(flow_forwarder_.lock())
 					flow_forwarder_.lock()->statistics(out);
 			}

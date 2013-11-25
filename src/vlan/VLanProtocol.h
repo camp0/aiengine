@@ -36,7 +36,7 @@
 namespace aiengine {
 
 struct vlan_tag {
-        u_int16_t       vlan_tpid;              /* ETH_P_8021Q */
+        u_int16_t       vlan_tpid;              /* ETH_P_8021Q/ETHERTYPE_VLAN */
         u_int16_t       vlan_tci;               /* VLAN TCI */
 } __attribute__((packed));
 
@@ -69,10 +69,10 @@ public:
 	void statistics() { statistics(std::cout);}
 
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { mux_;}
+        MultiplexerPtrWeak getMultiplexer() { return mux_;}
 
         void setFlowForwarder(FlowForwarderPtrWeak ff) {}
-        FlowForwarderPtrWeak getFlowForwarder() {}
+        FlowForwarderPtrWeak getFlowForwarder() { FlowForwarderPtrWeak ptr; return ptr; }
 
 	void setHeader(unsigned char *raw_packet){ 
 
