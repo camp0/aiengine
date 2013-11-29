@@ -31,6 +31,7 @@
 #include <iostream>
 #include <iomanip> // setw
 #include <sys/resource.h>
+#include <sys/mman.h>
 #include <sys/utsname.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -44,11 +45,14 @@ public:
 		start_time_ = boost::posix_time::microsec_clock::local_time();
 		getrusage(RUSAGE_SELF,&usage_);
 		uname(&system_info_);
+		is_memory_lock_ = false;
 	}
-    	virtual ~System() {}
+    	virtual ~System() { munlockall();}
 
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};	
+
+	void lockMemory() { is_memory_lock_ = ( mlockall(MCL_CURRENT) == 0 ? true:false);}
 
 	std::string getOSName() const;
 	std::string getNodeName() const;
@@ -61,6 +65,7 @@ private:
 	boost::posix_time::ptime end_time_;
 	struct rusage usage_;
 	struct utsname system_info_;
+	bool is_memory_lock_;
 };
 
 typedef std::shared_ptr<System> SystemPtr;

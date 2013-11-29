@@ -182,6 +182,10 @@ Check out the AIEngine source with
 
     $ git clone https://bitbucket.com/camp0/aiengine
 
+For make donations use the following bitcoin address
+
+    1MieEN8eX8PcPvwgwQnVjzxJ1U8DTogZzb
+
 Develop new functionality
 -------------------------
 

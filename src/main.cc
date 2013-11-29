@@ -30,7 +30,6 @@
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 #include <fstream>
-#include <boost/variant.hpp>
 #ifdef HAVE_LIBLOG4CXX
 #include "log4cxx/logger.h"
 #include "log4cxx/basicconfigurator.h"
@@ -337,6 +336,8 @@ int main(int argc, char* argv[]) {
 #ifdef HAVE_LIBLOG4CXX
 	BasicConfigurator::configure();
 #endif	
+	system_stats->lockMemory();
+	
 	pktdis = PacketDispatcherPtr(new PacketDispatcher());
 
 	try {
