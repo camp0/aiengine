@@ -264,3 +264,13 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
 
 BOOST_AUTO_TEST_SUITE_END( )
 
+BOOST_AUTO_TEST_SUITE(ip_lookups)
+
+BOOST_AUTO_TEST_CASE (test1_ip)
+{
+
+}
+
+
+BOOST_AUTO_TEST_SUITE_END( )
+

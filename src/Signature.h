@@ -28,6 +28,7 @@
 #include <config.h>
 #endif
 
+#include <iostream>
 #include <string>
 
 #ifdef PYTHON_BINDING

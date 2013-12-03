@@ -49,6 +49,16 @@ public:
 		for(int i=0;i< length;++i) ++freqs_[payload[i]];
 	}
 
+	void addPayload(const std::string& data) {
+
+		for (auto it = data.begin(); it!= data.end();++it) {
+			unsigned char value = *it;
+			//std::cout << "at:" << value << ":" << (short)value << std::endl;
+			++freqs_[(int)value];	
+		}
+
+	}
+
 	std::string getFrequenciesString() const { 
 	
 		std::ostringstream os;

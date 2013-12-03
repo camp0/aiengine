@@ -31,6 +31,7 @@
 #include "../ethernet/EthernetProtocol.h"
 #include "../vlan/VLanProtocol.h"
 #include "IPProtocol.h"
+//#include "IPLookup.h"
 
 using namespace aiengine;
 

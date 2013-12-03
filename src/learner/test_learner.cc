@@ -34,11 +34,10 @@ BOOST_AUTO_TEST_CASE (test1_learner)
 	LearnerEnginePtr le = LearnerEnginePtr(new LearnerEngine());
 	SharedPointer<PacketFrequencies> pkt_f1 = SharedPointer<PacketFrequencies>(new PacketFrequencies());
 
-	char *payload1 = "\x16\x04\xaa\xaa";
-        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (payload1);
-        int length1 = 4;
-
-	pkt_f1->addPayload(pkt1,length1);
+	unsigned char payload1[] = "\x16\x02\xaa\xaa";
+	std::string data1(reinterpret_cast<const char*>(payload1),4);
+	
+	pkt_f1->addPayload(data1);
 
 	for (int i = 0;i< 10;++i)
 	{
@@ -52,12 +51,11 @@ BOOST_AUTO_TEST_CASE (test1_learner)
 	BOOST_CHECK(le->getQualityByte(-1) == 0);
 	BOOST_CHECK(le->getQualityByte(5000) == 0);
 	
-	char *payload2 = "\x16\x02\xaa\x00";
-        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (payload2);
+	unsigned char payload2[] = "\x16\x02\xaa\x00";
+	std::string data2(reinterpret_cast<const char*>(payload2),4);
 	SharedPointer<PacketFrequencies> pkt_f2 = SharedPointer<PacketFrequencies>(new PacketFrequencies());
-        int length2 = 4;
 
-	pkt_f2->addPayload(pkt2,length2);
+	pkt_f2->addPayload(data2);
 
         for (int i = 0;i< 10;++i)
         {
@@ -65,7 +63,7 @@ BOOST_AUTO_TEST_CASE (test1_learner)
         }
 
 	BOOST_CHECK(le->getQualityByte(0) == 100);
-	BOOST_CHECK(le->getQualityByte(1) == 95);
+	BOOST_CHECK(le->getQualityByte(1) == 100);
 	BOOST_CHECK(le->getQualityByte(2) == 100);
 	BOOST_CHECK(le->getQualityByte(3) == 95);
 	
@@ -73,6 +71,7 @@ BOOST_AUTO_TEST_CASE (test1_learner)
 
 	std::string cadena("^\\x16\\x02\\xaa\\x00");
 
+	//std::cout << "regular:" << le->getRegularExpression() << std::endl;
 	BOOST_CHECK(cadena.compare(le->getRegularExpression()) == 0);
 }
 
@@ -82,19 +81,17 @@ BOOST_AUTO_TEST_CASE (test2_learner)
         LearnerEnginePtr le = LearnerEnginePtr(new LearnerEngine());
         SharedPointer<PacketFrequencies> pkt_f1 = SharedPointer<PacketFrequencies>(new PacketFrequencies());
 
-        char *payload1 = "\xaa\xaa\x01\x02\xff\xff";
-        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (payload1);
-        int length1 = 6;
+        unsigned char payload1[] = "\xaa\xaa\x01\x02\xff\xff";
+	std::string data1(reinterpret_cast<const char*>(payload1),6);
 
-        pkt_f1->addPayload(pkt1,length1);
+        pkt_f1->addPayload(data1);
         le->agregatePacketFlow(pkt_f1);
 
-        char *payload2 = "\x16\xaa\xaa\x00";
-        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (payload2);
+        unsigned char payload2[] = "\x16\xaa\xaa\x00";
+	std::string data2(reinterpret_cast<const char*>(payload2),4);
         SharedPointer<PacketFrequencies> pkt_f2 = SharedPointer<PacketFrequencies>(new PacketFrequencies());
-        int length2 = 4;
 
-        pkt_f2->addPayload(pkt2,length2);
+        pkt_f2->addPayload(data2);
 
         le->agregatePacketFlow(pkt_f2);
 

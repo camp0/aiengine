@@ -50,7 +50,7 @@ void LearnerEngine::agregatePacketFlow(SharedPointer<PacketFrequencies> pkt_freq
 	++items_;
 
 	for (int i = 0;i< pkt_freq->getLength();++i) {
-		int value = pkt_freq->index(i);
+		unsigned char value = pkt_freq->index(i);
 
 		auto it = q_array_[i].find(value);	
 		if (it == q_array_[i].end()) { 
@@ -103,8 +103,9 @@ void LearnerEngine::compute() {
 		// TODO: The quality of the regex generated should be bigger
 		// than 80 percent.	
 		if ((quality > 80)&&(q_array_[i].size()>0)) {
-			int token_candidate = q_array_[i].begin()->first;
+			unsigned short token_candidate = (q_array_[i].begin()->first);
 			int quality_token = 0;
+			unsigned short a = 170;
 	
 			for (auto it = q_array_[i].begin(); it!=q_array_[i].end();++it) {
 				if(it->second > quality_token) {

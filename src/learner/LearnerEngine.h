@@ -79,7 +79,7 @@ public:
 #endif
 
 private:
-	std::array<std::unordered_map<int,int>,MAX_PACKET_FREQUENCIES_VALUES> q_array_;
+	std::array<std::unordered_map<unsigned short,int>,MAX_PACKET_FREQUENCIES_VALUES> q_array_;
 	int length_;
 	int items_;
 	int max_raw_expression_;

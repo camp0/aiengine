@@ -33,39 +33,38 @@ BOOST_FIXTURE_TEST_SUITE(frequencies_suite,StackFrequencytest)
 
 BOOST_AUTO_TEST_CASE (test1_frequencies)
 {
-        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
+	std::string data(reinterpret_cast<const char*>(raw_packet_ethernet_ip_tcp_ssl_client_hello),length);
 
 	Frequencies freqs;
 
-	freqs.addPayload(pkt,length);
+	freqs.addPayload(data);
 	BOOST_CHECK(freqs[0] == 66);
 	
-	freqs.addPayload(pkt,length);
+	freqs.addPayload(data);
 	BOOST_CHECK(freqs[0] == 66*2);
 }
 
 BOOST_AUTO_TEST_CASE (test2_frequencies)
 {
-	char *buffer = "\x00\x00\x00\xff\xff";
-        unsigned char *pkt = reinterpret_cast <unsigned char*> (buffer);
-        int length = 5;
+	unsigned char buffer[] = "\x00\x00\x00\xff\xff";
+	std::string data(reinterpret_cast<const char*>(buffer),5);
 
         Frequencies freqs;
 
-        freqs.addPayload(pkt,length);
+        freqs.addPayload(data);
         BOOST_CHECK(freqs[0] == 3);
         BOOST_CHECK(freqs[255] == 2);
 }
 
 BOOST_AUTO_TEST_CASE (test3_frequencies)
 {
-        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
+	std::string data(reinterpret_cast<const char*>(raw_packet_ethernet_ip_tcp_ssl_client_hello),length);
 
         Frequencies freqs1,freqs2;
 
-        freqs1.addPayload(pkt,length);
+        freqs1.addPayload(data);
 
 	Frequencies freqs3 = freqs1 + freqs2;
 
@@ -77,7 +76,7 @@ BOOST_AUTO_TEST_CASE (test3_frequencies)
 
 	Frequencies freqs4;
 
-        freqs4.addPayload(pkt,length);
+        freqs4.addPayload(data);
 
 	BOOST_CHECK(freqs4 == freqs1);
 	BOOST_CHECK(freqs4 != freqs2);	
@@ -86,7 +85,7 @@ BOOST_AUTO_TEST_CASE (test3_frequencies)
 	SharedPointer<Frequencies> f1 = SharedPointer<Frequencies>(new Frequencies());
 	SharedPointer<Frequencies> f2 = SharedPointer<Frequencies>(new Frequencies());
 
-	f1->addPayload(pkt,length);
+	f1->addPayload(data);
 
 	Frequencies *f1_p = f1.get();
 	Frequencies *f2_p = f2.get();
@@ -95,7 +94,7 @@ BOOST_AUTO_TEST_CASE (test3_frequencies)
 	BOOST_CHECK((*f1_p)[0] == 66);
 
 	for (int i = 0;i<10 ; ++i)
-		f1->addPayload(pkt,length);
+		f1->addPayload(data);
 	
 	BOOST_CHECK((*f1_p)[0] == 66*11);
 }
@@ -103,8 +102,8 @@ BOOST_AUTO_TEST_CASE (test3_frequencies)
 
 BOOST_AUTO_TEST_CASE (test4_frequencies)
 {
-        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
+	std::string data(reinterpret_cast<const char*>(raw_packet_ethernet_ip_tcp_ssl_client_hello),length);
 	Cache<Frequencies>::CachePtr freqs_cache_(new Cache<Frequencies>);
 
         SharedPointer<Frequencies> freqs = freqs_cache_->acquire().lock();
@@ -347,9 +346,10 @@ BOOST_AUTO_TEST_CASE ( test12_frequencies )
 {
 	char *cadena = "Buenos";
         unsigned char *pkt = reinterpret_cast <unsigned char*> (cadena);
+	std::string data(cadena);
 	PacketFrequencies pfreq;
 
-	pfreq.addPayload(pkt,6);
+	pfreq.addPayload(data);
 	BOOST_CHECK(pfreq.getLength() == 6);
 
 	pfreq.addPayload(pkt,6);
@@ -368,14 +368,15 @@ BOOST_AUTO_TEST_CASE ( test12_frequencies )
                         "Host: onedomain.com\r\n"
                         "\r\n";
 	unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header);
-	pfreq.addPayload(pkt1,strlen(header));
+	std::string data1(header);
+	pfreq.addPayload(data1);
 	BOOST_CHECK(pfreq.getLength() == 619);
 	for (int i = 0;i< 7;++i)
-		pfreq.addPayload(pkt1,strlen(header));
+		pfreq.addPayload(data1);
 	
 	BOOST_CHECK(pfreq.getLength() == 4868);
 
-	pfreq.addPayload(pkt1,strlen(header));
+	pfreq.addPayload(data1);
 	BOOST_CHECK(pfreq.getLength() == 5000);
 }
 

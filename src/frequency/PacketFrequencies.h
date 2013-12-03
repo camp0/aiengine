@@ -47,21 +47,28 @@ public:
 
 	void reset() { length_ = 0; for(auto& value: freqs_) value = 0;};
 
-	void addPayload(unsigned char *payload, int length)
-	{
-		int limit = length;
+	void addPayload(unsigned char *data, int length) {
+		std::string buffer(reinterpret_cast<const char*>(data),length);
 
-		if(length_>= MAX_PACKET_FREQUENCIES_VALUES) return;
-		if(length < 0) return;
-
-		if(length_ + length > MAX_PACKET_FREQUENCIES_VALUES)
-		{
-			limit = MAX_PACKET_FREQUENCIES_VALUES  - length_ ;
-		}
-
-		for(int i=0;i< limit ;++i) freqs_[length_+i] = payload[i];
-		length_ += limit;
+		addPayload(buffer);
 	}
+
+        void addPayload(const std::string& data) {
+
+		int limit = data.length();
+
+		if (length_ >= MAX_PACKET_FREQUENCIES_VALUES) return;
+		if (data.length() < 0) return;
+
+                if(length_ + data.length() > MAX_PACKET_FREQUENCIES_VALUES)
+                {
+                        limit = MAX_PACKET_FREQUENCIES_VALUES  - length_ ;
+                }
+
+		for(int i=0;i< limit ;++i) freqs_[length_+i] = data[i];
+		length_ += limit;
+        }
+
 
 	std::string getPacketFrequenciesString() const 
 	{
@@ -98,7 +105,7 @@ public:
 		os << os_f.str() << std::endl;
 	}	
 
-	int index(int index) { return freqs_[index];};
+	unsigned short index(int index) { return freqs_[index];};
 
 	int& operator [](const int index)
 	{
