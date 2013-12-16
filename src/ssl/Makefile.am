@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS =	test_ssl.h
+noinst_HEADERS =	test_ssl.h SSLHost.h
 
 TEST = test_ssl
 
@@ -13,7 +13,7 @@ test_ssl_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../flow/FlowManager.cc \
 			SSLProtocol.cc test_ssl.cc
 
-test_ssl_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
+test_ssl_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE -g
 test_ssl_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so

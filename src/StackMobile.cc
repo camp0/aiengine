@@ -360,6 +360,9 @@ void StackMobile::setTotalTCPFlows(int value) {
         // so create 75% of the value received for the http caches
         http_->createHTTPHosts(value * 0.75);
         http_->createHTTPUserAgents(value * 0.75);
+
+        // The 40% of the traffic is SSL
+        ssl_->createSSLHosts(value * 0.4);
 }
 
 void StackMobile::enableFrequencyEngine(bool enable) {

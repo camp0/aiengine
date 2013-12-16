@@ -113,7 +113,7 @@ struct StackSSLtest
                 mux_tcp->addDownMultiplexer(mux_ip);
 
                 // Connect the FlowManager and FlowCache
-                flow_cache->createFlows(1);
+                flow_cache->createFlows(2);
 
                 tcp->setFlowCache(flow_cache);
                 tcp->setFlowManager(flow_mng);

@@ -37,6 +37,7 @@
 #include "../http/HTTPHost.h"
 #include "../http/HTTPUserAgent.h"
 #include "../dns/DNSDomain.h"
+#include "../ssl/SSLHost.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -97,6 +98,7 @@ public:
 	WeakPointer<Regex> regex;
 	WeakPointer<HTTPHost> http_host;
 	WeakPointer<HTTPUserAgent> http_ua;	
+	WeakPointer<SSLHost> ssl_host;
 	WeakPointer<Frequencies> frequencies;
 	WeakPointer<PacketFrequencies> packet_frequencies;
 	FlowForwarderPtrWeak forwarder;
@@ -118,6 +120,7 @@ public:
 		forwarder.reset();
 		frequencies.reset();
 		http_host.reset();
+		ssl_host.reset();
 		http_ua.reset();
 		regex.reset();
 		dns_domain.reset();
@@ -143,6 +146,7 @@ public:
 	PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.lock().get();}
 	Regex& getRegex() const { return *regex.lock().get();}
 	DNSDomain& getDNSDomain() const { return *dns_domain.lock().get();}
+	SSLHost& getSSLHost() const { return *ssl_host.lock().get();}
 #endif
 
 private:
@@ -150,7 +154,7 @@ private:
 	IPAddress address_;
 	u_int16_t source_port_;
 	u_int16_t dest_port_;
-	u_int16_t protocol_;
+	u_int16_t protocol_; 
 };
 
 } // namespace aiengine 

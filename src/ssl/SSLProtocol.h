@@ -31,6 +31,8 @@
 #include "../Multiplexer.h"
 #include "../FlowForwarder.h"
 #include "../Protocol.h"
+#include "SSLHost.h"
+#include "../Cache.h"
 #include <net/ethernet.h>
 #include <netinet/ip.h>
 #include <netinet/in.h>
@@ -53,15 +55,6 @@ typedef struct {
 #define TLS1_VERSION 0x0301
 #define TLS1_1_VERSION 0x0302
 
-typedef struct {
-	uint8_t type;
-	uint16_t version;
-	uint16_t length;
-	uint8_t handshake_type;
-	uint16_t lenght_record;
-	u_char data[0];
-} __attribute__((packed)) ssl_handshake_record;
-
 // Record types of the ssl_handshake_record
 
 #define SSL3_MT_HELLO_REQUEST            0   //(x'00')
@@ -75,20 +68,41 @@ typedef struct {
 #define SSL3_MT_CLIENT_KEY_EXCHANGE     16   // (x'10')
 #define SSL3_MT_FINISHED                20   // (x'14')
 
+typedef struct {
+	u_char handshake_type[2];
+	uint16_t length;
+	uint16_t version;
+	u_char random[32];
+	uint8_t session_id_length;
+	u_char data[0];
+} __attribute__((packed)) ssl_hello;
+
+typedef struct {
+	uint16_t type;
+	short length;
+	u_char data[0];
+} __attribute__((packed)) ssl_extension;
+
+typedef struct {
+	uint16_t list_length;
+	uint8_t type;
+	uint16_t length;
+	u_char data[0];
+} __attribute__((packed)) ssl_server_name;
+
 // record_type
 // SSL3_RT_CHANGE_CIPHER_SPEC      20   (x'14')
 // SSL3_RT_ALERT                   21   (x'15')
 // SSL3_RT_HANDSHAKE               22   (x'16')
 // SSL3_RT_APPLICATION_DATA        23   (x'17')
 
-// http://publib.boulder.ibm.com/infocenter/tpfhelp/current/index.jsp?topic=%2Fcom.ibm.ztpf-ztpfdf.doc_put.cur%2Fgtps5%2Fs5rcd.html
-
 class SSLProtocol: public Protocol 
 {
 public:
     	explicit SSLProtocol():ssl_header_(nullptr),total_bytes_(0),
 		stats_level_(0),total_client_hellos_(0),total_server_hellos_(0),
-		total_certificates_(0),total_records_(0) { name_="SSLProtocol";}
+		total_certificates_(0),total_records_(0),
+		host_cache_(new Cache<SSLHost>("Host cache")) { name_="SSLProtocol";}
     	virtual ~SSLProtocol() {}
 	
 	static const u_int16_t id = 0;
@@ -138,6 +152,9 @@ public:
 	int32_t getTotalCertificates() const { return total_certificates_; }
 	int32_t getTotalRecords() const { return total_records_; }
 
+        void createSSLHosts(int number) { host_cache_->create(number);}
+        void destroySSLHosts(int number) { host_cache_->destroy(number);}
+
 private:
 	int stats_level_;
 	FlowForwarderPtrWeak flow_forwarder_;	
@@ -148,6 +165,17 @@ private:
 	int32_t total_server_hellos_;
 	int32_t total_certificates_;
 	int32_t total_records_;
+
+	Cache<SSLHost>::CachePtr host_cache_;
+
+        typedef std::map<std::string,std::pair<SharedPointer<SSLHost>,int32_t>> HostMapType;
+        HostMapType host_map_;
+
+        //DomainNameManagerPtrWeak host_mng_;
+
+	void handleClientHello(Flow *flow,int offset, unsigned char *data);
+	void handleServerHello(Flow *flow,int offset, unsigned char *data);
+	void handleCertificate(Flow *flow,int offset, unsigned char *data);
 };
 
 typedef std::shared_ptr<SSLProtocol> SSLProtocolPtr;

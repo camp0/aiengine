@@ -66,22 +66,38 @@ BOOST_AUTO_TEST_CASE (test1_ssl)
 
 BOOST_AUTO_TEST_CASE (test2_ssl)
 {
-        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
-        int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
-        Packet packet(pkt,length,0);
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
+        int length1 = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
+        Packet packet1(pkt1,length1,0);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
+        mux_eth->setPacket(&packet1);
         eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
         mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+        mux_eth->forwardPacket(packet1);
 
-        // Check the results
         BOOST_CHECK(ssl->getTotalClientHellos() == 1);
         BOOST_CHECK(ssl->getTotalServerHellos() == 0);
         BOOST_CHECK(ssl->getTotalCertificates() == 0);
         BOOST_CHECK(ssl->getTotalRecords() == 1);
+
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello_2);
+        int length2 = raw_packet_ethernet_ip_tcp_ssl_client_hello_2_length;
+        Packet packet2(pkt2,length2,0);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet2);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet2);
+
+        // Check the results
+        BOOST_CHECK(ssl->getTotalClientHellos() == 2);
+        BOOST_CHECK(ssl->getTotalServerHellos() == 0);
+        BOOST_CHECK(ssl->getTotalCertificates() == 0);
+        BOOST_CHECK(ssl->getTotalRecords() == 2);
+
+
 }
 
 BOOST_AUTO_TEST_CASE (test3_ssl)
@@ -110,6 +126,83 @@ BOOST_AUTO_TEST_CASE (test3_ssl)
         BOOST_CHECK(ssl->getTotalRecords() == 2); // The packet contains 4 records, but we only process 3 types;
 }
 
+BOOST_AUTO_TEST_CASE (test4_ssl)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
+        int length1 = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
+        Packet packet1(pkt1,length1,0);
+
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        ssl->createSSLHosts(0);
+
+        flow->packet = const_cast<Packet*>(&packet1);
+        ssl->processFlow(flow.get());
+
+        BOOST_CHECK(flow->ssl_host.lock() == nullptr);
+}
+
+BOOST_AUTO_TEST_CASE (test5_ssl)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (&(raw_packet_ethernet_ip_tcp_ssl_client_hello[66]));
+        int length1 = raw_packet_ethernet_ip_tcp_ssl_client_hello_length - 66;
+        Packet packet1(pkt1,length1,0);
+
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        ssl->createSSLHosts(1);
+
+        flow->packet = const_cast<Packet*>(&packet1);
+        ssl->processFlow(flow.get());
+
+        BOOST_CHECK(flow->ssl_host.lock() != nullptr);
+	std::string cad("0.drive.google.com");
+
+	// The host is valid
+        BOOST_CHECK(cad.compare(flow->ssl_host.lock()->getName()) == 0);
+}
+
+
+BOOST_AUTO_TEST_CASE (test6_ssl)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (&(raw_packet_ethernet_ip_tcp_ssl_client_hello_2[54]));
+        int length1 = raw_packet_ethernet_ip_tcp_ssl_client_hello_2_length - 54;
+        Packet packet1(pkt1,length1,0);
+
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        ssl->createSSLHosts(1);
+
+        flow->packet = const_cast<Packet*>(&packet1);
+        ssl->processFlow(flow.get());
+
+        BOOST_CHECK(flow->ssl_host.lock() != nullptr);
+        std::string cad("atv-ps.amazon.com");
+
+        // The host is valid
+        BOOST_CHECK(cad.compare(flow->ssl_host.lock()->getName()) == 0);
+}
+
+// Tor ssl case 
+BOOST_AUTO_TEST_CASE (test7_ssl)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (&(raw_packet_ethernet_ip_tcp_ssl_tor_hello[54]));
+        int length1 = raw_packet_ethernet_ip_tcp_ssl_tor_hello_length - 54;
+        Packet packet1(pkt1,length1,0);
+
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        ssl->createSSLHosts(1);
+
+        flow->packet = const_cast<Packet*>(&packet1);
+        ssl->processFlow(flow.get());
+
+        BOOST_CHECK(flow->ssl_host.lock() != nullptr);
+        std::string cad("www.6k6fnxstu.com");
+
+        // The host is valid
+        BOOST_CHECK(cad.compare(flow->ssl_host.lock()->getName()) == 0);
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 
