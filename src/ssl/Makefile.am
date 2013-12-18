@@ -11,6 +11,7 @@ test_ssl_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ip/IPProtocol.cc \
 			../tcp/TCPProtocol.cc \
 			../flow/FlowManager.cc \
+			../names/DomainNameManager.cc \
 			SSLProtocol.cc test_ssl.cc
 
 test_ssl_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE -g

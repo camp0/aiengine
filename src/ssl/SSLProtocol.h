@@ -28,6 +28,9 @@
 #include <config.h>
 #endif
 
+#ifdef HAVE_LIBLOG4CXX
+#include "log4cxx/logger.h"
+#endif
 #include "../Multiplexer.h"
 #include "../FlowForwarder.h"
 #include "../Protocol.h"
@@ -39,6 +42,7 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include <cstring>
+#include "../names/DomainNameManager.h"
 
 namespace aiengine {
 
@@ -155,6 +159,8 @@ public:
         void createSSLHosts(int number) { host_cache_->create(number);}
         void destroySSLHosts(int number) { host_cache_->destroy(number);}
 
+	void setHostNameManager(DomainNameManagerPtrWeak dnm) { host_mng_ = dnm;}
+
 private:
 	int stats_level_;
 	FlowForwarderPtrWeak flow_forwarder_;	
@@ -171,11 +177,15 @@ private:
         typedef std::map<std::string,std::pair<SharedPointer<SSLHost>,int32_t>> HostMapType;
         HostMapType host_map_;
 
-        //DomainNameManagerPtrWeak host_mng_;
+        DomainNameManagerPtrWeak host_mng_;
 
 	void handleClientHello(Flow *flow,int offset, unsigned char *data);
 	void handleServerHello(Flow *flow,int offset, unsigned char *data);
 	void handleCertificate(Flow *flow,int offset, unsigned char *data);
+
+#ifdef HAVE_LIBLOG4CXX
+        static log4cxx::LoggerPtr logger;
+#endif
 };
 
 typedef std::shared_ptr<SSLProtocol> SSLProtocolPtr;

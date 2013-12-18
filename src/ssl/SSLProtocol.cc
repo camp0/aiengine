@@ -26,7 +26,6 @@
 
 namespace aiengine {
 
-//#define DEBUG 1
 void SSLProtocol::handleClientHello(Flow *flow,int offset, u_char *data) {
 
 	int payload_length = flow->packet->getLength();
@@ -69,7 +68,6 @@ void SSLProtocol::handleClientHello(Flow *flow,int offset, u_char *data) {
 						if ((block_offset + server_length < payload_length )and(server_length > 0)) {
 							std::string servername((char*)server->data,0,server_length);
 
-							//std::cout << "SSLHost:" << servername << std::endl;
 							SharedPointer<SSLHost> host_ptr = flow->ssl_host.lock();
 
 							if (!host_ptr) { // There is no Host object attached to the flow
@@ -88,11 +86,11 @@ void SSLProtocol::handleClientHello(Flow *flow,int offset, u_char *data) {
 								}
 							}
 						}	
-					} 
+					} // Server name 
 				}
 			}	
 		}
-	}
+	} // end version 
 }
 
 void SSLProtocol::handleServerHello(Flow *flow,int offset,unsigned char *data) {
@@ -111,6 +109,7 @@ void SSLProtocol::handleCertificate(Flow *flow,int offset, unsigned char *data) 
 
 void SSLProtocol::processFlow(Flow *flow) {
 
+	DomainNameManagerPtr host_mng;
 	++total_packets_;
 	total_bytes_ += flow->packet->getLength();
 	++flow->total_packets_l7;
@@ -119,10 +118,6 @@ void SSLProtocol::processFlow(Flow *flow) {
 		setHeader(flow->packet->getPayload());
 
 		int length = ntohs(ssl_header_->length);
-#ifdef DEBUG
-		std::cout << "SSL Flow," << flow->total_packets_l7 << " bytes:" << flow->packet->getLength();
-		std::cout << " ssl length:" << length << std::endl; 
-#endif
 		if (length > 0) {
 			ssl_record *record = ssl_header_;
 			int offset = 0;		// Total offset byte
@@ -139,10 +134,7 @@ void SSLProtocol::processFlow(Flow *flow) {
 					// SSL Records are group by blocks
 					u_char *ssl_data = record->data;
 					bool have_data = false;
-#ifdef DEBUG
-					std::cout << "Record type:" << std::hex << type << std::endl;
-					std::cout << "Block length:" << std::dec << block_length << std::endl;
-#endif
+
                                         if (type == SSL3_MT_CLIENT_HELLO)  {
                                                 handleClientHello(flow,offset,ssl_data);
                                                 have_data = true;
@@ -168,6 +160,32 @@ void SSLProtocol::processFlow(Flow *flow) {
 				}
 				if (maxattemps == 4 ) break;
 			}while(offset < flow->packet->getLength());
+
+			host_mng = host_mng_.lock();
+			if (host_mng) {
+				SharedPointer<SSLHost> host_name = flow->ssl_host.lock();
+
+				if (host_name) {
+					SharedPointer<DomainName> host_candidate = host_mng->getDomainName(host_name->getName());
+					
+					if (host_candidate) {
+#ifdef PYTHON_BINDING
+#ifdef HAVE_LIBLOG4CXX
+						LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
+#endif  
+						if(host_candidate->haveCallback()) {
+							PyGILState_STATE state(PyGILState_Ensure());
+							try {
+								boost::python::call<void>(host_candidate->getCallback(),boost::python::ptr(flow));
+							} catch (std::exception &e) {
+								std::cout << "ERROR:" << e.what() << std::endl;
+							}
+							PyGILState_Release(state);
+						}
+#endif
+					}
+                        	}
+                	}
 		}
 	}
 }

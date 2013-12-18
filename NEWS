@@ -8,4 +8,5 @@ features of 0.2.
 features of 0.3.
 - Regex bug of \x00 charater.
 - Integration of IPv4 and IPv6 stack on one.
-- Freebsd support. 
+- Freebsd support.
+- Support for Host names on SSL traffic. 
