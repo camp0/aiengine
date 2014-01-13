@@ -63,7 +63,7 @@ SharedPointer<Flow> TCPProtocol::getFlow() {
         if (flow_table_) {
         	h1 = ipmux->address.getHash(getSrcPort(),6,getDstPort());
         	h2 = ipmux->address.getHash(getDstPort(),6,getSrcPort());
-              
+            
 		flow = flow_table_->findFlow(h1,h2);
                 if (!flow) {
                         if (flow_cache_) {
@@ -84,7 +84,15 @@ SharedPointer<Flow> TCPProtocol::getFlow() {
                                         flow_table_->addFlow(flow);
                                 }
                         }
-                }
+                } else {
+			/* In order to identificate the flow direction we use the port */
+			/* May be there is another way to do it, but this way consume low CPU */
+			if (getSrcPort() == flow->getSourcePort()) {
+				flow->setFlowDirection(FlowDirection::FORWARD);
+			} else {
+				flow->setFlowDirection(FlowDirection::BACKWARD);
+			}
+		}
         }
         return flow;
 }
