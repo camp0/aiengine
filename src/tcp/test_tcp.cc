@@ -96,3 +96,118 @@ BOOST_AUTO_TEST_CASE (test1_tcp)
 
 BOOST_AUTO_TEST_SUITE_END( )
 
+BOOST_AUTO_TEST_SUITE(tcp_suite3)
+// Unit tests for the tcp state machine
+
+BOOST_AUTO_TEST_CASE (test1_tcp)
+{
+	/***
+	for (int i = 0;i < static_cast<int>(TcpState::MAX_STATES);++i ) {
+		const struct ST_TCPStateMachine *state = &tcp_states[i];	
+
+		std::cout << "State(" << state << "):" << state->state->name << std::endl;
+		std::cout << "Forward" << std::endl;
+		for (int j = 0; j < static_cast<int>(TcpFlags::MAX_FLAGS); ++j) {
+			std::cout << "(" << j << ")=" << state->state->dir[0].flags[j] << " ";
+		}
+		std::cout << std::endl;
+		std::cout << "Backward" << std::endl;
+		for (int j = 0; j < static_cast<int>(TcpFlags::MAX_FLAGS); ++j) {
+			std::cout << "(" << j << ")=" << state->state->dir[1].flags[j] << " ";
+		}
+		std::cout << std::endl;
+	}
+	*/
+	int flags = static_cast<int>(TcpFlags::INVALID);
+	FlowDirection dir = FlowDirection::FORWARD;
+	int state = static_cast<int>(TcpState::CLOSED);
+
+	int newstate = ((tcp_states[state]).state)->dir[static_cast<int>(dir)].flags[flags];	
+
+	BOOST_CHECK(newstate == 0);
+
+	// receive a syn packet for the three way handshake
+	flags = static_cast<int>(TcpFlags::SYN);
+	dir = FlowDirection::FORWARD;
+
+	state = newstate;	
+	newstate = ((tcp_states[static_cast<int>(state)]).state)->dir[static_cast<int>(dir)].flags[flags];	
+
+	BOOST_CHECK ( newstate == static_cast<int>(TcpState::SYN_SENT));
+
+	flags = static_cast<int>(TcpFlags::SYNACK);
+	dir = FlowDirection::BACKWARD;
+	state = newstate;	
+	newstate = ((tcp_states[newstate]).state)->dir[static_cast<int>(dir)].flags[flags];	
+
+	BOOST_CHECK ( newstate == static_cast<int>(TcpState::SYN_RECEIVED));
+
+	flags = static_cast<int>(TcpFlags::ACK);
+	dir = FlowDirection::FORWARD;
+	state = newstate;	
+	newstate = ((tcp_states[newstate]).state)->dir[static_cast<int>(dir)].flags[flags];	
+	BOOST_CHECK ( newstate == static_cast<int>(TcpState::ESTABLISHED));
+}
+
+BOOST_AUTO_TEST_CASE (test2_tcp)
+{
+	// The flow have been established previously
+     
+        int flags = static_cast<int>(TcpFlags::ACK);
+        FlowDirection dir = FlowDirection::BACKWARD;
+        int state = static_cast<int>(TcpState::ESTABLISHED);
+	int newstate = state;
+        newstate = ((tcp_states[newstate]).state)->dir[static_cast<int>(dir)].flags[flags];
+        if (newstate == -1) { // Keep on the same state
+                newstate = state;
+        }
+        BOOST_CHECK ( newstate == static_cast<int>(TcpState::ESTABLISHED));
+
+        dir = FlowDirection::FORWARD;
+	state = newstate;
+        newstate = ((tcp_states[newstate]).state)->dir[static_cast<int>(dir)].flags[flags];
+        if (newstate == -1) { // Keep on the same state
+                newstate = state;
+        }
+        BOOST_CHECK ( newstate == static_cast<int>(TcpState::ESTABLISHED));
+
+	flags = static_cast<int>(TcpFlags::ACK);
+        dir = FlowDirection::BACKWARD;
+        state = newstate;
+        newstate = ((tcp_states[newstate]).state)->dir[static_cast<int>(dir)].flags[flags];
+        if (newstate == -1) { // Keep on the same state
+                newstate = state;
+        }
+        BOOST_CHECK ( newstate == static_cast<int>(TcpState::ESTABLISHED));
+}
+
+BOOST_AUTO_TEST_CASE (test3_tcp)
+{
+        // The flow have been established previously and a wrong flag appears
+
+        int flags = static_cast<int>(TcpFlags::ACK);
+        FlowDirection dir = FlowDirection::BACKWARD;
+        int state = static_cast<int>(TcpState::ESTABLISHED);
+        int newstate = state;
+        newstate = ((tcp_states[newstate]).state)->dir[static_cast<int>(dir)].flags[flags];
+        if (newstate == -1) { // Keep on the same state
+                newstate = state;
+        }
+        BOOST_CHECK ( newstate == static_cast<int>(TcpState::ESTABLISHED));
+
+	
+        flags = static_cast<int>(TcpFlags::SYNACK);
+        dir = FlowDirection::FORWARD;
+        state = newstate;
+        newstate = ((tcp_states[newstate]).state)->dir[static_cast<int>(dir)].flags[flags];
+
+        if (newstate == -1) { // Keep on the same state
+                newstate = state;
+        }
+        BOOST_CHECK ( newstate == static_cast<int>(TcpState::CLOSED));
+
+}
+
+
+
+BOOST_AUTO_TEST_SUITE_END( )

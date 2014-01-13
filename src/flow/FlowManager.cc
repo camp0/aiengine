@@ -52,14 +52,17 @@ SharedPointer<Flow> FlowManager::findFlow(unsigned long hash1,unsigned long hash
 
 	FlowByID::iterator it = flowTable_.find(hash1);
 	SharedPointer<Flow> fp;
+	FlowDirection dir = FlowDirection::FORWARD;
 
 	if (it == flowTable_.end()) {
+		dir = FlowDirection::BACKWARD;	
 		it = flowTable_.find(hash2);
 		if (it == flowTable_.end()) { 
 			return fp;
 		}
 	}
 	fp = (*it);
+	fp->setFlowDirection(dir);
 	return fp;
 }
 

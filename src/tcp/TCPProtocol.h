@@ -36,6 +36,7 @@
 #include "../flow/FlowManager.h"
 #include "../flow/FlowCache.h"
 #include "../FlowForwarder.h"
+#include "TCPStates.h"
 
 namespace aiengine {
 
@@ -67,6 +68,7 @@ public:
 
 	void processFlow(Flow *flow) {}; // This protocol generates flows but not for destination.
 	void processPacket(Packet &packet);
+	void computeState(Flow *flow);
 
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
@@ -110,6 +112,10 @@ public:
     	unsigned int getTcpHdrLength() const { return tcp_header_->th_off * 4; }
     	unsigned char* getPayload() const { return (unsigned char*)tcp_header_ +getTcpHdrLength(); }
 #else
+    	bool isSyn() const { return tcp_header_->syn == 1; }
+    	bool isFin() const { return tcp_header_->fin == 1; }
+    	bool isAck() const { return tcp_header_->ack == 1; }
+    	bool isRst() const { return tcp_header_->rst == 1; }
     	u_int16_t getSrcPort() const { return ntohs(tcp_header_->source); }
     	u_int16_t getDstPort() const { return ntohs(tcp_header_->dest); }
     	unsigned int getTcpHdrLength() const { return tcp_header_->doff * 4; }

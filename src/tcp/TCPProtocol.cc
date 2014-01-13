@@ -104,6 +104,8 @@ void TCPProtocol::processPacket(Packet &packet) {
                 flow->total_bytes += bytes;
                 ++flow->total_packets;
 
+		computeState(flow.get());
+
                 if (flow_forwarder_.lock()&&(bytes > 0)) {
                 
                         FlowForwarderPtr ff = flow_forwarder_.lock();
@@ -120,6 +122,61 @@ void TCPProtocol::processPacket(Packet &packet) {
                         ff->forwardFlow(flow.get());
                 }
         }
+}
+
+void TCPProtocol::computeState(Flow *flow) {
+
+	bool syn = isSyn();
+	bool ack = isAck();
+	bool fin = isFin();
+	bool rst = isRst();
+	int state = flow->tcp_state_curr;
+	int flags = static_cast<int>(TcpFlags::INVALID);
+	char *str_flag = "None";
+
+	if (syn) { 
+		if (ack) {
+			flags = static_cast<int>(TcpFlags::SYNACK);
+			str_flag = "SynAck";
+		} else {
+			flags = static_cast<int>(TcpFlags::SYN);
+			str_flag = "Syn";
+		}
+	} else {
+		if ((ack)&&(fin)) {
+			flags = static_cast<int>(TcpFlags::FIN);
+			str_flag = "Fin";
+		} else {
+			if (fin) {
+				flags = static_cast<int>(TcpFlags::FIN);
+				str_flag = "Fin";
+			} else {
+				flags = static_cast<int>(TcpFlags::ACK);
+				str_flag = "Ack";
+			}
+		}
+	}	
+
+	flow->tcp_state_prev = flow->tcp_state_curr;
+	int dir = static_cast<int>(flow->getFlowDirection());
+	int newstate = ((tcp_states[static_cast<int>(state)]).state)->dir[dir].flags[flags];
+
+	if (newstate == -1) {
+		// Continue on the same state
+		newstate = flow->tcp_state_prev;
+	}
+	flow->tcp_state_curr = newstate;
+	if (rst) { 
+		flow->tcp_state_prev = static_cast<int>(TcpState::CLOSED);
+		flow->tcp_state_curr = static_cast<int>(TcpState::CLOSED);
+	}
+#define DEBUG 1
+#ifdef DEBUG
+	const char *prev_state = ((tcp_states[flow->tcp_state_prev]).state)->name;
+	const char *curr_state = ((tcp_states[flow->tcp_state_curr]).state)->name;
+	std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":prev:" << prev_state << " curr:" << curr_state << " flags:" << str_flag << " dir:" << dir << std::endl; 
+#endif
+
 }
 
 } // namespace aiengine

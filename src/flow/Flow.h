@@ -51,6 +51,11 @@ namespace aiengine {
 class FlowForwarder;
 typedef std::weak_ptr<FlowForwarder> FlowForwarderPtrWeak;
 
+enum class FlowDirection : std::int8_t {
+	FORWARD = 0, 
+	BACKWARD = 1 
+};
+
 class Flow {
 public:
     	Flow() {reset();}
@@ -59,6 +64,9 @@ public:
 	// Common fields of the Flow
 	void setId(unsigned long hash) { hash_=hash;}
 	unsigned long getId() const { return hash_;}
+
+	void setFlowDirection(FlowDirection dir) { direction_ = dir; }
+	FlowDirection getFlowDirection() { return direction_; }
 
 	// IP functions
 	inline void setFiveTuple(u_int32_t src_a,u_int16_t src_p,u_int16_t proto,u_int32_t dst_a,u_int16_t dst_p) {
@@ -93,6 +101,9 @@ public:
 	int32_t total_packets_l7;
 	int32_t total_packets;
 
+	short tcp_state_prev;
+        short tcp_state_curr;
+
 	// Objects that links with the Flow
 	WeakPointer<DNSDomain> dns_domain;
 	WeakPointer<Regex> regex;
@@ -108,7 +119,9 @@ public:
 	bool frequency_engine_inspected;
 	
 	inline void reset() {
-	
+
+		tcp_state_prev = 0;
+		tcp_state_curr = 0; 	
 		hash_ = 0;
 		total_bytes = 0;
 		total_packets = 0;
@@ -126,6 +139,7 @@ public:
 		dns_domain.reset();
 		packet = nullptr;
 		frequency_engine_inspected = false;
+		direction_ = FlowDirection::FORWARD;
 	}
 
 	friend std::ostream& operator<< (std::ostream& out, const Flow& flow) {
@@ -154,7 +168,8 @@ private:
 	IPAddress address_;
 	u_int16_t source_port_;
 	u_int16_t dest_port_;
-	u_int16_t protocol_; 
+	u_int16_t protocol_;
+	FlowDirection direction_; 
 };
 
 } // namespace aiengine 
