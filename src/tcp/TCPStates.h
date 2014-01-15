@@ -68,7 +68,7 @@ struct TCPState {
 };
 
 static struct TCPState ST_NullState = {
-	"NONE",
+	(char*)"NONE",
  	{{ 	/* INVALID */ 	0,
 		/* SYN */	0,
 		/* SYNACK */	0,
@@ -84,7 +84,7 @@ static struct TCPState ST_NullState = {
 };
 
 static struct TCPState ST_TCPStateClosed = {
-	"CLOSE",
+	(char*)"CLOSE",
  	{{ 	/* INVALID */ 	0,
 		/* SYN */	static_cast<int>(TcpState::SYN_SENT), /* Handshake (1): initial SYN. */
 		/* SYNACK */	0,
@@ -100,7 +100,7 @@ static struct TCPState ST_TCPStateClosed = {
 };
 
 static struct TCPState ST_TCPStateSynSent = {
-	"SYN_SENT",
+	(char*)"SYN_SENT",
         {{	/* INVALID */	0,
                 /* SYN */	static_cast<int>(TcpState::OK), /* SYN may be retransmitted. */
                 /* SYNACK */	0,
@@ -116,7 +116,7 @@ static struct TCPState ST_TCPStateSynSent = {
 };
 
 static struct TCPState ST_TCPStateSimSynSent = {
-	"SIMSYN_SENT",
+	(char*)"SIMSYN_SENT",
         {{      /* INVALID */	0,
                 /* SYN */ 	static_cast<int>(TcpState::OK), /* Original SYN re-transmission. */
                 /* SYNACK */	static_cast<int>(TcpState::SYN_RECEIVED), /* SYN-ACK response to simultaneous SYN. */
@@ -132,28 +132,28 @@ static struct TCPState ST_TCPStateSimSynSent = {
 };
 
 static struct TCPState ST_TCPStateSynReceived = {
-	"SYN_RECEIVED",
-        {{       /* INVALID */   0,
+	(char*)"SYN_RECEIVED",
+        {{      /* INVALID */   0,
                 /* SYN */	0,
                 /* SYNACK */	0,
                 /* ACK */ 	static_cast<int>(TcpState::ESTABLISHED), /* Handshake (3): ACK is expected. */
                	/* FIN */	static_cast<int>(TcpState::FIN_SEEN),	/* FIN may be sent early. */ 
         },
-        {       0,
-                0,
-                static_cast<int>(TcpState::OK),	/* SYN-ACK may be retransmitted. */
-                static_cast<int>(TcpState::OK),	/* XXX: ACK of late SYN in simultaneous case? */
-               	static_cast<int>(TcpState::FIN_SEEN)	/* FIN may be sent early. */ 
+        {       /* INVALID */	0,
+                /* SYN */	0,
+                /* SYNACK */	static_cast<int>(TcpState::OK),	/* SYN-ACK may be retransmitted. */
+                /* ACK */	static_cast<int>(TcpState::OK),	/* XXX: ACK of late SYN in simultaneous case? */
+               	/* FIN */	static_cast<int>(TcpState::FIN_SEEN)	/* FIN may be sent early. */ 
         }}
 };
 
 static struct TCPState ST_TCPStateEstablished = {
-	"ESTABLISHED",
+	(char*)"ESTABLISHED",
         /*
          * Regular ACKs (data exchange) or FIN.
          * FIN packets may have ACK set.
          */
-        {{       /* INVALID */   0,
+        {{      /* INVALID */   0,
                 /* SYN */       0,
                 /* SYNACK */    0,
                 /* ACK */       static_cast<int>(TcpState::OK),
@@ -168,14 +168,14 @@ static struct TCPState ST_TCPStateEstablished = {
 };
 
 static struct TCPState ST_TCPStateFinSeen = {
-	"FIN_SEEN",
+	(char*)"FIN_SEEN",
         /*
          * FIN was seen.   If ACK only, connection is half-closed now,
          * need to determine which end is closed (sender or receiver).
          * However, both FIN and FIN-ACK may race here - in which
          * case we are closing immediately.
          */
-        {{       /* INVALID */   0,
+        {{      /* INVALID */   0,
                 /* SYN */       0,
                 /* SYNACK */    0,
                 /* ACK */       static_cast<int>(TcpState::CLOSE_WAIT),
@@ -190,9 +190,9 @@ static struct TCPState ST_TCPStateFinSeen = {
 };
 
 static struct TCPState ST_TCPStateCloseWait = {
-	"CLOSE_WAIT" ,
+	(char*)"CLOSE_WAIT" ,
         /* Sender has sent the FIN and closed its end. */
-        {{       /* INVALID */   0,
+        {{      /* INVALID */   0,
                 /* SYN */       0,
                 /* SYNACK */    0,
                 /* ACK */       static_cast<int>(TcpState::OK),
@@ -207,9 +207,9 @@ static struct TCPState ST_TCPStateCloseWait = {
 };
 
 static struct TCPState ST_TCPStateFinWait = {
-        "FIN_WAIT" ,
+        (char*)"FIN_WAIT" ,
         /* Receiver has closed its end. */
-        {{       /* INVALID */   0,
+        {{      /* INVALID */   0,
                 /* SYN */       0,
                 /* SYNACK */    0,
                 /* ACK */       static_cast<int>(TcpState::OK),
@@ -224,9 +224,9 @@ static struct TCPState ST_TCPStateFinWait = {
 };
 
 static struct TCPState ST_TCPStateClosing = {
-        "CLOSING" ,
+        (char*)"CLOSING" ,
         /* Race of FINs - expecting ACK. */
-        {{       /* INVALID */   0,
+        {{      /* INVALID */   0,
                 /* SYN */       0,
                 /* SYNACK */    0,
                 /* ACK */       static_cast<int>(TcpState::LAST_ACK),
@@ -241,9 +241,9 @@ static struct TCPState ST_TCPStateClosing = {
 };
 
 static struct TCPState ST_TCPStateLastAck = {
-        "LAST_ACK" ,
+        (char*)"LAST_ACK" ,
         /* FINs exchanged - expecting last ACK. */
-        {{       /* INVALID */   0,
+        {{      /* INVALID */   0,
                 /* SYN */       0,
                 /* SYNACK */    0,
                 /* ACK */       static_cast<int>(TcpState::TIME_WAIT),
@@ -258,9 +258,9 @@ static struct TCPState ST_TCPStateLastAck = {
 };
 
 static struct TCPState ST_TCPStateTimeWait = {
-        "TIMEWAIT", 
+        (char*)"TIMEWAIT", 
         /* May re-open the connection as per RFC 1122. */
-        {{       /* INVALID */   0,
+        {{      /* INVALID */   0,
                 /* SYN */       static_cast<int>(TcpState::SYN_SENT),
                 /* SYNACK */    0,
                 /* ACK */       0,

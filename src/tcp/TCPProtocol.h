@@ -36,7 +36,9 @@
 #include "../flow/FlowManager.h"
 #include "../flow/FlowCache.h"
 #include "../FlowForwarder.h"
+#include "../Cache.h"
 #include "TCPStates.h"
+#include "TCPInfo.h"
 
 namespace aiengine {
 
@@ -44,9 +46,11 @@ class TCPProtocol: public Protocol
 {
 public:
     	explicit TCPProtocol():tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
-		stats_level_(0) { name_="TCPProtocol";}
+		stats_level_(0),
+		tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")) { name_="TCPProtocol";}
     	explicit TCPProtocol(std::string name):tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
-		stats_level_(0) { name_ = name;}
+		stats_level_(0),
+		tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")) { name_ = name;}
     	virtual ~TCPProtocol() {}
 
 	static const u_int16_t id = IPPROTO_TCP;
@@ -123,8 +127,12 @@ public:
 #endif
         void setFlowManager(FlowManagerPtr flow_mng) { flow_table_ = flow_mng;}
         FlowManagerPtr getFlowManager() { return flow_table_; }
-        void setFlowCache(FlowCachePtr flow_cache) { flow_cache_ = flow_cache;}
+
+        void setFlowCache(FlowCachePtr flow_cache) { flow_cache_ = flow_cache; } 
         FlowCachePtr getFlowCache() { return flow_cache_;}
+
+        void createTCPInfo(int number) { tcp_info_cache_->create(number);}
+        void destroyTCPInfo(int number) { tcp_info_cache_->destroy(number);}
 
 	Flow *getCurrenFlow() { return current_flow_;}
 private:
@@ -135,6 +143,7 @@ private:
 	FlowForwarderPtrWeak flow_forwarder_;
 	FlowManagerPtr flow_table_;
 	FlowCachePtr flow_cache_;
+	Cache<TCPInfo>::CachePtr tcp_info_cache_;
 	struct tcphdr *tcp_header_;
 	Flow *current_flow_;
 	int64_t total_bytes_;

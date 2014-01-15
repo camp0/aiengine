@@ -583,7 +583,8 @@ BOOST_FIXTURE_TEST_CASE(test_case_14,StackLanTest)
 	BOOST_CHECK(tcp6->getTotalValidatedPackets() == 86);
 	BOOST_CHECK(tcp6->getTotalMalformedPackets() == 0);
 
-	BOOST_CHECK(flow_table_tcp->getTotalFlows() == 1);
+	BOOST_CHECK(flow_table_tcp->getTotalFlows() == 0); // The flow is on the cache
+	BOOST_CHECK(flow_table_tcp->getTotalProcessFlows() == 1);
 	BOOST_CHECK(flow_cache_tcp->getTotalAcquires() == 1);
 	BOOST_CHECK(flow_cache_tcp->getTotalFails() == 0);
 
@@ -662,7 +663,8 @@ BOOST_FIXTURE_TEST_CASE(test_case_16,StackLanTest)
         BOOST_CHECK(tcp6->getTotalValidatedPackets() == 86);
         BOOST_CHECK(tcp6->getTotalMalformedPackets() == 0);
 
-        BOOST_CHECK(flow_table_tcp->getTotalFlows() == 1);
+        BOOST_CHECK(flow_table_tcp->getTotalProcessFlows() == 1);
+        BOOST_CHECK(flow_table_tcp->getTotalFlows() == 0);
         BOOST_CHECK(flow_cache_tcp->getTotalAcquires() == 1);
         BOOST_CHECK(flow_cache_tcp->getTotalFails() == 0);
 
@@ -691,7 +693,8 @@ BOOST_FIXTURE_TEST_CASE(test_case_16,StackLanTest)
         BOOST_CHECK(tcp6->getTotalValidatedPackets() == 86);
         BOOST_CHECK(tcp6->getTotalMalformedPackets() == 0);
 
-        BOOST_CHECK(flow_table_tcp->getTotalFlows() == 2);
+        BOOST_CHECK(flow_table_tcp->getTotalProcessFlows() == 2);
+        BOOST_CHECK(flow_table_tcp->getTotalFlows() == 1);
         BOOST_CHECK(flow_cache_tcp->getTotalAcquires() == 2);
         BOOST_CHECK(flow_cache_tcp->getTotalFails() == 0);
 
@@ -716,7 +719,7 @@ BOOST_AUTO_TEST_CASE ( test_case_1 )
 	stack->setTotalTCPFlows(2);
 	stack->enableFrequencyEngine(true);
 	pd->setStack(stack);
-	pd->openPcapFile("../pcapfiles/two_http_flows.pcap");
+	pd->openPcapFile("../pcapfiles/two_http_flows_noending.pcap");
         pd->runPcap();
         pd->closePcapFile();
 
@@ -749,7 +752,7 @@ BOOST_AUTO_TEST_CASE ( test_case_2 )
         stack->setTotalTCPFlows(2);
         stack->enableFrequencyEngine(true);
         pd->setStack(stack);
-        pd->openPcapFile("../pcapfiles/two_http_flows.pcap");
+        pd->openPcapFile("../pcapfiles/two_http_flows_noending.pcap");
         pd->runPcap();
         pd->closePcapFile();
 
@@ -782,7 +785,7 @@ BOOST_AUTO_TEST_CASE ( test_case_3 )
         stack->setTotalTCPFlows(2);
         stack->enableFrequencyEngine(true);
         pd->setStack(stack);
-        pd->openPcapFile("../pcapfiles/two_http_flows.pcap");
+        pd->openPcapFile("../pcapfiles/two_http_flows_noending.pcap");
         pd->runPcap();
         pd->closePcapFile();
 
@@ -826,7 +829,7 @@ BOOST_AUTO_TEST_CASE ( test_case_4 ) // integrate the learner and the FrequencyG
         stack->setTotalTCPFlows(2);
         stack->enableFrequencyEngine(true);
         pd->setStack(stack);
-        pd->openPcapFile("../pcapfiles/two_http_flows.pcap");
+        pd->openPcapFile("../pcapfiles/two_http_flows_noending.pcap");
         pd->runPcap();
         pd->closePcapFile();
 

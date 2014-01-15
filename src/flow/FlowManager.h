@@ -48,7 +48,7 @@ typedef FlowTable::nth_index<0>::type FlowByID;
 class FlowManager
 {
 public:
-    	FlowManager() {}
+    	FlowManager(): total_process_flows_(0) {}
     	virtual ~FlowManager();
 
 	void addFlow(SharedPointer<Flow> flow);
@@ -56,6 +56,7 @@ public:
 	SharedPointer<Flow> findFlow(unsigned long hash1,unsigned long hash2);
 
 	int getTotalFlows() const { return flowTable_.size();}
+	int32_t getTotalProcessFlows() const { return total_process_flows_;}
 
 	void printFlows(std::basic_ostream<char>& out);
 	void printFlows() { printFlows(std::cout);}      
@@ -74,7 +75,7 @@ public:
 
 private:
     	timeval now_;
-
+	int32_t total_process_flows_;
     	FlowTable flowTable_;
 };
 

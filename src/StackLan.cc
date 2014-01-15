@@ -355,6 +355,7 @@ void StackLan::enableNIDSEngine(bool enable) {
 void StackLan::setTotalTCPFlows(int value) {
 
 	flow_cache_tcp_->createFlows(value);
+	tcp_->createTCPInfo(value);
 
 	// The bast mayority of the traffic of internet is HTTP
 	// so create 75% of the value received for the http caches

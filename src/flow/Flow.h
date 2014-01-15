@@ -38,6 +38,7 @@
 #include "../http/HTTPUserAgent.h"
 #include "../dns/DNSDomain.h"
 #include "../ssl/SSLHost.h"
+#include "../tcp/TCPInfo.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -105,6 +106,7 @@ public:
         short tcp_state_curr;
 
 	// Objects that links with the Flow
+	WeakPointer<TCPInfo> tcp_info;
 	WeakPointer<DNSDomain> dns_domain;
 	WeakPointer<Regex> regex;
 	WeakPointer<HTTPHost> http_host;
@@ -137,6 +139,7 @@ public:
 		http_ua.reset();
 		regex.reset();
 		dns_domain.reset();
+		tcp_info.reset();
 		packet = nullptr;
 		frequency_engine_inspected = false;
 		direction_ = FlowDirection::FORWARD;

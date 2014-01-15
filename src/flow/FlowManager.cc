@@ -36,6 +36,7 @@ FlowManager::~FlowManager() {
 
 void FlowManager::addFlow(SharedPointer<Flow> flow) {
 
+	++total_process_flows_;
 	flowTable_.insert(flow);
 }
 
@@ -73,6 +74,7 @@ std::ostream& operator<< (std::ostream& out, const FlowManager& fm) {
 void FlowManager::statistics(std::basic_ostream<char>& out) {
 
         out << "FlowManager statistics" << std::endl;
+        out << "\t" << "Total process flows:    " << std::setw(10) << total_process_flows_ <<std::endl;
         out << "\t" << "Total flows:            " << std::setw(10) << flowTable_.size() <<std::endl;
 
 }
@@ -92,6 +94,9 @@ void FlowManager::printFlows(std::basic_ostream<char>& out) {
 		fivetuple << ":[" << flow->getDstAddrDotNotation() << "]:" << flow->getDestinationPort();
 
 		out << boost::format("%-64s %-10d %-10d %p") % fivetuple.str() % flow->total_bytes % flow->total_packets % flow->forwarder.lock();
+
+		if(flow->tcp_info.lock())	
+			out << "     TCP  :" << *flow->tcp_info.lock();
 
 		if(flow->regex.lock())	
 			out << "     Regex:" << flow->regex.lock()->getName();

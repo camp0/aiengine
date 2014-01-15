@@ -45,13 +45,14 @@ void TCPProtocol::statistics(std::basic_ostream<char>& out) {
                                                 flow_table_->statistics(out);
                                         if (flow_cache_)
                                                 flow_cache_->statistics(out);
+					if (tcp_info_cache_)
+						tcp_info_cache_->statistics(out);
                                  }
                         }
                 }
         }
 }
 
-// This method its similar to the UDP, so maybe in future.....
 SharedPointer<Flow> TCPProtocol::getFlow() {
 
         unsigned long h1;
@@ -82,6 +83,12 @@ SharedPointer<Flow> TCPProtocol::getFlow() {
                                                 	getDstPort());
 					}
                                         flow_table_->addFlow(flow);
+
+					// Now attach a TCPInfo to the TCP Flow
+					SharedPointer<TCPInfo> tcp_info_ptr = tcp_info_cache_->acquire().lock();
+					if (tcp_info_ptr) { 
+						flow->tcp_info = tcp_info_ptr;
+					} 
                                 }
                         }
                 } else {
@@ -97,6 +104,7 @@ SharedPointer<Flow> TCPProtocol::getFlow() {
         return flow;
 }
 
+//#define DEBUG 1
 void TCPProtocol::processPacket(Packet &packet) {
 
 	SharedPointer<Flow> flow = getFlow();
@@ -128,7 +136,17 @@ void TCPProtocol::processPacket(Packet &packet) {
 
 			flow->packet = const_cast<Packet*>(&packet);
                         ff->forwardFlow(flow.get());
-                }
+                } else {
+			// Retrieve the flow to the flow cache if the flow have been closed	
+			if ((flow->tcp_state_prev == static_cast<int>(TcpState::CLOSED))and(flow->tcp_state_curr == static_cast<int>(TcpState::CLOSED))) {
+#ifdef DEBUG
+				std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":retrieving to flow cache" << std::endl; 
+#endif
+				// There is no need to recheck the life of the flow_table_ variabe, must exists on this point 
+				flow_table_->removeFlow(flow);
+				flow_cache_->releaseFlow(flow);
+			}
+		}	
         }
 }
 
@@ -140,33 +158,46 @@ void TCPProtocol::computeState(Flow *flow) {
 	bool rst = isRst();
 	int state = flow->tcp_state_curr;
 	int flags = static_cast<int>(TcpFlags::INVALID);
-	char *str_flag = "None";
+	char *str_flag = (char*)"None";
+	SharedPointer<TCPInfo> tcp_info = flow->tcp_info.lock();
 
 	if (syn) { 
 		if (ack) {
 			flags = static_cast<int>(TcpFlags::SYNACK);
-			str_flag = "SynAck";
+			str_flag = (char*)"SynAck";
+			if (tcp_info) 
+				++ tcp_info->syn_ack;
 		} else {
 			flags = static_cast<int>(TcpFlags::SYN);
-			str_flag = "Syn";
+			str_flag = (char*)"Syn";
+			if (tcp_info) 
+				++ tcp_info->syn;
 		}
 	} else {
 		if ((ack)&&(fin)) {
 			flags = static_cast<int>(TcpFlags::FIN);
-			str_flag = "Fin";
+			str_flag = (char*)"Fin";
+			if (tcp_info) 
+				++ tcp_info->fin;
 		} else {
 			if (fin) {
 				flags = static_cast<int>(TcpFlags::FIN);
-				str_flag = "Fin";
+				str_flag = (char*)"Fin";
+				if (tcp_info) 
+					++ tcp_info->fin;
 			} else {
 				flags = static_cast<int>(TcpFlags::ACK);
-				str_flag = "Ack";
+				str_flag = (char*)"Ack";
+				if (tcp_info) 
+					++ tcp_info->ack;
 			}
 		}
 	}	
 
 	flow->tcp_state_prev = flow->tcp_state_curr;
 	int dir = static_cast<int>(flow->getFlowDirection());
+	
+	// Compute the new transition state
 	int newstate = ((tcp_states[static_cast<int>(state)]).state)->dir[dir].flags[flags];
 
 	if (newstate == -1) {
@@ -174,11 +205,12 @@ void TCPProtocol::computeState(Flow *flow) {
 		newstate = flow->tcp_state_prev;
 	}
 	flow->tcp_state_curr = newstate;
-	if (rst) { 
+	if (rst) {
+		// Hard reset, close the flow 
 		flow->tcp_state_prev = static_cast<int>(TcpState::CLOSED);
 		flow->tcp_state_curr = static_cast<int>(TcpState::CLOSED);
 	}
-#define DEBUG 1
+
 #ifdef DEBUG
 	const char *prev_state = ((tcp_states[flow->tcp_state_prev]).state)->name;
 	const char *curr_state = ((tcp_states[flow->tcp_state_curr]).state)->name;
