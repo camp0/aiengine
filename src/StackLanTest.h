@@ -264,7 +264,10 @@ struct StackLanTest
 		tcp->setFlowManager(flow_table_tcp);
 		tcp6->setFlowCache(flow_cache_tcp);
 		tcp6->setFlowManager(flow_table_tcp);
-				
+		
+		tcp->createTCPInfo(1024*32);
+		tcp6->createTCPInfo(1024*32);
+		
 		udp->setFlowCache(flow_cache_udp);
 		udp->setFlowManager(flow_table_udp);
 		

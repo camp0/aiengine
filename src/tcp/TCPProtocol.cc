@@ -120,7 +120,7 @@ void TCPProtocol::processPacket(Packet &packet) {
                 flow->total_bytes += bytes;
                 ++flow->total_packets;
 
-		computeState(flow.get());
+		computeState(flow.get(),bytes);
 
                 if (flow_forwarder_.lock()&&(bytes > 0)) {
                 
@@ -137,86 +137,96 @@ void TCPProtocol::processPacket(Packet &packet) {
 			flow->packet = const_cast<Packet*>(&packet);
                         ff->forwardFlow(flow.get());
                 } else {
-			// Retrieve the flow to the flow cache if the flow have been closed	
-			if ((flow->tcp_state_prev == static_cast<int>(TcpState::CLOSED))and(flow->tcp_state_curr == static_cast<int>(TcpState::CLOSED))) {
+			SharedPointer<TCPInfo> tcp_info = flow->tcp_info.lock();
+
+			if (tcp_info) {
+				// Retrieve the flow to the flow cache if the flow have been closed	
+				if ((tcp_info->state_prev == static_cast<int>(TcpState::CLOSED))and(tcp_info->state_curr == static_cast<int>(TcpState::CLOSED))) {
 #ifdef DEBUG
-				std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":retrieving to flow cache" << std::endl; 
+					std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":retrieving to flow cache" << std::endl; 
 #endif
-				// There is no need to recheck the life of the flow_table_ variabe, must exists on this point 
-				flow_table_->removeFlow(flow);
-				flow_cache_->releaseFlow(flow);
+					// There is no need to recheck the life of the flow_table_ variabe, must exists on this point
+					tcp_info_cache_->release(tcp_info);
+					flow_table_->removeFlow(flow);
+					flow_cache_->releaseFlow(flow);
+				}
 			}
 		}	
         }
 }
 
-void TCPProtocol::computeState(Flow *flow) {
+void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 
 	bool syn = isSyn();
 	bool ack = isAck();
 	bool fin = isFin();
 	bool rst = isRst();
-	int state = flow->tcp_state_curr;
 	int flags = static_cast<int>(TcpFlags::INVALID);
 	char *str_flag = (char*)"None";
 	SharedPointer<TCPInfo> tcp_info = flow->tcp_info.lock();
 
-	if (syn) { 
-		if (ack) {
-			flags = static_cast<int>(TcpFlags::SYNACK);
-			str_flag = (char*)"SynAck";
-			if (tcp_info) 
+	if (tcp_info) {
+
+		int state = tcp_info->state_curr;
+		if (syn) { 
+			if (ack) {
+				flags = static_cast<int>(TcpFlags::SYNACK);
+				str_flag = (char*)"SynAck";
 				++ tcp_info->syn_ack;
-		} else {
-			flags = static_cast<int>(TcpFlags::SYN);
-			str_flag = (char*)"Syn";
-			if (tcp_info) 
+			} else {
+				flags = static_cast<int>(TcpFlags::SYN);
+				str_flag = (char*)"Syn";
 				++ tcp_info->syn;
-		}
-	} else {
-		if ((ack)&&(fin)) {
-			flags = static_cast<int>(TcpFlags::FIN);
-			str_flag = (char*)"Fin";
-			if (tcp_info) 
-				++ tcp_info->fin;
+			}
 		} else {
-			if (fin) {
+			if ((ack)&&(fin)) {
 				flags = static_cast<int>(TcpFlags::FIN);
 				str_flag = (char*)"Fin";
-				if (tcp_info) 
-					++ tcp_info->fin;
+				++ tcp_info->fin;
 			} else {
-				flags = static_cast<int>(TcpFlags::ACK);
-				str_flag = (char*)"Ack";
-				if (tcp_info) 
+				if (fin) {
+					flags = static_cast<int>(TcpFlags::FIN);
+					str_flag = (char*)"Fin";
+					++ tcp_info->fin;
+				} else {
+					flags = static_cast<int>(TcpFlags::ACK);
+					str_flag = (char*)"Ack";
 					++ tcp_info->ack;
+				}
 			}
-		}
-	}	
-
-	flow->tcp_state_prev = flow->tcp_state_curr;
-	int dir = static_cast<int>(flow->getFlowDirection());
+			if (isPushSet()) {
+				++ tcp_info->push;
+			}
+		}	
 	
-	// Compute the new transition state
-	int newstate = ((tcp_states[static_cast<int>(state)]).state)->dir[dir].flags[flags];
+		// TODO sequence numbering	
+		tcp_info->seq_num = getSequence();
+		tcp_info->ack_num = getAckSequence();
 
-	if (newstate == -1) {
-		// Continue on the same state
-		newstate = flow->tcp_state_prev;
-	}
-	flow->tcp_state_curr = newstate;
-	if (rst) {
-		// Hard reset, close the flow 
-		flow->tcp_state_prev = static_cast<int>(TcpState::CLOSED);
-		flow->tcp_state_curr = static_cast<int>(TcpState::CLOSED);
-	}
+		tcp_info->state_prev = tcp_info->state_curr;
+		int dir = static_cast<int>(flow->getFlowDirection());
+		
+		// Compute the new transition state
+		int newstate = ((tcp_states[static_cast<int>(state)]).state)->dir[dir].flags[flags];
 
+		if (newstate == -1) {
+			// Continue on the same state
+			newstate = tcp_info->state_prev;
+		}
+		tcp_info->state_curr = newstate;
+		if (rst) {
+			// Hard reset, close the flow 
+			tcp_info->state_prev = static_cast<int>(TcpState::CLOSED);
+			tcp_info->state_curr = static_cast<int>(TcpState::CLOSED);
+		}
 #ifdef DEBUG
-	const char *prev_state = ((tcp_states[flow->tcp_state_prev]).state)->name;
-	const char *curr_state = ((tcp_states[flow->tcp_state_curr]).state)->name;
-	std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":prev:" << prev_state << " curr:" << curr_state << " flags:" << str_flag << " dir:" << dir << std::endl; 
+		const char *prev_state = ((tcp_states[tcp_info->state_prev]).state)->name;
+		const char *curr_state = ((tcp_states[tcp_info->state_curr]).state)->name;
+		std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":prev:" << prev_state << " curr:" << curr_state << " flags:" << str_flag;
+		std::cout << " seq(" << tcp_info->seq_num << ")ack(" << tcp_info->ack_num << ") dir:" << dir << " bytes:" << bytes << std::endl;
 #endif
 
+	} // end tcp_info
 }
 
 } // namespace aiengine

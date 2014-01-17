@@ -72,7 +72,7 @@ public:
 
 	void processFlow(Flow *flow) {}; // This protocol generates flows but not for destination.
 	void processPacket(Packet &packet);
-	void computeState(Flow *flow);
+	void computeState(Flow *flow,int32_t bytes);
 
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
@@ -120,6 +120,9 @@ public:
     	bool isFin() const { return tcp_header_->fin == 1; }
     	bool isAck() const { return tcp_header_->ack == 1; }
     	bool isRst() const { return tcp_header_->rst == 1; }
+    	bool isPushSet() const { return tcp_header_->psh == 1; }
+    	uint32_t getSequence() const  { return ntohl(tcp_header_->seq); }
+    	uint32_t getAckSequence() const  { return ntohl(tcp_header_->ack_seq); }
     	u_int16_t getSrcPort() const { return ntohs(tcp_header_->source); }
     	u_int16_t getDstPort() const { return ntohs(tcp_header_->dest); }
     	unsigned int getTcpHdrLength() const { return tcp_header_->doff * 4; }

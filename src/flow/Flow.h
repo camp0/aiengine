@@ -66,8 +66,9 @@ public:
 	void setId(unsigned long hash) { hash_=hash;}
 	unsigned long getId() const { return hash_;}
 
-	void setFlowDirection(FlowDirection dir) { direction_ = dir; }
+	void setFlowDirection(FlowDirection dir) { prev_direction_ = direction_; direction_ = dir; }
 	FlowDirection getFlowDirection() { return direction_; }
+	FlowDirection getPrevFlowDirection() { return prev_direction_; }
 
 	// IP functions
 	inline void setFiveTuple(u_int32_t src_a,u_int16_t src_p,u_int16_t proto,u_int32_t dst_a,u_int16_t dst_p) {
@@ -102,9 +103,6 @@ public:
 	int32_t total_packets_l7;
 	int32_t total_packets;
 
-	short tcp_state_prev;
-        short tcp_state_curr;
-
 	// Objects that links with the Flow
 	WeakPointer<TCPInfo> tcp_info;
 	WeakPointer<DNSDomain> dns_domain;
@@ -122,8 +120,6 @@ public:
 	
 	inline void reset() {
 
-		tcp_state_prev = 0;
-		tcp_state_curr = 0; 	
 		hash_ = 0;
 		total_bytes = 0;
 		total_packets = 0;
@@ -142,7 +138,7 @@ public:
 		tcp_info.reset();
 		packet = nullptr;
 		frequency_engine_inspected = false;
-		direction_ = FlowDirection::FORWARD;
+		prev_direction_ = direction_ = FlowDirection::FORWARD;
 	}
 
 	friend std::ostream& operator<< (std::ostream& out, const Flow& flow) {
@@ -173,6 +169,7 @@ private:
 	u_int16_t dest_port_;
 	u_int16_t protocol_;
 	FlowDirection direction_; 
+	FlowDirection prev_direction_; 
 };
 
 } // namespace aiengine 

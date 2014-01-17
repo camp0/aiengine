@@ -110,6 +110,9 @@ void FlowManager::printFlows(std::basic_ostream<char>& out) {
 		if(flow->dns_domain.lock())	
 			out << "    Domain:" << flow->dns_domain.lock()->getName();
 		
+		if(flow->ssl_host.lock())	
+			out << "    Host:" << flow->ssl_host.lock()->getName();
+		
 		if(flow->frequencies.lock())
 			out << boost::format("%-8s") % flow->frequencies.lock()->getFrequenciesString();
 

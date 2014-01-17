@@ -29,30 +29,40 @@
 #endif
 
 #include <iostream>
+#include "TCPStates.h"
 
 namespace aiengine {
 
 class TCPInfo 
 {
 public:
-    	explicit TCPInfo() {}
+    	explicit TCPInfo() { reset(); }
     	virtual ~TCPInfo() {}
 
-        void reset() { syn = 0; syn_ack = 0; ack= 0; fin = 0; }
+        void reset() { 
+		syn = 0; syn_ack = 0; ack= 0; fin = 0; push= 0; seq_num = 0; ack_num = 0; 
+		state_prev = static_cast<int>(TcpState::CLOSED);
+		state_curr = static_cast<int>(TcpState::CLOSED);
+	}
+
+        short state_prev;
+        short state_curr;
 
 	int16_t syn;
 	int16_t syn_ack;
 	int16_t ack;
 	int16_t fin;
+	int16_t push;
+	uint32_t seq_num;
+	uint32_t ack_num;
 
-//#ifdef PYTHON_BINDING
         friend std::ostream& operator<< (std::ostream& out, const TCPInfo& ti) {
         
-                out << "Syn(" << ti.syn << ")SynAck(" << ti.syn_ack << ")Ack(" << ti.ack;
-                out << ")Fin(" << ti.fin << ")";
+                out << "S(" << ti.syn << ")SA(" << ti.syn_ack << ")A(" << ti.ack;
+                out << ")F(" << ti.fin << ")P(" << ti.push << ")Seq(" << ti.seq_num;
+		out << ")Ack(" << ti.ack_num << ")";
                 return out;
         }
-//#endif
 };
 
 } // namespace aiengine
