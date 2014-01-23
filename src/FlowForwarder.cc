@@ -42,11 +42,13 @@ void FlowForwarder::forwardFlow(Flow *flow) {
 	bool have_forwarder = false;
 
 #ifdef DEBUG
-	std::cout << __FILE__ << ":" << this << ":forwardFlow(" << flow << ")" << std::endl;
-
+	std::cout << __PRETTY_FUNCTION__ << ":" << this << ":forwardFlow(" << flow << ")" << std::endl;
 #endif
 	++total_received_flows_;     
 	if((ff = flow->forwarder.lock())) {
+#ifdef DEBUG
+		std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":attached to:" << ff << std::endl;
+#endif
 		ff->flow_func_(flow);
 		return;
 	}
@@ -58,6 +60,9 @@ void FlowForwarder::forwardFlow(Flow *flow) {
 			// The packet have been accepted by the FlowForwarder
 			flow->forwarder = (*it);
 			ff->flow_func_(flow);
+#ifdef DEBUG
+			std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":assigned to:" << ff << std::endl;
+#endif
 			++total_forward_flows_;
 			return;	
 		}

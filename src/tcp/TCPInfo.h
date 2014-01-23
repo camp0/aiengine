@@ -40,27 +40,32 @@ public:
     	virtual ~TCPInfo() {}
 
         void reset() { 
-		syn = 0; syn_ack = 0; ack= 0; fin = 0; push= 0; seq_num = 0; ack_num = 0; 
+		syn = 0; syn_ack = 0; ack= 0; fin = 0; push= 0; 
+		seq_num[0] = 0; 
+		seq_num[1] = 0; 
 		state_prev = static_cast<int>(TcpState::CLOSED);
 		state_curr = static_cast<int>(TcpState::CLOSED);
 	}
 
+	// TCP State
         short state_prev;
         short state_curr;
 
+	// TCP Flags
 	int16_t syn;
 	int16_t syn_ack;
 	int16_t ack;
 	int16_t fin;
 	int16_t push;
-	uint32_t seq_num;
-	uint32_t ack_num;
+
+	// TCP Sequence numbers 0 for upstream and 1 for downstream FlowDirection
+	uint32_t seq_num[2];
 
         friend std::ostream& operator<< (std::ostream& out, const TCPInfo& ti) {
         
                 out << "S(" << ti.syn << ")SA(" << ti.syn_ack << ")A(" << ti.ack;
-                out << ")F(" << ti.fin << ")P(" << ti.push << ")Seq(" << ti.seq_num;
-		out << ")Ack(" << ti.ack_num << ")";
+                out << ")F(" << ti.fin << ")P(" << ti.push << ")Seq(" << ti.seq_num << ")";
+//		out << ")Ack(" << ti.ack_num << ")";
                 return out;
         }
 };

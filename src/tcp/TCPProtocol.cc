@@ -112,34 +112,34 @@ void TCPProtocol::processPacket(Packet &packet) {
 	++total_packets_;
 
         if (flow) {
+		SharedPointer<TCPInfo> tcp_info = flow->tcp_info.lock();
         	MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();
         	MultiplexerPtr ipmux = downmux.lock();
-               
-		int bytes = (ipmux->total_length - ipmux->getHeaderSize() - getTcpHdrLength());
 
-                flow->total_bytes += bytes;
-                ++flow->total_packets;
+		if (tcp_info) {              
+ 
+			int bytes = (ipmux->total_length - ipmux->getHeaderSize() - getTcpHdrLength());
 
-		computeState(flow.get(),bytes);
+			flow->total_bytes += bytes;
+			++flow->total_packets;
 
-                if (flow_forwarder_.lock()&&(bytes > 0)) {
-                
-                        FlowForwarderPtr ff = flow_forwarder_.lock();
+			computeState(flow.get(),bytes);
 
-			// Modify the packet for the next level
-			packet.setPayload(&packet.getPayload()[getTcpHdrLength()]);
-			packet.setPrevHeaderSize(getTcpHdrLength());
-			packet.setPayloadLength(packet.getLength() - getTcpHdrLength());	
+			if (flow_forwarder_.lock()&&(bytes > 0)) {
+			
+				FlowForwarderPtr ff = flow_forwarder_.lock();
 
-			packet.setDestinationPort(getDstPort());
-			packet.setSourcePort(getSrcPort());
+				// Modify the packet for the next level
+				packet.setPayload(&packet.getPayload()[getTcpHdrLength()]);
+				packet.setPrevHeaderSize(getTcpHdrLength());
+				packet.setPayloadLength(packet.getLength() - getTcpHdrLength());	
 
-			flow->packet = const_cast<Packet*>(&packet);
-                        ff->forwardFlow(flow.get());
-                } else {
-			SharedPointer<TCPInfo> tcp_info = flow->tcp_info.lock();
+				packet.setDestinationPort(getDstPort());
+				packet.setSourcePort(getSrcPort());
 
-			if (tcp_info) {
+				flow->packet = const_cast<Packet*>(&packet);
+				ff->forwardFlow(flow.get());
+			} else {
 				// Retrieve the flow to the flow cache if the flow have been closed	
 				if ((tcp_info->state_prev == static_cast<int>(TcpState::CLOSED))and(tcp_info->state_curr == static_cast<int>(TcpState::CLOSED))) {
 #ifdef DEBUG
@@ -151,8 +151,8 @@ void TCPProtocol::processPacket(Packet &packet) {
 					flow_cache_->releaseFlow(flow);
 				}
 			}
-		}	
-        }
+		}
+	}
 }
 
 void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
@@ -163,20 +163,32 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 	bool rst = isRst();
 	int flags = static_cast<int>(TcpFlags::INVALID);
 	char *str_flag = (char*)"None";
+	char *str_num = (char*)"None";
 	SharedPointer<TCPInfo> tcp_info = flow->tcp_info.lock();
 
 	if (tcp_info) {
-
+		int flowdir = static_cast<int>(flow->getFlowDirection());
+		int prev_flowdir = static_cast<int>(flow->getPrevFlowDirection());
+		uint32_t seq_num = getSequence();
+		uint32_t ack_num = getAckSequence();
+		uint32_t next_seq_num = 0;
+		uint32_t next_ack_num = 0;
 		int state = tcp_info->state_curr;
+
 		if (syn) { 
 			if (ack) {
 				flags = static_cast<int>(TcpFlags::SYNACK);
 				str_flag = (char*)"SynAck";
 				++ tcp_info->syn_ack;
+				
+				tcp_info->seq_num[flowdir] = seq_num;
 			} else {
 				flags = static_cast<int>(TcpFlags::SYN);
 				str_flag = (char*)"Syn";
 				++ tcp_info->syn;
+
+				tcp_info->seq_num[flowdir] = seq_num + 1;
+				++seq_num;
 			}
 		} else {
 			if ((ack)&&(fin)) {
@@ -197,17 +209,23 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 			if (isPushSet()) {
 				++ tcp_info->push;
 			}
-		}	
-	
-		// TODO sequence numbering	
-		tcp_info->seq_num = getSequence();
-		tcp_info->ack_num = getAckSequence();
+		}
+
+		// Check if the sequence numbers are fine
+		if (seq_num == tcp_info->seq_num[flowdir]) {
+			str_num = (char*)"numOK";
+		} else {
+			// Duplicated packets or retransmited
+			str_num = (char*)"numBad";
+		}
+			
+		next_seq_num = seq_num + bytes;
+		tcp_info->seq_num[flowdir] = next_seq_num;
 
 		tcp_info->state_prev = tcp_info->state_curr;
-		int dir = static_cast<int>(flow->getFlowDirection());
 		
 		// Compute the new transition state
-		int newstate = ((tcp_states[static_cast<int>(state)]).state)->dir[dir].flags[flags];
+		int newstate = ((tcp_states[static_cast<int>(state)]).state)->dir[flowdir].flags[flags];
 
 		if (newstate == -1) {
 			// Continue on the same state
@@ -222,8 +240,9 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 #ifdef DEBUG
 		const char *prev_state = ((tcp_states[tcp_info->state_prev]).state)->name;
 		const char *curr_state = ((tcp_states[tcp_info->state_curr]).state)->name;
-		std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":prev:" << prev_state << " curr:" << curr_state << " flags:" << str_flag;
-		std::cout << " seq(" << tcp_info->seq_num << ")ack(" << tcp_info->ack_num << ") dir:" << dir << " bytes:" << bytes << std::endl;
+		std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << " curr:" << curr_state << " flg:" << str_flag << " " << str_num;
+		std::cout << " seq(" << seq_num << ")ack(" << ack_num << ") dir:" << flowdir << " bytes:" << bytes;
+		std::cout << " nseq(" << next_seq_num << ")nack(" << next_ack_num << ")" << std::endl;
 #endif
 
 	} // end tcp_info

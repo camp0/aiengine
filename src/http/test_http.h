@@ -116,6 +116,7 @@ struct StackHTTPtest
 
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(1);
+		tcp->createTCPInfo(1);
 
                 tcp->setFlowCache(flow_cache);
                 tcp->setFlowManager(flow_mng);
@@ -211,6 +212,7 @@ struct StackIPv6HTTPtest
 
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(1);
+		tcp->createTCPInfo(1);
 
                 tcp->setFlowCache(flow_cache);
                 tcp->setFlowManager(flow_mng);
