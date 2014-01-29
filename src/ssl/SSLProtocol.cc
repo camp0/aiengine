@@ -26,6 +26,28 @@
 
 namespace aiengine {
 
+void SSLProtocol::attachHostToFlow(Flow *flow, std::string &servername) {
+
+	SharedPointer<SSLHost> host_ptr = flow->ssl_host.lock();
+
+	if (!host_ptr) { // There is no Host object attached to the flow
+		HostMapType::iterator it = host_map_.find(servername);
+		if (it == host_map_.end()) {
+			host_ptr = host_cache_->acquire().lock();
+			if (host_ptr) {
+				host_ptr->setName(servername);
+				flow->ssl_host = host_ptr;
+				host_map_.insert(std::make_pair(servername,std::make_pair(host_ptr,1)));
+			}
+		} else {
+			int *counter = &std::get<1>(it->second);
+			++(*counter);
+			flow->ssl_host = std::get<0>(it->second);
+		}
+	}
+}
+
+
 void SSLProtocol::handleClientHello(Flow *flow,int offset, u_char *data) {
 
 	int payload_length = flow->packet->getLength();
@@ -45,6 +67,7 @@ void SSLProtocol::handleClientHello(Flow *flow,int offset, u_char *data) {
 
 		uint16_t cipher_length = ntohs((data[block_offset+1] << 8) + data[block_offset]);
 		if (cipher_length < payload_length) {
+
 			block_offset += cipher_length  + 2;
 			u_char *compression_pointer = &data[block_offset];
 			short compression_length = compression_pointer[0];
@@ -67,24 +90,22 @@ void SSLProtocol::handleClientHello(Flow *flow,int offset, u_char *data) {
 						int server_length = ntohs(server->length);
 						if ((block_offset + server_length < payload_length )and(server_length > 0)) {
 							std::string servername((char*)server->data,0,server_length);
+							DomainNameManagerPtr ban_dnm = ban_host_mng_.lock();
 
-							SharedPointer<SSLHost> host_ptr = flow->ssl_host.lock();
-
-							if (!host_ptr) { // There is no Host object attached to the flow
-								HostMapType::iterator it = host_map_.find(servername);
-								if (it == host_map_.end()) {
-									host_ptr = host_cache_->acquire().lock();
-									if (host_ptr) {
-										host_ptr->setName(servername);
-										flow->ssl_host = host_ptr;
-										host_map_.insert(std::make_pair(servername,std::make_pair(host_ptr,1)));
-									}
-								} else {
-									int *counter = &std::get<1>(it->second);
-									++(*counter);
-									flow->ssl_host = std::get<0>(it->second);
+							ban_dnm = ban_host_mng_.lock();
+							if (ban_dnm) {
+								SharedPointer<DomainName> host_candidate = ban_dnm->getDomainName(servername);
+								if (host_candidate) {
+#ifdef HAVE_LIBLOG4CXX
+									LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with banned host " << host_candidate->getName());
+#endif
+									++total_ban_hosts_;
+									return;
 								}
 							}
+							++total_allow_hosts_;
+
+							attachHostToFlow(flow,servername);
 						}	
 					} // Server name 
 				}
@@ -97,14 +118,11 @@ void SSLProtocol::handleServerHello(Flow *flow,int offset,unsigned char *data) {
 
 	ssl_hello *hello = reinterpret_cast<ssl_hello*>(data); 
 	++ total_server_hellos_;
-
 }
 
 void SSLProtocol::handleCertificate(Flow *flow,int offset, unsigned char *data) {
 
-
 	++ total_certificates_;
-
 }
 
 void SSLProtocol::processFlow(Flow *flow) {
@@ -128,30 +146,30 @@ void SSLProtocol::processFlow(Flow *flow) {
 				int block_length = ntohs(record->length);
 				short type = record->data[0];
 				++maxattemps;
-	
+
 				if((version == SSL3_VERSION)or(version == TLS1_VERSION)or(version == TLS1_1_VERSION)) { 		
 					// This is a valid SSL header that we could extract some usefulll information.
 					// SSL Records are group by blocks
 					u_char *ssl_data = record->data;
 					bool have_data = false;
 
-                                        if (type == SSL3_MT_CLIENT_HELLO)  {
-                                                handleClientHello(flow,offset,ssl_data);
-                                                have_data = true;
-                                        } else if (type == SSL3_MT_SERVER_HELLO)  {
-                                                handleServerHello(flow,offset,ssl_data);
-                                                have_data = true;
-                                        } else if (type == SSL3_MT_CERTIFICATE) {
-                                                handleCertificate(flow,offset,ssl_data);
-                                                have_data = true;
-                                        }
+					if (type == SSL3_MT_CLIENT_HELLO)  {
+						handleClientHello(flow,offset,ssl_data);
+						have_data = true;
+					} else if (type == SSL3_MT_SERVER_HELLO)  {
+						handleServerHello(flow,offset,ssl_data);
+						have_data = true;
+					} else if (type == SSL3_MT_CERTIFICATE) {
+						handleCertificate(flow,offset,ssl_data);
+						have_data = true;
+					}
 
-                                        if (have_data) {
-                                                ++ total_records_;
-                                                offset += block_length;
-                                                ssl_data = &(record->data[block_length]);
-                                                block_length = ntohs(record->length);
-                                        }
+					if (have_data) {
+						++ total_records_;
+						offset += block_length;
+						ssl_data = &(record->data[block_length]);
+						block_length = ntohs(record->length);
+					}
 
 					record = reinterpret_cast<ssl_record*>(ssl_data);
 					offset += 5;	
@@ -184,8 +202,8 @@ void SSLProtocol::processFlow(Flow *flow) {
 						}
 #endif
 					}
-                        	}
-                	}
+				}
+			}
 		}
 	}
 }
@@ -205,22 +223,24 @@ void SSLProtocol::statistics(std::basic_ostream<char>& out) {
 				out << "\t" << "Total server hellos:    " << std::setw(10) << total_server_hellos_ <<std::endl;
 				out << "\t" << "Total certificates:     " << std::setw(10) << total_certificates_ <<std::endl;
 				out << "\t" << "Total records:          " << std::setw(10) << total_records_ <<std::endl;
+				out << "\t" << "Total allow hosts:      " << std::setw(10) << total_allow_hosts_ <<std::endl;
+				out << "\t" << "Total banned hosts:     " << std::setw(10) << total_ban_hosts_ <<std::endl;
 			}
 			if (stats_level_ > 2) {
 				if(flow_forwarder_.lock())
 					flow_forwarder_.lock()->statistics(out);
 			}
-                        if (stats_level_ > 3) {
-                        	host_cache_->statistics(out);
-                                if(stats_level_ > 4) {
-                                	out << "\tSSL Hosts usage" << std::endl;
-                                        for(auto it = host_map_.begin(); it!=host_map_.end(); ++it) {
-                                        	SharedPointer<SSLHost> host = std::get<0>((*it).second);
-                                                int count = std::get<1>((*it).second);
-                                                if(host)
-                                                        out << "\t\tHost:" << host->getName() <<":" << count << std::endl;
+			if (stats_level_ > 3) {
+				host_cache_->statistics(out);
+				if(stats_level_ > 4) {
+					out << "\tSSL Hosts usage" << std::endl;
+					for(auto it = host_map_.begin(); it!=host_map_.end(); ++it) {
+						SharedPointer<SSLHost> host = std::get<0>((*it).second);
+						int count = std::get<1>((*it).second);
+						if(host)
+							out << "\t\tHost:" << host->getName() <<":" << count << std::endl;
 					}
-                                }
+				}
 			}
 		}
 	}

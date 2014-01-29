@@ -32,31 +32,52 @@ log4cxx::LoggerPtr HTTPProtocol::logger(log4cxx::Logger::getLogger("aiengine.htt
 
 void HTTPProtocol::extractHostValue(Flow *flow, const char *header) {
 
+	DomainNameManagerPtr ban_hosts;
 	boost::cmatch result;
 
         if (boost::regex_search(header,result,http_host_)) {
         	std::string host_raw(result[0].first, result[0].second);
                 std::string host(host_raw,6,host_raw.length()-8); // remove also the \r\n
 
-                SharedPointer<HTTPHost> host_ptr = flow->http_host.lock();
-
-                if (!host_ptr) { // There is no Host object attached to the flow
-                	HostMapType::iterator it = host_map_.find(host);
-                	if (it == host_map_.end()) { 
-                		host_ptr = host_cache_->acquire().lock();
-                        	if (host_ptr) {
-                      			host_ptr->setName(host); 
-		         		flow->http_host = host_ptr;
-                			host_map_.insert(std::make_pair(host,std::make_pair(host_ptr,1)));
-				}
-			} else {
-				int *counter = &std::get<1>(it->second);
-				++(*counter);
-				flow->http_host = std::get<0>(it->second);	
+		ban_hosts = ban_host_mng_.lock();
+		if (ban_hosts) {
+			SharedPointer<DomainName> host_candidate = ban_hosts->getDomainName(host);
+			if (host_candidate) {
+#ifdef HAVE_LIBLOG4CXX
+				LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with ban host " << host_candidate->getName());
+#endif
+				++total_ban_hosts_;
+				return;
 			}
-                }
+		}
+		++total_allow_hosts_;
+
+		attachHostToFlow(flow,host);
 	}
 }
+
+
+void HTTPProtocol::attachHostToFlow(Flow *flow, std::string &host) {
+
+	SharedPointer<HTTPHost> host_ptr = flow->http_host.lock();
+
+	if (!host_ptr) { // There is no Host object attached to the flow
+		HostMapType::iterator it = host_map_.find(host);
+		if (it == host_map_.end()) {
+			host_ptr = host_cache_->acquire().lock();
+			if (host_ptr) {
+				host_ptr->setName(host);
+				flow->http_host = host_ptr;
+				host_map_.insert(std::make_pair(host,std::make_pair(host_ptr,1)));
+			}
+		} else {
+			int *counter = &std::get<1>(it->second);
+			++(*counter);
+			flow->http_host = std::get<0>(it->second);
+		}
+	}
+}
+
 
 void HTTPProtocol::extractUserAgentValue(Flow *flow, const char *header) {
 
@@ -66,22 +87,27 @@ void HTTPProtocol::extractUserAgentValue(Flow *flow, const char *header) {
 		std::string ua_raw(result[0].first, result[0].second);
 		std::string ua(ua_raw,12,ua_raw.length()-14); // remove also the \r\n
 
-		SharedPointer<HTTPUserAgent> ua_ptr = flow->http_ua.lock();
+		attachUserAgentToFlow(flow,ua);
+	}
+}
 
-		if (!ua_ptr) { // There is no user agent attached
-			UAMapType::iterator it = ua_map_.find(ua);
-			if (it == ua_map_.end()) {
-			        ua_ptr = ua_cache_->acquire().lock();
-                        	if (ua_ptr) {
-                                	ua_ptr->setName(ua);
-                                	flow->http_ua = ua_ptr;
-                			ua_map_.insert(std::make_pair(ua,std::make_pair(ua_ptr,1)));
-                        	}	
-			} else {
-				int *counter = &std::get<1>(it->second);
-				++(*counter);
-				flow->http_ua = std::get<0>(it->second);	
-			}
+void HTTPProtocol::attachUserAgentToFlow(Flow *flow, std::string &ua) {
+
+	SharedPointer<HTTPUserAgent> ua_ptr = flow->http_ua.lock();
+
+	if (!ua_ptr) { // There is no user agent attached
+		UAMapType::iterator it = ua_map_.find(ua);
+		if (it == ua_map_.end()) {
+			ua_ptr = ua_cache_->acquire().lock();
+			if (ua_ptr) {
+				ua_ptr->setName(ua);
+				flow->http_ua = ua_ptr;
+				ua_map_.insert(std::make_pair(ua,std::make_pair(ua_ptr,1)));
+			}	
+		} else {
+			int *counter = &std::get<1>(it->second);
+			++(*counter);
+			flow->http_ua = std::get<0>(it->second);	
 		}
 	}
 }
@@ -139,6 +165,11 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 		if (stats_level_ > 1) {
         		out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
         		out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
+			if(stats_level_ > 3)
+			{
+				out << "\t" << "Total allow hosts:      " << std::setw(10) << total_allow_hosts_ <<std::endl;
+				out << "\t" << "Total banned hosts:     " << std::setw(10) << total_ban_hosts_ <<std::endl;
+			}
 			if (stats_level_ > 2) {
 				if (flow_forwarder_.lock())
 					flow_forwarder_.lock()->statistics(out);

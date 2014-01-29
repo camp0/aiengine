@@ -105,7 +105,8 @@ class SSLProtocol: public Protocol
 public:
     	explicit SSLProtocol():ssl_header_(nullptr),total_bytes_(0),
 		stats_level_(0),total_client_hellos_(0),total_server_hellos_(0),
-		total_certificates_(0),total_records_(0),
+		total_certificates_(0),total_records_(0),total_ban_hosts_(0),
+		total_allow_hosts_(0),
 		host_cache_(new Cache<SSLHost>("Host cache")) { name_="SSLProtocol";}
     	virtual ~SSLProtocol() {}
 	
@@ -155,11 +156,14 @@ public:
 	int32_t getTotalServerHellos() const { return total_server_hellos_; }
 	int32_t getTotalCertificates() const { return total_certificates_; }
 	int32_t getTotalRecords() const { return total_records_; }
+	int32_t getTotalBanHosts() const { return total_ban_hosts_; }
+	int32_t getTotalAllowHosts() const { return total_allow_hosts_; }
 
         void createSSLHosts(int number) { host_cache_->create(number);}
         void destroySSLHosts(int number) { host_cache_->destroy(number);}
 
 	void setHostNameManager(DomainNameManagerPtrWeak dnm) { host_mng_ = dnm;}
+	void setHostNameBanManager(DomainNameManagerPtrWeak dnm) { ban_host_mng_ = dnm;}
 
 private:
 	int stats_level_;
@@ -171,6 +175,8 @@ private:
 	int32_t total_server_hellos_;
 	int32_t total_certificates_;
 	int32_t total_records_;
+	int32_t total_ban_hosts_;
+	int32_t total_allow_hosts_;
 
 	Cache<SSLHost>::CachePtr host_cache_;
 
@@ -178,10 +184,13 @@ private:
         HostMapType host_map_;
 
         DomainNameManagerPtrWeak host_mng_;
+        DomainNameManagerPtrWeak ban_host_mng_;
 
 	void handleClientHello(Flow *flow,int offset, unsigned char *data);
 	void handleServerHello(Flow *flow,int offset, unsigned char *data);
 	void handleCertificate(Flow *flow,int offset, unsigned char *data);
+
+	void attachHostToFlow(Flow *flow, std::string &servername); 
 
 #ifdef HAVE_LIBLOG4CXX
         static log4cxx::LoggerPtr logger;

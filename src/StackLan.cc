@@ -298,6 +298,18 @@ void StackLan::setHTTPHostNameManager(DomainNameManager& dnm) {
         setHTTPHostNameManager(http_host_domains_);
 }
 
+void StackLan::setSSLHostNameManager(DomainNameManagerPtrWeak dnm) {
+
+        if (dnm.lock()) {
+                ssl_->setHostNameManager(dnm.lock());
+        }
+}
+
+void StackLan::setSSLHostNameManager(DomainNameManager& dnm) {
+
+        ssl_host_domains_ = std::make_shared<DomainNameManager>(dnm);
+        setSSLHostNameManager(ssl_host_domains_);
+}
 
 
 void StackLan::enableFrequencyEngine(bool enable) {

@@ -224,6 +224,9 @@ BOOST_AUTO_TEST_CASE (test8_ssl)
         mux_eth->forwardPacket(packet);
 
 	BOOST_CHECK(host_name->getMatchs() == 1);
+
+	BOOST_CHECK(ssl->getTotalAllowHosts() == 1);
+	BOOST_CHECK(ssl->getTotalBanHosts() == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test9_ssl)
@@ -246,6 +249,31 @@ BOOST_AUTO_TEST_CASE (test9_ssl)
         mux_eth->forwardPacket(packet);
 
         BOOST_CHECK(host_name->getMatchs() == 0);
+}
+
+BOOST_AUTO_TEST_CASE (test10_ssl)
+{
+        SharedPointer<DomainNameManager> host_mng = SharedPointer<DomainNameManager>(new DomainNameManager());
+        WeakPointer<DomainNameManager> host_mng_weak = host_mng;
+        SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("example",".google.com"));
+
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
+        int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
+        Packet packet(pkt,length,0);
+
+        ssl->createSSLHosts(1);
+        ssl->setHostNameBanManager(host_mng_weak);
+        host_mng->addDomainName(host_name);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        BOOST_CHECK(host_name->getMatchs() == 1);
+
+        BOOST_CHECK(ssl->getTotalAllowHosts() == 0);
+        BOOST_CHECK(ssl->getTotalBanHosts() == 1);
 }
 
 

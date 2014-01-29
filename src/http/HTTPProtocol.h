@@ -53,6 +53,7 @@ class HTTPProtocol: public Protocol
 {
 public:
     	explicit HTTPProtocol():http_header_(nullptr),total_bytes_(0),
+		total_allow_hosts_(0),total_ban_hosts_(0),
 		http_regex_("^(GET|POST|HEAD|PUT|TRACE).*HTTP/1."),
 		http_host_("Host: .*?\r\n"),
 		http_ua_("User-Agent: .*?\r\n"),
@@ -116,8 +117,15 @@ public:
         void destroyHTTPUserAgents(int number) { ua_cache_->destroy(number);}
 
 	void setHostNameManager(DomainNameManagerPtrWeak dnm) { host_mng_ = dnm;}
+	void setHostNameBanManager(DomainNameManagerPtrWeak dnm) { ban_host_mng_ = dnm;}
+
+	int32_t getTotalAllowHosts() const { return total_allow_hosts_;}
+	int32_t getTotalBanHosts() const { return total_ban_hosts_;}
+
 private:
 
+	void attachHostToFlow(Flow *flow, std::string &host);
+	void attachUserAgentToFlow(Flow *flow, std::string &ua);
 	void extractHostValue(Flow *flow, const char *header);
 	void extractUserAgentValue(Flow *flow, const char *header);
 
@@ -127,6 +135,8 @@ private:
         boost::cmatch what_;
 	unsigned char *http_header_;
 	int64_t total_bytes_;
+	int32_t total_allow_hosts_;
+	int32_t total_ban_hosts_;
 
 	Cache<HTTPHost>::CachePtr host_cache_;
 	Cache<HTTPUserAgent>::CachePtr ua_cache_;
@@ -137,6 +147,7 @@ private:
 	HostMapType host_map_;	
 
 	DomainNameManagerPtrWeak host_mng_;
+	DomainNameManagerPtrWeak ban_host_mng_;
 
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;

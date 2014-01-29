@@ -352,6 +352,19 @@ void StackMobile::setHTTPHostNameManager(DomainNameManager& dnm) {
         setHTTPHostNameManager(http_host_domains_);
 }
 
+void StackMobile::setSSLHostNameManager(DomainNameManagerPtrWeak dnm) {
+
+        if (dnm.lock()) {
+                ssl_->setHostNameManager(dnm.lock());
+        }
+}
+
+void StackMobile::setSSLHostNameManager(DomainNameManager& dnm) {
+
+        ssl_host_domains_ = std::make_shared<DomainNameManager>(dnm);
+        setSSLHostNameManager(ssl_host_domains_);
+}
+
 
 void StackMobile::setTotalTCPFlows(int value) {
 

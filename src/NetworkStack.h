@@ -63,6 +63,8 @@ public:
 	virtual void setDNSDomainNameManager(DomainNameManager& dnm) = 0;
 	virtual void setHTTPHostNameManager(DomainNameManagerPtrWeak dnm) = 0;
 	virtual void setHTTPHostNameManager(DomainNameManager& dnm) = 0;
+	virtual void setSSLHostNameManager(DomainNameManagerPtrWeak dnm) = 0;
+	virtual void setSSLHostNameManager(DomainNameManager& dnm) = 0;
 
 	virtual void enableFrequencyEngine(bool enable) = 0;
 	virtual void enableNIDSEngine(bool enable) = 0;

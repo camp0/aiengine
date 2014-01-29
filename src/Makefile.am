@@ -1,5 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 
+EXTRA_FLAGS = -flto
 EXTRA_DIST = py_wrapper.cc setup.py
 
 noinst_HEADERS =        Packet.h Pointer.h \
@@ -76,7 +77,7 @@ endif
 BOOST_LINK_CORE = -lboost_system -lboost_thread -lboost_regex
 
 aiengine_SOURCES =      $(aiengine_core_sources) main.cc
-aiengine_CPPFLAGS = 	$(BOOST_CPPFLAGS)
+aiengine_CPPFLAGS = 	$(EXTRA_FLAGS) $(BOOST_CPPFLAGS)
 aiengine_LDFLAGS = 	-DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ \
 			$(BOOST_LDFLAGS) $(BOOST_LINK_CORE) \
 			-lboost_program_options \
@@ -124,7 +125,7 @@ tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lp
 BUILT_SOURCES = $(srcdir)/pyaiengine.so
 
 $(srcdir)/pyaiengine.so: py_wrapper.cc
-	$(CXX) -fPIC -I. -I.. -DHAVE_CONFIG_H -DPYTHON_BINDING \
+	$(CXX) -fPIC $(EXTRA_FLAGS) -I. -I.. -DHAVE_CONFIG_H -DPYTHON_BINDING \
         	$(aiengine_core_sources) py_wrapper.cc `pkg-config --cflags python-2.7` \
 		$(BOOST_CPPFLAGS)/boost/python -std=c++11 -lpthread -lstdc++ \
 		$(BOOST_LDFLAGS) $(BOOST_LINK_CORE) -lboost_python -lpython2.7 -lpcap \

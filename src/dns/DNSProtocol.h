@@ -51,7 +51,7 @@ class DNSProtocol: public Protocol
 {
 public:
     	explicit DNSProtocol():ssl_header_(nullptr),total_bytes_(0),
-		total_queries_(0),stats_level_(0),
+		total_allow_queries_(0),total_ban_queries_(0),stats_level_(0),
 		domain_cache_(new Cache<DNSDomain>("Domain cache"))
 		 { name_ = "DNSProtocol"; }
 
@@ -104,6 +104,10 @@ public:
         void destroyDNSDomains(int number) { domain_cache_->destroy(number);}
 
 	void setDomainNameManager(DomainNameManagerPtrWeak dnm) { domain_mng_ = dnm;}
+	void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) { ban_domain_mng_ = dnm;}
+
+	int32_t getTotalAllowQueries() const { return total_allow_queries_;}
+	int32_t getTotalBanQueries() const { return total_ban_queries_;}
 
 private:
 	void attachDNStoFlow(Flow *flow, std::string &domain);
@@ -112,9 +116,11 @@ private:
 	FlowForwarderPtrWeak flow_forwarder_;	
 	unsigned char *ssl_header_;
         int64_t total_bytes_;
-        int64_t total_queries_;
+        int32_t total_allow_queries_;
+        int32_t total_ban_queries_;
 
 	DomainNameManagerPtrWeak domain_mng_;
+	DomainNameManagerPtrWeak ban_domain_mng_;
 
 	Cache<DNSDomain>::CachePtr domain_cache_;
 

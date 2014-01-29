@@ -8,5 +8,8 @@ features of 0.2.
 features of 0.3.
 - Regex bug of \x00 charater.
 - Integration of IPv4 and IPv6 stack on one.
-- Freebsd support.
-- Support for Host names on SSL traffic. 
+- Freebsd support for the aiengine binary (not the python wrapper).
+- Support for Host names on SSL traffic.
+- Support for banned domains and hosts for HTTP, DNS and SSL
+- Support for sigusr1, sigusr2 on the aiengine binary for dump stats.
+- TCP finite state machine (beta). 

@@ -57,6 +57,44 @@ BOOST_AUTO_TEST_CASE (test1_dns)
         BOOST_CHECK(dns->getTotalBytes() == 28);
         BOOST_CHECK(dns->getTotalMalformedPackets() == 0);
 
+	BOOST_CHECK( dns->getTotalAllowQueries() == 1);
+	BOOST_CHECK( dns->getTotalBanQueries() == 0);
+}
+
+// Test the ban functionality for avoid unwanted domains
+BOOST_AUTO_TEST_CASE (test2_dns)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dns_as_dot_com);
+        int length = raw_packet_ethernet_ip_udp_dns_as_dot_com_length;
+        Packet packet(pkt,length,0);
+
+	SharedPointer<DomainNameManager> host_ban_mng = SharedPointer<DomainNameManager>(new DomainNameManager());
+	SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("unwanted domain",".com"));
+	WeakPointer<DomainNameManager> host_ban_weak = host_ban_mng;
+
+	dns->setDomainNameBanManager(host_ban_weak);
+	host_ban_mng->addDomainName(host_name);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        // Check the results
+        BOOST_CHECK(ip->getTotalPackets() == 1);
+        BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(ip->getTotalBytes() == 56);
+        BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+
+        // dns
+        BOOST_CHECK(dns->getTotalPackets() == 1);
+        BOOST_CHECK(dns->getTotalBytes() == 28);
+        BOOST_CHECK(dns->getTotalMalformedPackets() == 0);
+	BOOST_CHECK( dns->getTotalAllowQueries() == 0);
+	BOOST_CHECK( dns->getTotalBanQueries() == 1);
+
 }
 
 

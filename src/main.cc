@@ -25,6 +25,8 @@
 #include <config.h>
 #endif
 
+#include <fstream>
+#include <iostream>
 #include <functional>
 #include <csignal>
 #include <boost/program_options.hpp>
@@ -41,6 +43,7 @@
 #include "StackLan.h"
 #include "StackMobile.h"
 #include "StackLanIPv6.h"
+#include <boost/date_time/posix_time/posix_time_io.hpp>
 
 using namespace aiengine;
 
@@ -88,6 +91,47 @@ void signalHandler( int signum ){
         exit(signum);
 }
 
+void signalHandlerShowStackStatistics( int signum) {
+
+        boost::posix_time::ptime nowt = boost::posix_time::second_clock::local_time();
+	boost::posix_time::ptime now = boost::posix_time::second_clock::universal_time();
+	static std::locale loc(std::cout.getloc(), new boost::posix_time::time_facet("%Y%m%d_%H%M%S"));
+	std::basic_stringstream<char> ss;
+	
+	ss.imbue(loc);
+	ss << "statistics.stack." << now << ".dat"; 
+
+	std::ofstream outfile(ss.str());
+
+        std::cout << "[" << nowt << "] ";
+	std::cout << "Dumping stack information into " << ss.str() << std::endl;
+	if (stack) 
+	        if (option_statistics_level > 0)
+                	stack->statistics(outfile);
+
+	outfile.close();
+}
+
+
+void signalHandlerShowFlowsStatistics( int signum) {
+
+        boost::posix_time::ptime nowt = boost::posix_time::second_clock::local_time();
+        boost::posix_time::ptime now = boost::posix_time::second_clock::universal_time();
+        static std::locale loc(std::cout.getloc(), new boost::posix_time::time_facet("%Y%m%d_%H%M%S"));
+        std::basic_stringstream<char> ss;
+
+        ss.imbue(loc);
+        ss << "flows.stack." << now << ".dat";
+
+        std::ofstream outfile(ss.str());
+
+        std::cout << "[" << nowt << "] ";
+        std::cout << "Dumping flows information into " << ss.str() << std::endl;
+        if (stack )
+		stack->printFlows(outfile);
+
+        outfile.close();
+}
 
 void configureFrequencyGroupOptions() { 
 
@@ -184,13 +228,19 @@ void learnerCallback() {
 	}
 }
 
+void showStackStatistics(std::basic_ostream<char>& out) {
+
+	if (option_statistics_level > 0) 
+		stack->statistics(out);
+}
+
+
 void iaengineExit() {
 
 	if (stack) {
 		pktdis->stop();
 
-		if (option_statistics_level > 0)
-			stack->statistics();
+		showStackStatistics(std::cout);
 		
 		if (option_show_flows)
               		stack->printFlows();
@@ -323,6 +373,8 @@ int main(int argc, char* argv[]) {
     	}
 
     	signal(SIGINT, signalHandler);  
+    	signal(SIGUSR1, signalHandlerShowStackStatistics);  
+    	signal(SIGUSR2, signalHandlerShowFlowsStatistics);  
 
         system_stats = SystemPtr(new System());
 

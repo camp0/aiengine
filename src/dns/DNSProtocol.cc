@@ -53,7 +53,7 @@ void DNSProtocol::attachDNStoFlow(Flow *flow, std::string &domain) {
 
 void DNSProtocol::processFlow(Flow *flow) {
 
-	DomainNameManagerPtr dnm;
+	DomainNameManagerPtr dnm,ban_dnm;
 	int length = flow->packet->getLength();
 	total_bytes_ += length;
 	++total_packets_;
@@ -79,7 +79,19 @@ void DNSProtocol::processFlow(Flow *flow) {
 
 			if (domain.length() > 0) { // The domain is valid
 
-				++total_queries_;
+				ban_dnm = ban_domain_mng_.lock();
+				if (ban_dnm) {
+					SharedPointer<DomainName> domain_candidate = ban_dnm->getDomainName(domain);
+					if (domain_candidate) {
+#ifdef HAVE_LIBLOG4CXX
+						LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with banned domain " << domain_candidate->getName());
+#endif
+						++total_ban_queries_;
+						return;
+					}
+				}
+
+				++total_allow_queries_;
 		
 				attachDNStoFlow(flow,domain);	
 				
@@ -122,7 +134,8 @@ void DNSProtocol::statistics(std::basic_ostream<char>& out)
 			out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
 			if(stats_level_ > 3)
 			{
-				out << "\t" << "Total standard queries: " << std::setw(10) << total_queries_ <<std::endl;
+				out << "\t" << "Total allow queries:    " << std::setw(10) << total_allow_queries_ <<std::endl;
+				out << "\t" << "Total banned queries:   " << std::setw(10) << total_ban_queries_ <<std::endl;
 			}
 			if(stats_level_ > 2)	
 			{	

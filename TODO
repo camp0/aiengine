@@ -9,3 +9,5 @@ add log4cxx for the messages. http://logging.apache.org/log4cxx / DONE PARTIALY
 Add ip6 support.
 Add NDIS functionatly for inspect all the packets on the TCPGEneric and UDPGeneric, and also put the loggers. DONE
 Add levels for output the statistics of the classes.DONE.
+Add Blacklists for the domains in order to avoid unwanted domains.
+Add support for dumping statistics from the aiengine binary by using sigusr1 and sigusr2.

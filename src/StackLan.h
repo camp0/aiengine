@@ -84,6 +84,8 @@ public:
 	void setDNSDomainNameManager(DomainNameManager& dnm);
 	void setHTTPHostNameManager(DomainNameManagerPtrWeak dnm); 
 	void setHTTPHostNameManager(DomainNameManager& dnm);
+	void setSSLHostNameManager(DomainNameManagerPtrWeak dnm); 
+	void setSSLHostNameManager(DomainNameManager& dnm);
 
 	void enableNIDSEngine(bool enable);
 	void enableFrequencyEngine(bool enable);
@@ -154,6 +156,7 @@ private:
 	// Also for the DomainNameManager on the DNSProtocol
 	DomainNameManagerPtr domains_udp_;
 	DomainNameManagerPtr http_host_domains_;
+	DomainNameManagerPtr ssl_host_domains_;
 };
 
 typedef std::shared_ptr<StackLan> StackLanPtr;

@@ -56,6 +56,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	using namespace boost::asio;
 	using self_ns::str;
 
+//	Py_InitializeEx(1);
+
 	if (! PyEval_ThreadsInitialized()) {
     		PyEval_InitThreads();
 	}
@@ -73,12 +75,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (NetworkStack::*setTCPRegexManager2)(RegexManagerPtrWeak) = &NetworkStack::setTCPRegexManager;
 	void (NetworkStack::*setDNSDomainNameManager1)(DomainNameManager&) = &NetworkStack::setDNSDomainNameManager;
 	void (NetworkStack::*setHTTPHostNameManager1)(DomainNameManager&) = &NetworkStack::setHTTPHostNameManager;
+	void (NetworkStack::*setSSLHostNameManager1)(DomainNameManager&) = &NetworkStack::setSSLHostNameManager;
 
         boost::python::class_<NetworkStack, boost::noncopyable>("NetworkStack",no_init)
                 .def("setUDPRegexManager",pure_virtual(setUDPRegexManager1))
                 .def("setTCPRegexManager",pure_virtual(setTCPRegexManager1))
                 .def("setDNSDomainNameManager",pure_virtual(setDNSDomainNameManager1))
                 .def("setHTTPHostNameManager",pure_virtual(setHTTPHostNameManager1))
+                .def("setSSLHostNameManager",pure_virtual(setSSLHostNameManager1))
                 .def("setTotalTCPFlows",pure_virtual(&NetworkStack::setTotalTCPFlows))
                 .def("setTotalUDPFlows",pure_virtual(&NetworkStack::setTotalUDPFlows))
               	.def("printFlows",pure_virtual(printFlowsNetworkStack))
@@ -100,6 +104,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackLan::*setDNSDomainNameManagerLan2)(DomainNameManagerPtrWeak) = &StackLan::setDNSDomainNameManager;
         void (StackLan::*setHTTPHostNameManagerLan1)(DomainNameManager&) = &StackLan::setHTTPHostNameManager;
         void (StackLan::*setHTTPHostNameManagerLan2)(DomainNameManagerPtrWeak) = &StackLan::setHTTPHostNameManager;
+        void (StackLan::*setSSLHostNameManagerLan1)(DomainNameManager&) = &StackLan::setSSLHostNameManager;
+        void (StackLan::*setSSLHostNameManagerLan2)(DomainNameManagerPtrWeak) = &StackLan::setSSLHostNameManager;
 
 	boost::python::class_<StackLan, bases<NetworkStack> >("StackLan")
 		.def("setUDPRegexManager",setUDPRegexManagerLan1)	
@@ -110,6 +116,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setDNSDomainNameManager",setDNSDomainNameManagerLan2)
                 .def("setHTTPHostNameManager",setHTTPHostNameManagerLan1)
                 .def("setHTTPHostNameManager",setHTTPHostNameManagerLan2)
+                .def("setSSLHostNameManager",setSSLHostNameManagerLan1)
+                .def("setSSLHostNameManager",setSSLHostNameManagerLan2)
 		.def("setTotalTCPFlows",&StackLan::setTotalTCPFlows)
 		.def("setTotalUDPFlows",&StackLan::setTotalUDPFlows)
 		.def(self_ns::str(self_ns::self))
@@ -132,6 +140,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackMobile::*setDNSDomainNameManagerMobile2)(DomainNameManagerPtrWeak) = &StackMobile::setDNSDomainNameManager;
         void (StackMobile::*setHTTPHostNameManagerMobile1)(DomainNameManager&) = &StackMobile::setHTTPHostNameManager;
         void (StackMobile::*setHTTPHostNameManagerMobile2)(DomainNameManagerPtrWeak) = &StackMobile::setHTTPHostNameManager;
+        void (StackMobile::*setSSLHostNameManagerMobile1)(DomainNameManager&) = &StackMobile::setSSLHostNameManager;
+        void (StackMobile::*setSSLHostNameManagerMobile2)(DomainNameManagerPtrWeak) = &StackMobile::setSSLHostNameManager;
 
         boost::python::class_<StackMobile, bases<NetworkStack> >("StackMobile")
 		.def("setUDPRegexManager",setUDPRegexManagerMobile1)	
@@ -142,6 +152,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setDNSDomainNameManager",setDNSDomainNameManagerMobile2)
                 .def("setHTTPHostNameManager",setHTTPHostNameManagerMobile1)
                 .def("setHTTPHostNameManager",setHTTPHostNameManagerMobile2)
+                .def("setSSLHostNameManager",setSSLHostNameManagerMobile1)
+                .def("setSSLHostNameManager",setSSLHostNameManagerMobile2)
                 .def("setTotalTCPFlows",&StackMobile::setTotalTCPFlows)
                 .def("setTotalUDPFlows",&StackMobile::setTotalUDPFlows)
 		.def(self_ns::str(self_ns::self))
@@ -164,6 +176,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackLanIPv6::*setDNSDomainNameManagerLanIPv62)(DomainNameManagerPtrWeak) = &StackLanIPv6::setDNSDomainNameManager;
         void (StackLanIPv6::*setHTTPHostNameManagerLanIPv61)(DomainNameManager&) = &StackLanIPv6::setHTTPHostNameManager;
         void (StackLanIPv6::*setHTTPHostNameManagerLanIPv62)(DomainNameManagerPtrWeak) = &StackLanIPv6::setHTTPHostNameManager;
+        void (StackLanIPv6::*setSSLHostNameManagerLanIPv61)(DomainNameManager&) = &StackLanIPv6::setSSLHostNameManager;
+        void (StackLanIPv6::*setSSLHostNameManagerLanIPv62)(DomainNameManagerPtrWeak) = &StackLanIPv6::setSSLHostNameManager;
 
         boost::python::class_<StackLanIPv6, bases<NetworkStack> >("StackLanIPv6")
                 .def("setUDPRegexManager",setUDPRegexManagerLanIPv61)
@@ -174,6 +188,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setDNSDomainNameManager",setDNSDomainNameManagerLanIPv62)
                 .def("setHTTPHostNameManager",setHTTPHostNameManagerLanIPv61)
                 .def("setHTTPHostNameManager",setHTTPHostNameManagerLanIPv62)
+                .def("setSSLHostNameManager",setSSLHostNameManagerLanIPv61)
+                .def("setSSLHostNameManager",setSSLHostNameManagerLanIPv62)
                 .def("setTotalTCPFlows",&StackLanIPv6::setTotalTCPFlows)
                 .def("setTotalUDPFlows",&StackLanIPv6::setTotalUDPFlows)
                 .def(self_ns::str(self_ns::self))
