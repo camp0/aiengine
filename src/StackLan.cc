@@ -272,45 +272,57 @@ void StackLan::setUDPRegexManager(RegexManager& sig) {
 	setUDPRegexManager(sigs_udp_);
 } 
 
-void StackLan::setDNSDomainNameManager(DomainNameManagerPtrWeak dnm) {
+#ifdef PYTHON_BINDING
 
-        if (dnm.lock()) {
-                dns_->setDomainNameManager(dnm.lock());
-        }
+void StackLan::setDNSDomainNameManager(DomainNameManager& dnm, bool allow) {
+
+	if (allow) {
+		dns_domains_ = std::make_shared<DomainNameManager>(dnm);
+               	dns_->setDomainNameManager(dns_domains_);
+	} else {
+		ban_dns_domains_ = std::make_shared<DomainNameManager>(dnm);
+               	dns_->setDomainNameBanManager(ban_dns_domains_);
+	}      
+}
+
+void StackLan::setHTTPHostNameManager(DomainNameManager& dnm, bool allow) {
+
+	if (allow) {
+        	http_host_domains_ = std::make_shared<DomainNameManager>(dnm);
+               	http_->setHostNameManager(http_host_domains_);
+       	} else { 
+		ban_http_host_domains_ = std::make_shared<DomainNameManager>(dnm);
+               	http_->setHostNameBanManager(ban_http_host_domains_);
+	}
+}
+
+void StackLan::setSSLHostNameManager(DomainNameManager& dnm, bool allow ) {
+
+	if (allow) {
+        	ssl_host_domains_ = std::make_shared<DomainNameManager>(dnm);
+               	ssl_->setHostNameManager(ssl_host_domains_);
+       	} else { 
+		ban_ssl_host_domains_ = std::make_shared<DomainNameManager>(dnm);
+               	ssl_->setHostNameBanManager(ban_ssl_host_domains_);
+	}
 }
 
 void StackLan::setDNSDomainNameManager(DomainNameManager& dnm) {
 
-	domains_udp_ = std::make_shared<DomainNameManager>(dnm);
-        setDNSDomainNameManager(domains_udp_);
-}
-
-void StackLan::setHTTPHostNameManager(DomainNameManagerPtrWeak dnm) {
-
-        if (dnm.lock()) {
-                http_->setHostNameManager(dnm.lock());
-        }
+	setDNSDomainNameManager(dnm,true);
 }
 
 void StackLan::setHTTPHostNameManager(DomainNameManager& dnm) {
 
-        http_host_domains_ = std::make_shared<DomainNameManager>(dnm);
-        setHTTPHostNameManager(http_host_domains_);
-}
-
-void StackLan::setSSLHostNameManager(DomainNameManagerPtrWeak dnm) {
-
-        if (dnm.lock()) {
-                ssl_->setHostNameManager(dnm.lock());
-        }
+	setHTTPHostNameManager(dnm,true);
 }
 
 void StackLan::setSSLHostNameManager(DomainNameManager& dnm) {
 
-        ssl_host_domains_ = std::make_shared<DomainNameManager>(dnm);
-        setSSLHostNameManager(ssl_host_domains_);
+	setSSLHostNameManager(dnm,true);
 }
 
+#endif
 
 void StackLan::enableFrequencyEngine(bool enable) {
 

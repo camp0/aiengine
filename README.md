@@ -12,9 +12,8 @@ Using AIEngine
 
 To use AIEngine just execute the binary aiengine:
 
-
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
-	iaengine 0.2
+	iaengine 0.3
 	Mandatory arguments:
 	  -I [ --interface ] arg            Sets the network interface.
 	  -P [ --pcapfile ] arg             Sets the pcap file or directory with pcap 
@@ -44,7 +43,7 @@ To use AIEngine just execute the binary aiengine:
 	  -k [ --key-learner ] arg (=80)    Sets the key for the Learner engine.
 
 	Optional arguments:
-	  -k [ --stack ] arg (=lan)    Sets the network stack (lan,mobile,lan6).
+	  -n [ --stack ] arg (=lan)    Sets the network stack (lan,mobile,lan6).
 	  -d [ --dumpflows ]           Dump the flows to stdout.
 	  -s [ --statistics ] arg (=0) Show statistics of the network stack (5 levels).
 	  -p [ --pstatistics ]         Show statistics of the process.
@@ -75,6 +74,7 @@ The main objects that the python module provide are the following ones.
 	   |---> getPacketFrequencies
 	   |---> getProtocol
 	   |---> getRegex
+	   |---> getSSLHost
 	   |---> getSourceAddress
 	   |---> getSourcePort
 	   |---> getTotalBytes
@@ -100,6 +100,7 @@ The main objects that the python module provide are the following ones.
 	   |---> printFlows
 	   |---> setDNSDomainNameManager
 	   |---> setHTTPHostNameManager
+	   |---> setSSLHostNameManager
 	   |---> setStatisticsLevel
 	   |---> setTCPRegexManager
 	   |---> setTotalTCPFlows
@@ -123,6 +124,7 @@ The main objects that the python module provide are the following ones.
 	   |---> setNextRegex
 	RegexManager
 	   |---> addRegex
+	SSLHost
 	StackLan
 	   |---> enableFrequencyEngine
 	   |---> enableLinkLayerTagging
@@ -131,6 +133,21 @@ The main objects that the python module provide are the following ones.
 	   |---> printFlows
 	   |---> setDNSDomainNameManager
 	   |---> setHTTPHostNameManager
+	   |---> setSSLHostNameManager
+	   |---> setStatisticsLevel
+	   |---> setTCPRegexManager
+	   |---> setTotalTCPFlows
+	   |---> setTotalUDPFlows
+	   |---> setUDPRegexManager
+	StackLanIPv6
+	   |---> enableFrequencyEngine
+	   |---> enableLinkLayerTagging
+	   |---> getTCPFlowManager
+	   |---> getUDPFlowManager
+	   |---> printFlows
+	   |---> setDNSDomainNameManager
+	   |---> setHTTPHostNameManager
+	   |---> setSSLHostNameManager
 	   |---> setStatisticsLevel
 	   |---> setTCPRegexManager
 	   |---> setTotalTCPFlows
@@ -144,24 +161,13 @@ The main objects that the python module provide are the following ones.
 	   |---> printFlows
 	   |---> setDNSDomainNameManager
 	   |---> setHTTPHostNameManager
+	   |---> setSSLHostNameManager
 	   |---> setStatisticsLevel
 	   |---> setTCPRegexManager
 	   |---> setTotalTCPFlows
 	   |---> setTotalUDPFlows
 	   |---> setUDPRegexManager
-    StackLanIPv6
-       |---> enableFrequencyEngine
-       |---> enableLinkLayerTagging
-       |---> getTCPFlowManager
-       |---> getUDPFlowManager
-       |---> printFlows
-       |---> setDNSDomainNameManager
-       |---> setHTTPHostNameManager
-       |---> setStatisticsLevel
-       |---> setTCPRegexManager
-       |---> setTotalTCPFlows
-       |---> setTotalUDPFlows
-       |---> setUDPRegexManager
+	std_ostream
 
 Check the wiki pages in order to have more complex examples.
 

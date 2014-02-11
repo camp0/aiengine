@@ -86,12 +86,6 @@ public:
         void setUDPRegexManager(RegexManagerPtrWeak sig);
         void setTCPRegexManager(RegexManager& sig);
         void setUDPRegexManager(RegexManager& sig);
-	void setDNSDomainNameManager(DomainNameManagerPtrWeak dnm);
-	void setDNSDomainNameManager(DomainNameManager& dnm);
-        void setHTTPHostNameManager(DomainNameManagerPtrWeak dnm);
-        void setHTTPHostNameManager(DomainNameManager& dnm);
-        void setSSLHostNameManager(DomainNameManagerPtrWeak dnm);
-        void setSSLHostNameManager(DomainNameManager& dnm);
 
 	void enableNIDSEngine(bool value);
 	void enableFrequencyEngine(bool value);
@@ -100,6 +94,13 @@ public:
 #ifdef PYTHON_BINDING
         FlowManager &getTCPFlowManager() { return *flow_mng_tcp_.get();}
         FlowManager &getUDPFlowManager() { return *flow_mng_udp_high_.get();}
+        
+	void setDNSDomainNameManager(DomainNameManager& dnm);
+	void setDNSDomainNameManager(DomainNameManager& dnm, bool allow);
+        void setHTTPHostNameManager(DomainNameManager& dnm);
+        void setHTTPHostNameManager(DomainNameManager& dnm, bool allow);
+        void setSSLHostNameManager(DomainNameManager& dnm);
+        void setSSLHostNameManager(DomainNameManager& dnm, bool allow);
 #else
         FlowManagerPtrWeak getTCPFlowManager() { return flow_mng_tcp_;}
         FlowManagerPtrWeak getUDPFlowManager() { return flow_mng_udp_high_;}
@@ -166,10 +167,14 @@ private:
         // the ownership of them.
         RegexManagerPtr sigs_tcp_;
         RegexManagerPtr sigs_udp_;
-	// Also for the DomainNameManager on the DNSProtocol
-        DomainNameManagerPtr domains_udp_;
+
+        // DomainNameManagers for managing Domains and Host over some protocols
+        DomainNameManagerPtr dns_domains_;
         DomainNameManagerPtr http_host_domains_;
         DomainNameManagerPtr ssl_host_domains_;
+        DomainNameManagerPtr ban_dns_domains_;
+        DomainNameManagerPtr ban_http_host_domains_;
+        DomainNameManagerPtr ban_ssl_host_domains_;
 };
 
 } // namespace aiengine

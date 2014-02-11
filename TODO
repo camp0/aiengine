@@ -1,13 +1,19 @@
-Add a verification when a specific multiplexer is setup.
-Add DNSProtocol DONE.
-Add User class for managing the behavior.
-Add Host cache for the HTTPProtocol DONE.
-Unify the unit test into one on the src directory DONE.
-Add a command line for setting up the vlan tag or not. DONE
-http://linux.die.net/man/2/mlockall.
-add log4cxx for the messages. http://logging.apache.org/log4cxx / DONE PARTIALY
-Add ip6 support.
-Add NDIS functionatly for inspect all the packets on the TCPGEneric and UDPGeneric, and also put the loggers. DONE
-Add levels for output the statistics of the classes.DONE.
-Add Blacklists for the domains in order to avoid unwanted domains.
-Add support for dumping statistics from the aiengine binary by using sigusr1 and sigusr2.
+Version 0.1 
+* Add a verification when a specific multiplexer is setup.
+* Add DNSProtocol DONE.
+* Add User class for managing the behavior.
+* Add Host cache for the HTTPProtocol DONE.
+
+Version 0.2 
+* Unify the unit test into one on the src directory DONE.
+* Add a command line for setting up the vlan tag or not. DONE
+* Add NDIS functionatly for inspect all the packets on the TCPGEneric and UDPGeneric, and also put the loggers. DONE
+
+Version 0.3
+* Freebsd support for the iaengine binary(Python support not ready).
+* Add http://linux.die.net/man/2/mlockalll DONE.
+* Add log4cxx for the messages. http://logging.apache.org/log4cxx / DONE PARTIALY
+* Add ip6 support. DONE
+* Add levels for output the statistics of the classes.DONE.
+* Add Blacklists for the domains in order to avoid unwanted domains. DONE.
+* Add support for dumping statistics from the aiengine binary by using sigusr1 and sigusr2. DONE.

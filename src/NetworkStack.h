@@ -59,12 +59,6 @@ public:
 	virtual void setUDPRegexManager(RegexManagerPtrWeak sig) = 0;	
 	virtual void setTCPRegexManager(RegexManager& sig) = 0;	
 	virtual void setUDPRegexManager(RegexManager& sig) = 0;	
-	virtual void setDNSDomainNameManager(DomainNameManagerPtrWeak dnm) = 0;
-	virtual void setDNSDomainNameManager(DomainNameManager& dnm) = 0;
-	virtual void setHTTPHostNameManager(DomainNameManagerPtrWeak dnm) = 0;
-	virtual void setHTTPHostNameManager(DomainNameManager& dnm) = 0;
-	virtual void setSSLHostNameManager(DomainNameManagerPtrWeak dnm) = 0;
-	virtual void setSSLHostNameManager(DomainNameManager& dnm) = 0;
 
 	virtual void enableFrequencyEngine(bool enable) = 0;
 	virtual void enableNIDSEngine(bool enable) = 0;
@@ -73,6 +67,13 @@ public:
 #ifdef PYTHON_BINDING
 	virtual FlowManager& getTCPFlowManager() = 0;
 	virtual FlowManager& getUDPFlowManager() = 0;
+	
+	virtual void setDNSDomainNameManager(DomainNameManager& dnm) = 0;
+	virtual void setDNSDomainNameManager(DomainNameManager& dnm, bool allow) = 0;
+	virtual void setHTTPHostNameManager(DomainNameManager& dnm) = 0;
+	virtual void setHTTPHostNameManager(DomainNameManager& dnm, bool allow) = 0;
+	virtual void setSSLHostNameManager(DomainNameManager& dnm) = 0;
+	virtual void setSSLHostNameManager(DomainNameManager& dnm, bool allow) = 0;
 #else
 	virtual FlowManagerPtrWeak getTCPFlowManager() = 0;
 	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;

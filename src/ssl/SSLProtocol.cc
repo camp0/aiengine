@@ -26,6 +26,10 @@
 
 namespace aiengine {
 
+#ifdef HAVE_LIBLOG4CXX
+log4cxx::LoggerPtr SSLProtocol::logger(log4cxx::Logger::getLogger("aiengine.ssl"));
+#endif
+
 void SSLProtocol::attachHostToFlow(Flow *flow, std::string &servername) {
 
 	SharedPointer<SSLHost> host_ptr = flow->ssl_host.lock();

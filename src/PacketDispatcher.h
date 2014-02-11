@@ -44,6 +44,7 @@
 #include "Protocol.h"
 #include "StackLan.h"
 #include "StackMobile.h"
+#include "StackLanIPv6.h"
 #include <sys/resource.h>
 
 namespace aiengine {
@@ -106,6 +107,7 @@ public:
 	void setStack(NetworkStackPtr stack) { setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());}
 	void setStack(StackLan& stack) { setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
 	void setStack(StackMobile& stack) { setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
+	void setStack(StackLanIPv6& stack) { setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
 
 	void setDefaultMultiplexer(MultiplexerPtr mux); // just use for the unit tests
 	void setIdleFunction(std::function <void ()> idle_function) { idle_function_ = idle_function;}

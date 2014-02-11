@@ -56,8 +56,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	using namespace boost::asio;
 	using self_ns::str;
 
-//	Py_InitializeEx(1);
-
 	if (! PyEval_ThreadsInitialized()) {
     		PyEval_InitThreads();
 	}
@@ -74,15 +72,21 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (NetworkStack::*setUDPRegexManager2)(RegexManagerPtrWeak) = &NetworkStack::setUDPRegexManager;
 	void (NetworkStack::*setTCPRegexManager2)(RegexManagerPtrWeak) = &NetworkStack::setTCPRegexManager;
 	void (NetworkStack::*setDNSDomainNameManager1)(DomainNameManager&) = &NetworkStack::setDNSDomainNameManager;
+	void (NetworkStack::*setDNSDomainNameManager2)(DomainNameManager&, bool) = &NetworkStack::setDNSDomainNameManager;
 	void (NetworkStack::*setHTTPHostNameManager1)(DomainNameManager&) = &NetworkStack::setHTTPHostNameManager;
+	void (NetworkStack::*setHTTPHostNameManager2)(DomainNameManager&, bool) = &NetworkStack::setHTTPHostNameManager;
 	void (NetworkStack::*setSSLHostNameManager1)(DomainNameManager&) = &NetworkStack::setSSLHostNameManager;
+	void (NetworkStack::*setSSLHostNameManager2)(DomainNameManager&, bool) = &NetworkStack::setSSLHostNameManager;
 
         boost::python::class_<NetworkStack, boost::noncopyable>("NetworkStack",no_init)
                 .def("setUDPRegexManager",pure_virtual(setUDPRegexManager1))
                 .def("setTCPRegexManager",pure_virtual(setTCPRegexManager1))
                 .def("setDNSDomainNameManager",pure_virtual(setDNSDomainNameManager1))
+                .def("setDNSDomainNameManager",pure_virtual(setDNSDomainNameManager2))
                 .def("setHTTPHostNameManager",pure_virtual(setHTTPHostNameManager1))
+                .def("setHTTPHostNameManager",pure_virtual(setHTTPHostNameManager2))
                 .def("setSSLHostNameManager",pure_virtual(setSSLHostNameManager1))
+                .def("setSSLHostNameManager",pure_virtual(setSSLHostNameManager2))
                 .def("setTotalTCPFlows",pure_virtual(&NetworkStack::setTotalTCPFlows))
                 .def("setTotalUDPFlows",pure_virtual(&NetworkStack::setTotalUDPFlows))
               	.def("printFlows",pure_virtual(printFlowsNetworkStack))
@@ -93,7 +97,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setStatisticsLevel",pure_virtual(&NetworkStack::setStatisticsLevel))
         ;
 
-	// for overload the methods with the class
+	// Definitions for the StackLan class
 	void (StackLan::*printFlowsLan)() = &StackLan::printFlows;
 
 	void (StackLan::*setUDPRegexManagerLan1)(RegexManager&) = &StackLan::setUDPRegexManager;
@@ -101,11 +105,11 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (StackLan::*setUDPRegexManagerLan2)(RegexManagerPtrWeak) = &StackLan::setUDPRegexManager;
 	void (StackLan::*setTCPRegexManagerLan2)(RegexManagerPtrWeak) = &StackLan::setTCPRegexManager;
         void (StackLan::*setDNSDomainNameManagerLan1)(DomainNameManager&) = &StackLan::setDNSDomainNameManager;
-        void (StackLan::*setDNSDomainNameManagerLan2)(DomainNameManagerPtrWeak) = &StackLan::setDNSDomainNameManager;
+        void (StackLan::*setDNSDomainNameManagerLan2)(DomainNameManager&, bool) = &StackLan::setDNSDomainNameManager;
         void (StackLan::*setHTTPHostNameManagerLan1)(DomainNameManager&) = &StackLan::setHTTPHostNameManager;
-        void (StackLan::*setHTTPHostNameManagerLan2)(DomainNameManagerPtrWeak) = &StackLan::setHTTPHostNameManager;
+        void (StackLan::*setHTTPHostNameManagerLan2)(DomainNameManager&, bool) = &StackLan::setHTTPHostNameManager;
         void (StackLan::*setSSLHostNameManagerLan1)(DomainNameManager&) = &StackLan::setSSLHostNameManager;
-        void (StackLan::*setSSLHostNameManagerLan2)(DomainNameManagerPtrWeak) = &StackLan::setSSLHostNameManager;
+        void (StackLan::*setSSLHostNameManagerLan2)(DomainNameManager&, bool) = &StackLan::setSSLHostNameManager;
 
 	boost::python::class_<StackLan, bases<NetworkStack> >("StackLan")
 		.def("setUDPRegexManager",setUDPRegexManagerLan1)	
@@ -129,19 +133,19 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setStatisticsLevel",&StackLan::setStatisticsLevel)
 	;
 
-        // for overload the methods with the class
-        void (StackMobile::*printFlowsMobile)() = &StackMobile::printFlows;
+	// Definitions for the StackMobile class
+       	void (StackMobile::*printFlowsMobile)() = &StackMobile::printFlows;
 
 	void (StackMobile::*setUDPRegexManagerMobile1)(RegexManager&) = &StackMobile::setUDPRegexManager;
 	void (StackMobile::*setTCPRegexManagerMobile1)(RegexManager&) = &StackMobile::setTCPRegexManager;
 	void (StackMobile::*setUDPRegexManagerMobile2)(RegexManagerPtrWeak) = &StackMobile::setUDPRegexManager;
 	void (StackMobile::*setTCPRegexManagerMobile2)(RegexManagerPtrWeak) = &StackMobile::setTCPRegexManager;
         void (StackMobile::*setDNSDomainNameManagerMobile1)(DomainNameManager&) = &StackMobile::setDNSDomainNameManager;
-        void (StackMobile::*setDNSDomainNameManagerMobile2)(DomainNameManagerPtrWeak) = &StackMobile::setDNSDomainNameManager;
+        void (StackMobile::*setDNSDomainNameManagerMobile2)(DomainNameManager&, bool) = &StackMobile::setDNSDomainNameManager;
         void (StackMobile::*setHTTPHostNameManagerMobile1)(DomainNameManager&) = &StackMobile::setHTTPHostNameManager;
-        void (StackMobile::*setHTTPHostNameManagerMobile2)(DomainNameManagerPtrWeak) = &StackMobile::setHTTPHostNameManager;
+        void (StackMobile::*setHTTPHostNameManagerMobile2)(DomainNameManager&, bool) = &StackMobile::setHTTPHostNameManager;
         void (StackMobile::*setSSLHostNameManagerMobile1)(DomainNameManager&) = &StackMobile::setSSLHostNameManager;
-        void (StackMobile::*setSSLHostNameManagerMobile2)(DomainNameManagerPtrWeak) = &StackMobile::setSSLHostNameManager;
+        void (StackMobile::*setSSLHostNameManagerMobile2)(DomainNameManager&, bool) = &StackMobile::setSSLHostNameManager;
 
         boost::python::class_<StackMobile, bases<NetworkStack> >("StackMobile")
 		.def("setUDPRegexManager",setUDPRegexManagerMobile1)	
@@ -165,19 +169,20 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setStatisticsLevel",&StackMobile::setStatisticsLevel)
         ;
 
-        // for overload the methods with the class
-        void (StackLanIPv6::*printFlowsLanIPv6)() = &StackLanIPv6::printFlows;
+
+	// Definitions for the StackLanIPv6 class
+       	void (StackLanIPv6::*printFlowsLanIPv6)() = &StackLanIPv6::printFlows;
 
         void (StackLanIPv6::*setUDPRegexManagerLanIPv61)(RegexManager&) = &StackLanIPv6::setUDPRegexManager;
         void (StackLanIPv6::*setTCPRegexManagerLanIPv61)(RegexManager&) = &StackLanIPv6::setTCPRegexManager;
         void (StackLanIPv6::*setUDPRegexManagerLanIPv62)(RegexManagerPtrWeak) = &StackLanIPv6::setUDPRegexManager;
         void (StackLanIPv6::*setTCPRegexManagerLanIPv62)(RegexManagerPtrWeak) = &StackLanIPv6::setTCPRegexManager;
         void (StackLanIPv6::*setDNSDomainNameManagerLanIPv61)(DomainNameManager&) = &StackLanIPv6::setDNSDomainNameManager;
-        void (StackLanIPv6::*setDNSDomainNameManagerLanIPv62)(DomainNameManagerPtrWeak) = &StackLanIPv6::setDNSDomainNameManager;
+        void (StackLanIPv6::*setDNSDomainNameManagerLanIPv62)(DomainNameManager&, bool) = &StackLanIPv6::setDNSDomainNameManager;
         void (StackLanIPv6::*setHTTPHostNameManagerLanIPv61)(DomainNameManager&) = &StackLanIPv6::setHTTPHostNameManager;
-        void (StackLanIPv6::*setHTTPHostNameManagerLanIPv62)(DomainNameManagerPtrWeak) = &StackLanIPv6::setHTTPHostNameManager;
+        void (StackLanIPv6::*setHTTPHostNameManagerLanIPv62)(DomainNameManager&, bool) = &StackLanIPv6::setHTTPHostNameManager;
         void (StackLanIPv6::*setSSLHostNameManagerLanIPv61)(DomainNameManager&) = &StackLanIPv6::setSSLHostNameManager;
-        void (StackLanIPv6::*setSSLHostNameManagerLanIPv62)(DomainNameManagerPtrWeak) = &StackLanIPv6::setSSLHostNameManager;
+        void (StackLanIPv6::*setSSLHostNameManagerLanIPv62)(DomainNameManager&, bool) = &StackLanIPv6::setSSLHostNameManager;
 
         boost::python::class_<StackLanIPv6, bases<NetworkStack> >("StackLanIPv6")
                 .def("setUDPRegexManager",setUDPRegexManagerLanIPv61)
@@ -210,9 +215,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setNextRegex",&Regex::setNextRegex)
 	;
 
-	// for overload the methods with the class
+	// for overload the methods within the class
 	void (PacketDispatcher::*setStackLan)(StackLan&) = &PacketDispatcher::setStack;
 	void (PacketDispatcher::*setStackMobile)(StackMobile&) = &PacketDispatcher::setStack;
+	void (PacketDispatcher::*setStackLanIPv6)(StackLanIPv6&) = &PacketDispatcher::setStack;
 
 	boost::python::class_<PacketDispatcher,boost::noncopyable>("PacketDispatcher")
 		.def("openDevice",&PacketDispatcher::openDevice)
@@ -223,6 +229,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("runPcap",&PacketDispatcher::runPcap)
 		.def("setStack",setStackLan)
 		.def("setStack",setStackMobile)
+		.def("setStack",setStackLanIPv6)
 	;
 
 
@@ -256,6 +263,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getFrequencies",&Flow::getFrequencies,return_internal_reference<>())
 		.def("getPacketFrequencies",&Flow::getPacketFrequencies,return_internal_reference<>())
 		.def("getDNSDomain",&Flow::getDNSDomain,return_internal_reference<>())
+		.def("getSSLHost",&Flow::getSSLHost,return_internal_reference<>())
 		.def("getRegex",&Flow::getRegex,return_internal_reference<>())
 		.def(self_ns::str(self_ns::self))
 	;
@@ -269,6 +277,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
 	boost::python::class_<HTTPUserAgent, SharedPointer<HTTPUserAgent>, boost::noncopyable>("HTTPUserAgent")
+		.def(self_ns::str(self_ns::self))
+	;
+
+	boost::python::class_<SSLHost, SharedPointer<SSLHost>, boost::noncopyable>("SSLHost")
 		.def(self_ns::str(self_ns::self))
 	;
 
