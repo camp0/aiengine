@@ -90,6 +90,7 @@ public:
 
                 os_f << "]";
 		os << os_f.str() << std::endl;
+		return os;
 	}	
 
 	int& operator[](const int index) {

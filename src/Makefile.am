@@ -1,6 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
 
-EXTRA_FLAGS = -flto
+# EXTRA_FLAGS = -flto not supported on the freebsd compiler
+EXTRA_FLAGS = 
 EXTRA_DIST = py_wrapper.cc setup.py
 
 noinst_HEADERS =        Packet.h Pointer.h \

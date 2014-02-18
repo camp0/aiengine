@@ -103,14 +103,14 @@ public:
 #ifdef __FREEBSD__
     	u_int16_t getSrcPort() const { return ntohs(tcp_header_->th_sport); }
     	u_int16_t getDstPort() const { return ntohs(tcp_header_->th_dport); }
-    	// u_int32_t getSequence() const  { return ntohl(tcp_header_->th_seq); }
-    	// u_int32_t getAckSequence() const  { return ntohl(tcp_header_->ack_seq); }
+    	u_int32_t getSequence() const  { return ntohl(tcp_header_->th_seq); }
+    	u_int32_t getAckSequence() const  { return ntohl(tcp_header_->th_ack); }
     	// u_int16_t getWindow() const { return tcp_header_->window; }
-    	// bool isSyn() const { return tcp_header_->syn; }
-    	// bool isFin() const { return tcp_header_->fin; }
-    	// bool isAck() const { return tcp_header_->ack; }
-    	// bool isRst() const { return tcp_header_->rst; }
-    	// bool isPushSet() const { return tcp_header_->psh; }
+    	bool isSyn() const { return (tcp_header_->th_flags & TH_SYN) == 1; }
+    	bool isFin() const { return (tcp_header_->th_flags & TH_FIN) == 1; }
+    	bool isAck() const { return (tcp_header_->th_flags & TH_ACK) == 1; }
+    	bool isRst() const { return (tcp_header_->th_flags & TH_RST) == 1; }
+    	bool isPushSet() const { return (tcp_header_->th_flags & TH_PUSH) == 1; }
     	// unsigned int getTcpSegmentLength() const { return ntohs(ip->tot_len) - ip->ihl * 4; }
     	// unsigned int getPayloadLength() const { return ntohs(ip->tot_len) - 20 /* ip->ihl * 4 */ - tcp->doff * 4; }
     	unsigned int getTcpHdrLength() const { return tcp_header_->th_off * 4; }

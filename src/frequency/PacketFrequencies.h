@@ -103,6 +103,7 @@ public:
 
                 os_f << "]";
 		os << os_f.str() << std::endl;
+		return os;
 	}	
 
 	unsigned short index(int index) { return freqs_[index];};
