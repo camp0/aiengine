@@ -106,11 +106,11 @@ public:
     	u_int32_t getSequence() const  { return ntohl(tcp_header_->th_seq); }
     	u_int32_t getAckSequence() const  { return ntohl(tcp_header_->th_ack); }
     	// u_int16_t getWindow() const { return tcp_header_->window; }
-    	bool isSyn() const { return (tcp_header_->th_flags & TH_SYN) == 1; }
-    	bool isFin() const { return (tcp_header_->th_flags & TH_FIN) == 1; }
-    	bool isAck() const { return (tcp_header_->th_flags & TH_ACK) == 1; }
-    	bool isRst() const { return (tcp_header_->th_flags & TH_RST) == 1; }
-    	bool isPushSet() const { return (tcp_header_->th_flags & TH_PUSH) == 1; }
+    	bool isSyn() const { return (tcp_header_->th_flags & TH_SYN) == TH_SYN; }
+    	bool isFin() const { return (tcp_header_->th_flags & TH_FIN) == TH_FIN; }
+    	bool isAck() const { return (tcp_header_->th_flags & TH_ACK) == TH_ACK; }
+    	bool isRst() const { return (tcp_header_->th_flags & TH_RST) == TH_RST; }
+    	bool isPushSet() const { return (tcp_header_->th_flags & TH_PUSH) == TH_PUSH; }
     	// unsigned int getTcpSegmentLength() const { return ntohs(ip->tot_len) - ip->ihl * 4; }
     	// unsigned int getPayloadLength() const { return ntohs(ip->tot_len) - 20 /* ip->ihl * 4 */ - tcp->doff * 4; }
     	unsigned int getTcpHdrLength() const { return tcp_header_->th_off * 4; }
@@ -137,7 +137,7 @@ public:
         void createTCPInfo(int number) { tcp_info_cache_->create(number);}
         void destroyTCPInfo(int number) { tcp_info_cache_->destroy(number);}
 
-	Flow *getCurrenFlow() { return current_flow_;}
+	Flow *getCurrentFlow() { return current_flow_;} // used just for testing pourposes
 private:
         SharedPointer<Flow> getFlow();
 

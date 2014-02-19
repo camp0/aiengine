@@ -71,6 +71,112 @@ BOOST_AUTO_TEST_CASE (test2_tcp)
         BOOST_CHECK(tcp->getTotalBytes() == 225);
 }
 
+// Test case for verify tcp flags
+BOOST_AUTO_TEST_CASE (test3_tcp)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
+        int length1 = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
+        Packet packet(pkt1,length1,0);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+	Flow *flow = tcp->getCurrentFlow();
+
+	BOOST_CHECK(flow != nullptr);
+        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
+	SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+
+	BOOST_CHECK(info->syn == 0);
+	BOOST_CHECK(info->fin == 0);
+	BOOST_CHECK(info->syn_ack == 0);
+	BOOST_CHECK(info->ack == 1);
+	BOOST_CHECK(info->push == 1);
+}
+
+BOOST_AUTO_TEST_CASE (test4_tcp)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn);
+        int length1 = raw_packet_ethernet_ip_tcp_syn_length;
+        Packet packet(pkt1,length1,0);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        Flow *flow = tcp->getCurrentFlow();
+
+        BOOST_CHECK(flow != nullptr);
+        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
+        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+
+        BOOST_CHECK(info->syn == 1);
+        BOOST_CHECK(info->fin == 0);
+        BOOST_CHECK(info->syn_ack == 0);
+        BOOST_CHECK(info->ack == 0);
+        BOOST_CHECK(info->push == 0);
+}
+
+BOOST_AUTO_TEST_CASE (test5_tcp)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn_ack);
+        int length1 = raw_packet_ethernet_ip_tcp_syn_ack_length;
+        Packet packet(pkt1,length1,0);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        Flow *flow = tcp->getCurrentFlow();
+
+        BOOST_CHECK(flow != nullptr);
+        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
+        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+
+        BOOST_CHECK(info->syn == 0);
+        BOOST_CHECK(info->fin == 0);
+        BOOST_CHECK(info->syn_ack == 1);
+        BOOST_CHECK(info->ack == 0);
+        BOOST_CHECK(info->push == 0);
+}
+
+BOOST_AUTO_TEST_CASE (test6_tcp)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn);
+        int length1 = raw_packet_ethernet_ip_tcp_syn_length;
+        Packet packet1(pkt1,length1,0);
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn_ack);
+        int length2 = raw_packet_ethernet_ip_tcp_syn_ack_length;
+        Packet packet2(pkt2,length2,0);
+
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(packet1.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+        mux_eth->setPacket(&packet2);
+        eth->setHeader(packet2.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet2);
+
+        Flow *flow = tcp->getCurrentFlow();
+
+        BOOST_CHECK(flow != nullptr);
+        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
+        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+
+        BOOST_CHECK(info->syn == 1);
+        BOOST_CHECK(info->fin == 0);
+        BOOST_CHECK(info->syn_ack == 1);
+        BOOST_CHECK(info->ack == 0);
+        BOOST_CHECK(info->push == 0);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END( )
 
 BOOST_FIXTURE_TEST_SUITE(tcp_suite2,StackIPv6TCPTest)
@@ -207,7 +313,5 @@ BOOST_AUTO_TEST_CASE (test3_tcp)
         BOOST_CHECK ( newstate == static_cast<int>(TcpState::CLOSED));
 
 }
-
-
 
 BOOST_AUTO_TEST_SUITE_END( )

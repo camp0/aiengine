@@ -58,6 +58,7 @@ public:
 			os << std::hex << (int)p.packet_[i] << " ";
 		}
 		os << std::endl << "End packet" << std::endl; 
+		return os;
 	}	
 
 private:

@@ -46,6 +46,10 @@ struct StackTCPTest
         MultiplexerPtr mux_ip;
         MultiplexerPtr mux_tcp;
 
+       // FlowManager and FlowCache
+        FlowManagerPtr flow_mng;
+        FlowCachePtr flow_cache;
+
        	StackTCPTest()
         {
                 tcp = TCPProtocolPtr(new TCPProtocol());
@@ -83,6 +87,17 @@ struct StackTCPTest
                 mux_ip->addDownMultiplexer(mux_eth);
                 mux_ip->addUpMultiplexer(mux_tcp,IPPROTO_TCP);
                 mux_tcp->addDownMultiplexer(mux_ip);
+
+                // Allocate the flow caches and tables
+                flow_mng = FlowManagerPtr(new FlowManager());
+                flow_cache = FlowCachePtr(new FlowCache());
+
+                // Connect the FlowManager and FlowCache
+                flow_cache->createFlows(2);
+                tcp->createTCPInfo(2);
+
+                tcp->setFlowCache(flow_cache);
+                tcp->setFlowManager(flow_mng);
         }
 
         ~StackTCPTest() {

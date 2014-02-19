@@ -255,6 +255,7 @@ void iaengineExit() {
 			if (system_stats)	
 				system_stats->statistics();
        	}
+	std::cout << "Exiting process" << std::endl;
 }
 
 

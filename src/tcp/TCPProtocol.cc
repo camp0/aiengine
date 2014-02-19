@@ -109,6 +109,8 @@ void TCPProtocol::processPacket(Packet &packet) {
 
 	SharedPointer<Flow> flow = getFlow();
 
+	current_flow_ = flow.get();
+
 	++total_packets_;
 
         if (flow) {
