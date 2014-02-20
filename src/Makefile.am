@@ -10,7 +10,7 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			NetworkStack.h \
 			StackLan.h \
 			StackLanIPv6.h \
-			Cache.h \
+			Cache.h IPAddress.h \
 			StackMobile.h \
 			Multiplexer.h \
 			FlowForwarder.h \

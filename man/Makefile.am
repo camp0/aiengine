@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = foreign
 
+EXTRA_DIST = aiengine.1
+
 man_MANS = aiengine.1
 
 MAINTAINERCLEANFILES = config.h.in Makefile.in configure stamp-h1 config.log py-compile \
