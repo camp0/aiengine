@@ -94,8 +94,8 @@ public:
 			}
 		} else {
 			++total_malformed_packets_;
-			return false;
 		}
+		return false;
 	}
 
 	unsigned char *getPayload() const { return gprs_header_;}

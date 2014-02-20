@@ -53,10 +53,8 @@ public:
 
 		for (auto it = data.begin(); it!= data.end();++it) {
 			unsigned char value = *it;
-			//std::cout << "at:" << value << ":" << (short)value << std::endl;
 			++freqs_[(int)value];	
 		}
-
 	}
 
 	std::string getFrequenciesString() const { 
@@ -158,7 +156,7 @@ public:
 	}
 
 private:
-	std::array<int,255> freqs_;
+	std::array<int,256> freqs_;
 };
 
 } // namespace aiengine

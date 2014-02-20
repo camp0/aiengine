@@ -58,7 +58,6 @@ public:
 		int limit = data.length();
 
 		if (length_ >= MAX_PACKET_FREQUENCIES_VALUES) return;
-		if (data.length() < 0) return;
 
                 if(length_ + data.length() > MAX_PACKET_FREQUENCIES_VALUES)
                 {

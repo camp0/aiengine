@@ -72,7 +72,8 @@ public:
 			if(fg.log_level_>0)
 				os << "\t" << fgi->getFrequencies()->getFrequenciesString() << std::endl;
 		}
-		os << std::endl; 
+		os << std::endl;
+		return os; 
 	}	
 
 	void setLogLevel(int level) { log_level_ = level;}
