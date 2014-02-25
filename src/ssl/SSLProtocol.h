@@ -168,7 +168,6 @@ public:
 private:
 	int stats_level_;
 	FlowForwarderPtrWeak flow_forwarder_;	
-	unsigned char *ssl_data_;
 	ssl_record *ssl_header_;
         int64_t total_bytes_;
 	int32_t total_client_hellos_;

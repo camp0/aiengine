@@ -8,118 +8,6 @@ import signal
 import sys
 import pyaiengine
 
-# http://www.abuse.ch/zeustracker/blocklist.php?download=domainblocklist
-
-def callback_drop_packets(flow_name):
-
-	print "hola", str(flow_name).split(":")[0]
-
-def callback_domain(flow_name):
-
-	ip = str(flow_name).split(":")[0]
-	
-	print "Suspicious Domain(%s) from %s" % (flow_name.getDNSDomain(),ip)
-
-def loadRegexForTcp():
-	sm = pyaiengine.RegexManager()
-	
-	reg = pyaiengine.Regex("Shellcode Generic Exploit","\x90\x90\x90\x90\x90\x90\x90\x90\x90")
-
-	reg.setCallback(callback_drop_packets)
-	sm.addRegex(reg)
-
-	return sm
-
-def loadRegexForUdp():
-	sm = pyaiengine.RegexManager()
-
-	reg = pyaiengine.Regex("bittorrent udp","^d1:ad2:id20");
-	reg.setCallback(callback_drop_packets)
-	
-	sm.addRegex(reg)
-
-	return sm
-
-def loadDomains():
-
-        dm = pyaiengine.DomainNameManager()
-
-        dom = pyaiengine.DomainName("facebook","facebook.com")
-	dom.setCallback(callback_domain)
-        dm.addDomainName(dom)
-
-	return dm
-
-def loadBadDomains():
-	
-	dm = pyaiengine.DomainNameManager()
-
-	dom = pyaiengine.DomainName("root domain","CoM")
-	dom.setCallback(callback_domain)
-	dm.addDomainName(dom)	
-
-	dom = pyaiengine.DomainName("root domain","coM")
-	dom.setCallback(callback_domain)
-	dm.addDomainName(dom)	
-
-	dom = pyaiengine.DomainName("root domain","cOm")
-	dom.setCallback(callback_domain)
-	dm.addDomainName(dom)	
-
-	dom = pyaiengine.DomainName("root domain","cOM")
-	dom.setCallback(callback_domain)
-	dm.addDomainName(dom)	
-
-	dom = pyaiengine.DomainName("root domain",".COM")
-	dom.setCallback(callback_domain)
-	dm.addDomainName(dom)	
-
-	return dm
-
-
-def processFlows(flowlist):
-	"""
-	This function gets all the flows of the flowlist
-	and process according to your need
-	"""
-	
-	candidate = list()
-
-        print "Total flows:", len(flowlist)
-        for flow in flowlist:
-
-		if(flow.getTotalBytes() > 0):
-			name = str(flow)
-			print name,flow.getTotalBytes() #,flow.getSourcePort(),flow.getDestinationPort()
-
-			if(flow.getHTTPHost()):
-				print flow.getHTTPHost()
-
-			if(flow.getHTTPUserAgent()):
-				print flow.getHTTPUserAgent()
-
-			if(flow.getFrequencies()):
-				freq = flow.getFrequencies()
-				print "Enthropy:", freq.getEnthropy()
-				#print freq.getFrequenciesString()
-
-			if(flow.getPacketFrequencies()):
-				freq_pkt = flow.getPacketFrequencies()
-				#print freq_pkt.getPacketFrequenciesString()
-
-			if(flow.getDestinationPort() == 2525):	
-				candidate.append(flow)
-
-	""" Extract a valid signature for the flows of the list """
-	learner = pyaiengine.LearnerEngine()
-
-	learner.agregateFlows(candidate)
-	learner.compute()
-
-	print "Learning flows", learner.getTotalFlowsProcess()
-	regex = learner.getRegularExpression()
-	print "Regex:",regex
-	
 
 if __name__ == '__main__':
 
@@ -142,9 +30,6 @@ if __name__ == '__main__':
 	#s_udp = loadRegexForUdp()
 	#st.setUDPRegexManager(s_udp)
 
-	st.setHTTPHostNameManager(loadDomains())
-	#st.setDNSDomainNameManager(loadBadDomains())
-
 	# Allocate the TCP/UDP flows in order to keep memory
 	# under control and avoid allocations during the execution	
 	st.setTotalTCPFlows(327680)
@@ -161,7 +46,7 @@ if __name__ == '__main__':
 	#directory = "/home/luis/pcapfiles/torrent/"
 	#directory = "/home/luis/pcapfiles/defcon18/"
 	#directory = "/home/luis/pcapfiles/http/"
-	directory = "/home/luis/pcapfiles/vcom/"
+	directory = "/home/luis/pcapfiles/v/"
 	#directory = "/home/luis/pcapfiles/spotify/"
 	print "Ready to process files."
 	for pfile in os.listdir(directory):

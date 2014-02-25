@@ -12,4 +12,8 @@ features of 0.3.
 - Support for Host names on SSL traffic.
 - Support for banned domains and hosts for HTTP, DNS and SSL
 - Support for sigusr1, sigusr2 on the aiengine binary for dump stats.
-- TCP finite state machine (beta). 
+- TCP finite state machine (beta).
+
+features of 0.4
+- Pcre support.
+- Freebsd python support. 

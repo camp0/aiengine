@@ -63,9 +63,9 @@ void DNSProtocol::processFlow(Flow *flow) {
 	if (length > 10) { // Minimum header size consider
 		// \x01 \x00 Standar query
 		if (std::memcmp("\x01\x00",&payload[2],2) == 0) {
-			int queries = payload[5];
+			//int queries = payload[5];
 			std::string domain;
-			int i = 13,value;
+			int i = 13; // ,value;
 		
 			// Probably i will need to do it better :(	
 			while (payload[i] != '\x00') {

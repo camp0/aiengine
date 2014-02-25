@@ -63,8 +63,16 @@ void PacketDispatcher::openDevice(std::string device) {
 #ifdef HAVE_LIBLOG4CXX 
 	LOG4CXX_INFO(logger,"Processing packets from:" <<device.c_str());	
 #else
-       	boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
-       	std::cout << "[" << now << "] " << "Processing packets from:" <<  device.c_str() << std::endl; 
+        std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
+        std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+#ifdef __clang__
+        std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
+#else 
+        char mbstr[100];
+        std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
+        std::cout << "[" << mbstr << "] ";
+#endif
+	std::cout << "Processing packets from:" <<  device.c_str() << std::endl; 
 #endif
 }
 
@@ -96,8 +104,16 @@ void PacketDispatcher::openPcapFile(std::string filename) {
 #ifdef HAVE_LIBLOG4CXX 
 		LOG4CXX_INFO(logger,"Processing packets from:" << filename.c_str());	
 #else
-        	boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
-        	std::cout << "[" << now << "] " << "Processing packets from:" <<  filename.c_str() << std::endl; 
+        	std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
+        	std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+#ifdef __clang__
+                std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
+#else
+                char mbstr[100];
+                std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
+                std::cout << "[" << mbstr << "] ";
+#endif
+        	std::cout << "Processing packets from:" <<  filename.c_str() << std::endl;
 #endif
 	}
 }
@@ -211,8 +227,7 @@ void PacketDispatcher::start_operations() {
 
 void PacketDispatcher::runPcap() {
 
-	int ret = 0;
-	while((ret = pcap_next_ex(pcap_,&header,&pkt_data)) >= 0) {
+	while (pcap_next_ex(pcap_,&header,&pkt_data) >= 0) {
 		forwardRawPacket((unsigned char*)pkt_data,header->len);
 	}
 }

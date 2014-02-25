@@ -28,6 +28,7 @@
 #include <config.h>
 #endif
 
+#include <chrono>
 #include <string>
 #ifdef HAVE_LIBLOG4CXX
 #include "log4cxx/logger.h"
@@ -51,7 +52,6 @@
 #include "./flow/FlowCache.h"
 #include "./frequency/FrequencyProtocol.h"
 #include "NetworkStack.h"
-#include "boost/date_time/posix_time/posix_time.hpp"
 
 namespace aiengine {
 

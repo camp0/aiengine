@@ -251,8 +251,16 @@ StackMobile::StackMobile() {
 #ifdef HAVE_LIBLOG4CXX
 	LOG4CXX_INFO (logger, name_<< " ready.");
 #else
-        boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
-        std::cout << "[" << now << "] " << name_ << " ready." << std::endl; 
+        std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
+        std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+#ifdef __clang__
+        std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
+#else
+        char mbstr[100];
+        std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
+        std::cout << "[" << mbstr << "] ";
+#endif
+        std::cout << name_ << " ready." << std::endl; 
 #endif
 }
 
@@ -399,17 +407,25 @@ void StackMobile::enableFrequencyEngine(bool enable) {
         ff_udp_high_->removeUpFlowForwarder();
         ff_tcp_->removeUpFlowForwarder();
         if (enable) {
+#ifdef HAVE_LIBLOG4CXX
+		LOG4CXX_INFO (logger, "Enable FrequencyEngine on " << name_ );
+#else
+        	std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
+        	std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+#ifdef __clang__
+        	std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
+#else
+        	char mbstr[100];
+        	std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
+        	std::cout << "[" << mbstr << "] ";
+#endif
+		std::cout <<  "Enable FrequencyEngine on " << name_ << std::endl;
+#endif 
                 freqs_tcp_->createFrequencies(tcp_flows_created);
                 freqs_udp_->createFrequencies(udp_flows_created);
 
                 ff_tcp_->insertUpFlowForwarder(ff_tcp_freqs_);
                 ff_udp_high_->insertUpFlowForwarder(ff_udp_freqs_);
-
-#ifdef HAVE_LIBLOG4CXX
-		LOG4CXX_INFO (logger, "Enable FrequencyEngine on " << name_ );
-#else
-		std::cout <<  "Enable FrequencyEngine on " << name_ << std::endl;
-#endif 
         } else {
                 freqs_tcp_->destroyFrequencies(tcp_flows_created);
                 freqs_udp_->destroyFrequencies(udp_flows_created);
@@ -428,6 +444,15 @@ void StackMobile::enableNIDSEngine(bool enable) {
 #ifdef HAVE_LIBLOG4CXX
                 LOG4CXX_INFO (logger, "Enable NIDSEngine on " << name_ );
 #else
+        	std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
+        	std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+#ifdef __clang__
+        	std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
+#else
+        	char mbstr[100];
+        	std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
+        	std::cout << "[" << mbstr << "] ";
+#endif
                 std::cout << "Enable NIDSEngine on " << name_ << std::endl;
 #endif
         } else {
@@ -479,6 +504,15 @@ void StackMobile::enableLinkLayerTagging(std::string type) {
 #ifdef HAVE_LIBLOG4CXX
                         LOG4CXX_WARN (logger, "Unknown tagging type " << type );
 #else
+                        std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
+                        std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+#ifdef __clang__
+                        std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
+#else
+                        char mbstr[100];
+                        std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
+                        std::cout << "[" << mbstr << "] ";
+#endif
                         std::cout << "Unknown tagging type " << type << std::endl;
 #endif
                 }

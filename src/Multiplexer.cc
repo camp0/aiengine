@@ -67,7 +67,6 @@ void Multiplexer::forwardPacket(Packet &packet) {
 	if(!next_mux.expired()) {
                 mux = next_mux.lock();
                 if (mux) {
-			int offset = mux->header_size_;
 			int prev_header_size = packet.getPrevHeaderSize();
                       	Packet pkt_candidate(&packet.getPayload()[header_size_],packet.getLength() - header_size_, prev_header_size);
 

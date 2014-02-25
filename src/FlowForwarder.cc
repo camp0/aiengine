@@ -39,7 +39,6 @@ void FlowForwarder::statistics(std::basic_ostream<char>& out) {
 void FlowForwarder::forwardFlow(Flow *flow) {
 
 	FlowForwarderPtr ff;
-	bool have_forwarder = false;
 
 #ifdef DEBUG
 	std::cout << __PRETTY_FUNCTION__ << ":" << this << ":forwardFlow(" << flow << ")" << std::endl;

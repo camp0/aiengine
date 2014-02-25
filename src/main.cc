@@ -79,7 +79,7 @@ std::string option_regex_type_flows;
 std::string option_regex;
 bool option_show_flows = false;
 bool option_enable_frequencies = false;
-bool option_enable_signatures = false;
+bool option_enable_regex = false;
 bool option_enable_learner = false;
 bool option_show_pstatistics = false;
 int tcp_flows_cache;
@@ -416,9 +416,11 @@ int main(int argc, char* argv[]) {
 			if(option_regex_type_flows.compare("tcp") == 0) stack->setTCPRegexManager(sm);
 			if(option_regex_type_flows.compare("udp") == 0) stack->setUDPRegexManager(sm);
 		}
+		stack->enableNIDSEngine(true);
+		option_enable_regex = true;
 	}
 
-	if (var_map.count("enable-frequencies") == 1) {
+	if ((var_map.count("enable-frequencies") == 1)&&(option_enable_regex == false)) {
 		stack->enableFrequencyEngine(true);
 		option_enable_frequencies = true;
 	}

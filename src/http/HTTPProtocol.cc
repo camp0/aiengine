@@ -33,9 +33,15 @@ log4cxx::LoggerPtr HTTPProtocol::logger(log4cxx::Logger::getLogger("aiengine.htt
 void HTTPProtocol::extractHostValue(Flow *flow, const char *header) {
 
 	DomainNameManagerPtr ban_hosts;
+#if defined(__LINUX__)
 	boost::cmatch result;
 
         if (boost::regex_search(header,result,http_host_)) {
+#else
+	std::cmatch result;
+
+        if (std::regex_search(header,result,http_host_)) {
+#endif
         	std::string host_raw(result[0].first, result[0].second);
                 std::string host(host_raw,6,host_raw.length()-8); // remove also the \r\n
 
@@ -81,9 +87,15 @@ void HTTPProtocol::attachHostToFlow(Flow *flow, std::string &host) {
 
 void HTTPProtocol::extractUserAgentValue(Flow *flow, const char *header) {
 
+#if defined(__LINUX__)
 	boost::cmatch result;
 
 	if (boost::regex_search(header,result,http_ua_)) {
+#else
+	std::cmatch result;
+
+	if (std::regex_search(header,result,http_ua_)) {
+#endif
 		std::string ua_raw(result[0].first, result[0].second);
 		std::string ua(ua_raw,12,ua_raw.length()-14); // remove also the \r\n
 

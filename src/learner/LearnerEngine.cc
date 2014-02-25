@@ -105,7 +105,7 @@ void LearnerEngine::compute() {
 		if ((quality > 80)&&(q_array_[i].size()>0)) {
 			unsigned short token_candidate = (q_array_[i].begin()->first);
 			int quality_token = 0;
-			unsigned short a = 170;
+			// unsigned short a = 170;
 	
 			for (auto it = q_array_[i].begin(); it!=q_array_[i].end();++it) {
 				if(it->second > quality_token) {

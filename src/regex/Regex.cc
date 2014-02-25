@@ -29,9 +29,16 @@ bool Regex::evaluate(const std::string& data) {
 
         std::string::const_iterator start = data.begin();
         std::string::const_iterator end = data.end();
-	
-	bool result = boost::regex_match(start,end, what_, exp_);
-	//bool result = boost::regex_search(reinterpret_cast<const char*>(payload), what, exp_);
+	bool result = false;
+#if defined(HAVE_LIBPCRE__)
+	result = exp_.search(data);
+#else	
+#if defined(__LINUX__)	
+	result = boost::regex_match(start,end, what_, exp_);
+#else
+	result = std::regex_match(start,end, what_, exp_);
+#endif
+#endif
 	if (result) total_matchs_++;
 	total_evaluates_++;
 	return result; 

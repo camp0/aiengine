@@ -28,6 +28,8 @@
 #include <config.h>
 #endif
 
+#include <chrono>
+#include <iomanip>
 #include <pcap.h>
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
@@ -142,9 +144,6 @@ private:
 	EthernetProtocolPtr eth_;	
 	Packet current_packet_;
 	MultiplexerPtr defMux_;
-
-
-
 };
 
 typedef std::shared_ptr<PacketDispatcher> PacketDispatcherPtr;

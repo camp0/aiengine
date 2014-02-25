@@ -1,4 +1,4 @@
-AC_INIT([aiengine],[0.3],[luis.camp0.2009@gmail.com],[],[https://bitbucket.org/camp0/aiengine])
+AC_INIT([aiengine],[0.4],[luis.camp0.2009@gmail.com],[],[https://bitbucket.org/camp0/aiengine])
 AM_INIT_AUTOMAKE([subdir-objects])
 AM_PROG_LIBTOOL
 
@@ -96,6 +96,14 @@ AC_CHECK_LIB([log4cxx],[main],,have_log4cxx=no)
 AM_CONDITIONAL(SUPPORT_LOG4CXX, test "$have_log4cxx" = yes)
 
 ##########################################################################
+# Pcre++ support 
+##########################################################################
+AC_CHECK_HEADER([pcre++.h])
+AC_CHECK_LIB([pcre++],[main],,have_pcre4cxx=no)
+
+AM_CONDITIONAL(SUPPORT_PCRE, test "$have_pcre4cxx" = yes)
+
+##########################################################################
 # Debug compilation support
 ##########################################################################
 
@@ -167,5 +175,6 @@ echo "
   Python include path.: $python_path
   Log4cxx.............: $ac_cv_lib_log4cxx_main
   Libpcap.............: $ac_cv_lib_pcap_main
+  Pcre++..............: $ac_cv_lib_pcrepp_main
 "
 

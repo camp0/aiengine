@@ -30,7 +30,16 @@
 
 #include "../Signature.h"
 #include "../Pointer.h"
+
+#if defined(HAVE_LIBPCRE__)
+#include <pcre++.h>
+#else
+#if defined(__LINUX__)
 #include <boost/regex.hpp>
+#else
+#include <regex>
+#endif
+#endif
 
 namespace aiengine {
 
@@ -39,7 +48,16 @@ class Regex: public Signature
 public:
 
 	explicit Regex(const std::string &name, const std::string& exp):
-		exp_(exp,boost::regex_constants::perl|boost::regex::icase),next_regex_()
+		next_regex_()
+#if defined(HAVE_LIBPCRE__)
+		,exp_(exp,"is")
+#else
+#if defined(__LINUX__)
+		,exp_(exp,boost::regex_constants::perl|boost::regex::icase)
+#else
+		,exp_(exp,std::regex_constants::icase)
+#endif
+#endif
 	{
 		name_ = name;
 		expression_ = exp;
@@ -56,8 +74,17 @@ public:
 	SharedPointer<Regex> getNextRegex() { return next_regex_;}
 
 private:
+#if defined(HAVE_LIBPCRE__)
+	pcrepp::Pcre exp_;
+#else
+#if defined(__LINUX__)
 	boost::regex exp_;
 	boost::match_results<std::string::const_iterator> what_;
+#else
+	std::regex exp_;
+	std::match_results<std::string::const_iterator> what_;
+#endif
+#endif
 	SharedPointer<Regex> next_regex_;
 	bool is_terminal_;
 };

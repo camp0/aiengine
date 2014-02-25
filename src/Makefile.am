@@ -126,9 +126,11 @@ tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lp
 BUILT_SOURCES = $(srcdir)/pyaiengine.so
 
 $(srcdir)/pyaiengine.so: py_wrapper.cc
-	$(CXX) -fPIC $(EXTRA_FLAGS) -I. -I.. -DHAVE_CONFIG_H -DPYTHON_BINDING \
-        	$(aiengine_core_sources) py_wrapper.cc `pkg-config --cflags python-2.7` \
-		$(BOOST_CPPFLAGS)/boost/python -std=c++11 -lpthread -lstdc++ \
+	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DPYTHON_BINDING \
+		-I. -I.. $(BOOST_CPPFLAGS) $(BOOST_CPPFLAGS)/boost/python \
+		`pkg-config --cflags python-2.7` \
+		$(aiengine_core_sources) py_wrapper.cc \
+		-std=c++11 -lpthread -lstdc++ \
 		$(BOOST_LDFLAGS) $(BOOST_LINK_CORE) -lboost_python -lpython2.7 -lpcap \
 		$(LOG4CXX_FLAGS) -o pyaiengine.so -shared
 
