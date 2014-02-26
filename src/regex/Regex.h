@@ -31,8 +31,8 @@
 #include "../Signature.h"
 #include "../Pointer.h"
 
-#if defined(HAVE_LIBPCRE__)
-#include <pcre++.h>
+#if defined(HAVE_LIBPCRE)
+#include <pcre.h>
 #else
 #if defined(__LINUX__)
 #include <boost/regex.hpp>
@@ -49,9 +49,7 @@ public:
 
 	explicit Regex(const std::string &name, const std::string& exp):
 		next_regex_()
-#if defined(HAVE_LIBPCRE__)
-		,exp_(exp,"is")
-#else
+#if !defined(HAVE_LIBPCRE)
 #if defined(__LINUX__)
 		,exp_(exp,boost::regex_constants::perl|boost::regex::icase)
 #else
@@ -59,12 +57,37 @@ public:
 #endif
 #endif
 	{
+		have_jit_ = false;
+#if defined(HAVE_LIBPCRE)
+		const char *errorstr;
+		int erroffset;
+		const char *buffer = const_cast<const char*>(exp.c_str());
+		exp_ = pcre_compile(buffer, PCRE_DOTALL, &errorstr, &erroffset, 0);
+		if (exp_ == NULL)
+			throw "Can not compile regex";
+
+#if defined(PCRE_HAVE_JIT)
+		study_exp_ = pcre_study(exp_, PCRE_STUDY_JIT_COMPILE, &errorstr);
+		if (study_exp_ != NULL) {
+			int jit = 0;
+			int ret = pcre_fullinfo(exp_,study_exp_,PCRE_INFO_JIT, &jit);
+			if ((ret != 0)or(jit!=1)) {
+				have_jit_ = false;
+			} else {
+				have_jit_ = true;
+			}
+		}	
+#else
+		study_exp_ = pcre_study(exp_,0,&errorstr);
+#endif
+#endif
 		name_ = name;
 		expression_ = exp;
 		is_terminal_ = true;
 	}
 
-	virtual ~Regex() = default; 
+	virtual ~Regex() = default;
+ 
 	bool evaluate(const std::string& data);
 
 	friend std::ostream& operator<< (std::ostream& out, const Regex& sig);
@@ -74,8 +97,9 @@ public:
 	SharedPointer<Regex> getNextRegex() { return next_regex_;}
 
 private:
-#if defined(HAVE_LIBPCRE__)
-	pcrepp::Pcre exp_;
+#if defined(HAVE_LIBPCRE)
+	const pcre *exp_;
+	pcre_extra *study_exp_;
 #else
 #if defined(__LINUX__)
 	boost::regex exp_;
@@ -87,6 +111,7 @@ private:
 #endif
 	SharedPointer<Regex> next_regex_;
 	bool is_terminal_;
+	bool have_jit_;
 };
 
 } // namespace aiengine

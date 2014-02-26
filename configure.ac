@@ -98,10 +98,70 @@ AM_CONDITIONAL(SUPPORT_LOG4CXX, test "$have_log4cxx" = yes)
 ##########################################################################
 # Pcre++ support 
 ##########################################################################
-AC_CHECK_HEADER([pcre++.h])
-AC_CHECK_LIB([pcre++],[main],,have_pcre4cxx=no)
 
-AM_CONDITIONAL(SUPPORT_PCRE, test "$have_pcre4cxx" = yes)
+AC_MSG_CHECKING(for perl regular expressions support)
+AC_ARG_WITH(pcre, AC_HELP_STRING([--with-pcre],[Enable pcre support (default yes)]),
+    [WITH_PCRE=$withval],[WITH_PCRE=yes])
+AC_MSG_RESULT([$WITH_PCRE])
+
+if test "$WITH_PCRE" != "no"; then
+  AC_PATH_PROG(PCRECONFIG, pcre-config)
+
+  if test x"$PCRECONFIG" != x; then
+    PCRE_LIB=`$PCRECONFIG --libs`
+    CPPFLAGS="$CPPFLAGS `$PCRECONFIG --cflags`"
+    AC_DEFINE([HAVE_LIBPCRE], [1], [libpcre])
+    AC_DEFINE([HAVE_PCRE_H], [1], [pcre.h])
+  else
+     AC_MSG_ERROR([pcre-config not found, install the pcre-devel package or build with --without-pcre])
+  fi
+fi
+
+AC_SUBST(PCRE_LIB)
+    AC_MSG_CHECKING(for PCRE JIT support)
+    AC_TRY_COMPILE([ #include <pcre.h> ],
+        [
+        int jit = 0;
+        pcre_config(PCRE_CONFIG_JIT, &jit);
+        ],
+        [ pcre_jit_available=yes ], [ pcre_jit_available=no ]
+        )
+
+    if test "x$pcre_jit_available" = "xyes"; then
+       AC_MSG_RESULT(yes)
+       AC_DEFINE([PCRE_HAVE_JIT], [1], [Pcre with JIT compiler support enabled])
+
+       AC_MSG_CHECKING(for PCRE JIT support usability)
+       AC_TRY_COMPILE([ #include <pcre.h> ],
+           [
+           const char* regexstr = "(a|b|c|d)";
+           pcre *re;
+           const char *error;
+           pcre_extra *extra;
+           int err_offset;
+           re = pcre_compile(regexstr,0, &error, &err_offset,NULL);
+           extra = pcre_study(re, PCRE_STUDY_JIT_COMPILE, &error);
+           if (extra == NULL)
+               exit(EXIT_FAILURE);
+           int jit = 0;
+           int ret = pcre_fullinfo(re, extra, PCRE_INFO_JIT, &jit);
+           if (ret != 0 || jit != 1)
+               exit(EXIT_FAILURE);
+           exit(EXIT_SUCCESS);
+           ],
+           [ pcre_jit_works=yes ], [:]
+       )
+       if test "x$pcre_jit_works" != "xyes"; then
+           AC_MSG_RESULT(no)
+           echo
+           echo "   PCRE JIT support detection worked but testing it failed"
+           echo "   something odd is going on, please file a bug report."
+           echo
+           exit 1
+       else
+           AC_MSG_RESULT(yes)
+       fi
+    fi
 
 ##########################################################################
 # Debug compilation support
@@ -175,6 +235,7 @@ echo "
   Python include path.: $python_path
   Log4cxx.............: $ac_cv_lib_log4cxx_main
   Libpcap.............: $ac_cv_lib_pcap_main
-  Pcre++..............: $ac_cv_lib_pcrepp_main
+  Pcre................: $WITH_PCRE
+  Pcre JIT............: $pcre_jit_works
 "
 

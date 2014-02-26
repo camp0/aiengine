@@ -30,8 +30,12 @@ bool Regex::evaluate(const std::string& data) {
         std::string::const_iterator start = data.begin();
         std::string::const_iterator end = data.end();
 	bool result = false;
-#if defined(HAVE_LIBPCRE__)
-	result = exp_.search(data);
+
+#if defined(HAVE_LIBPCRE)
+
+	int ret = pcre_exec(exp_,NULL,data.c_str(),data.length(),0,0,NULL,0);
+	if (ret == 0) 
+		result = true;	
 #else	
 #if defined(__LINUX__)	
 	result = boost::regex_match(start,end, what_, exp_);
