@@ -13,10 +13,11 @@ test_http_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../tcp/TCPProtocol.cc \
 			../flow/FlowManager.cc \
 			../names/DomainNameManager.cc \
+			../regex/Regex.cc \
 			HTTPProtocol.cc test_http.cc
 
 test_http_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
-test_http_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework -lboost_regex
+test_http_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework -lboost_regex $(PCRE_LIB)
 
 CLEANFILES = *.o *.lo *.so
 

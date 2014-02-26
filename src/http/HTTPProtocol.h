@@ -39,17 +39,13 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
-#if defined(__LINUX__)
-#include <boost/regex.hpp>
-#else
-#include <regex>
-#endif
 #include "HTTPHost.h"
 #include "HTTPUserAgent.h"
 #include "HTTPReferer.h"
 #include "../Cache.h"
 #include <unordered_map>
 #include "../names/DomainNameManager.h"
+#include "../regex/Regex.h"
 
 namespace aiengine {
 
@@ -58,13 +54,12 @@ class HTTPProtocol: public Protocol
 public:
     	explicit HTTPProtocol():http_header_(nullptr),total_bytes_(0),
 		total_allow_hosts_(0),total_ban_hosts_(0),
-		http_regex_("^(GET|POST|HEAD|PUT|TRACE).*HTTP/1."),
-		http_host_("Host: .*?\r\n"),
-		http_ua_("User-Agent: .*?\r\n"),
-		http_referer_("Referer: .*?\r\n"),
+		http_regex_(new Regex("Main HTTP expression","^(GET|POST|HEAD|PUT|TRACE).*HTTP/1.")),
+		http_host_(new Regex("Host expression","Host: .*?\r\n")),
+		http_ua_(new Regex("User Agent expression","User-Agent: .*?\r\n")),
 		host_cache_(new Cache<HTTPHost>("Host cache")),
 		ua_cache_(new Cache<HTTPUserAgent>("UserAgent cache")),
-		stats_level_(0) { name_="HTTPProtocol";}
+		stats_level_(0) { name_="HTTPProtocol"; } 
 
     	virtual ~HTTPProtocol() {}
 	
@@ -102,11 +97,8 @@ public:
         bool httpChecker(Packet& packet) {
         
 		const char * paco = reinterpret_cast<const char*>(packet.getPayload());
-#if defined(__LINUX__)		
-		if (boost::regex_search(paco, what_, http_regex_)){
-#else
-		if (std::regex_search(paco, what_, http_regex_)){
-#endif
+
+		if (http_regex_->evaluate(paco)) {
 
 			setHeader(packet.getPayload());
                         ++total_validated_packets_;
@@ -139,13 +131,7 @@ private:
 
 	int stats_level_;
 	FlowForwarderPtrWeak flow_forwarder_;
-#if defined(__LINUX__)
-	boost::regex http_regex_,http_host_,http_ua_,http_referer_;
-        boost::cmatch what_;
-#else
-	std::regex http_regex_,http_host_,http_ua_,http_referer_;
-        std::cmatch what_;
-#endif
+	SharedPointer<Regex> http_regex_,http_host_,http_ua_;
 	unsigned char *http_header_;
 	int64_t total_bytes_;
 	int32_t total_allow_hosts_;

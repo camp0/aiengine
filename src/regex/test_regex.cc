@@ -196,6 +196,18 @@ BOOST_AUTO_TEST_CASE (test6_regex)
         BOOST_CHECK(sigmng->getMatchedRegex() == re2);
 }
 
+BOOST_AUTO_TEST_CASE (test7_regex)
+{
+	std::string text("GET some/data/i/want/to/retrieve HTTP");
+        RegexManagerPtr sigmng = RegexManagerPtr( new RegexManager());
+        SharedPointer<Regex> re = SharedPointer<Regex>(new Regex("r1","^GET .* HTTP$"));
+
+	bool value = re->matchAndExtract(text);
+
+	BOOST_CHECK( value == true);
+	BOOST_CHECK( text.compare(re->getExtract()) == 0);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

@@ -96,10 +96,13 @@ public:
 	void setNextRegex(SharedPointer<Regex> reg) { next_regex_ = reg;is_terminal_ = false;}
 	SharedPointer<Regex> getNextRegex() { return next_regex_;}
 
+	bool matchAndExtract(const std::string& data) ;
+	const char *getExtract() const { return extract_buffer_.c_str();} 
 private:
 #if defined(HAVE_LIBPCRE)
 	const pcre *exp_;
 	pcre_extra *study_exp_;
+	int ovecount_[128];
 #else
 #if defined(__LINUX__)
 	boost::regex exp_;
@@ -112,6 +115,7 @@ private:
 	SharedPointer<Regex> next_regex_;
 	bool is_terminal_;
 	bool have_jit_;
+	std::string extract_buffer_;
 };
 
 } // namespace aiengine
