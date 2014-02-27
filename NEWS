@@ -15,5 +15,5 @@ features of 0.3.
 - TCP finite state machine (beta).
 
 features of 0.4
-- Pcre support.
-- Freebsd python support. 
+- Pcre with JIT support.
+- FreeBSD full python support. 

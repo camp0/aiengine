@@ -97,12 +97,18 @@ public:
 	SharedPointer<Regex> getNextRegex() { return next_regex_;}
 
 	bool matchAndExtract(const std::string& data) ;
+#if defined(HAVE_LIBPCRE)
+	const char *getExtract() const { return extract_buffer_;} 
+#else
 	const char *getExtract() const { return extract_buffer_.c_str();} 
+#endif
+
 private:
 #if defined(HAVE_LIBPCRE)
 	const pcre *exp_;
 	pcre_extra *study_exp_;
-	int ovecount_[128];
+	int ovecount_[32];
+	char extract_buffer_[256];
 #else
 #if defined(__LINUX__)
 	boost::regex exp_;
@@ -111,11 +117,11 @@ private:
 	std::regex exp_;
 	std::match_results<std::string::const_iterator> what_;
 #endif
+	std::string extract_buffer_;
 #endif
 	SharedPointer<Regex> next_regex_;
 	bool is_terminal_;
 	bool have_jit_;
-	std::string extract_buffer_;
 };
 
 } // namespace aiengine

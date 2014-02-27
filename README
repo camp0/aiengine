@@ -14,7 +14,7 @@ To use AIEngine just execute the binary aiengine:
 
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
-	iaengine 0.1
+	iaengine 0.4
 	Mandatory arguments:
 	  -I [ --interface ] arg            Sets the network interface.
 	  -P [ --pcapfile ] arg             Sets the pcap file.

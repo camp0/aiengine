@@ -56,14 +56,11 @@ bool Regex::matchAndExtract(const std::string &data) {
 
 #if defined(HAVE_LIBPCRE)
 
-        int ret = pcre_exec(exp_,NULL,data.c_str(),data.length(),0,0,ovecount_,128);
+        int ret = pcre_exec(exp_,NULL,data.c_str(),data.length(),0,0,ovecount_,32);
         if (ret == 1)
                 result = true;
-	const char *psubStrMatchStr;
-	//std::cout << "ret="<< ret << std::endl;
-	pcre_get_substring(data.c_str(),ovecount_,ret,0,&psubStrMatchStr);
-	extract_buffer_ = psubStrMatchStr;
-	//std::cout << "string="<< psubStrMatchStr << std::endl;
+
+	ret = pcre_copy_substring(data.c_str(),ovecount_,ret,0,extract_buffer_,256);
 #else
 #if defined(__LINUX__)
         result = boost::regex_match(start,end, what_, exp_);

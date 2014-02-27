@@ -84,6 +84,7 @@ if test x"$unittestsit" = x"yes"; then
     AX_BOOST_UNIT_TEST_FRAMEWORK
 fi
 
+AM_PATH_PYTHON
 AX_PYTHON_DEVEL([>= 2.7])
 AX_BOOST_PYTHON
 

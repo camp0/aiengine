@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
 
+python_PYTHON = pyai.py
+
 # EXTRA_FLAGS = -flto not supported on the freebsd compiler
 EXTRA_FLAGS = 
 EXTRA_DIST = py_wrapper.cc setup.py
@@ -132,7 +134,7 @@ $(srcdir)/pyaiengine.so: py_wrapper.cc
 		$(aiengine_core_sources) py_wrapper.cc \
 		-std=c++11 -lpthread -lstdc++ \
 		$(BOOST_LDFLAGS) $(BOOST_LINK_CORE) -lboost_python -lpython2.7 -lpcap \
-		$(LOG4CXX_FLAGS) -o pyaiengine.so -shared
+		$(LOG4CXX_FLAGS) $(PCRE_LIB) -o pyaiengine.so -shared
 
 CLEANFILES = *.o *.lo *.so
 
