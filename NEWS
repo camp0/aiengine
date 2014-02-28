@@ -1,11 +1,11 @@
 It seems that on g++4.7.2 there is a bug with the optimization, so we keep the code on -O0.
 
-features of 0.2.
+Features of 0.2.
 - Support for chainging regex.
 - HTTP domain accesing.
 - Support for IPv6 with a new NetworkStack
 
-features of 0.3.
+Features of 0.3.
 - Regex bug of \x00 charater.
 - Integration of IPv4 and IPv6 stack on one.
 - Freebsd support for the aiengine binary (not the python wrapper).
@@ -14,6 +14,32 @@ features of 0.3.
 - Support for sigusr1, sigusr2 on the aiengine binary for dump stats.
 - TCP finite state machine (beta).
 
-features of 0.4
+Features of 0.4
 - Pcre with JIT support.
-- FreeBSD full python support. 
+- FreeBSD full python support.
+
+Some benchmark results of 0.4 version
+
+	EthernetProtocol(0x1235010) statistics
+		Total packets:                   0
+		Total bytes:          439034385904
+		Total validated packets: 723537721
+		Total malformed packets:   1408838
+		Total bytes:          439034385904
+	Multiplexer(0x1251a80) statistics
+		Plugged to object(0x1235010)
+		Total forward packets:   723537721
+		Total received packets:  723537721
+		Total fail packets:              0
+
+	IPProtocol(0x1235220) statistics
+		Total packets:           723537721
+		Total bytes:          428904857810
+		Total validated packets: 723537721
+		Total malformed packets:         0
+	Multiplexer(0x1251f00) statistics
+		Plugged to object(0x1235220)
+		Total forward packets:   723537721
+		Total received packets:  723537721
+		Total fail packets:              0
+ 

@@ -6,6 +6,7 @@ without any human intervention.
 
 AIEngine helps network/security profesionals to identify traffic and develop
 signatures for use them on NIDS, Firewalls, Traffic classifiers and so on.
+The application is supported on Linux and FreeBSD operating systems.
 
 Using AIEngine 
 ---------------
@@ -13,7 +14,7 @@ Using AIEngine
 To use AIEngine just execute the binary aiengine:
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
-	iaengine 0.3
+	iaengine 0.4
 	Mandatory arguments:
 	  -I [ --interface ] arg            Sets the network interface.
 	  -P [ --pcapfile ] arg             Sets the pcap file or directory with pcap 
@@ -167,7 +168,6 @@ The main objects that the python module provide are the following ones.
 	   |---> setTotalTCPFlows
 	   |---> setTotalUDPFlows
 	   |---> setUDPRegexManager
-	std_ostream
 
 Check the wiki pages in order to have more complex examples.
 
