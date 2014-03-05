@@ -17,3 +17,9 @@ Version 0.3
 * Add levels for output the statistics of the classes.DONE.
 * Add Blacklists for the domains in order to avoid unwanted domains. DONE.
 * Add support for dumping statistics from the aiengine binary by using sigusr1 and sigusr2. DONE.
+
+Version 0.4
+* Sorry I forget to fill.
+
+Version 0.5
+* Support for pcapng on the aiengine binary

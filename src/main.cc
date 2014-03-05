@@ -444,7 +444,8 @@ int main(int argc, char* argv[]) {
     
 			while (it != endit) {
       				if (fs::is_regular_file(*it)and((it->path().extension() == ".pcap")
-					or(it->path().extension() == ".cap"))) {
+					or(it->path().extension() == ".cap") 
+					or(it->path().extension() == ".pcapng"))) {
 					std::ostringstream os;
 					
 					os << option_pcapfile.c_str() << "/" << it->path().filename().c_str();

@@ -14,7 +14,5 @@ Installing on BSD systems.
 --------------------------
 
 ./configure
-make -i
-
-BSD versions can not compile the python binding due to a limitation on the compilation system.
-
+make 
+make install

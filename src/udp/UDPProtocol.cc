@@ -60,8 +60,8 @@ SharedPointer<Flow> UDPProtocol::getFlow() {
 	MultiplexerPtr ipmux = downmux.lock();
 
 	if (flow_table_) {
-                h1 = ipmux->address.getHash(getSrcPort(),17,getDstPort());
-                h2 = ipmux->address.getHash(getDstPort(),17,getSrcPort());
+                h1 = ipmux->address.getHash(getSrcPort(),IPPROTO_UDP,getDstPort());
+                h2 = ipmux->address.getHash(getDstPort(),IPPROTO_UDP,getSrcPort());
 
 		flow = flow_table_->findFlow(h1,h2);
 		if (!flow){
@@ -71,12 +71,12 @@ SharedPointer<Flow> UDPProtocol::getFlow() {
 					flow->setId(h1);
                                         if (ipmux->address.getType() == 4) {
                                                 flow->setFiveTuple(ipmux->address.getSourceAddress(),
-                                                        getSrcPort(),6,
+                                                        getSrcPort(),IPPROTO_UDP,
                                                         ipmux->address.getDestinationAddress(),
                                                         getDstPort());
                                         } else {
                                                 flow->setFiveTuple6(ipmux->address.getSourceAddress6(),
-                                                        getSrcPort(),6,
+                                                        getSrcPort(),IPPROTO_UDP,
                                                         ipmux->address.getDestinationAddress6(),
                                                         getDstPort());
                                         }

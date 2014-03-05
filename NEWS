@@ -20,26 +20,28 @@ Features of 0.4
 
 Some benchmark results of 0.4 version
 
-	EthernetProtocol(0x1235010) statistics
+	EthernetProtocol(0xa36010) statistics
 		Total packets:                   0
-		Total bytes:          439034385904
-		Total validated packets: 723537721
-		Total malformed packets:   1408838
-		Total bytes:          439034385904
-	Multiplexer(0x1251a80) statistics
-		Plugged to object(0x1235010)
-		Total forward packets:   723537721
-		Total received packets:  723537721
+		Total bytes:         2065338805586
+		Total validated packets:3408802476
+		Total malformed packets:   6723295
+		Total bytes:         2065338805586
+	Multiplexer(0xa52a80) statistics
+		Plugged to object(0xa36010)
+		Total forward packets:  3408802476
+		Total received packets: 3408802476
 		Total fail packets:              0
 
-	IPProtocol(0x1235220) statistics
-		Total packets:           723537721
-		Total bytes:          428904857810
-		Total validated packets: 723537721
+	IPProtocol(0xa36220) statistics
+		Total packets:          3408802476
+		Total bytes:         2017615570922
+		Total validated packets:3408802476
 		Total malformed packets:         0
-	Multiplexer(0x1251f00) statistics
-		Plugged to object(0x1235220)
-		Total forward packets:   723537721
-		Total received packets:  723537721
+	Multiplexer(0xa52f00) statistics
+		Plugged to object(0xa36220)
+		Total forward packets:  3408802476
+		Total received packets: 3408802476
 		Total fail packets:              0
- 
+
+Features of 0.5
+- Fix minor bugs (printFlows) 

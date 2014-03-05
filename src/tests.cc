@@ -886,5 +886,45 @@ BOOST_AUTO_TEST_CASE ( test_case_4 ) // integrate the learner and the FrequencyG
 	BOOST_CHECK(it == group.end());
 }
 
+// Check the file format support for pcapng files
+BOOST_AUTO_TEST_CASE ( test_case_5 )
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        StackLanPtr stack = StackLanPtr(new StackLan());
+
+        stack->setTotalTCPFlows(1);
+        stack->setTotalUDPFlows(2);
+        pd->setStack(stack);
+
+        pd->openPcapFile("../pcapfiles/icq.pcapng");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        pd->openPcapFile("../pcapfiles/4udppackets.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+	FlowManagerPtr flows_tcp = stack->getTCPFlowManager().lock();
+	FlowManagerPtr flows_udp = stack->getUDPFlowManager().lock();
+
+	BOOST_CHECK(flows_tcp->getTotalFlows() == 1);
+	BOOST_CHECK(flows_udp->getTotalFlows() == 1);
+
+	auto ft = flows_tcp->getFlowTable();
+	for (auto it = ft.begin(); it != ft.end(); ++it) {
+		SharedPointer<Flow> flow = *it;
+
+		BOOST_CHECK(flow->getProtocol() == IPPROTO_TCP);
+	}
+	ft = flows_udp->getFlowTable();
+	for (auto it = ft.begin(); it != ft.end(); ++it) {
+		SharedPointer<Flow> flow = *it;
+
+		BOOST_CHECK(flow->getProtocol() == IPPROTO_UDP);
+	}
+}
+
+
+
 BOOST_AUTO_TEST_SUITE_END( )
 
