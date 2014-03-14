@@ -80,7 +80,22 @@ SharedPointer<Flow> UDPProtocol::getFlow() {
                                                         ipmux->address.getDestinationAddress6(),
                                                         getDstPort());
                                         }
-					flow_table_->addFlow(flow);			
+					flow_table_->addFlow(flow);		
+#if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
+                        		if (is_set_db_) { // There is attached a database object
+                                		std::ostringstream key;
+
+                                		key << *flow;
+
+                                		PyGILState_STATE state(PyGILState_Ensure());
+                                		try {
+                                        		boost::python::call_method<void>(dbptr_.ptr(),"insert",key.str());
+                                		} catch(std::exception &e) {
+                                        		std::cout << "ERROR:" << e.what() << std::endl;
+                                		}
+                                		PyGILState_Release(state);
+                        		}
+#endif
 				}
 			}
 		}
@@ -115,8 +130,36 @@ void UDPProtocol::processPacket(Packet& packet) {
 
                         flow->packet = const_cast<Packet*>(&packet);
                         ff->forwardFlow(flow.get());
-		}	
+		}
+		
+#if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR) 
+		if (flow->total_packets % 16 ) {
+			if (is_set_db_) { // There is attached a database object
+				std::ostringstream data;
+				std::ostringstream key; 
+
+				key << *flow;
+				flow->serialize(data);
+				
+                                PyGILState_STATE state(PyGILState_Ensure());
+                                try {
+					boost::python::call_method<void>(dbptr_.ptr(),"update",key.str(),data.str());	
+                                } catch(std::exception &e) {
+                                        std::cout << "ERROR:" << e.what() << std::endl;
+				}
+                                PyGILState_Release(state);
+			} 
+		}
+#endif
 	}
 }
+
+#ifdef PYTHON_BINDING
+void UDPProtocol::setDatabaseAdaptor(boost::python::object &dbptr) {
+
+	is_set_db_ = true;
+	dbptr_ = dbptr;
+}
+#endif
 
 } // namespace aiengine

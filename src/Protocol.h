@@ -32,6 +32,7 @@
 #include <fstream>
 #include "FlowForwarder.h"
 #include "Multiplexer.h"
+#include "DatabaseAdaptor.h"
 
 namespace aiengine {
 
@@ -53,12 +54,16 @@ public:
 	virtual void processFlow(Flow *flow) = 0;
 	virtual void processPacket(Packet &packet) = 0;
 
-	void virtual setMultiplexer(MultiplexerPtrWeak mux) = 0;
-	MultiplexerPtrWeak virtual getMultiplexer() = 0; 
+	virtual void setMultiplexer(MultiplexerPtrWeak mux) = 0;
+	virtual MultiplexerPtrWeak getMultiplexer() = 0; 
 
-	void virtual setFlowForwarder(FlowForwarderPtrWeak ff) = 0;
-	FlowForwarderPtrWeak virtual getFlowForwarder() = 0; 
-	
+	virtual void setFlowForwarder(FlowForwarderPtrWeak ff) = 0;
+	virtual FlowForwarderPtrWeak getFlowForwarder() = 0; 
+
+#ifdef PYTHON_BINDING
+	virtual void setDatabaseAdaptor(boost::python::object &dbptr) = 0;
+#endif
+
 	mutable std::string name_;
 	mutable int64_t total_malformed_packets_;
 	mutable int64_t total_validated_packets_;

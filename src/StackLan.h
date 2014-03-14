@@ -51,6 +51,7 @@
 #include "./flow/FlowCache.h"
 #include "./frequency/FrequencyProtocol.h"
 #include "NetworkStack.h"
+#include "DatabaseAdaptor.h"
 
 namespace aiengine {
 
@@ -95,6 +96,9 @@ public:
 	void setHTTPHostNameManager(DomainNameManager& dnm, bool allow);
 	void setSSLHostNameManager(DomainNameManager& dnm);
 	void setSSLHostNameManager(DomainNameManager& dnm, bool allow);
+	
+	void setTCPDatabaseAdaptor(boost::python::object &dbptr);
+	void setUDPDatabaseAdaptor(boost::python::object &dbptr);
 #else
         FlowManagerPtrWeak getTCPFlowManager() { return flow_table_tcp_;}
         FlowManagerPtrWeak getUDPFlowManager() { return flow_table_udp_;}
@@ -162,6 +166,8 @@ private:
 	DomainNameManagerPtr ban_dns_domains_;
 	DomainNameManagerPtr ban_http_host_domains_;
 	DomainNameManagerPtr ban_ssl_host_domains_;
+
+	DatabaseAdaptorPtr bbdd_;
 };
 
 typedef std::shared_ptr<StackLan> StackLanPtr;

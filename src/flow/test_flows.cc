@@ -148,6 +148,30 @@ BOOST_AUTO_TEST_CASE (test4_flowcache)
         delete fc;
 }
 
+BOOST_AUTO_TEST_CASE (test5_flow_serialize)
+{
+        FlowCache *fc = new FlowCache();
+        fc->createFlows(1);
+
+        SharedPointer<Flow> f1 = fc->acquireFlow().lock();
+
+	f1->setFiveTuple(inet_addr("192.168.1.1"),2345,6,inet_addr("54.12.5.1"),80);
+
+	std::ostringstream os;
+	std::string output("{ipsrc:'192.168.1.1', portsrc:2345, proto:6, ipdst:'54.12.5.1', portdst:80, bytes:0 }");
+	f1->serialize(os);
+
+	BOOST_CHECK(output.compare(os.str()) == 0);
+
+        fc->releaseFlow(f1);
+        BOOST_CHECK(fc->getTotalFlowsOnCache() == 1);
+        BOOST_CHECK(fc->getTotalReleases() == 1);
+
+        fc->destroyFlows(fc->getTotalFlows());
+        delete fc;
+}
+
+
 BOOST_AUTO_TEST_SUITE_END( )
 
 BOOST_AUTO_TEST_SUITE (flowmanager) // name of the test suite is stringtest

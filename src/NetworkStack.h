@@ -30,6 +30,7 @@
 #include "./names/DomainNameManager.h"
 #include "./regex/RegexManager.h"
 #include "./flow/FlowManager.h"
+#include "DatabaseAdaptor.h"
 
 namespace aiengine {
 
@@ -49,8 +50,8 @@ public:
 	virtual const char* getName() = 0;
 	virtual void setName(char *name) = 0;
 
-	void virtual setLinkLayerMultiplexer(MultiplexerPtrWeak mux) = 0;
-	MultiplexerPtrWeak virtual getLinkLayerMultiplexer() = 0; 
+	virtual void setLinkLayerMultiplexer(MultiplexerPtrWeak mux) = 0;
+	virtual MultiplexerPtrWeak getLinkLayerMultiplexer() = 0; 
 
 	virtual void setTotalTCPFlows(int value) = 0;
 	virtual void setTotalUDPFlows(int value) = 0;
@@ -74,6 +75,9 @@ public:
 	virtual void setHTTPHostNameManager(DomainNameManager& dnm, bool allow) = 0;
 	virtual void setSSLHostNameManager(DomainNameManager& dnm) = 0;
 	virtual void setSSLHostNameManager(DomainNameManager& dnm, bool allow) = 0;
+	
+	virtual void setTCPDatabaseAdaptor(boost::python::object &dbptr) = 0;
+	virtual void setUDPDatabaseAdaptor(boost::python::object &dbptr) = 0;
 #else
 	virtual FlowManagerPtrWeak getTCPFlowManager() = 0;
 	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;

@@ -21,6 +21,10 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <string>
 #include "Multiplexer.h"
 #include "FlowForwarder.h"
@@ -34,6 +38,10 @@
 #include "./frequency/FrequencyGroup.h"
 #include "./learner/LearnerEngine.h"
 #include "StackLanTest.h"
+
+#ifdef HAVE_REDIS
+#include "RedisAdaptor.h"
+#endif
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE Main 
@@ -925,6 +933,17 @@ BOOST_AUTO_TEST_CASE ( test_case_5 )
 }
 
 
+BOOST_AUTO_TEST_SUITE_END( )
+
+#ifdef HAVE_REDIS
+
+BOOST_AUTO_TEST_SUITE (test_redis_integration) // Test cases with redis 
+
+BOOST_AUTO_TEST_CASE ( test_case_1 )
+{
+	SharedPointer<DatabaseAdaptor> db = SharedPointer<DatabaseAdaptor>(new RedisAdaptor());  
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 
+#endif

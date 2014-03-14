@@ -69,6 +69,10 @@ public:
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
         MultiplexerPtrWeak getMultiplexer() { return mux_;}
 
+#ifdef PYTHON_BINDING
+        void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
+#endif
+
         void setHeader(unsigned char *raw_packet) {
         
                 ip_header_ = reinterpret_cast <struct ip*> (raw_packet);

@@ -13,6 +13,7 @@ test_frequency_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ip/IPProtocol.cc \
 			../tcp/TCPProtocol.cc \
 			../flow/FlowManager.cc \
+			../flow/Flow.cc \
 			FrequencyProtocol.cc FrequencyCounter.cc test_frequency.cc
 
 test_frequency_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE

@@ -10,6 +10,7 @@ test_dns_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ethernet/EthernetProtocol.cc \
 			../ip/IPProtocol.cc \
 			../udp/UDPProtocol.cc \
+			../flow/Flow.cc \
 			../flow/FlowManager.cc \
 			../names/DomainNameManager.cc \
 			DNSProtocol.cc test_dns.cc

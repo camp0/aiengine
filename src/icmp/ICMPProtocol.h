@@ -67,6 +67,10 @@ public:
         void setFlowForwarder(FlowForwarderPtrWeak ff) {}
         FlowForwarderPtrWeak getFlowForwarder() { FlowForwarderPtrWeak ptr; return ptr; }
 
+#ifdef PYTHON_BINDING
+        void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
+#endif
+
         void setHeader(unsigned char *raw_packet) { 
        
 #ifdef __FREEBSD__ 

@@ -10,6 +10,7 @@ test_udpgeneric_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 				../ethernet/EthernetProtocol.cc \
 				../ip/IPProtocol.cc \
 				../udp/UDPProtocol.cc \
+				../flow/Flow.cc \
 				../flow/FlowManager.cc \
 				../regex/RegexManager.cc \
 				../regex/Regex.cc \

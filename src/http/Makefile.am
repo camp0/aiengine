@@ -11,6 +11,7 @@ test_http_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ip/IPProtocol.cc \
 			../ip6/IPv6Protocol.cc \
 			../tcp/TCPProtocol.cc \
+			../flow/Flow.cc \
 			../flow/FlowManager.cc \
 			../names/DomainNameManager.cc \
 			../regex/Regex.cc \

@@ -41,11 +41,15 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			./names/DomainName.h \
 			./names/DomainNode.h \
 			./names/DomainNameManager.h \
-			System.h StackLanTest.h 
+			System.h \
+			StackLanTest.h \
+			Serializable.h \
+			DatabaseAdaptor.h 
 
 aiengine_core_sources =	Multiplexer.cc \
 			FlowForwarder.cc \
 			PacketDispatcher.cc \
+			./flow/Flow.cc \
 			./flow/FlowManager.cc \
 			./ethernet/EthernetProtocol.cc \
 			./vlan/VLanProtocol.cc \

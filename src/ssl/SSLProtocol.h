@@ -134,6 +134,10 @@ public:
         void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
         FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
 
+#ifdef PYTHON_BINDING
+        void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
+#endif
+
         void setHeader(unsigned char *raw_packet) {
         
                 ssl_header_ = reinterpret_cast<ssl_record*>(raw_packet);

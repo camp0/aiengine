@@ -44,4 +44,5 @@ Some benchmark results of 0.4 version
 		Total fail packets:              0
 
 Features of 0.5
-- Fix minor bugs (printFlows) 
+- Fix minor bugs (printFlows, runPcap and run)
+- DatabaseAdaptor generated on python, so a lot of databases could be use, redis, voltdb..... 

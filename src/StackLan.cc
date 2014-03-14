@@ -330,6 +330,16 @@ void StackLan::setSSLHostNameManager(DomainNameManager& dnm) {
 	setSSLHostNameManager(dnm,true);
 }
 
+void StackLan::setUDPDatabaseAdaptor(boost::python::object &dbptr) {
+
+	udp_->setDatabaseAdaptor(dbptr);
+} 
+
+void StackLan::setTCPDatabaseAdaptor(boost::python::object &dbptr) {
+
+	tcp_->setDatabaseAdaptor(dbptr);
+} 
+
 #endif
 
 void StackLan::enableFrequencyEngine(bool enable) {

@@ -36,6 +36,7 @@
 #include "./learner/LearnerEngine.h"
 #include "./names/DomainNameManager.h"
 #include "./Signature.h"
+#include "DatabaseAdaptor.h"
 #include <boost/python.hpp>
 #include <boost/asio.hpp>
 
@@ -49,6 +50,15 @@ using namespace log4cxx::helpers;
 
 using namespace boost::python;
 using namespace aiengine;
+
+struct DatabaseAdaptorWrap: DatabaseAdaptor, wrapper<DatabaseAdaptor>
+{
+        void connect(std::string &connection_str) { this->get_override("connection")(connection_str); }
+        void insert(std::string &key) { this->get_override("insert")(key); }
+        void update(std::string &key, std::string& data) { this->get_override("update")(key,data); }
+        void remove(std::string &key) { this->get_override("delete")(key); }
+};
+
 
 BOOST_PYTHON_MODULE(pyaiengine)
 {
@@ -95,6 +105,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getTCPFlowManager",pure_virtual(&NetworkStack::getTCPFlowManager),return_internal_reference<>())
 		.def("getUDPFlowManager",pure_virtual(&NetworkStack::getUDPFlowManager),return_internal_reference<>())
 		.def("setStatisticsLevel",pure_virtual(&NetworkStack::setStatisticsLevel))
+		.def("setTCPDatabaseAdaptor",pure_virtual(&NetworkStack::setTCPDatabaseAdaptor))
+		.def("setUDPDatabaseAdaptor",pure_virtual(&NetworkStack::setUDPDatabaseAdaptor))
         ;
 
 	// Definitions for the StackLan class
@@ -131,6 +143,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getTCPFlowManager",&StackLan::getTCPFlowManager,return_internal_reference<>())
 		.def("getUDPFlowManager",&StackLan::getUDPFlowManager,return_internal_reference<>())
 		.def("setStatisticsLevel",&StackLan::setStatisticsLevel)
+		.def("setTCPDatabaseAdaptor",&StackLan::setTCPDatabaseAdaptor)
+		.def("setUDPDatabaseAdaptor",&StackLan::setUDPDatabaseAdaptor)
 	;
 
 	// Definitions for the StackMobile class
@@ -167,6 +181,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getTCPFlowManager",&StackMobile::getTCPFlowManager,return_internal_reference<>())
 		.def("getUDPFlowManager",&StackMobile::getUDPFlowManager,return_internal_reference<>())
 		.def("setStatisticsLevel",&StackMobile::setStatisticsLevel)
+		.def("setTCPDatabaseAdaptor",&StackMobile::setTCPDatabaseAdaptor)
+		.def("setUDPDatabaseAdaptor",&StackMobile::setUDPDatabaseAdaptor)
         ;
 
 
@@ -204,6 +220,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("getTCPFlowManager",&StackLanIPv6::getTCPFlowManager,return_internal_reference<>())
                 .def("getUDPFlowManager",&StackLanIPv6::getUDPFlowManager,return_internal_reference<>())
                 .def("setStatisticsLevel",&StackLanIPv6::setStatisticsLevel)
+                .def("setTCPDatabaseAdaptor",&StackLanIPv6::setTCPDatabaseAdaptor)
+                .def("setUDPDatabaseAdaptor",&StackLanIPv6::setUDPDatabaseAdaptor)
         ;
 	
 	boost::python::class_<Regex>("Regex",init<const std::string&,const std::string&>())
@@ -322,6 +340,13 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("addDomainName",addDomainName2)
                 //.def("__len__",&RegexManager::getTotalRegexs)
                 //.def(self_ns::str(self_ns::self))
+        ;
+
+        boost::python::class_<DatabaseAdaptorWrap, boost::noncopyable>("DatabaseAdaptor",no_init)
+                .def("connect",pure_virtual(&DatabaseAdaptor::connect))
+                .def("insert",pure_virtual(&DatabaseAdaptor::insert))
+                .def("update",pure_virtual(&DatabaseAdaptor::update))
+                .def("remove",pure_virtual(&DatabaseAdaptor::remove))
         ;
 
 }

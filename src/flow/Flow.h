@@ -30,6 +30,7 @@
 
 #include "../Pointer.h"
 #include "../Packet.h"
+#include "../Serializable.h"
 #include "../IPAddress.h"
 #include "../regex/Regex.h"
 #include "../frequency/Frequencies.h"
@@ -57,7 +58,7 @@ enum class FlowDirection : std::int8_t {
 	BACKWARD = 1 
 };
 
-class Flow {
+class Flow : public Serializable {
 public:
     	Flow() {reset();}
     	virtual ~Flow() {}
@@ -71,14 +72,8 @@ public:
 	FlowDirection getPrevFlowDirection() { return prev_direction_; }
 
 	// IP functions
-	inline void setFiveTuple(u_int32_t src_a,u_int16_t src_p,u_int16_t proto,u_int32_t dst_a,u_int16_t dst_p) {
-	
-		address_.setSourceAddress(src_a);
-		address_.setDestinationAddress(dst_a);
-		source_port_ = src_p;
-		dest_port_ = dst_p;
-		protocol_ = proto;
-	}
+	void setFiveTuple(u_int32_t src_a,u_int16_t src_p,u_int16_t proto,u_int32_t dst_a,u_int16_t dst_p);
+       	void setFiveTuple6(struct in6_addr *src_a,u_int16_t src_p,u_int16_t proto,struct in6_addr *dst_a,u_int16_t dst_p); 
 
 	u_int32_t getSourceAddress() const { return address_.getSourceAddress();}
 	u_int32_t getDestinationAddress() const { return address_.getDestinationAddress();}
@@ -88,16 +83,6 @@ public:
 
         char* getSrcAddrDotNotation() const { return address_.getSrcAddrDotNotation();}
         char* getDstAddrDotNotation() const { return address_.getDstAddrDotNotation();}
-
-	// IPv6 functtions
-        inline void setFiveTuple6(struct in6_addr *src_a,u_int16_t src_p,u_int16_t proto,struct in6_addr *dst_a,u_int16_t dst_p) {
-
-                address_.setSourceAddress6(src_a);
-                address_.setDestinationAddress6(dst_a);
-                source_port_ = src_p;
-                dest_port_ = dst_p;
-                protocol_ = proto;
-        }
 
 	int32_t total_bytes;
 	int32_t total_packets_l7;
@@ -118,28 +103,7 @@ public:
 	// specific values for a specific Engine
 	bool frequency_engine_inspected;
 	
-	inline void reset() {
-
-		hash_ = 0;
-		total_bytes = 0;
-		total_packets = 0;
-		total_packets_l7 = 0;
-		address_.reset();
-		source_port_ = 0;
-		dest_port_ = 0;
-		protocol_ = 0;		
-		forwarder.reset();
-		frequencies.reset();
-		http_host.reset();
-		ssl_host.reset();
-		http_ua.reset();
-		regex.reset();
-		dns_domain.reset();
-		tcp_info.reset();
-		packet = nullptr;
-		frequency_engine_inspected = false;
-		prev_direction_ = direction_ = FlowDirection::FORWARD;
-	}
+	void reset() ; 
 
 	friend std::ostream& operator<< (std::ostream& out, const Flow& flow) {
 	
@@ -147,6 +111,9 @@ public:
 		out << ":" << flow.address_.getDstAddrDotNotation() << ":" << flow.getDestinationPort();
         	return out;
 	}
+
+    	void serialize(std::ostream& stream) ;
+    	void deserialize(std::istream& stream) {} ;
 
 #ifdef PYTHON_BINDING
 	int32_t getTotalBytes() const { return total_bytes;}

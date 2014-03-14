@@ -384,6 +384,16 @@ void StackMobile::setSSLHostNameManager(DomainNameManager& dnm) {
 	setSSLHostNameManager(dnm,true);
 }
 
+void StackMobile::setUDPDatabaseAdaptor(boost::python::object &dbptr) {
+
+        udp_high_->setDatabaseAdaptor(dbptr);
+}
+
+void StackMobile::setTCPDatabaseAdaptor(boost::python::object &dbptr) {
+
+        tcp_->setDatabaseAdaptor(dbptr);
+}
+
 #endif
 
 void StackMobile::setTotalTCPFlows(int value) {

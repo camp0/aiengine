@@ -88,7 +88,22 @@ SharedPointer<Flow> TCPProtocol::getFlow() {
 					SharedPointer<TCPInfo> tcp_info_ptr = tcp_info_cache_->acquire().lock();
 					if (tcp_info_ptr) { 
 						flow->tcp_info = tcp_info_ptr;
-					} 
+					}
+#if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
+                                        if (is_set_db_) { // There is attached a database object
+                                                std::ostringstream key;
+
+                                                key << *flow;
+
+                                                PyGILState_STATE state(PyGILState_Ensure());
+                                                try {
+                                                        boost::python::call_method<void>(dbptr_.ptr(),"insert",key.str());
+                                                } catch(std::exception &e) {
+                                                        std::cout << "ERROR:" << e.what() << std::endl;
+                                                }
+                                                PyGILState_Release(state);
+                                        }
+#endif
                                 }
                         }
                 } else {
@@ -151,8 +166,43 @@ void TCPProtocol::processPacket(Packet &packet) {
 					tcp_info_cache_->release(tcp_info);
 					flow_table_->removeFlow(flow);
 					flow_cache_->releaseFlow(flow);
+#if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
+                                        if (is_set_db_) { // There is attached a database object
+                                                std::ostringstream key;
+
+                                                key << *flow;
+
+                                                PyGILState_STATE state(PyGILState_Ensure());
+                                                try {
+                                                        boost::python::call_method<void>(dbptr_.ptr(),"remove",key.str());
+                                                } catch(std::exception &e) {
+                                                        std::cout << "ERROR:" << e.what() << std::endl;
+                                                }
+                                                PyGILState_Release(state);
+                                        }
+#endif
+					return; // I dont like but sometimes.....
 				}
 			}
+#if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
+                	if (flow->total_packets % 16 ) {
+                        	if (is_set_db_) { // There is attached a database object
+                                	std::ostringstream data;
+                                	std::ostringstream key;
+
+                                	key << *flow;
+                                	flow->serialize(data);
+
+                                	PyGILState_STATE state(PyGILState_Ensure());
+                                	try {
+                                        	boost::python::call_method<void>(dbptr_.ptr(),"update",key.str(),data.str());
+                                	} catch(std::exception &e) {
+                                        	std::cout << "ERROR:" << e.what() << std::endl;
+                                	}
+                                	PyGILState_Release(state);
+                        	}
+                	}
+#endif
 		}
 	}
 }
@@ -249,5 +299,13 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 
 	} // end tcp_info
 }
+
+#ifdef PYTHON_BINDING
+void TCPProtocol::setDatabaseAdaptor(boost::python::object &dbptr) {
+
+        is_set_db_ = true;
+        dbptr_ = dbptr;
+}
+#endif
 
 } // namespace aiengine

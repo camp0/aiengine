@@ -184,6 +184,26 @@ else
     AM_CXXFLAGS="$AM_CXXFLAGS -O0"
 fi
 
+
+##########################################################################
+# database adaptor support
+##########################################################################
+
+AC_MSG_CHECKING([whether to build database adaptors on python])
+AC_ARG_ENABLE([adaptor],
+    [AS_HELP_STRING([--enable-adaptor],
+        [enable python database adaptor support (def=no)])],
+    [adaptor_support=yes],
+    [adaptor_support=no])
+AC_MSG_RESULT([$adaptor_support])
+
+if test x"$adaptor_support" = x"yes"; then
+    AC_DEFINE([HAVE_ADAPTOR],[1],[Database adaptor python support])
+else
+    AC_DEFINE([HAVE_ADAPTOR],[0],[No database adaptor python support])
+fi
+
+
 CXXFLAGS=$AM_CXXFLAGS
 
 ##########################################################################
@@ -238,5 +258,6 @@ echo "
   Libpcap.............: $ac_cv_lib_pcap_main
   Pcre................: $WITH_PCRE
   Pcre JIT............: $pcre_jit_works
+  Database support....: $adaptor_support
 "
 

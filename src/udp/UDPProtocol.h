@@ -36,6 +36,7 @@
 #include "../flow/FlowManager.h"
 #include "../flow/FlowCache.h"
 #include "../FlowForwarder.h"
+#include "../DatabaseAdaptor.h"
 
 namespace aiengine {
 
@@ -43,8 +44,15 @@ class UDPProtocol: public Protocol
 {
 public:
     	explicit UDPProtocol(): udp_header_(nullptr),total_bytes_(0),
+#ifdef PYTHON_BINDING
+        	dbptr_(),is_set_db_(false),
+#endif
 		stats_level_(0) { name_="UDPProtocol";}
+
     	explicit UDPProtocol(std::string name): udp_header_(nullptr),total_bytes_(0),
+#ifdef PYTHON_BINDING
+        	dbptr_(),is_set_db_(false),
+#endif
 		stats_level_(0) { name_=name;}
     	virtual ~UDPProtocol() {}
 
@@ -77,6 +85,8 @@ public:
         
                 udp_header_ = reinterpret_cast <struct udphdr*> (raw_packet);
         }
+
+	void setDatabaseAdaptor(DatabaseAdaptorPtrWeak dbptr) {} ;
 
 	// Condition for say that a packet its ethernet 
 	bool udpChecker(Packet &packet){ 
@@ -112,6 +122,10 @@ public:
 	void setFlowCache(FlowCachePtr flow_cache) { flow_cache_ = flow_cache;}
 	FlowCachePtr getFlowCache() { return flow_cache_;}
 
+#ifdef PYTHON_BINDING
+	void setDatabaseAdaptor(boost::python::object &dbptr);
+#endif
+
 private:
 	SharedPointer<Flow> getFlow(); 
 
@@ -122,6 +136,10 @@ private:
 	FlowForwarderPtrWeak flow_forwarder_;
 	struct udphdr *udp_header_;
 	int64_t total_bytes_;
+#ifdef PYTHON_BINDING
+	boost::python::object dbptr_;
+	bool is_set_db_;
+#endif
 };
 
 typedef std::shared_ptr<UDPProtocol> UDPProtocolPtr;

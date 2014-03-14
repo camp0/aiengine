@@ -239,15 +239,29 @@ void PacketDispatcher::run() {
         	idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(5));
                 idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
                         boost::asio::placeholders::error));
+		try {
+			start_operations();
+			io_service_.run();
+		}
+		catch (std::exception& e) {
+        		std::cerr << e.what() << std::endl;
+        	}
+	} else {
+#ifdef HAVE_LIBLOG4CXX
+                LOG4CXX_WARNING(logger,"The device is not ready to run"); 
+#else
+                std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
+                std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+#ifdef __clang__
+                std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
+#else
+                char mbstr[100];
+                std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
+                std::cout << "[" << mbstr << "] ";
+#endif
+                std::cout << "The device is not ready to run" << std::endl;
+#endif
 	}
-
-	try {
-		start_operations();
-		io_service_.run();
-	}
-	catch (std::exception& e) {
-        	std::cerr << e.what() << std::endl;
-        }
 }
 
 } // namespace aiengine
