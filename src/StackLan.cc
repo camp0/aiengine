@@ -340,6 +340,17 @@ void StackLan::setTCPDatabaseAdaptor(boost::python::object &dbptr) {
 	tcp_->setDatabaseAdaptor(dbptr);
 } 
 
+void StackLan::setUDPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
+
+        udp_->setDatabaseAdaptor(dbptr,packet_sampling);
+}
+
+void StackLan::setTCPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
+
+        tcp_->setDatabaseAdaptor(dbptr, packet_sampling);
+}
+
+
 #endif
 
 void StackLan::enableFrequencyEngine(bool enable) {

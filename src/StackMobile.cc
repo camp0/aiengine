@@ -394,6 +394,16 @@ void StackMobile::setTCPDatabaseAdaptor(boost::python::object &dbptr) {
         tcp_->setDatabaseAdaptor(dbptr);
 }
 
+void StackMobile::setUDPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
+
+        udp_high_->setDatabaseAdaptor(dbptr,packet_sampling);
+}
+
+void StackMobile::setTCPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
+
+        tcp_->setDatabaseAdaptor(dbptr, packet_sampling);
+}
+
 #endif
 
 void StackMobile::setTotalTCPFlows(int value) {

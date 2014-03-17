@@ -47,15 +47,9 @@ class TCPProtocol: public Protocol
 public:
     	explicit TCPProtocol():tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
 		stats_level_(0),
-#ifdef PYTHON_BINDING
-		is_set_db_(false),
-#endif
 		tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")) { name_="TCPProtocol";}
     	explicit TCPProtocol(std::string name):tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
 		stats_level_(0),
-#ifdef PYTHON_BINDING
-                is_set_db_(false),
-#endif
 		tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")) { name_ = name;}
     	virtual ~TCPProtocol() {}
 
@@ -73,10 +67,6 @@ public:
 
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
         MultiplexerPtrWeak getMultiplexer() { return mux_;}
-
-#ifdef PYTHON_BINDING
-	void setDatabaseAdaptor(boost::python::object &dbptr);
-#endif
 
         const char *getName() { return name_.c_str();}
 
@@ -160,10 +150,6 @@ private:
 	struct tcphdr *tcp_header_;
 	Flow *current_flow_;
 	int64_t total_bytes_;
-#ifdef PYTHON_BINDING
-	boost::python::object dbptr_;
-	bool is_set_db_;
-#endif
 };
 
 typedef std::shared_ptr<TCPProtocol> TCPProtocolPtr;

@@ -45,6 +45,7 @@ class redisAdaptor(pyaiengine.DatabaseAdaptor):
     def update(self,key,data):
         self.__r.hset("udpflows",key,data)
         self.__total_updates = self.__total_updates + 1 
+	print "updating:",data
 	
     def insert(self,key):
         self.__r.hset("udpflows",key,"{}")
@@ -61,6 +62,7 @@ if __name__ == '__main__':
 
     # Load an instance of a Network Stack on Mobile network
     st = pyaiengine.StackLan()
+    st = pyaiengine.StackMobile()
 
     # Create a instace of a PacketDispatcher
     pdis = pyaiengine.PacketDispatcher()
@@ -74,9 +76,9 @@ if __name__ == '__main__':
     db = redisAdaptor()
     db.connect("localhost")
 
-    st.setUDPDatabaseAdaptor(db)
+    st.setUDPDatabaseAdaptor(db,512)
 
-    filename = "/home/luis/pcapfiles/barrapunto_get.pcap"
+    filename = "/home/luis/udpflow.pcap"
     pdis.openPcapFile(filename)
 
     try:

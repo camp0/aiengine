@@ -101,9 +101,11 @@ public:
         void setHTTPHostNameManager(DomainNameManager& dnm, bool allow);
         void setSSLHostNameManager(DomainNameManager& dnm);
         void setSSLHostNameManager(DomainNameManager& dnm, bool allow);
-	
+
 	void setTCPDatabaseAdaptor(boost::python::object &dbptr);
+	void setTCPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling);
 	void setUDPDatabaseAdaptor(boost::python::object &dbptr);
+	void setUDPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling);
 #else
         FlowManagerPtrWeak getTCPFlowManager() { return flow_mng_tcp_;}
         FlowManagerPtrWeak getUDPFlowManager() { return flow_mng_udp_high_;}

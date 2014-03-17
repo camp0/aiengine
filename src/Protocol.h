@@ -42,7 +42,11 @@ class Protocol
 {
 public:
     	Protocol():total_malformed_packets_(0),total_validated_packets_(0),
-		total_packets_(0),name_("") {}
+		total_packets_(0),
+#ifdef PYTHON_BINDING
+		dbptr_(),is_set_db_(false),packet_sampling_(32),
+#endif
+		name_("") {}
     	virtual ~Protocol() {}
 
 	virtual void setHeader(unsigned char *raw_packet) = 0;
@@ -61,9 +65,13 @@ public:
 	virtual FlowForwarderPtrWeak getFlowForwarder() = 0; 
 
 #ifdef PYTHON_BINDING
-	virtual void setDatabaseAdaptor(boost::python::object &dbptr) = 0;
-#endif
+	void setDatabaseAdaptor(boost::python::object &dbptr) { setDatabaseAdaptor(dbptr,16); }
+	void setDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) { dbptr_ = dbptr; is_set_db_ = true; packet_sampling_ = packet_sampling; }
 
+        mutable boost::python::object dbptr_;
+        mutable bool is_set_db_;
+	mutable int packet_sampling_;
+#endif
 	mutable std::string name_;
 	mutable int64_t total_malformed_packets_;
 	mutable int64_t total_validated_packets_;

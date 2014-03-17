@@ -133,7 +133,7 @@ void UDPProtocol::processPacket(Packet& packet) {
 		}
 		
 #if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR) 
-		if (flow->total_packets % 16 ) {
+		if ((flow->total_packets % packet_sampling_) == 0 ) {
 			if (is_set_db_) { // There is attached a database object
 				std::ostringstream data;
 				std::ostringstream key; 
@@ -153,13 +153,5 @@ void UDPProtocol::processPacket(Packet& packet) {
 #endif
 	}
 }
-
-#ifdef PYTHON_BINDING
-void UDPProtocol::setDatabaseAdaptor(boost::python::object &dbptr) {
-
-	is_set_db_ = true;
-	dbptr_ = dbptr;
-}
-#endif
 
 } // namespace aiengine

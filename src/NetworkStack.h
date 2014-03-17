@@ -77,7 +77,9 @@ public:
 	virtual void setSSLHostNameManager(DomainNameManager& dnm, bool allow) = 0;
 	
 	virtual void setTCPDatabaseAdaptor(boost::python::object &dbptr) = 0;
+	virtual void setTCPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling) = 0;
 	virtual void setUDPDatabaseAdaptor(boost::python::object &dbptr) = 0;
+	virtual void setUDPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling) = 0;
 #else
 	virtual FlowManagerPtrWeak getTCPFlowManager() = 0;
 	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;
