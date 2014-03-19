@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-#  AIEngine.
+# AIEngine.
 #
 # Copyright (C) 2013  Luis Campo Giralte
 #
@@ -33,6 +33,12 @@ import pyaiengine
 import redis
 
 class redisAdaptor(pyaiengine.DatabaseAdaptor):
+    """ This class inheritance of DatabaseAdaptor that contains 
+	the following methods:
+	    - insert, called on the first insertion of the network flow
+	    - update, called depending on the sample selected.
+	    - delete, called when the flow is destroy.
+    """
     def __init__(self):
 	self.__r = None 
         self.__total_inserts = 0
@@ -56,13 +62,12 @@ class redisAdaptor(pyaiengine.DatabaseAdaptor):
         self.__total_removes = self.__total_removes + 1
 
     def show(self):
-	print self.__total_inserts,self.__total_updates,self.__total_removes
+	print "Total inserts %d, total updates %d, total removes %d" % (self.__total_inserts,self.__total_updates,self.__total_removes)
 
 if __name__ == '__main__':
 
     # Load an instance of a Network Stack on Mobile network
     st = pyaiengine.StackLan()
-    st = pyaiengine.StackMobile()
 
     # Create a instace of a PacketDispatcher
     pdis = pyaiengine.PacketDispatcher()
@@ -72,10 +77,22 @@ if __name__ == '__main__':
 
     st.setTotalTCPFlows(327680)
     st.setTotalUDPFlows(163840)
-
+ 
+    """
+ 	Create a redisAdaptor object. 
+	This is just and example you can create your own adaptor for
+	any database.
+    """
     db = redisAdaptor()
+    # connect to the redis database 
     db.connect("localhost")
-
+ 
+    """ 
+	Set the database adaptor just for UDP traffic
+    	and with a packet sampling of 512 packets, so every 512 packets
+    	the method "update" will be called.
+    	Fix this value depending on your software/hardware requirments.
+    """
     st.setUDPDatabaseAdaptor(db,512)
 
     filename = "/home/luis/udpflow.pcap"
@@ -90,11 +107,5 @@ if __name__ == '__main__':
     pdis.closePcapFile()
 
     db.show()
-    # Dump on file the statistics of the stack
-    st.setStatisticsLevel(5)
-    f = open("statistics.log","w")
-    f.write(str(st))
-    f.close()
-    
     sys.exit(0)
 
