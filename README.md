@@ -11,10 +11,10 @@ The application is supported on Linux and FreeBSD operating systems.
 Using AIEngine 
 ---------------
 
-To use AIEngine just execute the binary aiengine:
+To use AIEngine just execute the binary aiengine or use the python binding.
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
-	iaengine 0.4
+	iaengine 0.5
 	Mandatory arguments:
 	  -I [ --interface ] arg            Sets the network interface.
 	  -P [ --pcapfile ] arg             Sets the pcap file or directory with pcap 
@@ -57,119 +57,134 @@ Integrating AIEngine with other systems
 AIEngine have a python module in order to be more flexible in terms of integration with other systems and functionalities.
 The main objects that the python module provide are the following ones.
 
-	DNSDomain
-	DomainName
-	   |---> getExpression
-	   |---> getMatchs
-	   |---> getName
-	   |---> setCallback
-	DomainNameManager
-	   |---> addDomainName
-	Flow
-	   |---> getDNSDomain
-	   |---> getDestinationAddress
-	   |---> getDestinationPort
-	   |---> getFrequencies
-	   |---> getHTTPHost
-	   |---> getHTTPUserAgent
-	   |---> getPacketFrequencies
-	   |---> getProtocol
-	   |---> getRegex
-	   |---> getSSLHost
-	   |---> getSourceAddress
-	   |---> getSourcePort
-	   |---> getTotalBytes
-	   |---> getTotalPackets
-	   |---> getTotalPacketsLayer7
-	FlowManager
-	Frequencies
-	   |---> getDispersion
-	   |---> getEnthropy
-	   |---> getFrequenciesString
-	HTTPHost
-	HTTPUserAgent
-	LearnerEngine
-	   |---> agregateFlows
-	   |---> compute
-	   |---> getRegularExpression
-	   |---> getTotalFlowsProcess
-	NetworkStack
-	   |---> enableFrequencyEngine
-	   |---> enableLinkLayerTagging
-	   |---> getTCPFlowManager
-	   |---> getUDPFlowManager
-	   |---> printFlows
-	   |---> setDNSDomainNameManager
-	   |---> setHTTPHostNameManager
-	   |---> setSSLHostNameManager
-	   |---> setStatisticsLevel
-	   |---> setTCPRegexManager
-	   |---> setTotalTCPFlows
-	   |---> setTotalUDPFlows
-	   |---> setUDPRegexManager
-	PacketDispatcher
-	   |---> closeDevice
-	   |---> closePcapFile
-	   |---> openDevice
-	   |---> openPcapFile
-	   |---> run
-	   |---> runPcap
-	   |---> setStack
-	PacketFrequencies
-	   |---> getPacketFrequenciesString
-	Regex
-	   |---> getExpression
-	   |---> getMatchs
-	   |---> getName
-	   |---> setCallback
-	   |---> setNextRegex
-	RegexManager
-	   |---> addRegex
-	SSLHost
-	StackLan
-	   |---> enableFrequencyEngine
-	   |---> enableLinkLayerTagging
-	   |---> getTCPFlowManager
-	   |---> getUDPFlowManager
-	   |---> printFlows
-	   |---> setDNSDomainNameManager
-	   |---> setHTTPHostNameManager
-	   |---> setSSLHostNameManager
-	   |---> setStatisticsLevel
-	   |---> setTCPRegexManager
-	   |---> setTotalTCPFlows
-	   |---> setTotalUDPFlows
-	   |---> setUDPRegexManager
-	StackLanIPv6
-	   |---> enableFrequencyEngine
-	   |---> enableLinkLayerTagging
-	   |---> getTCPFlowManager
-	   |---> getUDPFlowManager
-	   |---> printFlows
-	   |---> setDNSDomainNameManager
-	   |---> setHTTPHostNameManager
-	   |---> setSSLHostNameManager
-	   |---> setStatisticsLevel
-	   |---> setTCPRegexManager
-	   |---> setTotalTCPFlows
-	   |---> setTotalUDPFlows
-	   |---> setUDPRegexManager
-	StackMobile
-	   |---> enableFrequencyEngine
-	   |---> enableLinkLayerTagging
-	   |---> getTCPFlowManager
-	   |---> getUDPFlowManager
-	   |---> printFlows
-	   |---> setDNSDomainNameManager
-	   |---> setHTTPHostNameManager
-	   |---> setSSLHostNameManager
-	   |---> setStatisticsLevel
-	   |---> setTCPRegexManager
-	   |---> setTotalTCPFlows
-	   |---> setTotalUDPFlows
-	   |---> setUDPRegexManager
 
-Check the wiki pages in order to have more complex examples.
+        DNSDomain
+        DatabaseAdaptor
+           |---> connect
+           |---> insert
+           |---> remove
+           |---> update
+        DomainName
+           |---> getExpression
+           |---> getMatchs
+           |---> getName
+           |---> setCallback
+        DomainNameManager
+           |---> addDomainName
+        Flow
+           |---> getDNSDomain
+           |---> getDestinationAddress
+           |---> getDestinationPort
+           |---> getFrequencies
+           |---> getHTTPHost
+           |---> getHTTPUserAgent
+           |---> getPacketFrequencies
+           |---> getProtocol
+           |---> getRegex
+           |---> getSSLHost
+           |---> getSourceAddress
+           |---> getSourcePort
+           |---> getTotalBytes
+           |---> getTotalPackets
+           |---> getTotalPacketsLayer7
+        FlowManager
+        Frequencies
+           |---> getDispersion
+           |---> getEnthropy
+           |---> getFrequenciesString
+        HTTPHost
+        HTTPUserAgent
+        LearnerEngine
+           |---> agregateFlows
+           |---> compute
+           |---> getRegularExpression
+           |---> getTotalFlowsProcess
+        NetworkStack
+           |---> enableFrequencyEngine
+           |---> enableLinkLayerTagging
+           |---> getTCPFlowManager
+           |---> getUDPFlowManager
+           |---> printFlows
+           |---> setDNSDomainNameManager
+           |---> setHTTPHostNameManager
+           |---> setSSLHostNameManager
+           |---> setStatisticsLevel
+           |---> setTCPDatabaseAdaptor
+           |---> setTCPRegexManager
+           |---> setTotalTCPFlows
+           |---> setTotalUDPFlows
+           |---> setUDPDatabaseAdaptor
+           |---> setUDPRegexManager
+        PacketDispatcher
+           |---> closeDevice
+           |---> closePcapFile
+           |---> openDevice
+           |---> openPcapFile
+           |---> run
+           |---> runPcap
+           |---> setStack
+        PacketFrequencies
+           |---> getPacketFrequenciesString
+        Regex
+           |---> getExpression
+           |---> getMatchs
+           |---> getName
+           |---> setCallback
+           |---> setNextRegex
+        RegexManager
+           |---> addRegex
+        SSLHost
+        StackLan
+           |---> enableFrequencyEngine
+           |---> enableLinkLayerTagging
+           |---> getTCPFlowManager
+           |---> getUDPFlowManager
+           |---> printFlows
+           |---> setDNSDomainNameManager
+           |---> setHTTPHostNameManager
+           |---> setSSLHostNameManager
+           |---> setStatisticsLevel
+           |---> setTCPDatabaseAdaptor
+           |---> setTCPRegexManager
+           |---> setTotalTCPFlows
+           |---> setTotalUDPFlows
+           |---> setUDPDatabaseAdaptor
+           |---> setUDPRegexManager
+        StackLanIPv6
+           |---> enableFrequencyEngine
+           |---> enableLinkLayerTagging
+           |---> getTCPFlowManager
+           |---> getUDPFlowManager
+           |---> printFlows
+           |---> setDNSDomainNameManager
+           |---> setHTTPHostNameManager
+           |---> setSSLHostNameManager
+           |---> setStatisticsLevel
+           |---> setTCPDatabaseAdaptor
+           |---> setTCPRegexManager
+           |---> setTotalTCPFlows
+           |---> setTotalUDPFlows
+           |---> setUDPDatabaseAdaptor
+           |---> setUDPRegexManager
+        StackMobile
+           |---> enableFrequencyEngine
+           |---> enableLinkLayerTagging
+           |---> getTCPFlowManager
+           |---> getUDPFlowManager
+           |---> printFlows
+           |---> setDNSDomainNameManager
+           |---> setHTTPHostNameManager
+           |---> setSSLHostNameManager
+           |---> setStatisticsLevel
+           |---> setTCPDatabaseAdaptor
+           |---> setTCPRegexManager
+           |---> setTotalTCPFlows
+           |---> setTotalUDPFlows
+           |---> setUDPDatabaseAdaptor
+           |---> setUDPRegexManager
+        std_ostream
+
+Check the configuration wiki pages in order to have more complex examples.
 
 Compile AIEngine
 ----------------
