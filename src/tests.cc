@@ -932,18 +932,53 @@ BOOST_AUTO_TEST_CASE ( test_case_5 )
 	}
 }
 
-
-BOOST_AUTO_TEST_SUITE_END( )
-
-#ifdef HAVE_REDIS
-
-BOOST_AUTO_TEST_SUITE (test_redis_integration) // Test cases with redis 
-
-BOOST_AUTO_TEST_CASE ( test_case_1 )
+// Test the IPset functionality 
+BOOST_AUTO_TEST_CASE ( test_case_6 )
 {
-	SharedPointer<DatabaseAdaptor> db = SharedPointer<DatabaseAdaptor>(new RedisAdaptor());  
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        StackLanPtr stack = StackLanPtr(new StackLan());
+	IPSet ipset_tcp("IPSet on TCP");
+
+	ipset_tcp.addIPAddress("69.64.34.124");
+
+	stack->setTCPIPSet(ipset_tcp);
+        stack->setTotalTCPFlows(1);
+        stack->setTotalUDPFlows(2);
+        pd->setStack(stack);
+
+        pd->openPcapFile("../pcapfiles/icq.pcapng");
+        pd->runPcap();
+        pd->closePcapFile();
+
+	BOOST_CHECK(ipset_tcp.getTotalIPs() == 1);
+	BOOST_CHECK(ipset_tcp.getTotalLookups() == 1);
+	BOOST_CHECK(ipset_tcp.getTotalLookupsIn() == 1);
+	BOOST_CHECK(ipset_tcp.getTotalLookupsOut() == 0);
+
+        pd->openPcapFile("../pcapfiles/4udppackets.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        FlowManagerPtr flows_tcp = stack->getTCPFlowManager().lock();
+        FlowManagerPtr flows_udp = stack->getUDPFlowManager().lock();
+
+        BOOST_CHECK(flows_tcp->getTotalFlows() == 1);
+        BOOST_CHECK(flows_udp->getTotalFlows() == 1);
+
+        auto ft = flows_tcp->getFlowTable();
+        for (auto it = ft.begin(); it != ft.end(); ++it) {
+                SharedPointer<Flow> flow = *it;
+
+                BOOST_CHECK(flow->getProtocol() == IPPROTO_TCP);
+        }
+        ft = flows_udp->getFlowTable();
+        for (auto it = ft.begin(); it != ft.end(); ++it) {
+                SharedPointer<Flow> flow = *it;
+
+                BOOST_CHECK(flow->getProtocol() == IPPROTO_UDP);
+        }
 }
 
+
 BOOST_AUTO_TEST_SUITE_END( )
 
-#endif

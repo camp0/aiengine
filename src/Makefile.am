@@ -4,6 +4,7 @@ python_PYTHON = pyai.py
 
 # EXTRA_FLAGS = -flto not supported on the freebsd compiler
 EXTRA_FLAGS = 
+
 EXTRA_DIST = py_wrapper.cc setup.py
 
 noinst_HEADERS =        Packet.h Pointer.h \
@@ -21,6 +22,7 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			./vlan/VLanProtocol.h \
 			./mpls/MPLSProtocol.h \
 			./ip/IPProtocol.h \
+			./ipset/IPSet.h \
 			./ip6/IPv6Protocol.h \
 			./icmp/ICMPProtocol.h \
 			./udp/UDPProtocol.h \
@@ -55,6 +57,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			./vlan/VLanProtocol.cc \
 			./mpls/MPLSProtocol.cc \
 			./ip/IPProtocol.cc \
+			./ipset/IPSet.cc \
 			./ip6/IPv6Protocol.cc \
 			./icmp/ICMPProtocol.cc \
 			./udp/UDPProtocol.cc \
@@ -105,6 +108,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		./flow/test_flows.cc \
 		./ip/test_ip.cc \
 		./ip6/test_ip6.cc \
+		./ipset/test_ipset.cc \
 		./udp/test_udp.cc \
 		./tcp/test_tcp.cc \
 		./tcpgeneric/test_tcpgeneric.cc \

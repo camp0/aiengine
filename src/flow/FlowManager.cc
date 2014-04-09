@@ -95,6 +95,9 @@ void FlowManager::printFlows(std::basic_ostream<char>& out) {
 
 		out << boost::format("%-64s %-10d %-10d %p") % fivetuple.str() % flow->total_bytes % flow->total_packets % flow->forwarder.lock();
 
+		if(flow->ipset.lock())	
+			out << "     IPset:" << *flow->ipset.lock()->getName();
+
 		if(flow->tcp_info.lock())	
 			out << "     TCP  :" << *flow->tcp_info.lock();
 

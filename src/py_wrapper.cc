@@ -37,6 +37,7 @@
 #include "./names/DomainNameManager.h"
 #include "./Signature.h"
 #include "DatabaseAdaptor.h"
+#include "./ipset/IPSet.h"
 #include <boost/python.hpp>
 #include <boost/asio.hpp>
 
@@ -369,5 +370,9 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("remove",pure_virtual(&DatabaseAdaptor::remove))
         ;
 
+	boost::python::class_<IPSet>("IPSet")
+		.def("addIPAddress",&IPSet::addIPAddress)
+		//.def("statistics",&IPSet::statistics)
+	;
 }
 

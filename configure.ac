@@ -1,4 +1,4 @@
-AC_INIT([aiengine],[0.5],[luis.camp0.2009@gmail.com],[],[https://bitbucket.org/camp0/aiengine])
+AC_INIT([aiengine],[0.6],[luis.camp0.2009@gmail.com],[],[https://bitbucket.org/camp0/aiengine])
 AM_INIT_AUTOMAKE([subdir-objects])
 AM_PROG_LIBTOOL
 
@@ -203,7 +203,6 @@ else
     AC_DEFINE([HAVE_ADAPTOR],[0],[No database adaptor python support])
 fi
 
-
 CXXFLAGS=$AM_CXXFLAGS
 
 ##########################################################################
@@ -220,6 +219,7 @@ src/vlan/Makefile
 src/mpls/Makefile
 src/ip/Makefile
 src/ip6/Makefile
+src/ipset/Makefile
 src/gprs/Makefile
 src/icmp/Makefile
 src/udp/Makefile

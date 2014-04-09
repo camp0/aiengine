@@ -32,6 +32,7 @@
 #include "../Packet.h"
 #include "../Serializable.h"
 #include "../IPAddress.h"
+#include "../ipset/IPSet.h"
 #include "../regex/Regex.h"
 #include "../frequency/Frequencies.h"
 #include "../frequency/PacketFrequencies.h"
@@ -89,6 +90,7 @@ public:
 	int32_t total_packets;
 
 	// Objects that links with the Flow
+	WeakPointer<IPSet> ipset;
 	WeakPointer<TCPInfo> tcp_info;
 	WeakPointer<DNSDomain> dns_domain;
 	WeakPointer<Regex> regex;

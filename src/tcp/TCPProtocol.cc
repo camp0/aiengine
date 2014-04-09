@@ -185,6 +185,17 @@ void TCPProtocol::processPacket(Packet &packet) {
 				}
 			}
 #if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
+
+                	if (flow->total_packets == 1) { // Just need to check once per flow
+                        	SharedPointer<IPSet> ipset = ipset_.lock();
+
+                        	if(ipset) {
+                                	if (ipset->lookupIPAddress(flow->getSrcAddrDotNotation())) {
+                                        	flow->ipset = ipset;
+                                	}
+                        	}
+                	}
+
                 	if ((flow->total_packets % packet_sampling_ ) == 0) {
                         	if (is_set_db_) { // There is attached a database object
                                 	std::ostringstream data;

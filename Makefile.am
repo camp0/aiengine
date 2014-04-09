@@ -12,6 +12,7 @@ SUBDIRS = 	src \
 		src/mpls \
 		src/ip \
 		src/ip6 \
+		src/ipset \
 		src/gprs \
 		src/icmp \
 		src/udp \

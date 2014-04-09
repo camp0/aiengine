@@ -52,7 +52,8 @@ void Flow::reset() {
 	address_.reset();
 	source_port_ = 0;
 	dest_port_ = 0;
-	protocol_ = 0;		
+	protocol_ = 0;	
+	ipset.reset();	
 	forwarder.reset();
 	frequencies.reset();
 	http_host.reset();
@@ -76,6 +77,9 @@ void Flow::serialize(std::ostream& stream) {
 	stream << "portdst:" << dest_port_ << ", ";
 
 	stream << "bytes:" << total_bytes << " "; 
+
+	if(ipset.lock())
+		stream << ", ipset:'" << ipset.lock()->getName() << "' ";
 
 	if (protocol_ == IPPROTO_TCP) {
 		if(tcp_info.lock())	

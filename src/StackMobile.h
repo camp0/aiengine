@@ -107,6 +107,9 @@ public:
 	void setUDPDatabaseAdaptor(boost::python::object &dbptr);
 	void setUDPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling);
 #else
+        void setTCPIPSet(IPSet& ipset) {}
+        void setUDPIPSet(IPSet& ipset) {}
+
         FlowManagerPtrWeak getTCPFlowManager() { return flow_mng_tcp_;}
         FlowManagerPtrWeak getUDPFlowManager() { return flow_mng_udp_high_;}
 #endif

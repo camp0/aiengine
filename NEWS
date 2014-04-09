@@ -46,4 +46,7 @@ Some benchmark results of 0.4 version
 Features of 0.5
 - Fix minor bugs (printFlows, runPcap and run)
 - DatabaseAdaptor generated on python, so a lot of databases could be use, redis, voltdb, postgress.
-  Check redis_adaptor.py as a example on /examples 
+  Check redis_adaptor.py as a example on /examples
+
+Features of 0.6
+- Ip Filters for ip matching rules (hash_map, bloom filters). 

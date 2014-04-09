@@ -30,9 +30,11 @@
 
 #include <iostream>
 #include <fstream>
+#include "Pointer.h"
 #include "FlowForwarder.h"
 #include "Multiplexer.h"
 #include "DatabaseAdaptor.h"
+#include "./ipset/IPSet.h"
 
 namespace aiengine {
 
@@ -44,7 +46,7 @@ public:
     	Protocol():total_malformed_packets_(0),total_validated_packets_(0),
 		total_packets_(0),
 #ifdef PYTHON_BINDING
-		dbptr_(),is_set_db_(false),packet_sampling_(32),
+		dbptr_(),is_set_db_(false),packet_sampling_(32),ipset_(),
 #endif
 		name_("") {}
     	virtual ~Protocol() {}
@@ -71,7 +73,12 @@ public:
         mutable boost::python::object dbptr_;
         mutable bool is_set_db_;
 	mutable int packet_sampling_;
+
+	void setIPSet(IPSet& ipset) { ipset_ = boost::make_shared<IPSet>(ipset);} 
+#else
+	void setIPSet(IPSet& ipset) { ipset_ = std::make_shared<IPSet>(ipset);} 
 #endif
+	WeakPointer<IPSet> ipset_;
 	mutable std::string name_;
 	mutable int64_t total_malformed_packets_;
 	mutable int64_t total_validated_packets_;
