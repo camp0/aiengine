@@ -5,6 +5,8 @@ EXTRA_DIST = 	bitcoinminer.py \
 		mostusedips.py \
 		nids_firewall.py \
 		troyan.py \
-		redis_adaptor.py
+		redis_adaptor.py \
+		heartbeat.py \
+		tor.py
 
 MAINTAINERCLEANFILES = Makefile.in 

@@ -241,7 +241,9 @@ void iaengineExit() {
 		pktdis->stop();
 
 		showStackStatistics(std::cout);
-		
+
+		if (option_enable_regex)
+			std::cout << *sm.get();		
 		if (option_show_flows)
               		stack->printFlows();
 
@@ -463,7 +465,7 @@ int main(int argc, char* argv[]) {
         		pktdis->openPcapFile(entry);
 			try {
 				pktdis->runPcap();
-		
+			
 			}catch(std::exception& e) {
 				std::cerr << "Error: " << e.what() << std::endl;
 			}

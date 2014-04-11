@@ -132,18 +132,29 @@ void UDPProtocol::processPacket(Packet& packet) {
                         ff->forwardFlow(flow.get());
 		}
 		
-#if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR) 
-
 		if (flow->total_packets == 1) { // Just need to check once per flow
-			SharedPointer<IPSet> ipset = ipset_.lock();
-
-			if(ipset) {
-				if (ipset->lookupIPAddress(flow->getSrcAddrDotNotation())) {
-					flow->ipset = ipset;	
+			if(ipset_) {
+				if (ipset_->lookupIPAddress(flow->getDstAddrDotNotation())) {
+					flow->ipset = ipset_;
+#ifdef DEBUG
+                                        std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":Lookup positive on IPSet:" << ipset_->getName() << std::endl;
+#endif
+#ifdef PYTHON_BINDING
+                                        if (ipset_->haveCallback()) {
+                                        	PyGILState_STATE state(PyGILState_Ensure());
+                                                try {
+                                                	boost::python::call<void>(ipset_->getCallback(),boost::python::ptr(flow.get()));
+                                                } catch(std::exception &e) {
+                                                        std::cout << "ERROR:" << e.what() << std::endl;
+                                                }
+                                                PyGILState_Release(state);
+                                       	}
+#endif
 				}
 			}	
 		}
 
+#if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR) 
 		if (((flow->total_packets - 1) % packet_sampling_) == 0 ) {
 			if (is_set_db_) { // There is attached a database object
 				std::ostringstream data;

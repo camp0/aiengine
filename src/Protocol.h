@@ -44,12 +44,12 @@ class Protocol
 {
 public:
     	Protocol():total_malformed_packets_(0),total_validated_packets_(0),
-		total_packets_(0),
+		total_packets_(0),ipset_(),
 #ifdef PYTHON_BINDING
-		dbptr_(),is_set_db_(false),packet_sampling_(32),ipset_(),
+		dbptr_(),is_set_db_(false),packet_sampling_(32),
 #endif
 		name_("") {}
-    	virtual ~Protocol() {}
+    	virtual ~Protocol() { ipset_.reset();}
 
 	virtual void setHeader(unsigned char *raw_packet) = 0;
 	virtual void setStatisticsLevel(int level) = 0;
@@ -74,11 +74,12 @@ public:
         mutable bool is_set_db_;
 	mutable int packet_sampling_;
 
-	void setIPSet(IPSet& ipset) { ipset_ = boost::make_shared<IPSet>(ipset);} 
+	void setIPSet(const IPSet& ipset) { ipset_ = boost::make_shared<IPSet>(ipset);} 
 #else
-	void setIPSet(IPSet& ipset) { ipset_ = std::make_shared<IPSet>(ipset);} 
+	void setIPSet(SharedPointer<IPSet> ipset) { ipset_ = ipset;} 
 #endif
-	WeakPointer<IPSet> ipset_;
+
+	SharedPointer<IPSet> ipset_;
 	mutable std::string name_;
 	mutable int64_t total_malformed_packets_;
 	mutable int64_t total_validated_packets_;

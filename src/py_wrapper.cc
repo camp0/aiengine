@@ -106,6 +106,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
               	.def("printFlows",pure_virtual(printFlowsNetworkStack))
 		.def("enableFrequencyEngine",pure_virtual(&NetworkStack::enableFrequencyEngine))
 		.def("enableLinkLayerTagging",pure_virtual(&NetworkStack::enableLinkLayerTagging))
+		.def("enableNIDSEngine",pure_virtual(&NetworkStack::enableNIDSEngine))
 		.def("getTCPFlowManager",pure_virtual(&NetworkStack::getTCPFlowManager),return_internal_reference<>())
 		.def("getUDPFlowManager",pure_virtual(&NetworkStack::getUDPFlowManager),return_internal_reference<>())
 		.def("setStatisticsLevel",pure_virtual(&NetworkStack::setStatisticsLevel))
@@ -113,6 +114,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setTCPDatabaseAdaptor",pure_virtual(setTCPDatabaseAdaptor2))
 		.def("setUDPDatabaseAdaptor",pure_virtual(setUDPDatabaseAdaptor1))
 		.def("setUDPDatabaseAdaptor",pure_virtual(setUDPDatabaseAdaptor2))
+		.def("setTCPIPSet", pure_virtual(&NetworkStack::setTCPIPSet))
+		.def("setUDPIPSet", pure_virtual(&NetworkStack::setUDPIPSet))
         ;
 
 	// Definitions for the StackLan class
@@ -149,6 +152,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("printFlows",printFlowsLan)
 		.def("enableFrequencyEngine",&StackLan::enableFrequencyEngine)
 		.def("enableLinkLayerTagging",&StackLan::enableLinkLayerTagging)
+		.def("enableNIDSEngine",&StackLan::enableNIDSEngine)
 		.def("getTCPFlowManager",&StackLan::getTCPFlowManager,return_internal_reference<>())
 		.def("getUDPFlowManager",&StackLan::getUDPFlowManager,return_internal_reference<>())
 		.def("setStatisticsLevel",&StackLan::setStatisticsLevel)
@@ -156,6 +160,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorLan2)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLan1)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLan2)
+		.def("setTCPIPSet", &StackLan::setTCPIPSet)
+		.def("setUDPIPSet", &StackLan::setUDPIPSet)
 	;
 
 	// Definitions for the StackMobile class
@@ -192,6 +198,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("printFlows",printFlowsMobile)
 		.def("enableFrequencyEngine",&StackMobile::enableFrequencyEngine)
 		.def("enableLinkLayerTagging",&StackMobile::enableLinkLayerTagging)
+		.def("enableNIDSEngine",&StackMobile::enableNIDSEngine)
 		.def("getTCPFlowManager",&StackMobile::getTCPFlowManager,return_internal_reference<>())
 		.def("getUDPFlowManager",&StackMobile::getUDPFlowManager,return_internal_reference<>())
 		.def("setStatisticsLevel",&StackMobile::setStatisticsLevel)
@@ -199,6 +206,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorMobile2)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorMobile1)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorMobile2)
+		.def("setTCPIPSet", &StackMobile::setTCPIPSet)
+		.def("setUDPIPSet", &StackMobile::setUDPIPSet)
         ;
 
 
@@ -236,6 +245,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("printFlows",printFlowsLanIPv6)
                 .def("enableFrequencyEngine",&StackLanIPv6::enableFrequencyEngine)
                 .def("enableLinkLayerTagging",&StackLanIPv6::enableLinkLayerTagging)
+                .def("enableNIDSEngine",&StackLanIPv6::enableNIDSEngine)
                 .def("getTCPFlowManager",&StackLanIPv6::getTCPFlowManager,return_internal_reference<>())
                 .def("getUDPFlowManager",&StackLanIPv6::getUDPFlowManager,return_internal_reference<>())
                 .def("setStatisticsLevel",&StackLanIPv6::setStatisticsLevel)
@@ -243,6 +253,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorLanIPv62)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLanIPv61)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLanIPv62)
+		.def("setTCPIPSet", &StackLanIPv6::setTCPIPSet)
+		.def("setUDPIPSet", &StackLanIPv6::setUDPIPSet)
         ;
 	
 	boost::python::class_<Regex>("Regex",init<const std::string&,const std::string&>())
@@ -304,6 +316,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getDNSDomain",&Flow::getDNSDomain,return_internal_reference<>())
 		.def("getSSLHost",&Flow::getSSLHost,return_internal_reference<>())
 		.def("getRegex",&Flow::getRegex,return_internal_reference<>())
+		.def("getPayload",&Flow::getPayload,return_internal_reference<>())
 		.def(self_ns::str(self_ns::self))
 	;
 
@@ -372,6 +385,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	boost::python::class_<IPSet>("IPSet")
 		.def("addIPAddress",&IPSet::addIPAddress)
+		.def("setCallback",&IPSet::setCallback)
 		//.def("statistics",&IPSet::statistics)
 	;
 }

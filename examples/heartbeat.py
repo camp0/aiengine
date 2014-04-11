@@ -21,7 +21,7 @@
 #
 # Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
 #
-""" Example for integrate NIDS functionality with iptables """
+""" Example for detecting SSL Heartbeats on the network """
 __author__ = "Luis Campo Giralte"
 __copyright__ = "Copyright (C) 2013 by Luis Campo Giralte"
 __revision__ = "$Id$"
@@ -32,28 +32,17 @@ import os
 sys.path.append("../src/")
 import pyaiengine
 
-def callback_drop_packets(flow_name):
-    """ Send a command to the Iptables in other to drop the packets """
-    source_ip = str(flow_name).split(":")[0]
-#    os.system("iptables -A INPUT -i eth0 -s %s -j DROP" % source_ip)
+def callback_heartbeat(flow):
 
-def loadSignaturesForTcp():
-     """ Load the signatures from source, Snort, Suricata, etc. """
-
-     sm = pyaiengine.RegexManager()
-
-     sig = pyaiengine.Regex("Shellcode Generic Exploit","\x90\x90\x90\x90\x90\x90\x90\x90\x90")
-
-     """ Sets a specific callback to the signature created """
-     sig.setCallback(callback_drop_packets)
-     sm.addRegex(sig)
-
-     return sm
+     print "SSL Heartbeat on", str(flow)
+     payload = flow.getPayload()
+     print payload
+     print "Filename:",filename
 
 if __name__ == '__main__':
 
      # Load an instance of a Network Stack
-     st = pyaiengine.StackLan()
+     st = pyaiengine.StackMobile()
 
      # Create a instace of a PacketDispatcher
      pdis = pyaiengine.PacketDispatcher()
@@ -61,30 +50,33 @@ if __name__ == '__main__':
      # Plug the stack on the PacketDispatcher
      pdis.setStack(st)
 
-     # Load Signatures/Rules in order to detect the traffic
-     s_tcp = loadSignaturesForTcp()
-     st.setTCPRegexManager(s_tcp)
+     sm = pyaiengine.RegexManager()
+     sig = pyaiengine.Regex("SSL Heartbeat","^\x18\x03(\x01|\x02)\x00\x03\x01")
+     sig.setCallback(callback_heartbeat)
+     sm.addRegex(sig)
 
-     st.enableNIDSEngine(True)
+     st.setTCPRegexManager(sm)
 
      st.setTotalTCPFlows(327680)
      st.setTotalUDPFlows(163840)
 
-     pdis.openDevice("eth0")
+     st.enableNIDSEngine(True)
 
-     try:
-         pdis.run()
-     except:
-         e = sys.exc_info()[0]
-         print "Interrupt during capturing packets:",e
-     
-     pdis.closeDevice()
+     directory = "/tmp/kildare/"
+     print "Ready to process files."
+     for pfile in os.listdir(directory)[:500]:
+         print "Processing ",pfile
+         fpath = "%s/%s" %(directory,pfile)
+         filename = fpath
+         pdis.openPcapFile(fpath)
 
-     # Dump on file the statistics of the stack
-     st.setStatisticsLevel(5)
-     f = open("statistics.log","w")
-     f.write(str(st))
-     f.close()
-
+         try:
+             pdis.runPcap()
+         except:
+             e = sys.exc_info()[0]
+             print "Error: capturing packets:",e
+	     break
+	 pdis.closePcapFile()
+        
      sys.exit(0)
 

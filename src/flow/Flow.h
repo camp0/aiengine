@@ -122,6 +122,7 @@ public:
 	int32_t getTotalPacketsLayer7() const { return total_packets_l7;}
 	int32_t getTotalPackets() const { return total_packets;}
 
+	std::string &getPayload() { return payload_; } 
 	HTTPHost& getHTTPHost() const { return *http_host.lock().get();}
 	HTTPUserAgent& getHTTPUserAgent() const { return *http_ua.lock().get();}
 	Frequencies& getFrequencies() const { return *frequencies.lock().get();}
@@ -129,6 +130,9 @@ public:
 	Regex& getRegex() const { return *regex.lock().get();}
 	DNSDomain& getDNSDomain() const { return *dns_domain.lock().get();}
 	SSLHost& getSSLHost() const { return *ssl_host.lock().get();}
+	IPSet& getIPSet() const { return *ipset.lock().get();}
+
+	std::string payload_;
 #endif
 
 private:

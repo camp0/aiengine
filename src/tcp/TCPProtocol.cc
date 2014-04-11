@@ -119,7 +119,6 @@ SharedPointer<Flow> TCPProtocol::getFlow() {
         return flow;
 }
 
-//#define DEBUG 1
 void TCPProtocol::processPacket(Packet &packet) {
 
 	SharedPointer<Flow> flow = getFlow();
@@ -184,18 +183,32 @@ void TCPProtocol::processPacket(Packet &packet) {
 					return; // I dont like but sometimes.....
 				}
 			}
-#if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
 
                 	if (flow->total_packets == 1) { // Just need to check once per flow
-                        	SharedPointer<IPSet> ipset = ipset_.lock();
+                        	if(ipset_) { 
+                                	if (ipset_->lookupIPAddress(flow->getDstAddrDotNotation())) {
+                                        	flow->ipset = ipset_;
+#ifdef DEBUG
+						std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":Lookup positive on IPSet:" << ipset_->getName() << std::endl;
+#endif
+#ifdef PYTHON_BINDING
+                				if (ipset_->haveCallback()) {
+                        				PyGILState_STATE state(PyGILState_Ensure());
+                        				try {
+                                				boost::python::call<void>(ipset_->getCallback(),boost::python::ptr(flow.get()));
+                                			} catch(std::exception &e) {
+                                        			std::cout << "ERROR:" << e.what() << std::endl;
+                                			}
+                                			PyGILState_Release(state);
+                        			}
+#endif
 
-                        	if(ipset) {
-                                	if (ipset->lookupIPAddress(flow->getSrcAddrDotNotation())) {
-                                        	flow->ipset = ipset;
+
                                 	}
                         	}
                 	}
 
+#if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
                 	if ((flow->total_packets % packet_sampling_ ) == 0) {
                         	if (is_set_db_) { // There is attached a database object
                                 	std::ostringstream data;

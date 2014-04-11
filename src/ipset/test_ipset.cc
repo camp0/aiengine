@@ -32,7 +32,7 @@
 
 using namespace aiengine;
 
-BOOST_AUTO_TEST_SUITE (testipset)
+BOOST_AUTO_TEST_SUITE (testipset_1)
 
 BOOST_AUTO_TEST_CASE ( test1_ip )
 {
@@ -70,7 +70,60 @@ BOOST_AUTO_TEST_CASE ( test2_ip )
         BOOST_CHECK(ipset->getTotalLookupsOut() == 1);
 }
 
-
-
 BOOST_AUTO_TEST_SUITE_END( )
 
+BOOST_FIXTURE_TEST_SUITE(testipset_2,StackTCPIPSetTest)
+
+BOOST_AUTO_TEST_CASE ( test1_ip )
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello_2);
+        int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_2_length;
+        Packet packet(pkt,length,0);
+
+        IPSetPtr ipset = IPSetPtr(new IPSet("new ipset"));
+
+	ipset->addIPAddress("72.21.211.223");
+
+	tcp->setIPSet(ipset);
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        BOOST_CHECK(ipset->getTotalIPs() == 1);
+        BOOST_CHECK(ipset->getTotalLookups() == 1);
+
+        BOOST_CHECK(ipset->getTotalLookupsIn() == 1);
+        BOOST_CHECK(ipset->getTotalLookupsOut() == 0);
+        BOOST_CHECK(ipset->getSize() == 1);
+}
+
+BOOST_AUTO_TEST_CASE ( test2_ip )
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello_2);
+        int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_2_length;
+        Packet packet(pkt,length,0);
+
+        IPSetPtr ipset = IPSetPtr(new IPSet("new ipset"));
+
+        ipset->addIPAddress("72.21.211.3");
+
+        tcp->setIPSet(ipset);
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        BOOST_CHECK(ipset->getTotalIPs() == 1);
+        BOOST_CHECK(ipset->getTotalLookups() == 1);
+
+        BOOST_CHECK(ipset->getTotalLookupsIn() == 0);
+        BOOST_CHECK(ipset->getTotalLookupsOut() == 1);
+        BOOST_CHECK(ipset->getSize() == 1);
+}
+
+BOOST_AUTO_TEST_SUITE_END( )
