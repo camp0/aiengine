@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef SRC_IP_IPSET_H_
-#define SRC_IP_IPSET_H_
+#ifndef SRC_IPSET_IPSET_H_
+#define SRC_IPSET_IPSET_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -45,7 +45,7 @@ class IPSet
 public:
     	explicit IPSet():total_ips_(0),
 		total_ips_not_on_set_(0),total_ips_on_set_(0)
-		{ 
+		{
 			name_="Generic IPSet";
 #ifdef PYTHON_BINDING
 			callback_set_ = false;
@@ -115,4 +115,4 @@ typedef std::weak_ptr<IPSet> IPSetPtrWeak;
 
 } // namespace aiengine
 
-#endif  // SRC_IP_IPSET_H_
+#endif  // SRC_IPSET_IPSET_H_

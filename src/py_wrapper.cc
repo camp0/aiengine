@@ -316,7 +316,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getDNSDomain",&Flow::getDNSDomain,return_internal_reference<>())
 		.def("getSSLHost",&Flow::getSSLHost,return_internal_reference<>())
 		.def("getRegex",&Flow::getRegex,return_internal_reference<>())
-		.def("getPayload",&Flow::getPayload,return_internal_reference<>())
+		.def("getPayload",&Flow::getPayload)
 		.def(self_ns::str(self_ns::self))
 	;
 

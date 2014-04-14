@@ -21,7 +21,7 @@
 #
 # Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
 #
-""" Example for detecting SSL Heartbeats on the network """
+""" Example for detecting SSL Heartbeats with leaks on the network """
 __author__ = "Luis Campo Giralte"
 __copyright__ = "Copyright (C) 2013 by Luis Campo Giralte"
 __revision__ = "$Id$"
@@ -34,49 +34,54 @@ import pyaiengine
 
 def callback_heartbeat(flow):
 
-     print "SSL Heartbeat on", str(flow)
-     payload = flow.getPayload()
-     print payload
-     print "Filename:",filename
+    payload = flow.getPayload()
+    if(len(payload) > 7): 
+	""" Heartbeat minimum header """
+	if(int(payload[7])>1):
+     	    print "SSL Heartbeat leak on", str(flow)
+	    print payload
 
 if __name__ == '__main__':
 
-     # Load an instance of a Network Stack
-     st = pyaiengine.StackMobile()
+    # Load an instance of a Network Stack
+    st = pyaiengine.StackLan()
 
-     # Create a instace of a PacketDispatcher
-     pdis = pyaiengine.PacketDispatcher()
+    # Create a instace of a PacketDispatcher
+    pdis = pyaiengine.PacketDispatcher()
 
-     # Plug the stack on the PacketDispatcher
-     pdis.setStack(st)
+    # Plug the stack on the PacketDispatcher
+    pdis.setStack(st)
 
-     sm = pyaiengine.RegexManager()
-     sig = pyaiengine.Regex("SSL Heartbeat","^\x18\x03(\x01|\x02)\x00\x03\x01")
-     sig.setCallback(callback_heartbeat)
-     sm.addRegex(sig)
+    sm = pyaiengine.RegexManager()
 
-     st.setTCPRegexManager(sm)
+    """ 
+	Heartbeat regex expression
+	18 -> Content Type: Heartbeat
+        0301, 0302 -> Version: TLS
+        xxxx -> Length
+        01 - Heartbeat
+        xx - heartbeat payload length
+    """ 
+    sig = pyaiengine.Regex("SSL Heartbeat","^\x18\x03(\x01|\x02|\x03)\x00\x03\x01")
+    sig.setCallback(callback_heartbeat)
+    sm.addRegex(sig)
 
-     st.setTotalTCPFlows(327680)
-     st.setTotalUDPFlows(163840)
+    st.setTCPRegexManager(sm)
 
-     st.enableNIDSEngine(True)
+    st.setTotalTCPFlows(327680)
+    st.setTotalUDPFlows(163840)
 
-     directory = "/tmp/kildare/"
-     print "Ready to process files."
-     for pfile in os.listdir(directory)[:500]:
-         print "Processing ",pfile
-         fpath = "%s/%s" %(directory,pfile)
-         filename = fpath
-         pdis.openPcapFile(fpath)
+    st.enableNIDSEngine(True)
 
-         try:
-             pdis.runPcap()
-         except:
-             e = sys.exc_info()[0]
-             print "Error: capturing packets:",e
-	     break
-	 pdis.closePcapFile()
+    pdis.openDevice("eth0")
+
+    try:
+        pdis.run()
+    except:
+        e = sys.exc_info()[0]
+        print "Error: capturing packets:",e
+
+    pdis.closeDevice()
         
-     sys.exit(0)
+    sys.exit(0)
 

@@ -65,9 +65,6 @@ void Flow::reset() {
 	packet = nullptr;
 	frequency_engine_inspected = false;
 	prev_direction_ = direction_ = FlowDirection::FORWARD;
-#ifdef PYTHON_BINDING 
-	payload_ = "pepe";
-#endif
 }
 
 void Flow::serialize(std::ostream& stream) {

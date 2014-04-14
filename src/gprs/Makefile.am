@@ -12,6 +12,7 @@ test_gprs_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../flow/Flow.cc \
 			../flow/FlowManager.cc \
 			../ip/IPProtocol.cc \
+			../ipset/IPSet.cc \
 			../udp/UDPProtocol.cc \
 			../icmp/ICMPProtocol.cc \
 			../names/DomainNameManager.cc \

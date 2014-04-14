@@ -203,6 +203,29 @@ else
     AC_DEFINE([HAVE_ADAPTOR],[0],[No database adaptor python support])
 fi
 
+##########################################################################
+# bloom filter support
+##########################################################################
+
+AC_MSG_CHECKING([whether to build bloom filters])
+AC_ARG_ENABLE([bloomfilter],
+    [AS_HELP_STRING([--enable-bloomfilter],
+        [enable bloom filter support (def=no)])],
+    [bloom_support=yes],
+    [bloom_support=no])
+AC_MSG_RESULT([$bloom_support])
+
+if test x"$bloom_support" = x"yes"; then
+    AC_CHECK_HEADER([bf.h])
+    AC_CHECK_LIB([bf],[main],,have_bloom=no)
+#AC_DEFINE([HAVE_BLOOMFILTER],[1],[Bloom filter support])
+#else
+#    AC_DEFINE([HAVE_BLOOMFILTER],[0],[No bloom filter support])
+fi
+
+
+##########################################################################
+
 CXXFLAGS=$AM_CXXFLAGS
 
 ##########################################################################
@@ -211,6 +234,7 @@ AC_CONFIG_FILES([
 Makefile
 test/Makefile
 man/Makefile
+utils/Makefile
 examples/Makefile
 pcapfiles/Makefile
 src/Makefile

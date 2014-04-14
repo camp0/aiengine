@@ -122,7 +122,15 @@ public:
 	int32_t getTotalPacketsLayer7() const { return total_packets_l7;}
 	int32_t getTotalPackets() const { return total_packets;}
 
-	std::string &getPayload() { return payload_; } 
+	boost::python::list getPayload() { 
+		unsigned char *pkt = packet->getPayload();
+		boost::python::list l;
+
+		for (int i = 0; i != packet->getLength();++i) l.append(pkt[i]);
+
+		return l;
+	} 
+
 	HTTPHost& getHTTPHost() const { return *http_host.lock().get();}
 	HTTPUserAgent& getHTTPUserAgent() const { return *http_ua.lock().get();}
 	Frequencies& getFrequencies() const { return *frequencies.lock().get();}
@@ -132,7 +140,6 @@ public:
 	SSLHost& getSSLHost() const { return *ssl_host.lock().get();}
 	IPSet& getIPSet() const { return *ipset.lock().get();}
 
-	std::string payload_;
 #endif
 
 private:

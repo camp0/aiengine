@@ -42,12 +42,7 @@ if __name__ == '__main__':
 	# Enable VLAN tag if needed or MPLS
 	# st.enableLinkLayerTagging("vlan")
 
-	directory = "/home/luis/pcapfiles/torrent/transmission/"
-	#directory = "/home/luis/pcapfiles/torrent/"
-	#directory = "/home/luis/pcapfiles/defcon18/"
-	#directory = "/home/luis/pcapfiles/http/"
-	directory = "/home/luis/pcapfiles/v/"
-	#directory = "/home/luis/pcapfiles/spotify/"
+	directory = "/home/luis/pcapfiles/defcon18/"
 	print "Ready to process files."
 	for pfile in os.listdir(directory):
 		print "Processing ",pfile

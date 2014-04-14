@@ -43,7 +43,7 @@ bool IPSet::lookupIPAddress(const std::string &ip) {
 	}
 }
 
-void IPSet::statistics(std::basic_ostream<char>& out){
+void IPSet::statistics(std::basic_ostream<char>& out) {
 
 	out << "IPSet " << name_ << std::endl;
 	out << "\tTotal IP address:       " << std::setw(10) << total_ips_ <<std::endl;
