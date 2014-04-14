@@ -200,7 +200,7 @@ The main objects that the python module provide are the following ones.
 	std_ostream
 
 Check the configuration wiki pages in order to have more complex examples.
-    https://bitbucket.org/camp0/aiengine/wiki/Configurations
+[https://bitbucket.org/camp0/aiengine/wiki/Configurations Configurations]
 
 Compile AIEngine
 ----------------
