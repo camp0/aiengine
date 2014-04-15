@@ -5,6 +5,7 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = 	src \
 		test \
 		man \
+		utils \
 		examples \
 		pcapfiles \
 		src/ethernet \

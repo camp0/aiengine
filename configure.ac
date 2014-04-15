@@ -215,13 +215,13 @@ AC_ARG_ENABLE([bloomfilter],
     [bloom_support=no])
 AC_MSG_RESULT([$bloom_support])
 
-if test x"$bloom_support" = x"yes"; then
-    AC_CHECK_HEADER([bf.h])
-    AC_CHECK_LIB([bf],[main],,have_bloom=no)
+#if test x"$bloom_support" = x"yes"; then
+#    AC_CHECK_HEADER([bf.h])
+#    AC_CHECK_LIB([bf],[main],,have_bloom=no)
 #AC_DEFINE([HAVE_BLOOMFILTER],[1],[Bloom filter support])
 #else
 #    AC_DEFINE([HAVE_BLOOMFILTER],[0],[No bloom filter support])
-fi
+#fi
 
 
 ##########################################################################

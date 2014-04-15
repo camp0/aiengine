@@ -282,13 +282,13 @@ int main(int argc, char* argv[]) {
 
 	po::options_description optional_ops_tcp("TCP optional arguments");
 	optional_ops_tcp.add_options()
-		("tcp-flows,t",    po::value<int>(&tcp_flows_cache)->default_value(32768),
+		("tcp-flows,t",    po::value<int>(&tcp_flows_cache)->default_value(1024),
 		  	"Sets the number of TCP flows on the pool.")
 		;
 	
 	po::options_description optional_ops_udp("UDP optional arguments");
 	optional_ops_udp.add_options()
-		("udp-flows,u",    	po::value<int>(&udp_flows_cache)->default_value(16384),
+		("udp-flows,u",    	po::value<int>(&udp_flows_cache)->default_value(512),
 		  			"Sets the number of UDP flows on the pool.")
 		;
 

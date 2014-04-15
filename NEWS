@@ -49,4 +49,5 @@ Features of 0.5
   Check redis_adaptor.py as a example on /examples
 
 Features of 0.6
-- Ip Filters for ip matching rules (hash_map, bloom filters). 
+- Ip Filters for ip matching rules (hash_map, bloom filters).
+- Minor bugs (leak on pcre). 

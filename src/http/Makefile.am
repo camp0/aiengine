@@ -9,6 +9,7 @@ noinst_HEADERS = 	HTTPProtocol.h HTTPHost.h HTTPUserAgent.h HTTPReferer.h test_h
 test_http_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ethernet/EthernetProtocol.cc \
 			../ip/IPProtocol.cc \
+			../ipset/IPSet.cc \
 			../ip6/IPv6Protocol.cc \
 			../tcp/TCPProtocol.cc \
 			../flow/Flow.cc \

@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE (test2_regex)
 BOOST_AUTO_TEST_CASE (test3_regex)
 {
         RegexManagerPtr sigmng = RegexManagerPtr( new RegexManager());
-	Regex sig("name","^.*(some hex).*$");
+	SharedPointer<Regex> sig = SharedPointer<Regex>( new Regex("name","^.*(some hex).*$"));
 
         sigmng->addRegex(sig);
         BOOST_CHECK(sigmng->getTotalRegexs()  == 1);
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE (test3_regex)
         BOOST_CHECK(sigmng->getMatchedRegex().get() != nullptr);
         BOOST_CHECK(sigmng->getTotalMatchingRegexs() == 1);
 
-	BOOST_CHECK(sig.getExpression().compare(sigmng->getMatchedRegex()->getExpression())== 0);
+	BOOST_CHECK(sig->getExpression().compare(sigmng->getMatchedRegex()->getExpression())== 0);
 
 }
 

@@ -58,6 +58,7 @@ public:
 #endif
 	{
 		have_jit_ = false;
+		study_exp_ = NULL;
 #if defined(HAVE_LIBPCRE)
 		const char *errorstr;
 		int erroffset;
@@ -77,6 +78,7 @@ public:
 				have_jit_ = true;
 			}
 		}	
+
 #else
 		study_exp_ = pcre_study(exp_,0,&errorstr);
 #endif
@@ -86,7 +88,12 @@ public:
 		is_terminal_ = true;
 	}
 
-	virtual ~Regex() = default;
+	virtual ~Regex() {
+#if defined(HAVE_LIBPCRE)
+        	pcre_free_study(study_exp_);
+        	pcre_free(exp_);
+#endif
+	}
  
 	bool evaluate(const std::string& data);
 
@@ -105,7 +112,7 @@ public:
 
 private:
 #if defined(HAVE_LIBPCRE)
-	const pcre *exp_;
+	pcre *exp_;
 	pcre_extra *study_exp_;
 	int ovecount_[32];
 	char extract_buffer_[256];
