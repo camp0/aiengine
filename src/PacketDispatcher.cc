@@ -248,7 +248,7 @@ void PacketDispatcher::run() {
         	}
 	} else {
 #ifdef HAVE_LIBLOG4CXX
-                LOG4CXX_WARNING(logger,"The device is not ready to run"); 
+                LOG4CXX_INFO(logger,"The device is not ready to run"); 
 #else
                 std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
                 std::time_t now = std::chrono::system_clock::to_time_t(time_point);
