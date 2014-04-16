@@ -53,7 +53,7 @@ if __name__ == '__main__':
     ipset_mng = pyaiengine.IPSetManager()
     ipset_mng.addIPSet(ipset)
 
-    """ Take a big list of IP address that belongs to ToR ""
+    """ Take a big list of IP address that belongs to ToR """
     req = urllib2.Request("https://www.dan.me.uk/torlist/")
     try:
         response = urllib2.urlopen(req)
