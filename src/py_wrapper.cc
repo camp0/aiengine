@@ -38,6 +38,7 @@
 #include "./Signature.h"
 #include "DatabaseAdaptor.h"
 #include "./ipset/IPSet.h"
+#include "./ipset/IPSetManager.h"
 #include <boost/python.hpp>
 #include <boost/asio.hpp>
 
@@ -114,8 +115,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setTCPDatabaseAdaptor",pure_virtual(setTCPDatabaseAdaptor2))
 		.def("setUDPDatabaseAdaptor",pure_virtual(setUDPDatabaseAdaptor1))
 		.def("setUDPDatabaseAdaptor",pure_virtual(setUDPDatabaseAdaptor2))
-		.def("setTCPIPSet", pure_virtual(&NetworkStack::setTCPIPSet))
-		.def("setUDPIPSet", pure_virtual(&NetworkStack::setUDPIPSet))
+		.def("setTCPIPSetManager", pure_virtual(&NetworkStack::setTCPIPSetManager))
+		.def("setUDPIPSetManager", pure_virtual(&NetworkStack::setUDPIPSetManager))
         ;
 
 	// Definitions for the StackLan class
@@ -160,8 +161,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorLan2)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLan1)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLan2)
-		.def("setTCPIPSet", &StackLan::setTCPIPSet)
-		.def("setUDPIPSet", &StackLan::setUDPIPSet)
+		.def("setTCPIPSetManager", &StackLan::setTCPIPSetManager)
+		.def("setUDPIPSetManager", &StackLan::setUDPIPSetManager)
 	;
 
 	// Definitions for the StackMobile class
@@ -206,8 +207,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorMobile2)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorMobile1)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorMobile2)
-		.def("setTCPIPSet", &StackMobile::setTCPIPSet)
-		.def("setUDPIPSet", &StackMobile::setUDPIPSet)
+		.def("setTCPIPSetManager", &StackMobile::setTCPIPSetManager)
+		.def("setUDPIPSetManager", &StackMobile::setUDPIPSetManager)
         ;
 
 
@@ -253,8 +254,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorLanIPv62)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLanIPv61)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLanIPv62)
-		.def("setTCPIPSet", &StackLanIPv6::setTCPIPSet)
-		.def("setUDPIPSet", &StackLanIPv6::setUDPIPSet)
+		.def("setTCPIPSetManager", &StackLanIPv6::setTCPIPSetManager)
+		.def("setUDPIPSetManager", &StackLanIPv6::setUDPIPSetManager)
         ;
 	
 	boost::python::class_<Regex>("Regex",init<const std::string&,const std::string&>())
@@ -355,8 +356,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("compute",&LearnerEngine::compute)
 	;
 
-
-
         boost::python::class_<DomainName>("DomainName",init<const std::string&,const std::string&>())
                 .def("getExpression",&DomainName::getExpression,return_internal_reference<>())
                 .def("getName",&DomainName::getName,return_internal_reference<>())
@@ -386,7 +385,11 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	boost::python::class_<IPSet>("IPSet")
 		.def("addIPAddress",&IPSet::addIPAddress)
 		.def("setCallback",&IPSet::setCallback)
-		//.def("statistics",&IPSet::statistics)
 	;
+
+	void (IPSetManager::*addIPSet)(IPSet&) = &IPSetManager::addIPSet;
+        boost::python::class_<IPSetManager, SharedPointer<IPSetManager>>("IPSetManager")
+                .def("addIPSet",addIPSet)
+        ;
 }
 

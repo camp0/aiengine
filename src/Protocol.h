@@ -34,7 +34,7 @@
 #include "FlowForwarder.h"
 #include "Multiplexer.h"
 #include "DatabaseAdaptor.h"
-#include "./ipset/IPSet.h"
+#include "./ipset/IPSetManager.h"
 
 namespace aiengine {
 
@@ -44,12 +44,12 @@ class Protocol
 {
 public:
     	Protocol():total_malformed_packets_(0),total_validated_packets_(0),
-		total_packets_(0),ipset_(),
+		total_packets_(0),ipset_mng_(),
 #ifdef PYTHON_BINDING
 		dbptr_(),is_set_db_(false),packet_sampling_(32),
 #endif
 		name_("") {}
-    	virtual ~Protocol() { ipset_.reset();}
+    	virtual ~Protocol() { ipset_mng_.reset();}
 
 	virtual void setHeader(unsigned char *raw_packet) = 0;
 	virtual void setStatisticsLevel(int level) = 0;
@@ -74,12 +74,12 @@ public:
         mutable bool is_set_db_;
 	mutable int packet_sampling_;
 
-	void setIPSet(const IPSet& ipset) { ipset_ = boost::make_shared<IPSet>(ipset);} 
+	void setIPSetManager(const IPSetManager& ipset_mng) { ipset_mng_ = boost::make_shared<IPSetManager>(ipset_mng);} 
 #else
-	void setIPSet(SharedPointer<IPSet> ipset) { ipset_ = ipset;} 
+	void setIPSetManager(SharedPointer<IPSetManager> ipset_mng) { ipset_mng_ = ipset_mng;} 
 #endif
 
-	SharedPointer<IPSet> ipset_;
+	SharedPointer<IPSetManager> ipset_mng_;
 	mutable std::string name_;
 	mutable int64_t total_malformed_packets_;
 	mutable int64_t total_validated_packets_;

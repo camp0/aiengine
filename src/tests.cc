@@ -938,11 +938,14 @@ BOOST_AUTO_TEST_CASE ( test_case_6 )
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         StackLanPtr stack = StackLanPtr(new StackLan());
 	SharedPointer<IPSet> ipset_tcp = SharedPointer<IPSet>(new IPSet("IPSet on TCP"));
+	SharedPointer<IPSetManager> ipset_mng = SharedPointer<IPSetManager>(new IPSetManager());
 
 	ipset_tcp->addIPAddress("69.64.34.124");
 	ipset_tcp->addIPAddress("69.64.34.125");
 
-	stack->setTCPIPSet(ipset_tcp);
+	ipset_mng->addIPSet(ipset_tcp);
+
+	stack->setTCPIPSetManager(ipset_mng);
         stack->setTotalTCPFlows(1);
         pd->setStack(stack);
 
@@ -973,10 +976,12 @@ BOOST_AUTO_TEST_CASE ( test_case_7 )
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         StackLanPtr stack = StackLanPtr(new StackLan());
         SharedPointer<IPSet> ipset_tcp = SharedPointer<IPSet>(new IPSet("IPSet 1"));
+	SharedPointer<IPSetManager> ipset_mng = SharedPointer<IPSetManager>(new IPSetManager());
 
+	ipset_mng->addIPSet(ipset_tcp);
         ipset_tcp->addIPAddress("69.64.34.1");
 
-        stack->setTCPIPSet(ipset_tcp);
+        stack->setTCPIPSetManager(ipset_mng);
         stack->setTotalTCPFlows(1);
         pd->setStack(stack);
 

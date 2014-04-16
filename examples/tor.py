@@ -50,6 +50,9 @@ if __name__ == '__main__':
     ipset = pyaiengine.IPSet()
     ipset.setCallback(callback_tor)
 
+    ipset_mng = pyaiengine.IPSetManager()
+    ipset_mng.addIPSet(ipset)
+
     """ Take a big list of IP address that belongs to ToR ""
     req = urllib2.Request("https://www.dan.me.uk/torlist/")
     try:
@@ -64,7 +67,7 @@ if __name__ == '__main__':
     except urllib2.URLError as e:
 	print "Error:",e
 
-    st.setTCPIPSet(ipset)
+    st.setTCPIPSetManager(ipset_mng)
     st.setTotalTCPFlows(327680)
     st.setTotalUDPFlows(163840)
 
@@ -78,7 +81,6 @@ if __name__ == '__main__':
 
     pdis.closeDevice()
 
-    ipset.statistics()
     # st.printFlows()
     sys.exit(0)
 

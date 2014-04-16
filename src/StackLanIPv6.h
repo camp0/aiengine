@@ -101,11 +101,11 @@ public:
 	void setUDPDatabaseAdaptor(boost::python::object &dbptr);
 	void setUDPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling);
 
-        void setTCPIPSet(IPSet& ipset) { tcp_->setIPSet(ipset);}
-        void setUDPIPSet(IPSet& ipset) { udp_->setIPSet(ipset);}
+        void setTCPIPSetManager(IPSetManager& ipset_mng) { tcp_->setIPSetManager(ipset_mng);}
+        void setUDPIPSetManager(IPSetManager& ipset_mng) { udp_->setIPSetManager(ipset_mng);}
 #else
-        void setTCPIPSet(SharedPointer<IPSet> ipset) { tcp_->setIPSet(ipset);}
-        void setUDPIPSet(SharedPointer<IPSet> ipset) { udp_->setIPSet(ipset);}
+        void setTCPIPSetManager(SharedPointer<IPSetManager> ipset_mng) { tcp_->setIPSetManager(ipset_mng);}
+        void setUDPIPSetManager(SharedPointer<IPSetManager> ipset_mng) { udp_->setIPSetManager(ipset_mng);}
 
         FlowManagerPtrWeak getTCPFlowManager() { return flow_table_tcp_;}
         FlowManagerPtrWeak getUDPFlowManager() { return flow_table_udp_;}

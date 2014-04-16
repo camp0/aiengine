@@ -23,6 +23,7 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			./mpls/MPLSProtocol.h \
 			./ip/IPProtocol.h \
 			./ipset/IPSet.h \
+			./ipset/IPSetManager.h \
 			./ip6/IPv6Protocol.h \
 			./icmp/ICMPProtocol.h \
 			./udp/UDPProtocol.h \
@@ -58,6 +59,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			./mpls/MPLSProtocol.cc \
 			./ip/IPProtocol.cc \
 			./ipset/IPSet.cc \
+			./ipset/IPSetManager.cc \
 			./ip6/IPv6Protocol.cc \
 			./icmp/ICMPProtocol.cc \
 			./udp/UDPProtocol.cc \

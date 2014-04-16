@@ -9,6 +9,7 @@ check_PROGRAMS = test_ssl
 test_ssl_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ethernet/EthernetProtocol.cc \
 			../ip/IPProtocol.cc \
+			../ipset/IPSetManager.cc \
 			../ipset/IPSet.cc \
 			../tcp/TCPProtocol.cc \
 			../flow/Flow.cc \

@@ -14,7 +14,7 @@ test_ipset_SOURCES = 	../Multiplexer.cc  \
 			../vlan/VLanProtocol.cc \
 			../ip/IPProtocol.cc \
 			../tcp/TCPProtocol.cc \
-			IPSet.cc test_ipset.cc 
+			IPSet.cc IPSetManager.cc test_ipset.cc 
 
 test_ipset_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
 test_ipset_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework

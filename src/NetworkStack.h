@@ -31,7 +31,7 @@
 #include "./regex/RegexManager.h"
 #include "./flow/FlowManager.h"
 #include "DatabaseAdaptor.h"
-#include "./ipset/IPSet.h"
+#include "./ipset/IPSetManager.h"
 
 namespace aiengine {
 
@@ -82,11 +82,11 @@ public:
 	virtual void setUDPDatabaseAdaptor(boost::python::object &dbptr) = 0;
 	virtual void setUDPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling) = 0;
 	
-	virtual void setTCPIPSet(IPSet& ipset) = 0;
-	virtual void setUDPIPSet(IPSet& ipset) = 0;
+	virtual void setTCPIPSetManager(IPSetManager& ipset_mng) = 0;
+	virtual void setUDPIPSetManager(IPSetManager& ipset_mng) = 0;
 #else
-	virtual void setTCPIPSet(SharedPointer<IPSet> ipset) = 0;
-	virtual void setUDPIPSet(SharedPointer<IPSet> ipset) = 0;
+	virtual void setTCPIPSetManager(SharedPointer<IPSetManager> ipset_mng) = 0;
+	virtual void setUDPIPSetManager(SharedPointer<IPSetManager> ipset_mng) = 0;
 
 	virtual FlowManagerPtrWeak getTCPFlowManager() = 0;
 	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;

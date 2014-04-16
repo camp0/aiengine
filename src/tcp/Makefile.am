@@ -13,6 +13,7 @@ test_tcp_SOURCES = 	../Multiplexer.cc  \
 			../ethernet/EthernetProtocol.cc \
 			../vlan/VLanProtocol.cc \
 			../ip/IPProtocol.cc \
+			../ipset/IPSetManager.cc \
 			../ipset/IPSet.cc \
 			../ip6/IPv6Protocol.cc \
 			TCPProtocol.cc \

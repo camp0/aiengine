@@ -70,6 +70,59 @@ BOOST_AUTO_TEST_CASE ( test2_ip )
         BOOST_CHECK(ipset->getTotalLookupsOut() == 1);
 }
 
+BOOST_AUTO_TEST_CASE ( test3_ip )
+{
+        IPSetPtr ipset1 = IPSetPtr(new IPSet());
+	IPSetManagerPtr ipmng = IPSetManagerPtr(new IPSetManager());
+
+        ipset1->addIPAddress("192.168.1.1");
+
+	ipmng->addIPSet(ipset1);
+
+	BOOST_CHECK(ipmng->lookupIPAddress("192.168.1.1") == true);
+	BOOST_CHECK(ipmng->getMatchedIPSet() == ipset1);
+}
+
+BOOST_AUTO_TEST_CASE ( test4_ip )
+{
+        IPSetPtr ipset1 = IPSetPtr(new IPSet());
+        IPSetPtr ipset2 = IPSetPtr(new IPSet());
+        IPSetManagerPtr ipmng = IPSetManagerPtr(new IPSetManager());
+
+        ipset1->addIPAddress("192.168.1.1");
+        ipset2->addIPAddress("10.1.1.1");
+        ipset2->addIPAddress("10.1.1.2");
+
+        ipmng->addIPSet(ipset1);
+        ipmng->addIPSet(ipset2);
+
+        BOOST_CHECK(ipmng->lookupIPAddress("192.168.1.2") == false);
+        BOOST_CHECK(ipmng->getMatchedIPSet() == nullptr);
+        
+	BOOST_CHECK(ipmng->lookupIPAddress("192.168.1.1") == true);
+        BOOST_CHECK(ipmng->getMatchedIPSet() == ipset1);
+
+        BOOST_CHECK(ipset1->getTotalLookups() == 2);
+        BOOST_CHECK(ipset1->getTotalLookupsIn() == 1);
+        BOOST_CHECK(ipset1->getTotalLookupsOut() == 1);	
+	BOOST_CHECK(ipset2->getTotalLookups() == 1);
+        BOOST_CHECK(ipset2->getTotalLookupsIn() == 0);
+        BOOST_CHECK(ipset2->getTotalLookupsOut() == 1);	
+	
+	BOOST_CHECK(ipmng->lookupIPAddress("10.1.1.2") == true);
+        BOOST_CHECK(ipmng->getMatchedIPSet() == ipset2);
+        
+	BOOST_CHECK(ipset1->getTotalLookups() == 3);
+        BOOST_CHECK(ipset1->getTotalLookupsIn() == 1);
+        BOOST_CHECK(ipset1->getTotalLookupsOut() == 2);	
+	BOOST_CHECK(ipset2->getTotalLookups() == 2);
+        BOOST_CHECK(ipset2->getTotalLookupsIn() == 1);
+        BOOST_CHECK(ipset2->getTotalLookupsOut() == 1);	
+}
+
+
+
+
 BOOST_AUTO_TEST_SUITE_END( )
 
 BOOST_FIXTURE_TEST_SUITE(testipset_2,StackTCPIPSetTest)
@@ -81,10 +134,12 @@ BOOST_AUTO_TEST_CASE ( test1_ip )
         Packet packet(pkt,length,0);
 
         IPSetPtr ipset = IPSetPtr(new IPSet("new ipset"));
+	IPSetManagerPtr ipset_mng = IPSetManagerPtr(new IPSetManager());
 
+	ipset_mng->addIPSet(ipset);
 	ipset->addIPAddress("72.21.211.223");
 
-	tcp->setIPSet(ipset);
+	tcp->setIPSetManager(ipset_mng);
         // executing the packet
         // forward the packet through the multiplexers
         mux_eth->setPacket(&packet);
@@ -106,11 +161,13 @@ BOOST_AUTO_TEST_CASE ( test2_ip )
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_2_length;
         Packet packet(pkt,length,0);
 
+	IPSetManagerPtr ipset_mng = IPSetManagerPtr(new IPSetManager());
         IPSetPtr ipset = IPSetPtr(new IPSet("new ipset"));
 
+	ipset_mng->addIPSet(ipset);
         ipset->addIPAddress("72.21.211.3");
 
-        tcp->setIPSet(ipset);
+        tcp->setIPSetManager(ipset_mng);
         // executing the packet
         // forward the packet through the multiplexers
         mux_eth->setPacket(&packet);

@@ -26,6 +26,7 @@
 
 #include <string>
 #include "IPSet.h"
+#include "IPSetManager.h"
 #include "../../test/tests_packets.h"
 #include "../Protocol.h"
 #include "../Multiplexer.h"
