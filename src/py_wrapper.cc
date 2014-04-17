@@ -258,7 +258,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setUDPIPSetManager", &StackLanIPv6::setUDPIPSetManager)
         ;
 	
-	boost::python::class_<Regex>("Regex",init<const std::string&,const std::string&>())
+	boost::python::class_<Regex, SharedPointer<Regex>,boost::noncopyable>("Regex",init<const std::string&,const std::string&>())
 		.def("getExpression",&Regex::getExpression,return_internal_reference<>())
 		.def("getName",&Regex::getName,return_internal_reference<>())
 		.def("getMatchs",&Regex::getMatchs)
@@ -286,7 +286,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 
 	void (RegexManager::*addRegex1)(const std::string,const std::string) = &RegexManager::addRegex;
-	void (RegexManager::*addRegex2)(Regex&) = &RegexManager::addRegex;
+	void (RegexManager::*addRegex2)(const SharedPointer<Regex>) = &RegexManager::addRegex;
 
 	boost::python::class_<RegexManager,boost::shared_ptr<RegexManager>,boost::noncopyable >("RegexManager")
 		.def("addRegex",addRegex1)

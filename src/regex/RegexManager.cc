@@ -26,15 +26,6 @@
 
 namespace aiengine {
 
-void RegexManager::addRegex(Regex& sig) {
-
-#ifdef PYTHON_BINDING
-	addRegex(boost::make_shared<Regex>(sig));
-#else
-	addRegex(std::make_shared<Regex>(sig));
-#endif
-}
-
 void RegexManager::addRegex(const std::string name,const std::string expression) {
 
 	SharedPointer<Regex> sig = SharedPointer<Regex>(new Regex(name,expression));

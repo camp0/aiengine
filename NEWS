@@ -52,3 +52,6 @@ Features of 0.6
 - Ip Filters for ip matching rules (unordered_set(ready), bloom filters(planned)).
 - Minor bugs (leak on pcre). 
 - Python Wrapper IPSet and IPSetManager for manage the ip filters.
+
+Features of 0.7
+- Fix bug on the destructors of the Regex.

@@ -62,9 +62,14 @@ if __name__ == '__main__':
         01 - Heartbeat
         xx - heartbeat payload length
     """ 
+    ssl_sig = pyaiengine.Regex("SSL Basic regex","^\x16\x03")
+
     sig = pyaiengine.Regex("SSL Heartbeat","^\x18\x03(\x01|\x02|\x03)\x00\x03\x01")
     sig.setCallback(callback_heartbeat)
-    sm.addRegex(sig)
+
+    ssl_sig.setNextRegex(sig)
+
+    sm.addRegex(ssl_sig)
 
     st.setTCPRegexManager(sm)
 
@@ -82,6 +87,6 @@ if __name__ == '__main__':
         print "Error: capturing packets:",e
 
     pdis.closeDevice()
-        
+
     sys.exit(0)
 

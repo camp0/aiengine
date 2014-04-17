@@ -40,7 +40,7 @@ public:
         explicit RegexManager():
                 total_matched_signatures_(0) {}
 
-        virtual ~RegexManager()=default;
+        virtual ~RegexManager() = default;
 
 	int32_t getTotalRegexs() { return signatures_.size();}
 	int32_t getTotalMatchingRegexs() { return total_matched_signatures_;}
@@ -49,7 +49,6 @@ public:
 
 	void addRegex(const std::string name,const std::string expression);
 	void addRegex(SharedPointer<Regex> sig);
-	void addRegex(Regex& sig);
 
 	SharedPointer<Regex> getMatchedRegex() { return current_signature_;}
 
