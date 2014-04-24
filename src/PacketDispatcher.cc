@@ -233,7 +233,7 @@ void PacketDispatcher::runPcap() {
 }
 
 
-void PacketDispatcher::run() {
+void PacketDispatcher::runDevice() {
 
 	if(device_is_ready_) {
         	idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(5));

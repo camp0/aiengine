@@ -197,6 +197,7 @@ BOOST_AUTO_TEST_CASE (test1_flowmanager_lookups)
 	SharedPointer<Flow> f3 = fm->findFlow(hfail,hfail);
 	BOOST_CHECK(f3.get() == 0);
 	BOOST_CHECK(fm->getTotalFlows() == 1);
+
 	delete fm;
 }
 

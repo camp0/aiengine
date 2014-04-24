@@ -43,9 +43,10 @@ public:
 
 	void addDomainName(SharedPointer<DomainName> domain); 
 	void addDomainName(const std::string name,const std::string expression);
-	void addDomainName(DomainName& name);
 
 	SharedPointer<DomainName> getDomainName(std::string& name);
+
+	int32_t getTotalDomains() const { return total_domains_; }
 
 	friend std::ostream& operator<< (std::ostream& out, const DomainNameManager& domain);
 

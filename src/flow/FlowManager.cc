@@ -64,19 +64,12 @@ SharedPointer<Flow> FlowManager::findFlow(unsigned long hash1,unsigned long hash
 	return fp;
 }
 
-
 std::ostream& operator<< (std::ostream& out, const FlowManager& fm) {
 
         out << "FlowManager statistics" << std::endl;
+        out << "\t" << "Total process flows:    " << std::setw(10) << fm.total_process_flows_ <<std::endl;
         out << "\t" << "Total flows:            " << std::setw(10) << fm.flowTable_.size() <<std::endl;
 	return out;
-}
-
-void FlowManager::statistics(std::basic_ostream<char>& out) {
-
-        out << "FlowManager statistics" << std::endl;
-        out << "\t" << "Total process flows:    " << std::setw(10) << total_process_flows_ <<std::endl;
-        out << "\t" << "Total flows:            " << std::setw(10) << flowTable_.size() <<std::endl;
 }
 
 void FlowManager::printFlows(std::basic_ostream<char>& out) {

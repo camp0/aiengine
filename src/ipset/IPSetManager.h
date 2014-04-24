@@ -42,14 +42,21 @@ public:
     	explicit IPSetManager():sets_(),matched_set_() {}
     	virtual ~IPSetManager() {}
 
-#ifdef PYTHON_BINDING
-	void addIPSet(IPSet& ipset);
-#endif
-	void addIPSet(SharedPointer<IPSet> ipset);
+	void addIPSet(const SharedPointer<IPSet> ipset);
 	bool lookupIPAddress(const std::string &ip); 
 
-	void statistics(std::basic_ostream<char>& out);
+	int32_t getTotalSets() const { return sets_.size(); }
+
+	void statistics(std::basic_ostream<char>& out) { out << *this; }
 	void statistics() { statistics(std::cout);}
+
+#ifdef PYTHON_BINDING
+	// Methods for exposing the class to python iterable methods
+	std::vector<SharedPointer<IPSet>>::iterator begin() { return sets_.begin(); }
+	std::vector<SharedPointer<IPSet>>::iterator end() { return sets_.end(); }
+#endif
+
+	friend std::ostream& operator<< (std::ostream& out, const IPSetManager& im);
 
 	SharedPointer<IPSet> getMatchedIPSet() { return matched_set_;}
 private:

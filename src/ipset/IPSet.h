@@ -68,8 +68,10 @@ public:
 	void addIPAddress(const std::string &ip);
 	bool lookupIPAddress(const std::string &ip); 
 
-	void statistics(std::basic_ostream<char>& out);
+	void statistics(std::basic_ostream<char>& out) { out<< *this; }
 	void statistics() { statistics(std::cout);}
+
+	friend std::ostream& operator<< (std::ostream& out, const IPSet& is);
 
 #ifdef PYTHON_BINDING
 

@@ -58,7 +58,7 @@ struct DatabaseAdaptorWrap: DatabaseAdaptor, wrapper<DatabaseAdaptor>
         void connect(std::string &connection_str) { this->get_override("connection")(connection_str); }
         void insert(std::string &key) { this->get_override("insert")(key); }
         void update(std::string &key, std::string& data) { this->get_override("update")(key,data); }
-        void remove(std::string &key) { this->get_override("delete")(key); }
+        void remove(std::string &key) { this->get_override("remove")(key); }
 };
 
 
@@ -277,7 +277,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("closeDevice",&PacketDispatcher::closeDevice)
 		.def("openPcapFile",&PacketDispatcher::openPcapFile)
 		.def("closePcapFile",&PacketDispatcher::closePcapFile)
-		.def("run",&PacketDispatcher::run)
+		.def("runDevice",&PacketDispatcher::runDevice)
 		.def("runPcap",&PacketDispatcher::runPcap)
 		.def("setStack",setStackLan)
 		.def("setStack",setStackMobile)
@@ -288,16 +288,18 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (RegexManager::*addRegex1)(const std::string,const std::string) = &RegexManager::addRegex;
 	void (RegexManager::*addRegex2)(const SharedPointer<Regex>) = &RegexManager::addRegex;
 
-	boost::python::class_<RegexManager,boost::shared_ptr<RegexManager>,boost::noncopyable >("RegexManager")
+	boost::python::class_<RegexManager,SharedPointer<RegexManager>,boost::noncopyable >("RegexManager")
+		.def("__iter__",boost::python::range(&RegexManager::begin,&RegexManager::end))
 		.def("addRegex",addRegex1)
 		.def("addRegex",addRegex2)
 		.def("__len__",&RegexManager::getTotalRegexs)
 		.def(self_ns::str(self_ns::self))
 	;
 
-	boost::python::class_<FlowManager,boost::shared_ptr<FlowManager>,boost::noncopyable >("FlowManager")
+	boost::python::class_<FlowManager,SharedPointer<FlowManager>,boost::noncopyable >("FlowManager")
 		.def("__iter__",boost::python::range(&FlowManager::begin,&FlowManager::end))
 		.def("__len__", &FlowManager::getTotalFlows)
+		.def("getTotalFlows", &FlowManager::getTotalFlows)
 		.def(self_ns::str(self_ns::self))
 	;
 	
@@ -318,6 +320,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getSSLHost",&Flow::getSSLHost,return_internal_reference<>())
 		.def("getRegex",&Flow::getRegex,return_internal_reference<>())
 		.def("getPayload",&Flow::getPayload)
+		.def("getIPSet",&Flow::getIPSet,return_internal_reference<>())
 		.def(self_ns::str(self_ns::self))
 	;
 
@@ -356,23 +359,22 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("compute",&LearnerEngine::compute)
 	;
 
-        boost::python::class_<DomainName>("DomainName",init<const std::string&,const std::string&>())
+        boost::python::class_<DomainName, SharedPointer<DomainName>, boost::noncopyable>("DomainName",init<const std::string&,const std::string&>())
                 .def("getExpression",&DomainName::getExpression,return_internal_reference<>())
                 .def("getName",&DomainName::getName,return_internal_reference<>())
                 .def("getMatchs",&DomainName::getMatchs)
-//                .def(self_ns::str(self_ns::self))
                 .def("setCallback",&DomainName::setCallback)
         ;
 
-
         void (DomainNameManager::*addDomainName1)(const std::string,const std::string) = &DomainNameManager::addDomainName;
-        void (DomainNameManager::*addDomainName2)(DomainName&) = &DomainNameManager::addDomainName;
+        void (DomainNameManager::*addDomainName2)(const SharedPointer<DomainName>) = &DomainNameManager::addDomainName;
 
-        boost::python::class_<DomainNameManager,boost::shared_ptr<DomainNameManager>,boost::noncopyable >("DomainNameManager")
+        boost::python::class_<DomainNameManager,SharedPointer<DomainNameManager>,boost::noncopyable >("DomainNameManager")
                 .def("addDomainName",addDomainName1)
                 .def("addDomainName",addDomainName2)
-                //.def("__len__",&RegexManager::getTotalRegexs)
-                //.def(self_ns::str(self_ns::self))
+		.def("getTotalDomains", &DomainNameManager::getTotalDomains)
+		.def("__len__", &DomainNameManager::getTotalDomains)
+                .def(self_ns::str(self_ns::self))
         ;
 
         boost::python::class_<DatabaseAdaptorWrap, boost::noncopyable>("DatabaseAdaptor",no_init)
@@ -382,14 +384,23 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("remove",pure_virtual(&DatabaseAdaptor::remove))
         ;
 
-	boost::python::class_<IPSet>("IPSet")
+	boost::python::class_<IPSet, SharedPointer<IPSet>>("IPSet")
+		.def(init<>())
+		.def(init<const std::string&>())
 		.def("addIPAddress",&IPSet::addIPAddress)
 		.def("setCallback",&IPSet::setCallback)
+		.def("getTotalIPs",&IPSet::getTotalIPs)
+		.def("__len__",&IPSet::getTotalIPs)
+                .def(self_ns::str(self_ns::self))
 	;
 
-	void (IPSetManager::*addIPSet)(IPSet&) = &IPSetManager::addIPSet;
-        boost::python::class_<IPSetManager, SharedPointer<IPSetManager>>("IPSetManager")
+	void (IPSetManager::*addIPSet)(const SharedPointer<IPSet>) = &IPSetManager::addIPSet;
+        boost::python::class_<IPSetManager, SharedPointer<IPSetManager>, boost::noncopyable>("IPSetManager")
+		.def("__iter__",boost::python::range(&IPSetManager::begin,&IPSetManager::end))
                 .def("addIPSet",addIPSet)
+		.def("getTotalSets",&IPSetManager::getTotalSets)
+		.def("__len__",&IPSetManager::getTotalSets)
+                .def(self_ns::str(self_ns::self))
         ;
 }
 

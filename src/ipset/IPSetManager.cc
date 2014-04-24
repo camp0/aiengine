@@ -26,15 +26,7 @@
 
 namespace aiengine {
 
-#ifdef PYTHON_BINDING
-void IPSetManager::addIPSet(IPSet& ipset) {
-
-	addIPSet(boost::make_shared<IPSet>(ipset));
-}
-
-#endif
-
-void IPSetManager::addIPSet(SharedPointer<IPSet> ipset) {
+void IPSetManager::addIPSet(const SharedPointer<IPSet> ipset) {
 
 	sets_.push_back(ipset);
 }
@@ -53,13 +45,19 @@ bool IPSetManager::lookupIPAddress(const std::string &ip) {
 	return false;
 }
 
-void IPSetManager::statistics(std::basic_ostream<char>& out) {
+std::ostream& operator<< (std::ostream& out, const IPSetManager& im) {
 
 	out << "IPSetManager " << std::endl;
-	out << "\tTotal IPSets:           " << std::setw(10) << sets_.size() <<std::endl;
-	for(auto it = sets_.begin(); it != sets_.end(); ++it) {
-		(*it)->statistics(out);
-	}
+	out << "\tTotal IPSets:           " << std::setw(10) << im.sets_.size() <<std::endl;
+//	for(auto it = im.sets_.begin(); it != im.sets_.end(); ++it) {
+		//out << (*it).get();
+//		out << it->get();
+		//out << it;
+		//out << (*it)->statistics(out);
+		//out << (*it);
+		//out << *(*it);
+//	}
+
 }
 
 

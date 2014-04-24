@@ -100,7 +100,7 @@ public:
 	void closePcapFile();
 
 	void stop() { io_service_.stop();}
-	void run(); 
+	void runDevice(); 
 	void runPcap(); 
 
 	uint64_t getTotalBytes() const { return total_bytes_;}

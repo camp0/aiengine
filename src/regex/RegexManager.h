@@ -54,6 +54,12 @@ public:
 
 	friend std::ostream& operator<< (std::ostream& out, const RegexManager& sig);
 
+#ifdef PYTHON_BINDING
+	// Methods for exposing the class to python iterable methods
+	std::vector<SharedPointer<Regex>>::iterator begin() { return signatures_.begin(); }
+	std::vector<SharedPointer<Regex>>::iterator end() { return signatures_.end(); }
+#endif
+
 private:
 	SharedPointer<Regex> current_signature_;
 	int32_t total_matched_signatures_;

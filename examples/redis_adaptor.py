@@ -57,7 +57,7 @@ class redisAdaptor(pyaiengine.DatabaseAdaptor):
         self.__r.hset("udpflows",key,"{}")
         self.__total_inserts = self.__total_inserts + 1
  
-    def delete(self,key):
+    def remove(self,key):
         self.__r.hdelete("udpflows",key)
         self.__total_removes = self.__total_removes + 1
 

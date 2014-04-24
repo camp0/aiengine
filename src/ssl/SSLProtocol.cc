@@ -187,7 +187,8 @@ void SSLProtocol::processFlow(Flow *flow) {
 			if (host_mng) {
 				SharedPointer<SSLHost> host_name = flow->ssl_host.lock();
 
-				if (host_name) {
+				// TODO: just handled the client hello, so there is no need of checking on packetsl7 > than 1
+				if ((host_name)and(flow->total_packets_l7 == 1)) {
 					SharedPointer<DomainName> host_candidate = host_mng->getDomainName(host_name->getName());
 					
 					if (host_candidate) {

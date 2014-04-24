@@ -479,7 +479,7 @@ int main(int argc, char* argv[]) {
 			
         		pktdis->openDevice(option_interface.c_str());
 			try {
-				pktdis->run();
+				pktdis->runDevice();
 			} catch(std::exception& e) {
 				std::cerr << "Error: " << e.what() << std::endl;
 			}

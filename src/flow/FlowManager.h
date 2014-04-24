@@ -60,7 +60,8 @@ public:
 
 	void printFlows(std::basic_ostream<char>& out);
 	void printFlows() { printFlows(std::cout);}      
-	void statistics(std::basic_ostream<char>& out);
+
+	void statistics(std::basic_ostream<char>& out) { out << *this;} 
         void statistics() { statistics(std::cout);}
 
 	friend std::ostream& operator<< (std::ostream& out, const FlowManager& fm);
