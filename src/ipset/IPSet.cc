@@ -49,6 +49,7 @@ std::ostream& operator<< (std::ostream& out, const IPSet& is) {
 	out << "\tTotal IP address:       " << std::setw(10) << is.total_ips_ <<std::endl;
 	out << "\tTotal lookups in:       " << std::setw(10) << is.total_ips_on_set_ <<std::endl;
 	out << "\tTotal lookups out:      " << std::setw(10) << is.total_ips_not_on_set_ <<std::endl;
+	return out;
 }
 
 

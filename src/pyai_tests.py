@@ -242,6 +242,26 @@ class StackLanTests(unittest.TestCase):
 	self.assertEqual(d.getMatchs(), 1)
 	self.assertEqual(self.called_callback, 1)
 
+    def test9(self):
+        """ Verify iterators of the RegexManager """
+
+	rl = [ pyaiengine.Regex("expression %d" % x, "some regex %d" % x) for x in xrange(0,5) ]
+
+	rm = pyaiengine.RegexManager()
+
+	[rm.addRegex(r) for r in rl] 
+	
+        self.s.setTCPRegexManager(rm)
+	self.s.enableNIDSEngine(True)	
+
+        self.dis.openPcapFile("../pcapfiles/sslflow.pcap")
+        self.dis.runPcap()
+        self.dis.closePcapFile()
+
+	self.assertEqual(len(rm), 5)
+	
+	for r in rl:
+		self.assertEqual(r.getMatchs(), 0)
 
 class StackLanIPv6Tests(unittest.TestCase):
 

@@ -14,7 +14,7 @@ Using AIEngine
 To use AIEngine just execute the binary aiengine or use the python binding.
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
-	iaengine 0.6
+	iaengine 0.7
 	Mandatory arguments:
 	  -I [ --interface ] arg            Sets the network interface.
 	  -P [ --pcapfile ] arg             Sets the pcap file or directory with pcap 
@@ -70,6 +70,7 @@ The main objects that the python module provide are the following ones.
 	   |---> setCallback
 	DomainNameManager
 	   |---> addDomainName
+	   |---> getTotalDomains
 	Flow
 	   |---> getDNSDomain
 	   |---> getDestinationAddress
@@ -77,6 +78,7 @@ The main objects that the python module provide are the following ones.
 	   |---> getFrequencies
 	   |---> getHTTPHost
 	   |---> getHTTPUserAgent
+	   |---> getIPSet
 	   |---> getPacketFrequencies
 	   |---> getPayload
 	   |---> getProtocol
@@ -88,6 +90,7 @@ The main objects that the python module provide are the following ones.
 	   |---> getTotalPackets
 	   |---> getTotalPacketsLayer7
 	FlowManager
+	   |---> getTotalFlows
 	Frequencies
 	   |---> getDispersion
 	   |---> getEnthropy
@@ -96,7 +99,11 @@ The main objects that the python module provide are the following ones.
 	HTTPUserAgent
 	IPSet
 	   |---> addIPAddress
+	   |---> getTotalIPs
 	   |---> setCallback
+	IPSetManager
+	   |---> addIPSet
+	   |---> getTotalSets
 	LearnerEngine
 	   |---> agregateFlows
 	   |---> compute
@@ -114,19 +121,19 @@ The main objects that the python module provide are the following ones.
 	   |---> setSSLHostNameManager
 	   |---> setStatisticsLevel
 	   |---> setTCPDatabaseAdaptor
-	   |---> setTCPIPSet
+	   |---> setTCPIPSetManager
 	   |---> setTCPRegexManager
 	   |---> setTotalTCPFlows
 	   |---> setTotalUDPFlows
 	   |---> setUDPDatabaseAdaptor
-	   |---> setUDPIPSet
+	   |---> setUDPIPSetManager
 	   |---> setUDPRegexManager
 	PacketDispatcher
 	   |---> closeDevice
 	   |---> closePcapFile
 	   |---> openDevice
 	   |---> openPcapFile
-	   |---> run
+	   |---> runDevice
 	   |---> runPcap
 	   |---> setStack
 	PacketFrequencies
@@ -152,12 +159,12 @@ The main objects that the python module provide are the following ones.
 	   |---> setSSLHostNameManager
 	   |---> setStatisticsLevel
 	   |---> setTCPDatabaseAdaptor
-	   |---> setTCPIPSet
+	   |---> setTCPIPSetManager
 	   |---> setTCPRegexManager
 	   |---> setTotalTCPFlows
 	   |---> setTotalUDPFlows
 	   |---> setUDPDatabaseAdaptor
-	   |---> setUDPIPSet
+	   |---> setUDPIPSetManager
 	   |---> setUDPRegexManager
 	StackLanIPv6
 	   |---> enableFrequencyEngine
@@ -171,12 +178,12 @@ The main objects that the python module provide are the following ones.
 	   |---> setSSLHostNameManager
 	   |---> setStatisticsLevel
 	   |---> setTCPDatabaseAdaptor
-	   |---> setTCPIPSet
+	   |---> setTCPIPSetManager
 	   |---> setTCPRegexManager
 	   |---> setTotalTCPFlows
 	   |---> setTotalUDPFlows
 	   |---> setUDPDatabaseAdaptor
-	   |---> setUDPIPSet
+	   |---> setUDPIPSetManager
 	   |---> setUDPRegexManager
 	StackMobile
 	   |---> enableFrequencyEngine
@@ -190,12 +197,12 @@ The main objects that the python module provide are the following ones.
 	   |---> setSSLHostNameManager
 	   |---> setStatisticsLevel
 	   |---> setTCPDatabaseAdaptor
-	   |---> setTCPIPSet
+	   |---> setTCPIPSetManager
 	   |---> setTCPRegexManager
 	   |---> setTotalTCPFlows
 	   |---> setTotalUDPFlows
 	   |---> setUDPDatabaseAdaptor
-	   |---> setUDPIPSet
+	   |---> setUDPIPSetManager
 	   |---> setUDPRegexManager
 	std_ostream
 

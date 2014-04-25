@@ -242,8 +242,6 @@ void iaengineExit() {
 
 		showStackStatistics(std::cout);
 
-		if (option_enable_regex)
-			std::cout << *sm.get();		
 		if (option_show_flows)
               		stack->printFlows();
 
