@@ -3,7 +3,7 @@ AUTOMAKE_OPTIONS = gnu
 python_PYTHON = pyai_tests.py
 
 # EXTRA_FLAGS = -flto not supported on the freebsd compiler
-EXTRA_FLAGS = 
+EXTRA_FLAGS = -O3 
 
 EXTRA_DIST = py_wrapper.cc setup.py
 

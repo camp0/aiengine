@@ -57,3 +57,5 @@ Features of 0.7
 - Fix bug on the destructors of the Regex.
 - Tested on Fedora 20.
 - Improvements on the iterators of the python side.
+- Unit tests for python.
+- Compilation on O3 optimization.
