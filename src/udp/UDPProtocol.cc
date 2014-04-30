@@ -135,7 +135,7 @@ void UDPProtocol::processPacket(Packet& packet) {
 		if (flow->total_packets == 1) { // Just need to check once per flow
 			if(ipset_mng_) {
 				if (ipset_mng_->lookupIPAddress(flow->getDstAddrDotNotation())) {
-					SharedPointer<IPSet> ipset = ipset_mng_->getMatchedIPSet();
+					SharedPointer<IPAbstractSet> ipset = ipset_mng_->getMatchedIPSet();
 					flow->ipset = ipset;
 #ifdef DEBUG
                                         std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":Lookup positive on IPSet:" << ipset->getName() << std::endl;

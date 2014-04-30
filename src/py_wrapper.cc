@@ -38,6 +38,7 @@
 #include "./Signature.h"
 #include "DatabaseAdaptor.h"
 #include "./ipset/IPSet.h"
+#include "./ipset/IPBloomSet.h"
 #include "./ipset/IPSetManager.h"
 #include <boost/python.hpp>
 #include <boost/asio.hpp>
@@ -384,7 +385,11 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("remove",pure_virtual(&DatabaseAdaptor::remove))
         ;
 
-	boost::python::class_<IPSet, SharedPointer<IPSet>>("IPSet")
+        boost::python::class_<IPAbstractSet, boost::noncopyable>("IPAbstractSet",no_init)
+                .def("addIPAddress",pure_virtual(&IPAbstractSet::addIPAddress))
+	;
+
+	boost::python::class_<IPSet, bases<IPAbstractSet>, SharedPointer<IPSet>>("IPSet")
 		.def(init<>())
 		.def(init<const std::string&>())
 		.def("addIPAddress",&IPSet::addIPAddress)
@@ -394,7 +399,20 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def(self_ns::str(self_ns::self))
 	;
 
-	void (IPSetManager::*addIPSet)(const SharedPointer<IPSet>) = &IPSetManager::addIPSet;
+#ifdef HAVE_BLOOMFILTER
+        boost::python::class_<IPBloomSet, bases<IPAbstractSet>, SharedPointer<IPBloomSet>>("IPBloomSet")
+                .def(init<>())
+                .def(init<const std::string&>())
+                .def("addIPAddress",&IPBloomSet::addIPAddress)
+                .def("setCallback",&IPBloomSet::setCallback)
+                .def("getTotalIPs",&IPBloomSet::getTotalIPs)
+                .def("__len__",&IPBloomSet::getTotalIPs)
+                .def(self_ns::str(self_ns::self))
+        ;
+
+#endif // HAVE_BLOOMFILTER
+
+	void (IPSetManager::*addIPSet)(const SharedPointer<IPAbstractSet>) = &IPSetManager::addIPSet;
         boost::python::class_<IPSetManager, SharedPointer<IPSetManager>, boost::noncopyable>("IPSetManager")
 		.def("__iter__",boost::python::range(&IPSetManager::begin,&IPSetManager::end))
                 .def("addIPSet",addIPSet)

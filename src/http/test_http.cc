@@ -23,6 +23,7 @@
  */
 #include "test_http.h"
 
+
 #define BOOST_TEST_DYN_LINK
 #ifdef STAND_ALONE
 #define BOOST_TEST_MODULE httptest
@@ -616,6 +617,5 @@ BOOST_AUTO_TEST_CASE (test2_http)
 	// Probably need to improve more.
 }
 
-
-
 BOOST_AUTO_TEST_SUITE_END( )
+

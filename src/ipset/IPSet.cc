@@ -46,6 +46,7 @@ bool IPSet::lookupIPAddress(const std::string &ip) {
 std::ostream& operator<< (std::ostream& out, const IPSet& is) {
 
 	out << "IPSet " << is.name_ << std::endl;
+	//out << "\tFalse positive rate:    " << std::setw(10) << is.getFalsePositiveRate() <<std::endl;
 	out << "\tTotal IP address:       " << std::setw(10) << is.total_ips_ <<std::endl;
 	out << "\tTotal lookups in:       " << std::setw(10) << is.total_ips_on_set_ <<std::endl;
 	out << "\tTotal lookups out:      " << std::setw(10) << is.total_ips_not_on_set_ <<std::endl;

@@ -36,6 +36,11 @@
 #include "../ip6/IPv6Protocol.h"
 #include "../tcp/TCPProtocol.h"
 
+#ifdef HAVE_BLOOMFILTER
+#include <boost/bloom_filter/basic_bloom_filter.hpp>
+#include "IPBloomSet.h"
+#endif
+
 using namespace aiengine;
 
 struct StackTCPIPSetTest

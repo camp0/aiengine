@@ -22,6 +22,8 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			./vlan/VLanProtocol.h \
 			./mpls/MPLSProtocol.h \
 			./ip/IPProtocol.h \
+			./ipset/IPAbstractSet.h \
+			./ipset/IPBloomSet.h \
 			./ipset/IPSet.h \
 			./ipset/IPSetManager.h \
 			./ip6/IPv6Protocol.h \
@@ -59,6 +61,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			./mpls/MPLSProtocol.cc \
 			./ip/IPProtocol.cc \
 			./ipset/IPSet.cc \
+			./ipset/IPBloomSet.cc \
 			./ipset/IPSetManager.cc \
 			./ip6/IPv6Protocol.cc \
 			./icmp/ICMPProtocol.cc \

@@ -59,3 +59,4 @@ Features of 0.7
 - Improvements on the iterators of the python side.
 - Unit tests for python.
 - Compilation on O3 optimization.
+- Bloom filters implemented on the python wrapper (Boost blool filter).

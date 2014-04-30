@@ -38,6 +38,8 @@
 #include "./frequency/FrequencyGroup.h"
 #include "./learner/LearnerEngine.h"
 #include "StackLanTest.h"
+#include "./ipset/IPSet.h"
+#include "./ipset/IPBloomSet.h"
 
 #ifdef HAVE_REDIS
 #include "RedisAdaptor.h"
@@ -995,6 +997,64 @@ BOOST_AUTO_TEST_CASE ( test_case_7 )
         BOOST_CHECK(ipset_tcp->getTotalLookupsOut() == 1);
 }
 
+#ifdef HAVE_BLOOMFILTER 
+// Test the IPBloomSet functionality
+BOOST_AUTO_TEST_CASE ( test_case_8 )
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        StackLanPtr stack = StackLanPtr(new StackLan());
+        SharedPointer<IPBloomSet> ipset_tcp = SharedPointer<IPBloomSet>(new IPBloomSet("IPBloomSet 1"));
+        SharedPointer<IPSetManager> ipset_mng = SharedPointer<IPSetManager>(new IPSetManager());
+
+        ipset_mng->addIPSet(ipset_tcp);
+        ipset_tcp->addIPAddress("69.64.34.1");
+
+        stack->setTCPIPSetManager(ipset_mng);
+        stack->setTotalTCPFlows(1);
+        pd->setStack(stack);
+
+        pd->openPcapFile("../pcapfiles/icq.pcapng");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        BOOST_CHECK(ipset_tcp->getTotalIPs() == 1);
+        BOOST_CHECK(ipset_tcp->getTotalLookups() == 1);
+        BOOST_CHECK(ipset_tcp->getTotalLookupsIn() == 0);
+        BOOST_CHECK(ipset_tcp->getTotalLookupsOut() == 1);
+}
+
+BOOST_AUTO_TEST_CASE ( test_case_9 )
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        StackLanPtr stack = StackLanPtr(new StackLan());
+        SharedPointer<IPBloomSet> ipset_tcp = SharedPointer<IPBloomSet>(new IPBloomSet("IPBloomSet 1"));
+        SharedPointer<IPSetManager> ipset_mng = SharedPointer<IPSetManager>(new IPSetManager());
+
+        ipset_mng->addIPSet(ipset_tcp);
+
+	for (int i = 1 ; i < 255; ++i ) {
+		std::stringstream ipstr;
+		
+		ipstr << "74.12.3." << i;
+        	ipset_tcp->addIPAddress(ipstr.str());
+	}
+
+        stack->setTCPIPSetManager(ipset_mng);
+        stack->setTotalTCPFlows(1);
+        pd->setStack(stack);
+
+        pd->openPcapFile("../pcapfiles/icq.pcapng");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        BOOST_CHECK(ipset_tcp->getTotalIPs() == 254);
+        BOOST_CHECK(ipset_tcp->getTotalLookups() == 1);
+        BOOST_CHECK(ipset_tcp->getTotalLookupsIn() == 0);
+        BOOST_CHECK(ipset_tcp->getTotalLookupsOut() == 1);
+}
+
+
+#endif // 
 
 BOOST_AUTO_TEST_SUITE_END( )
 

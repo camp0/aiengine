@@ -263,6 +263,37 @@ class StackLanTests(unittest.TestCase):
 	for r in rl:
 		self.assertEqual(r.getMatchs(), 0)
 
+    def test10(self):
+	""" Verify the IPBloomSet class """
+
+	have_bloom = False
+	try:
+	    from pyaiengine import IPBloomSet 
+	    have_bloom = True
+	except ImportError:
+	    pass
+  
+	if (have_bloom): # execute the test
+       	    def ipset_callback(flow):
+            	self.ip_called_callback += 1
+
+            ip = pyaiengine.IPBloomSet("Specific IP address")
+            ip = IPBloomSet("Specific IP address")
+            ip.addIPAddress("74.125.24.189")
+            ip.setCallback(ipset_callback)
+
+            ipm = pyaiengine.IPSetManager()
+            ipm.addIPSet(ip)
+
+            self.s.setTCPIPSetManager(ipm)
+
+            self.dis.openPcapFile("../pcapfiles/sslflow.pcap");
+            self.dis.runPcap();
+            self.dis.closePcapFile();
+
+            self.assertEqual(self.ip_called_callback,1)
+ 
+
 class StackLanIPv6Tests(unittest.TestCase):
 
     def setUp(self):

@@ -97,6 +97,12 @@ The main objects that the python module provide are the following ones.
 	   |---> getFrequenciesString
 	HTTPHost
 	HTTPUserAgent
+	IPAbstractSet
+	   |---> addIPAddress
+	IPBloomSet
+	   |---> addIPAddress
+	   |---> getTotalIPs
+	   |---> setCallback
 	IPSet
 	   |---> addIPAddress
 	   |---> getTotalIPs

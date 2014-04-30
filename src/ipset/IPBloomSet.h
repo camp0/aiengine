@@ -21,52 +21,63 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef SRC_IPSET_IPSETMANAGER_H_
-#define SRC_IPSET_IPSETMANAGER_H_
+#ifndef SRC_IPSET_IPBLOOMSET_H_
+#define SRC_IPSET_IPBLOOMSET_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-#include "../Pointer.h"
+#include <memory>
 #include <string>
 #include <iostream>
-#include <vector>
 #include "IPAbstractSet.h"
+
+#ifdef HAVE_BLOOMFILTER 
+
+#include <boost/bloom_filter/dynamic_bloom_filter.hpp>
+
+#ifdef PYTHON_BINDING
+#include <boost/python.hpp>
+#include <boost/function.hpp>
+#endif
 
 namespace aiengine {
 
-class IPSetManager 
+class IPBloomSet : public IPAbstractSet 
 {
 public:
-    	explicit IPSetManager():sets_(),matched_set_() {}
-    	virtual ~IPSetManager() {}
+    	explicit IPBloomSet():bloom_(BLOOM_NUM_BITS) {
+		setName("Generic IPBloomSet");
+	}
+    	explicit IPBloomSet(const std::string &name):bloom_(BLOOM_NUM_BITS) {
+		setName(name);
+	}
 
-	void addIPSet(const SharedPointer<IPAbstractSet> ipset);
+	static const size_t BLOOM_NUM_BITS = 4194304; // 1MB
+
+    	virtual ~IPBloomSet() {}
+
+	void addIPAddress(const std::string &ip);
 	bool lookupIPAddress(const std::string &ip); 
+	int getFalsePositiveRate() { return (bloom_.false_positive_rate() * 100.0); }
 
-	int32_t getTotalSets() const { return sets_.size(); }
-
-	void statistics(std::basic_ostream<char>& out) { out << *this; }
+	void statistics(std::basic_ostream<char>& out) { out<< *this; }
 	void statistics() { statistics(std::cout);}
 
-#ifdef PYTHON_BINDING
-	// Methods for exposing the class to python iterable methods
-	std::vector<SharedPointer<IPAbstractSet>>::iterator begin() { return sets_.begin(); }
-	std::vector<SharedPointer<IPAbstractSet>>::iterator end() { return sets_.end(); }
-#endif
+	friend std::ostream& operator<< (std::ostream& out, const IPBloomSet& is);
 
-	friend std::ostream& operator<< (std::ostream& out, const IPSetManager& im);
+	void resize(int num_bits) { bloom_.resize(num_bits); }
 
-	SharedPointer<IPAbstractSet> getMatchedIPSet() { return matched_set_;}
 private:
-	std::vector<SharedPointer<IPAbstractSet>> sets_;
-	SharedPointer<IPAbstractSet> matched_set_;
+	boost::bloom_filters::dynamic_bloom_filter<std::string> bloom_;
 };
 
-typedef std::shared_ptr<IPSetManager> IPSetManagerPtr;
-typedef std::weak_ptr<IPSetManager> IPSetManagerPtrWeak;
+typedef std::shared_ptr<IPBloomSet> IPBloomSetPtr;
+typedef std::weak_ptr<IPBloomSet> IPBloomSetPtrWeak;
 
 } // namespace aiengine
 
-#endif  // SRC_IPSET_IPSETMANAGER_H_
+#endif // HAVE_BLOOMFILTER
+
+#endif  // SRC_IPSET_IPBLOOMSET_H_

@@ -215,13 +215,13 @@ AC_ARG_ENABLE([bloomfilter],
     [bloom_support=no])
 AC_MSG_RESULT([$bloom_support])
 
-#if test x"$bloom_support" = x"yes"; then
-#    AC_CHECK_HEADER([bf.h])
+if test x"$bloom_support" = x"yes"; then
+    AC_CHECK_HEADER([boost/bloom_filter/basic_bloom_filter.hpp])
 #    AC_CHECK_LIB([bf],[main],,have_bloom=no)
-#AC_DEFINE([HAVE_BLOOMFILTER],[1],[Bloom filter support])
+	AC_DEFINE([HAVE_BLOOMFILTER],[1],[Bloom filter support])
 #else
-#    AC_DEFINE([HAVE_BLOOMFILTER],[0],[No bloom filter support])
-#fi
+#    	AC_DEFINE([HAVE_BLOOMFILTER],[0],[No bloom filter support])
+fi
 
 
 ##########################################################################
@@ -283,5 +283,6 @@ echo "
   Pcre................: $WITH_PCRE
   Pcre JIT............: $pcre_jit_works
   Database support....: $adaptor_support
+  Bloom filter support: $bloom_support
 "
 

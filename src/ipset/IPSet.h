@@ -31,6 +31,7 @@
 #include <memory>
 #include <string>
 #include <iostream>
+#include "IPAbstractSet.h"
 #include <unordered_set>
 
 #ifdef PYTHON_BINDING
@@ -40,76 +41,29 @@
 
 namespace aiengine {
 
-class IPSet 
+class IPSet : public IPAbstractSet 
 {
 public:
-    	explicit IPSet():total_ips_(0),
-		total_ips_not_on_set_(0),total_ips_on_set_(0)
-		{
-			name_="Generic IPSet";
-#ifdef PYTHON_BINDING
-			callback_set_ = false;
-			callback_ = nullptr;
-#endif
-		}
-    	explicit IPSet(const std::string &name):name_(name),
-		total_ips_not_on_set_(0),total_ips_on_set_(0),
-		total_ips_(0) 
-		{
-#ifdef PYTHON_BINDING
-			callback_set_ = false;
-			callback_ = nullptr;
-#endif
-		}
-    	virtual ~IPSet() {}
+    	explicit IPSet() {
+		setName("Generic IPSet");
+	}
+    	explicit IPSet(const std::string &name) {
+		setName(name);
+	}
 
-	const char *getName() { return name_.c_str();}
+    	virtual ~IPSet() {}
 
 	void addIPAddress(const std::string &ip);
 	bool lookupIPAddress(const std::string &ip); 
+	int getFalsePositiveRate() { return 0; }
 
 	void statistics(std::basic_ostream<char>& out) { out<< *this; }
 	void statistics() { statistics(std::cout);}
 
 	friend std::ostream& operator<< (std::ostream& out, const IPSet& is);
 
-#ifdef PYTHON_BINDING
-
-        bool haveCallback() const { return callback_set_;}
-
-        void setCallback(PyObject *callback) {
-
-                // TODO: Verify that the callback have at least one parameter
-                if (!PyCallable_Check(callback)) {
-                        std::cerr << "Object is not callable." << std::endl;
-                } else {
-                        if ( callback_ ) Py_XDECREF(callback_);
-                        callback_ = callback;
-                        Py_XINCREF(callback_);
-                        callback_set_ = true;
-                }
-        }
-
-        PyObject *getCallback() { return callback_;}
-
-#endif
-
-	int32_t getTotalIPs() const { return total_ips_; }
-	int32_t getTotalLookups() const { return (total_ips_on_set_ + total_ips_not_on_set_); }
-	int32_t getTotalLookupsIn() const { return total_ips_on_set_; }
-	int32_t getTotalLookupsOut() const { return total_ips_not_on_set_; }
-	int getSize() const { return map_.size(); }
-
 private:
-	std::string name_;	
-	int32_t total_ips_;
-	int32_t total_ips_not_on_set_;
-	int32_t total_ips_on_set_;
 	std::unordered_set<std::string> map_;
-#ifdef PYTHON_BINDING
-	bool callback_set_;
-	PyObject *callback_;
-#endif
 };
 
 typedef std::shared_ptr<IPSet> IPSetPtr;

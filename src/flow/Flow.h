@@ -32,7 +32,7 @@
 #include "../Packet.h"
 #include "../Serializable.h"
 #include "../IPAddress.h"
-#include "../ipset/IPSet.h"
+#include "../ipset/IPAbstractSet.h"
 #include "../regex/Regex.h"
 #include "../frequency/Frequencies.h"
 #include "../frequency/PacketFrequencies.h"
@@ -90,7 +90,7 @@ public:
 	int32_t total_packets;
 
 	// Objects that links with the Flow
-	WeakPointer<IPSet> ipset;
+	WeakPointer<IPAbstractSet> ipset;
 	WeakPointer<TCPInfo> tcp_info;
 	WeakPointer<DNSDomain> dns_domain;
 	WeakPointer<Regex> regex;
@@ -138,7 +138,7 @@ public:
 	Regex& getRegex() const { return *regex.lock().get();}
 	DNSDomain& getDNSDomain() const { return *dns_domain.lock().get();}
 	SSLHost& getSSLHost() const { return *ssl_host.lock().get();}
-	IPSet& getIPSet() const { return *ipset.lock().get();}
+	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
 
 #endif
 

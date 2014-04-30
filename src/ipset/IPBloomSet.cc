@@ -21,42 +21,40 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#include "IPSetManager.h"
+#include "IPBloomSet.h"
 #include <iomanip> // setw
+
+#ifdef HAVE_BLOOMFILTER
 
 namespace aiengine {
 
-void IPSetManager::addIPSet(const SharedPointer<IPAbstractSet> ipset) {
+void IPBloomSet::addIPAddress(const std::string &ip) {
 
-	sets_.push_back(ipset);
+	bloom_.insert(ip);
+	++total_ips_;
 }
 
-bool IPSetManager::lookupIPAddress(const std::string &ip) {
-	matched_set_.reset();
+bool IPBloomSet::lookupIPAddress(const std::string &ip) {
 
-	for(auto it = sets_.begin(); it != sets_.end(); ++it) {
-		bool value = (*it)->lookupIPAddress(ip);
-
-		if(value) {
-			matched_set_ = (*it);
-			return true;
-		}
+	if (bloom_.probably_contains(ip)) {
+		++total_ips_on_set_;
+		return true;
+	} else {
+		++total_ips_not_on_set_;
+		return false;
 	}
-	return false;
 }
 
-std::ostream& operator<< (std::ostream& out, const IPSetManager& im) {
+std::ostream& operator<< (std::ostream& out, const IPBloomSet& is) {
 
-	out << "IPSetManager" << std::endl;
-	out << "\tTotal IPSets:           " << std::setw(10) << im.sets_.size() <<std::endl;
-	for(auto it = im.sets_.begin(); it != im.sets_.end(); ++it) {
-		SharedPointer<IPAbstractSet> ipset = (*it);
-
-		//ipset->statistics(out);
-	}
-
+	out << "IPBloomSet " << is.name_ << std::endl;
+	//out << "\tFalse positive rate:    " << std::setw(10) << is.getFalsePositiveRate() <<std::endl;
+	out << "\tTotal IP address:       " << std::setw(10) << is.total_ips_ <<std::endl;
+	out << "\tTotal lookups in:       " << std::setw(10) << is.total_ips_on_set_ <<std::endl;
+	out << "\tTotal lookups out:      " << std::setw(10) << is.total_ips_not_on_set_ <<std::endl;
 	return out;
 }
 
-
 } // namespace aiengine
+
+#endif // HAVE_BLOOMFILTER
