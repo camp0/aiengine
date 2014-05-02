@@ -26,12 +26,12 @@
 
 #include <string>
 #include "../../test/tests_packets.h"
+#include "../../test/ip_frag_test_packets.h"
 #include "../Protocol.h"
 #include "../Multiplexer.h"
 #include "../ethernet/EthernetProtocol.h"
 #include "../vlan/VLanProtocol.h"
 #include "IPProtocol.h"
-//#include "IPLookup.h"
 
 using namespace aiengine;
 

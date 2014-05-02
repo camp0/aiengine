@@ -1,4 +1,4 @@
-AC_INIT([aiengine],[0.7],[luis.camp0.2009@gmail.com],[],[https://bitbucket.org/camp0/aiengine])
+AC_INIT([aiengine],[0.8],[luis.camp0.2009@gmail.com],[],[https://bitbucket.org/camp0/aiengine])
 AM_INIT_AUTOMAKE([subdir-objects])
 AM_PROG_LIBTOOL
 

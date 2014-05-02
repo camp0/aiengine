@@ -42,7 +42,7 @@ class IPProtocol: public Protocol
 {
 public:
     	explicit IPProtocol():ip_header_(nullptr),total_bytes_(0),
-		stats_level_(0) { name_="IPProtocol";}
+		total_frag_packets_(0),stats_level_(0) { name_="IPProtocol";}
     	virtual ~IPProtocol() {}
 	
 	static const u_int16_t id = ETHERTYPE_IP;
@@ -93,13 +93,14 @@ public:
 		}
 	}
 
+	/* Fields from IP headers */
     	u_int8_t getTTL() const { return ip_header_->ip_ttl; }
     	u_int16_t getPacketLength() const { return ntohs(ip_header_->ip_len); }
     	u_int16_t getIPHeaderLength() const { return ip_header_->ip_hl * 4; }
     	bool isIP() const { return ip_header_ ? true : false ; }
     	bool isIPver4() const { return ip_header_->ip_v == 4; }
-    	//bool isFragment() const { return (ntohs(ip_header_->frag_off) & 0x3fff); }
-    	//u_int16_t getID() const { return ntohs(ip_header_->id); }
+    	bool isFragment() const { return (ip_header_->ip_off & IP_MF); }
+    	u_int16_t getID() const { return ntohs(ip_header_->ip_id); }
     	int getVersion() const { return ip_header_->ip_v; }
     	u_int16_t getProtocol () const { return ip_header_->ip_p; }
     	u_int32_t getSrcAddr() const { return ip_header_->ip_src.s_addr; }
@@ -113,6 +114,7 @@ private:
 	MultiplexerPtrWeak mux_;
 	struct ip *ip_header_;
 	int64_t total_bytes_;
+	int32_t total_frag_packets_;
 };
 
 typedef std::shared_ptr<IPProtocol> IPProtocolPtr;

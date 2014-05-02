@@ -39,6 +39,10 @@ void IPProtocol::processPacket(Packet& packet) {
 	
 	mux->setNextProtocolIdentifier(getProtocol());
 	packet.setPrevHeaderSize(header_size);
+
+	if(isFragment() == true) {
+		++total_frag_packets_;
+	}
 }
 
 
@@ -56,6 +60,11 @@ void IPProtocol::statistics(std::basic_ostream<char>& out){
 		if (stats_level_ > 1) {
 			out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
 			out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
+			if(stats_level_ > 3)
+			{
+				out << "\t" << "Total fragment packets: " << std::setw(10) << total_frag_packets_ <<std::endl;
+			}
+
 			if (stats_level_ > 2) {
 				if(mux_.lock())
 					mux_.lock()->statistics(out);

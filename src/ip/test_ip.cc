@@ -50,6 +50,7 @@ BOOST_AUTO_TEST_CASE ( test1_ip )
 	BOOST_CHECK(ip->getIPHeaderLength() == 20);
 	BOOST_CHECK(ip->getProtocol() == IPPROTO_TCP);
 	BOOST_CHECK(ip->getPacketLength() == length);
+	BOOST_CHECK(ip->isFragment() == false);
 
 	BOOST_CHECK(localip.compare(ip->getSrcAddrDotNotation())==0);
 	BOOST_CHECK(remoteip.compare(ip->getDstAddrDotNotation())==0);
@@ -79,6 +80,7 @@ BOOST_AUTO_TEST_CASE (test2_ip) // ethernet -> ip
 	BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
 	BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
 	BOOST_CHECK(ip->getTotalBytes() == length -14);
+	BOOST_CHECK(ip->isFragment() == false);
 
 }
 
@@ -106,6 +108,7 @@ BOOST_FIXTURE_TEST_CASE (test3_ip, StackEthernetVLanIP) // ethernet -> vlan -> i
 
 	BOOST_CHECK(vlan->getTotalBytes() == length - 14);
 	BOOST_CHECK(ip->getTotalBytes() == length - 18);
+	BOOST_CHECK(ip->isFragment() == false);
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
 
         BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_VLAN);
@@ -247,6 +250,8 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
         BOOST_CHECK(mux_vlan->getCurrentPacket()->getLength() == 0);
 
+	BOOST_CHECK(ip1->isFragment() == false);
+	BOOST_CHECK(ip2->isFragment() == false);
         BOOST_CHECK(ip1->getPacketLength() == 81);
         BOOST_CHECK(ip2->getPacketLength() == 61);
 
@@ -264,11 +269,58 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
 
 BOOST_AUTO_TEST_SUITE_END( )
 
-BOOST_AUTO_TEST_SUITE(ip_lookups)
+BOOST_FIXTURE_TEST_SUITE(ip_frag_suite,StackEthernetIP)
 
-BOOST_AUTO_TEST_CASE (test1_ip)
+// First packet of a fragmented IP packet
+BOOST_AUTO_TEST_CASE ( test1_ip )
 {
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_frag_1);
+        int length = raw_packet_ethernet_ip_frag_1_length;
 
+        Packet packet(pkt,length,0);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
+
+        BOOST_CHECK(ip->getTotalPackets() == 1);
+        BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(ip->getTotalBytes() == length -14);
+
+	BOOST_CHECK(ip->getPacketLength() == 1500);
+	BOOST_CHECK(ip->getID() == 29812);
+	BOOST_CHECK(ip->isFragment() == true);
+	BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);
+}
+
+// last packet of a fragmented IP packet
+BOOST_AUTO_TEST_CASE ( test2_ip )
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_frag_2);
+        int length = raw_packet_ethernet_ip_frag_2_length;
+
+        Packet packet(pkt,length,0);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
+
+        BOOST_CHECK(ip->getTotalPackets() == 1);
+        BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(ip->getTotalBytes() == length -14);
+
+        BOOST_CHECK(ip->getPacketLength() == 568);
+        BOOST_CHECK(ip->getID() == 29812);
+        BOOST_CHECK(ip->isFragment() == true);
+	BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);
 }
 
 

@@ -60,3 +60,6 @@ Features of 0.7
 - Unit tests for python.
 - Compilation on O3 optimization.
 - Bloom filters implemented on the python wrapper (Boost blool filter).
+
+Features of 0.8
+- Counters for ip fragmentation packets.
