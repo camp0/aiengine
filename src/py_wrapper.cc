@@ -420,5 +420,16 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("__len__",&IPSetManager::getTotalSets)
                 .def(self_ns::str(self_ns::self))
         ;
+        
+	boost::python::class_<FrequencyGroup<std::string>>("FrequencyGroup")
+		.def("addFlowsBySourcePort",&FrequencyGroup<std::string>::agregateFlowsBySourcePort)
+		.def("addFlowsByDestinationPort",&FrequencyGroup<std::string>::agregateFlowsByDestinationPort)
+		.def("addFlowsBySourceAddress",&FrequencyGroup<std::string>::agregateFlowsBySourceAddress)
+		.def("addFlowsByDestinationAddress",&FrequencyGroup<std::string>::agregateFlowsByDestinationAddress)
+		.def("addFlowsByDestinationAddressAndPort",&FrequencyGroup<std::string>::agregateFlowsByDestinationAddressAndPort)
+		.def("addFlowsBySourceAddressAndPort",&FrequencyGroup<std::string>::agregateFlowsBySourceAddressAndPort)
+		.def("getTotalProcessFlows",&FrequencyGroup<std::string>::getTotalProcessFlows)
+		.def("getTotalComputedFrequencies",&FrequencyGroup<std::string>::getTotalComputedFrequencies)
+	;
 }
 
