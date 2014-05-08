@@ -421,6 +421,93 @@ class StackLanIPv6Tests(unittest.TestCase):
 	self.assertEqual(len(im), 3)
         self.assertEqual(self.called_callback , 0)
 
+class StackLanLearningTests(unittest.TestCase):
+
+    def setUp(self):
+        self.s = pyaiengine.StackLan()
+        self.dis = pyaiengine.PacketDispatcher()
+        self.dis.setStack(self.s)
+        self.s.setTotalTCPFlows(2048)
+        self.s.setTotalUDPFlows(1024)
+	self.f = pyaiengine.FrequencyGroup()
+
+    def tearDown(self):
+        del self.s
+        del self.dis
+	del self.f
+
+    def test1(self):
+
+	self.f.reset()
+	self.s.enableFrequencyEngine(True)
+
+        self.dis.openPcapFile("../pcapfiles/two_http_flows_noending.pcap")
+        self.dis.runPcap()
+        self.dis.closePcapFile()
+
+	self.assertEqual(self.f.getTotalProcessFlows(), 0)
+	self.assertEqual(self.f.getTotalComputedFrequencies(), 0)
+
+	""" Add the TCP Flows of the FlowManager on the FrequencyEngine """
+	ft = self.s.getTCPFlowManager()
+	self.f.addFlowsByDestinationPort(ft)
+	self.f.compute()
+	
+	self.assertEqual(self.f.getTotalProcessFlows(), 2)
+	self.assertEqual(self.f.getTotalComputedFrequencies(), 1)
+
+    def test2(self):
+        
+        self.f.reset()
+        self.s.enableFrequencyEngine(True)
+        
+        self.dis.openPcapFile("../pcapfiles/tor_4flows.pcap")
+        self.dis.runPcap()
+        self.dis.closePcapFile()
+
+        self.assertEqual(self.f.getTotalProcessFlows(), 0)
+        self.assertEqual(self.f.getTotalComputedFrequencies(), 0)
+
+        """ Add the TCP Flows of the FlowManager on the FrequencyEngine """
+        ft = self.s.getTCPFlowManager()
+        self.f.addFlowsByDestinationPort(ft)
+        self.f.compute()
+
+	self.assertEqual(len(self.f.getReferenceFlowsByKey("80")), 4)
+	self.assertEqual(len(self.f.getReferenceFlows()), 4)
+	self.assertEqual(len(self.f.getReferenceFlowsByKey("8080")), 0)
+        self.assertEqual(self.f.getTotalProcessFlows(), 4)
+        self.assertEqual(self.f.getTotalComputedFrequencies(), 1)
+
+    def test3(self):
+	""" Integrate with the learner to generate a regex """
+	learn = pyaiengine.LearnerEngine()
+
+        self.f.reset()
+        self.s.enableFrequencyEngine(True)
+        
+        self.dis.openPcapFile("../pcapfiles/tor_4flows.pcap")
+        self.dis.runPcap()
+        self.dis.closePcapFile()
+
+        """ Add the TCP Flows of the FlowManager on the FrequencyEngine """
+        ft = self.s.getTCPFlowManager()
+        self.f.addFlowsByDestinationPort(ft)
+        self.f.compute()
+
+	flow_list = self.f.getReferenceFlows()
+        self.assertEqual(self.f.getTotalComputedFrequencies(), 1)
+	learn.agregateFlows(flow_list)
+	learn.compute()
+
+	""" Get the generated regex and compile with the regex module """
+	r = learn.getRegex()
+	try:
+	    rc = re.compile(r)		
+	    self.assertTrue(True)	
+ 	except:
+	    self.assertFalse(False)	
+
 
 if __name__ == '__main__':
 

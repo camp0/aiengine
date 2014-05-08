@@ -827,9 +827,44 @@ BOOST_AUTO_TEST_CASE ( test_case_3 )
         BOOST_CHECK(header.compare(0,header.length(),reg,0,header.length())== 0);
 }
 
+BOOST_AUTO_TEST_CASE ( test_case_4 )
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        StackLanPtr stack = StackLanPtr(new StackLan());
+        LearnerEnginePtr learner = LearnerEnginePtr(new LearnerEngine());
+        std::vector<WeakPointer<Flow>> flow_list;
 
+        stack->setTotalTCPFlows(4);
+        stack->enableFrequencyEngine(true);
+        pd->setStack(stack);
+        pd->openPcapFile("../pcapfiles/tor_4flows.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+ 
+        FrequencyGroup<std::string> group_by_port;
+ 
+        group_by_port.setName("by destination port");
+        group_by_port.agregateFlowsByDestinationPort(stack->getTCPFlowManager().lock());
+        group_by_port.compute();
 
-BOOST_AUTO_TEST_CASE ( test_case_4 ) // integrate the learner and the FrequencyGroups 
+        BOOST_CHECK(group_by_port.getTotalProcessFlows() == 4);
+        BOOST_CHECK(group_by_port.getTotalComputedFrequencies() == 1);
+
+        flow_list = group_by_port.getReferenceFlowsByKey("80");
+
+        // The flow_list should contains two entries
+        BOOST_CHECK(flow_list.size() == 4);
+ 
+        // pass the flows to the Learner engine
+        learner->agregateFlows(flow_list);
+        learner->compute();
+        std::string header("^\\x16\\x03\\x01\\x00\\xd1\\x01\\x00\\x00\\xcd\\x03\\x01\\x52\\xc1\\xd5\\x86\\xd0\\xd3\\x8f\\x87\\xb8\\xf1\\x6e\\x0f\\xe1\\x59\\xff");// a SSL header on hexa
+        std::string reg(learner->getRegularExpression());
+        
+        BOOST_CHECK(header.compare(0,header.length(),reg,0,header.length())== 0);
+}
+
+BOOST_AUTO_TEST_CASE ( test_case_5 ) // integrate the learner and the FrequencyGroups 
 {
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         StackLanPtr stack = StackLanPtr(new StackLan());
@@ -897,7 +932,7 @@ BOOST_AUTO_TEST_CASE ( test_case_4 ) // integrate the learner and the FrequencyG
 }
 
 // Check the file format support for pcapng files
-BOOST_AUTO_TEST_CASE ( test_case_5 )
+BOOST_AUTO_TEST_CASE ( test_case_6 )
 {
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         StackLanPtr stack = StackLanPtr(new StackLan());
@@ -935,7 +970,7 @@ BOOST_AUTO_TEST_CASE ( test_case_5 )
 }
 
 // Test the IPset functionality 
-BOOST_AUTO_TEST_CASE ( test_case_6 )
+BOOST_AUTO_TEST_CASE ( test_case_7 )
 {
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         StackLanPtr stack = StackLanPtr(new StackLan());
@@ -973,7 +1008,7 @@ BOOST_AUTO_TEST_CASE ( test_case_6 )
 }
 
 // Test the IPset functionality
-BOOST_AUTO_TEST_CASE ( test_case_7 )
+BOOST_AUTO_TEST_CASE ( test_case_8 )
 {
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         StackLanPtr stack = StackLanPtr(new StackLan());
@@ -999,7 +1034,7 @@ BOOST_AUTO_TEST_CASE ( test_case_7 )
 
 #ifdef HAVE_BLOOMFILTER 
 // Test the IPBloomSet functionality
-BOOST_AUTO_TEST_CASE ( test_case_8 )
+BOOST_AUTO_TEST_CASE ( test_case_9 )
 {
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         StackLanPtr stack = StackLanPtr(new StackLan());
@@ -1023,7 +1058,7 @@ BOOST_AUTO_TEST_CASE ( test_case_8 )
         BOOST_CHECK(ipset_tcp->getTotalLookupsOut() == 1);
 }
 
-BOOST_AUTO_TEST_CASE ( test_case_9 )
+BOOST_AUTO_TEST_CASE ( test_case_10 )
 {
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         StackLanPtr stack = StackLanPtr(new StackLan());
@@ -1053,8 +1088,48 @@ BOOST_AUTO_TEST_CASE ( test_case_9 )
         BOOST_CHECK(ipset_tcp->getTotalLookupsOut() == 1);
 }
 
-
 #endif // 
+
+BOOST_AUTO_TEST_CASE ( test_case_11 )
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        StackLanPtr stack = StackLanPtr(new StackLan());
+        LearnerEnginePtr learner = LearnerEnginePtr(new LearnerEngine());
+        std::vector<WeakPointer<Flow>> flow_list;
+
+        stack->setTotalTCPFlows(4);
+        stack->enableFrequencyEngine(true);
+        pd->setStack(stack);
+        pd->openPcapFile("../pcapfiles/amazon_4ssl_flows.pcap");
+        pd->runPcap();
+        pd->closePcapFile();
+
+        FrequencyGroup<std::string> group_by_port;
+
+        group_by_port.setName("by destination port");
+        group_by_port.agregateFlowsByDestinationPort(stack->getTCPFlowManager().lock());
+        group_by_port.compute();
+
+        BOOST_CHECK(group_by_port.getTotalProcessFlows() == 4);
+        BOOST_CHECK(group_by_port.getTotalComputedFrequencies() == 1);
+
+        flow_list = group_by_port.getReferenceFlowsByKey("443");
+
+        // The flow_list should contains four entries
+        BOOST_CHECK(flow_list.size() == 4);
+
+        // pass the flows to the Learner engine
+        learner->agregateFlows(flow_list);
+        learner->compute();
+
+	// TODO: The resulting regex should be with operators {} to avoid .?.?.?.?.? tags
+        // std::string header("^\\x16\\x03\\x01\\x00\\xd1\\x01\\x00\\x00\\xcd\\x03\\x01\\x52\\xc1\\xd5\\x86\\xd0\\xd3\\x8f\\x87\\xb8\\xf1\\x6e\\x0f\\xe1\\x59\\xff");// a SSL header on hexa
+        // std::string reg(learner->getRegularExpression());
+
+        // BOOST_CHECK(header.compare(0,header.length(),reg,0,header.length())== 0);
+}
+
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

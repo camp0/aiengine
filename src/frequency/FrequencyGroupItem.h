@@ -61,20 +61,40 @@ public:
 	
 		total_items_ = 0;
 		total_flows_bytes_ = 0;
+#ifdef PYTHON_BINDING
+		int len = boost::python::len(flow_list_);
+		for (int i = 0; i<len; ++i) flow_list_.pop();
+#else
 		flow_list_.clear();
+#endif
 		freqs_->reset();
 	}	
 
-	void addFlow(SharedPointer<Flow> flow) { flow_list_.push_back(flow);}	
+#ifdef PYTHON_BINDING
+	void addFlow(SharedPointer<Flow> flow) { flow_list_.append(flow); } 
+#else
+	void addFlow(SharedPointer<Flow> flow) { flow_list_.push_back(flow); } 
+#endif
+	
 	int getTotalItems() { return total_items_;}
 	int32_t getTotalFlowsBytes() { return total_flows_bytes_;}	
 	SharedPointer<Frequencies> getFrequencies() { return freqs_;}	
+
+#ifdef PYTHON_BINDING
+	boost::python::list getReferenceFlows() { return flow_list_;}
+#else	
 	std::vector<WeakPointer<Flow>> &getReferenceFlows() { return flow_list_;}
+#endif
+
 private:		
 	int total_items_;
 	int32_t total_flows_bytes_;
 	SharedPointer<Frequencies> freqs_;
+#ifdef PYTHON_BINDING
+	boost::python::list flow_list_;
+#else
 	std::vector<WeakPointer<Flow>> flow_list_;
+#endif
 };
 
 typedef std::shared_ptr<FrequencyGroupItem> FrequencyGroupItemPtr;

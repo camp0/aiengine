@@ -58,6 +58,7 @@ typedef struct {
 #define SSL3_VERSION 0x0300
 #define TLS1_VERSION 0x0301
 #define TLS1_1_VERSION 0x0302
+#define TLS1_2_VERSION 0x0303
 
 // Record types of the ssl_handshake_record
 

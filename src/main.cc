@@ -235,7 +235,7 @@ void showStackStatistics(std::basic_ostream<char>& out) {
 }
 
 
-void iaengineExit() {
+void aiengineExit() {
 
 	if (stack) {
 		pktdis->stop();
@@ -336,7 +336,7 @@ int main(int argc, char* argv[]) {
         	po::store(po::parse_command_line(argc, argv, mandatory_ops), var_map);
 
         	if (var_map.count("help")) {
-            		std::cout << "iaengine " VERSION << std::endl;
+            		std::cout << PACKAGE " " VERSION << std::endl;
             		std::cout << mandatory_ops << std::endl;
 			std::cout << "Please report bugs to <" << PACKAGE_BUGREPORT << ">" << std::endl;
 			std::cout << "Copyright (C) 2009-2013 Luis Campo Giralte <" PACKAGE_BUGREPORT <<">" << std::endl;
@@ -346,11 +346,11 @@ int main(int argc, char* argv[]) {
             		return false;
         	}
         	if (var_map.count("version")) {
-            		std::cout << "iaengine " VERSION << std::endl;
+            		std::cout << PACKAGE " " VERSION << std::endl;
             		return false;
         	}
 		if ((var_map.count("interface") == 0)&&(var_map.count("pcapfile") == 0)) {
-            		std::cout << "iaengine " VERSION << std::endl;
+            		std::cout << PACKAGE " " VERSION << std::endl;
             		std::cout << mandatory_ops << std::endl;
 			return false;
 		}
@@ -362,12 +362,12 @@ int main(int argc, char* argv[]) {
         	po::notify(var_map);
     	
 	} catch(boost::program_options::required_option& e) {
-            	std::cout << "iaengine " VERSION << std::endl;
+            	std::cout << PACKAGE " " VERSION << std::endl;
         	std::cerr << "Error: " << e.what() << std::endl;
 		std::cout << mandatory_ops << std::endl;
         	return false;
 	} catch(std::exception& e) {
-            	std::cout << "iaengine " VERSION << std::endl;
+            	std::cout << PACKAGE " " VERSION << std::endl;
         	std::cerr << "Unsupported option." << e.what() << std::endl;
 		std::cout << mandatory_ops << std::endl;
         	return false;
@@ -396,7 +396,7 @@ int main(int argc, char* argv[]) {
 	try {
 		stack = stack_factory[option_stack_name]();
 	} catch (std::bad_function_call& e) {
-		std::cout << "iaengine: Unknown stack " << option_stack_name << std::endl;
+		std::cout << PACKAGE ": Unknown stack " << option_stack_name << std::endl;
 		exit(-1);
 	}
 	
@@ -431,7 +431,7 @@ int main(int argc, char* argv[]) {
 	// connect with the stack
         pktdis->setStack(stack);
 
-	atexit(iaengineExit);
+	atexit(aiengineExit);
 
 	if(var_map.count("pcapfile") == 1)
 	{

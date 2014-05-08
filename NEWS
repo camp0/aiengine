@@ -63,3 +63,5 @@ Features of 0.7
 
 Features of 0.8
 - Counters for ip fragmentation packets.
+- Support for TLS1.2 on the SSLProtocol
+- Exposed the FrequencyGroup and the LearnerEngine on python.

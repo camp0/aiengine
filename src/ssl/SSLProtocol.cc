@@ -61,7 +61,7 @@ void SSLProtocol::handleClientHello(Flow *flow,int offset, u_char *data) {
 
 	++ total_client_hellos_;
 
-	if ((version == TLS1_1_VERSION)or(version == TLS1_VERSION)) { 
+	if((version >= SSL3_VERSION)and(version <= TLS1_2_VERSION)) {
 
 		if (ntohs(hello->session_id_length) > 0) {
 			// Session id management
@@ -151,7 +151,7 @@ void SSLProtocol::processFlow(Flow *flow) {
 				short type = record->data[0];
 				++maxattemps;
 
-				if((version == SSL3_VERSION)or(version == TLS1_VERSION)or(version == TLS1_1_VERSION)) { 		
+				if((version >= SSL3_VERSION)and(version <= TLS1_2_VERSION)) {
 					// This is a valid SSL header that we could extract some usefulll information.
 					// SSL Records are group by blocks
 					u_char *ssl_data = record->data;

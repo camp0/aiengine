@@ -30,8 +30,12 @@ namespace aiengine {
 template <class A_Type>
 void FrequencyGroup<A_Type>::reset() {
 
+#ifdef PYTHON_BINDING
+	int len = boost::python::len(flow_list_);
+        for (int i = 0; i<len; ++i) flow_list_.pop();
+#else
 	flow_list_.clear();
-
+#endif
 	// Need to iterate and destroy de FrequencyGroupItems
 	for (auto it = group_map_.begin(); it != group_map_.end(); ++it) {
 		FrequencyGroupItemPtr fgitem = it->second;
@@ -43,24 +47,37 @@ void FrequencyGroup<A_Type>::reset() {
 	total_computed_freqs_ = 0;
 }
 
+#ifdef PYTHON_BINDING
+template <class A_Type>
+boost::python::list FrequencyGroup<A_Type>::getReferenceFlowsByKey(A_Type key) { 
+#else
 template <class A_Type>
 std::vector<WeakPointer<Flow>> &FrequencyGroup<A_Type>::getReferenceFlowsByKey(A_Type key) { 
-
+#endif
 	auto it = group_map_.find(key);
 
 	if (it != group_map_.end()) {
 		FrequencyGroupItemPtr fgitem = it->second;
 		return fgitem->getReferenceFlows();
 	} else {
+#ifdef PYTHON_BINDING
+		return boost::python::list();// empty_flow_list;
+#else
 		static std::vector<WeakPointer<Flow>> empty_flow_list;
 		return empty_flow_list;	
+#endif
 	}
 }
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlows(FlowManagerPtr flow_t, std::function <A_Type (SharedPointer<Flow>&)> condition) {
+void FrequencyGroup<A_Type>::agregateFlows(SharedPointer<FlowManager> flow_t, std::function <A_Type (SharedPointer<Flow>&)> condition) {
 
-	flow_list_.clear();
+#ifdef PYTHON_BINDING
+        int len = boost::python::len(flow_list_);
+        for (int i = 0; i<len; ++i) flow_list_.pop();
+#else
+        flow_list_.clear();
+#endif
 
 	auto ft = flow_t->getFlowTable();
 	for (auto it = ft.begin(); it!=ft.end();++it) {
@@ -89,7 +106,11 @@ void FrequencyGroup<A_Type>::agregateFlows(FlowManagerPtr flow_t, std::function 
 				flow->frequency_engine_inspected = true;
 				
 				++total_process_flows_;
-				flow_list_.push_back(flow);
+#ifdef PYTHON_BINDING
+        			flow_list_.append(flow);
+#else
+        			flow_list_.push_back(flow);
+#endif
 				fg_item->addFlow(flow);
 			}
 		}
@@ -112,31 +133,31 @@ void FrequencyGroup<A_Type>::compute() {
 }
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsBySourcePort(FlowManagerPtr flow_t) {
+void FrequencyGroup<A_Type>::agregateFlowsBySourcePort(SharedPointer<FlowManager> flow_t) {
 
 	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { return std::to_string(flow->getSourcePort());}));
 }
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsByDestinationPort(FlowManagerPtr flow_t) {
+void FrequencyGroup<A_Type>::agregateFlowsByDestinationPort(SharedPointer<FlowManager> flow_t) {
 
 	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { return std::to_string(flow->getDestinationPort());}));
 } 
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsBySourceAddress(FlowManagerPtr flow_t) { 
+void FrequencyGroup<A_Type>::agregateFlowsBySourceAddress(SharedPointer<FlowManager> flow_t) { 
 
 	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { return flow->getSrcAddrDotNotation();}));
 } 
 	
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddress(FlowManagerPtr flow_t) { 
+void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddress(SharedPointer<FlowManager> flow_t) { 
 
 	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { return flow->getDstAddrDotNotation();}));
 } 
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddressAndPort(FlowManagerPtr flow_t) {
+void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddressAndPort(SharedPointer<FlowManager> flow_t) {
 
 	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { 
 		std::ostringstream os;
@@ -148,7 +169,7 @@ void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddressAndPort(FlowManage
 }
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsBySourceAddressAndPort(FlowManagerPtr flow_t) {
+void FrequencyGroup<A_Type>::agregateFlowsBySourceAddressAndPort(SharedPointer<FlowManager> flow_t) {
 
 	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { 
 		std::ostringstream os;

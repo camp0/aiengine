@@ -31,7 +31,7 @@ void LearnerEngine::reset() {
 	length_ = 0;
 	raw_expression_="";
 	regex_expression_="";
-	for (int i = 0;i<5000;++i) q_array_[i].clear();
+	for (int i = 0;i< MAX_PACKET_FREQUENCIES_VALUES ;++i) q_array_[i].clear();
 }
 
 
@@ -68,7 +68,7 @@ int LearnerEngine::getQualityByte(int offset) {
 
 	int quality = 0;
 
-	if (offset >=0 && offset < 5000) {
+	if (offset >=0 && offset < MAX_PACKET_FREQUENCIES_VALUES) {
 		int items = q_array_[offset].size();
 
 		if (items_>0) {

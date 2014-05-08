@@ -420,8 +420,9 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("__len__",&IPSetManager::getTotalSets)
                 .def(self_ns::str(self_ns::self))
         ;
-        
+
 	boost::python::class_<FrequencyGroup<std::string>>("FrequencyGroup")
+		//.def("__iter__",boost::python::range(&FrequencyGroup<std::string>::cbegin,&FrequencyGroup<std::string>::cend))
 		.def("addFlowsBySourcePort",&FrequencyGroup<std::string>::agregateFlowsBySourcePort)
 		.def("addFlowsByDestinationPort",&FrequencyGroup<std::string>::agregateFlowsByDestinationPort)
 		.def("addFlowsBySourceAddress",&FrequencyGroup<std::string>::agregateFlowsBySourceAddress)
@@ -430,6 +431,17 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("addFlowsBySourceAddressAndPort",&FrequencyGroup<std::string>::agregateFlowsBySourceAddressAndPort)
 		.def("getTotalProcessFlows",&FrequencyGroup<std::string>::getTotalProcessFlows)
 		.def("getTotalComputedFrequencies",&FrequencyGroup<std::string>::getTotalComputedFrequencies)
+		.def("compute",&FrequencyGroup<std::string>::compute)
+		.def("reset",&FrequencyGroup<std::string>::reset)
+		.def("getReferenceFlowsByKey",&FrequencyGroup<std::string>::getReferenceFlowsByKey)
+		.def("getReferenceFlows",&FrequencyGroup<std::string>::getReferenceFlows)
 	;
+
+	boost::python::class_<LearnerEngine>("LearnerEngine")
+		.def("compute",&LearnerEngine::compute)
+		.def("agregateFlows",&LearnerEngine::agregateFlows)
+		.def("getRegex",&LearnerEngine::getRegularExpression)
+	;
+
 }
 

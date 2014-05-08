@@ -51,7 +51,7 @@ public:
 	const char* getName() { return name_.c_str();} 
 	void setName(char *name) { name_ = name;}
 
-	void agregateFlows(FlowManagerPtr flow_t, std::function <A_Type (SharedPointer<Flow>&)> condition);
+	void agregateFlows(SharedPointer<FlowManager> flow_t, std::function <A_Type (SharedPointer<Flow>&)> condition);
 	void compute();
 	void reset();
 
@@ -78,24 +78,28 @@ public:
 
 	void setLogLevel(int level) { log_level_ = level;}
 
-	void agregateFlowsBySourcePort(FlowManagerPtr flow_t);
-	void agregateFlowsByDestinationPort(FlowManagerPtr flow_t);
-	void agregateFlowsBySourceAddress(FlowManagerPtr flow_t); 
-	void agregateFlowsByDestinationAddress(FlowManagerPtr flow_t); 
-	void agregateFlowsByDestinationAddressAndPort(FlowManagerPtr flow_t); 
-	void agregateFlowsBySourceAddressAndPort(FlowManagerPtr flow_t); 
+	void agregateFlowsBySourcePort(SharedPointer<FlowManager> flow_t);
+	void agregateFlowsByDestinationPort(SharedPointer<FlowManager> flow_t);
+	void agregateFlowsBySourceAddress(SharedPointer<FlowManager> flow_t); 
+	void agregateFlowsByDestinationAddress(SharedPointer<FlowManager> flow_t); 
+	void agregateFlowsByDestinationAddressAndPort(SharedPointer<FlowManager> flow_t); 
+	void agregateFlowsBySourceAddressAndPort(SharedPointer<FlowManager> flow_t); 
 
 	int32_t getTotalProcessFlows() { return total_process_flows_;}
 	int32_t getTotalComputedFrequencies() { return total_computed_freqs_;}
 
+#ifdef PYTHON_BINDING
+	boost::python::list getReferenceFlows() { return flow_list_;};
+	boost::python::list getReferenceFlowsByKey(A_Type key);
+#else
 	std::vector<WeakPointer<Flow>> &getReferenceFlows() { return flow_list_;};
 	std::vector<WeakPointer<Flow>> &getReferenceFlowsByKey(A_Type key);
-
+#endif
 	typedef std::map <A_Type,FrequencyGroupItemPtr> GroupMapType;
 	typedef typename GroupMapType::iterator iterator;
     	typedef typename GroupMapType::const_iterator const_iterator;
 
-    	iterator begin() {return group_map_.begin();}
+    	iterator begin() { return group_map_.begin();}
     	const_iterator begin() const {return group_map_.begin();}
     	const iterator cbegin() const {return group_map_.cbegin();}
     	iterator end() {return group_map_.end();}
@@ -108,7 +112,11 @@ private:
 	int32_t total_process_flows_;
 	int32_t total_computed_freqs_;
 	GroupMapType group_map_;
+#ifdef PYTHON_BINDING
+	boost::python::list flow_list_;
+#else
 	std::vector<WeakPointer<Flow>> flow_list_;
+#endif
 };
 
 } // namespace aiengine
