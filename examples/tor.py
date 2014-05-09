@@ -38,7 +38,7 @@ def callback_tor(flow):
 
 if __name__ == '__main__':
 
-    # Load an instance of a Network Stack on Mobile network
+    # Load an instance of a Network Stack on a Lan network
     st = pyaiengine.StackLan()
 
     # Create a instace of a PacketDispatcher

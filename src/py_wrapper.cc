@@ -138,6 +138,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (StackLan::*setUDPDatabaseAdaptorLan2)(boost::python::object&, int) = 	&StackLan::setUDPDatabaseAdaptor;
 
 	boost::python::class_<StackLan, bases<NetworkStack> >("StackLan")
+		.def("getName",&StackLan::getName)
 		.def("setUDPRegexManager",setUDPRegexManagerLan1)	
 		.def("setTCPRegexManager",setTCPRegexManagerLan1)	
 		.def("setUDPRegexManager",setUDPRegexManagerLan2)	
@@ -184,6 +185,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackMobile::*setUDPDatabaseAdaptorMobile2)(boost::python::object&, int) =	&StackMobile::setUDPDatabaseAdaptor;
 
         boost::python::class_<StackMobile, bases<NetworkStack> >("StackMobile")
+		.def("getName",&StackMobile::getName)
 		.def("setUDPRegexManager",setUDPRegexManagerMobile1)	
 		.def("setTCPRegexManager",setTCPRegexManagerMobile1)	
 		.def("setUDPRegexManager",setUDPRegexManagerMobile2)	
@@ -231,6 +233,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackLanIPv6::*setUDPDatabaseAdaptorLanIPv62)(boost::python::object&, int) =	&StackLanIPv6::setUDPDatabaseAdaptor;
 
         boost::python::class_<StackLanIPv6, bases<NetworkStack> >("StackLanIPv6")
+		.def("getName",&StackLanIPv6::getName)
                 .def("setUDPRegexManager",setUDPRegexManagerLanIPv61)
                 .def("setTCPRegexManager",setTCPRegexManagerLanIPv61)
                 .def("setUDPRegexManager",setUDPRegexManagerLanIPv62)
@@ -353,13 +356,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def(self_ns::str(self_ns::self))
 	;
 
-	boost::python::class_<LearnerEngine,SharedPointer<LearnerEngine>>("LearnerEngine")
-		.def("getTotalFlowsProcess",&LearnerEngine::getTotalFlowsProcess)
-		.def("agregateFlows",&LearnerEngine::agregateFlows)
-		.def("getRegularExpression",&LearnerEngine::getRegularExpression)
-		.def("compute",&LearnerEngine::compute)
-	;
-
         boost::python::class_<DomainName, SharedPointer<DomainName>, boost::noncopyable>("DomainName",init<const std::string&,const std::string&>())
                 .def("getExpression",&DomainName::getExpression,return_internal_reference<>())
                 .def("getName",&DomainName::getName,return_internal_reference<>())
@@ -437,11 +433,12 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getReferenceFlows",&FrequencyGroup<std::string>::getReferenceFlows)
 	;
 
-	boost::python::class_<LearnerEngine>("LearnerEngine")
-		.def("compute",&LearnerEngine::compute)
-		.def("agregateFlows",&LearnerEngine::agregateFlows)
-		.def("getRegex",&LearnerEngine::getRegularExpression)
-	;
+        boost::python::class_<LearnerEngine,SharedPointer<LearnerEngine>>("LearnerEngine")
+                .def("getTotalFlowsProcess",&LearnerEngine::getTotalFlowsProcess)
+                .def("agregateFlows",&LearnerEngine::agregateFlows)
+                .def("getRegex",&LearnerEngine::getRegularExpression)
+                .def("compute",&LearnerEngine::compute)
+        ;
 
 }
 

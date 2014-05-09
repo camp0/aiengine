@@ -44,7 +44,7 @@ def callback_host(flow):
 
 if __name__ == '__main__':
 
-    # Load an instance of a Network Stack on Mobile network
+    # Load an instance of a Network Stack on Lan network
     st = pyaiengine.StackLan()
 
     # Create a instace of a PacketDispatcher

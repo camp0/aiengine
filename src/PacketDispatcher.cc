@@ -39,13 +39,18 @@ void PacketDispatcher::setDefaultMultiplexer(MultiplexerPtr mux) {
 void PacketDispatcher::openDevice(std::string device) {
 
 	char errorbuf[PCAP_ERRBUF_SIZE];
+#ifdef __FREEBSD__
+	int timeout = 1000; //miliseconds
+#else
+	int timeout = -1;
+#endif
 
-	pcap_ = pcap_open_live(device.c_str(), PACKET_RECVBUFSIZE, 0, -1, errorbuf);
+	pcap_ = pcap_open_live(device.c_str(), PACKET_RECVBUFSIZE, 0, timeout, errorbuf);
 	if(pcap_ == nullptr) {
 #ifdef HAVE_LIBLOG4CXX 
-		LOG4CXX_ERROR(logger,"Unknown device:" <<device.c_str());
+		LOG4CXX_ERROR(logger,"Device:" <<device.c_str() << " error:" << errorbuf );
 #else
-		std::cerr << "Unkown device:" << device.c_str() << std::endl;
+		std::cerr << "Device:" << device.c_str() << " error:" << errorbuf << std::endl;
 #endif
 		device_is_ready_ = false;
 		exit(-1);

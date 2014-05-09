@@ -83,8 +83,8 @@ void FlowManager::printFlows(std::basic_ostream<char>& out) {
 
 		std::ostringstream fivetuple;
 
-		fivetuple << "[" << flow->getSrcAddrDotNotation() << "]:" << flow->getSourcePort() << ":" << flow->getProtocol();
-		fivetuple << ":[" << flow->getDstAddrDotNotation() << "]:" << flow->getDestinationPort();
+		fivetuple << "[" << flow->getSrcAddrDotNotation() << ":" << flow->getSourcePort() << "]:" << flow->getProtocol();
+		fivetuple << ":[" << flow->getDstAddrDotNotation() << ":" << flow->getDestinationPort() <<"]";
 
 		out << boost::format("%-64s %-10d %-10d %p") % fivetuple.str() % flow->total_bytes % flow->total_packets % flow->forwarder.lock();
 

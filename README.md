@@ -6,7 +6,17 @@ without any human intervention.
 
 AIEngine helps network/security profesionals to identify traffic and develop
 signatures for use them on NIDS, Firewalls, Traffic classifiers and so on.
-The application is supported on Linux and FreeBSD operating systems.
+
+The main functionalities of AIEngine are:
+
+- Support for PCRE JIT for regex matching.
+- Support three types of NetworkStacks(lan,mobile and ipv6)
+- Support Sets and Bloom filters for IP searches.
+- Support Linux and FreeBSD operating systems.
+- Support for HTTP,DNS and SSL Domains matching.
+- Support for banned domains and hosts for HTTP, DNS and SSL
+- Frequency analisys for unknown traffic and auto-regex generation.
+- Easy integration with databases (MySQL, Redis, etc...)
 
 Using AIEngine 
 ---------------
@@ -14,7 +24,7 @@ Using AIEngine
 To use AIEngine just execute the binary aiengine or use the python binding.
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
-	iaengine 0.7
+	aiengine 0.8
 	Mandatory arguments:
 	  -I [ --interface ] arg            Sets the network interface.
 	  -P [ --pcapfile ] arg             Sets the pcap file or directory with pcap 
@@ -97,12 +107,6 @@ The main objects that the python module provide are the following ones.
 	   |---> getFrequenciesString
 	HTTPHost
 	HTTPUserAgent
-	IPAbstractSet
-	   |---> addIPAddress
-	IPBloomSet
-	   |---> addIPAddress
-	   |---> getTotalIPs
-	   |---> setCallback
 	IPSet
 	   |---> addIPAddress
 	   |---> getTotalIPs
