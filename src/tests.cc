@@ -145,9 +145,9 @@ BOOST_AUTO_TEST_CASE (test_case_3)
 {
 	PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
 
-	pd->openPcapFile("../pcapfiles/4udppackets.pcap");
-	pd->runPcap();
-	pd->closePcapFile();
+	pd->open("../pcapfiles/4udppackets.pcap");
+	pd->run();
+	pd->close();
 	BOOST_CHECK(pd->getTotalPackets() == 4);
 }
 
@@ -169,9 +169,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_5,StackLanTest)
 	// connect with the stack
 	pd->setDefaultMultiplexer(mux_eth);
 
-	pd->openPcapFile("../pcapfiles/4udppackets.pcap");
-	pd->runPcap();
-	pd->closePcapFile();
+	pd->open("../pcapfiles/4udppackets.pcap");
+	pd->run();
+	pd->close();
 	BOOST_CHECK(pd->getTotalPackets() == 4);
 	BOOST_CHECK(ip->getTotalValidatedPackets() == 4);
 	BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
@@ -197,9 +197,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_6,StackLanTest)
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
 
-        pd->openPcapFile("../pcapfiles/sslflow.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/sslflow.pcap");
+        pd->run();
+        pd->close();
         BOOST_CHECK(pd->getTotalPackets() == 95);
         BOOST_CHECK(ip->getTotalValidatedPackets() == 95);
         BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
@@ -229,9 +229,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_7,StackLanTest)
 	udp->setFlowCache(flowcache1);
 
 	// No flows on the cache 	
-        pd->openPcapFile("../pcapfiles/4udppackets.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/4udppackets.pcap");
+        pd->run();
+        pd->close();
 	
 	//Checkers
         BOOST_CHECK(flowcache1->getTotalFlowsOnCache() == 0);
@@ -245,9 +245,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_7,StackLanTest)
 	flowcache2->createFlows(1);
 	udp->setFlowCache(flowcache2);
 
-        pd->openPcapFile("../pcapfiles/4udppackets.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/4udppackets.pcap");
+        pd->run();
+        pd->close();
 
 	//Checkers
         BOOST_CHECK(flowcache2->getTotalFlowsOnCache() == 0);
@@ -263,9 +263,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_7,StackLanTest)
 	tcp->setFlowCache(flowcache2);
 	tcp->setFlowManager(flowmgr);
 
-        pd->openPcapFile("../pcapfiles/sslflow.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/sslflow.pcap");
+        pd->run();
+        pd->close();
 
         //Checkers
         BOOST_CHECK(flowcache2->getTotalFlowsOnCache() == 0);
@@ -308,9 +308,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_8,StackLanTest)
 	ff_ssl_aux->addChecker(std::bind(&SSLProtocol::sslChecker,ssl_aux,std::placeholders::_1));
         ff_ssl_aux->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl_aux,std::placeholders::_1));
 
-        pd->openPcapFile("../pcapfiles/sslflow.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/sslflow.pcap");
+        pd->run();
+        pd->close();
 
         //Checkers
         BOOST_CHECK(flowcache->getTotalFlowsOnCache() == 0);
@@ -366,9 +366,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_9,StackLanTest)
         ff_http_aux->addChecker(std::bind(&HTTPProtocol::httpChecker,http_aux,std::placeholders::_1));
         ff_http_aux->addFlowFunction(std::bind(&HTTPProtocol::processFlow,http_aux,std::placeholders::_1));
 
-        pd->openPcapFile("../pcapfiles/accessgoogle.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/accessgoogle.pcap");
+        pd->run();
+        pd->close();
 
         //Checkers of the forwarders
         BOOST_CHECK(ff_tcp_aux->getTotalForwardFlows() == 1);
@@ -413,9 +413,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_10,StackLanTest)
 
 	// Enable VLan Tagging but packets dont have the VLAN tag
 
-        pd->openPcapFile("../pcapfiles/4udppackets.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/4udppackets.pcap");
+        pd->run();
+        pd->close();
 
         BOOST_CHECK(pd->getTotalPackets() == 4);
 	BOOST_CHECK(mux_eth->getTotalForwardPackets() == 4);
@@ -436,9 +436,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_10,StackLanTest)
 	// Now inject pcap with VLan Tagging and netbios
 	// The trace contains 3 packets.
         
-	pd->openPcapFile("../pcapfiles/flow_vlan_netbios.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+	pd->open("../pcapfiles/flow_vlan_netbios.pcap");
+        pd->run();
+        pd->close();
 
         BOOST_CHECK(pd->getTotalPackets() == 7);
         BOOST_CHECK(mux_eth->getTotalForwardPackets() == 7);
@@ -468,9 +468,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_11,StackLanTest)
 
         this->enableLinkLayerTagging("mpls");
 
-        pd->openPcapFile("../pcapfiles/mpls_icmp.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/mpls_icmp.pcap");
+        pd->run();
+        pd->close();
 
         BOOST_CHECK(pd->getTotalPackets() == 10);
         BOOST_CHECK(mux_eth->getTotalForwardPackets() == 10);
@@ -507,9 +507,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_12,StackLanTest)
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
 
-        pd->openPcapFile("../pcapfiles/ipv6_tcp_stream.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/ipv6_tcp_stream.pcap");
+        pd->run();
+        pd->close();
 
         BOOST_CHECK(pd->getTotalPackets() == 13);
         BOOST_CHECK(mux_eth->getTotalForwardPackets() == 13);
@@ -554,9 +554,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_13,StackLanTest)
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
 
-        pd->openPcapFile("../pcapfiles/ipv6_tcp_stream.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/ipv6_tcp_stream.pcap");
+        pd->run();
+        pd->close();
 
 	// Check pcap file for see the results
 	BOOST_CHECK(r_head->getMatchs() == 1);
@@ -580,9 +580,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_14,StackLanTest)
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
 
-        pd->openPcapFile("../pcapfiles/generic_exploit_ipv6_defcon20.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap");
+        pd->run();
+        pd->close();
 
         // Check pcap file for see the results
         BOOST_CHECK(r_generic->getMatchs() == 1);
@@ -618,9 +618,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_15,StackLanTest)
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
 
-        pd->openPcapFile("../pcapfiles/polymorphic_clet32bits_port1986.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/polymorphic_clet32bits_port1986.pcap");
+        pd->run();
+        pd->close();
 
         // Check pcap file for see the results
         BOOST_CHECK(r_generic->getMatchs() == 0);
@@ -655,9 +655,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_16,StackLanTest)
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
 
-        pd->openPcapFile("../pcapfiles/generic_exploit_ipv6_defcon20.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap");
+        pd->run();
+        pd->close();
 
         // Check pcap file for see the results
         BOOST_CHECK(r_generic->getMatchs() == 1);
@@ -685,9 +685,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_16,StackLanTest)
 
 	// Inject IPv4 pcap file
 	// polymorphic_clet32bits_port1986.pcap
-        pd->openPcapFile("../pcapfiles/polymorphic_clet32bits_port1986.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/polymorphic_clet32bits_port1986.pcap");
+        pd->run();
+        pd->close();
 
         // Check pcap file for see the results
         BOOST_CHECK(r_generic->getMatchs() == 1);
@@ -729,9 +729,9 @@ BOOST_AUTO_TEST_CASE ( test_case_1 )
 	stack->setTotalTCPFlows(2);
 	stack->enableFrequencyEngine(true);
 	pd->setStack(stack);
-	pd->openPcapFile("../pcapfiles/two_http_flows_noending.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+	pd->open("../pcapfiles/two_http_flows_noending.pcap");
+        pd->run();
+        pd->close();
 
 	FrequencyGroup<std::string> group_by_ip;
 
@@ -762,9 +762,9 @@ BOOST_AUTO_TEST_CASE ( test_case_2 )
         stack->setTotalTCPFlows(2);
         stack->enableFrequencyEngine(true);
         pd->setStack(stack);
-        pd->openPcapFile("../pcapfiles/two_http_flows_noending.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/two_http_flows_noending.pcap");
+        pd->run();
+        pd->close();
 
         FrequencyGroup<std::string> group_by_port;
 
@@ -795,9 +795,9 @@ BOOST_AUTO_TEST_CASE ( test_case_3 )
         stack->setTotalTCPFlows(2);
         stack->enableFrequencyEngine(true);
         pd->setStack(stack);
-        pd->openPcapFile("../pcapfiles/two_http_flows_noending.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/two_http_flows_noending.pcap");
+        pd->run();
+        pd->close();
 
         FrequencyGroup<std::string> group_by_port;
 
@@ -837,9 +837,9 @@ BOOST_AUTO_TEST_CASE ( test_case_4 )
         stack->setTotalTCPFlows(4);
         stack->enableFrequencyEngine(true);
         pd->setStack(stack);
-        pd->openPcapFile("../pcapfiles/tor_4flows.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/tor_4flows.pcap");
+        pd->run();
+        pd->close();
  
         FrequencyGroup<std::string> group_by_port;
  
@@ -874,9 +874,9 @@ BOOST_AUTO_TEST_CASE ( test_case_5 ) // integrate the learner and the FrequencyG
         stack->setTotalTCPFlows(2);
         stack->enableFrequencyEngine(true);
         pd->setStack(stack);
-        pd->openPcapFile("../pcapfiles/two_http_flows_noending.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/two_http_flows_noending.pcap");
+        pd->run();
+        pd->close();
 
         FrequencyGroup<std::string> group;
 
@@ -941,13 +941,13 @@ BOOST_AUTO_TEST_CASE ( test_case_6 )
         stack->setTotalUDPFlows(2);
         pd->setStack(stack);
 
-        pd->openPcapFile("../pcapfiles/icq.pcapng");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/icq.pcapng");
+        pd->run();
+        pd->close();
 
-        pd->openPcapFile("../pcapfiles/4udppackets.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/4udppackets.pcap");
+        pd->run();
+        pd->close();
 
 	FlowManagerPtr flows_tcp = stack->getTCPFlowManager().lock();
 	FlowManagerPtr flows_udp = stack->getUDPFlowManager().lock();
@@ -986,9 +986,9 @@ BOOST_AUTO_TEST_CASE ( test_case_7 )
         stack->setTotalTCPFlows(1);
         pd->setStack(stack);
 
-        pd->openPcapFile("../pcapfiles/icq.pcapng");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/icq.pcapng");
+        pd->run();
+        pd->close();
 
 	BOOST_CHECK(ipset_tcp->getTotalIPs() == 2);
 	BOOST_CHECK(ipset_tcp->getTotalLookups() == 1);
@@ -1022,9 +1022,9 @@ BOOST_AUTO_TEST_CASE ( test_case_8 )
         stack->setTotalTCPFlows(1);
         pd->setStack(stack);
 
-        pd->openPcapFile("../pcapfiles/icq.pcapng");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/icq.pcapng");
+        pd->run();
+        pd->close();
 
         BOOST_CHECK(ipset_tcp->getTotalIPs() == 1);
         BOOST_CHECK(ipset_tcp->getTotalLookups() == 1);
@@ -1048,9 +1048,9 @@ BOOST_AUTO_TEST_CASE ( test_case_9 )
         stack->setTotalTCPFlows(1);
         pd->setStack(stack);
 
-        pd->openPcapFile("../pcapfiles/icq.pcapng");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/icq.pcapng");
+        pd->run();
+        pd->close();
 
         BOOST_CHECK(ipset_tcp->getTotalIPs() == 1);
         BOOST_CHECK(ipset_tcp->getTotalLookups() == 1);
@@ -1078,9 +1078,9 @@ BOOST_AUTO_TEST_CASE ( test_case_10 )
         stack->setTotalTCPFlows(1);
         pd->setStack(stack);
 
-        pd->openPcapFile("../pcapfiles/icq.pcapng");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/icq.pcapng");
+        pd->run();
+        pd->close();
 
         BOOST_CHECK(ipset_tcp->getTotalIPs() == 254);
         BOOST_CHECK(ipset_tcp->getTotalLookups() == 1);
@@ -1100,9 +1100,9 @@ BOOST_AUTO_TEST_CASE ( test_case_11 )
         stack->setTotalTCPFlows(4);
         stack->enableFrequencyEngine(true);
         pd->setStack(stack);
-        pd->openPcapFile("../pcapfiles/amazon_4ssl_flows.pcap");
-        pd->runPcap();
-        pd->closePcapFile();
+        pd->open("../pcapfiles/amazon_4ssl_flows.pcap");
+        pd->run();
+        pd->close();
 
         FrequencyGroup<std::string> group_by_port;
 

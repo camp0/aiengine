@@ -78,7 +78,7 @@ if __name__ == '__main__':
 
     st.enableNIDSEngine(True)
 
-    pdis.openDevice("eth0")
+    pdis.open("eth0")
 
     try:
         pdis.run()
@@ -86,7 +86,7 @@ if __name__ == '__main__':
         e = sys.exc_info()[0]
         print "Error: capturing packets:",e
 
-    pdis.closeDevice()
+    pdis.close()
 
     sys.exit(0)
 

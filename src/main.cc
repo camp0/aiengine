@@ -339,7 +339,7 @@ int main(int argc, char* argv[]) {
             		std::cout << PACKAGE " " VERSION << std::endl;
             		std::cout << mandatory_ops << std::endl;
 			std::cout << "Please report bugs to <" << PACKAGE_BUGREPORT << ">" << std::endl;
-			std::cout << "Copyright (C) 2009-2013 Luis Campo Giralte <" PACKAGE_BUGREPORT <<">" << std::endl;
+			std::cout << "Copyright (C) 2009-2014 Luis Campo Giralte <" PACKAGE_BUGREPORT <<">" << std::endl;
 			std::cout << "License: GNU GPL version 2" << std::endl;
 			std::cout << "This is free software: you are free to change and redistribute it." << std::endl;
 			std::cout << "There is NO WARRANTY, to the extent permitted by law." << std::endl;
@@ -460,14 +460,14 @@ int main(int argc, char* argv[]) {
 
 		for (auto& entry: files) {
 
-        		pktdis->openPcapFile(entry);
+        		pktdis->open(entry);
 			try {
-				pktdis->runPcap();
+				pktdis->run();
 			
 			}catch(std::exception& e) {
 				std::cerr << "Error: " << e.what() << std::endl;
 			}
-			pktdis->closePcapFile();
+			pktdis->close();
 		}
 	} else {
 		if (var_map.count("interface") == 1) {
@@ -475,13 +475,13 @@ int main(int argc, char* argv[]) {
 			if (option_enable_frequencies) // Sets the callback for learn.
 				pktdis->setIdleFunction(std::bind(learnerCallback));
 			
-        		pktdis->openDevice(option_interface.c_str());
+        		pktdis->open(option_interface.c_str());
 			try {
-				pktdis->runDevice();
+				pktdis->run();
 			} catch(std::exception& e) {
 				std::cerr << "Error: " << e.what() << std::endl;
 			}
-			pktdis->closeDevice();
+			pktdis->close();
 		}
 	}
 	return 0;

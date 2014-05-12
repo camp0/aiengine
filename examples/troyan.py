@@ -80,15 +80,15 @@ if __name__ == '__main__':
     st.setTotalTCPFlows(327680)
     st.setTotalUDPFlows(163840)
 
-    pdis.openPcapFile("/home/luis/pcapfiles/troyan/OSX_DocksterTrojan.pcap")
+    pdis.open("/home/luis/pcapfiles/troyan/OSX_DocksterTrojan.pcap")
 
     try:
-        pdis.runPcap()
+        pdis.run()
     except:
         e = sys.exc_info()[0]
         print "Interrupt during capturing packets:",e
 
-    pdis.closePcapFile()
+    pdis.close()
 
     # Dump on file the statistics of the stack
     st.setStatisticsLevel(5)

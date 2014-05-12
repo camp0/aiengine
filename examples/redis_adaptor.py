@@ -96,15 +96,15 @@ if __name__ == '__main__':
     st.setUDPDatabaseAdaptor(db,16)
 
     filename = "/home/luis/traffic.pcap"
-    pdis.openPcapFile(filename)
+    pdis.open(filename)
 
     try:
-        pdis.runPcap()
+        pdis.run()
     except:
         e = sys.exc_info()[0]
         print "Interrupt during capturing packets:",e
 
-    pdis.closePcapFile()
+    pdis.close()
 
     db.show()
     sys.exit(0)

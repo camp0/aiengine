@@ -76,9 +76,9 @@ class StackLanTests(unittest.TestCase):
         rm.addRegex(r)
 	self.s.setUDPRegexManager(rm)
 
-        self.dis.openPcapFile("../pcapfiles/flow_vlan_netbios.pcap");
-        self.dis.runPcap();
-        self.dis.closePcapFile();
+        self.dis.open("../pcapfiles/flow_vlan_netbios.pcap");
+        self.dis.run();
+        self.dis.close();
 
         self.assertEqual(r.getMatchs(), 1)
 
@@ -95,9 +95,9 @@ class StackLanTests(unittest.TestCase):
         rm.addRegex(r)
         self.s.setUDPRegexManager(rm)
 
-        self.dis.openPcapFile("../pcapfiles/flow_vlan_netbios.pcap");
-        self.dis.runPcap();
-        self.dis.closePcapFile();
+        self.dis.open("../pcapfiles/flow_vlan_netbios.pcap");
+        self.dis.run();
+        self.dis.close();
 
         self.assertEqual(r.getMatchs(), 1)
         self.assertEqual(self.called_callback, 1)
@@ -105,9 +105,9 @@ class StackLanTests(unittest.TestCase):
     def test3(self):
         """ Verify DNS and HTTP traffic """
 
-        self.dis.openPcapFile("../pcapfiles/accessgoogle.pcap");
-        self.dis.runPcap();
-        self.dis.closePcapFile();
+        self.dis.open("../pcapfiles/accessgoogle.pcap");
+        self.dis.run();
+        self.dis.close();
 
 	ft = self.s.getTCPFlowManager()
 	fu = self.s.getUDPFlowManager()
@@ -130,9 +130,9 @@ class StackLanTests(unittest.TestCase):
     def test4(self):
         """ Verify SSL traffic """
 
-        self.dis.openPcapFile("../pcapfiles/sslflow.pcap");
-        self.dis.runPcap();
-        self.dis.closePcapFile();
+        self.dis.open("../pcapfiles/sslflow.pcap");
+        self.dis.run();
+        self.dis.close();
 
         ft = self.s.getTCPFlowManager()
 
@@ -158,9 +158,9 @@ class StackLanTests(unittest.TestCase):
 
 	self.s.setSSLHostNameManager(dm)
 
-        self.dis.openPcapFile("../pcapfiles/sslflow.pcap");
-        self.dis.runPcap();
-        self.dis.closePcapFile();
+        self.dis.open("../pcapfiles/sslflow.pcap");
+        self.dis.run();
+        self.dis.close();
 
 	self.assertEqual(dm.getTotalDomains(), 1)
 	self.assertEqual(d.getMatchs() , 1)
@@ -191,9 +191,9 @@ class StackLanTests(unittest.TestCase):
 	self.s.setTCPIPSetManager(ipm)
         self.s.setSSLHostNameManager(dm)
 
-        self.dis.openPcapFile("../pcapfiles/sslflow.pcap");
-        self.dis.runPcap();
-        self.dis.closePcapFile();
+        self.dis.open("../pcapfiles/sslflow.pcap");
+        self.dis.run();
+        self.dis.close();
 
 	self.assertEqual(d.getMatchs() , 1)
         self.assertEqual(self.called_callback,1)
@@ -206,9 +206,9 @@ class StackLanTests(unittest.TestCase):
 
         self.s.setTCPDatabaseAdaptor(db,16)
 
-        self.dis.openPcapFile("../pcapfiles/sslflow.pcap")
-        self.dis.runPcap()
-        self.dis.closePcapFile()
+        self.dis.open("../pcapfiles/sslflow.pcap")
+        self.dis.run()
+        self.dis.close()
 
 	self.assertEqual(db.getInserts(), 1)
 	self.assertEqual(db.getUpdates(), 5)
@@ -232,9 +232,9 @@ class StackLanTests(unittest.TestCase):
 
         self.s.setTCPDatabaseAdaptor(db,16)
 
-        self.dis.openPcapFile("../pcapfiles/sslflow.pcap")
-        self.dis.runPcap()
-        self.dis.closePcapFile()
+        self.dis.open("../pcapfiles/sslflow.pcap")
+        self.dis.run()
+        self.dis.close()
 
         self.assertEqual(db.getInserts(), 1)
         self.assertEqual(db.getUpdates(), 5)
@@ -254,9 +254,9 @@ class StackLanTests(unittest.TestCase):
         self.s.setTCPRegexManager(rm)
 	self.s.enableNIDSEngine(True)	
 
-        self.dis.openPcapFile("../pcapfiles/sslflow.pcap")
-        self.dis.runPcap()
-        self.dis.closePcapFile()
+        self.dis.open("../pcapfiles/sslflow.pcap")
+        self.dis.run()
+        self.dis.close()
 
 	self.assertEqual(len(rm), 5)
 	
@@ -287,9 +287,9 @@ class StackLanTests(unittest.TestCase):
 
             self.s.setTCPIPSetManager(ipm)
 
-            self.dis.openPcapFile("../pcapfiles/sslflow.pcap");
-            self.dis.runPcap();
-            self.dis.closePcapFile();
+            self.dis.open("../pcapfiles/sslflow.pcap");
+            self.dis.run();
+            self.dis.close();
 
             self.assertEqual(self.ip_called_callback,1)
  
@@ -316,9 +316,9 @@ class StackLanIPv6Tests(unittest.TestCase):
         rm.addRegex(r)
         self.s.setTCPRegexManager(rm)
 
-        self.dis.openPcapFile("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
-        self.dis.runPcap()
-        self.dis.closePcapFile()
+        self.dis.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
+        self.dis.run()
+        self.dis.close()
 
         self.assertEqual(r.getMatchs(), 1)
 
@@ -343,9 +343,9 @@ class StackLanIPv6Tests(unittest.TestCase):
         rm.addRegex(r2)
         self.s.setTCPRegexManager(rm)
 
-        self.dis.openPcapFile("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
-        self.dis.runPcap()
-        self.dis.closePcapFile()
+        self.dis.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
+        self.dis.run()
+        self.dis.close()
 
         self.assertEqual(r1.getMatchs(), 1)
         self.assertEqual(r2.getMatchs(), 0)
@@ -372,9 +372,9 @@ class StackLanIPv6Tests(unittest.TestCase):
         rm.addRegex(r2)
         self.s.setTCPRegexManager(rm)
 
-        self.dis.openPcapFile("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
-        self.dis.runPcap()
-        self.dis.closePcapFile()
+        self.dis.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
+        self.dis.run()
+        self.dis.close()
 
         self.assertEqual(r1.getMatchs(), 0)
         self.assertEqual(r2.getMatchs(), 0)
@@ -387,9 +387,9 @@ class StackLanIPv6Tests(unittest.TestCase):
 
 	self.s.setTCPDatabaseAdaptor(db,16)
 
-        self.dis.openPcapFile("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
-        self.dis.runPcap()
-        self.dis.closePcapFile()
+        self.dis.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
+        self.dis.run()
+        self.dis.close()
 
         self.assertEqual(db.getInserts(), 1)
         self.assertEqual(db.getUpdates(), 5)
@@ -414,9 +414,9 @@ class StackLanIPv6Tests(unittest.TestCase):
 
         self.s.setTCPIPSetManager(im)
 
-        self.dis.openPcapFile("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
-        self.dis.runPcap()
-        self.dis.closePcapFile()
+        self.dis.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
+        self.dis.run()
+        self.dis.close()
 
 	self.assertEqual(len(im), 3)
         self.assertEqual(self.called_callback , 0)
@@ -441,9 +441,9 @@ class StackLanLearningTests(unittest.TestCase):
 	self.f.reset()
 	self.s.enableFrequencyEngine(True)
 
-        self.dis.openPcapFile("../pcapfiles/two_http_flows_noending.pcap")
-        self.dis.runPcap()
-        self.dis.closePcapFile()
+        self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
+        self.dis.run()
+        self.dis.close()
 
 	self.assertEqual(self.f.getTotalProcessFlows(), 0)
 	self.assertEqual(self.f.getTotalComputedFrequencies(), 0)
@@ -461,9 +461,9 @@ class StackLanLearningTests(unittest.TestCase):
         self.f.reset()
         self.s.enableFrequencyEngine(True)
         
-        self.dis.openPcapFile("../pcapfiles/tor_4flows.pcap")
-        self.dis.runPcap()
-        self.dis.closePcapFile()
+        self.dis.open("../pcapfiles/tor_4flows.pcap")
+        self.dis.run()
+        self.dis.close()
 
         self.assertEqual(self.f.getTotalProcessFlows(), 0)
         self.assertEqual(self.f.getTotalComputedFrequencies(), 0)
@@ -486,9 +486,9 @@ class StackLanLearningTests(unittest.TestCase):
         self.f.reset()
         self.s.enableFrequencyEngine(True)
         
-        self.dis.openPcapFile("../pcapfiles/tor_4flows.pcap")
-        self.dis.runPcap()
-        self.dis.closePcapFile()
+        self.dis.open("../pcapfiles/tor_4flows.pcap")
+        self.dis.run()
+        self.dis.close()
 
         """ Add the TCP Flows of the FlowManager on the FrequencyEngine """
         ft = self.s.getTCPFlowManager()

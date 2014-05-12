@@ -70,7 +70,7 @@ if __name__ == '__main__':
      st.setTotalTCPFlows(327680)
      st.setTotalUDPFlows(163840)
 
-     pdis.openDevice("eth0")
+     pdis.open("eth0")
 
      try:
          pdis.run()
@@ -78,7 +78,7 @@ if __name__ == '__main__':
          e = sys.exc_info()[0]
          print "Interrupt during capturing packets:",e
      
-     pdis.closeDevice()
+     pdis.close()
 
      # Dump on file the statistics of the stack
      st.setStatisticsLevel(5)

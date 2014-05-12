@@ -82,7 +82,7 @@ void PacketDispatcher::openDevice(std::string device) {
 }
 
 
-void PacketDispatcher::closeDevice() {
+void PacketDispatcher::closeDevice(void) {
 
 	if(device_is_ready_) {
 		stream_->close();
@@ -123,7 +123,7 @@ void PacketDispatcher::openPcapFile(std::string filename) {
 	}
 }
 
-void PacketDispatcher::closePcapFile() {
+void PacketDispatcher::closePcapFile(void) {
 
 	if(pcap_file_ready_) {
 		pcap_close(pcap_);
@@ -218,7 +218,7 @@ void PacketDispatcher::forwardRawPacket(unsigned char *packet,int length) {
 	}
 }
 
-void PacketDispatcher::start_operations() {
+void PacketDispatcher::start_operations(void) {
 
 	read_in_progress_ = false;
 	if(!read_in_progress_) {
@@ -230,7 +230,7 @@ void PacketDispatcher::start_operations() {
 	}
 }
 
-void PacketDispatcher::runPcap() {
+void PacketDispatcher::runPcap(void) {
 
 	while (pcap_next_ex(pcap_,&header,&pkt_data) >= 0) {
 		forwardRawPacket((unsigned char*)pkt_data,header->len);
@@ -238,7 +238,7 @@ void PacketDispatcher::runPcap() {
 }
 
 
-void PacketDispatcher::runDevice() {
+void PacketDispatcher::runDevice(void) {
 
 	if(device_is_ready_) {
         	idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(5));
@@ -267,6 +267,42 @@ void PacketDispatcher::runDevice() {
                 std::cout << "The device is not ready to run" << std::endl;
 #endif
 	}
+}
+
+void PacketDispatcher::open(const std::string &source) {
+
+	std::ifstream infile(source);
+
+	device_is_ready_ = false;
+	pcap_file_ready_ = false;
+
+	if(infile.good()) { // The source is a file
+		openPcapFile(source);
+	} else {
+		openDevice(source);
+	}
+}
+
+void PacketDispatcher::run(void) {
+
+	if(device_is_ready_) {
+		runDevice();
+	}else{
+		if(pcap_file_ready_) {
+			runPcap();
+		}
+	}
+}
+
+void PacketDispatcher::close(void) {
+
+        if(device_is_ready_) {
+                closeDevice();
+        }else{
+                if(pcap_file_ready_) {
+                        closePcapFile();
+                }
+        }
 }
 
 } // namespace aiengine

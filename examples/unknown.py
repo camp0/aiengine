@@ -57,10 +57,9 @@ if __name__ == '__main__':
     st1.enableFrequencyEngine(True)
        
     """ Open the pcapfile and process """ 
-    pdis.openPcapFile("../pcapfiles/amazon_4ssl_flows.pcap")
-    # pdis.openPcapFile("unknown_traffic.pcap")
-    pdis.runPcap()
-    pdis.closePcapFile()
+    pdis.open("unknown_traffic.pcap")
+    pdis.run()
+    pdis.close()
 
     """ Asuming that the unknown traffic is TCP """
     ft = st1.getTCPFlowManager()
@@ -94,14 +93,14 @@ if __name__ == '__main__':
     """ Plug a new stack """ 
     pdis.setStack(st2)
  
-    pdis.openDevice("re0")
+    pdis.open("eth0")
 
     try:
-        pdis.runDevice()
+        pdis.run()
     except:
         e = sys.exc_info()[0]
         print "Interrupt during capturing packets:",e
      
-    pdis.closeDevice()
+    pdis.close()
  
     sys.exit(0)

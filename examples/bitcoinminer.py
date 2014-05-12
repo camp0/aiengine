@@ -62,15 +62,15 @@ if __name__ == '__main__':
     st.setTotalTCPFlows(327680)
     st.setTotalUDPFlows(163840)
 
-    pdis.openPcapFile("/home/luis/pcapfiles/bitcoinminer.pcap")
+    pdis.open("/home/luis/pcapfiles/bitcoinminer.pcap")
 
     try:
-        pdis.runPcap()
+        pdis.run()
     except:
         e = sys.exc_info()[0]
         print "Interrupt during capturing packets:",e
 
-    pdis.closePcapFile()
+    pdis.close()
 
 
     st.printFlows()

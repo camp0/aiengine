@@ -94,17 +94,13 @@ public:
 
     	virtual ~PacketDispatcher() { io_service_.stop(); }
 
-	void openDevice(std::string device);
-	void closeDevice();
-	void openPcapFile(std::string filename);
-	void closePcapFile();
+	void open(const std::string &source);
+	void run(void);
+	void close(void);
+    	void stop(void) { io_service_.stop(); }
 
-	void stop() { io_service_.stop();}
-	void runDevice(); 
-	void runPcap(); 
-
-	uint64_t getTotalBytes() const { return total_bytes_;}
-	uint64_t getTotalPackets() const { return total_packets_;}
+	uint64_t getTotalBytes(void) const { return total_bytes_;}
+	uint64_t getTotalPackets(void) const { return total_packets_;}
 
 	void setStack(NetworkStackPtr stack) { setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());}
 	void setStack(StackLan& stack) { setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
@@ -114,12 +110,19 @@ public:
 	void setDefaultMultiplexer(MultiplexerPtr mux); // just use for the unit tests
 	void setIdleFunction(std::function <void ()> idle_function) { idle_function_ = idle_function;}
 private:
-	void start_operations();
+	void start_operations(void);
 	void handle_receive(boost::system::error_code error);
 	void do_read(boost::system::error_code error);
 	void forwardRawPacket(unsigned char *packet,int length);
 	void idle_handler(boost::system::error_code error);
-	void default_idle_function() const {};
+	void default_idle_function(void) const {};
+
+        void openDevice(std::string device);
+        void closeDevice(void);
+        void openPcapFile(std::string filename);
+        void closePcapFile(void);
+        void runDevice(void);
+        void runPcap(void);
 
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
