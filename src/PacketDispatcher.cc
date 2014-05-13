@@ -310,10 +310,6 @@ void PacketDispatcher::close(void) {
 void PacketDispatcher::forwardPacket(const std::string &packet, int length) {
 
 	const unsigned char *pkt = reinterpret_cast<const unsigned char *>(packet.c_str()); 
-	//unsigned char *pkt = reinterpret_cast<const unsigned char *>(packet.c_str()); 
-	//unsigned const char *pkt = reinterpret_cast<unsigned char *>(packet.c_str()); 
-	//const unsigned char *pkt = reinterpret_cast<unsigned char *>(packet.c_str()); 
-	//unsigned char *pkt = reinterpret_cast<unsigned char *>(packet.c_str()); 
 
 	forward_raw_packet((unsigned char*)pkt,length);
 	return;
