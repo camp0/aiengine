@@ -36,7 +36,7 @@ void PacketDispatcher::setDefaultMultiplexer(MultiplexerPtr mux) {
 }
 
 
-void PacketDispatcher::openDevice(std::string device) {
+void PacketDispatcher::open_device(std::string device) {
 
 	char errorbuf[PCAP_ERRBUF_SIZE];
 #ifdef __FREEBSD__
@@ -82,7 +82,7 @@ void PacketDispatcher::openDevice(std::string device) {
 }
 
 
-void PacketDispatcher::closeDevice(void) {
+void PacketDispatcher::close_device(void) {
 
 	if(device_is_ready_) {
 		stream_->close();
@@ -91,7 +91,7 @@ void PacketDispatcher::closeDevice(void) {
 	}
 }
 
-void PacketDispatcher::openPcapFile(std::string filename) {
+void PacketDispatcher::open_pcap_file(std::string filename) {
 
 	char errorbuf[PCAP_ERRBUF_SIZE];
 
@@ -123,7 +123,7 @@ void PacketDispatcher::openPcapFile(std::string filename) {
 	}
 }
 
-void PacketDispatcher::closePcapFile(void) {
+void PacketDispatcher::close_pcap_file(void) {
 
 	if(pcap_file_ready_) {
 		pcap_close(pcap_);
@@ -182,7 +182,7 @@ void PacketDispatcher::do_read(boost::system::error_code ec) {
 
 	int len = pcap_next_ex(pcap_,&header,&pkt_data);
 	if(len >= 0) { 
-		forwardRawPacket((unsigned char*)pkt_data,header->len);
+		forward_raw_packet((unsigned char*)pkt_data,header->len);
 	}
 
 // This prevents a problem on the boost asio signal
@@ -200,7 +200,7 @@ void PacketDispatcher::do_read(boost::system::error_code ec) {
 	// else error but not handler
 }
 
-void PacketDispatcher::forwardRawPacket(unsigned char *packet,int length) {
+void PacketDispatcher::forward_raw_packet(unsigned char *packet,int length) {
 
 	++total_packets_;
 	total_bytes_ += length;
@@ -230,15 +230,15 @@ void PacketDispatcher::start_operations(void) {
 	}
 }
 
-void PacketDispatcher::runPcap(void) {
+void PacketDispatcher::run_pcap(void) {
 
 	while (pcap_next_ex(pcap_,&header,&pkt_data) >= 0) {
-		forwardRawPacket((unsigned char*)pkt_data,header->len);
+		forward_raw_packet((unsigned char*)pkt_data,header->len);
 	}
 }
 
 
-void PacketDispatcher::runDevice(void) {
+void PacketDispatcher::run_device(void) {
 
 	if(device_is_ready_) {
         	idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(5));
@@ -277,19 +277,19 @@ void PacketDispatcher::open(const std::string &source) {
 	pcap_file_ready_ = false;
 
 	if(infile.good()) { // The source is a file
-		openPcapFile(source);
+		open_pcap_file(source);
 	} else {
-		openDevice(source);
+		open_device(source);
 	}
 }
 
 void PacketDispatcher::run(void) {
 
 	if(device_is_ready_) {
-		runDevice();
+		run_device();
 	}else{
 		if(pcap_file_ready_) {
-			runPcap();
+			run_pcap();
 		}
 	}
 }
@@ -297,12 +297,28 @@ void PacketDispatcher::run(void) {
 void PacketDispatcher::close(void) {
 
         if(device_is_ready_) {
-                closeDevice();
+                close_device();
         }else{
                 if(pcap_file_ready_) {
-                        closePcapFile();
+                        close_pcap_file();
                 }
         }
 }
+
+#ifdef PYTHON_BINDING
+
+void PacketDispatcher::forwardPacket(const std::string &packet, int length) {
+
+	const unsigned char *pkt = reinterpret_cast<const unsigned char *>(packet.c_str()); 
+	//unsigned char *pkt = reinterpret_cast<const unsigned char *>(packet.c_str()); 
+	//unsigned const char *pkt = reinterpret_cast<unsigned char *>(packet.c_str()); 
+	//const unsigned char *pkt = reinterpret_cast<unsigned char *>(packet.c_str()); 
+	//unsigned char *pkt = reinterpret_cast<unsigned char *>(packet.c_str()); 
+
+	forward_raw_packet((unsigned char*)pkt,length);
+	return;
+}
+
+#endif
 
 } // namespace aiengine

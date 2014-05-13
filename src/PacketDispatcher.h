@@ -99,6 +99,10 @@ public:
 	void close(void);
     	void stop(void) { io_service_.stop(); }
 
+#ifdef PYTHON_BINDING
+	void forwardPacket(const std::string &packet, int length);
+#endif
+
 	uint64_t getTotalBytes(void) const { return total_bytes_;}
 	uint64_t getTotalPackets(void) const { return total_packets_;}
 
@@ -113,16 +117,16 @@ private:
 	void start_operations(void);
 	void handle_receive(boost::system::error_code error);
 	void do_read(boost::system::error_code error);
-	void forwardRawPacket(unsigned char *packet,int length);
+	void forward_raw_packet(unsigned char *packet,int length);
 	void idle_handler(boost::system::error_code error);
 	void default_idle_function(void) const {};
 
-        void openDevice(std::string device);
-        void closeDevice(void);
-        void openPcapFile(std::string filename);
-        void closePcapFile(void);
-        void runDevice(void);
-        void runPcap(void);
+        void open_device(std::string device);
+        void close_device(void);
+        void open_pcap_file(std::string filename);
+        void close_pcap_file(void);
+        void run_device(void);
+        void run_pcap(void);
 
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
