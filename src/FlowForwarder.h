@@ -33,7 +33,7 @@
 #include <functional>
 #include <vector>
 #include <algorithm>
-#include "./flow/Flow.h"
+#include "Flow.h"
 #include "Packet.h"
 
 namespace aiengine {

@@ -26,9 +26,8 @@ To use AIEngine just execute the binary aiengine or use the python binding.
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
 	aiengine 0.8
 	Mandatory arguments:
-	  -I [ --interface ] arg            Sets the network interface.
-	  -P [ --pcapfile ] arg             Sets the pcap file or directory with pcap 
-                                    	    files.
+	  -I [ --input ] arg                Sets the network interface ,pcap file or 
+	                                    directory with pcap files.
 
 	Link Layer optional arguments:
 	  -q [ --tag ] arg      Selects the tag type of the ethernet layer (vlan,mpls).
@@ -68,7 +67,7 @@ AIEngine have a python module in order to be more flexible in terms of integrati
 The main objects that the python module provide are the following ones.
 
 	DNSDomain
-	DatabaseAdaptor
+	DatabaseAdaptor (Abstract class)
 	   |---> connect
 	   |---> insert
 	   |---> remove
@@ -105,8 +104,27 @@ The main objects that the python module provide are the following ones.
 	   |---> getDispersion
 	   |---> getEnthropy
 	   |---> getFrequenciesString
+	FrequencyGroup
+	   |---> addFlowsByDestinationAddress
+	   |---> addFlowsByDestinationAddressAndPort
+	   |---> addFlowsByDestinationPort
+	   |---> addFlowsBySourceAddress
+	   |---> addFlowsBySourceAddressAndPort
+	   |---> addFlowsBySourcePort
+	   |---> compute
+	   |---> getReferenceFlows
+	   |---> getReferenceFlowsByKey
+	   |---> getTotalComputedFrequencies
+	   |---> getTotalProcessFlows
+	   |---> reset
 	HTTPHost
 	HTTPUserAgent
+	IPAbstractSet (Abstract class)
+	   |---> addIPAddress
+	IPBloomSet
+	   |---> addIPAddress
+	   |---> getTotalIPs
+	   |---> setCallback
 	IPSet
 	   |---> addIPAddress
 	   |---> getTotalIPs
@@ -117,9 +135,9 @@ The main objects that the python module provide are the following ones.
 	LearnerEngine
 	   |---> agregateFlows
 	   |---> compute
-	   |---> getRegularExpression
+	   |---> getRegex
 	   |---> getTotalFlowsProcess
-	NetworkStack
+	NetworkStack (Abstract class)
 	   |---> enableFrequencyEngine
 	   |---> enableLinkLayerTagging
 	   |---> enableNIDSEngine
@@ -139,12 +157,10 @@ The main objects that the python module provide are the following ones.
 	   |---> setUDPIPSetManager
 	   |---> setUDPRegexManager
 	PacketDispatcher
-	   |---> closeDevice
-	   |---> closePcapFile
-	   |---> openDevice
-	   |---> openPcapFile
-	   |---> runDevice
-	   |---> runPcap
+	   |---> close
+	   |---> forwardPacket
+	   |---> open
+	   |---> run
 	   |---> setStack
 	PacketFrequencies
 	   |---> getPacketFrequenciesString
@@ -161,6 +177,7 @@ The main objects that the python module provide are the following ones.
 	   |---> enableFrequencyEngine
 	   |---> enableLinkLayerTagging
 	   |---> enableNIDSEngine
+	   |---> getName
 	   |---> getTCPFlowManager
 	   |---> getUDPFlowManager
 	   |---> printFlows
@@ -180,6 +197,7 @@ The main objects that the python module provide are the following ones.
 	   |---> enableFrequencyEngine
 	   |---> enableLinkLayerTagging
 	   |---> enableNIDSEngine
+	   |---> getName
 	   |---> getTCPFlowManager
 	   |---> getUDPFlowManager
 	   |---> printFlows
@@ -199,6 +217,7 @@ The main objects that the python module provide are the following ones.
 	   |---> enableFrequencyEngine
 	   |---> enableLinkLayerTagging
 	   |---> enableNIDSEngine
+	   |---> getName
 	   |---> getTCPFlowManager
 	   |---> getUDPFlowManager
 	   |---> printFlows

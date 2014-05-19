@@ -193,18 +193,16 @@ void TCPProtocol::processPacket(Packet &packet) {
 						std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":Lookup positive on IPSet:" << ipset->getName() << std::endl;
 #endif
 #ifdef PYTHON_BINDING
-                				if (ipset->haveCallback()) {
-                        				PyGILState_STATE state(PyGILState_Ensure());
-                        				try {
-                                				boost::python::call<void>(ipset->getCallback(),boost::python::ptr(flow.get()));
-                                			} catch(std::exception &e) {
-                                        			std::cout << "ERROR:" << e.what() << std::endl;
-                                			}
-                                			PyGILState_Release(state);
+                                        	if (ipset->haveCallback()) {
+                                                	PyGILState_STATE state(PyGILState_Ensure());
+                                                	try {
+                                                        	boost::python::call<void>(ipset->getCallback(),boost::python::ptr(flow.get()));
+                                                	} catch(std::exception &e) {
+                                                        	std::cout << "ERROR:" << e.what() << std::endl;
+                                                	}
+                                                	PyGILState_Release(state);
                         			}
 #endif
-
-
                                 	}
                         	}
                 	}

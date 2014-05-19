@@ -71,7 +71,7 @@ std::map<std::string, std::function<aiengine::NetworkStackPtr()>> stack_factory 
 std::string option_link_type_tag;
 std::string option_learner_key;
 std::string option_stack_name;
-std::string option_pcapfile;
+std::string option_input;
 std::string option_interface;
 std::string option_freqs_group_value;
 std::string option_freqs_type_flows;
@@ -266,10 +266,8 @@ int main(int argc, char* argv[]) {
 
 	po::options_description mandatory_ops("Mandatory arguments");
 	mandatory_ops.add_options()
-		("interface,I",   po::value<std::string>(&option_interface),
-			"Sets the network interface.")
-		("pcapfile,P",   po::value<std::string>(&option_pcapfile),
-			"Sets the pcap file or directory with pcap files.")
+		("input,I",   po::value<std::string>(&option_input),
+			"Sets the network interface ,pcap file or directory with pcap files.")
         	;
 
         po::options_description optional_ops_tag("Link Layer optional arguments");
@@ -349,7 +347,7 @@ int main(int argc, char* argv[]) {
             		std::cout << PACKAGE " " VERSION << std::endl;
             		return false;
         	}
-		if ((var_map.count("interface") == 0)&&(var_map.count("pcapfile") == 0)) {
+		if (var_map.count("input") == 0) {
             		std::cout << PACKAGE " " VERSION << std::endl;
             		std::cout << mandatory_ops << std::endl;
 			return false;
@@ -433,56 +431,42 @@ int main(int argc, char* argv[]) {
 
 	atexit(aiengineExit);
 
-	if(var_map.count("pcapfile") == 1)
-	{
-		std::vector<std::string> files;
-		namespace fs = boost::filesystem;
+	std::vector<std::string> inputs;
+	namespace fs = boost::filesystem;
 
-		if (fs::is_directory(option_pcapfile.c_str())) {
-			fs::recursive_directory_iterator it(option_pcapfile.c_str());
-    			fs::recursive_directory_iterator endit;
+	if (fs::is_directory(option_input.c_str())) {
+		fs::recursive_directory_iterator it(option_input.c_str());
+    		fs::recursive_directory_iterator endit;
     
-			while (it != endit) {
-      				if (fs::is_regular_file(*it)and((it->path().extension() == ".pcap")
-					or(it->path().extension() == ".cap") 
-					or(it->path().extension() == ".pcapng"))) {
-					std::ostringstream os;
-					
-					os << option_pcapfile.c_str() << "/" << it->path().filename().c_str();
-      					files.push_back(os.str());
-				}
-				++it;
+		while (it != endit) {
+      			if (fs::is_regular_file(*it)and((it->path().extension() == ".pcap")
+				or(it->path().extension() == ".cap") 
+				or(it->path().extension() == ".pcapng"))) {
+				std::ostringstream os;
+				
+				os << option_input.c_str() << "/" << it->path().filename().c_str();
+      				inputs.push_back(os.str());
 			}
-			sort(files.begin(),files.end());
-		} else {
-			files.push_back (option_pcapfile.c_str());
+			++it;
 		}
-
-		for (auto& entry: files) {
-
-        		pktdis->open(entry);
-			try {
-				pktdis->run();
-			
-			}catch(std::exception& e) {
-				std::cerr << "Error: " << e.what() << std::endl;
-			}
-			pktdis->close();
-		}
+		sort(inputs.begin(),inputs.end());
 	} else {
-		if (var_map.count("interface") == 1) {
-
-			if (option_enable_frequencies) // Sets the callback for learn.
-				pktdis->setIdleFunction(std::bind(learnerCallback));
+		inputs.push_back (option_input.c_str());
+	}
 			
-        		pktdis->open(option_interface.c_str());
-			try {
-				pktdis->run();
-			} catch(std::exception& e) {
-				std::cerr << "Error: " << e.what() << std::endl;
-			}
-			pktdis->close();
+	if (option_enable_frequencies) // Sets the callback for learn.
+		pktdis->setIdleFunction(std::bind(learnerCallback));
+
+	for (auto& entry: inputs) {
+
+        	pktdis->open(entry);
+		try {
+			pktdis->run();
+		
+		}catch(std::exception& e) {
+			std::cerr << "Error: " << e.what() << std::endl;
 		}
+		pktdis->close();
 	}
 	return 0;
 }

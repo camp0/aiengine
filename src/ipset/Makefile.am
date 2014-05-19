@@ -8,7 +8,7 @@ check_PROGRAMS = test_ipset
 
 test_ipset_SOURCES = 	../Multiplexer.cc  \
 			../FlowForwarder.cc \
-			../flow/Flow.cc \
+			../Flow.cc \
 			../flow/FlowManager.cc \
 			../ethernet/EthernetProtocol.cc \
 			../vlan/VLanProtocol.cc \

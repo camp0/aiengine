@@ -31,18 +31,50 @@
 #include <iostream>
 #include <fstream>
 
+#ifdef PYTHON_BINDING
+#include <boost/python.hpp>
+#include <boost/function.hpp>
+#endif
+
 namespace aiengine {
 
 class DatabaseAdaptor 
 {
 public:
-    	DatabaseAdaptor() {}
+#ifdef PYTHON_BINDING
+    	DatabaseAdaptor(boost::python::object &o) { obj = o;}
+#else
+	DatabaseAdaptor() {}
+#endif
     	virtual ~DatabaseAdaptor() {}
 
 	virtual void connect(std::string &connection_str) = 0;
 	virtual void insert(std::string &key) = 0;
 	virtual void update(std::string &key,std::string &data) = 0;
 	virtual void remove(std::string &key) = 0;
+
+#ifdef PYTHON_BINDING
+
+	void handleInsert(SharedPointer<Flow> flow) {
+       		std::ostringstream key;
+		//boost::python::object o = dynamic_cast<boost::python::object>(this);
+       		key << *flow;
+
+		std::cout << "vamos que nos vamos" << std::endl;
+      		PyGILState_STATE state(PyGILState_Ensure());
+                try {
+                //	boost::python::call_method<void>(obj.ptr(),"insert",key.str());
+                } catch(std::exception &e) {
+                	std::cout << "ERROR:" << e.what() << std::endl;
+                }      
+                PyGILState_Release(state);
+	}
+#endif
+
+private:
+#ifdef PYTHON_BINDING
+	boost::python::object obj;
+#endif
 };
 
 typedef std::shared_ptr <DatabaseAdaptor> DatabaseAdaptorPtr;

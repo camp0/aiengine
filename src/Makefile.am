@@ -38,7 +38,7 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			./dns/DNSProtocol.h \
                         ./flow/FlowCache.h \
                         ./flow/FlowManager.h \
-                        ./flow/Flow.h \
+                        Flow.h \
 			./frequency/Frequencies.h \
 			./frequency/PacketFrequencies.h \
 			./frequency/FrequencyProtocol.h \
@@ -54,7 +54,7 @@ noinst_HEADERS =        Packet.h Pointer.h \
 aiengine_core_sources =	Multiplexer.cc \
 			FlowForwarder.cc \
 			PacketDispatcher.cc \
-			./flow/Flow.cc \
+			Flow.cc \
 			./flow/FlowManager.cc \
 			./ethernet/EthernetProtocol.cc \
 			./vlan/VLanProtocol.cc \

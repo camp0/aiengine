@@ -12,7 +12,7 @@ test_udpgeneric_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 				../ipset/IPSetManager.cc \
 				../ipset/IPSet.cc \
 				../udp/UDPProtocol.cc \
-				../flow/Flow.cc \
+				../Flow.cc \
 				../flow/FlowManager.cc \
 				../regex/RegexManager.cc \
 				../regex/Regex.cc \

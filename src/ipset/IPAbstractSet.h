@@ -35,9 +35,12 @@
 #ifdef PYTHON_BINDING
 #include <boost/python.hpp>
 #include <boost/function.hpp>
+//#include "../Pointer.h"
 #endif
 
 namespace aiengine {
+
+class Flow;
 
 class IPAbstractSet 
 {

@@ -13,7 +13,7 @@ test_tcpgeneric_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 				../ipset/IPSet.cc \
 				../ip6/IPv6Protocol.cc \
 				../tcp/TCPProtocol.cc \
-				../flow/Flow.cc \
+				../Flow.cc \
 				../flow/FlowManager.cc \
 				../regex/RegexManager.cc \
 				../regex/Regex.cc \

@@ -32,7 +32,7 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 
 #include "../Cache.h" 
-#include "Flow.h"
+#include "../Flow.h"
 
 namespace aiengine {
 

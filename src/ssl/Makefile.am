@@ -12,7 +12,7 @@ test_ssl_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ipset/IPSetManager.cc \
 			../ipset/IPSet.cc \
 			../tcp/TCPProtocol.cc \
-			../flow/Flow.cc \
+			../Flow.cc \
 			../flow/FlowManager.cc \
 			../names/DomainNameManager.cc \
 			SSLProtocol.cc test_ssl.cc

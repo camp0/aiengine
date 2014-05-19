@@ -9,7 +9,7 @@ check_PROGRAMS = test_gprs
 test_gprs_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ethernet/EthernetProtocol.cc \
 			../vlan/VLanProtocol.cc \
-			../flow/Flow.cc \
+			../Flow.cc \
 			../flow/FlowManager.cc \
 			../ip/IPProtocol.cc \
 			../ipset/IPSetManager.cc \

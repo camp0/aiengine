@@ -21,33 +21,28 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef SRC_FLOW_FLOW_H_
-#define SRC_FLOW_FLOW_H_
+#ifndef SRC_FLOW_H_
+#define SRC_FLOW_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-#include "../Pointer.h"
-#include "../Packet.h"
-#include "../Serializable.h"
-#include "../IPAddress.h"
-#include "../ipset/IPAbstractSet.h"
-#include "../regex/Regex.h"
-#include "../frequency/Frequencies.h"
-#include "../frequency/PacketFrequencies.h"
-#include "../http/HTTPHost.h"
-#include "../http/HTTPUserAgent.h"
-#include "../dns/DNSDomain.h"
-#include "../ssl/SSLHost.h"
-#include "../tcp/TCPInfo.h"
+#include "Pointer.h"
+#include "Packet.h"
+#include "Serializable.h"
+#include "IPAddress.h"
+#include "./ipset/IPAbstractSet.h"
+#include "./regex/Regex.h"
+#include "./frequency/Frequencies.h"
+#include "./frequency/PacketFrequencies.h"
+#include "./http/HTTPHost.h"
+#include "./http/HTTPUserAgent.h"
+#include "./dns/DNSDomain.h"
+#include "./ssl/SSLHost.h"
+#include "./tcp/TCPInfo.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
-
-#ifdef PYTHON_BINDING
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-#endif
 
 namespace aiengine {
 
@@ -154,4 +149,4 @@ private:
 
 } // namespace aiengine 
 
-#endif  // SRC_FLOW_FLOW_H_
+#endif  // SRC_FLOW_H_

@@ -93,7 +93,7 @@ if __name__ == '__main__':
     	the method "update" will be called.
     	Fix this value depending on your software/hardware requirments.
     """
-    st.setUDPDatabaseAdaptor(db,16)
+    st.setUDPDatabaseAdaptor(db,512)
 
     filename = "/home/luis/traffic.pcap"
     pdis.open(filename)

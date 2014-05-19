@@ -32,7 +32,7 @@
 #include <boost/multi_index/hashed_index.hpp>
 #include <boost/multi_index/mem_fun.hpp>
 #include <fstream>
-#include "Flow.h"
+#include "../Flow.h"
 
 namespace aiengine {
 

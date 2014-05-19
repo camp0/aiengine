@@ -82,7 +82,7 @@ SharedPointer<Flow> UDPProtocol::getFlow() {
                                         }
 					flow_table_->addFlow(flow);		
 #if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
-                        		if (is_set_db_) { // There is attached a database object
+                        		if (is_set_db_) { // There is attached a database objec
                                 		std::ostringstream key;
 
                                 		key << *flow;
