@@ -91,17 +91,7 @@ SharedPointer<Flow> TCPProtocol::getFlow() {
 					}
 #if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
                                         if (is_set_db_) { // There is attached a database object
-                                                std::ostringstream key;
-
-                                                key << *flow;
-
-                                                PyGILState_STATE state(PyGILState_Ensure());
-                                                try {
-                                                        boost::python::call_method<void>(dbptr_.ptr(),"insert",key.str());
-                                                } catch(std::exception &e) {
-                                                        std::cout << "ERROR:" << e.what() << std::endl;
-                                                }
-                                                PyGILState_Release(state);
+						databaseAdaptorInsertHandler(flow);
                                         }
 #endif
                                 }
@@ -167,17 +157,7 @@ void TCPProtocol::processPacket(Packet &packet) {
 					flow_cache_->releaseFlow(flow);
 #if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
                                         if (is_set_db_) { // There is attached a database object
-                                                std::ostringstream key;
-
-                                                key << *flow;
-
-                                                PyGILState_STATE state(PyGILState_Ensure());
-                                                try {
-                                                        boost::python::call_method<void>(dbptr_.ptr(),"remove",key.str());
-                                                } catch(std::exception &e) {
-                                                        std::cout << "ERROR:" << e.what() << std::endl;
-                                                }
-                                                PyGILState_Release(state);
+						databaseAdaptorRemoveHandler(flow);
                                         }
 #endif
 					return; // I dont like but sometimes.....
@@ -210,19 +190,7 @@ void TCPProtocol::processPacket(Packet &packet) {
 #if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
                 	if ((flow->total_packets % packet_sampling_ ) == 0) {
                         	if (is_set_db_) { // There is attached a database object
-                                	std::ostringstream data;
-                                	std::ostringstream key;
-
-                                	key << *flow;
-                                	flow->serialize(data);
-
-                                	PyGILState_STATE state(PyGILState_Ensure());
-                                	try {
-                                        	boost::python::call_method<void>(dbptr_.ptr(),"update",key.str(),data.str());
-                                	} catch(std::exception &e) {
-                                        	std::cout << "ERROR:" << e.what() << std::endl;
-                                	}
-                                	PyGILState_Release(state);
+					databaseAdaptorUpdateHandler(flow);
                         	}
                 	}
 #endif

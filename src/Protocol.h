@@ -67,14 +67,19 @@ public:
 	virtual FlowForwarderPtrWeak getFlowForwarder() = 0; 
 
 #ifdef PYTHON_BINDING
-	void setDatabaseAdaptor(boost::python::object &dbptr) { setDatabaseAdaptor(dbptr,16); }
-	void setDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) { dbptr_ = dbptr; is_set_db_ = true; packet_sampling_ = packet_sampling; }
+	void setDatabaseAdaptor(boost::python::object &dbptr); 
+	void setDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling);  
 
+#ifdef HAVE_ADAPTOR
+	void databaseAdaptorInsertHandler(SharedPointer<Flow> flow);
+	void databaseAdaptorUpdateHandler(SharedPointer<Flow> flow); 
+	void databaseAdaptorRemoveHandler(SharedPointer<Flow> flow); 
+#endif
         mutable boost::python::object dbptr_;
         mutable bool is_set_db_;
 	mutable int packet_sampling_;
 
-	void setIPSetManager(const IPSetManager& ipset_mng) { ipset_mng_ = boost::make_shared<IPSetManager>(ipset_mng);} 
+	void setIPSetManager(const IPSetManager& ipset_mng);
 #else
 	void setIPSetManager(SharedPointer<IPSetManager> ipset_mng) { ipset_mng_ = ipset_mng;} 
 #endif

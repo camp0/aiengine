@@ -82,18 +82,8 @@ SharedPointer<Flow> UDPProtocol::getFlow() {
                                         }
 					flow_table_->addFlow(flow);		
 #if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
-                        		if (is_set_db_) { // There is attached a database objec
-                                		std::ostringstream key;
-
-                                		key << *flow;
-
-                                		PyGILState_STATE state(PyGILState_Ensure());
-                                		try {
-                                        		boost::python::call_method<void>(dbptr_.ptr(),"insert",key.str());
-                                		} catch(std::exception &e) {
-                                        		std::cout << "ERROR:" << e.what() << std::endl;
-                                		}
-                                		PyGILState_Release(state);
+                        		if (is_set_db_) { // There is attached a database object
+						databaseAdaptorInsertHandler(flow); 
                         		}
 #endif
 				}
@@ -158,19 +148,7 @@ void UDPProtocol::processPacket(Packet& packet) {
 #if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR) 
 		if (((flow->total_packets - 1) % packet_sampling_) == 0 ) {
 			if (is_set_db_) { // There is attached a database object
-				std::ostringstream data;
-				std::ostringstream key; 
-
-				key << *flow;
-				flow->serialize(data);
-				
-                                PyGILState_STATE state(PyGILState_Ensure());
-                                try {
-					boost::python::call_method<void>(dbptr_.ptr(),"update",key.str(),data.str());	
-                                } catch(std::exception &e) {
-                                        std::cout << "ERROR:" << e.what() << std::endl;
-				}
-                                PyGILState_Release(state);
+				databaseAdaptorUpdateHandler(flow);
 			} 
 		}
 #endif
