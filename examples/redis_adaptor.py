@@ -37,7 +37,7 @@ class redisAdaptor(pyaiengine.DatabaseAdaptor):
 	the following methods:
 	    - insert, called on the first insertion of the network flow
 	    - update, called depending on the sample selected.
-	    - delete, called when the flow is destroy.
+	    - remove, called when the flow is destroy.
     """
     def __init__(self):
 	self.__r = None 
@@ -56,10 +56,9 @@ class redisAdaptor(pyaiengine.DatabaseAdaptor):
     def insert(self,key):
         self.__r.hset("udpflows",key,"{}")
         self.__total_inserts = self.__total_inserts + 1
-	print "inserting:", key
 
     def remove(self,key):
-        self.__r.hdelete("udpflows",key)
+        self.__r.hdel("udpflows",key)
         self.__total_removes = self.__total_removes + 1
 
     def show(self):
@@ -67,7 +66,7 @@ class redisAdaptor(pyaiengine.DatabaseAdaptor):
 
 if __name__ == '__main__':
 
-    # Load an instance of a Network Stack on Mobile network
+    # Load an instance of a Network Stack on Lan Network
     st = pyaiengine.StackLan()
 
     # Create a instace of a PacketDispatcher
@@ -82,7 +81,7 @@ if __name__ == '__main__':
     """
  	Create a redisAdaptor object. 
 	This is just and example you can create your own adaptor for
-	any database.
+	any database, or file, or whatever you decide.
     """
     db = redisAdaptor()
     # connect to the redis database 
@@ -94,9 +93,11 @@ if __name__ == '__main__':
     	the method "update" will be called.
     	Fix this value depending on your software/hardware requirments.
     """
-    st.setUDPDatabaseAdaptor(db,512)
+    st.setUDPDatabaseAdaptor(db,16)
+    # st.setTCPDatabaseAdaptor(db,512)
 
     filename = "/home/luis/traffic.pcap"
+    
     pdis.open(filename)
 
     try:

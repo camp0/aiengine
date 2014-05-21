@@ -100,7 +100,7 @@ public:
 	// specific values for a specific Engine
 	bool frequency_engine_inspected;
 	
-	void reset() ; 
+	void reset(); 
 
 	friend std::ostream& operator<< (std::ostream& out, const Flow& flow) {
 	
@@ -109,8 +109,8 @@ public:
         	return out;
 	}
 
-    	void serialize(std::ostream& stream) ;
-    	void deserialize(std::istream& stream) {} ;
+    	void serialize(std::ostream& stream);
+    	void deserialize(std::istream& stream) {} 
 
 #ifdef PYTHON_BINDING
 	int32_t getTotalBytes() const { return total_bytes;}

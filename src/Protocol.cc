@@ -62,28 +62,28 @@ void Protocol::databaseAdaptorUpdateHandler(SharedPointer<Flow> flow) {
         key << *flow;
         flow->serialize(data);
 
-                PyGILState_STATE state(PyGILState_Ensure());
-                try {
-                	boost::python::call_method<void>(dbptr_.ptr(),"update",key.str(),data.str());
-                } catch(std::exception &e) {
-                        std::cout << "ERROR:" << e.what() << std::endl;
-                }
-                PyGILState_Release(state);
-	}
+        PyGILState_STATE state(PyGILState_Ensure());
+        try {
+              	boost::python::call_method<void>(dbptr_.ptr(),"update",key.str(),data.str());
+        } catch(std::exception &e) {
+                std::cout << "ERROR:" << e.what() << std::endl;
+        }
+        PyGILState_Release(state);
+}
 
 void Protocol::databaseAdaptorRemoveHandler(SharedPointer<Flow> flow) {
-        	std::ostringstream key;
+      	std::ostringstream key;
 
-                key << *flow;
+        key << *flow;
 
-                PyGILState_STATE state(PyGILState_Ensure());
-                try {
-                	boost::python::call_method<void>(dbptr_.ptr(),"remove",key.str());
-                } catch(std::exception &e) {
-                        std::cout << "ERROR:" << e.what() << std::endl;
-                }
-                PyGILState_Release(state);
-	}
+        PyGILState_STATE state(PyGILState_Ensure());
+        try {
+               	boost::python::call_method<void>(dbptr_.ptr(),"remove",key.str());
+        } catch(std::exception &e) {
+                std::cout << "ERROR:" << e.what() << std::endl;
+        }
+        PyGILState_Release(state);
+}
 
 #endif
 

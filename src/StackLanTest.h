@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _StackLanTest_H_
-#define _StackLanTest_H_
+#ifndef SRC_STACKLANTEST_H_
+#define SRC_STACKLANTEST_H_
 
 #include <string>
 #include "Multiplexer.h"
@@ -282,8 +282,8 @@ struct StackLanTest
 
         }
 
-	void statistics()
-	{
+	void statistics() {
+	
 		eth->statistics();
 		std::cout << std::endl;
 		ip->statistics();
@@ -299,28 +299,26 @@ struct StackLanTest
 		ssl->statistics();
 	}
 
-	void dumpFlows()
-	{
+	void dumpFlows() {
+	
 		std::cout << "Flows on memory" << std::endl;
 		flow_table_tcp->printFlows(std::cout);
 		flow_table_udp->printFlows(std::cout);
 	}
 
-	void enableLinkLayerTagging(std::string type)
-	{
-		if(type.compare("vlan") == 0)
-		{
+	void enableLinkLayerTagging(std::string type) {
+
+		if(type.compare("vlan") == 0) {
 
 			mux_eth->addUpMultiplexer(mux_vlan,ETHERTYPE_VLAN);
 			mux_vlan->addDownMultiplexer(mux_eth);
 			mux_vlan->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
 			//mux_vlan->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
 			mux_ip->addDownMultiplexer(mux_vlan);
-		}
-		else
-		{
-			if(type.compare("mpls") == 0)
-			{
+		} else {
+		
+			if(type.compare("mpls") == 0) {
+
 				mux_eth->addUpMultiplexer(mux_mpls,ETHERTYPE_MPLS);
 				mux_mpls->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
 				mux_ip->addDownMultiplexer(mux_mpls);
@@ -328,10 +326,7 @@ struct StackLanTest
         	}
 	}
 
-        ~StackLanTest()
-	{
-        }
+        ~StackLanTest() {}
 };
 
-
-#endif
+#endif  // SRC_STACKLANTEST_H_
