@@ -59,8 +59,8 @@ public:
 #endif
 	{
 		have_jit_ = false;
-		study_exp_ = NULL;
 #if defined(HAVE_LIBPCRE)
+		study_exp_ = NULL;
 		const char *errorstr;
 		int erroffset;
 		const char *buffer = const_cast<const char*>(exp.c_str());

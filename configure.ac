@@ -48,6 +48,8 @@ else
     AM_CXXFLAGS="$AM_CXXFLAGS -std=c++11"
 fi
 
+AC_SUBST([cxx_version],[$( $CXX --version|head -n 1 )])
+
 AM_CXXFLAGS="$AM_CXXFLAGS -Wno-write-strings"
 # Dont use it unless you know what you are doing
 # CXXFLAGS="-std=c++11"
@@ -270,7 +272,8 @@ echo "
   Host................: $host 
   Prefix..............: $prefix
   Debug Build.........: $debugit
-  C++ Compiler........: $CXX $AM_CXXFLAGS $CPPFLAGS 
+  C++ version.........: $cxx_version 
+  C++ compiler........: $CXX $AM_CXXFLAGS $CPPFLAGS 
   C++11 support.......: $ac_cv_cxx_compile_cxx11_cxx
   Linker..............: $LD $LDFLAGS $LIBS
   Boost include.......: $BOOST_CPPFLAGS/boost
