@@ -41,8 +41,7 @@ namespace aiengine {
 class IPv6Protocol: public Protocol 
 {
 public:
-    	explicit IPv6Protocol():ip6_header_(nullptr),total_bytes_(0)
-		{ name_="IPv6Protocol";}
+    	explicit IPv6Protocol():Protocol("IPv6Protocol"),ip6_header_(nullptr),total_bytes_(0) {}
     	virtual ~IPv6Protocol() {}
 	
 	static const u_int16_t id = ETHERTYPE_IPV6;
@@ -53,8 +52,6 @@ public:
 	int64_t getTotalPackets() const { return total_packets_;}
 	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
-
-        const char *getName() { return name_.c_str();};
 
 	void processFlow(Flow *flow) {}; // This protocol dont generate any flow 
         void processPacket(Packet& packet);

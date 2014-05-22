@@ -40,7 +40,7 @@ namespace aiengine {
 class ICMPProtocol: public Protocol 
 {
 public:
-    	explicit ICMPProtocol():icmp_header_(nullptr),stats_level_(0) { name_="ICMPProtocol";}
+    	explicit ICMPProtocol():Protocol("ICMPProtocol"),icmp_header_(nullptr),stats_level_(0) {}
     	virtual ~ICMPProtocol() {}
 
 	static const u_int16_t id = IPPROTO_ICMP;
@@ -51,8 +51,6 @@ public:
 	int64_t getTotalPackets() const { return total_packets_;}
 	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
-
-        const char *getName() { return name_.c_str();}
 
 	void processFlow(Flow *flow) { /* No flow to manager */ } 
 	void processPacket(Packet& packet);

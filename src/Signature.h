@@ -21,6 +21,7 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
+#pragma once
 #ifndef SRC_SIGNATURE_H_
 #define SRC_SIGNATURE_H_
 
@@ -37,6 +38,8 @@
 #endif
 
 namespace aiengine {
+
+class Flow;
 
 class Signature
 {
@@ -71,19 +74,9 @@ public:
 
 	bool haveCallback() const { return callback_set_;}
 
-	void setCallback(PyObject *callback) {
+	void setCallback(PyObject *callback); 
+	void executeCallback(Flow *flow);
 	
-		// TODO: Verify that the callback have at least one parameter
-		if (!PyCallable_Check(callback)) {
-      			std::cerr << "Object is not callable." << std::endl;
-   		} else {
-      			if ( callback_ ) Py_XDECREF(callback_);
-      			callback_ = callback;
-      			Py_XINCREF(callback_);
-			callback_set_ = true;
-   		}
-	}
-
 	PyObject *getCallback() { return callback_;}
 	
 #endif
@@ -93,6 +86,7 @@ public:
 	std::string expression_;	
 	std::string name_;	
 
+private:
 #ifdef PYTHON_BINDING
 	bool callback_set_;
 	PyObject *callback_;

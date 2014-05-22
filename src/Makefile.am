@@ -54,7 +54,9 @@ noinst_HEADERS =        Packet.h Pointer.h \
 aiengine_core_sources =	Multiplexer.cc \
 			FlowForwarder.cc \
 			PacketDispatcher.cc \
-			Flow.cc Protocol.cc \
+			Flow.cc \
+			Protocol.cc \
+			Signature.cc \
 			./flow/FlowManager.cc \
 			./ethernet/EthernetProtocol.cc \
 			./vlan/VLanProtocol.cc \

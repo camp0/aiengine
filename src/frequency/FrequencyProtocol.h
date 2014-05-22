@@ -45,10 +45,10 @@ namespace aiengine {
 class FrequencyProtocol: public Protocol 
 {
 public:
-    	explicit FrequencyProtocol():freqs_cache_(new Cache<Frequencies>),
+    	explicit FrequencyProtocol():Protocol("FrequencyProtocol"),freqs_cache_(new Cache<Frequencies>),
 		packet_freqs_cache_(new Cache<PacketFrequencies>),
 		inspection_limit_(100),freq_header_(nullptr),total_bytes_(0),
-		stats_level_(0) { name_="FrequencyProtocol";}
+		stats_level_(0) {}
 
     	virtual ~FrequencyProtocol() {}
 	
@@ -60,8 +60,6 @@ public:
 	int64_t getTotalPackets() const { return total_packets_;}
 	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
-
-        const char *getName() { return name_.c_str();}
 
 	void processPacket(Packet& packet) {}
 	void processFlow(Flow *flow);

@@ -38,10 +38,7 @@ namespace aiengine {
 class DomainName: public Signature 
 { 
 public:
-    	explicit DomainName(const std::string &name,const std::string &expression) {
-		name_= name;
-		expression_ = expression;
-	}
+    	explicit DomainName(const std::string &name,const std::string &expression):Signature(name,expression) {}
     	virtual ~DomainName() {}
 
 	friend std::ostream& operator<< (std::ostream& out, const DomainName& dom) {

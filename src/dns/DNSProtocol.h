@@ -50,10 +50,9 @@ namespace aiengine {
 class DNSProtocol: public Protocol 
 {
 public:
-    	explicit DNSProtocol():ssl_header_(nullptr),total_bytes_(0),
+    	explicit DNSProtocol():Protocol("DNSProtocol"),dns_header_(nullptr),total_bytes_(0),
 		total_allow_queries_(0),total_ban_queries_(0),stats_level_(0),
-		domain_cache_(new Cache<DNSDomain>("Domain cache"))
-		 { name_ = "DNSProtocol"; }
+		domain_cache_(new Cache<DNSDomain>("Domain cache")) {}
 
     	virtual ~DNSProtocol() {}
 	
@@ -65,8 +64,6 @@ public:
 	int64_t getTotalPackets() const { return total_packets_;}
 	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
-
-        const char *getName() { return name_.c_str();}
 
 	void processPacket(Packet& packet) {}
 	void processFlow(Flow *flow);
@@ -87,7 +84,7 @@ public:
 
         void setHeader(unsigned char *raw_packet) {
                 
-		ssl_header_ = raw_packet;
+		dns_header_ = raw_packet;
         }
 
 	// Condition for say that a payload is DNS 
@@ -118,7 +115,7 @@ private:
 
 	int stats_level_;
 	FlowForwarderPtrWeak flow_forwarder_;	
-	unsigned char *ssl_header_;
+	unsigned char *dns_header_;
         int64_t total_bytes_;
         int32_t total_allow_queries_;
         int32_t total_ban_queries_;

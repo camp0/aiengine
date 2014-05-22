@@ -47,12 +47,8 @@ namespace aiengine {
 class IPBloomSet : public IPAbstractSet 
 {
 public:
-    	explicit IPBloomSet():bloom_(BLOOM_NUM_BITS) {
-		setName("Generic IPBloomSet");
-	}
-    	explicit IPBloomSet(const std::string &name):bloom_(BLOOM_NUM_BITS) {
-		setName(name);
-	}
+    	explicit IPBloomSet():IPAbstractSet("Generic IPBloomSet"),bloom_(BLOOM_NUM_BITS) {}
+    	explicit IPBloomSet(const std::string &name):IPAbstractSet(name),bloom_(BLOOM_NUM_BITS) {}
 
 	static const size_t BLOOM_NUM_BITS = 4194304; // 1MB
 

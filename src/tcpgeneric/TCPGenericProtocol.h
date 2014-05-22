@@ -47,8 +47,8 @@ namespace aiengine {
 class TCPGenericProtocol: public Protocol 
 {
 public:
-    	explicit TCPGenericProtocol():tcp_generic_header_(nullptr),total_bytes_(0),
-		stats_level_(0) { name_="TCPGenericProtocol";}
+    	explicit TCPGenericProtocol():Protocol("TCPGenericProtocol"),tcp_generic_header_(nullptr),total_bytes_(0),
+		stats_level_(0) {}
     	virtual ~TCPGenericProtocol() {}
 	
 	static const u_int16_t id = 0;
@@ -59,8 +59,6 @@ public:
 	int64_t getTotalPackets() const { return total_packets_;}
 	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
-
-        const char *getName() { return name_.c_str();}
 
 	void processPacket(Packet& packet) {}
 	void processFlow(Flow *flow);

@@ -65,7 +65,6 @@ public:
 		}
     	virtual ~IPAbstractSet() {}
 
-	void setName(const std::string &name) { name_ = name; }
 	const char *getName() { return name_.c_str();}
 
 	virtual void addIPAddress(const std::string &ip) = 0;

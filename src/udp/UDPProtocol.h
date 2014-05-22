@@ -43,11 +43,11 @@ namespace aiengine {
 class UDPProtocol: public Protocol 
 {
 public:
-    	explicit UDPProtocol(): udp_header_(nullptr),total_bytes_(0),
-		stats_level_(0) { name_="UDPProtocol";}
+    	explicit UDPProtocol():Protocol("UDPProtocol"),udp_header_(nullptr),total_bytes_(0),
+		stats_level_(0) {}
 
-    	explicit UDPProtocol(std::string name): udp_header_(nullptr),total_bytes_(0),
-		stats_level_(0) { name_=name;}
+    	explicit UDPProtocol(std::string name):Protocol(name),udp_header_(nullptr),total_bytes_(0),
+		stats_level_(0) {}
     	virtual ~UDPProtocol() {}
 
 	static const u_int16_t id = IPPROTO_UDP;
@@ -65,8 +65,6 @@ public:
 
 	void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
 	FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
-
-        const char *getName() { return name_.c_str();}
 
 	void processFlow(Flow *flow) {} // This protocol generates flows but not for destination.
 	void processPacket(Packet& packet);

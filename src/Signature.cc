@@ -21,50 +21,32 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef SRC_IPSET_IPSET_H_
-#define SRC_IPSET_IPSET_H_
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <memory>
-#include <string>
-#include <iostream>
-#include "IPAbstractSet.h"
-#include <unordered_set>
-
-#ifdef PYTHON_BINDING
-#include <boost/python.hpp>
-#include <boost/function.hpp>
-#endif
+#include "Signature.h"
 
 namespace aiengine {
 
-class IPSet : public IPAbstractSet 
-{
-public:
-    	explicit IPSet():IPAbstractSet("Generic IPSet") {}
-    	explicit IPSet(const std::string &name):IPAbstractSet(name) {}
+#ifdef PYTHON_BINDING
 
-    	virtual ~IPSet() {}
+void Signature::setCallback(PyObject *callback) {
+	
+	// TODO: Verify that the callback have at least one parameter
+	if (!PyCallable_Check(callback)) {
+      		std::cerr << "Object is not callable." << std::endl;
+   	} else {
+      		if ( callback_ ) Py_XDECREF(callback_);
+      		callback_ = callback;
+      		Py_XINCREF(callback_);
+		callback_set_ = true;
+   	}
+}
 
-	void addIPAddress(const std::string &ip);
-	bool lookupIPAddress(const std::string &ip); 
-	int getFalsePositiveRate() { return 0; }
+void Signature::executeCallback(Flow *flow) {
 
-	void statistics(std::basic_ostream<char>& out) { out<< *this; }
-	void statistics() { statistics(std::cout);}
 
-	friend std::ostream& operator<< (std::ostream& out, const IPSet& is);
+}
 
-private:
-	std::unordered_set<std::string> map_;
-};
-
-typedef std::shared_ptr<IPSet> IPSetPtr;
-typedef std::weak_ptr<IPSet> IPSetPtrWeak;
+#endif
 
 } // namespace aiengine
 
-#endif  // SRC_IPSET_IPSET_H_
+

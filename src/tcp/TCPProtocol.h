@@ -45,12 +45,12 @@ namespace aiengine {
 class TCPProtocol: public Protocol 
 {
 public:
-    	explicit TCPProtocol():tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
+    	explicit TCPProtocol():Protocol("TCPProtocol"),tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
 		stats_level_(0),
-		tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")) { name_="TCPProtocol";}
-    	explicit TCPProtocol(std::string name):tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
+		tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")) {}
+    	explicit TCPProtocol(std::string name):Protocol(name),tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
 		stats_level_(0),
-		tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")) { name_ = name;}
+		tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")) {}
     	virtual ~TCPProtocol() {}
 
 	static const u_int16_t id = IPPROTO_TCP;
@@ -67,8 +67,6 @@ public:
 
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
         MultiplexerPtrWeak getMultiplexer() { return mux_;}
-
-        const char *getName() { return name_.c_str();}
 
 	void processFlow(Flow *flow) {}; // This protocol generates flows but not for destination.
 	void processPacket(Packet &packet);

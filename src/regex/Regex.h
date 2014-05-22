@@ -48,6 +48,7 @@ class Regex: public Signature
 public:
 
 	explicit Regex(const std::string &name, const std::string& exp):
+		Signature(name,exp),
 		next_regex_()
 #if !defined(HAVE_LIBPCRE)
 #if defined(__LINUX__)
@@ -83,8 +84,6 @@ public:
 		study_exp_ = pcre_study(exp_,0,&errorstr);
 #endif
 #endif
-		name_ = name;
-		expression_ = exp;
 		is_terminal_ = true;
 	}
 

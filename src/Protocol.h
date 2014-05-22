@@ -43,19 +43,19 @@ class Flow;
 class Protocol 
 {
 public:
-    	Protocol():total_malformed_packets_(0),total_validated_packets_(0),
+    	Protocol(const std::string& name):total_malformed_packets_(0),total_validated_packets_(0),
 		total_packets_(0),ipset_mng_(),
 #ifdef PYTHON_BINDING
 		dbptr_(),is_set_db_(false),packet_sampling_(32),
 #endif
-		name_("") {}
+		name_(name) {}
     	virtual ~Protocol() { ipset_mng_.reset();}
 
 	virtual void setHeader(unsigned char *raw_packet) = 0;
 	virtual void setStatisticsLevel(int level) = 0;
 	virtual void statistics(std::basic_ostream<char>& out) = 0;
 	virtual void statistics() = 0;
-	virtual const char* getName() = 0;
+	const char* getName() { return name_.c_str();} 
 
 	virtual void processFlow(Flow *flow) = 0;
 	virtual void processPacket(Packet &packet) = 0;
@@ -85,11 +85,11 @@ public:
 #endif
 
 	SharedPointer<IPSetManager> ipset_mng_;
-	mutable std::string name_;
 	mutable int64_t total_malformed_packets_;
 	mutable int64_t total_validated_packets_;
 	mutable int64_t total_packets_;
 private:
+	std::string name_;
 	u_int16_t protocol_id_;
 };
 

@@ -42,8 +42,8 @@ namespace aiengine {
 class EthernetProtocol: public Protocol 
 {
 public:
-    	explicit EthernetProtocol():eth_header_(nullptr),total_bytes_(0),
-		stats_level_(0) { name_ = "Ethernet";}
+    	explicit EthernetProtocol():Protocol("Ethernet"),eth_header_(nullptr),total_bytes_(0),
+		stats_level_(0) {}
     	virtual ~EthernetProtocol() {}
 
 	static const u_int16_t id = 0x0000; //Ethernet dont need a id
@@ -54,8 +54,6 @@ public:
 	int64_t getTotalPackets() const { return total_packets_;}
 	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
-
-	const char *getName() { return name_.c_str();}
 
 	void processFlow(Flow *flow) {} // This protocol dont generate any flow 
 	void processPacket(Packet &packet) ;

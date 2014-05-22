@@ -52,14 +52,14 @@ namespace aiengine {
 class HTTPProtocol: public Protocol 
 {
 public:
-    	explicit HTTPProtocol():http_header_(nullptr),total_bytes_(0),
+    	explicit HTTPProtocol():Protocol("HTTPProtocol"),http_header_(nullptr),total_bytes_(0),
 		total_allow_hosts_(0),total_ban_hosts_(0),
 		http_regex_(new Regex("Main HTTP expression","^(GET|POST|HEAD|PUT|TRACE).*HTTP/1.")),
 		http_host_(new Regex("Host expression","Host: .*?\r\n")),
 		http_ua_(new Regex("User Agent expression","User-Agent: .*?\r\n")),
 		host_cache_(new Cache<HTTPHost>("Host cache")),
 		ua_cache_(new Cache<HTTPUserAgent>("UserAgent cache")),
-		stats_level_(0) { name_="HTTPProtocol"; } 
+		stats_level_(0) {} 
 
     	virtual ~HTTPProtocol() {}
 	
@@ -71,8 +71,6 @@ public:
 	int64_t getTotalPackets() const { return total_packets_;}
 	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
-
-        const char *getName() { return name_.c_str();}
 
 	void processPacket(Packet& packet) { /* Nothing to process at packet level*/ }
 	void processFlow(Flow *flow);

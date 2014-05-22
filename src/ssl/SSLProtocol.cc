@@ -216,7 +216,7 @@ void SSLProtocol::processFlow(Flow *flow) {
 void SSLProtocol::statistics(std::basic_ostream<char>& out) {
 
 	if (stats_level_ > 0) {
-		out << name_ << "(" << this << ") statistics" << std::dec << std::endl;
+		out << getName() << "(" << this << ") statistics" << std::dec << std::endl;
 		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
 		out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
 		if (stats_level_ > 1) { 
