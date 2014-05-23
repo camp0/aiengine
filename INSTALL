@@ -16,3 +16,70 @@ Installing on BSD systems.
 ./configure
 make 
 make install
+
+Some configure output from supported systems
+--------------------------------------------
+
+  aiengine on Debian
+  (aiengine) version 0.8
+  Host................: x86_64-unknown-linux-gnu
+  Prefix..............: /usr/local
+  Debug Build.........: no
+  C++ version.........: g++ (Debian 4.8.2-14) 4.8.2
+  C++ compiler........: g++ -O3  -std=c++11 -Wno-write-strings   
+  C++11 support.......: yes
+  Linker..............: /usr/bin/ld -m elf_x86_64  -lpcap 
+  Boost include.......: -I/usr/include/boost
+  Boost...............: 1.48.0
+  Boost unit tests....: no
+  Python..............: 2.7 
+  Python include path.: -I/usr/include/python2.7
+  Log4cxx.............: yes
+  Libpcap.............: yes
+  Pcre................: yes
+  Pcre JIT............: yes
+  Database support....: no
+  Bloom filter support: no
+
+  aiengine on FreeBSD 10
+  (aiengine) version 0.8
+  Host................: i386-unknown-freebsd10.0
+  Prefix..............: /usr/local
+  Debug Build.........: no
+  C++ version.........: FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610
+  C++ compiler........: c++ -O3  -std=c++11 -Wno-write-strings   -I/usr/local/include
+  C++11 support.......: yes
+  Linker..............: /usr/bin/ld  -lpcap 
+  Boost include.......: -I/usr/local/include/boost
+  Boost...............: 1.48.0
+  Boost unit tests....: no
+  Python..............: 2.7 
+  Python include path.: -I/usr/local/include/python2.7
+  Log4cxx.............: no
+  Libpcap.............: yes
+  Pcre................: yes
+  Pcre JIT............: yes
+  Database support....: no
+  Bloom filter support: no
+
+  aiengine on Fedora
+  (aiengine) version 0.8
+  Host................: x86_64-unknown-linux-gnu
+  Prefix..............: /usr/local
+  Debug Build.........: no
+  C++ version.........: g++ (GCC) 4.8.2 20131212 (Red Hat 4.8.2-7)
+  C++ compiler........: g++ -O3  -std=c++11 -Wno-write-strings   
+  C++11 support.......: yes
+  Linker..............: /usr/bin/ld -m elf_x86_64  -lpcap 
+  Boost include.......: -I/usr/include/boost
+  Boost...............: 1.48.0
+  Boost unit tests....: no
+  Python..............: 2.7 
+  Python include path.: -I/usr/include/python2.7
+  Log4cxx.............: no
+  Libpcap.............: yes
+  Pcre................: yes
+  Pcre JIT............: yes
+  Database support....: no
+  Bloom filter support: no
+

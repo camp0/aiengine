@@ -71,9 +71,9 @@ public:
 	void setDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling);  
 
 #ifdef HAVE_ADAPTOR
-	void databaseAdaptorInsertHandler(SharedPointer<Flow> flow);
-	void databaseAdaptorUpdateHandler(SharedPointer<Flow> flow); 
-	void databaseAdaptorRemoveHandler(SharedPointer<Flow> flow); 
+	void databaseAdaptorInsertHandler(Flow *flow);
+	void databaseAdaptorUpdateHandler(Flow *flow); 
+	void databaseAdaptorRemoveHandler(Flow *flow); 
 #endif
         mutable boost::python::object dbptr_;
         mutable bool is_set_db_;

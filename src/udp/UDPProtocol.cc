@@ -83,7 +83,7 @@ SharedPointer<Flow> UDPProtocol::getFlow() {
 					flow_table_->addFlow(flow);		
 #if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
                         		if (is_set_db_) { // There is attached a database object
-						databaseAdaptorInsertHandler(flow); 
+						databaseAdaptorInsertHandler(flow.get()); 
                         		}
 #endif
 				}
@@ -148,7 +148,7 @@ void UDPProtocol::processPacket(Packet& packet) {
 #if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR) 
 		if (((flow->total_packets - 1) % packet_sampling_) == 0 ) {
 			if (is_set_db_) { // There is attached a database object
-				databaseAdaptorUpdateHandler(flow);
+				databaseAdaptorUpdateHandler(flow.get());
 			} 
 		}
 #endif

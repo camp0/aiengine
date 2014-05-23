@@ -41,7 +41,7 @@ void Protocol::setDatabaseAdaptor(boost::python::object &dbptr, int packet_sampl
 
 #ifdef HAVE_ADAPTOR
 
-void Protocol::databaseAdaptorInsertHandler(SharedPointer<Flow> flow) {
+void Protocol::databaseAdaptorInsertHandler(Flow *flow) {
 	std::ostringstream key;
 
         key << *flow;
@@ -55,7 +55,7 @@ void Protocol::databaseAdaptorInsertHandler(SharedPointer<Flow> flow) {
         PyGILState_Release(state);
 }
 
-void Protocol::databaseAdaptorUpdateHandler(SharedPointer<Flow> flow) {
+void Protocol::databaseAdaptorUpdateHandler(Flow *flow) {
        	std::ostringstream data;
         std::ostringstream key;
 
@@ -71,7 +71,7 @@ void Protocol::databaseAdaptorUpdateHandler(SharedPointer<Flow> flow) {
         PyGILState_Release(state);
 }
 
-void Protocol::databaseAdaptorRemoveHandler(SharedPointer<Flow> flow) {
+void Protocol::databaseAdaptorRemoveHandler(Flow *flow) {
       	std::ostringstream key;
 
         key << *flow;

@@ -42,7 +42,14 @@ void Signature::setCallback(PyObject *callback) {
 
 void Signature::executeCallback(Flow *flow) {
 
-
+	PyGILState_STATE state(PyGILState_Ensure());
+        try {
+		// TODO: Fix
+        	//boost::python::call<void>(callback_,boost::python::ptr(flow));
+        } catch (std::exception &e) {
+        	std::cout << "ERROR:" << e.what() << std::endl;
+        }
+        PyGILState_Release(state);
 }
 
 #endif
