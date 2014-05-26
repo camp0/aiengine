@@ -145,10 +145,12 @@ BUILT_SOURCES = $(srcdir)/pyaiengine.so
 $(srcdir)/pyaiengine.so: py_wrapper.cc
 	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DPYTHON_BINDING \
 		-I. -I.. $(BOOST_CPPFLAGS) $(BOOST_CPPFLAGS)/boost/python \
-		`pkg-config --cflags python-2.7` \
+		`pkg-config --cflags python-$(PYTHON_VERSION)` \
 		$(aiengine_core_sources) py_wrapper.cc \
 		-std=c++11 -lpthread -lstdc++ \
-		$(BOOST_LDFLAGS) $(BOOST_LINK_CORE) -lboost_python -lpython2.7 -lpcap \
+		$(BOOST_LDFLAGS) $(BOOST_LINK_CORE) \
+		-l$(BOOST_PYTHON_LIB) \
+		`pkg-config --libs python-$(PYTHON_VERSION)` -lpcap \
 		$(LOG4CXX_FLAGS) $(PCRE_LIB) -o pyaiengine.so -shared
 
 CLEANFILES = *.o *.lo *.so

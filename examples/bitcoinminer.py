@@ -34,7 +34,7 @@ import pyaiengine
 def callback(flow):
     ip = str(flow).split(":")[0]
 
-    print "Detected Bitcoinminer on ip:",ip
+    print("Detected Bitcoinminer on ip:",ip)
 
 if __name__ == '__main__':
 
@@ -68,7 +68,7 @@ if __name__ == '__main__':
         pdis.run()
     except:
         e = sys.exc_info()[0]
-        print "Interrupt during capturing packets:",e
+        print("Interrupt during capturing packets:",e)
 
     pdis.close()
 

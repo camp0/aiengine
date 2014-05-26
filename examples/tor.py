@@ -34,7 +34,7 @@ import pyaiengine
 
 def callback_tor(flow):
 
-    print "Detecting ToR on ", str(flow)
+    print("Detecting ToR on ", str(flow))
 
 if __name__ == '__main__':
 
@@ -58,14 +58,14 @@ if __name__ == '__main__':
     try:
         response = urllib2.urlopen(req)
         for line in response.readlines():
-	    ip = line.strip()
-	    try:
-		socket.inet_aton(ip)
-	    except:
-		continue
+            ip = line.strip()
+            try:
+    	        socket.inet_aton(ip)
+            except:
+    	        continue
             ipset.addIPAddress(ip)
     except urllib2.URLError as e:
-	print "Error:",e
+        print("Error:",e)
 
     st.setTCPIPSetManager(ipset_mng)
     st.setTotalTCPFlows(327680)
@@ -77,7 +77,7 @@ if __name__ == '__main__':
         pdis.run()
     except:
         e = sys.exc_info()[0]
-        print "Interrupt during capturing packets:",e
+        print("Interrupt during capturing packets:",e)
 
     pdis.close()
 

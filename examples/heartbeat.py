@@ -36,10 +36,10 @@ def callback_heartbeat(flow):
 
     payload = flow.getPayload()
     if(len(payload) > 7): 
-	""" Heartbeat minimum header """
-	if(int(payload[7])>1):
-     	    print "SSL Heartbeat leak on", str(flow)
-	    print payload
+        """ Heartbeat minimum header """
+        if(int(payload[7])>1):
+             print("SSL Heartbeat leak on", str(flow))
+        print(payload)
 
 if __name__ == '__main__':
 
@@ -55,8 +55,8 @@ if __name__ == '__main__':
     sm = pyaiengine.RegexManager()
 
     """ 
-	Heartbeat regex expression
-	18 -> Content Type: Heartbeat
+    Heartbeat regex expression
+    18 -> Content Type: Heartbeat
         0301, 0302 -> Version: TLS
         xxxx -> Length
         01 - Heartbeat
@@ -84,7 +84,7 @@ if __name__ == '__main__':
         pdis.run()
     except:
         e = sys.exc_info()[0]
-        print "Error: capturing packets:",e
+        print("Error: capturing packets:",e)
 
     pdis.close()
 

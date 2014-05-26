@@ -43,7 +43,7 @@ def netfilter_callback(packet):
     length = packet.get_payload_len() + 14
 
     """ Use the forwardPacket method from the PacketDispatcher object
-	in order to forward the packets from netfilter """
+    in order to forward the packets from netfilter """
     pdis.forwardPacket(payload,length)
     packet.accept()
 
@@ -66,7 +66,7 @@ if __name__ == '__main__':
     try:
         nfqueue.run()
     except KeyboardInterrupt:
-        print
+        print("Exit netfilter queue")
 
     # Dump on file the statistics of the stack
     st.setStatisticsLevel(5)

@@ -33,7 +33,7 @@ import pyaiengine
 
 def unknown_callback(flow):
 
-    print "Detecting unknown traffic on:",str(flow)
+    print("Detecting unknown traffic on:",str(flow))
 
 if __name__ == '__main__':
     
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     """ Get the generated regex """
     r_candidate = learn.getRegex()
   
-    print "Generated Regex:",r_candidate
+    print("Generated Regex:",r_candidate)
     rm = pyaiengine.RegexManager()
     r = pyaiengine.Regex("Unknown attack/traffic",r_candidate)
     r.setCallback(unknown_callback)
@@ -83,9 +83,9 @@ if __name__ == '__main__':
 
     """ We create another clean StackLan """
     st2 = pyaiengine.StackLan()
-	
+    
     st2.setTCPRegexManager(rm)
-    st2.enableNIDSEngine(True)	
+    st2.enableNIDSEngine(True)    
 
     st2.setTotalUDPFlows(16384)
     st2.setTotalTCPFlows(16384)
@@ -99,7 +99,7 @@ if __name__ == '__main__':
         pdis.run()
     except:
         e = sys.exc_info()[0]
-        print "Interrupt during capturing packets:",e
+        print("Interrupt during capturing packets:",e)
      
     pdis.close()
  

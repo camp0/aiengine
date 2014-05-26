@@ -87,7 +87,10 @@ if test x"$unittestsit" = x"yes"; then
 fi
 
 AM_PATH_PYTHON
-AX_PYTHON_DEVEL([>= 2.7])
+
+# If want a specific python version change the value
+# but allways with the commas!!!
+AX_PYTHON_DEVEL([>= '2.7'])
 AX_BOOST_PYTHON
 
 ##########################################################################

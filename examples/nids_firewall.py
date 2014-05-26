@@ -76,7 +76,7 @@ if __name__ == '__main__':
          pdis.run()
      except:
          e = sys.exc_info()[0]
-         print "Interrupt during capturing packets:",e
+         print("Interrupt during capturing packets:",e)
      
      pdis.close()
 

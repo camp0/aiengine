@@ -34,14 +34,14 @@ import pyaiengine
 def callback_troyan_activity(flow):
     ip = str(flow).split(":")[0]
 
-    print "Detected OSX_DocksterTrojan on ip:",ip
+    print("Detected OSX_DocksterTrojan on ip:",ip)
 
 def callback_domain(flow):
 
     ip = str(flow).split(":")[0]
 
-    print "Suspicious Domain (%s) from %s" % (flow.getDNSDomain(),ip)
-    print "Add specific regex for OSX_DocksterTrojan"
+    print("Suspicious Domain (%s) from %s" % (flow.getDNSDomain(),ip))
+    print("Add specific regex for OSX_DocksterTrojan")
 
     reg = pyaiengine.Regex("OSX_DocksterTrojan regex activity",
         "^\xff\xff\xff\xff\xc2\x1f\x96\x9b\x5f\x03\xd3\x3d\x43\xe0\x4f\x8f")
@@ -86,7 +86,7 @@ if __name__ == '__main__':
         pdis.run()
     except:
         e = sys.exc_info()[0]
-        print "Interrupt during capturing packets:",e
+        print("Interrupt during capturing packets:",e)
 
     pdis.close()
 
