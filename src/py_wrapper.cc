@@ -42,6 +42,7 @@
 #include "./ipset/IPSetManager.h"
 #include <boost/python.hpp>
 #include <boost/asio.hpp>
+#include <Python.h> // compatibility
 
 #ifdef HAVE_LIBLOG4CXX
 #include "log4cxx/logger.h"

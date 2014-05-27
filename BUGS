@@ -1,0 +1,25 @@
+Check that the boost python version should match with the python version, in any other case
+the python library will generate a core due to this issue.
+
+  aiengine
+  (aiengine) version 0.8
+  Host................: x86_64-unknown-linux-gnu
+  Prefix..............: /usr/local
+  Debug Build.........: no
+  C++ version.........: g++ (Debian 4.8.2-14) 4.8.2
+  C++ compiler........: g++ -O3  -std=c++11 -Wno-write-strings   
+  C++11 support.......: yes
+  Linker..............: /usr/bin/ld -m elf_x86_64  -lpcap 
+  Boost include.......: -I/usr/include/boost
+  Boost...............: 1.48.0
+  Boost unit tests....: no
+  Boost python lib....: boost_python-py33
+  Python..............: 3.4 
+  Python include path.: -I/usr/include/python3.4m
+  Log4cxx.............: yes
+  Libpcap.............: yes
+  Pcre................: yes
+  Pcre JIT............: yes
+  Database support....: no
+  Bloom filter support: no
+

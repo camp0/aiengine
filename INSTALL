@@ -32,7 +32,7 @@ PYTHON=/usr/bin/python3.3 PYTHON_VERSION=3.3 ./configure
 Some configure output from supported systems
 --------------------------------------------
 
-  aiengine on Debian
+  aiengine on Debian with Python 3.3
   (aiengine) version 0.8
   Host................: x86_64-unknown-linux-gnu
   Prefix..............: /usr/local
@@ -44,6 +44,29 @@ Some configure output from supported systems
   Boost include.......: -I/usr/include/boost
   Boost...............: 1.48.0
   Boost unit tests....: no
+  Boost python lib....: boost_python-py33
+  Python..............: 3.3 
+  Python include path.: -I/usr/include/python3.3m
+  Log4cxx.............: yes
+  Libpcap.............: yes
+  Pcre................: yes
+  Pcre JIT............: yes
+  Database support....: no
+  Bloom filter support: no
+
+  aiengine on Debian with Python 2.7
+  (aiengine) version 0.8
+  Host................: x86_64-unknown-linux-gnu
+  Prefix..............: /usr/local
+  Debug Build.........: no
+  C++ version.........: g++ (Debian 4.8.2-14) 4.8.2
+  C++ compiler........: g++ -O3  -std=c++11 -Wno-write-strings   
+  C++11 support.......: yes
+  Linker..............: /usr/bin/ld -m elf_x86_64  -lpcap 
+  Boost include.......: -I/usr/include/boost
+  Boost...............: 1.48.0
+  Boost unit tests....: no
+  Boost python lib....: boost_python-py27
   Python..............: 2.7 
   Python include path.: -I/usr/include/python2.7
   Log4cxx.............: yes
@@ -53,7 +76,7 @@ Some configure output from supported systems
   Database support....: no
   Bloom filter support: no
 
-  aiengine on FreeBSD 10
+  aiengine on FreeBSD 10 with Python 2.7
   (aiengine) version 0.8
   Host................: i386-unknown-freebsd10.0
   Prefix..............: /usr/local
@@ -65,6 +88,7 @@ Some configure output from supported systems
   Boost include.......: -I/usr/local/include/boost
   Boost...............: 1.48.0
   Boost unit tests....: no
+  Boost python lib....: boost_python
   Python..............: 2.7 
   Python include path.: -I/usr/local/include/python2.7
   Log4cxx.............: no
@@ -74,7 +98,7 @@ Some configure output from supported systems
   Database support....: no
   Bloom filter support: no
 
-  aiengine on Fedora
+  aiengine on Fedora with Python 2.7
   (aiengine) version 0.8
   Host................: x86_64-unknown-linux-gnu
   Prefix..............: /usr/local
@@ -86,6 +110,7 @@ Some configure output from supported systems
   Boost include.......: -I/usr/include/boost
   Boost...............: 1.48.0
   Boost unit tests....: no
+  Boost python lib....: boost_python-py27
   Python..............: 2.7 
   Python include path.: -I/usr/include/python2.7
   Log4cxx.............: no

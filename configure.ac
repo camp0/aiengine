@@ -27,6 +27,10 @@ case $host in
     *free*)    
     	AC_DEFINE([__FREEBSD__],[1],[FreeBSD Host])
     	AM_CONDITIONAL([__FREEBSD__],true)
+# The macro ax_boost_python is not working properly on freebsd
+# in order to fix the problem I just updated the BOOST_PYTHON_LIB
+# and if something is wrong will explode later :D
+	BOOST_PYTHON_LIB="boost_python"
     ;;
     *linux*)
 	AC_DEFINE([__LINUX__],[1],[Linux Host])
@@ -282,6 +286,7 @@ echo "
   Boost include.......: $BOOST_CPPFLAGS/boost
   Boost...............: $boost_lib_version_req
   Boost unit tests....: $unittestsit
+  Boost python lib....: $BOOST_PYTHON_LIB
   Python..............: $PYTHON_VERSION $ax_python_bin 
   Python include path.: $python_path
   Log4cxx.............: $ac_cv_lib_log4cxx_main

@@ -319,7 +319,7 @@ class StackLanIPv6Tests(unittest.TestCase):
         """ Create a regex for a generic exploit """
 
         rm = pyaiengine.RegexManager()
-        r = pyaiengine.Regex("generic exploit","\x90\x90\x90\x90\x90\x90\x90")
+        r = pyaiengine.Regex("generic exploit",b"\x90\x90\x90\x90\x90\x90\x90")
         rm.addRegex(r)
         self.s.setTCPRegexManager(rm)
 
