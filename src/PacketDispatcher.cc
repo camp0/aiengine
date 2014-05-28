@@ -46,7 +46,7 @@ void PacketDispatcher::open_device(std::string device) {
 #endif
 
 	pcap_ = pcap_open_live(device.c_str(), PACKET_RECVBUFSIZE, 0, timeout, errorbuf);
-	if(pcap_ == nullptr) {
+	if (pcap_ == nullptr) {
 #ifdef HAVE_LIBLOG4CXX 
 		LOG4CXX_ERROR(logger,"Device:" <<device.c_str() << " error:" << errorbuf );
 #else
@@ -84,7 +84,7 @@ void PacketDispatcher::open_device(std::string device) {
 
 void PacketDispatcher::close_device(void) {
 
-	if(device_is_ready_) {
+	if (device_is_ready_) {
 		stream_->close();
 		pcap_close(pcap_);
 		device_is_ready_ = false;
@@ -125,7 +125,7 @@ void PacketDispatcher::open_pcap_file(std::string filename) {
 
 void PacketDispatcher::close_pcap_file(void) {
 
-	if(pcap_file_ready_) {
+	if (pcap_file_ready_) {
 		pcap_close(pcap_);
 		pcap_file_ready_ = false;
 	}
@@ -181,7 +181,7 @@ void PacketDispatcher::idle_handler(boost::system::error_code error) {
 void PacketDispatcher::do_read(boost::system::error_code ec) {
 
 	int len = pcap_next_ex(pcap_,&header,&pkt_data);
-	if(len >= 0) { 
+	if (len >= 0) { 
 		forward_raw_packet((unsigned char*)pkt_data,header->len);
 	}
 
@@ -189,7 +189,7 @@ void PacketDispatcher::do_read(boost::system::error_code ec) {
 // remove this if when boost will be bigger than 1.50
 #ifdef PYTHON_BINDING
 #if BOOST_VERSION >= 104800 && BOOST_VERSION < 105000
-	if(PyErr_CheckSignals() == -1) {
+	if (PyErr_CheckSignals() == -1) {
 		std::cout << "Throwing exception from python." << std::endl;
 		throw std::runtime_error("Python exception\n");
        	}
@@ -205,12 +205,12 @@ void PacketDispatcher::forward_raw_packet(unsigned char *packet,int length) {
 	++total_packets_;
 	total_bytes_ += length;
 	
-	if(defMux_) {
+	if (defMux_) {
 		current_packet_.setPayload(packet);
 		current_packet_.setPayloadLength(length);
 		current_packet_.setPrevHeaderSize(0);
 
-		if(defMux_->acceptPacket(current_packet_)) {
+		if (defMux_->acceptPacket(current_packet_)) {
 			defMux_->setPacket(&current_packet_);
 			defMux_->setNextProtocolIdentifier(eth_->getEthernetType());
 			defMux_->forwardPacket(current_packet_);
@@ -221,7 +221,7 @@ void PacketDispatcher::forward_raw_packet(unsigned char *packet,int length) {
 void PacketDispatcher::start_operations(void) {
 
 	read_in_progress_ = false;
-	if(!read_in_progress_) {
+	if (!read_in_progress_) {
 		read_in_progress_ = true;
 
 		stream_->async_read_some(boost::asio::null_buffers(),
@@ -240,7 +240,7 @@ void PacketDispatcher::run_pcap(void) {
 
 void PacketDispatcher::run_device(void) {
 
-	if(device_is_ready_) {
+	if (device_is_ready_) {
         	idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(5));
                 idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
                         boost::asio::placeholders::error));
@@ -276,7 +276,7 @@ void PacketDispatcher::open(const std::string &source) {
 	device_is_ready_ = false;
 	pcap_file_ready_ = false;
 
-	if(infile.good()) { // The source is a file
+	if (infile.good()) { // The source is a file
 		open_pcap_file(source);
 	} else {
 		open_device(source);
@@ -285,9 +285,9 @@ void PacketDispatcher::open(const std::string &source) {
 
 void PacketDispatcher::run(void) {
 
-	if(device_is_ready_) {
+	if (device_is_ready_) {
 		run_device();
-	}else{
+	} else {
 		if(pcap_file_ready_) {
 			run_pcap();
 		}
@@ -296,10 +296,10 @@ void PacketDispatcher::run(void) {
 
 void PacketDispatcher::close(void) {
 
-        if(device_is_ready_) {
+        if (device_is_ready_) {
                 close_device();
-        }else{
-                if(pcap_file_ready_) {
+        } else {
+                if (pcap_file_ready_) {
                         close_pcap_file();
                 }
         }

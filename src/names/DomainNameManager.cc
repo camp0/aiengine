@@ -65,9 +65,9 @@ SharedPointer<DomainName> DomainNameManager::getDomainName(std::string& name) {
 
 	SharedPointer<DomainNode> curr_node = root_;
 
-	for(auto it = tokens.rbegin(); it != tokens.rend(); ++it) {
+	for (auto it = tokens.rbegin(); it != tokens.rend(); ++it) {
 		SharedPointer<DomainNode> node = curr_node->haveKey(*it);
-		if(node) {
+		if (node) {
 			curr_node = node;
 			domain_candidate = node->getDomainName();				
 		} else {
@@ -85,7 +85,7 @@ SharedPointer<DomainName> DomainNameManager::getDomainName(std::string& name) {
 
 void printDomainNode(std::ostream& out, SharedPointer<DomainNode> node) {
 
-        for (auto it = node->begin() ; it != node->end(); ++it ){
+        for (auto it = node->begin(); it != node->end(); ++it) {
                 SharedPointer<DomainNode> node_in = it->second;
                 SharedPointer<DomainName> name = node_in->getDomainName();
 

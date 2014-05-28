@@ -102,7 +102,7 @@ public:
 	void setNextRegex(SharedPointer<Regex> reg) { next_regex_ = reg;is_terminal_ = false;}
 	SharedPointer<Regex> getNextRegex() { return next_regex_;}
 
-	bool matchAndExtract(const std::string& data) ;
+	bool matchAndExtract(const std::string& data);
 #if defined(HAVE_LIBPCRE)
 	const char *getExtract() const { return extract_buffer_;} 
 #else

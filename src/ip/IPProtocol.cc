@@ -40,7 +40,7 @@ void IPProtocol::processPacket(Packet& packet) {
 	mux->setNextProtocolIdentifier(getProtocol());
 	packet.setPrevHeaderSize(header_size);
 
-	if(isFragment() == true) {
+	if (isFragment() == true) {
 		++total_frag_packets_;
 	}
 }

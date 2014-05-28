@@ -59,10 +59,11 @@ Features of 0.7
 - Improvements on the iterators of the python side.
 - Unit tests for python.
 - Compilation on O3 optimization.
-- Bloom filters implemented on the python wrapper (Boost blool filter).
+- Bloom filters implemented on the python wrapper (Boost bloom filter).
 
 Features of 0.8
 - Counters for ip fragmentation packets.
 - Support for TLS1.2 on the SSLProtocol
 - Exposed the FrequencyGroup and the LearnerEngine on python.
 - Expose a handler function on the PacketDispatcher for integrate with NetfilterPython or other packet systems.
+- Support for python 3.x versions (check INSTALL).

@@ -127,14 +127,14 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-        void setMultiplexer(MultiplexerPtrWeak mux) { }
+        void setMultiplexer(MultiplexerPtrWeak mux) {}
         MultiplexerPtrWeak getMultiplexer() { MultiplexerPtrWeak mux; return mux;}
 
         void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
         FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
 
 #ifdef PYTHON_BINDING
-        void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
+        void setDatabaseAdaptor(boost::python::object &dbptr) {} 
 #endif
 
         void setHeader(unsigned char *raw_packet) {

@@ -76,13 +76,13 @@ void SSLProtocol::handleClientHello(Flow *flow,int offset, u_char *data) {
 			u_char *compression_pointer = &data[block_offset];
 			short compression_length = compression_pointer[0];
 			
-			if( compression_length > 0) {
+			if(compression_length > 0) {
 				block_offset += compression_length + 2;
 			}
 			if (block_offset < payload_length) {
 				u_char *extensions = &data[block_offset];
 				uint16_t extensions_length = ((extensions[1] << 8) + extensions[0]);
-				if ( extensions_length + block_offset < payload_length) {
+				if (extensions_length + block_offset < payload_length) {
 					block_offset += 2;
 					extensions = &data[block_offset];
 					uint16_t extension_type = ((extensions[1] << 8) + extensions[0]);
@@ -222,8 +222,8 @@ void SSLProtocol::statistics(std::basic_ostream<char>& out) {
 		if (stats_level_ > 1) { 
 			out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
 			out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
-			if(stats_level_ > 3)
-			{
+			if(stats_level_ > 3) {
+			
 				out << "\t" << "Total client hellos:    " << std::setw(10) << total_client_hellos_ <<std::endl;
 				out << "\t" << "Total server hellos:    " << std::setw(10) << total_server_hellos_ <<std::endl;
 				out << "\t" << "Total certificates:     " << std::setw(10) << total_certificates_ <<std::endl;

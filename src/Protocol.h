@@ -43,7 +43,7 @@ class Flow;
 class Protocol 
 {
 public:
-    	Protocol(const std::string& name):total_malformed_packets_(0),total_validated_packets_(0),
+    	explicit Protocol(const std::string& name):total_malformed_packets_(0),total_validated_packets_(0),
 		total_packets_(0),ipset_mng_(),
 #ifdef PYTHON_BINDING
 		dbptr_(),is_set_db_(false),packet_sampling_(32),

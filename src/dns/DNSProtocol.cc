@@ -123,35 +123,35 @@ void DNSProtocol::processFlow(Flow *flow) {
 
 void DNSProtocol::statistics(std::basic_ostream<char>& out)
 {
-	if(stats_level_ > 0)
-	{
+	if (stats_level_ > 0) {
+	
         	out << "DNSProtocol(" << this << ") statistics" << std::dec <<  std::endl;
         	out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
         	out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
-		if(stats_level_ > 1)
-		{
+		if (stats_level_ > 1) {
+		
 			out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
 			out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
-			if(stats_level_ > 3)
-			{
+			if (stats_level_ > 3) {
+			
 				out << "\t" << "Total allow queries:    " << std::setw(10) << total_allow_queries_ <<std::endl;
 				out << "\t" << "Total banned queries:   " << std::setw(10) << total_ban_queries_ <<std::endl;
 			}
-			if(stats_level_ > 2)	
-			{	
-				if(flow_forwarder_.lock())
+			if (stats_level_ > 2) {	
+			
+				if (flow_forwarder_.lock())
 					flow_forwarder_.lock()->statistics(out);
-                                if(stats_level_ > 3)
-                                {
+                                if (stats_level_ > 3) {
+                                
                                         domain_cache_->statistics(out);
-                                        if(stats_level_ > 4)
-                                        {       
+                                        if (stats_level_ > 4) {
+                                               
                                                 out << "\tDNS Domains usage" << std::endl;
-                                                for(auto it = domain_map_.begin(); it!=domain_map_.end(); ++it)
-                                                {
+                                                for (auto it = domain_map_.begin(); it!=domain_map_.end(); ++it) {
+                                                
                                                         SharedPointer<DNSDomain> domain = std::get<0>((*it).second);
                                                         int count = std::get<1>((*it).second);
-                                                        if(domain)
+                                                        if (domain)
                                                         	out << "\t\tDomain:" << domain->getName() <<":" << count << std::endl;
                                                 }
                                         }
