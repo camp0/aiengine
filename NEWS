@@ -62,8 +62,9 @@ Features of 0.7
 - Bloom filters implemented on the python wrapper (Boost bloom filter).
 
 Features of 0.8
-- Counters for ip fragmentation packets.
+- Counters for IP fragmentation packets.
 - Support for TLS1.2 on the SSLProtocol
 - Exposed the FrequencyGroup and the LearnerEngine on python.
 - Expose a handler function on the PacketDispatcher for integrate with NetfilterPython or other packet systems.
 - Support for python 3.x versions (check INSTALL).
+- Sorts the outputs of the HTTP, SSL and DNS most used domains (aiengine binary).

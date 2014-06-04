@@ -1,6 +1,6 @@
 .\" Manpage for AIEngine.
 .\" Contact luis.camp0.2009@gmail.com to correct errors or typos.
-.TH man 8 "23 Jun 2013" "1.0" "aiengine man page"
+.TH man 8 "23 Jun 2014" "0.8" "aiengine man page"
 .SH NAME
 aiengine \- AIEngine is a packet inspection engine with capabilities of learning without any human intervention
 .SH SYNOPSIS
@@ -12,10 +12,8 @@ AIEngine system is based on c++11
 .PP
 Mandatory arguments to long options are mandatory for short options too.
 .TP
-\fB\-I\fR, \fB\-\-interface\fR
-Sets the network interface.
-.TP
-\fB\-P\fR, \fB\-\-pcapfile\fR
+\fB\-I\fR, \fB\-\-input\fR
+Sets the network interface, pcap file or directory with pcap files.
 Sets the pcap file or directory with pcap files to analyze.
 .PP
 
@@ -76,7 +74,7 @@ The Learner engine needs a key for analyze the flows that have been process by t
 Optional arguments.
 .TP
 \fB\-n\fR, \fB\-\-stack\fR
-Selects the Network stack for the analysis. There is only two network stacks availables at the moment. The Stack Lans contains the configuration of a LAN network (ethernet,ip,tcp,udp), and the Stack mobile contains a 3G stack (ethernet,ip,upd,gprs,ip,udp,tcp). 
+Selects the Network stack for the analysis. There is only two network stacks availables at the moment. The Stack Lans contains the configuration of a LAN network (ethernet,ip,tcp,udp), and the Stack mobile contains a 3G stack (ethernet,ip,udp,gprs,ip,udp,tcp). 
 .TP
 \fB\-d\fR, \fB\-\-dumpflows\fR
 Dumps the flows processes to the stdout.

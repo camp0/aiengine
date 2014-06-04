@@ -182,7 +182,8 @@ private:
 
 	Cache<SSLHost>::CachePtr host_cache_;
 
-        typedef std::map<std::string,std::pair<SharedPointer<SSLHost>,int32_t>> HostMapType;
+	typedef std::pair<SharedPointer<SSLHost>,int32_t> HostHits;
+        typedef std::map<std::string,HostHits> HostMapType;
         HostMapType host_map_;
 
         DomainNameManagerPtrWeak host_mng_;

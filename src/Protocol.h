@@ -70,15 +70,14 @@ public:
 	void setDatabaseAdaptor(boost::python::object &dbptr); 
 	void setDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling);  
 
+	bool getPythonObjectIsSet() const { return is_set_db_;}
+	int getPacketSampling() const { return packet_sampling_;}
+
 #ifdef HAVE_ADAPTOR
 	void databaseAdaptorInsertHandler(Flow *flow);
 	void databaseAdaptorUpdateHandler(Flow *flow); 
 	void databaseAdaptorRemoveHandler(Flow *flow); 
 #endif
-        mutable boost::python::object dbptr_;
-        mutable bool is_set_db_;
-	mutable int packet_sampling_;
-
 	void setIPSetManager(const IPSetManager& ipset_mng);
 #else
 	void setIPSetManager(SharedPointer<IPSetManager> ipset_mng) { ipset_mng_ = ipset_mng;} 
@@ -91,6 +90,11 @@ public:
 private:
 	std::string name_;
 	u_int16_t protocol_id_;
+#ifdef PYTHON_BINDING
+        boost::python::object dbptr_;
+        bool is_set_db_;
+	int packet_sampling_;
+#endif
 };
 
 typedef std::shared_ptr <Protocol> ProtocolPtr;

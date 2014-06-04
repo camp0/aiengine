@@ -90,7 +90,7 @@ SharedPointer<Flow> TCPProtocol::getFlow() {
 						flow->tcp_info = tcp_info_ptr;
 					}
 #if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
-                                        if (is_set_db_) { // There is attached a database object
+                                        if (getPythonObjectIsSet()) { // There is attached a database object
 						databaseAdaptorInsertHandler(flow.get());
                                         }
 #endif
@@ -156,7 +156,7 @@ void TCPProtocol::processPacket(Packet &packet) {
 					flow_table_->removeFlow(flow);
 					flow_cache_->releaseFlow(flow);
 #if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
-                                        if (is_set_db_) { // There is attached a database object
+                                        if (getPythonObjectIsSet()) { // There is attached a database object
 						databaseAdaptorRemoveHandler(flow.get());
                                         }
 #endif
@@ -188,8 +188,8 @@ void TCPProtocol::processPacket(Packet &packet) {
                 	}
 
 #if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
-                	if ((flow->total_packets % packet_sampling_ ) == 0) {
-                        	if (is_set_db_) { // There is attached a database object
+                	if ((flow->total_packets % getPacketSampling()) == 0) {
+                        	if (getPythonObjectIsSet()) { // There is attached a database object
 					databaseAdaptorUpdateHandler(flow.get());
                         	}
                 	}

@@ -62,7 +62,7 @@ public:
 		stats_level_(0) {} 
 
     	virtual ~HTTPProtocol() {}
-	
+
 	static const u_int16_t id = 0;
 	static const int header_size = 0;
 	int getHeaderSize() const { return header_size;}
@@ -142,8 +142,11 @@ private:
 	Cache<HTTPHost>::CachePtr host_cache_;
 	Cache<HTTPUserAgent>::CachePtr ua_cache_;
 
-	typedef std::map<std::string,std::pair<SharedPointer<HTTPHost>,int32_t>> HostMapType;
-	typedef std::map<std::string,std::pair<SharedPointer<HTTPUserAgent>,int32_t>> UAMapType;
+	typedef std::pair<SharedPointer<HTTPHost>,int32_t> HostHits;
+	typedef std::pair<SharedPointer<HTTPUserAgent>,int32_t> UAHits;
+
+	typedef std::map<std::string,HostHits> HostMapType;
+	typedef std::map<std::string,UAHits> UAMapType;
 	UAMapType ua_map_;	
 	HostMapType host_map_;	
 

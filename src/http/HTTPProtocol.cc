@@ -140,13 +140,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
 					LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
 #endif	
 					if(host_candidate->haveCallback()) {
-						PyGILState_STATE state(PyGILState_Ensure());
-						try {
-							boost::python::call<void>(host_candidate->getCallback(),boost::python::ptr(flow));
-						} catch (std::exception &e) {
-							std::cout << "ERROR:" << e.what() << std::endl;
-                                        	}
-                                        	PyGILState_Release(state);
+						host_candidate->executeCallback(flow);
                                 	}
 #endif
                         	}
@@ -177,14 +171,45 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 					ua_cache_->statistics(out);
 					if(stats_level_ > 4) {
 						out << "\tHTTP Hosts usage" << std::endl;
-						for(auto it = host_map_.begin(); it!=host_map_.end(); ++it) {
+
+						std::vector<std::pair<std::string,HostHits>> h_list(host_map_.begin(),host_map_.end());
+						// Sort The host_map by using lambdas	
+						std::sort(
+							h_list.begin(),
+							h_list.end(), 
+          						[](std::pair<std::string,HostHits> const &a, 
+							std::pair<std::string,HostHits> const &b) 
+						{  
+							int v1 = std::get<1>(a.second);
+							int v2 = std::get<1>(b.second);
+		
+							return v1 > v2;
+						}); 
+
+						for(auto it = h_list.begin(); it!=h_list.end(); ++it) {
 							SharedPointer<HTTPHost> host = std::get<0>((*it).second);
 							int count = std::get<1>((*it).second);
 							if(host)
-							out << "\t\tHost:" << host->getName() <<":" << count << std::endl;
+								out << "\t\tHost:" << host->getName() <<":" << count << std::endl;
 						}
 						out << "\tHTTP UserAgents usage" << std::endl;
-						for(auto it = ua_map_.begin(); it!=ua_map_.end(); ++it) {
+
+                                                std::vector<std::pair<std::string,UAHits>> ua_list(ua_map_.begin(),ua_map_.end());
+						
+						// Sort The ua_map by using lambdas	
+                                                std::sort(
+                                                        ua_list.begin(),
+                                                        ua_list.end(),
+                                                        [](std::pair<std::string,UAHits> const &a,
+                                                        std::pair<std::string,UAHits> const &b)
+                                                {
+                                                        int v1 = std::get<1>(a.second);
+                                                        int v2 = std::get<1>(b.second);
+                                                         
+                                                        return v1 > v2;
+                                                });
+						
+						for(auto it = ua_list.begin(); it!=ua_list.end(); ++it) {
 							SharedPointer<HTTPUserAgent> ua = std::get<0>((*it).second);
 							int count = std::get<1>((*it).second);
 							if(ua)

@@ -197,13 +197,7 @@ void SSLProtocol::processFlow(Flow *flow) {
 						LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
 #endif  
 						if(host_candidate->haveCallback()) {
-							PyGILState_STATE state(PyGILState_Ensure());
-							try {
-								boost::python::call<void>(host_candidate->getCallback(),boost::python::ptr(flow));
-							} catch (std::exception &e) {
-								std::cout << "ERROR:" << e.what() << std::endl;
-							}
-							PyGILState_Release(state);
+							host_candidate->executeCallback(flow);
 						}
 #endif
 					}
@@ -239,7 +233,22 @@ void SSLProtocol::statistics(std::basic_ostream<char>& out) {
 				host_cache_->statistics(out);
 				if(stats_level_ > 4) {
 					out << "\tSSL Hosts usage" << std::endl;
-					for(auto it = host_map_.begin(); it!=host_map_.end(); ++it) {
+
+                                        std::vector<std::pair<std::string,HostHits>> h_list(host_map_.begin(),host_map_.end());
+                                        // Sort The host_map by using lambdas
+                                        std::sort(
+                                        	h_list.begin(),
+                                                h_list.end(),
+                                                [](std::pair<std::string,HostHits> const &a,
+                                                std::pair<std::string,HostHits> const &b)
+                                        {
+                                                int v1 = std::get<1>(a.second);
+                                                int v2 = std::get<1>(b.second);
+
+                                                return v1 > v2;
+                                        });
+
+					for(auto it = h_list.begin(); it!=h_list.end(); ++it) {
 						SharedPointer<SSLHost> host = std::get<0>((*it).second);
 						int count = std::get<1>((*it).second);
 						if(host)

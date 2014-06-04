@@ -103,14 +103,8 @@ void DNSProtocol::processFlow(Flow *flow) {
 						LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << domain_candidate->getName());
 #endif
 #ifdef PYTHON_BINDING
-						if(domain_candidate->haveCallback()) {
-							PyGILState_STATE state(PyGILState_Ensure());
-							try {
-								boost::python::call<void>(domain_candidate->getCallback(),boost::python::ptr(flow));
-							} catch (std::exception &e) {
-								std::cout << "ERROR:" << e.what() << std::endl;
-							}
-							PyGILState_Release(state);
+						if(domain_candidate->haveCallback()) { 
+							domain_candidate->executeCallback(flow);
 						}							
 #endif
 					}
@@ -147,7 +141,22 @@ void DNSProtocol::statistics(std::basic_ostream<char>& out)
                                         if (stats_level_ > 4) {
                                                
                                                 out << "\tDNS Domains usage" << std::endl;
-                                                for (auto it = domain_map_.begin(); it!=domain_map_.end(); ++it) {
+                                                
+						std::vector<std::pair<std::string,DomainHits>> d_list(domain_map_.begin(),domain_map_.end());
+                                                // Sort The domain_map by using lambdas
+                                                std::sort(
+                                                        d_list.begin(),
+                                                        d_list.end(),
+                                                        [](std::pair<std::string,DomainHits> const &a,
+                                                        std::pair<std::string,DomainHits> const &b)
+                                                {
+                                                        int v1 = std::get<1>(a.second);
+                                                        int v2 = std::get<1>(b.second);
+
+                                                        return v1 > v2;
+                                                });
+
+                                                for (auto it = d_list.begin(); it!=d_list.end(); ++it) {
                                                 
                                                         SharedPointer<DNSDomain> domain = std::get<0>((*it).second);
                                                         int count = std::get<1>((*it).second);

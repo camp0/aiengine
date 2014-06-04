@@ -125,7 +125,8 @@ private:
 
 	Cache<DNSDomain>::CachePtr domain_cache_;
 
-	typedef std::map<std::string,std::pair<SharedPointer<DNSDomain>,int32_t>> DomainMapType;
+	typedef std::pair<SharedPointer<DNSDomain>,int32_t> DomainHits;
+	typedef std::map<std::string,DomainHits> DomainMapType;
 	DomainMapType domain_map_;	
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;

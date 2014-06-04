@@ -133,12 +133,6 @@ void signalHandlerShowFlowsStatistics( int signum) {
         outfile.close();
 }
 
-void configureFrequencyGroupOptions() { 
-
-	// TODO
-}
-
-
 bool computeFrequencyGroup () {
 
 	bool computed = false;
