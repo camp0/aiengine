@@ -88,6 +88,7 @@ BOOST_AUTO_TEST_CASE (test2_http)
 	flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
+	BOOST_CHECK(flow->http_uri.lock() == nullptr); // there is no items on the cache
 	BOOST_CHECK(flow->http_host.lock() == nullptr); // there is no items on the cache
 	BOOST_CHECK(flow->http_ua.lock() == nullptr); // there is no items on the cache
 }
@@ -109,6 +110,7 @@ BOOST_AUTO_TEST_CASE (test3_http)
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
+        BOOST_CHECK(flow->http_uri.lock() == nullptr);
         BOOST_CHECK(flow->http_host.lock() != nullptr);
 
 	std::string cad("www.google.com");
@@ -149,7 +151,7 @@ BOOST_AUTO_TEST_CASE (test4_http)
 
 BOOST_AUTO_TEST_CASE (test5_http)
 {
-        char *header = 	"GET /someur-oonnnnn-a-/somefile.php HTTP/1.1\r\n"
+        char *header = 	"GET /someur-oonnnnn-a-/somefile.php HTTP/1.0\r\n"
 			"Host: www.g00gle.com\r\n"
 			"Connection: close\r\n"
 			"Accept-Encoding: gzip, deflate\r\n"
@@ -162,19 +164,22 @@ BOOST_AUTO_TEST_CASE (test5_http)
         Packet packet(pkt,length,0);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
+        http->createHTTPUris(1);
         http->createHTTPHosts(1);
         http->createHTTPUserAgents(1);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
+	std::string cad_uri("/someur-oonnnnn-a-/somefile.php");
         std::string cad_host("www.g00gle.com");
         std::string cad_ua("LuisAgent");
 
         BOOST_CHECK(flow->http_ua.lock() != nullptr);
         BOOST_CHECK(flow->http_host.lock() != nullptr);
+        BOOST_CHECK(flow->http_uri.lock() != nullptr);
 
-        // The host is valid
+        BOOST_CHECK(cad_uri.compare(flow->http_uri.lock()->getName()) == 0);
         BOOST_CHECK(cad_host.compare(flow->http_host.lock()->getName()) == 0);
         BOOST_CHECK(cad_ua.compare(flow->http_ua.lock()->getName()) == 0);
 }
@@ -529,6 +534,59 @@ BOOST_AUTO_TEST_CASE (test13_http)
 	BOOST_CHECK( http->getTotalBanHosts() == 1);
 }
 
+// Test the URI functionality
+BOOST_AUTO_TEST_CASE (test14_http)
+{
+        char *header1 =  "GET /someur-oonnnnn-a-/somefile.php HTTP/1.0\r\n"
+                        "Host: www.bu.com\r\n"
+                        "Connection: close\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Accept-Language: en-gb\r\n"
+                        "Accept: */*\r\n"
+                        "User-Agent: LuisAgent\r\n\r\n";
+
+        char *header2 =  "GET /VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB/oonnnnn-a-/otherfile.html HTTP/1.0\r\n"
+                        "Host: www.bu.com\r\n"
+                        "Connection: close\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Accept-Language: en-gb\r\n"
+                        "Accept: */*\r\n"
+                        "User-Agent: LuisAgent\r\n\r\n"; 
+
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header1);
+        int length1 = strlen(header1);
+        Packet packet1(pkt1,length1,0);
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (header2);
+        int length2 = strlen(header2);
+        Packet packet2(pkt2,length2,0);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->createHTTPUris(1);
+
+        flow->packet = const_cast<Packet*>(&packet1);
+        http->processFlow(flow.get());
+                        
+        std::string cad_uri1("/someur-oonnnnn-a-/somefile.php");
+        std::string cad_uri2("/VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB/oonnnnn-a-/otherfile.html");
+ 
+        BOOST_CHECK(flow->http_uri.lock() != nullptr);
+        BOOST_CHECK(cad_uri1.compare(flow->http_uri.lock()->getName()) == 0);
+
+	// Inject the next header
+        flow->packet = const_cast<Packet*>(&packet2);
+        http->processFlow(flow.get());
+
+	// There is no uris on the cache so the flow keeps the last uri seen
+        BOOST_CHECK(cad_uri1.compare(flow->http_uri.lock()->getName()) == 0);
+
+	// Now create a uri on the cache 
+        http->createHTTPUris(1);
+        
+	http->processFlow(flow.get());
+
+	// There is no uris on the cache so the flow keeps the last uri seen
+        BOOST_CHECK(cad_uri2.compare(flow->http_uri.lock()->getName()) == 0);
+}
 
 
 BOOST_AUTO_TEST_SUITE_END( )

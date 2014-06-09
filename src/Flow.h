@@ -37,6 +37,7 @@
 #include "./regex/Regex.h"
 #include "./frequency/Frequencies.h"
 #include "./frequency/PacketFrequencies.h"
+#include "./http/HTTPUri.h"
 #include "./http/HTTPHost.h"
 #include "./http/HTTPUserAgent.h"
 #include "./dns/DNSDomain.h"
@@ -90,6 +91,7 @@ public:
 	WeakPointer<TCPInfo> tcp_info;
 	WeakPointer<DNSDomain> dns_domain;
 	WeakPointer<Regex> regex;
+	WeakPointer<HTTPUri> http_uri;
 	WeakPointer<HTTPHost> http_host;
 	WeakPointer<HTTPUserAgent> http_ua;	
 	WeakPointer<SSLHost> ssl_host;
@@ -127,6 +129,7 @@ public:
 		return l;
 	} 
 
+	HTTPUri& getHTTPUri() const { return *http_uri.lock().get();}
 	HTTPHost& getHTTPHost() const { return *http_host.lock().get();}
 	HTTPUserAgent& getHTTPUserAgent() const { return *http_ua.lock().get();}
 	Frequencies& getFrequencies() const { return *frequencies.lock().get();}

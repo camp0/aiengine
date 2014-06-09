@@ -56,6 +56,7 @@ void Flow::reset() {
 	ipset.reset();	
 	forwarder.reset();
 	frequencies.reset();
+	http_uri.reset();
 	http_host.reset();
 	ssl_host.reset();
 	http_ua.reset();

@@ -208,6 +208,5 @@ BOOST_AUTO_TEST_CASE (test7_regex)
 	BOOST_CHECK( text.compare(re->getExtract()) == 0);
 }
 
-
 BOOST_AUTO_TEST_SUITE_END( )
 

@@ -4,7 +4,7 @@ TEST = test_http
 
 check_PROGRAMS = test_http
 
-noinst_HEADERS = 	HTTPProtocol.h HTTPHost.h HTTPUserAgent.h HTTPReferer.h test_http.h
+noinst_HEADERS = 	HTTPProtocol.h HTTPUri.h HTTPHost.h HTTPUserAgent.h HTTPReferer.h test_http.h
 
 test_http_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../ethernet/EthernetProtocol.cc \

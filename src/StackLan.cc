@@ -426,8 +426,9 @@ void StackLan::setTotalTCPFlows(int value) {
 	flow_cache_tcp_->createFlows(value);
 	tcp_->createTCPInfo(value);
 
-	// The bast mayority of the traffic of internet is HTTP
+	// The vast majority of the traffic of internet is HTTP
 	// so create 75% of the value received for the http caches
+	http_->createHTTPUris(value * 1.5);
 	http_->createHTTPHosts(value * 0.75);
 	http_->createHTTPUserAgents(value * 0.75);
 

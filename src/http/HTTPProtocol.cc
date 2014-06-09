@@ -111,6 +111,43 @@ void HTTPProtocol::attachUserAgentToFlow(Flow *flow, std::string &ua) {
 	}
 }
 
+// The URI should be updated on every request
+void HTTPProtocol::attachUriToFlow(Flow *flow, std::string &uri) {
+
+	UriMapType::iterator it = uri_map_.find(uri);
+        if (it == uri_map_.end()) {
+        	SharedPointer<HTTPUri> uri_ptr = uri_cache_->acquire().lock();
+                if (uri_ptr) {
+                	uri_ptr->setName(uri);
+                        flow->http_uri = uri_ptr;
+                        uri_map_.insert(std::make_pair(uri,std::make_pair(uri_ptr,1)));
+                } 
+        } else {
+		// Update the URI of the flow
+		flow->http_uri = std::get<0>(it->second);
+	}
+}
+
+
+void HTTPProtocol::extractUriValue(Flow *flow, const char *header) {
+
+	int offset = 0;
+	std::string http_header(header);
+
+	if (std::memcmp("GET",&header[0],3) == 0) {
+		offset = 4;
+	} else if (std::memcmp("POST",&header[0],4) == 0) {
+		offset = 5;
+	}
+	if (offset > 0) {
+		int end = http_header.find("HTTP/1.");
+		if (end > 0) {
+			std::string uri(http_header,offset,(end-offset) -1);
+		
+			attachUriToFlow(flow,uri);	
+		}
+	}
+}
 
 void HTTPProtocol::processFlow(Flow *flow) {
 
@@ -123,6 +160,8 @@ void HTTPProtocol::processFlow(Flow *flow) {
 	// Is the first packet accepted and processed
 	if (flow->total_packets_l7 == 1) { 
 		const char *header = reinterpret_cast <const char*> (flow->packet->getPayload());
+
+		extractUriValue(flow,header);
 	
 		extractHostValue(flow,header);	
 
@@ -146,6 +185,12 @@ void HTTPProtocol::processFlow(Flow *flow) {
                         	}
 			}
 		}
+	} else {
+		if (flow->getFlowDirection() == FlowDirection::FORWARD) {
+			const char *header = reinterpret_cast <const char*> (flow->packet->getPayload());
+
+			extractUriValue(flow,header);
+		}
 	}
 }
 
@@ -167,9 +212,33 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 				if (flow_forwarder_.lock())
 					flow_forwarder_.lock()->statistics(out);
 				if (stats_level_ > 3) {
+					uri_cache_->statistics(out);
 					host_cache_->statistics(out);
 					ua_cache_->statistics(out);
 					if(stats_level_ > 4) {
+                                                out << "\tHTTP Uris usage" << std::endl;
+                
+                                                std::vector<std::pair<std::string,UriHits>> uri_list(uri_map_.begin(),uri_map_.end());
+                                                // Sort The uri_map by using lambdas
+                                                std::sort(
+                                                        uri_list.begin(),
+                                                        uri_list.end(),
+                                                        [](std::pair<std::string,UriHits> const &a,
+                                                        std::pair<std::string,UriHits> const &b)
+                                                {
+                                                        int v1 = std::get<1>(a.second);
+                                                        int v2 = std::get<1>(b.second);
+
+                                                        return v1 > v2;
+                                                });
+
+                                                for(auto it = uri_list.begin(); it!=uri_list.end(); ++it) {
+                                                        SharedPointer<HTTPUri> uri = std::get<0>((*it).second);
+                                                        int count = std::get<1>((*it).second);
+                                                        if(uri)
+                                                                out << "\t\tUri:" << uri->getName() <<":" << count << std::endl;
+                                                }
+
 						out << "\tHTTP Hosts usage" << std::endl;
 
 						std::vector<std::pair<std::string,HostHits>> h_list(host_map_.begin(),host_map_.end());

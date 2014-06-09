@@ -39,6 +39,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
+#include "HTTPUri.h"
 #include "HTTPHost.h"
 #include "HTTPUserAgent.h"
 #include "HTTPReferer.h"
@@ -57,6 +58,7 @@ public:
 		http_regex_(new Regex("Main HTTP expression","^(GET|POST|HEAD|PUT|TRACE).*HTTP/1.")),
 		http_host_(new Regex("Host expression","Host: .*?\r\n")),
 		http_ua_(new Regex("User Agent expression","User-Agent: .*?\r\n")),
+		uri_cache_(new Cache<HTTPUri>("Uri cache")),
 		host_cache_(new Cache<HTTPHost>("Host cache")),
 		ua_cache_(new Cache<HTTPUserAgent>("UserAgent cache")),
 		stats_level_(0) {} 
@@ -98,9 +100,9 @@ public:
         // Condition for say that a payload is HTTP 
         bool httpChecker(Packet& packet) {
         
-		const char * paco = reinterpret_cast<const char*>(packet.getPayload());
+		const char * header = reinterpret_cast<const char*>(packet.getPayload());
 
-		if (http_regex_->evaluate(paco)) {
+		if (http_regex_->evaluate(header)) {
 
 			setHeader(packet.getPayload());
                         ++total_validated_packets_;
@@ -113,6 +115,8 @@ public:
 
 	unsigned char *getPayload() { return http_header_; }
 
+        void createHTTPUris(int number) { uri_cache_->create(number);}
+        void destroyHTTPUris(int number) { uri_cache_->destroy(number);}
         void createHTTPHosts(int number) { host_cache_->create(number);}
         void destroyHTTPHosts(int number) { host_cache_->destroy(number);}
         void createHTTPUserAgents(int number) { ua_cache_->create(number);}
@@ -126,8 +130,10 @@ public:
 
 private:
 
+	void attachUriToFlow(Flow *flow, std::string &host);
 	void attachHostToFlow(Flow *flow, std::string &host);
 	void attachUserAgentToFlow(Flow *flow, std::string &ua);
+	void extractUriValue(Flow *flow, const char *header);
 	void extractHostValue(Flow *flow, const char *header);
 	void extractUserAgentValue(Flow *flow, const char *header);
 
@@ -139,16 +145,20 @@ private:
 	int32_t total_allow_hosts_;
 	int32_t total_ban_hosts_;
 
+	Cache<HTTPUri>::CachePtr uri_cache_;
 	Cache<HTTPHost>::CachePtr host_cache_;
 	Cache<HTTPUserAgent>::CachePtr ua_cache_;
 
+	typedef std::pair<SharedPointer<HTTPUri>,int32_t> UriHits;
 	typedef std::pair<SharedPointer<HTTPHost>,int32_t> HostHits;
 	typedef std::pair<SharedPointer<HTTPUserAgent>,int32_t> UAHits;
 
+	typedef std::map<std::string,UriHits> UriMapType;
 	typedef std::map<std::string,HostHits> HostMapType;
 	typedef std::map<std::string,UAHits> UAMapType;
 	UAMapType ua_map_;	
 	HostMapType host_map_;	
+	UriMapType uri_map_;	
 
 	DomainNameManagerPtrWeak host_mng_;
 	DomainNameManagerPtrWeak ban_host_mng_;
