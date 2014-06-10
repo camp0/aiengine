@@ -315,6 +315,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getTotalPacketsLayer7",&Flow::getTotalPacketsLayer7)
 		.def("getTotalPackets",&Flow::getTotalPackets)
 		.def("getTotalBytes",&Flow::getTotalBytes)
+		.def("getHTTPUri",&Flow::getHTTPUri,return_internal_reference<>())
 		.def("getHTTPHost",&Flow::getHTTPHost,return_internal_reference<>())
 		.def("getHTTPUserAgent",&Flow::getHTTPUserAgent,return_internal_reference<>())
 		.def("getFrequencies",&Flow::getFrequencies,return_internal_reference<>())
@@ -328,6 +329,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
 	boost::python::class_<DNSDomain, SharedPointer<DNSDomain>,boost::noncopyable>("DNSDomain")
+		.def(self_ns::str(self_ns::self))
+	;
+
+	boost::python::class_<HTTPUri, SharedPointer<HTTPUri>,boost::noncopyable>("HTTPUri")
 		.def(self_ns::str(self_ns::self))
 	;
 

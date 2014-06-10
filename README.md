@@ -1,8 +1,8 @@
 AIEngine (Artificial Inteligent Engine)
 =========
 
-AIEngine is a packet inspection engine with capabilities of learning
-without any human intervention.  
+AIEngine is a next generation packet inspection engine with capabilities of learning
+without any human intervention and other functionalities.  
 
 AIEngine helps network/security profesionals to identify traffic and develop
 signatures for use them on NIDS, Firewalls, Traffic classifiers and so on.
@@ -17,6 +17,7 @@ The main functionalities of AIEngine are:
 - Support for banned domains and hosts for HTTP, DNS and SSL
 - Frequency analisys for unknown traffic and auto-regex generation.
 - Easy integration with databases (MySQL, Redis, etc...)
+- Easy integration with other packet engines (Netfilter).
 
 Using AIEngine 
 ---------------
@@ -85,6 +86,7 @@ The main objects that the python module provide are the following ones.
 	   |---> getDestinationAddress
 	   |---> getDestinationPort
 	   |---> getFrequencies
+	   |---> getHTTPUri
 	   |---> getHTTPHost
 	   |---> getHTTPUserAgent
 	   |---> getIPSet
@@ -117,6 +119,7 @@ The main objects that the python module provide are the following ones.
 	   |---> getTotalComputedFrequencies
 	   |---> getTotalProcessFlows
 	   |---> reset
+	HTTPUri
 	HTTPHost
 	HTTPUserAgent
 	IPAbstractSet (Abstract class)

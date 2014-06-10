@@ -299,6 +299,28 @@ class StackLanTests(unittest.TestCase):
             self.dis.close();
 
             self.assertEqual(self.ip_called_callback,1)
+
+    def test11(self):
+	""" Verify the HTTP fields of the flow """
+
+        def domain_callback(flow):
+            self.called_callback += 1
+            self.assertEqual(str(flow.getHTTPUri()),"/css/global.css?v=20121120a")
+            self.assertEqual(str(flow.getHTTPHost()),"www.wired.com")
+
+        d = pyaiengine.DomainName("Wired domain",".wired.com")
+
+        dm = pyaiengine.DomainNameManager()
+        d.setCallback(domain_callback)
+        dm.addDomainName(d)
+
+	self.s.setHTTPHostNameManager(dm)
+
+        self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
+        self.dis.run()
+        self.dis.close()
+
+        self.assertEqual(self.called_callback, 1)
  
 
 class StackLanIPv6Tests(unittest.TestCase):

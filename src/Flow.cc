@@ -71,33 +71,33 @@ void Flow::reset() {
 void Flow::serialize(std::ostream& stream) {
 
 	stream << "{";
-	stream << "ipsrc:'" << address_.getSrcAddrDotNotation() << "', ";
-	stream << "portsrc:" << source_port_ << ", ";
-	stream << "proto:" << protocol_ << ", ";
-	stream << "ipdst:'" << address_.getDstAddrDotNotation() << "', ";
-	stream << "portdst:" << dest_port_ << ", ";
+	stream << "\"ipsrc\":\"" << address_.getSrcAddrDotNotation() << "\", ";
+	stream << "\"portsrc\":" << source_port_ << ", ";
+	stream << "\"proto\":" << protocol_ << ", ";
+	stream << "\"ipdst\":\"" << address_.getDstAddrDotNotation() << "\", ";
+	stream << "\"portdst\":" << dest_port_ << ", ";
 
-	stream << "bytes:" << total_bytes << " "; 
+	stream << "\"bytes\":" << total_bytes << " "; 
 
 	if(ipset.lock())
-		stream << ", ipset:'" << ipset.lock()->getName() << "' ";
+		stream << ", \"ipset\":\"" << ipset.lock()->getName() << "\" ";
 
 	if (protocol_ == IPPROTO_TCP) {
 		if(tcp_info.lock())	
-			stream << ", tcpflags:'" << *tcp_info.lock() << "' ";
+			stream << ", \"tcpflags\":\"" << *tcp_info.lock() << "\" ";
 		
 		if(http_host.lock())	
-			stream << ", httphost:'" << http_host.lock()->getName() << "' ";
+			stream << ", \"httphost\":\"" << http_host.lock()->getName() << "\" ";
 
 		if(ssl_host.lock())	
-			stream << ", sslhost:" << ssl_host.lock()->getName() << "' ";
+			stream << ", \"sslhost\":\"" << ssl_host.lock()->getName() << "\" ";
 
 	} else { // UDP
 		if(dns_domain.lock())	
-			stream << ", dnsdomain:'" << dns_domain.lock()->getName() << " ";
+			stream << ", \"dnsdomain\":\"" << dns_domain.lock()->getName() << "\" ";
 	}
 	if(regex.lock())	
-		stream << ", matchs:'" << regex.lock()->getName() << "' ";
+		stream << ", \"matchs\":\"" << regex.lock()->getName() << "\" ";
 	
 	stream << "}";
 }
