@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE (test5_flow_serialize)
 	f1->setFiveTuple(inet_addr("192.168.1.1"),2345,6,inet_addr("54.12.5.1"),80);
 
 	std::ostringstream os;
-	std::string output("{ipsrc:'192.168.1.1', portsrc:2345, proto:6, ipdst:'54.12.5.1', portdst:80, bytes:0 }");
+	std::string output("{\"ipsrc\":\"192.168.1.1\", \"portsrc\":2345, \"proto\":6, \"ipdst\":\"54.12.5.1\", \"portdst\":80, \"bytes\":0 }");
 	f1->serialize(os);
 
 	BOOST_CHECK(output.compare(os.str()) == 0);

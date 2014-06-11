@@ -121,10 +121,12 @@ void HTTPProtocol::attachUriToFlow(Flow *flow, std::string &uri) {
                 	uri_ptr->setName(uri);
                         flow->http_uri = uri_ptr;
                         uri_map_.insert(std::make_pair(uri,std::make_pair(uri_ptr,1)));
+			++total_requests_;
                 } 
         } else {
 		// Update the URI of the flow
 		flow->http_uri = std::get<0>(it->second);
+		++total_requests_;
 	}
 }
 
@@ -205,6 +207,7 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
         		out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
 			if(stats_level_ > 3) { 
 			
+				out << "\t" << "Total requests:         " << std::setw(10) << total_requests_ <<std::endl;
 				out << "\t" << "Total allow hosts:      " << std::setw(10) << total_allow_hosts_ <<std::endl;
 				out << "\t" << "Total banned hosts:     " << std::setw(10) << total_ban_hosts_ <<std::endl;
 			}
