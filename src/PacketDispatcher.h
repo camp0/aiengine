@@ -98,6 +98,7 @@ public:
 	void run(void);
 	void close(void);
     	void stop(void) { io_service_.stop(); }
+	void setPcapFilter(const std::string &filter);
 
 #ifdef PYTHON_BINDING
 	void forwardPacket(const std::string &packet, int length);
@@ -127,6 +128,8 @@ private:
         void close_pcap_file(void);
         void run_device(void);
         void run_pcap(void);
+
+	void info_message(std::string msg);
 
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;

@@ -25,6 +25,25 @@
 
 namespace aiengine {
 
+void PacketDispatcher::info_message(std::string msg) {
+
+#ifdef HAVE_LIBLOG4CXX
+        LOG4CXX_INFO(logger, msg);
+#else
+        std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
+        std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+#ifdef __clang__
+        std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
+#else
+        char mbstr[100];
+        std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
+        std::cout << "[" << mbstr << "] ";
+#endif
+        std::cout << msg << std::endl;
+#endif
+}
+
+
 #ifdef HAVE_LIBLOG4CXX
 log4cxx::LoggerPtr PacketDispatcher::logger(log4cxx::Logger::getLogger("aiengine.packetdispatcher"));
 #endif
@@ -65,20 +84,11 @@ void PacketDispatcher::open_device(std::string device) {
 			
 	stream_->assign(::dup(ifd));
 	device_is_ready_ = true;
-#ifdef HAVE_LIBLOG4CXX 
-	LOG4CXX_INFO(logger,"Processing packets from:" <<device.c_str());	
-#else
-        std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
-        std::time_t now = std::chrono::system_clock::to_time_t(time_point);
-#ifdef __clang__
-        std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
-#else 
-        char mbstr[100];
-        std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
-        std::cout << "[" << mbstr << "] ";
-#endif
-	std::cout << "Processing packets from:" <<  device.c_str() << std::endl; 
-#endif
+
+	std::ostringstream msg;
+	msg << "Processing packets from:" << device.c_str();
+
+	info_message(msg.str());
 }
 
 
@@ -106,20 +116,11 @@ void PacketDispatcher::open_pcap_file(std::string filename) {
 		exit(-1);
 	} else {	
 		pcap_file_ready_ = true;
-#ifdef HAVE_LIBLOG4CXX 
-		LOG4CXX_INFO(logger,"Processing packets from:" << filename.c_str());	
-#else
-        	std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
-        	std::time_t now = std::chrono::system_clock::to_time_t(time_point);
-#ifdef __clang__
-                std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
-#else
-                char mbstr[100];
-                std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
-                std::cout << "[" << mbstr << "] ";
-#endif
-        	std::cout << "Processing packets from:" <<  filename.c_str() << std::endl;
-#endif
+
+        	std::ostringstream msg;
+        	msg << "Processing packets from:" << filename.c_str();
+
+        	info_message(msg.str());
 	}
 }
 
@@ -252,20 +253,11 @@ void PacketDispatcher::run_device(void) {
         		std::cerr << e.what() << std::endl;
         	}
 	} else {
-#ifdef HAVE_LIBLOG4CXX
-                LOG4CXX_INFO(logger,"The device is not ready to run"); 
-#else
-                std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
-                std::time_t now = std::chrono::system_clock::to_time_t(time_point);
-#ifdef __clang__
-                std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
-#else
-                char mbstr[100];
-                std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
-                std::cout << "[" << mbstr << "] ";
-#endif
-                std::cout << "The device is not ready to run" << std::endl;
-#endif
+
+                std::ostringstream msg;
+                msg << "The device is not ready to run";
+     
+                info_message(msg.str());
 	}
 }
 
@@ -303,6 +295,23 @@ void PacketDispatcher::close(void) {
                         close_pcap_file();
                 }
         }
+}
+
+void PacketDispatcher::setPcapFilter(const std::string &filter) {
+
+	if ((device_is_ready_)or(pcap_file_ready_)) {
+		struct bpf_program fp;
+
+		if (pcap_compile(pcap_, &fp, filter.c_str(), 1, PCAP_NETMASK_UNKNOWN) == 0) {
+			
+			if (pcap_setfilter(pcap_,&fp) == 0) {
+				std::ostringstream msg;
+                		msg << "Pcap filter set:" << filter;
+
+                		info_message(msg.str());
+			}
+		}
+	}
 }
 
 #ifdef PYTHON_BINDING

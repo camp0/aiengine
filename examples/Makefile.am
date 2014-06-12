@@ -9,6 +9,7 @@ EXTRA_DIST = 	bitcoinminer.py \
 		heartbeat.py \
 		unknown.py \
 		tor.py \
-		netfilter.py
+		netfilter.py \
+		parallel.py
 
 MAINTAINERCLEANFILES = Makefile.in 
