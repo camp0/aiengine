@@ -52,14 +52,12 @@ typedef std::weak_ptr<Multiplexer> MultiplexerPtrWeak;
 class Multiplexer 
 {
 public:
-    	Multiplexer(): packet_(),address() {
+    	Multiplexer(): address(),packet_() {
 	
 		total_forward_packets_ = 0;
 		total_received_packets_ = 0;
 		total_fail_packets_ = 0;
 		header_size_ = 0;
-		//ipsrc = 0;
-		//ipdst = 0;
 		total_length = 0;
 		protocol_id_ =  NO_PROTOCOL_SELECTED;
 		next_protocol_id_ =  NO_PROTOCOL_SELECTED;
@@ -112,8 +110,6 @@ public:
 
 	IPAddress address;
 	// This is realy uggly puagggggg
-	// u_int32_t ipsrc;
-	// u_int32_t ipdst;
 	u_int16_t total_length;
 private:
 	ProtocolPtr proto_;

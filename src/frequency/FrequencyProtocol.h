@@ -45,10 +45,11 @@ namespace aiengine {
 class FrequencyProtocol: public Protocol 
 {
 public:
-    	explicit FrequencyProtocol():Protocol("FrequencyProtocol"),freqs_cache_(new Cache<Frequencies>),
-		packet_freqs_cache_(new Cache<PacketFrequencies>),
-		inspection_limit_(100),freq_header_(nullptr),total_bytes_(0),
-		stats_level_(0) {}
+    	explicit FrequencyProtocol():Protocol("FrequencyProtocol"),stats_level_(0),mux_(),
+		flow_forwarder_(),freq_header_(nullptr),total_bytes_(0),
+		inspection_limit_(100),
+		freqs_cache_(new Cache<Frequencies>),
+		packet_freqs_cache_(new Cache<PacketFrequencies>) {}
 
     	virtual ~FrequencyProtocol() {}
 	
@@ -105,8 +106,8 @@ public:
 
 private:
 	int stats_level_;
-	FlowForwarderPtrWeak flow_forwarder_;	
 	MultiplexerPtrWeak mux_;
+	FlowForwarderPtrWeak flow_forwarder_;	
 	unsigned char *freq_header_;
         int64_t total_bytes_;
 	int inspection_limit_;

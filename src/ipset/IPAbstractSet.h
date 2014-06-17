@@ -55,8 +55,7 @@ public:
 #endif
 		}
     	explicit IPAbstractSet(const std::string &name):name_(name),
-		total_ips_not_on_set_(0),total_ips_on_set_(0),
-		total_ips_(0) 
+		total_ips_(0),total_ips_not_on_set_(0),total_ips_on_set_(0)
 		{
 #ifdef PYTHON_BINDING
 			callback_set_ = false;

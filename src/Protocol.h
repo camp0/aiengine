@@ -43,12 +43,14 @@ class Flow;
 class Protocol 
 {
 public:
-    	explicit Protocol(const std::string& name):total_malformed_packets_(0),total_validated_packets_(0),
-		total_packets_(0),ipset_mng_(),
+    	explicit Protocol(const std::string& name):ipset_mng_(),
+		total_malformed_packets_(0),total_validated_packets_(0),
+		total_packets_(0),name_(name),protocol_id_(0)
 #ifdef PYTHON_BINDING
-		dbptr_(),is_set_db_(false),packet_sampling_(32),
+		,dbptr_(),is_set_db_(false),packet_sampling_(32)
 #endif
-		name_(name) {}
+		{}
+
     	virtual ~Protocol() { ipset_mng_.reset();}
 
 	virtual void setHeader(unsigned char *raw_packet) = 0;

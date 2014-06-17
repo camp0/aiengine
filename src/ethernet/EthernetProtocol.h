@@ -42,8 +42,8 @@ namespace aiengine {
 class EthernetProtocol: public Protocol 
 {
 public:
-    	explicit EthernetProtocol():Protocol("Ethernet"),eth_header_(nullptr),total_bytes_(0),
-		stats_level_(0) {}
+    	explicit EthernetProtocol():Protocol("Ethernet"),stats_level_(0),mux_(),
+		eth_header_(nullptr),total_bytes_(0) {}
     	virtual ~EthernetProtocol() {}
 
 	static const u_int16_t id = 0x0000; //Ethernet dont need a id

@@ -41,10 +41,10 @@ namespace aiengine {
 class IPProtocol: public Protocol 
 {
 public:
-    	explicit IPProtocol():Protocol("IPProtocol"),ip_header_(nullptr),total_bytes_(0),
-		total_frag_packets_(0),stats_level_(0) {}
+    	explicit IPProtocol():Protocol("IPProtocol"),stats_level_(0),mux_(),
+		ip_header_(nullptr),total_bytes_(0),total_frag_packets_(0) {}
     	virtual ~IPProtocol() {}
-	
+
 	static const u_int16_t id = ETHERTYPE_IP;
 	static const int header_size = 20;
 	int getHeaderSize() const { return header_size;}

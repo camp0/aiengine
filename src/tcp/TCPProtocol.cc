@@ -211,11 +211,11 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 
 	if (tcp_info) {
 		int flowdir = static_cast<int>(flow->getFlowDirection());
-		int prev_flowdir = static_cast<int>(flow->getPrevFlowDirection());
+		int prev_flowdir __attribute__((unused)) = static_cast<int>(flow->getPrevFlowDirection());
 		uint32_t seq_num = getSequence();
-		uint32_t ack_num = getAckSequence();
+		uint32_t ack_num __attribute__((unused)) = getAckSequence();
 		uint32_t next_seq_num = 0;
-		uint32_t next_ack_num = 0;
+		uint32_t next_ack_num __attribute__((unused)) = 0;
 		int state = tcp_info->state_curr;
 
 		if (syn) { 

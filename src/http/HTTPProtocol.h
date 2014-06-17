@@ -53,15 +53,17 @@ namespace aiengine {
 class HTTPProtocol: public Protocol 
 {
 public:
-    	explicit HTTPProtocol():Protocol("HTTPProtocol"),http_header_(nullptr),total_bytes_(0),
+    	explicit HTTPProtocol():Protocol("HTTPProtocol"),stats_level_(0),flow_forwarder_(),
+                http_regex_(new Regex("Main HTTP expression","^(GET|POST|HEAD|PUT|TRACE).*HTTP/1.")),
+                http_host_(new Regex("Host expression","Host: .*?\r\n")),
+                http_ua_(new Regex("User Agent expression","User-Agent: .*?\r\n")),
+		http_header_(nullptr),total_bytes_(0),
 		total_allow_hosts_(0),total_ban_hosts_(0),total_requests_(0),
-		http_regex_(new Regex("Main HTTP expression","^(GET|POST|HEAD|PUT|TRACE).*HTTP/1.")),
-		http_host_(new Regex("Host expression","Host: .*?\r\n")),
-		http_ua_(new Regex("User Agent expression","User-Agent: .*?\r\n")),
 		uri_cache_(new Cache<HTTPUri>("Uri cache")),
 		host_cache_(new Cache<HTTPHost>("Host cache")),
 		ua_cache_(new Cache<HTTPUserAgent>("UserAgent cache")),
-		stats_level_(0) {} 
+		ua_map_(),host_map_(),uri_map_(),
+		host_mng_(),ban_host_mng_() {}	
 
     	virtual ~HTTPProtocol() {}
 

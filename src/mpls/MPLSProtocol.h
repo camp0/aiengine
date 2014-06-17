@@ -55,8 +55,9 @@ namespace aiengine {
 class MPLSProtocol: public Protocol 
 {
 public:
-    	explicit MPLSProtocol():Protocol("MPLSProtocol"),mpls_header_(nullptr),total_bytes_(0),
-		stats_level_(0) {}
+    	explicit MPLSProtocol():Protocol("MPLSProtocol"),stats_level_(0),
+		mpls_header_(nullptr),total_bytes_(0) {}
+
     	virtual ~MPLSProtocol() {}
 	
 	static const u_int16_t id = ETHERTYPE_MPLS;		// MPLS Unicast traffic	

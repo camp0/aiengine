@@ -48,8 +48,10 @@ class LearnerEngine
 {
 public:
 
-    	explicit LearnerEngine():items_(0),length_(0),
-		raw_expression_(""),regex_expression_(""),max_raw_expression_(64) {};
+    	explicit LearnerEngine():length_(0),items_(0),max_raw_expression_(64),
+		raw_expression_(""),regex_expression_(""),
+		freq_group_(),q_array_() {}
+
     	virtual ~LearnerEngine() {};
 
 	void reset(); 
@@ -79,13 +81,13 @@ public:
 #endif
 
 private:
-	std::array<std::unordered_map<unsigned short,int>,MAX_PACKET_FREQUENCIES_VALUES> q_array_;
 	int length_;
 	int items_;
 	int max_raw_expression_;
 	std::string raw_expression_;	
 	std::string regex_expression_;	
 	FrequencyGroup<std::string>::PtrWeak freq_group_;
+	std::array<std::unordered_map<unsigned short,int>,MAX_PACKET_FREQUENCIES_VALUES> q_array_;
 };
 
 typedef std::shared_ptr<LearnerEngine> LearnerEnginePtr;

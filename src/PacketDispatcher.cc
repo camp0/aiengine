@@ -181,9 +181,9 @@ void PacketDispatcher::idle_handler(boost::system::error_code error) {
 
 void PacketDispatcher::do_read(boost::system::error_code ec) {
 
-	int len = pcap_next_ex(pcap_,&header,&pkt_data);
+	int len = pcap_next_ex(pcap_,&header_,&pkt_data_);
 	if (len >= 0) { 
-		forward_raw_packet((unsigned char*)pkt_data,header->len);
+		forward_raw_packet((unsigned char*)pkt_data_,header_->len);
 	}
 
 // This prevents a problem on the boost asio signal
@@ -233,8 +233,8 @@ void PacketDispatcher::start_operations(void) {
 
 void PacketDispatcher::run_pcap(void) {
 
-	while (pcap_next_ex(pcap_,&header,&pkt_data) >= 0) {
-		forward_raw_packet((unsigned char*)pkt_data,header->len);
+	while (pcap_next_ex(pcap_,&header_,&pkt_data_) >= 0) {
+		forward_raw_packet((unsigned char*)pkt_data_,header_->len);
 	}
 }
 

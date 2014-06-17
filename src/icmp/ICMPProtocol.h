@@ -40,7 +40,9 @@ namespace aiengine {
 class ICMPProtocol: public Protocol 
 {
 public:
-    	explicit ICMPProtocol():Protocol("ICMPProtocol"),icmp_header_(nullptr),stats_level_(0) {}
+    	explicit ICMPProtocol():Protocol("ICMPProtocol"),stats_level_(0),
+		mux_(),icmp_header_(nullptr) {}
+
     	virtual ~ICMPProtocol() {}
 
 	static const u_int16_t id = IPPROTO_ICMP;

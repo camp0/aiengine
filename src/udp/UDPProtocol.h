@@ -43,11 +43,12 @@ namespace aiengine {
 class UDPProtocol: public Protocol 
 {
 public:
-    	explicit UDPProtocol():Protocol("UDPProtocol"),udp_header_(nullptr),total_bytes_(0),
-		stats_level_(0) {}
+    	explicit UDPProtocol():Protocol("UDPProtocol"),stats_level_(0),
+		udp_header_(nullptr),total_bytes_(0) {}
 
-    	explicit UDPProtocol(std::string name):Protocol(name),udp_header_(nullptr),total_bytes_(0),
-		stats_level_(0) {}
+    	explicit UDPProtocol(std::string name):Protocol(name),stats_level_(0),
+		udp_header_(nullptr),total_bytes_(0) {}
+
     	virtual ~UDPProtocol() {}
 
 	static const u_int16_t id = IPPROTO_UDP;

@@ -76,16 +76,12 @@ public:
 			int64_t prev_total_packets_per_interval;	
 	};
 
-    	explicit PacketDispatcher():
-		io_service_(),
-		stats_(),
-		idle_work_interval_(5),
-		idle_work_(io_service_,boost::posix_time::seconds(0)),
-		signals_(io_service_, SIGINT, SIGTERM),
-		total_packets_(0),
-		total_bytes_(0),
-		pcap_file_ready_(false),
-		device_is_ready_(false) {
+    	explicit PacketDispatcher():stream_(),pcap_file_ready_(false),read_in_progress_(false),
+		device_is_ready_(false),total_packets_(0),total_bytes_(0),pcap_(nullptr),
+		io_service_(),idle_work_(io_service_,boost::posix_time::seconds(0)),
+		signals_(io_service_, SIGINT, SIGTERM),idle_work_interval_(5),
+		stats_(),header_(nullptr),pkt_data_(nullptr),
+		eth_(),current_packet_(),defMux_() {
 			
 		setIdleFunction(std::bind(&PacketDispatcher::default_idle_function,this));
 		signals_.async_wait(
@@ -147,8 +143,8 @@ private:
 	boost::asio::signal_set signals_;
 	int idle_work_interval_;
 	Statistics stats_;
-	struct pcap_pkthdr *header;
-	const u_char *pkt_data;
+	struct pcap_pkthdr *header_;
+	const u_char *pkt_data_;
 	std::function <void ()> idle_function_;
 
 	EthernetProtocolPtr eth_;	

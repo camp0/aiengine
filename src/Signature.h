@@ -81,10 +81,10 @@ public:
 	
 #endif
 
+	std::string name_;	
+	std::string expression_;	
 	int32_t total_matchs_;
 	int32_t total_evaluates_;
-	std::string expression_;	
-	std::string name_;	
 
 private:
 #ifdef PYTHON_BINDING

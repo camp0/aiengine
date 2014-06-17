@@ -45,7 +45,9 @@ public:
 	typedef std::shared_ptr< FrequencyGroup<A_Type> > Ptr;
 	typedef std::weak_ptr< FrequencyGroup<A_Type>> PtrWeak;
 
-    	explicit FrequencyGroup(): name_(""),total_process_flows_(0),total_computed_freqs_(0),log_level_(0) {}
+    	explicit FrequencyGroup(): name_(""),log_level_(0),total_process_flows_(0),total_computed_freqs_(0),
+		group_map_(), flow_list_() {}
+
     	virtual ~FrequencyGroup() {}
 
 	const char* getName() { return name_.c_str();} 

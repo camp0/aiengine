@@ -47,8 +47,9 @@ namespace aiengine {
 class UDPGenericProtocol: public Protocol 
 {
 public:
-    	explicit UDPGenericProtocol():Protocol("UDPGenericProtocol"),udp_generic_header_(nullptr),total_bytes_(0),
-		stats_level_(0) {}
+    	explicit UDPGenericProtocol():Protocol("UDPGenericProtocol"),stats_level_(0),
+		udp_generic_header_(nullptr),total_bytes_(0) {}
+
     	virtual ~UDPGenericProtocol() {}
 	
 	static const u_int16_t id = 0;

@@ -33,7 +33,8 @@ class Packet
 public:
     	Packet():length_(0),packet_(nullptr),prev_header_size_(0),source_port_(0),dest_port_(0) {}
     	Packet(unsigned char *packet,int length, int prev_header_size):
-		packet_(packet),length_(length),prev_header_size_(prev_header_size) {}
+		length_(length),packet_(packet),prev_header_size_(prev_header_size),
+		source_port_(0),dest_port_(0) {}
 
     	virtual ~Packet() {}
 

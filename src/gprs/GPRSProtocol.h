@@ -41,10 +41,11 @@ namespace aiengine {
 class GPRSProtocol: public Protocol 
 {
 public:
-    	explicit GPRSProtocol():Protocol("GPRSProtocol"),gprs_header_(nullptr),total_bytes_(0),
-		stats_level_(0) {}
+    	explicit GPRSProtocol():Protocol("GPRSProtocol"),stats_level_(0),mux_(),
+		gprs_header_(nullptr),total_bytes_(0) {}
+
     	virtual ~GPRSProtocol() {}
-	
+
 	static const u_int16_t id = 0;
 	static const int header_size = 8; // GTP version 1
 	int getHeaderSize() const { return header_size;}
@@ -105,9 +106,9 @@ public:
 private:
 	int stats_level_;
 	MultiplexerPtrWeak mux_;
+	FlowForwarderPtrWeak flow_forwarder_;
 	unsigned char *gprs_header_;
 	int64_t total_bytes_;
-	FlowForwarderPtrWeak flow_forwarder_;
 };
 
 typedef std::shared_ptr<GPRSProtocol> GPRSProtocolPtr;

@@ -45,12 +45,16 @@ namespace aiengine {
 class TCPProtocol: public Protocol 
 {
 public:
-    	explicit TCPProtocol():Protocol("TCPProtocol"),tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
-		stats_level_(0),
-		tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")) {}
-    	explicit TCPProtocol(std::string name):Protocol(name),tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
-		stats_level_(0),
-		tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")) {}
+    	explicit TCPProtocol():Protocol("TCPProtocol"),stats_level_(0),mux_(),
+		flow_forwarder_(),flow_table_(),flow_cache_(),
+		tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")), 
+		tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0) {}
+
+    	explicit TCPProtocol(std::string name):Protocol(name),stats_level_(0),mux_(),
+                flow_forwarder_(),flow_table_(),flow_cache_(),
+                tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")), 
+                tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0) {}
+
     	virtual ~TCPProtocol() {}
 
 	static const u_int16_t id = IPPROTO_TCP;

@@ -47,8 +47,9 @@ namespace aiengine {
 class TCPGenericProtocol: public Protocol 
 {
 public:
-    	explicit TCPGenericProtocol():Protocol("TCPGenericProtocol"),tcp_generic_header_(nullptr),total_bytes_(0),
-		stats_level_(0) {}
+    	explicit TCPGenericProtocol():Protocol("TCPGenericProtocol"),stats_level_(0),
+		tcp_generic_header_(nullptr),total_bytes_(0) {}
+
     	virtual ~TCPGenericProtocol() {}
 	
 	static const u_int16_t id = 0;

@@ -67,7 +67,7 @@ struct TCPState {
 	struct ST_TcpFlags dir[2]; // 0 for FORWARD, 1 for BACKWARD
 };
 
-static struct TCPState ST_NullState = {
+static struct TCPState __attribute__((unused)) ST_NullState = {
 	(char*)"NONE",
  	{{ 	/* INVALID */ 	0,
 		/* SYN */	0,

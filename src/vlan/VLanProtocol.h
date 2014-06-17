@@ -45,8 +45,8 @@ struct vlan_tag {
 class VLanProtocol: public Protocol 
 {
 public:
-    	explicit VLanProtocol():Protocol("VLanProtocol"),vlan_header_(nullptr),total_bytes_(0),
-		stats_level_(0) {}
+    	explicit VLanProtocol():Protocol("VLanProtocol"),stats_level_(0),mux_(),
+		vlan_header_(nullptr),total_bytes_(0) {}
     	virtual ~VLanProtocol() {}
 
 	static const u_int16_t id = ETHERTYPE_VLAN;	

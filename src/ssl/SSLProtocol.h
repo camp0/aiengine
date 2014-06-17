@@ -104,11 +104,14 @@ typedef struct {
 class SSLProtocol: public Protocol 
 {
 public:
-    	explicit SSLProtocol():Protocol("SSLProtocol"),ssl_header_(nullptr),total_bytes_(0),
-		stats_level_(0),total_client_hellos_(0),total_server_hellos_(0),
+    	explicit SSLProtocol():Protocol("SSLProtocol"),stats_level_(0),flow_forwarder_(),
+		ssl_header_(nullptr),total_bytes_(0),
+		total_client_hellos_(0),total_server_hellos_(0),
 		total_certificates_(0),total_records_(0),total_ban_hosts_(0),
 		total_allow_hosts_(0),
-		host_cache_(new Cache<SSLHost>("Host cache")) {}
+		host_cache_(new Cache<SSLHost>("Host cache")),
+		host_map_(),host_mng_(),ban_host_mng_() {}
+
     	virtual ~SSLProtocol() {}
 	
 	static const u_int16_t id = 0;

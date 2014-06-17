@@ -86,7 +86,7 @@ void SSLProtocol::handleClientHello(Flow *flow,int offset, u_char *data) {
 					block_offset += 2;
 					extensions = &data[block_offset];
 					uint16_t extension_type = ((extensions[1] << 8) + extensions[0]);
-					short extension_length = extensions[2];
+					short extension_length __attribute__((unused)) = extensions[2];
 
 					if (extension_type == 0x0000) { // Server name
 						//block_offset += 2;
@@ -120,7 +120,7 @@ void SSLProtocol::handleClientHello(Flow *flow,int offset, u_char *data) {
 
 void SSLProtocol::handleServerHello(Flow *flow,int offset,unsigned char *data) {
 
-	ssl_hello *hello = reinterpret_cast<ssl_hello*>(data); 
+	ssl_hello *hello __attribute__((unused)) = reinterpret_cast<ssl_hello*>(data); 
 	++ total_server_hellos_;
 }
 

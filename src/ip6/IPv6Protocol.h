@@ -41,9 +41,10 @@ namespace aiengine {
 class IPv6Protocol: public Protocol 
 {
 public:
-    	explicit IPv6Protocol():Protocol("IPv6Protocol"),ip6_header_(nullptr),total_bytes_(0) {}
+    	explicit IPv6Protocol():Protocol("IPv6Protocol"),stats_level_(0),mux_(),
+		ip6_header_(nullptr),total_bytes_(0) {}
     	virtual ~IPv6Protocol() {}
-	
+
 	static const u_int16_t id = ETHERTYPE_IPV6;
 	static const int header_size = 40;
 	int getHeaderSize() const { return header_size;}
@@ -100,6 +101,7 @@ public:
 	struct in6_addr *getDestinationAddress() const { return (struct in6_addr*)&(ip6_header_->ip6_dst);}
 
 private:
+	int stats_level_;
 	MultiplexerPtrWeak mux_;
 	struct ip6_hdr *ip6_header_;
 	int64_t total_bytes_;

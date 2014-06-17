@@ -50,9 +50,12 @@ namespace aiengine {
 class DNSProtocol: public Protocol 
 {
 public:
-    	explicit DNSProtocol():Protocol("DNSProtocol"),dns_header_(nullptr),total_bytes_(0),
-		total_allow_queries_(0),total_ban_queries_(0),stats_level_(0),
-		domain_cache_(new Cache<DNSDomain>("Domain cache")) {}
+    	explicit DNSProtocol():Protocol("DNSProtocol"),stats_level_(0),flow_forwarder_(),
+		dns_header_(nullptr),total_bytes_(0),
+		total_allow_queries_(0),total_ban_queries_(0),
+		domain_mng_(),ban_domain_mng_(),
+		domain_cache_(new Cache<DNSDomain>("Domain cache")),
+		domain_map_() {}
 
     	virtual ~DNSProtocol() {}
 	
