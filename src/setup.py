@@ -9,6 +9,8 @@ from distutils.core import setup
 from distutils.extension import Extension
 
 """ List of the files of the lib """
+head_files =  ["Multiplexer.h","FlowForwarder.h","PacketDispatcher.h","Flow.cc","Protocol.h","Signature.h"]
+
 src_files =  ["Multiplexer.cc","FlowForwarder.cc","PacketDispatcher.cc","Flow.cc","Protocol.cc","Signature.cc"]
 src_files += ["./flow/FlowManager.cc","./ethernet/EthernetProtocol.cc","./vlan/VLanProtocol.cc","./mpls/MPLSProtocol.cc"]
 src_files += ["./ip/IPProtocol.cc","./ipset/IPSet.cc","./ipset/IPBloomSet.cc","./ipset/IPSetManager.cc"]
@@ -44,7 +46,7 @@ aiengine_module = Extension("pyaiengine",
     include_dirs = [".."],
     libraries = ["boost_system","boost_python","pcap","pcre"],
     define_macros = [('HAVE_CONFIG_H','1'),('PYTHON_BINDING','1')],
-    extra_compile_args = ["-Wreorder","-std=c++11","-lpthread","-lstdc++"]
+    extra_compile_args = ["-Wreorder","-std=c++11","-lpthread","-lstdc++"],
     )
 
 if __name__ == "__main__":
@@ -61,8 +63,10 @@ if __name__ == "__main__":
         author_email = "luis.camp0.2009 at gmail.com",
         url = "https://bitbucket.org/camp0/aiengine",
         license = "GPLv2",
+        package_dir = {'': '.'},
+        package_data = {"" : ["*.h","flow/*.h"] },
         description = "Wrapper for the aiengine",
-        long_description = "Wrapper for the aiengine",
+        long_description = open('../README.md').read(),
         ext_modules = [aiengine_module],
         py_modules = ["pyaiengine"],
     )

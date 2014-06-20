@@ -21,50 +21,49 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef SRC_IPSET_IPSET_H_
-#define SRC_IPSET_IPSET_H_
+#ifndef SRC_INTERPRETER_H_
+#define SRC_INTERPRETER_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-#include <memory>
-#include <string>
 #include <iostream>
-#include "IPAbstractSet.h"
-#include <unordered_set>
-
 #ifdef PYTHON_BINDING
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
 #include <boost/python.hpp>
-#include <boost/function.hpp>
-#endif
+#endif 
 
 namespace aiengine {
 
-class IPSet : public IPAbstractSet 
+#ifdef PYTHON_BINDING
+
+class Interpreter 
 {
 public:
-    	explicit IPSet(const std::string &name):IPAbstractSet(name) {}
-    	explicit IPSet():IPSet("Generic IPSet") {}
+	Interpreter(boost::asio::io_service &io_service_):
+		user_input_(io_service_,::dup(STDIN_FILENO)),
+		user_input_buffer_(64),
+		python_shell_enable_(true) {}
 
-    	virtual ~IPSet() {}
+    	virtual ~Interpreter() { user_input_.close(); }
 
-	void addIPAddress(const std::string &ip);
-	bool lookupIPAddress(const std::string &ip); 
-	int getFalsePositiveRate() { return 0; }
-
-	void statistics(std::basic_ostream<char>& out) { out<< *this; }
-	void statistics() { statistics(std::cout);}
-
-	friend std::ostream& operator<< (std::ostream& out, const IPSet& is);
+	void start(); 
+	void stop();
+	void readUserInput();
 
 private:
-	std::unordered_set<std::string> map_;
+
+	void handle_read_user_input(boost::system::error_code error);
+
+	boost::asio::posix::stream_descriptor user_input_;
+	boost::asio::streambuf user_input_buffer_;
+	bool python_shell_enable_;
 };
 
-typedef std::shared_ptr<IPSet> IPSetPtr;
-typedef std::weak_ptr<IPSet> IPSetPtrWeak;
+#endif // PYTHON_BINDING
 
 } // namespace aiengine
 
-#endif  // SRC_IPSET_IPSET_H_
+#endif  // SRC_INTERPRETER_H_

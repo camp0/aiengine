@@ -47,6 +47,9 @@
 #include "StackLan.h"
 #include "StackMobile.h"
 #include "StackLanIPv6.h"
+#ifdef PYTHON_BINDING
+#include "Interpreter.h"
+#endif
 #include <sys/resource.h>
 
 namespace aiengine {
@@ -81,8 +84,11 @@ public:
 		io_service_(),idle_work_(io_service_,boost::posix_time::seconds(0)),
 		signals_(io_service_, SIGINT, SIGTERM),idle_work_interval_(5),
 		stats_(),header_(nullptr),pkt_data_(nullptr),
-		eth_(),current_packet_(),defMux_() {
-			
+		eth_(),current_packet_(),defMux_(),stack_name_()
+#ifdef PYTHON_BINDING
+		,user_shell_(SharedPointer<Interpreter>(new Interpreter(io_service_)))
+#endif
+		{	
 		setIdleFunction(std::bind(&PacketDispatcher::default_idle_function,this));
 		signals_.async_wait(
     			boost::bind(&boost::asio::io_service::stop, &io_service_));
@@ -103,13 +109,16 @@ public:
 	uint64_t getTotalBytes(void) const { return total_bytes_;}
 	uint64_t getTotalPackets(void) const { return total_packets_;}
 
-	void setStack(NetworkStackPtr stack) { setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());}
-	void setStack(StackLan& stack) { setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
-	void setStack(StackMobile& stack) { setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
-	void setStack(StackLanIPv6& stack) { setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
+	void setStack(NetworkStackPtr stack) { stack_name_ = stack->getName(); setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());}
+	void setStack(StackLan& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
+	void setStack(StackMobile& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
+	void setStack(StackLanIPv6& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
 
 	void setDefaultMultiplexer(MultiplexerPtr mux); // just use for the unit tests
 	void setIdleFunction(std::function <void ()> idle_function) { idle_function_ = idle_function;}
+
+	friend std::ostream& operator<< (std::ostream& out, const PacketDispatcher& pdis);
+
 private:
 	void start_operations(void);
 	void handle_receive(boost::system::error_code error);
@@ -150,6 +159,11 @@ private:
 	EthernetProtocolPtr eth_;	
 	Packet current_packet_;
 	MultiplexerPtr defMux_;
+	std::string stack_name_;
+
+#ifdef PYTHON_BINDING
+	SharedPointer<Interpreter> user_shell_;
+#endif
 };
 
 typedef std::shared_ptr<PacketDispatcher> PacketDispatcherPtr;

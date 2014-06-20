@@ -196,6 +196,7 @@ void PacketDispatcher::do_read(boost::system::error_code ec) {
        	}
 #endif
 #endif
+
 	if (!ec || ec == boost::asio::error::would_block)
       		start_operations();
 	// else error but not handler
@@ -228,6 +229,9 @@ void PacketDispatcher::start_operations(void) {
 		stream_->async_read_some(boost::asio::null_buffers(),
                 	boost::bind(&PacketDispatcher::do_read, this,
                                 boost::asio::placeholders::error));
+#ifdef PYTHON_BINDING
+		user_shell_->readUserInput();
+#endif
 	}
 }
 
@@ -242,6 +246,10 @@ void PacketDispatcher::run_pcap(void) {
 void PacketDispatcher::run_device(void) {
 
 	if (device_is_ready_) {
+
+#ifdef PYTHON_BINDING
+                user_shell_->start();
+#endif
         	idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(5));
                 idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
                         boost::asio::placeholders::error));
@@ -325,5 +333,15 @@ void PacketDispatcher::forwardPacket(const std::string &packet, int length) {
 }
 
 #endif
+
+std::ostream& operator<< (std::ostream& out, const PacketDispatcher& pdis) {
+
+	out << "PacketDispatcher(" << &pdis <<") statistics" << std::endl;
+	out << "\t" << "Connected to " << pdis.stack_name_ <<std::endl;
+	out << "\t" << "Total packets:          " << std::setw(10) << pdis.total_packets_ <<std::endl;
+	out << "\t" << "Total bytes:            " << std::setw(10) << pdis.total_bytes_ <<std::endl;
+
+        return out;
+}
 
 } // namespace aiengine

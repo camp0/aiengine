@@ -55,12 +55,7 @@ public:
 #endif
 	}
 
-	Signature():name_(""),expression_(""),total_matchs_(0),total_evaluates_(0) {
-#ifdef PYTHON_BINDING
-		callback_set_ = false;
-		callback_ = nullptr;	
-#endif
-	}
+	Signature():Signature("","") {}
 
 	virtual ~Signature() {}
 

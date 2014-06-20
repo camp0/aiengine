@@ -224,6 +224,7 @@ void learnerCallback() {
 
 void showStackStatistics(std::basic_ostream<char>& out) {
 
+	std::cout << *pktdis;
 	if (option_statistics_level > 0) 
 		stack->statistics(out);
 }
@@ -260,7 +261,7 @@ int main(int argc, char* argv[]) {
 
 	po::options_description mandatory_ops("Mandatory arguments");
 	mandatory_ops.add_options()
-		("input,I",   po::value<std::string>(&option_input),
+		("input,i",   po::value<std::string>(&option_input),
 			"Sets the network interface ,pcap file or directory with pcap files.")
         	;
 

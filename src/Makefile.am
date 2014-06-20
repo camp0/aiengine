@@ -5,7 +5,7 @@ python_PYTHON = pyai_tests.py
 # EXTRA_FLAGS = -flto not supported on the freebsd compiler
 EXTRA_FLAGS = -O3 
 
-EXTRA_DIST = py_wrapper.cc setup.py
+EXTRA_DIST = py_wrapper.cc setup.py MANIFEST.in
 
 noinst_HEADERS =        Packet.h Pointer.h \
 			Protocol.h \
@@ -18,6 +18,7 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			Multiplexer.h \
 			FlowForwarder.h \
 			Signature.h \
+			Interpreter.h \
 			./ethernet/EthernetProtocol.h \
 			./vlan/VLanProtocol.h \
 			./mpls/MPLSProtocol.h \
@@ -57,6 +58,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			Flow.cc \
 			Protocol.cc \
 			Signature.cc \
+			Interpreter.cc \
 			./flow/FlowManager.cc \
 			./ethernet/EthernetProtocol.cc \
 			./vlan/VLanProtocol.cc \
