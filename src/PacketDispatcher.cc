@@ -247,9 +247,6 @@ void PacketDispatcher::run_device(void) {
 
 	if (device_is_ready_) {
 
-#ifdef PYTHON_BINDING
-                user_shell_->start();
-#endif
         	idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(5));
                 idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
                         boost::asio::placeholders::error));
@@ -330,6 +327,11 @@ void PacketDispatcher::forwardPacket(const std::string &packet, int length) {
 
 	forward_raw_packet((unsigned char*)pkt,length);
 	return;
+}
+
+void PacketDispatcher::enableShell(bool enable) {
+
+	user_shell_->enableShell(enable);	
 }
 
 #endif

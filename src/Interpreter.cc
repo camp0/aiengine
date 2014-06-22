@@ -27,8 +27,22 @@ namespace aiengine {
 
 #ifdef PYTHON_BINDING
 
+void Interpreter::enableShell(bool enable) {
+
+	if (python_shell_enable_) {
+		if (!enable) {
+			stop();
+		}
+	} else {
+		if (enable) {
+			start();
+		}
+	}
+}
+
 void Interpreter::start() {
 
+	python_shell_enable_ = true;
 	std::cout << "AIEngine " << VERSION << " shell" << std::endl << std::flush;
 	std::cout << "==> " << std::flush;
 }
@@ -37,7 +51,7 @@ void Interpreter::stop() {
        
         python_shell_enable_ = false;
         user_input_buffer_.consume(64);
-        std::cout << "exiting AIEngine " << VERSION << " shell" <<std::endl;
+        std::cout << "exiting AIEngine " << VERSION << " shell" <<std::endl << std::flush;
 	user_input_.close();
 }
 
@@ -81,7 +95,7 @@ void Interpreter::handle_read_user_input(boost::system::error_code error) {
 
 			boost::python::exec(cad.c_str(),global);
 		} catch (boost::python::error_already_set const &) {	
-			std::cout << "JODER" << std::endl;
+			//std::cout << "JODER" << std::endl;
 			PyErr_Print();
 		}
                 user_input_buffer_.consume(64);

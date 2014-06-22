@@ -45,7 +45,7 @@ public:
 	Interpreter(boost::asio::io_service &io_service_):
 		user_input_(io_service_,::dup(STDIN_FILENO)),
 		user_input_buffer_(64),
-		python_shell_enable_(true) {}
+		python_shell_enable_(false) {}
 
     	virtual ~Interpreter() { user_input_.close(); }
 
@@ -53,6 +53,7 @@ public:
 	void stop();
 	void readUserInput();
 
+	void enableShell(bool enable);  
 private:
 
 	void handle_read_user_input(boost::system::error_code error);

@@ -286,6 +286,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setStack",setStackLan)
 		.def("setStack",setStackMobile)
 		.def("setStack",setStackLanIPv6)
+		.def("enableShell",&PacketDispatcher::enableShell)
 		.def(self_ns::str(self_ns::self))
 	;
 

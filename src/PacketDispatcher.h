@@ -104,6 +104,7 @@ public:
 
 #ifdef PYTHON_BINDING
 	void forwardPacket(const std::string &packet, int length);
+	void enableShell(bool enable);
 #endif
 
 	uint64_t getTotalBytes(void) const { return total_bytes_;}
