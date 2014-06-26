@@ -1,7 +1,7 @@
 AIEngine (Artificial Inteligent Engine)
 =========
 
-AIEngine is a next generation packet inspection engine with capabilities of learning
+AIEngine is a next generation interactive packet inspection engine with capabilities of learning
 without any human intervention and other functionalities.  
 
 AIEngine helps network/security profesionals to identify traffic and develop
@@ -9,6 +9,7 @@ signatures for use them on NIDS, Firewalls, Traffic classifiers and so on.
 
 The main functionalities of AIEngine are:
 
+- Support for interact with the user while the engine is running.
 - Support for PCRE JIT for regex matching.
 - Support three types of NetworkStacks(lan,mobile and ipv6)
 - Support Sets and Bloom filters for IP searches.
@@ -67,178 +68,37 @@ Integrating AIEngine with other systems
 AIEngine have a python module in order to be more flexible in terms of integration with other systems and functionalities.
 The main objects that the python module provide are the following ones.
 
-	DNSDomain
-	DatabaseAdaptor (Abstract class)
-	   |---> connect
-	   |---> insert
-	   |---> remove
-	   |---> update
-	DomainName
-	   |---> getExpression
-	   |---> getMatchs
-	   |---> getName
-	   |---> setCallback
-	DomainNameManager
-	   |---> addDomainName
-	   |---> getTotalDomains
-	Flow
-	   |---> getDNSDomain
-	   |---> getDestinationAddress
-	   |---> getDestinationPort
-	   |---> getFrequencies
-	   |---> getHTTPUri
-	   |---> getHTTPHost
-	   |---> getHTTPUserAgent
-	   |---> getIPSet
-	   |---> getPacketFrequencies
-	   |---> getPayload
-	   |---> getProtocol
-	   |---> getRegex
-	   |---> getSSLHost
-	   |---> getSourceAddress
-	   |---> getSourcePort
-	   |---> getTotalBytes
-	   |---> getTotalPackets
-	   |---> getTotalPacketsLayer7
-	FlowManager
-	   |---> getTotalFlows
-	Frequencies
-	   |---> getDispersion
-	   |---> getEnthropy
-	   |---> getFrequenciesString
-	FrequencyGroup
-	   |---> addFlowsByDestinationAddress
-	   |---> addFlowsByDestinationAddressAndPort
-	   |---> addFlowsByDestinationPort
-	   |---> addFlowsBySourceAddress
-	   |---> addFlowsBySourceAddressAndPort
-	   |---> addFlowsBySourcePort
-	   |---> compute
-	   |---> getReferenceFlows
-	   |---> getReferenceFlowsByKey
-	   |---> getTotalComputedFrequencies
-	   |---> getTotalProcessFlows
-	   |---> reset
-	HTTPUri
-	HTTPHost
-	HTTPUserAgent
-	IPAbstractSet (Abstract class)
-	   |---> addIPAddress
-	IPBloomSet
-	   |---> addIPAddress
-	   |---> getTotalIPs
-	   |---> setCallback
-	IPSet
-	   |---> addIPAddress
-	   |---> getTotalIPs
-	   |---> setCallback
-	IPSetManager
-	   |---> addIPSet
-	   |---> getTotalSets
-	LearnerEngine
-	   |---> agregateFlows
-	   |---> compute
-	   |---> getRegex
-	   |---> getTotalFlowsProcess
-	NetworkStack (Abstract class)
-	   |---> enableFrequencyEngine
-	   |---> enableLinkLayerTagging
-	   |---> enableNIDSEngine
-	   |---> getTCPFlowManager
-	   |---> getUDPFlowManager
-	   |---> printFlows
-	   |---> setDNSDomainNameManager
-	   |---> setHTTPHostNameManager
-	   |---> setSSLHostNameManager
-	   |---> setStatisticsLevel
-	   |---> setTCPDatabaseAdaptor
-	   |---> setTCPIPSetManager
-	   |---> setTCPRegexManager
-	   |---> setTotalTCPFlows
-	   |---> setTotalUDPFlows
-	   |---> setUDPDatabaseAdaptor
-	   |---> setUDPIPSetManager
-	   |---> setUDPRegexManager
-	PacketDispatcher
-	   |---> close
-	   |---> forwardPacket
-	   |---> open
-	   |---> run
-	   |---> setStack
-	PacketFrequencies
-	   |---> getPacketFrequenciesString
-	Regex
-	   |---> getExpression
-	   |---> getMatchs
-	   |---> getName
-	   |---> setCallback
-	   |---> setNextRegex
-	RegexManager
-	   |---> addRegex
-	SSLHost
-	StackLan
-	   |---> enableFrequencyEngine
-	   |---> enableLinkLayerTagging
-	   |---> enableNIDSEngine
-	   |---> getName
-	   |---> getTCPFlowManager
-	   |---> getUDPFlowManager
-	   |---> printFlows
-	   |---> setDNSDomainNameManager
-	   |---> setHTTPHostNameManager
-	   |---> setSSLHostNameManager
-	   |---> setStatisticsLevel
-	   |---> setTCPDatabaseAdaptor
-	   |---> setTCPIPSetManager
-	   |---> setTCPRegexManager
-	   |---> setTotalTCPFlows
-	   |---> setTotalUDPFlows
-	   |---> setUDPDatabaseAdaptor
-	   |---> setUDPIPSetManager
-	   |---> setUDPRegexManager
-	StackLanIPv6
-	   |---> enableFrequencyEngine
-	   |---> enableLinkLayerTagging
-	   |---> enableNIDSEngine
-	   |---> getName
-	   |---> getTCPFlowManager
-	   |---> getUDPFlowManager
-	   |---> printFlows
-	   |---> setDNSDomainNameManager
-	   |---> setHTTPHostNameManager
-	   |---> setSSLHostNameManager
-	   |---> setStatisticsLevel
-	   |---> setTCPDatabaseAdaptor
-	   |---> setTCPIPSetManager
-	   |---> setTCPRegexManager
-	   |---> setTotalTCPFlows
-	   |---> setTotalUDPFlows
-	   |---> setUDPDatabaseAdaptor
-	   |---> setUDPIPSetManager
-	   |---> setUDPRegexManager
-	StackMobile
-	   |---> enableFrequencyEngine
-	   |---> enableLinkLayerTagging
-	   |---> enableNIDSEngine
-	   |---> getName
-	   |---> getTCPFlowManager
-	   |---> getUDPFlowManager
-	   |---> printFlows
-	   |---> setDNSDomainNameManager
-	   |---> setHTTPHostNameManager
-	   |---> setSSLHostNameManager
-	   |---> setStatisticsLevel
-	   |---> setTCPDatabaseAdaptor
-	   |---> setTCPIPSetManager
-	   |---> setTCPRegexManager
-	   |---> setTotalTCPFlows
-	   |---> setTotalUDPFlows
-	   |---> setUDPDatabaseAdaptor
-	   |---> setUDPIPSetManager
-	   |---> setUDPRegexManager
-	std_ostream
+        DNSDomain
+        DatabaseAdaptor (Abstract class)
+        DomainName
+        DomainNameManager
+        Flow
+        FlowManager
+        Frequencies
+        FrequencyGroup
+        HTTPHost
+        HTTPUri
+        HTTPUserAgent
+        IPAbstractSet (Abstract class)
+            IPSet
+        IPSetManager
+        LearnerEngine
+        NetworkStack (Abstract class)
+            StackLan
+            StackLanIPv6
+            StackMobile
+        PacketDispatcher
+        PacketFrequencies
+        Regex
+        RegexManager
+        SSLHost
 
-Check the configuration wiki pages in order to have more complex examples.
+For a complete description of the class methods 
+
+	import pyaiengine
+	help(pyaiengine)
+
+Check the configuration wiki pages or the examples directory in order to have more complex examples.
 [https://bitbucket.org/camp0/aiengine/wiki/Configurations Configurations]
 
 Compile AIEngine

@@ -64,6 +64,12 @@ typedef std::shared_ptr<PcapStream> PcapStreamPtr;
 class PacketDispatcher 
 {
 public:
+
+	enum class PacketDispatcherStatus : short {
+        	RUNNING = 0,
+        	STOP
+	};
+
 	class Statistics
 	{
 		public:
@@ -79,12 +85,13 @@ public:
 			int64_t prev_total_packets_per_interval;	
 	};
 
-    	explicit PacketDispatcher():stream_(),pcap_file_ready_(false),read_in_progress_(false),
+    	explicit PacketDispatcher():status_(PacketDispatcherStatus::STOP),
+		stream_(),pcap_file_ready_(false),read_in_progress_(false),
 		device_is_ready_(false),total_packets_(0),total_bytes_(0),pcap_(nullptr),
 		io_service_(),idle_work_(io_service_,boost::posix_time::seconds(0)),
 		signals_(io_service_, SIGINT, SIGTERM),idle_work_interval_(5),
 		stats_(),header_(nullptr),pkt_data_(nullptr),
-		eth_(),current_packet_(),defMux_(),stack_name_()
+		eth_(),current_packet_(),defMux_(),stack_name_(),input_name_()
 #ifdef PYTHON_BINDING
 		,user_shell_(SharedPointer<Interpreter>(new Interpreter(io_service_)))
 #endif
@@ -101,6 +108,7 @@ public:
 	void close(void);
     	void stop(void) { io_service_.stop(); }
 	void setPcapFilter(const std::string &filter);
+	void status(void);
 
 #ifdef PYTHON_BINDING
 	void forwardPacket(const std::string &packet, int length);
@@ -140,6 +148,7 @@ private:
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
 #endif
+	PacketDispatcherStatus status_;
 	PcapStreamPtr stream_;
 	bool pcap_file_ready_;
 	bool read_in_progress_;
@@ -161,6 +170,7 @@ private:
 	Packet current_packet_;
 	MultiplexerPtr defMux_;
 	std::string stack_name_;
+	std::string input_name_;
 
 #ifdef PYTHON_BINDING
 	SharedPointer<Interpreter> user_shell_;

@@ -31,6 +31,7 @@ log4cxx::LoggerPtr StackLanIPv6::logger(log4cxx::Logger::getLogger("aiengine.sta
 
 StackLanIPv6::StackLanIPv6() {
 
+	stats_level_ = 0;
 	name_ = "Lan IPv6 network stack";
 
 	// Allocate all the specific Protocol objects
@@ -220,30 +221,31 @@ StackLanIPv6::StackLanIPv6() {
 
 std::ostream& operator<< (std::ostream& out, const StackLanIPv6& stk) {
 
-	stk.eth_->statistics(out);
-	out << std::endl;
-	stk.ip6_->statistics(out);
-	out << std::endl;
-	stk.tcp_->statistics(out);
-	out << std::endl;
-	stk.udp_->statistics(out);
-	out << std::endl;
-	stk.icmp_->statistics(out);
-	out << std::endl;
-	stk.dns_->statistics(out);
-	out << std::endl;
-	stk.udp_generic_->statistics(out);
-	out << std::endl;
-	stk.freqs_udp_->statistics(out);
-	out << std::endl;
-	stk.http_->statistics(out);
-	out << std::endl;
-	stk.ssl_->statistics(out);
-	out << std::endl;
-	stk.tcp_generic_->statistics(out);
-	out << std::endl;
-	stk.freqs_tcp_->statistics(out);
-
+	if (stk.stats_level_ > 0) { 
+		stk.eth_->statistics(out);
+		out << std::endl;
+		stk.ip6_->statistics(out);
+		out << std::endl;
+		stk.tcp_->statistics(out);
+		out << std::endl;
+		stk.udp_->statistics(out);
+		out << std::endl;
+		stk.icmp_->statistics(out);
+		out << std::endl;
+		stk.dns_->statistics(out);
+		out << std::endl;
+		stk.udp_generic_->statistics(out);
+		out << std::endl;
+		stk.freqs_udp_->statistics(out);
+		out << std::endl;
+		stk.http_->statistics(out);
+		out << std::endl;
+		stk.ssl_->statistics(out);
+		out << std::endl;
+		stk.tcp_generic_->statistics(out);
+		out << std::endl;
+		stk.freqs_tcp_->statistics(out);
+	}
 	return out;
 }
 
@@ -443,6 +445,7 @@ void StackLanIPv6::setTotalUDPFlows(int value) {
 
 void StackLanIPv6::setStatisticsLevel(int level) {
 
+	stats_level_ = level;
         eth_->setStatisticsLevel(level);
         ip6_->setStatisticsLevel(level);
         tcp_->setStatisticsLevel(level);

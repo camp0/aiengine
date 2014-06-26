@@ -62,8 +62,8 @@ public:
       	std::string &getName() { return name_; }
         std::string &getExpression() { return expression_; }
         void incrementMatchs() { ++total_matchs_; }
-        int32_t getMatchs() { return total_matchs_; }
-	int32_t getTotalEvaluates() { return total_evaluates_;}
+        int32_t getMatchs() const { return total_matchs_; }
+	int32_t getTotalEvaluates() const { return total_evaluates_;}
 
 #ifdef PYTHON_BINDING
 

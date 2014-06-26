@@ -29,6 +29,7 @@
 #endif
 
 #include <vector>
+#include <sstream>
 #include "Regex.h"
 #include "../Pointer.h"
 

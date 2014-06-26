@@ -41,6 +41,7 @@
 #include "./ipset/IPBloomSet.h"
 #include "./ipset/IPSetManager.h"
 #include <boost/python.hpp>
+#include <boost/python/docstring_options.hpp>
 #include <boost/asio.hpp>
 #include <Python.h> // compatibility
 
@@ -76,14 +77,18 @@ BOOST_PYTHON_MODULE(pyaiengine)
 #ifdef HAVE_LIBLOG4CXX	
 	BasicConfigurator::configure();
 #endif
+
+	// Enable de documentation, for help(pyaiengine)
+	boost::python::docstring_options doc_options(true,false); //(true,false,false);
+
 	boost::python::class_< std::ostream, boost::noncopyable >( "std_ostream",no_init); 
 
         // for overload the methods with the class
       	void (NetworkStack::*printFlowsNetworkStack)() = 				&NetworkStack::printFlows;
 	void (NetworkStack::*setUDPRegexManager1)(RegexManager&) = 			&NetworkStack::setUDPRegexManager;
 	void (NetworkStack::*setTCPRegexManager1)(RegexManager&) = 			&NetworkStack::setTCPRegexManager;
-	void (NetworkStack::*setUDPRegexManager2)(RegexManagerPtrWeak) = 		&NetworkStack::setUDPRegexManager;
-	void (NetworkStack::*setTCPRegexManager2)(RegexManagerPtrWeak) = 		&NetworkStack::setTCPRegexManager;
+	// void (NetworkStack::*setUDPRegexManager2)(RegexManagerPtrWeak) = 		&NetworkStack::setUDPRegexManager;
+	// void (NetworkStack::*setTCPRegexManager2)(RegexManagerPtrWeak) = 		&NetworkStack::setTCPRegexManager;
 	void (NetworkStack::*setDNSDomainNameManager1)(DomainNameManager&) = 		&NetworkStack::setDNSDomainNameManager;
 	void (NetworkStack::*setDNSDomainNameManager2)(DomainNameManager&, bool) = 	&NetworkStack::setDNSDomainNameManager;
 	void (NetworkStack::*setHTTPHostNameManager1)(DomainNameManager&) = 		&NetworkStack::setHTTPHostNameManager;
@@ -264,12 +269,17 @@ BOOST_PYTHON_MODULE(pyaiengine)
         ;
 	
 	boost::python::class_<Regex, SharedPointer<Regex>,boost::noncopyable>("Regex",init<const std::string&,const std::string&>())
-		.def("getExpression",&Regex::getExpression,return_internal_reference<>())
-		.def("getName",&Regex::getName,return_internal_reference<>())
-		.def("getMatchs",&Regex::getMatchs)
+		.def("getExpression",&Regex::getExpression,return_value_policy<return_by_value>(),
+			"Returns the regular expression")
+		.def("getName",&Regex::getName,return_value_policy<return_by_value>(),
+			"Returns the name of the regular expression") 
+		.def("getMatchs",&Regex::getMatchs,
+			"Returns the number of matches of the regular expression")
 		.def(self_ns::str(self_ns::self))
-		.def("setCallback",&Regex::setCallback)
-		.def("setNextRegex",&Regex::setNextRegex)
+		.def("setCallback",&Regex::setCallback,
+			"Sets the callback function for the regular expression")
+		.def("setNextRegex",&Regex::setNextRegex,
+			"Sets the next regular expression that should match")
 	;
 
 	// for overload the methods within the class
@@ -278,9 +288,12 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (PacketDispatcher::*setStackLanIPv6)(StackLanIPv6&) = &PacketDispatcher::setStack;
 
 	boost::python::class_<PacketDispatcher,boost::noncopyable>("PacketDispatcher")
-		.def("open",&PacketDispatcher::open)
-		.def("close",&PacketDispatcher::close)
+		.def("open",&PacketDispatcher::open,
+			"Opens a network device or a pcap file")
+		.def("close",&PacketDispatcher::close,
+			"Closes a network device or a pcap file")
 		.def("run",&PacketDispatcher::run)
+		.def("status",&PacketDispatcher::status)
 		.def("setPcapFilter",&PacketDispatcher::setPcapFilter)
 		.def("forwardPacket",&PacketDispatcher::forwardPacket)
 		.def("setStack",setStackLan)
@@ -373,31 +386,40 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (DomainNameManager::*addDomainName1)(const std::string,const std::string) = &DomainNameManager::addDomainName;
         void (DomainNameManager::*addDomainName2)(const SharedPointer<DomainName>) = &DomainNameManager::addDomainName;
 
-        boost::python::class_<DomainNameManager,SharedPointer<DomainNameManager>,boost::noncopyable >("DomainNameManager")
-                .def("addDomainName",addDomainName1)
-                .def("addDomainName",addDomainName2)
-		.def("getTotalDomains", &DomainNameManager::getTotalDomains)
+        boost::python::class_<DomainNameManager,SharedPointer<DomainNameManager>,boost::noncopyable >("DomainNameManager",
+		"Class that manages DomainsNames.")
+                .def("addDomainName",addDomainName1,
+			"Adds a DomainName to the DomainNameManager.")
+                .def("addDomainName",addDomainName2,
+			"Adds a DomainName to the DomainNameManager.")
+		.def("getTotalDomains", &DomainNameManager::getTotalDomains,
+			"Returns the total number of domains on the DomainNameManager.")
 		.def("__len__", &DomainNameManager::getTotalDomains)
                 .def(self_ns::str(self_ns::self))
         ;
 
-        boost::python::class_<DatabaseAdaptorWrap, boost::noncopyable>("DatabaseAdaptor",no_init)
+        boost::python::class_<DatabaseAdaptorWrap, boost::noncopyable>("DatabaseAdaptor",
+		"Abstract class for implements connections with databases", no_init)
                 .def("connect",pure_virtual(&DatabaseAdaptor::connect))
                 .def("insert",pure_virtual(&DatabaseAdaptor::insert))
                 .def("update",pure_virtual(&DatabaseAdaptor::update))
                 .def("remove",pure_virtual(&DatabaseAdaptor::remove))
         ;
 
-        boost::python::class_<IPAbstractSet, boost::noncopyable>("IPAbstractSet",no_init)
+        boost::python::class_<IPAbstractSet, boost::noncopyable>("IPAbstractSet",
+		"Abstract class for implements searchs on IP addresses", no_init )
                 .def("addIPAddress",pure_virtual(&IPAbstractSet::addIPAddress))
 	;
 
 	boost::python::class_<IPSet, bases<IPAbstractSet>, SharedPointer<IPSet>>("IPSet")
 		.def(init<>())
 		.def(init<const std::string&>())
-		.def("addIPAddress",&IPSet::addIPAddress)
-		.def("setCallback",&IPSet::setCallback)
-		.def("getTotalIPs",&IPSet::getTotalIPs)
+		.def("addIPAddress",&IPSet::addIPAddress,
+			"Add a IP address to the IPSet.")
+		.def("setCallback",&IPSet::setCallback,
+			"Sets a function callback for the IPSet.")
+		.def("getTotalIPs",&IPSet::getTotalIPs,
+			"Returns the total number of IPs on the IPSet.")
 		.def("__len__",&IPSet::getTotalIPs)
                 .def(self_ns::str(self_ns::self))
 	;
@@ -418,33 +440,50 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (IPSetManager::*addIPSet)(const SharedPointer<IPAbstractSet>) = &IPSetManager::addIPSet;
         boost::python::class_<IPSetManager, SharedPointer<IPSetManager>, boost::noncopyable>("IPSetManager")
 		.def("__iter__",boost::python::range(&IPSetManager::begin,&IPSetManager::end))
-                .def("addIPSet",addIPSet)
-		.def("getTotalSets",&IPSetManager::getTotalSets)
+                .def("addIPSet",addIPSet,
+			"Adds a IPSet.")
+		.def("getTotalSets",&IPSetManager::getTotalSets,
+			"Returns the number of total IPSets.")
 		.def("__len__",&IPSetManager::getTotalSets)
                 .def(self_ns::str(self_ns::self))
         ;
 
 	boost::python::class_<FrequencyGroup<std::string>>("FrequencyGroup")
 		//.def("__iter__",boost::python::range(&FrequencyGroup<std::string>::cbegin,&FrequencyGroup<std::string>::cend))
-		.def("addFlowsBySourcePort",&FrequencyGroup<std::string>::agregateFlowsBySourcePort)
-		.def("addFlowsByDestinationPort",&FrequencyGroup<std::string>::agregateFlowsByDestinationPort)
-		.def("addFlowsBySourceAddress",&FrequencyGroup<std::string>::agregateFlowsBySourceAddress)
-		.def("addFlowsByDestinationAddress",&FrequencyGroup<std::string>::agregateFlowsByDestinationAddress)
-		.def("addFlowsByDestinationAddressAndPort",&FrequencyGroup<std::string>::agregateFlowsByDestinationAddressAndPort)
-		.def("addFlowsBySourceAddressAndPort",&FrequencyGroup<std::string>::agregateFlowsBySourceAddressAndPort)
-		.def("getTotalProcessFlows",&FrequencyGroup<std::string>::getTotalProcessFlows)
-		.def("getTotalComputedFrequencies",&FrequencyGroup<std::string>::getTotalComputedFrequencies)
-		.def("compute",&FrequencyGroup<std::string>::compute)
-		.def("reset",&FrequencyGroup<std::string>::reset)
+		.def("addFlowsBySourcePort",&FrequencyGroup<std::string>::agregateFlowsBySourcePort,
+			"Adds a list of flows and group them by source port.")
+		.def("addFlowsByDestinationPort",&FrequencyGroup<std::string>::agregateFlowsByDestinationPort,
+			"Adds a list of flows and group them by destination IP address and port.")
+		.def("addFlowsBySourceAddress",&FrequencyGroup<std::string>::agregateFlowsBySourceAddress,
+			"Adds a list of flows and group them by source IP address.")
+		.def("addFlowsByDestinationAddress",&FrequencyGroup<std::string>::agregateFlowsByDestinationAddress,
+			"Adds a list of flows and group them by source IP address and port")
+		.def("addFlowsByDestinationAddressAndPort",&FrequencyGroup<std::string>::agregateFlowsByDestinationAddressAndPort,
+			"Adds a list of flows and group them by destination IP address and port")
+		.def("addFlowsBySourceAddressAndPort",&FrequencyGroup<std::string>::agregateFlowsBySourceAddressAndPort,
+			"Adds a list of flows and group them by source IP address and port")
+		.def("getTotalProcessFlows",&FrequencyGroup<std::string>::getTotalProcessFlows,
+			"Returns the total number of computed flows")
+		.def("getTotalComputedFrequencies",&FrequencyGroup<std::string>::getTotalComputedFrequencies,
+			"Returns the total number of computed frequencies")
+		.def("compute",&FrequencyGroup<std::string>::compute,
+			"Computes the frequencies of the flows")
+		.def("reset",&FrequencyGroup<std::string>::reset,
+			"Resets all the temporay memory used by the engine")
 		.def("getReferenceFlowsByKey",&FrequencyGroup<std::string>::getReferenceFlowsByKey)
-		.def("getReferenceFlows",&FrequencyGroup<std::string>::getReferenceFlows)
+		.def("getReferenceFlows",&FrequencyGroup<std::string>::getReferenceFlows,
+			"Returns a list of the processed flows by the FrequencyGroup")
 	;
 
         boost::python::class_<LearnerEngine,SharedPointer<LearnerEngine>>("LearnerEngine")
-                .def("getTotalFlowsProcess",&LearnerEngine::getTotalFlowsProcess)
-                .def("agregateFlows",&LearnerEngine::agregateFlows)
-                .def("getRegex",&LearnerEngine::getRegularExpression)
-                .def("compute",&LearnerEngine::compute)
+                .def("getTotalFlowsProcess",&LearnerEngine::getTotalFlowsProcess,
+			"Returns the total number of flows processes by the LearnerEngine")
+                .def("agregateFlows",&LearnerEngine::agregateFlows,
+			"Adds a list of flows to be process")
+                .def("getRegex",&LearnerEngine::getRegularExpression,
+			"Returns the generated regular expression")
+                .def("compute",&LearnerEngine::compute,
+			"runs the engine")
         ;
 
 }

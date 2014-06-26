@@ -3,7 +3,7 @@ Installing on Linux systems.
 
 - Notice that g++ with c++11 is available on compilers up to 4.7.6 versions.
 - Boost also is need on versions 1.48 or greater.
-- Python 2.7.
+- Python 2.7,3.3 and 3.4.
 - Libpcap 0.8. 
 - Log4cxx is optional.
 
@@ -19,12 +19,13 @@ make
 make install
 
 Using a different python version (Experimental).
----------------------------------
+------------------------------------------------
 
 - The base system is designed for 2.7 python versions but I have the plans
   to migrate to the 3.x python series.
 - Just overwrite PYTHON and PYTHON_VERSION variables in order to compile 
   aiengine in other python versions.
+- The setup.py is working so you can use also python setup.py build_ext -i
 
 PYTHON=/usr/bin/python3.3 PYTHON_VERSION=3.3 ./configure
 

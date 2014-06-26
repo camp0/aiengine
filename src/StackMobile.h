@@ -120,6 +120,7 @@ public:
         friend std::ostream& operator<< (std::ostream& out, const StackMobile& stk);
 
 private:
+	int stats_level_;
 	std::string name_;
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;

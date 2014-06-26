@@ -67,7 +67,20 @@ std::ostream& operator<< (std::ostream& out, const RegexManager& sig) {
 	out << "RegexManager(" << &sig << ") statistics" << std::dec <<  std::endl;	
 	for (auto it = sig.signatures_.begin(); it != sig.signatures_.end(); ++it) {
 		SharedPointer<Regex> sig = (*it);
-		out << "\t" << "Regex:" << sig->getName() << " matches:" << sig->getMatchs() << std::endl;
+		std::ostringstream tabs;	
+
+		bool no_more_regex = false;
+
+		while (no_more_regex == false) {
+			tabs << "\t";
+			out << tabs.str() << "Regex:" << sig->getName() << " matches:" << sig->getMatchs() << std::endl;
+			if (sig->isTerminal() == false) { 
+				no_more_regex = false;
+				sig = sig->getNextRegex();
+			} else {
+				no_more_regex = true;
+			}
+		}	
 	}
 	return out;
 }

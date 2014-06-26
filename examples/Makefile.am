@@ -10,6 +10,7 @@ EXTRA_DIST = 	bitcoinminer.py \
 		unknown.py \
 		tor.py \
 		netfilter.py \
-		parallel.py
+		parallel.py \
+		snort.py
 
 MAINTAINERCLEANFILES = Makefile.in 

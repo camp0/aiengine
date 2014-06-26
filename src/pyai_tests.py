@@ -93,7 +93,10 @@ class StackLanTests(unittest.TestCase):
         """ Create a regex for netbios with callback """
         def callback(flow):
             self.called_callback += 1 
-
+            r = flow.getRegex()
+            self.assertEqual(r.getMatchs(),1)
+            self.assertEqual(r.getName(), "netbios")
+    
         self.s.enableLinkLayerTagging("vlan")
 
         rm = pyaiengine.RegexManager()
@@ -226,6 +229,7 @@ class StackLanTests(unittest.TestCase):
 
         def domain_callback(flow):
             self.called_callback += 1 
+            self.assertEqual(str(flow.getSSLHost()),"0.drive.google.com")
 
         d = pyaiengine.DomainName("Google All",".google.com")
 

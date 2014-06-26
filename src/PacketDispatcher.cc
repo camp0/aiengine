@@ -25,6 +25,10 @@
 
 namespace aiengine {
 
+#ifdef HAVE_LIBLOG4CXX
+log4cxx::LoggerPtr PacketDispatcher::logger(log4cxx::Logger::getLogger("aiengine.packetdispatcher"));
+#endif
+
 void PacketDispatcher::info_message(std::string msg) {
 
 #ifdef HAVE_LIBLOG4CXX
@@ -43,10 +47,6 @@ void PacketDispatcher::info_message(std::string msg) {
 #endif
 }
 
-
-#ifdef HAVE_LIBLOG4CXX
-log4cxx::LoggerPtr PacketDispatcher::logger(log4cxx::Logger::getLogger("aiengine.packetdispatcher"));
-#endif
 
 void PacketDispatcher::setDefaultMultiplexer(MultiplexerPtr mux) {
 
@@ -84,13 +84,8 @@ void PacketDispatcher::open_device(std::string device) {
 			
 	stream_->assign(::dup(ifd));
 	device_is_ready_ = true;
-
-	std::ostringstream msg;
-	msg << "Processing packets from:" << device.c_str();
-
-	info_message(msg.str());
+	input_name_ = device;
 }
-
 
 void PacketDispatcher::close_device(void) {
 
@@ -116,11 +111,7 @@ void PacketDispatcher::open_pcap_file(std::string filename) {
 		exit(-1);
 	} else {	
 		pcap_file_ready_ = true;
-
-        	std::ostringstream msg;
-        	msg << "Processing packets from:" << filename.c_str();
-
-        	info_message(msg.str());
+		input_name_ = filename;
 	}
 }
 
@@ -237,9 +228,16 @@ void PacketDispatcher::start_operations(void) {
 
 void PacketDispatcher::run_pcap(void) {
 
+        std::ostringstream msg;
+        msg << "Processing packets from file " << input_name_.c_str();
+
+       	info_message(msg.str());
+
+	status_ = PacketDispatcherStatus::RUNNING;
 	while (pcap_next_ex(pcap_,&header_,&pkt_data_) >= 0) {
 		forward_raw_packet((unsigned char*)pkt_data_,header_->len);
 	}
+	status_ = PacketDispatcherStatus::STOP;
 }
 
 
@@ -250,13 +248,21 @@ void PacketDispatcher::run_device(void) {
         	idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(5));
                 idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
                         boost::asio::placeholders::error));
+
+        	std::ostringstream msg;
+        	msg << "Processing packets from device " << input_name_.c_str();
+
+        	info_message(msg.str());
+
 		try {
+			status_ = PacketDispatcherStatus::RUNNING;
 			start_operations();
 			io_service_.run();
 		}
 		catch (std::exception& e) {
         		std::cerr << e.what() << std::endl;
         	}
+		status_ = PacketDispatcherStatus::STOP;
 	} else {
 
                 std::ostringstream msg;
@@ -344,6 +350,20 @@ std::ostream& operator<< (std::ostream& out, const PacketDispatcher& pdis) {
 	out << "\t" << "Total bytes:            " << std::setw(10) << pdis.total_bytes_ <<std::endl;
 
         return out;
+}
+
+void PacketDispatcher::status(void) {
+
+	std::ostringstream msg;
+        msg << "PacketDispatcher ";
+	if (status_ == PacketDispatcherStatus::RUNNING) 
+		msg << "running";
+	else
+		msg << "stoped";
+	msg << ", plug to " << stack_name_;
+	msg << ", packets " << total_packets_ << ", bytes " << total_bytes_;
+
+        info_message(msg.str());
 }
 
 } // namespace aiengine

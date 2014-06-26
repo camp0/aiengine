@@ -89,8 +89,8 @@ BOOST_AUTO_TEST_CASE (test3_regex)
 BOOST_AUTO_TEST_CASE (test4_regex)
 {
         RegexManagerPtr sigmng = RegexManagerPtr(new RegexManager());
-	SharedPointer<Regex> sig1 = SharedPointer<Regex>(new Regex("name","^.*(some hex).*$"));
-	SharedPointer<Regex> sig2 = SharedPointer<Regex>(new Regex("name","^.*(some hex).*$"));
+	SharedPointer<Regex> sig1 = SharedPointer<Regex>(new Regex("name1","^.*(some hex).*$"));
+	SharedPointer<Regex> sig2 = SharedPointer<Regex>(new Regex("name2","^.*(some hex).*$"));
 
 	BOOST_CHECK(sig1->isTerminal() == true);
 	BOOST_CHECK(sig2->isTerminal() == true);
@@ -101,6 +101,10 @@ BOOST_AUTO_TEST_CASE (test4_regex)
 	BOOST_CHECK(sig2->isTerminal() == true);
 
 	BOOST_CHECK(sig1->getNextRegex() == sig2);
+
+        sigmng->addRegex(sig1);
+        sigmng->addRegex(sig2);
+	//std::cout << *sigmng;
 }
 
 BOOST_AUTO_TEST_CASE (test5_regex)

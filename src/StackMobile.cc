@@ -31,6 +31,7 @@ log4cxx::LoggerPtr StackMobile::logger(log4cxx::Logger::getLogger("aiengine.stac
 
 StackMobile::StackMobile() {
 
+	stats_level_ = 0;
 	name_ = "Mobile Network Stack";
 
 	// Allocate all the Protocol objects
@@ -266,37 +267,38 @@ StackMobile::StackMobile() {
 
 std::ostream& operator<< (std::ostream& out, const StackMobile& stk) {
 
-	stk.eth_->statistics(out);
-	out << std::endl;
-	stk.ip_low_->statistics(out);
-	out << std::endl;
-	stk.udp_low_->statistics(out);
-	out << std::endl;
-	stk.gprs_->statistics(out);
-	out << std::endl;
-	stk.ip_high_->statistics(out);
-	out << std::endl;
-	stk.tcp_->statistics(out);
-	out << std::endl;
-	stk.udp_high_->statistics(out);
+	if (stk.stats_level_ > 0) {
+		stk.eth_->statistics(out);
+		out << std::endl;
+		stk.ip_low_->statistics(out);
+		out << std::endl;
+		stk.udp_low_->statistics(out);
+		out << std::endl;
+		stk.gprs_->statistics(out);
+		out << std::endl;
+		stk.ip_high_->statistics(out);
+		out << std::endl;
+		stk.tcp_->statistics(out);
+		out << std::endl;
+		stk.udp_high_->statistics(out);
 
-        out << std::endl;
-        stk.icmp_->statistics(out);
-        out << std::endl;
-        stk.dns_->statistics(out);
-        out << std::endl;
-        stk.udp_generic_->statistics(out);
-	out << std::endl;
-        stk.freqs_udp_->statistics(out);
-        out << std::endl;
-        stk.http_->statistics(out);
-        out << std::endl;
-        stk.ssl_->statistics(out);
-        out << std::endl;
-        stk.tcp_generic_->statistics(out);
-	out << std::endl;
-        stk.freqs_tcp_->statistics(out);
-
+		out << std::endl;
+		stk.icmp_->statistics(out);
+		out << std::endl;
+		stk.dns_->statistics(out);
+		out << std::endl;
+		stk.udp_generic_->statistics(out);
+		out << std::endl;
+		stk.freqs_udp_->statistics(out);
+		out << std::endl;
+		stk.http_->statistics(out);
+		out << std::endl;
+		stk.ssl_->statistics(out);
+		out << std::endl;
+		stk.tcp_generic_->statistics(out);
+		out << std::endl;
+		stk.freqs_tcp_->statistics(out);
+	}
 	return out;
 }
 
@@ -492,6 +494,7 @@ void StackMobile::enableNIDSEngine(bool enable) {
 
 void StackMobile::setStatisticsLevel(int level) {
 
+	stats_level_ = level;
         eth_->setStatisticsLevel(level);
         ip_low_->setStatisticsLevel(level);
         udp_low_->setStatisticsLevel(level);
