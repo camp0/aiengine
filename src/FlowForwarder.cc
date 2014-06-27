@@ -38,13 +38,13 @@ void FlowForwarder::statistics(std::basic_ostream<char>& out) {
 
 void FlowForwarder::forwardFlow(Flow *flow) {
 
-	FlowForwarderPtr ff;
+	FlowForwarderPtr ff = flow->forwarder.lock();
 
 #ifdef DEBUG
 	std::cout << __PRETTY_FUNCTION__ << ":" << this << ":forwardFlow(" << flow << ")" << std::endl;
 #endif
 	++total_received_flows_;     
-	if((ff = flow->forwarder.lock())) {
+	if(ff) {
 #ifdef DEBUG
 		std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":attached to:" << ff << std::endl;
 #endif

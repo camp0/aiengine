@@ -80,6 +80,14 @@ public:
 
 	void setProtocol(ProtocolPtr proto) { proto_ = proto; }
 	ProtocolPtr getProtocol() { return proto_;}
+	const char *getProtocolName() {
+        	const char *name = "None";
+
+		// TODO
+        	//if (proto_) name = proto_->getName(); 
+        
+        	return name;
+	}
 
 	bool acceptPacket(Packet& packet) const { return check_func_(packet);}
 	void addChecker(std::function <bool (Packet&)> checker) { check_func_ = checker;}

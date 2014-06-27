@@ -22,6 +22,7 @@
  *
  */
 #include "FlowManager.h"
+#include "../FlowForwarder.h"
 #include <iomanip> // setw
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -80,13 +81,17 @@ void FlowManager::printFlows(std::basic_ostream<char>& out) {
 	out << std::endl;	
 	for(auto it = flowTable_.begin(); it!=flowTable_.end(); ++it) {
 		SharedPointer<Flow> flow = *it;
-
+		FlowForwarderPtr ff = flow->forwarder.lock();	
+		const char *proto_name = "None";
+		if (ff)
+			proto_name = ff->getProtocolName();	
+		
 		std::ostringstream fivetuple;
 
 		fivetuple << "[" << flow->getSrcAddrDotNotation() << ":" << flow->getSourcePort() << "]:" << flow->getProtocol();
 		fivetuple << ":[" << flow->getDstAddrDotNotation() << ":" << flow->getDestinationPort() <<"]";
 
-		out << boost::format("%-64s %-10d %-10d %p") % fivetuple.str() % flow->total_bytes % flow->total_packets % flow->forwarder.lock();
+		out << boost::format("%-64s %-10d %-10d %p") % fivetuple.str() % flow->total_bytes % flow->total_packets % ff;
 
 		if(flow->ipset.lock())	
 			out << "     IPset:" << *flow->ipset.lock()->getName();

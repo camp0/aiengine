@@ -79,7 +79,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 #endif
 
 	// Enable de documentation, for help(pyaiengine)
-	boost::python::docstring_options doc_options(true,false); //(true,false,false);
+	boost::python::docstring_options doc_options(true,false);
 
 	boost::python::class_< std::ostream, boost::noncopyable >( "std_ostream",no_init); 
 
@@ -101,23 +101,37 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (NetworkStack::*setUDPDatabaseAdaptor2)(boost::python::object&, int) = 	&NetworkStack::setUDPDatabaseAdaptor;
 
         boost::python::class_<NetworkStack, boost::noncopyable>("NetworkStack",no_init)
-                .def("setUDPRegexManager",pure_virtual(setUDPRegexManager1))
-                .def("setTCPRegexManager",pure_virtual(setTCPRegexManager1))
-                .def("setDNSDomainNameManager",pure_virtual(setDNSDomainNameManager1))
+                .def("setUDPRegexManager",pure_virtual(setUDPRegexManager1),
+			"Sets a RegexManager for the UDP traffic.")
+                .def("setTCPRegexManager",pure_virtual(setTCPRegexManager1),
+			"Sets a RegexManager for the TCP traffic.")
+                .def("setDNSDomainNameManager",pure_virtual(setDNSDomainNameManager1),
+			"Sets a DomainNameManager for the DNS traffic.")
                 .def("setDNSDomainNameManager",pure_virtual(setDNSDomainNameManager2))
-                .def("setHTTPHostNameManager",pure_virtual(setHTTPHostNameManager1))
+                .def("setHTTPHostNameManager",pure_virtual(setHTTPHostNameManager1),
+			"Sets a HostNameManager for the HTTP traffic.")
                 .def("setHTTPHostNameManager",pure_virtual(setHTTPHostNameManager2))
-                .def("setSSLHostNameManager",pure_virtual(setSSLHostNameManager1))
+                .def("setSSLHostNameManager",pure_virtual(setSSLHostNameManager1),
+			"Sets a HostNameManager for the SSL traffic.")
                 .def("setSSLHostNameManager",pure_virtual(setSSLHostNameManager2))
-                .def("setTotalTCPFlows",pure_virtual(&NetworkStack::setTotalTCPFlows))
-                .def("setTotalUDPFlows",pure_virtual(&NetworkStack::setTotalUDPFlows))
-              	.def("printFlows",pure_virtual(printFlowsNetworkStack))
-		.def("enableFrequencyEngine",pure_virtual(&NetworkStack::enableFrequencyEngine))
-		.def("enableLinkLayerTagging",pure_virtual(&NetworkStack::enableLinkLayerTagging))
-		.def("enableNIDSEngine",pure_virtual(&NetworkStack::enableNIDSEngine))
-		.def("getTCPFlowManager",pure_virtual(&NetworkStack::getTCPFlowManager),return_internal_reference<>())
-		.def("getUDPFlowManager",pure_virtual(&NetworkStack::getUDPFlowManager),return_internal_reference<>())
-		.def("setStatisticsLevel",pure_virtual(&NetworkStack::setStatisticsLevel))
+                .def("setTotalTCPFlows",pure_virtual(&NetworkStack::setTotalTCPFlows),
+			"Sets the maximum number of flows to be on the cache for TCP traffic.")
+                .def("setTotalUDPFlows",pure_virtual(&NetworkStack::setTotalUDPFlows),
+			"Sets the maximum number of flows to be on the cache for UDP traffic.")
+              	.def("printFlows",pure_virtual(printFlowsNetworkStack),
+			"Shows the active flows of the stack.")
+		.def("enableFrequencyEngine",pure_virtual(&NetworkStack::enableFrequencyEngine),
+			"Enable or disable the frequency engine on the stack.")
+		.def("enableLinkLayerTagging",pure_virtual(&NetworkStack::enableLinkLayerTagging),
+			"Enable or disable the link layer tags (vlan,mpls).")
+		.def("enableNIDSEngine",pure_virtual(&NetworkStack::enableNIDSEngine),
+			"Enable or disable the NIDS engine.")
+		.def("getTCPFlowManager",pure_virtual(&NetworkStack::getTCPFlowManager),return_internal_reference<>(),
+			"Returns the FlowManager attached for manage the TCP Flows.")
+		.def("getUDPFlowManager",pure_virtual(&NetworkStack::getUDPFlowManager),return_internal_reference<>(),
+			"Returns the FlowManager attached for manage the UDP Flows.")
+		.def("setStatisticsLevel",pure_virtual(&NetworkStack::setStatisticsLevel),
+			"Sets the number of statistics level for the stack (1-5).")
 		.def("setTCPDatabaseAdaptor",pure_virtual(setTCPDatabaseAdaptor1))
 		.def("setTCPDatabaseAdaptor",pure_virtual(setTCPDatabaseAdaptor2))
 		.def("setUDPDatabaseAdaptor",pure_virtual(setUDPDatabaseAdaptor1))
@@ -143,7 +157,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (StackLan::*setUDPDatabaseAdaptorLan1)(boost::python::object&) = 		&StackLan::setUDPDatabaseAdaptor;
 	void (StackLan::*setUDPDatabaseAdaptorLan2)(boost::python::object&, int) = 	&StackLan::setUDPDatabaseAdaptor;
 
-	boost::python::class_<StackLan, bases<NetworkStack> >("StackLan")
+	boost::python::class_<StackLan, bases<NetworkStack> >("StackLan",
+		"Class that implemnents a network stack for lan enviroments")
 		.def("getName",&StackLan::getName)
 		.def("setUDPRegexManager",setUDPRegexManagerLan1)	
 		.def("setTCPRegexManager",setTCPRegexManagerLan1)	
@@ -190,7 +205,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackMobile::*setUDPDatabaseAdaptorMobile1)(boost::python::object&) =       	&StackMobile::setUDPDatabaseAdaptor;
         void (StackMobile::*setUDPDatabaseAdaptorMobile2)(boost::python::object&, int) =	&StackMobile::setUDPDatabaseAdaptor;
 
-        boost::python::class_<StackMobile, bases<NetworkStack> >("StackMobile")
+        boost::python::class_<StackMobile, bases<NetworkStack> >("StackMobile",
+		"Class that implemnents a network stack for mobile enviroments")
 		.def("getName",&StackMobile::getName)
 		.def("setUDPRegexManager",setUDPRegexManagerMobile1)	
 		.def("setTCPRegexManager",setTCPRegexManagerMobile1)	
@@ -238,7 +254,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackLanIPv6::*setUDPDatabaseAdaptorLanIPv61)(boost::python::object&) =     	&StackLanIPv6::setUDPDatabaseAdaptor;
         void (StackLanIPv6::*setUDPDatabaseAdaptorLanIPv62)(boost::python::object&, int) =	&StackLanIPv6::setUDPDatabaseAdaptor;
 
-        boost::python::class_<StackLanIPv6, bases<NetworkStack> >("StackLanIPv6")
+        boost::python::class_<StackLanIPv6, bases<NetworkStack> >("StackLanIPv6",
+		"Class that implemnents a network stack for lan enviroments with IPv6")
 		.def("getName",&StackLanIPv6::getName)
                 .def("setUDPRegexManager",setUDPRegexManagerLanIPv61)
                 .def("setTCPRegexManager",setTCPRegexManagerLanIPv61)
@@ -287,19 +304,25 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (PacketDispatcher::*setStackMobile)(StackMobile&) = &PacketDispatcher::setStack;
 	void (PacketDispatcher::*setStackLanIPv6)(StackLanIPv6&) = &PacketDispatcher::setStack;
 
-	boost::python::class_<PacketDispatcher,boost::noncopyable>("PacketDispatcher")
+	boost::python::class_<PacketDispatcher,boost::noncopyable>("PacketDispatcher",
+		"Class that manage the packets and forwards to the associated network stack")
 		.def("open",&PacketDispatcher::open,
 			"Opens a network device or a pcap file")
 		.def("close",&PacketDispatcher::close,
 			"Closes a network device or a pcap file")
-		.def("run",&PacketDispatcher::run)
-		.def("status",&PacketDispatcher::status)
-		.def("setPcapFilter",&PacketDispatcher::setPcapFilter)
-		.def("forwardPacket",&PacketDispatcher::forwardPacket)
+		.def("run",&PacketDispatcher::run,
+			"Start to process packets")
+		.def("status",&PacketDispatcher::status,
+			"Shows the status of the PacketDispatcher")
+		.def("setPcapFilter",&PacketDispatcher::setPcapFilter,
+			"Sets a pcap filter on the PacketDispatcher")
+		.def("forwardPacket",&PacketDispatcher::forwardPacket,
+			"Forwards the received packet to a external packet engine(Netfilter)")
 		.def("setStack",setStackLan)
 		.def("setStack",setStackMobile)
 		.def("setStack",setStackLanIPv6)
-		.def("enableShell",&PacketDispatcher::enableShell)
+		.def("enableShell",&PacketDispatcher::enableShell,
+			"Enables a python shell in order to interact with the system on real time")
 		.def(self_ns::str(self_ns::self))
 	;
 
@@ -322,25 +345,44 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def(self_ns::str(self_ns::self))
 	;
 	
-	boost::python::class_<Flow,SharedPointer<Flow>>("Flow")
-		.def("getProtocol",&Flow::getProtocol)
-		.def("getDestinationPort",&Flow::getDestinationPort)
-		.def("getSourcePort",&Flow::getSourcePort)
-		.def("getDestinationAddress",&Flow::getDestinationAddress)
-		.def("getSourceAddress",&Flow::getSourceAddress)
-		.def("getTotalPacketsLayer7",&Flow::getTotalPacketsLayer7)
-		.def("getTotalPackets",&Flow::getTotalPackets)
-		.def("getTotalBytes",&Flow::getTotalBytes)
-		.def("getHTTPUri",&Flow::getHTTPUri,return_internal_reference<>())
-		.def("getHTTPHost",&Flow::getHTTPHost,return_internal_reference<>())
-		.def("getHTTPUserAgent",&Flow::getHTTPUserAgent,return_internal_reference<>())
-		.def("getFrequencies",&Flow::getFrequencies,return_internal_reference<>())
-		.def("getPacketFrequencies",&Flow::getPacketFrequencies,return_internal_reference<>())
-		.def("getDNSDomain",&Flow::getDNSDomain,return_internal_reference<>())
-		.def("getSSLHost",&Flow::getSSLHost,return_internal_reference<>())
-		.def("getRegex",&Flow::getRegex,return_internal_reference<>())
-		.def("getPayload",&Flow::getPayload)
-		.def("getIPSet",&Flow::getIPSet,return_internal_reference<>())
+	boost::python::class_<Flow,SharedPointer<Flow>>("Flow",
+		"Class that keeps all the relevant information of a network flow.")
+		.def("getProtocol",&Flow::getProtocol,
+			"Returns the protocol of the flow (tcp,udp).")
+		.def("getDestinationPort",&Flow::getDestinationPort,
+			"Returns the protocol of the flow (tcp,udp).")
+		.def("getSourcePort",&Flow::getSourcePort,
+			"Returns the source port.")
+		.def("getDestinationAddress",&Flow::getDestinationAddress,
+			"Returns the destination IP address.")
+		.def("getSourceAddress",&Flow::getSourceAddress,
+			"Returns the source IP address.")
+		.def("getTotalPacketsLayer7",&Flow::getTotalPacketsLayer7,
+			"Returns the total number of layer7 packets.")
+		.def("getTotalPackets",&Flow::getTotalPackets,
+			"Returns the total number of packets on the flow.")
+		.def("getTotalBytes",&Flow::getTotalBytes,
+			"Returns the total number of bytes.")
+		.def("getHTTPUri",&Flow::getHTTPUri,return_internal_reference<>(),
+			"Returns the HTTP URI of the flow if the flow is HTTP.")
+		.def("getHTTPHost",&Flow::getHTTPHost,return_internal_reference<>(),
+			"Returns the HTTP Host of the flow if the flow is HTTP.")
+		.def("getHTTPUserAgent",&Flow::getHTTPUserAgent,return_internal_reference<>(),
+			"Returns the HTTP UserAgent of the flow if the flow is HTTP.")
+		.def("getFrequencies",&Flow::getFrequencies,return_internal_reference<>(),
+			"Returns a map of frequencies of the payload of the flow.")
+		.def("getPacketFrequencies",&Flow::getPacketFrequencies,return_internal_reference<>(),
+			"Returns the packet frequencies of the flow.")
+		.def("getDNSDomain",&Flow::getDNSDomain,return_internal_reference<>(),
+			"Returns the DNS domain name if the flow is a DNS.")
+		.def("getSSLHost",&Flow::getSSLHost,return_internal_reference<>(),
+			"Returns the CA domain name if the flow is SSL.")
+		.def("getRegex",&Flow::getRegex,return_internal_reference<>(),
+			"Returns the regex if the flow have been matched with the associated regex.")
+		.def("getPayload",&Flow::getPayload,
+			"Returns a list of the bytes of the payload of the flow.")
+		.def("getIPSet",&Flow::getIPSet,return_internal_reference<>(),
+			"Returns the IPset attached to the flow if they IPs matchs.")
 		.def(self_ns::str(self_ns::self))
 	;
 
@@ -377,10 +419,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
         boost::python::class_<DomainName, SharedPointer<DomainName>, boost::noncopyable>("DomainName",init<const std::string&,const std::string&>())
-                .def("getExpression",&DomainName::getExpression,return_internal_reference<>())
-                .def("getName",&DomainName::getName,return_internal_reference<>())
-                .def("getMatchs",&DomainName::getMatchs)
-                .def("setCallback",&DomainName::setCallback)
+                .def("getExpression",&DomainName::getExpression,return_internal_reference<>(),
+			"Returns the domain expression.")
+                .def("getName",&DomainName::getName,return_internal_reference<>(),
+			"Returns the name of the domain.")
+                .def("getMatchs",&DomainName::getMatchs,
+			"Returns the total number of matches of the domain.")
+                .def("setCallback",&DomainName::setCallback,
+			"Sets the callback of the domain.")
         ;
 
         void (DomainNameManager::*addDomainName1)(const std::string,const std::string) = &DomainNameManager::addDomainName;
@@ -390,8 +436,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		"Class that manages DomainsNames.")
                 .def("addDomainName",addDomainName1,
 			"Adds a DomainName to the DomainNameManager.")
-                .def("addDomainName",addDomainName2,
-			"Adds a DomainName to the DomainNameManager.")
+                .def("addDomainName",addDomainName2)
 		.def("getTotalDomains", &DomainNameManager::getTotalDomains,
 			"Returns the total number of domains on the DomainNameManager.")
 		.def("__len__", &DomainNameManager::getTotalDomains)
@@ -400,15 +445,20 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
         boost::python::class_<DatabaseAdaptorWrap, boost::noncopyable>("DatabaseAdaptor",
 		"Abstract class for implements connections with databases", no_init)
-                .def("connect",pure_virtual(&DatabaseAdaptor::connect))
-                .def("insert",pure_virtual(&DatabaseAdaptor::insert))
-                .def("update",pure_virtual(&DatabaseAdaptor::update))
-                .def("remove",pure_virtual(&DatabaseAdaptor::remove))
+                .def("connect",pure_virtual(&DatabaseAdaptor::connect),
+			"Method for connect to the database.")
+                .def("insert",pure_virtual(&DatabaseAdaptor::insert),
+			"Method called when a new flow is created.")
+                .def("update",pure_virtual(&DatabaseAdaptor::update),
+			"Method called when the flow is updating.")
+                .def("remove",pure_virtual(&DatabaseAdaptor::remove),
+			"Method called when the flow is removed.")
         ;
 
         boost::python::class_<IPAbstractSet, boost::noncopyable>("IPAbstractSet",
 		"Abstract class for implements searchs on IP addresses", no_init )
-                .def("addIPAddress",pure_virtual(&IPAbstractSet::addIPAddress))
+                .def("addIPAddress",pure_virtual(&IPAbstractSet::addIPAddress),
+			"Adds a IP address to the set.")
 	;
 
 	boost::python::class_<IPSet, bases<IPAbstractSet>, SharedPointer<IPSet>>("IPSet")

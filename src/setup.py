@@ -25,25 +25,24 @@ src_files += ["py_wrapper.cc"]
 def setup_compiler():
     distutils.sysconfig.get_config_vars()
     config_vars = distutils.sysconfig._config_vars
+
+    includes = list()
+
+    includes.append("..")
     
-    if sys.platform == 'sunos5':
+    if (sys.platform == 'sunos5'):
         config_vars['LDSHARED'] = "gcc -G"
         config_vars['CCSHARED'] = ""
+    elif (sys.platform == 'freebsd10'):
+        os.environ["CC"] = "c++"
+        includes.append("/usr/local/include")
+    else:
+        os.environ["CC"] = "g++"
 
-    """
-    print config_vars
-    for item,val in config_vars.iteritems():
-        print item,val 
-    print config_vars['CCSHARED']
-    print config_vars['PY_CFLAGS']
-    print config_vars['CFLAGS']
-    """
-
-    os.environ["CC"] = "g++"
+    return includes
 
 aiengine_module = Extension("pyaiengine",
     sources = src_files,
-    include_dirs = [".."],
     libraries = ["boost_system","boost_python","pcap","pcre"],
     define_macros = [('HAVE_CONFIG_H','1'),('PYTHON_BINDING','1')],
     extra_compile_args = ["-Wreorder","-std=c++11","-lpthread","-lstdc++"],
@@ -51,11 +50,13 @@ aiengine_module = Extension("pyaiengine",
 
 if __name__ == "__main__":
 
-    setup_compiler()
+    includes = setup_compiler()
 
     print("Compiling aiengine extension for %s" % sys.platform)
-    print("\tOS name %s" % os.name)
+    print("\tOS name %s" % (os.name))
     print("\tArchitecture %s" % os.uname()[4])
+
+    aiengine_module.include_dirs = includes
 
     setup(name="aiengine",
         version = "0.8",

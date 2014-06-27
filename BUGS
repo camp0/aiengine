@@ -23,3 +23,5 @@ the python library will generate a core due to this issue.
   Database support....: no
   Bloom filter support: no
 
+--------------------------------------------------
+Some flows are not attched to a forwarder!!!! 0x0

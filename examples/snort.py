@@ -58,7 +58,7 @@ def loadRegexFromSnort():
     dm_udp = pyaiengine.RegexManager()
 
     # Parse the file with the snort rules
-    f = open("/home/luis/community.rules","r")
+    f = open("/root/community.rules","r")
 
     lines = f.readlines()
     for line in lines:
@@ -107,11 +107,13 @@ if __name__ == '__main__':
      st.setTCPRegexManager(r_tcp)
      st.setUDPRegexManager(r_udp)
 
-     pdis.open("eth0")
+     st.enableNIDSEngine(True)
+
+     pdis.open("re0")
 
      """ Enable the shell so the user can take under control
          the all system """
-#     pdis.enableShell(True)
+     pdis.enableShell(True)
      try:
          pdis.run()
      except:
