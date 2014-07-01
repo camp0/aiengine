@@ -70,3 +70,6 @@ Features of 0.8
 - Sorts the outputs of the HTTP, SSL and DNS most used domains (aiengine binary).
 - Support for HTTP1.1 (URI Cache), all the flows will have all the paths taken by the user.
 - Shell support. The system have a interactive shell so the user can interact on realtime with the system.
+
+Features of 0.9
+- Remote python shell TODO.

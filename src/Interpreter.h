@@ -42,10 +42,14 @@ namespace aiengine {
 class Interpreter 
 {
 public:
-	Interpreter(boost::asio::io_service &io_service_):
-		user_input_(io_service_,::dup(STDIN_FILENO)),
+	Interpreter(boost::asio::io_service &io_service_):Interpreter(io_service_,STDIN_FILENO) {}
+
+	// Constructor for remote python shell
+	Interpreter(boost::asio::io_service &io_service_, int fd):
+		user_input_(io_service_,::dup(fd)),
 		user_input_buffer_(64),
 		python_shell_enable_(false) {}
+
 
     	virtual ~Interpreter() { user_input_.close(); }
 

@@ -33,6 +33,7 @@
 #include <boost/multi_index/mem_fun.hpp>
 #include <fstream>
 #include "../Flow.h"
+#include "../Protocol.h"
 
 namespace aiengine {
 

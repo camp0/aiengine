@@ -109,7 +109,7 @@ if __name__ == '__main__':
 
      st.enableNIDSEngine(True)
 
-     pdis.open("re0")
+     pdis.open("eth0")
 
      """ Enable the shell so the user can take under control
          the all system """

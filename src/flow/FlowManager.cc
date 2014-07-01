@@ -77,45 +77,39 @@ void FlowManager::printFlows(std::basic_ostream<char>& out) {
 
 	// Print a header
 	out << std::endl;
-	out << boost::format("%-64s %-10s %-10s %-13s %-12s") % "Flow" % "Bytes" % "Packets" % "FlowForwarder" % "Info";
+	out << boost::format("%-64s %-10s %-10s %-18s %-12s") % "Flow" % "Bytes" % "Packets" % "FlowForwarder" % "Info";
 	out << std::endl;	
 	for(auto it = flowTable_.begin(); it!=flowTable_.end(); ++it) {
 		SharedPointer<Flow> flow = *it;
 		FlowForwarderPtr ff = flow->forwarder.lock();	
 		const char *proto_name = "None";
-		if (ff)
-			proto_name = ff->getProtocolName();	
-		
+		if (ff) { // Some flows could be not attached to a Protocol, for example syn packets, syn/ack packets and so on
+			ProtocolPtr proto = ff->getProtocol();
+			if (proto) proto_name = proto->getName();	
+		}
+	
 		std::ostringstream fivetuple;
 
 		fivetuple << "[" << flow->getSrcAddrDotNotation() << ":" << flow->getSourcePort() << "]:" << flow->getProtocol();
 		fivetuple << ":[" << flow->getDstAddrDotNotation() << ":" << flow->getDestinationPort() <<"]";
 
-		out << boost::format("%-64s %-10d %-10d %p") % fivetuple.str() % flow->total_bytes % flow->total_packets % ff;
+		out << boost::format("%-64s %-10d %-10d %-18s") % fivetuple.str() % flow->total_bytes % flow->total_packets % proto_name;
 
-		if(flow->ipset.lock())	
-			out << "     IPset:" << *flow->ipset.lock()->getName();
+		if(flow->ipset.lock()) out << " IPset:" << *flow->ipset.lock()->getName();	
 
-		if(flow->tcp_info.lock())	
-			out << "     TCP  :" << *flow->tcp_info.lock();
+		if(flow->tcp_info.lock()) out << " TCP  :" << *flow->tcp_info.lock();	
 
-		if(flow->regex.lock())	
-			out << "     Regex:" << flow->regex.lock()->getName();
+		if(flow->regex.lock()) out << " Regex:" << flow->regex.lock()->getName();	
 
-		if(flow->http_host.lock())	
-			out << "     Host:" << flow->http_host.lock()->getName();
+		if(flow->http_host.lock()) out << "Host:" << flow->http_host.lock()->getName();	
 	
-		if(flow->http_ua.lock())
-			out << " UserAgent:" << flow->http_ua.lock()->getName();	
+		if(flow->http_ua.lock()) out << " UserAgent:" << flow->http_ua.lock()->getName();
 
-		if(flow->dns_domain.lock())	
-			out << "    Domain:" << flow->dns_domain.lock()->getName();
+		if(flow->dns_domain.lock()) out << " Domain:" << flow->dns_domain.lock()->getName();	
 		
-		if(flow->ssl_host.lock())	
-			out << "    Host:" << flow->ssl_host.lock()->getName();
+		if(flow->ssl_host.lock()) out << " Host:" << flow->ssl_host.lock()->getName();	
 		
-		if(flow->frequencies.lock())
-			out << boost::format("%-8s") % flow->frequencies.lock()->getFrequenciesString();
+		if(flow->frequencies.lock()) out << boost::format("%-8s") % flow->frequencies.lock()->getFrequenciesString();
 
 		out << std::endl;
 	}
