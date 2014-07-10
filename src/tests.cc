@@ -25,6 +25,8 @@
 #include <config.h>
 #endif
 
+#include <boost/filesystem/fstream.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <string>
 #include "Multiplexer.h"
 #include "FlowForwarder.h"
@@ -1129,7 +1131,64 @@ BOOST_AUTO_TEST_CASE ( test_case_11 )
         // BOOST_CHECK(header.compare(0,header.length(),reg,0,header.length())== 0);
 }
 
+// Test the statistics method by passing the protocol name
+BOOST_AUTO_TEST_CASE ( test_case_12 )
+{
+        NetworkStackPtr stack = NetworkStackPtr(new StackLan());
+	const char *tempfile = "/tmp/sometempfilefortest12.txt";
 
+	stack->setStatisticsLevel(1);
+
+	std::streambuf *psbuf, *backup;
+  	std::ofstream filestr;
+  	filestr.open (tempfile);
+
+  	backup = std::cout.rdbuf();     // back up cout's streambuf
+  	psbuf = filestr.rdbuf();        // get file's streambuf
+  	std::cout.rdbuf(psbuf);         // assign streambuf to cout
+	stack->statistics("Ethernet");
+  	std::cout.rdbuf(backup);        // restore cout's original streambuf
+  	filestr.close();
+
+	BOOST_CHECK(boost::filesystem::file_size(tempfile) > 100); // Ugly check but works
+
+	boost::filesystem::remove(tempfile);
+
+  	filestr.open (tempfile);
+  	backup = std::cout.rdbuf();     // back up cout's streambuf
+  	psbuf = filestr.rdbuf();        // get file's streambuf
+  	std::cout.rdbuf(psbuf);         // assign streambuf to cout
+	stack->statistics("EthernetNoExiste");
+  	std::cout.rdbuf(backup);        // restore cout's original streambuf
+  	filestr.close();
+
+	BOOST_CHECK(boost::filesystem::file_size(tempfile) == 0); // Ugly check but works
+	boost::filesystem::remove(tempfile);
+}
+
+BOOST_AUTO_TEST_CASE (test_case_13) // Test the UDP regex 
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        NetworkStackPtr stack = NetworkStackPtr(new StackLan());
+        RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
+        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("Netbios","^.*FACACA.*$"));
+
+        // connect with the stack
+        pd->setStack(stack);
+
+        stack->setTotalUDPFlows(2);
+        stack->enableLinkLayerTagging("vlan");
+
+        rmng->addRegex(r_generic);
+        stack->setUDPRegexManager(rmng);
+
+        pd->open("../pcapfiles/flow_vlan_netbios.pcap");
+        pd->run();
+        pd->close();
+
+	BOOST_CHECK(r_generic->getMatchs() == 1);
+	BOOST_CHECK(r_generic->getTotalEvaluates() == 1);
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 

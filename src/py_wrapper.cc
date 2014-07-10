@@ -84,7 +84,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	boost::python::class_< std::ostream, boost::noncopyable >( "std_ostream",no_init); 
 
         // for overload the methods with the class
-      	void (NetworkStack::*printFlowsNetworkStack)() = 				&NetworkStack::printFlows;
+      	void (NetworkStack::*showFlowsNetworkStack)() = 				&NetworkStack::showFlows;
 	void (NetworkStack::*setUDPRegexManager1)(RegexManager&) = 			&NetworkStack::setUDPRegexManager;
 	void (NetworkStack::*setTCPRegexManager1)(RegexManager&) = 			&NetworkStack::setTCPRegexManager;
 	// void (NetworkStack::*setUDPRegexManager2)(RegexManagerPtrWeak) = 		&NetworkStack::setUDPRegexManager;
@@ -118,7 +118,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Sets the maximum number of flows to be on the cache for TCP traffic.")
                 .def("setTotalUDPFlows",pure_virtual(&NetworkStack::setTotalUDPFlows),
 			"Sets the maximum number of flows to be on the cache for UDP traffic.")
-              	.def("printFlows",pure_virtual(printFlowsNetworkStack),
+              	.def("showFlows",pure_virtual(showFlowsNetworkStack),
 			"Shows the active flows of the stack.")
 		.def("enableFrequencyEngine",pure_virtual(&NetworkStack::enableFrequencyEngine),
 			"Enable or disable the frequency engine on the stack.")
@@ -141,7 +141,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
         ;
 
 	// Definitions for the StackLan class
-	void (StackLan::*printFlowsLan)() = 						&StackLan::printFlows;
+	void (StackLan::*showFlowsLan)() = 						&StackLan::showFlows;
 	void (StackLan::*setUDPRegexManagerLan1)(RegexManager&) = 			&StackLan::setUDPRegexManager;
 	void (StackLan::*setTCPRegexManagerLan1)(RegexManager&) = 			&StackLan::setTCPRegexManager;
 	void (StackLan::*setUDPRegexManagerLan2)(RegexManagerPtrWeak) = 		&StackLan::setUDPRegexManager;
@@ -173,7 +173,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setTotalTCPFlows",&StackLan::setTotalTCPFlows)
 		.def("setTotalUDPFlows",&StackLan::setTotalUDPFlows)
 		.def(self_ns::str(self_ns::self))
-		.def("printFlows",printFlowsLan)
+		.def("showFlows",showFlowsLan)
 		.def("enableFrequencyEngine",&StackLan::enableFrequencyEngine)
 		.def("enableLinkLayerTagging",&StackLan::enableLinkLayerTagging)
 		.def("enableNIDSEngine",&StackLan::enableNIDSEngine)
@@ -189,7 +189,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
 	// Definitions for the StackMobile class
-       	void (StackMobile::*printFlowsMobile)() = 						&StackMobile::printFlows;
+       	void (StackMobile::*showFlowsMobile)() = 						&StackMobile::showFlows;
 	void (StackMobile::*setUDPRegexManagerMobile1)(RegexManager&) = 			&StackMobile::setUDPRegexManager;
 	void (StackMobile::*setTCPRegexManagerMobile1)(RegexManager&) = 			&StackMobile::setTCPRegexManager;
 	void (StackMobile::*setUDPRegexManagerMobile2)(RegexManagerPtrWeak) = 			&StackMobile::setUDPRegexManager;
@@ -221,7 +221,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setTotalTCPFlows",&StackMobile::setTotalTCPFlows)
                 .def("setTotalUDPFlows",&StackMobile::setTotalUDPFlows)
 		.def(self_ns::str(self_ns::self))
-                .def("printFlows",printFlowsMobile)
+                .def("showFlows",showFlowsMobile)
 		.def("enableFrequencyEngine",&StackMobile::enableFrequencyEngine)
 		.def("enableLinkLayerTagging",&StackMobile::enableLinkLayerTagging)
 		.def("enableNIDSEngine",&StackMobile::enableNIDSEngine)
@@ -238,7 +238,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 
 	// Definitions for the StackLanIPv6 class
-      	void (StackLanIPv6::*printFlowsLanIPv6)() = 						&StackLanIPv6::printFlows;
+      	void (StackLanIPv6::*showFlowsLanIPv6)() = 						&StackLanIPv6::showFlows;
         void (StackLanIPv6::*setUDPRegexManagerLanIPv61)(RegexManager&) = 			&StackLanIPv6::setUDPRegexManager;
         void (StackLanIPv6::*setTCPRegexManagerLanIPv61)(RegexManager&) = 			&StackLanIPv6::setTCPRegexManager;
         void (StackLanIPv6::*setUDPRegexManagerLanIPv62)(RegexManagerPtrWeak) = 		&StackLanIPv6::setUDPRegexManager;
@@ -270,7 +270,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setTotalTCPFlows",&StackLanIPv6::setTotalTCPFlows)
                 .def("setTotalUDPFlows",&StackLanIPv6::setTotalUDPFlows)
                 .def(self_ns::str(self_ns::self))
-                .def("printFlows",printFlowsLanIPv6)
+                .def("showFlows",showFlowsLanIPv6)
                 .def("enableFrequencyEngine",&StackLanIPv6::enableFrequencyEngine)
                 .def("enableLinkLayerTagging",&StackLanIPv6::enableLinkLayerTagging)
                 .def("enableNIDSEngine",&StackLanIPv6::enableNIDSEngine)

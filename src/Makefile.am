@@ -84,6 +84,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			./learner/LearnerEngine.cc \
 			./names/DomainNameManager.cc \
 			System.cc \
+			NetworkStack.cc \
 			StackMobile.cc StackLan.cc \
 			StackLanIPv6.cc  
 

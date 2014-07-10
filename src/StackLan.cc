@@ -31,26 +31,37 @@ log4cxx::LoggerPtr StackLan::logger(log4cxx::Logger::getLogger("aiengine.stackla
 
 StackLan::StackLan() {
 
-	stats_level_ = 0;
 	name_ = "Lan network stack";
 
 	// Allocate all the specific Protocol objects
         eth_ = EthernetProtocolPtr(new EthernetProtocol());
+	addProtocol(eth_);
         vlan_ = VLanProtocolPtr(new VLanProtocol());
+	addProtocol(vlan_);
         mpls_ = MPLSProtocolPtr(new MPLSProtocol());
+	addProtocol(mpls_);
         ip_ = IPProtocolPtr(new IPProtocol());
-
+	addProtocol(ip_);
         tcp_ = TCPProtocolPtr(new TCPProtocol());
+	addProtocol(tcp_);
         udp_ = UDPProtocolPtr(new UDPProtocol());
+	addProtocol(udp_);
         icmp_ = ICMPProtocolPtr(new ICMPProtocol());
-        
+	addProtocol(icmp_);
 	http_ = HTTPProtocolPtr(new HTTPProtocol());
+	addProtocol(http_);
         ssl_ = SSLProtocolPtr(new SSLProtocol());
+	addProtocol(ssl_);
         dns_ = DNSProtocolPtr(new DNSProtocol());
+	addProtocol(dns_);
 	tcp_generic_ = TCPGenericProtocolPtr(new TCPGenericProtocol());
+	addProtocol(tcp_generic_);
 	udp_generic_ = UDPGenericProtocolPtr(new UDPGenericProtocol());
-	freqs_tcp_ = FrequencyProtocolPtr(new FrequencyProtocol());
-	freqs_udp_ = FrequencyProtocolPtr(new FrequencyProtocol());
+	addProtocol(udp_generic_);
+	freqs_tcp_ = FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol"));
+	addProtocol(freqs_tcp_);
+	freqs_udp_ = FrequencyProtocolPtr(new FrequencyProtocol("UDPFrequencyProtocol"));
+	addProtocol(freqs_udp_);
 
 	// Allocate the Multiplexers
         mux_eth_ = MultiplexerPtr(new Multiplexer());
@@ -219,141 +230,12 @@ StackLan::StackLan() {
 
 }
 
-std::ostream& operator<< (std::ostream& out, const StackLan& stk) {
-
-	if (stk.stats_level_ > 0) {
-		stk.eth_->statistics(out);
-		out << std::endl;
-		stk.ip_->statistics(out);
-		out << std::endl;
-		stk.tcp_->statistics(out);
-		out << std::endl;
-		stk.udp_->statistics(out);
-		out << std::endl;
-		stk.icmp_->statistics(out);
-		out << std::endl;
-		stk.dns_->statistics(out);
-		out << std::endl;
-		stk.udp_generic_->statistics(out);
-		out << std::endl;
-		stk.freqs_udp_->statistics(out);
-		out << std::endl;
-		stk.http_->statistics(out);
-		out << std::endl;
-		stk.ssl_->statistics(out);
-		out << std::endl;
-		stk.tcp_generic_->statistics(out);
-		out << std::endl;
-		stk.freqs_tcp_->statistics(out);
-	}
-	return out;
-}
-
-void StackLan::printFlows(std::basic_ostream<char>& out) {
+void StackLan::showFlows(std::basic_ostream<char>& out) {
 
 	out << "Flows on memory" << std::endl;
-	flow_table_tcp_->printFlows(out);
-	flow_table_udp_->printFlows(out);
+	flow_table_tcp_->showFlows(out);
+	flow_table_udp_->showFlows(out);
 }
-
-void StackLan::setTCPRegexManager(RegexManagerPtrWeak sig) {
-
-	if(sig.lock()) {
-		tcp_generic_->setRegexManager(sig.lock());
-	}
-}
-
-void StackLan::setUDPRegexManager(RegexManagerPtrWeak sig) { 
-
-	if(sig.lock()) {
-		udp_generic_->setRegexManager(sig.lock());
-	}
-}
-
-void StackLan::setTCPRegexManager(RegexManager& sig) {
-
-	sigs_tcp_ = std::make_shared<RegexManager>(sig);
-	setTCPRegexManager(sigs_tcp_);
-} 
-
-void StackLan::setUDPRegexManager(RegexManager& sig) {
-
-	sigs_udp_ = std::make_shared<RegexManager>(sig);
-	setUDPRegexManager(sigs_udp_);
-} 
-
-#ifdef PYTHON_BINDING
-
-void StackLan::setDNSDomainNameManager(DomainNameManager& dnm, bool allow) {
-
-	if (allow) {
-		dns_domains_ = std::make_shared<DomainNameManager>(dnm);
-               	dns_->setDomainNameManager(dns_domains_);
-	} else {
-		ban_dns_domains_ = std::make_shared<DomainNameManager>(dnm);
-               	dns_->setDomainNameBanManager(ban_dns_domains_);
-	}      
-}
-
-void StackLan::setHTTPHostNameManager(DomainNameManager& dnm, bool allow) {
-
-	if (allow) {
-        	http_host_domains_ = std::make_shared<DomainNameManager>(dnm);
-               	http_->setHostNameManager(http_host_domains_);
-       	} else { 
-		ban_http_host_domains_ = std::make_shared<DomainNameManager>(dnm);
-               	http_->setHostNameBanManager(ban_http_host_domains_);
-	}
-}
-
-void StackLan::setSSLHostNameManager(DomainNameManager& dnm, bool allow ) {
-
-	if (allow) {
-        	ssl_host_domains_ = std::make_shared<DomainNameManager>(dnm);
-               	ssl_->setHostNameManager(ssl_host_domains_);
-       	} else { 
-		ban_ssl_host_domains_ = std::make_shared<DomainNameManager>(dnm);
-               	ssl_->setHostNameBanManager(ban_ssl_host_domains_);
-	}
-}
-
-void StackLan::setDNSDomainNameManager(DomainNameManager& dnm) {
-
-	setDNSDomainNameManager(dnm,true);
-}
-
-void StackLan::setHTTPHostNameManager(DomainNameManager& dnm) {
-
-	setHTTPHostNameManager(dnm,true);
-}
-
-void StackLan::setSSLHostNameManager(DomainNameManager& dnm) {
-
-	setSSLHostNameManager(dnm,true);
-}
-
-void StackLan::setUDPDatabaseAdaptor(boost::python::object &dbptr) {
-
-	udp_->setDatabaseAdaptor(dbptr);
-} 
-
-void StackLan::setTCPDatabaseAdaptor(boost::python::object &dbptr) {
-
-	tcp_->setDatabaseAdaptor(dbptr);
-} 
-
-void StackLan::setUDPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
-
-        udp_->setDatabaseAdaptor(dbptr,packet_sampling);
-}
-
-void StackLan::setTCPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
-
-        tcp_->setDatabaseAdaptor(dbptr, packet_sampling);
-}
-
-
-#endif
 
 void StackLan::enableFrequencyEngine(bool enable) {
 
@@ -442,23 +324,6 @@ void StackLan::setTotalUDPFlows(int value) {
 
 	flow_cache_udp_->createFlows(value);
 	dns_->createDNSDomains(value/ 2);
-}
-
-void StackLan::setStatisticsLevel(int level) {
-
-	stats_level_ = level;
-        eth_->setStatisticsLevel(level);
-        ip_->setStatisticsLevel(level);
-        tcp_->setStatisticsLevel(level);
-        udp_->setStatisticsLevel(level);
-        icmp_->setStatisticsLevel(level);
-        dns_->setStatisticsLevel(level);
-        udp_generic_->setStatisticsLevel(level);
-        freqs_udp_->setStatisticsLevel(level);
-        http_->setStatisticsLevel(level);
-        ssl_->setStatisticsLevel(level);
-        tcp_generic_->setStatisticsLevel(level);
-        freqs_tcp_->setStatisticsLevel(level);
 }
 
 void StackLan::enableLinkLayerTagging(std::string type) {

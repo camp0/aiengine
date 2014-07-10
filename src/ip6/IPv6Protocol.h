@@ -60,7 +60,7 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
-	void setStatisticsLevel(int level) {}
+	void setStatisticsLevel(int level) { stats_level_ = level; }
 
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
         MultiplexerPtrWeak getMultiplexer() { return mux_;}

@@ -74,7 +74,7 @@ class StackLanTests(unittest.TestCase):
         del self.s
         del self.dis
 
-    def test1(self):
+    def test_1_1(self):
         """ Create a regex for netbios and detect """
         self.s.enableLinkLayerTagging("vlan")
 
@@ -89,7 +89,7 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(r.getMatchs(), 1)
 
-    def test2(self):
+    def test_2_1(self):
         """ Create a regex for netbios with callback """
         def callback(flow):
             self.called_callback += 1 
@@ -112,7 +112,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(r.getMatchs(), 1)
         self.assertEqual(self.called_callback, 1)
 
-    def test3(self):
+    def test_3_1(self):
         """ Verify DNS and HTTP traffic """
 
         self.dis.open("../pcapfiles/accessgoogle.pcap");
@@ -137,7 +137,7 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(str(http_flow.getHTTPHost()),"www.google.com")
 
-    def test4(self):
+    def test_4_1(self):
         """ Verify SSL traffic """
 
         self.dis.open("../pcapfiles/sslflow.pcap");
@@ -154,7 +154,7 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(str(f.getSSLHost()),"0.drive.google.com")
 
-    def test5(self):
+    def test_5_1(self):
         """ Verify SSL traffic with domain callback"""
         
         def domain_callback(flow):
@@ -176,7 +176,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(d.getMatchs() , 1)
         self.assertEqual(self.called_callback, 1)
 
-    def test6(self):
+    def test_6_1(self):
         """ Verify SSL traffic with domain callback and IPset"""
 
         def ipset_callback(flow):
@@ -209,7 +209,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(self.called_callback,1)
         self.assertEqual(self.ip_called_callback,1)
 
-    def test7(self):
+    def test_7_1(self):
         """ Attach a database to the engine """
 
         db = databaseTestAdaptor()
@@ -224,7 +224,24 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(db.getUpdates(), 5)
         self.assertEqual(db.getRemoves(), 0)
 
-    def test8(self):
+    def test_7_2(self):
+        """ Attach a database to the engine """
+
+        db = databaseTestAdaptor()
+
+        self.s.enableLinkLayerTagging("vlan")
+        self.s.setUDPDatabaseAdaptor(db,16)
+
+        self.dis.open("../pcapfiles/flow_vlan_netbios.pcap");
+        self.dis.run();
+        self.dis.close();
+
+        self.assertEqual(db.getInserts(), 1)
+        self.assertEqual(db.getUpdates(), 1)
+        self.assertEqual(db.getRemoves(), 0)
+
+
+    def test_8_1(self):
         """ Attach a database to the engine and domain name"""
 
         def domain_callback(flow):
@@ -253,7 +270,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(d.getMatchs(), 1)
         self.assertEqual(self.called_callback, 1)
 
-    def test9(self):
+    def test_9_1(self):
         """ Verify iterators of the RegexManager """
 
         rl = [ pyaiengine.Regex("expression %d" % x, "some regex %d" % x) for x in xrange(0,5) ]
@@ -274,7 +291,7 @@ class StackLanTests(unittest.TestCase):
         for r in rl:
     	    self.assertEqual(r.getMatchs(), 0)
 
-    def test10(self):
+    def test_10_1(self):
         """ Verify the IPBloomSet class """
 
         have_bloom = False
@@ -304,7 +321,7 @@ class StackLanTests(unittest.TestCase):
 
             self.assertEqual(self.ip_called_callback,1)
 
-    def test11(self):
+    def test_11_1(self):
 	""" Verify the HTTP fields of the flow """
 
         def domain_callback(flow):
@@ -341,7 +358,7 @@ class StackLanIPv6Tests(unittest.TestCase):
         del self.s
         del self.dis
 
-    def test1(self):
+    def test_1_1(self):
         """ Create a regex for a generic exploit """
 
         rm = pyaiengine.RegexManager()
@@ -355,10 +372,10 @@ class StackLanIPv6Tests(unittest.TestCase):
 
         self.assertEqual(r.getMatchs(), 1)
 
-    def test2(self):
+    def test_2_1(self):
         """ Create a regex for a generic exploit and a IPSet """
-    def ipset_callback(flow):
-        self.called_callback += 1 
+        def ipset_callback(flow):
+            self.called_callback += 1 
 
         ipset = pyaiengine.IPSet("IPv6 generic set")
         ipset.addIPAddress("dc20:c7f:2012:11::2")
@@ -384,7 +401,7 @@ class StackLanIPv6Tests(unittest.TestCase):
         self.assertEqual(r2.getMatchs(), 0)
         self.assertEqual(self.called_callback , 1)
 
-    def test3(self):
+    def test_3_1(self):
         """ Create a regex for a generic exploit and a IPSet with no matching"""
         def ipset_callback(flow):
             self.called_callback += 1
@@ -413,8 +430,8 @@ class StackLanIPv6Tests(unittest.TestCase):
         self.assertEqual(r2.getMatchs(), 0)
         self.assertEqual(self.called_callback , 0)
 
-    def test4(self):
-        """ Attach a database to the engine """
+    def test_4_1(self):
+        """ Attach a database to the engine for TCP traffic """
 
         db = databaseTestAdaptor()
         
@@ -428,7 +445,28 @@ class StackLanIPv6Tests(unittest.TestCase):
         self.assertEqual(db.getUpdates(), 5)
         self.assertEqual(db.getRemoves(), 1)
 
-    def test5(self):
+    def test_4_2(self):
+        """ Attach a database to the engine for UDP traffic """
+
+        db_udp = databaseTestAdaptor()
+        db_tcp = databaseTestAdaptor()
+
+        self.s.setUDPDatabaseAdaptor(db_udp,16)
+        self.s.setTCPDatabaseAdaptor(db_tcp)
+
+        self.dis.open("../pcapfiles/ipv6_google_dns.pcap")
+        self.dis.run()
+        self.dis.close()
+
+        self.assertEqual(db_udp.getInserts(), 1)
+        self.assertEqual(db_udp.getUpdates(), 1)
+        self.assertEqual(db_udp.getRemoves(), 0)
+
+        self.assertEqual(db_tcp.getInserts(), 0)
+        self.assertEqual(db_tcp.getUpdates(), 0)
+        self.assertEqual(db_tcp.getRemoves(), 0)
+
+    def test_5_1(self):
         """ Several IPSets with no matching"""
         def ipset_callback(flow):
             self.called_callback += 1

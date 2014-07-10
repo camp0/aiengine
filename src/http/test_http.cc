@@ -408,7 +408,7 @@ BOOST_AUTO_TEST_CASE (test10_http)
         Packet packet(pkt,length,0);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-	http->setHostNameManager(host_mng_weak);
+	http->setDomainNameManager(host_mng_weak);
 	host_mng->addDomainName(host_name);
 
 	// Dont create any items on the cache
@@ -447,7 +447,7 @@ BOOST_AUTO_TEST_CASE (test11_http)
         Packet packet(pkt,length,0);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->setHostNameManager(host_mng_weak);
+        http->setDomainNameManager(host_mng_weak);
         host_mng->addDomainName(host_name);
 
         // Dont create any items on the cache
@@ -486,7 +486,7 @@ BOOST_AUTO_TEST_CASE (test12_http)
         Packet packet(pkt,length,0);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->setHostNameManager(host_mng_weak);
+        http->setDomainNameManager(host_mng_weak);
         host_mng->addDomainName(host_name);
 
         // Dont create any items on the cache
@@ -524,7 +524,7 @@ BOOST_AUTO_TEST_CASE (test13_http)
         Packet packet(pkt,length,0);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->setHostNameBanManager(host_mng_weak);
+        http->setDomainNameBanManager(host_mng_weak);
         host_mng->addDomainName(host_name);
 
         flow->packet = const_cast<Packet*>(&packet);

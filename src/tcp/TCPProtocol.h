@@ -21,6 +21,7 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 #ifndef SRC_TCP_TCPPROTOCOL_H_
 #define SRC_TCP_TCPPROTOCOL_H_
 
@@ -50,10 +51,11 @@ public:
                 tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")), 
                 tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0) {}
 
-    	explicit TCPProtocol():TCPProtocol("TCPProtocol") {}
+    	explicit TCPProtocol():TCPProtocol(TCPProtocol::default_name) {}
 
     	virtual ~TCPProtocol() {}
 
+	static constexpr char *default_name = "TCPProtocol";
 	static const u_int16_t id = IPPROTO_TCP;
 	static const int header_size = 20;
 	int getHeaderSize() const { return header_size;}

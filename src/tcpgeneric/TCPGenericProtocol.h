@@ -21,6 +21,10 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
+
+// gets rid of annoying "deprecated conversion from string constant blah blah" warning
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+
 #ifndef SRC_TCPGENERIC_TCPGENERICPROTOCOL_H_
 #define SRC_TCPGENERIC_TCPGENERICPROTOCOL_H_
 
@@ -47,11 +51,12 @@ namespace aiengine {
 class TCPGenericProtocol: public Protocol 
 {
 public:
-    	explicit TCPGenericProtocol():Protocol("TCPGenericProtocol"),stats_level_(0),
+    	explicit TCPGenericProtocol():Protocol(TCPGenericProtocol::default_name),stats_level_(0),
 		tcp_generic_header_(nullptr),total_bytes_(0) {}
 
     	virtual ~TCPGenericProtocol() {}
-	
+
+	static constexpr char *default_name = "TCPGenericProtocol";	
 	static const u_int16_t id = 0;
 	static const int header_size = 0;
 	int getHeaderSize() const { return header_size;}

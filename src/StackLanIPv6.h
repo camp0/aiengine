@@ -66,20 +66,11 @@ public:
         void setLinkLayerMultiplexer(MultiplexerPtrWeak mux) { }
         MultiplexerPtrWeak getLinkLayerMultiplexer() { return mux_eth_;}
 	
-	void printFlows(std::basic_ostream<char>& out);
-	void printFlows() { printFlows(std::cout);}
-
-	void setStatisticsLevel(int level);
-        void statistics(std::basic_ostream<char>& out) { out << *this; }
-        void statistics() { statistics(std::cout);} 
+	void showFlows(std::basic_ostream<char>& out);
+	void showFlows() { showFlows(std::cout);}
 
 	void setTotalTCPFlows(int value);
 	void setTotalUDPFlows(int value);
-
-	void setTCPRegexManager(RegexManagerPtrWeak sig); 
-	void setUDPRegexManager(RegexManagerPtrWeak sig);
-        void setTCPRegexManager(RegexManager& sig);
-        void setUDPRegexManager(RegexManager& sig); 
 
 	void enableNIDSEngine(bool enable);
 	void enableFrequencyEngine(bool enable);
@@ -89,18 +80,6 @@ public:
         FlowManager &getTCPFlowManager() { return *flow_table_tcp_.get();}
         FlowManager &getUDPFlowManager() { return *flow_table_udp_.get();}
         
-	void setDNSDomainNameManager(DomainNameManager& dnm);
-	void setDNSDomainNameManager(DomainNameManager& dnm, bool allow);
-        void setHTTPHostNameManager(DomainNameManager& dnm);
-        void setHTTPHostNameManager(DomainNameManager& dnm, bool allow);
-        void setSSLHostNameManager(DomainNameManager& dnm);
-        void setSSLHostNameManager(DomainNameManager& dnm, bool allow);
-
-	void setTCPDatabaseAdaptor(boost::python::object &dbptr);
-	void setTCPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling);
-	void setUDPDatabaseAdaptor(boost::python::object &dbptr);
-	void setUDPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling);
-
         void setTCPIPSetManager(IPSetManager& ipset_mng) { tcp_->setIPSetManager(ipset_mng);}
         void setUDPIPSetManager(IPSetManager& ipset_mng) { udp_->setIPSetManager(ipset_mng);}
 #else
@@ -110,10 +89,8 @@ public:
         FlowManagerPtrWeak getTCPFlowManager() { return flow_table_tcp_;}
         FlowManagerPtrWeak getUDPFlowManager() { return flow_table_udp_;}
 #endif
-	friend std::ostream& operator<< (std::ostream& out, const StackLanIPv6& stk);
 
 private:
-	int stats_level_;
 	std::string name_;
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
@@ -160,20 +137,6 @@ private:
 	FlowForwarderPtr ff_tcp_freqs_;
 	FlowForwarderPtr ff_udp_freqs_;
 
-	// References to the RegexsManagers
-	// This references are created on the python side, so we need
-	// to have them on a shared_ptr, because weak_ptr dont have
-	// the ownership of them.
-	RegexManagerPtr sigs_tcp_;
-	RegexManagerPtr sigs_udp_;
-
-        // DomainNameManagers for managing Domains and Host over some protocols
-        DomainNameManagerPtr dns_domains_;
-        DomainNameManagerPtr http_host_domains_;
-        DomainNameManagerPtr ssl_host_domains_;
-        DomainNameManagerPtr ban_dns_domains_;
-        DomainNameManagerPtr ban_http_host_domains_;
-        DomainNameManagerPtr ban_ssl_host_domains_;
 };
 
 typedef std::shared_ptr<StackLanIPv6> StackLanIPv6Ptr;

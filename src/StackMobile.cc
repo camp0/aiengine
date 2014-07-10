@@ -31,27 +31,45 @@ log4cxx::LoggerPtr StackMobile::logger(log4cxx::Logger::getLogger("aiengine.stac
 
 StackMobile::StackMobile() {
 
-	stats_level_ = 0;
 	name_ = "Mobile Network Stack";
 
 	// Allocate all the Protocol objects
         eth_= EthernetProtocolPtr(new EthernetProtocol());
+	addProtocol(eth_);
         vlan_= VLanProtocolPtr(new VLanProtocol());
+	addProtocol(vlan_);
         mpls_= MPLSProtocolPtr(new MPLSProtocol());
-        ip_low_ = IPProtocolPtr(new IPProtocol());
-	ip_high_ = IPProtocolPtr(new IPProtocol());
-        udp_low_ = UDPProtocolPtr(new UDPProtocol());
-	udp_high_ = UDPProtocolPtr(new UDPProtocol());
-        tcp_ = TCPProtocolPtr(new TCPProtocol());
+	addProtocol(mpls_);
+        ip_low_ = IPProtocolPtr(new IPProtocol("IPProtocol low"));
+	addProtocol(ip_low_);
+        udp_low_ = UDPProtocolPtr(new UDPProtocol("UDPProtocol low"));
+	addProtocol(udp_low_);
         gprs_ = GPRSProtocolPtr(new GPRSProtocol());
+	addProtocol(gprs_);
+
+	ip_high_ = IPProtocolPtr(new IPProtocol());
+	addProtocol(ip_high_);
+
+	udp_high_ = UDPProtocolPtr(new UDPProtocol());
+	addProtocol(udp_high_);
+        tcp_ = TCPProtocolPtr(new TCPProtocol());
+	addProtocol(tcp_);
         icmp_ = ICMPProtocolPtr(new ICMPProtocol());
+	addProtocol(icmp_);
         http_ = HTTPProtocolPtr(new HTTPProtocol());
+	addProtocol(http_);
         ssl_ = SSLProtocolPtr(new SSLProtocol());
+	addProtocol(ssl_);
         dns_ = DNSProtocolPtr(new DNSProtocol());
+	addProtocol(dns_);
         tcp_generic_ = TCPGenericProtocolPtr(new TCPGenericProtocol());
+	addProtocol(tcp_generic_);
         udp_generic_ = UDPGenericProtocolPtr(new UDPGenericProtocol());
-	freqs_tcp_ = FrequencyProtocolPtr(new FrequencyProtocol());
-	freqs_udp_ = FrequencyProtocolPtr(new FrequencyProtocol());
+	addProtocol(udp_generic_);
+	freqs_tcp_ = FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol"));
+	addProtocol(freqs_tcp_);
+	freqs_udp_ = FrequencyProtocolPtr(new FrequencyProtocol("UDPFrequencyProtocol"));
+	addProtocol(freqs_udp_);
 
 	// Allocate the Multiplexers
 	mux_eth_ = MultiplexerPtr(new Multiplexer());
@@ -265,148 +283,13 @@ StackMobile::StackMobile() {
 #endif
 }
 
-std::ostream& operator<< (std::ostream& out, const StackMobile& stk) {
-
-	if (stk.stats_level_ > 0) {
-		stk.eth_->statistics(out);
-		out << std::endl;
-		stk.ip_low_->statistics(out);
-		out << std::endl;
-		stk.udp_low_->statistics(out);
-		out << std::endl;
-		stk.gprs_->statistics(out);
-		out << std::endl;
-		stk.ip_high_->statistics(out);
-		out << std::endl;
-		stk.tcp_->statistics(out);
-		out << std::endl;
-		stk.udp_high_->statistics(out);
-
-		out << std::endl;
-		stk.icmp_->statistics(out);
-		out << std::endl;
-		stk.dns_->statistics(out);
-		out << std::endl;
-		stk.udp_generic_->statistics(out);
-		out << std::endl;
-		stk.freqs_udp_->statistics(out);
-		out << std::endl;
-		stk.http_->statistics(out);
-		out << std::endl;
-		stk.ssl_->statistics(out);
-		out << std::endl;
-		stk.tcp_generic_->statistics(out);
-		out << std::endl;
-		stk.freqs_tcp_->statistics(out);
-	}
-	return out;
-}
-
-void StackMobile::printFlows(std::basic_ostream<char>& out) {
+void StackMobile::showFlows(std::basic_ostream<char>& out) {
 
 	out << "Flows on memory" << std::endl;
-	flow_mng_udp_low_->printFlows(out);
-	flow_mng_tcp_->printFlows(out);
-	flow_mng_udp_high_->printFlows(out);
+	flow_mng_udp_low_->showFlows(out);
+	flow_mng_tcp_->showFlows(out);
+	flow_mng_udp_high_->showFlows(out);
 }
-
-void StackMobile::setTCPRegexManager(RegexManagerPtrWeak sig) {
-
-        if (sig.lock()) {
-                tcp_generic_->setRegexManager(sig.lock());
-	}
-}
-
-void StackMobile::setUDPRegexManager(RegexManagerPtrWeak sig ) {
-
-        if (sig.lock()) {
-                udp_generic_->setRegexManager(sig.lock());
-	}
-}
-
-void StackMobile::setTCPRegexManager(RegexManager& sig) {
-
-	sigs_tcp_ = std::make_shared<RegexManager>(sig);
-        setTCPRegexManager(sigs_tcp_);
-}
-
-void StackMobile::setUDPRegexManager(RegexManager& sig) {
-
-	sigs_udp_ = std::make_shared<RegexManager>(sig);
-        setUDPRegexManager(sigs_udp_);
-}
-
-#ifdef PYTHON_BINDING
-
-void StackMobile::setDNSDomainNameManager(DomainNameManager& dnm, bool allow) {
-
-        if (allow) {
-                dns_domains_ = std::make_shared<DomainNameManager>(dnm);
-                dns_->setDomainNameManager(dns_domains_);
-        } else {
-                ban_dns_domains_ = std::make_shared<DomainNameManager>(dnm);
-                dns_->setDomainNameBanManager(ban_dns_domains_);
-        }
-}
-
-void StackMobile::setHTTPHostNameManager(DomainNameManager& dnm, bool allow) {
-
-        if (allow) {
-                http_host_domains_ = std::make_shared<DomainNameManager>(dnm);
-                http_->setHostNameManager(http_host_domains_);
-        } else {
-                ban_http_host_domains_ = std::make_shared<DomainNameManager>(dnm);
-                http_->setHostNameBanManager(ban_http_host_domains_);
-        }
-}
-
-void StackMobile::setSSLHostNameManager(DomainNameManager& dnm, bool allow ) {
-
-        if (allow) {
-                ssl_host_domains_ = std::make_shared<DomainNameManager>(dnm);
-                ssl_->setHostNameManager(ssl_host_domains_);
-        } else {
-                ban_ssl_host_domains_ = std::make_shared<DomainNameManager>(dnm);
-                ssl_->setHostNameBanManager(ban_ssl_host_domains_);
-        }
-}
-
-void StackMobile::setDNSDomainNameManager(DomainNameManager& dnm) {
-
-	setDNSDomainNameManager(dnm,true);
-}
-
-void StackMobile::setHTTPHostNameManager(DomainNameManager& dnm) {
-
-	setHTTPHostNameManager(dnm,true);
-}
-
-void StackMobile::setSSLHostNameManager(DomainNameManager& dnm) {
-
-	setSSLHostNameManager(dnm,true);
-}
-
-void StackMobile::setUDPDatabaseAdaptor(boost::python::object &dbptr) {
-
-        udp_high_->setDatabaseAdaptor(dbptr);
-}
-
-void StackMobile::setTCPDatabaseAdaptor(boost::python::object &dbptr) {
-
-        tcp_->setDatabaseAdaptor(dbptr);
-}
-
-void StackMobile::setUDPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
-
-        udp_high_->setDatabaseAdaptor(dbptr,packet_sampling);
-}
-
-void StackMobile::setTCPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
-
-        tcp_->setDatabaseAdaptor(dbptr, packet_sampling);
-}
-
-#endif
 
 void StackMobile::setTotalTCPFlows(int value) {
 
@@ -489,27 +372,6 @@ void StackMobile::enableNIDSEngine(bool enable) {
                 ff_udp_high_->addUpFlowForwarder(ff_dns_);
                 ff_udp_high_->addUpFlowForwarder(ff_udp_generic_);
         }
-}
-
-
-void StackMobile::setStatisticsLevel(int level) {
-
-	stats_level_ = level;
-        eth_->setStatisticsLevel(level);
-        ip_low_->setStatisticsLevel(level);
-        udp_low_->setStatisticsLevel(level);
-        gprs_->setStatisticsLevel(level);
-        ip_high_->setStatisticsLevel(level);
-        tcp_->setStatisticsLevel(level);
-        udp_high_->setStatisticsLevel(level);
-        icmp_->setStatisticsLevel(level);
-        dns_->setStatisticsLevel(level);
-        udp_generic_->setStatisticsLevel(level);
-        freqs_udp_->setStatisticsLevel(level);
-        http_->setStatisticsLevel(level);
-        ssl_->setStatisticsLevel(level);
-        tcp_generic_->setStatisticsLevel(level);
-        freqs_tcp_->setStatisticsLevel(level);
 }
 
 void StackMobile::enableLinkLayerTagging(std::string type) {

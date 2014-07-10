@@ -302,8 +302,8 @@ struct StackLanTest
 	void dumpFlows() {
 	
 		std::cout << "Flows on memory" << std::endl;
-		flow_table_tcp->printFlows(std::cout);
-		flow_table_udp->printFlows(std::cout);
+		flow_table_tcp->showFlows(std::cout);
+		flow_table_udp->showFlows(std::cout);
 	}
 
 	void enableLinkLayerTagging(std::string type) {

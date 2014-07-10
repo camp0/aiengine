@@ -21,6 +21,7 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 #ifndef SRC_UDP_UDPPROTOCOL_H_
 #define SRC_UDP_UDPPROTOCOL_H_
 
@@ -46,13 +47,13 @@ public:
     	explicit UDPProtocol(std::string name):Protocol(name),stats_level_(0),
 		udp_header_(nullptr),total_bytes_(0) {}
     	
-	explicit UDPProtocol():UDPProtocol("UDPProtocol") {}
+	explicit UDPProtocol():UDPProtocol(UDPProtocol::default_name) {}
 
     	virtual ~UDPProtocol() {}
 
+	static constexpr char *default_name = "UDPProtocol";
 	static const u_int16_t id = IPPROTO_UDP;
 	static const int header_size = 8;
-
 	int getHeaderSize() const { return header_size;}
 
 	int64_t getTotalBytes() const { return total_bytes_; }

@@ -21,6 +21,9 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
+// gets rid of annoying "deprecated conversion from string constant blah blah" warning
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+
 #ifndef SRC_UDPGENERIC_UDPGENERICPROTOCOL_H_
 #define SRC_UDPGENERIC_UDPGENERICPROTOCOL_H_
 
@@ -47,11 +50,12 @@ namespace aiengine {
 class UDPGenericProtocol: public Protocol 
 {
 public:
-    	explicit UDPGenericProtocol():Protocol("UDPGenericProtocol"),stats_level_(0),
+    	explicit UDPGenericProtocol():Protocol(UDPGenericProtocol::default_name),stats_level_(0),
 		udp_generic_header_(nullptr),total_bytes_(0) {}
 
     	virtual ~UDPGenericProtocol() {}
-	
+
+	static constexpr char *default_name = "UDPGenericProtocol";	
 	static const u_int16_t id = 0;
 	static const int header_size = 0;
 	int getHeaderSize() const { return header_size;}

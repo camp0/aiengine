@@ -128,7 +128,7 @@ void signalHandlerShowFlowsStatistics( int signum) {
         std::cout << "[" << nowt << "] ";
         std::cout << "Dumping flows information into " << ss.str() << std::endl;
         if (stack )
-		stack->printFlows(outfile);
+		stack->showFlows(outfile);
 
         outfile.close();
 }
@@ -238,7 +238,7 @@ void aiengineExit() {
 		showStackStatistics(std::cout);
 
 		if (option_show_flows)
-              		stack->printFlows();
+              		stack->showFlows();
 
 		if (option_enable_frequencies) {
 			showFrequencyResults();

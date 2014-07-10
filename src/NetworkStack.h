@@ -32,21 +32,35 @@
 #include "./flow/FlowManager.h"
 #include "DatabaseAdaptor.h"
 #include "./ipset/IPSetManager.h"
+#include "./tcp/TCPProtocol.h"
+#include "./udp/UDPProtocol.h"
+#include "./tcpgeneric/TCPGenericProtocol.h"
+#include "./udpgeneric/UDPGenericProtocol.h"
+#include "./dns/DNSProtocol.h"
+#include "./ssl/SSLProtocol.h"
+#include "./http/HTTPProtocol.h"
 
 namespace aiengine {
+
+typedef std::pair<std::string,ProtocolPtr> ProtocolPair;
+typedef std::map<std::string,ProtocolPtr> ProtocolMap;
+typedef std::vector<ProtocolPair> ProtocolVector;
 
 class NetworkStack 
 {
 public:
-    	NetworkStack() {}
+    	NetworkStack():sigs_tcp(),sigs_udp(),
+		stats_level_(0),proto_map_(),proto_vector_(),
+		domain_mng_list_() {}
+
     	virtual ~NetworkStack() {}
 
-	virtual void printFlows(std::basic_ostream<char>& out) = 0;
-	virtual void printFlows() = 0;
+	virtual void showFlows(std::basic_ostream<char>& out) = 0;
+	virtual void showFlows() = 0;
 
-	virtual void setStatisticsLevel(int level) = 0;
-	virtual void statistics(std::basic_ostream<char>& out) = 0;
-	virtual void statistics() = 0;
+        void statistics(std::basic_ostream<char>& out) { out << *this; }
+        void statistics() { statistics(std::cout);}
+	void statistics(const std::string &name);
 
 	virtual const char* getName() = 0;
 	virtual void setName(char *name) = 0;
@@ -57,10 +71,10 @@ public:
 	virtual void setTotalTCPFlows(int value) = 0;
 	virtual void setTotalUDPFlows(int value) = 0;
 
-	virtual void setTCPRegexManager(RegexManagerPtrWeak sig) = 0;	
-	virtual void setUDPRegexManager(RegexManagerPtrWeak sig) = 0;	
-	virtual void setTCPRegexManager(RegexManager& sig) = 0;	
-	virtual void setUDPRegexManager(RegexManager& sig) = 0;	
+	void setTCPRegexManager(RegexManagerPtrWeak sig);	
+	void setUDPRegexManager(RegexManagerPtrWeak sig);	
+	void setTCPRegexManager(RegexManager& sig);	
+	void setUDPRegexManager(RegexManager& sig);	
 
 	virtual void enableFrequencyEngine(bool enable) = 0;
 	virtual void enableNIDSEngine(bool enable) = 0;
@@ -70,17 +84,17 @@ public:
 	virtual FlowManager& getTCPFlowManager() = 0;
 	virtual FlowManager& getUDPFlowManager() = 0;
 	
-	virtual void setDNSDomainNameManager(DomainNameManager& dnm) = 0;
-	virtual void setDNSDomainNameManager(DomainNameManager& dnm, bool allow) = 0;
-	virtual void setHTTPHostNameManager(DomainNameManager& dnm) = 0;
-	virtual void setHTTPHostNameManager(DomainNameManager& dnm, bool allow) = 0;
-	virtual void setSSLHostNameManager(DomainNameManager& dnm) = 0;
-	virtual void setSSLHostNameManager(DomainNameManager& dnm, bool allow) = 0;
+	void setDNSDomainNameManager(DomainNameManager& dnm);
+	void setDNSDomainNameManager(DomainNameManager& dnm, bool allow);
+	void setHTTPHostNameManager(DomainNameManager& dnm);
+	void setHTTPHostNameManager(DomainNameManager& dnm, bool allow);
+	void setSSLHostNameManager(DomainNameManager& dnm);
+	void setSSLHostNameManager(DomainNameManager& dnm, bool allow);
 	
-	virtual void setTCPDatabaseAdaptor(boost::python::object &dbptr) = 0;
-	virtual void setTCPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling) = 0;
-	virtual void setUDPDatabaseAdaptor(boost::python::object &dbptr) = 0;
-	virtual void setUDPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling) = 0;
+	void setTCPDatabaseAdaptor(boost::python::object &dbptr);
+	void setTCPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling);
+	void setUDPDatabaseAdaptor(boost::python::object &dbptr);
+	void setUDPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling);
 	
 	virtual void setTCPIPSetManager(IPSetManager& ipset_mng) = 0;
 	virtual void setUDPIPSetManager(IPSetManager& ipset_mng) = 0;
@@ -92,6 +106,26 @@ public:
 	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;
 #endif
 
+	void addProtocol(ProtocolPtr proto); 
+	void setStatisticsLevel(int level); 
+	int getStatisticsLevel() const { return stats_level_; }
+
+	friend std::ostream& operator<< (std::ostream& out, const NetworkStack& ns);
+
+        // References to the RegexsManagers
+        RegexManagerPtr sigs_tcp;
+        RegexManagerPtr sigs_udp;
+
+private:
+	template <class T> 
+	void set_domain_name_manager(DomainNameManager& dnm, bool allow);
+
+	ProtocolPtr get_protocol(const std::string &name);
+
+	int stats_level_;
+	ProtocolMap proto_map_;
+	ProtocolVector proto_vector_;
+	std::vector<DomainNameManagerPtr> domain_mng_list_;
 };
 
 typedef std::shared_ptr <NetworkStack> NetworkStackPtr;

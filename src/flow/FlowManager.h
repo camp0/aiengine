@@ -49,7 +49,9 @@ typedef FlowTable::nth_index<0>::type FlowByID;
 class FlowManager
 {
 public:
-    	FlowManager(): total_process_flows_(0) {}
+    	explicit FlowManager(std::string name):name_(name),total_process_flows_(0) {}
+    	explicit FlowManager(): FlowManager("FlowManager") {}
+
     	virtual ~FlowManager();
 
 	void addFlow(SharedPointer<Flow> flow);
@@ -59,8 +61,8 @@ public:
 	int getTotalFlows() const { return flowTable_.size();}
 	int32_t getTotalProcessFlows() const { return total_process_flows_;}
 
-	void printFlows(std::basic_ostream<char>& out);
-	void printFlows() { printFlows(std::cout);}      
+	void showFlows(std::basic_ostream<char>& out);
+	void showFlows() { showFlows(std::cout);}      
 
 	void statistics(std::basic_ostream<char>& out) { out << *this;} 
         void statistics() { statistics(std::cout);}
@@ -76,6 +78,7 @@ public:
 #endif
 
 private:
+	std::string name_;
     	timeval now_;
 	int32_t total_process_flows_;
     	FlowTable flowTable_;

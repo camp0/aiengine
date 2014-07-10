@@ -21,6 +21,7 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 #ifndef SRC_DNS_DNSPROTOCOL_H_ 
 #define SRC_DNS_DNSPROTOCOL_H_
 
@@ -50,7 +51,7 @@ namespace aiengine {
 class DNSProtocol: public Protocol 
 {
 public:
-    	explicit DNSProtocol():Protocol("DNSProtocol"),stats_level_(0),flow_forwarder_(),
+    	explicit DNSProtocol():Protocol(DNSProtocol::default_name),stats_level_(0),flow_forwarder_(),
 		dns_header_(nullptr),total_bytes_(0),
 		total_allow_queries_(0),total_ban_queries_(0),
 		domain_mng_(),ban_domain_mng_(),
@@ -58,7 +59,8 @@ public:
 		domain_map_() {}
 
     	virtual ~DNSProtocol() {}
-	
+
+	static constexpr char *default_name = "DNSProtocol";	
 	static const u_int16_t id = 0;
 	static const int header_size = 2;
 	int getHeaderSize() const { return header_size;}

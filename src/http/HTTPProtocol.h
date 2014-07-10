@@ -21,6 +21,7 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 #ifndef SRC_HTTP_HTTPPROTOCOL_H_
 #define SRC_HTTP_HTTPPROTOCOL_H_
 
@@ -53,7 +54,7 @@ namespace aiengine {
 class HTTPProtocol: public Protocol 
 {
 public:
-    	explicit HTTPProtocol():Protocol("HTTPProtocol"),stats_level_(0),flow_forwarder_(),
+    	explicit HTTPProtocol():Protocol(HTTPProtocol::default_name),stats_level_(0),flow_forwarder_(),
                 http_regex_(new Regex("Main HTTP expression","^(GET|POST|HEAD|PUT|TRACE).*HTTP/1.")),
                 http_host_(new Regex("Host expression","Host: .*?\r\n")),
                 http_ua_(new Regex("User Agent expression","User-Agent: .*?\r\n")),
@@ -67,6 +68,7 @@ public:
 
     	virtual ~HTTPProtocol() {}
 
+	static constexpr char *default_name = "HTTPProtocol";
 	static const u_int16_t id = 0;
 	static const int header_size = 0;
 	int getHeaderSize() const { return header_size;}
@@ -124,8 +126,8 @@ public:
         void createHTTPUserAgents(int number) { ua_cache_->create(number);}
         void destroyHTTPUserAgents(int number) { ua_cache_->destroy(number);}
 
-	void setHostNameManager(DomainNameManagerPtrWeak dnm) { host_mng_ = dnm;}
-	void setHostNameBanManager(DomainNameManagerPtrWeak dnm) { ban_host_mng_ = dnm;}
+	void setDomainNameManager(DomainNameManagerPtrWeak dnm) { host_mng_ = dnm;}
+	void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) { ban_host_mng_ = dnm;}
 
 	int32_t getTotalAllowHosts() const { return total_allow_hosts_;}
 	int32_t getTotalBanHosts() const { return total_ban_hosts_;}

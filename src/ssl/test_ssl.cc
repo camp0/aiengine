@@ -215,7 +215,7 @@ BOOST_AUTO_TEST_CASE (test8_ssl)
         Packet packet(pkt,length,0);
 
         ssl->createSSLHosts(1);
-        ssl->setHostNameManager(host_mng_weak);
+        ssl->setDomainNameManager(host_mng_weak);
         host_mng->addDomainName(host_name);
         
 	mux_eth->setPacket(&packet);
@@ -240,7 +240,7 @@ BOOST_AUTO_TEST_CASE (test9_ssl)
         Packet packet(pkt,length,0);
 
         ssl->createSSLHosts(1);
-        ssl->setHostNameManager(host_mng_weak);
+        ssl->setDomainNameManager(host_mng_weak);
         host_mng->addDomainName(host_name);
 
         mux_eth->setPacket(&packet);
@@ -262,7 +262,7 @@ BOOST_AUTO_TEST_CASE (test10_ssl)
         Packet packet(pkt,length,0);
 
         ssl->createSSLHosts(1);
-        ssl->setHostNameBanManager(host_mng_weak);
+        ssl->setDomainNameBanManager(host_mng_weak);
         host_mng->addDomainName(host_name);
 
         mux_eth->setPacket(&packet);

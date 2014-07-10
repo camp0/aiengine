@@ -41,8 +41,11 @@ namespace aiengine {
 class IPProtocol: public Protocol 
 {
 public:
-    	explicit IPProtocol():Protocol("IPProtocol"),stats_level_(0),mux_(),
+    	explicit IPProtocol(std::string name):Protocol(name),stats_level_(0),mux_(),
 		ip_header_(nullptr),total_bytes_(0),total_frag_packets_(0) {}
+
+    	explicit IPProtocol():IPProtocol("IPProtocol") {}
+
     	virtual ~IPProtocol() {}
 
 	static const u_int16_t id = ETHERTYPE_IP;

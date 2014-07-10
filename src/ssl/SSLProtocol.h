@@ -21,6 +21,7 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 #ifndef SRC_SSL_SSLPROTOCOL_H_
 #define SRC_SSL_SSLPROTOCOL_H_
 
@@ -104,7 +105,7 @@ typedef struct {
 class SSLProtocol: public Protocol 
 {
 public:
-    	explicit SSLProtocol():Protocol("SSLProtocol"),stats_level_(0),flow_forwarder_(),
+    	explicit SSLProtocol():Protocol(SSLProtocol::default_name),stats_level_(0),flow_forwarder_(),
 		ssl_header_(nullptr),total_bytes_(0),
 		total_client_hellos_(0),total_server_hellos_(0),
 		total_certificates_(0),total_records_(0),total_ban_hosts_(0),
@@ -113,7 +114,8 @@ public:
 		host_map_(),host_mng_(),ban_host_mng_() {}
 
     	virtual ~SSLProtocol() {}
-	
+
+	static constexpr char *default_name = "SSLProtocol";	
 	static const u_int16_t id = 0;
 	static const int header_size = 2;
 	int getHeaderSize() const { return header_size;}
@@ -168,8 +170,8 @@ public:
         void createSSLHosts(int number) { host_cache_->create(number);}
         void destroySSLHosts(int number) { host_cache_->destroy(number);}
 
-	void setHostNameManager(DomainNameManagerPtrWeak dnm) { host_mng_ = dnm;}
-	void setHostNameBanManager(DomainNameManagerPtrWeak dnm) { ban_host_mng_ = dnm;}
+	void setDomainNameManager(DomainNameManagerPtrWeak dnm) { host_mng_ = dnm;}
+	void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) { ban_host_mng_ = dnm;}
 
 private:
 	int stats_level_;
