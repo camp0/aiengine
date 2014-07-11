@@ -718,6 +718,37 @@ BOOST_FIXTURE_TEST_CASE(test_case_16,StackLanTest)
 	//dumpFlows();
 }
 
+BOOST_FIXTURE_TEST_CASE(test_case_17,StackLanTest) // Test a IPv6 flow with  authentication header
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+        pd->open("../pcapfiles/ipv6_ah.pcap");
+        pd->run();
+        pd->close();
+
+        BOOST_CHECK(pd->getTotalPackets() == 10);
+        BOOST_CHECK(mux_eth->getTotalForwardPackets() == 10);
+        BOOST_CHECK(mux_eth->getTotalReceivedPackets() == 10);
+        BOOST_CHECK(mux_eth->getTotalFailPackets() == 0);
+
+        BOOST_CHECK(ip6->getTotalValidatedPackets() == 10);
+        BOOST_CHECK(ip6->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(ip6->getTotalPackets() == 10);
+        BOOST_CHECK(ip6->getTotalBytes() == 947);
+        
+        BOOST_CHECK(tcp6->getTotalValidatedPackets() == 10);
+        BOOST_CHECK(tcp6->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(tcp6->getTotalPackets() == 10);
+
+        BOOST_CHECK(tcp_generic6->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(tcp_generic6->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(tcp_generic6->getTotalPackets() == 2);
+        BOOST_CHECK(tcp_generic6->getTotalBytes() == 103);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 
@@ -1189,6 +1220,30 @@ BOOST_AUTO_TEST_CASE (test_case_13) // Test the UDP regex
 	BOOST_CHECK(r_generic->getMatchs() == 1);
 	BOOST_CHECK(r_generic->getTotalEvaluates() == 1);
 }
+
+BOOST_AUTO_TEST_CASE (test_case_14) // Test the TCP regex with IPv6 extension headers
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        NetworkStackPtr stack = NetworkStackPtr(new StackLanIPv6());
+        RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
+        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("Bad http","^GET /bad.html"));
+
+        // connect with the stack
+        pd->setStack(stack);
+
+        stack->setTotalTCPFlows(1);
+
+        rmng->addRegex(r_generic);
+        stack->setTCPRegexManager(rmng);
+
+        pd->open("../pcapfiles/ipv6_ah.pcap");
+        pd->run();
+        pd->close();
+
+        BOOST_CHECK(r_generic->getMatchs() == 1);
+        BOOST_CHECK(r_generic->getTotalEvaluates() == 1);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

@@ -408,6 +408,48 @@ BOOST_AUTO_TEST_CASE (test8_tcpgeneric)
 
 }
 
+BOOST_AUTO_TEST_CASE (test9_tcpgeneric) // IPv6 with auth header 
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_ethernet_ipv6_dstopthdr_tcp_http_get);
+        int length = raw_ethernet_ipv6_dstopthdr_tcp_http_get_length;
+        Packet packet(pkt,length,0);
+
+        SharedPointer<Regex> r = SharedPointer<Regex>(new Regex("Bad http","^GET.*$"));
+        RegexManagerPtr sig = RegexManagerPtr(new RegexManager());
+
+        sig->addRegex(r);
+        gtcp6->setRegexManager(sig);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        // Check stack integrity
+        BOOST_CHECK(tcp6->getTotalPackets() == 1);
+        BOOST_CHECK(tcp6->getTotalBytes() == 35);
+        BOOST_CHECK(tcp6->getTotalValidatedPackets() == 1);
+
+	BOOST_CHECK(tcp6->getSrcPort() == 36951);
+	BOOST_CHECK(tcp6->getDstPort() == 80);
+	BOOST_CHECK(tcp6->isSyn() == false);
+	BOOST_CHECK(tcp6->isAck() == true);
+	BOOST_CHECK(tcp6->isFin() == false);
+	BOOST_CHECK(tcp6->isRst() == false);
+	BOOST_CHECK(tcp6->isPushSet() == true);
+
+        BOOST_CHECK(r->getMatchs() == 1);
+        BOOST_CHECK(r->getTotalEvaluates() == 1);
+
+//	char *msg = reinterpret_cast <char*> (tcp6->getPayload());
+
+        BOOST_CHECK(gtcp6->getTotalPackets() == 1);
+        BOOST_CHECK(gtcp6->getTotalBytes() == 15);
+        BOOST_CHECK(gtcp6->getTotalValidatedPackets() == 1);
+
+}
 
 
 BOOST_AUTO_TEST_SUITE_END( )

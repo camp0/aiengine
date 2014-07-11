@@ -42,7 +42,9 @@ class IPv6Protocol: public Protocol
 {
 public:
     	explicit IPv6Protocol():Protocol("IPv6Protocol"),stats_level_(0),mux_(),
-		ip6_header_(nullptr),total_bytes_(0) {}
+		ip6_header_(nullptr),total_bytes_(0),total_frag_packets_(0),
+		total_extension_header_packets_(0) {}
+
     	virtual ~IPv6Protocol() {}
 
 	static const u_int16_t id = ETHERTYPE_IPV6;
@@ -99,12 +101,15 @@ public:
     	char* getDstAddrDotNotation() const ; 
 	struct in6_addr *getSourceAddress() const { return (struct in6_addr*)&(ip6_header_->ip6_src);}
 	struct in6_addr *getDestinationAddress() const { return (struct in6_addr*)&(ip6_header_->ip6_dst);}
+	unsigned char* getPayload() const { return (unsigned char*)ip6_header_ + 40; }
 
 private:
 	int stats_level_;
 	MultiplexerPtrWeak mux_;
 	struct ip6_hdr *ip6_header_;
 	int64_t total_bytes_;
+	int32_t total_frag_packets_;
+	int32_t total_extension_header_packets_;
 };
 
 typedef std::shared_ptr<IPv6Protocol> IPv6ProtocolPtr;

@@ -56,6 +56,8 @@ char* IPv6Protocol::getDstAddrDotNotation() const {
 void IPv6Protocol::processPacket(Packet& packet) {
 
         MultiplexerPtr mux = mux_.lock();
+	u_int8_t next_proto = getProtocol();
+	int extension_length = 0;
 
         ++total_packets_;
 
@@ -65,8 +67,36 @@ void IPv6Protocol::processPacket(Packet& packet) {
 	mux->address.setSourceAddress6(getSourceAddress());
 	mux->address.setDestinationAddress6(getDestinationAddress());
 
-        mux->setNextProtocolIdentifier(getProtocol());
-        packet.setPrevHeaderSize(header_size);
+	// I dont like switch statements but sometimes.....
+	switch (getProtocol()) {
+		case IPPROTO_DSTOPTS:
+		case IPPROTO_ROUTING:
+		case IPPROTO_HOPOPTS: { 
+			struct ip6_ext *ip6_generic_ext = reinterpret_cast <struct ip6_ext*> (getPayload()); 
+
+			next_proto = ip6_generic_ext->ip6e_nxt;
+			extension_length = (ip6_generic_ext->ip6e_len + 1) * 8;  /* length in units of 8 octets.  */
+			++total_extension_header_packets_;
+			// std::cout << "IPv6Protocol:hdr len="<< header_size << " ext hdr=" << extension_length << std::endl;
+			break;
+		}
+		case IPPROTO_AH: {
+			struct ip6_ext *ip6_generic_ext = reinterpret_cast <struct ip6_ext*> (getPayload()); 
+
+			next_proto = ip6_generic_ext->ip6e_nxt;
+			extension_length = (ip6_generic_ext->ip6e_len) * 6;  /* length in units of 6 octets.  */
+			++total_extension_header_packets_;
+			// std::cout << "IPv6ProtocolAH:hdr len="<< header_size << " ext hdr=" << extension_length << std::endl;
+			break;
+		}
+		case IPPROTO_FRAGMENT: 
+			++total_frag_packets_;
+			break;
+	} 
+
+        mux->setHeaderSize(header_size + extension_length);
+       	mux->setNextProtocolIdentifier(next_proto);
+       	packet.setPrevHeaderSize(header_size + extension_length);
 }
 
 void IPv6Protocol::statistics(std::basic_ostream<char>& out) {
@@ -79,7 +109,8 @@ void IPv6Protocol::statistics(std::basic_ostream<char>& out) {
                         out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
                         out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
                         if(stats_level_ > 3) {
-                                //out << "\t" << "Total fragment packets: " << std::setw(10) << total_frag_packets_ <<std::endl;
+                                out << "\t" << "Total fragment packets: " << std::setw(10) << total_frag_packets_ <<std::endl;
+                                out << "\t" << "Total extension packets:" << std::setw(10) << total_extension_header_packets_ <<std::endl;
                         }
 
                         if (stats_level_ > 2) {

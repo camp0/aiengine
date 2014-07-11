@@ -200,6 +200,50 @@ BOOST_AUTO_TEST_CASE (test1_tcp)
         BOOST_CHECK(tcp->getTotalBytes() == 797+20);
 }
 
+BOOST_AUTO_TEST_CASE (test2_tcp)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_ethernet_ipv6_dstopthdr_tcp_http_get);
+        int length = raw_ethernet_ipv6_dstopthdr_tcp_http_get_length;
+        Packet packet(pkt,length,0);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        // Check the TCP integrity
+        BOOST_CHECK(tcp->getSrcPort() == 36951);
+        BOOST_CHECK(tcp->getDstPort() == 80);
+        BOOST_CHECK(tcp->getTotalBytes() == 15+20);
+}
+
+BOOST_AUTO_TEST_CASE (test3_tcp)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_ethernet_ipv6_ahhdr_tcp_syn_flow1);
+        int length1 = raw_ethernet_ipv6_ahhdr_tcp_syn_flow1_length;
+        Packet packet1(pkt1,length1,0);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(packet1.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+        // Check the TCP integrity
+        BOOST_CHECK(tcp->getSrcPort() == 17257);
+        BOOST_CHECK(tcp->getDstPort() == 80);
+	BOOST_CHECK(tcp->isSyn() == true);
+	BOOST_CHECK(tcp->isFin() == false);
+	BOOST_CHECK(tcp->isRst() == false);
+	BOOST_CHECK(tcp->isAck() == false);
+	BOOST_CHECK(tcp->isPushSet() == false);
+        BOOST_CHECK(tcp->getTotalBytes() == 20);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END( )
 
 BOOST_AUTO_TEST_SUITE(tcp_suite3)

@@ -257,16 +257,16 @@ struct StackLanTest
                 mux_icmp->addDownMultiplexer(mux_ip);
 		
 		// Connect the FlowManager and FlowCache
-		flow_cache_udp->createFlows(1024*16);
-		flow_cache_tcp->createFlows(1024*32);
+		flow_cache_udp->createFlows(1024);
+		flow_cache_tcp->createFlows(1024);
 		
 		tcp->setFlowCache(flow_cache_tcp);
 		tcp->setFlowManager(flow_table_tcp);
 		tcp6->setFlowCache(flow_cache_tcp);
 		tcp6->setFlowManager(flow_table_tcp);
 		
-		tcp->createTCPInfo(1024*32);
-		tcp6->createTCPInfo(1024*32);
+		tcp->createTCPInfo(1024);
+		tcp6->createTCPInfo(1024);
 		
 		udp->setFlowCache(flow_cache_udp);
 		udp->setFlowManager(flow_table_udp);

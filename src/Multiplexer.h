@@ -87,6 +87,8 @@ public:
 	int getNumberUpMultiplexers() const { return muxUpMap_.size(); }
 
 	void setProtocolIdentifier(u_int16_t protocol_id) { protocol_id_ = protocol_id; } 
+	u_int16_t getProtocolIdentifier() const { return protocol_id_; }
+	u_int16_t getNextProtocolIdentifier() const { return next_protocol_id_; }
 	void setNextProtocolIdentifier(u_int16_t protocol_id) { next_protocol_id_ = protocol_id;}
 	void setProtocol(ProtocolPtr proto) { proto_ = proto; }
 	ProtocolPtr getProtocol() { return proto_;}

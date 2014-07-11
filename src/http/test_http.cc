@@ -675,5 +675,30 @@ BOOST_AUTO_TEST_CASE (test2_http)
 	// Probably need to improve more.
 }
 
+BOOST_AUTO_TEST_CASE (test3_http)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_ethernet_ipv6_dstopthdr_tcp_http_get);
+        int length = raw_ethernet_ipv6_dstopthdr_tcp_http_get_length;
+        Packet packet(pkt,length,0);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        BOOST_CHECK(flow_mng->getTotalFlows() == 1);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 1);
+        BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
+        BOOST_CHECK(flow_cache->getTotalReleases() == 0);
+
+	// The http request contains a non valid minimum http header
+	// GET bad.html
+	//
+        BOOST_CHECK(http->getTotalMalformedPackets() == 1);
+        BOOST_CHECK(http->getTotalValidatedPackets() == 0);
+        BOOST_CHECK(http->getTotalBytes() == 0);
+
+}
+
 BOOST_AUTO_TEST_SUITE_END( )
 

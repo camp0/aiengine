@@ -11,7 +11,8 @@ from distutils.extension import Extension
 """ List of the files of the lib """
 head_files =  ["Multiplexer.h","FlowForwarder.h","PacketDispatcher.h","Flow.cc","Protocol.h","Signature.h"]
 
-src_files =  ["Multiplexer.cc","FlowForwarder.cc","PacketDispatcher.cc","Flow.cc","Protocol.cc","Signature.cc","Interpreter.cc"]
+src_files =  ["Multiplexer.cc","FlowForwarder.cc","PacketDispatcher.cc","Flow.cc","Protocol.cc"]
+src_files += ["Signature.cc","Interpreter.cc","NetworkStack.cc"]
 src_files += ["./flow/FlowManager.cc","./ethernet/EthernetProtocol.cc","./vlan/VLanProtocol.cc","./mpls/MPLSProtocol.cc"]
 src_files += ["./ip/IPProtocol.cc","./ipset/IPSet.cc","./ipset/IPBloomSet.cc","./ipset/IPSetManager.cc"]
 src_files += ["./ip6/IPv6Protocol.cc","./icmp/ICMPProtocol.cc","./udp/UDPProtocol.cc","./tcp/TCPProtocol.cc"]
