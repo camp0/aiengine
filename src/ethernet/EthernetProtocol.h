@@ -83,6 +83,9 @@ public:
 
 		if (ETHER_IS_VALID_LEN(length)) {
 			setHeader(packet.getPayload());
+
+			// The packet dont contains an anomaly by default
+			packet.setPacketAnomaly(PacketAnomaly::NONE);
 			++total_validated_packets_;
 			total_bytes_ += length; 
 			return true;

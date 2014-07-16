@@ -95,6 +95,8 @@ void FlowManager::showFlows(std::basic_ostream<char>& out) {
 
 		out << boost::format("%-64s %-10d %-10d %-18s") % fivetuple.str() % flow->total_bytes % flow->total_packets % proto_name;
 
+		if (flow->getPacketAnomaly() != PacketAnomaly::NONE) out << " Anomaly:" << PacketAnomalyToString.at(flow->getPacketAnomaly());
+
 		if(flow->ipset.lock()) out << " IPset:" << *flow->ipset.lock()->getName();	
 
 		if(flow->tcp_info.lock()) out << " TCP  :" << *flow->tcp_info.lock();	

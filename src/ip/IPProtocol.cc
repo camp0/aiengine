@@ -42,6 +42,7 @@ void IPProtocol::processPacket(Packet& packet) {
 
 	if (isFragment() == true) {
 		++total_frag_packets_;
+		packet.setPacketAnomaly(PacketAnomaly::IPV4_FRAGMENTATION);
 	}
 }
 

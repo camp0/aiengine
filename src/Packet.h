@@ -25,16 +25,18 @@
 #define SRC_PACKET_H_
 
 #include <iostream>
+#include "PacketAnomaly.h"
 
 namespace aiengine {
 
 class Packet 
 {
 public:
-    	Packet():length_(0),packet_(nullptr),prev_header_size_(0),source_port_(0),dest_port_(0) {}
     	Packet(unsigned char *packet,int length, int prev_header_size):
 		length_(length),packet_(packet),prev_header_size_(prev_header_size),
-		source_port_(0),dest_port_(0) {}
+		source_port_(0),dest_port_(0),pa_(PacketAnomaly::NONE) {}
+
+    	Packet():Packet(nullptr,0,0) {}
 
     	virtual ~Packet() {}
 
@@ -44,6 +46,9 @@ public:
 
 	void setDestinationPort(u_int16_t port) { dest_port_ = port;}
 	void setSourcePort(u_int16_t port) { source_port_ = port;}
+
+	void setPacketAnomaly(const PacketAnomaly &pa) { pa_ = pa; }
+	PacketAnomaly getPacketAnomaly() const { return pa_;} 
 
 	u_int16_t getDestinationPort() { return dest_port_;}
 	u_int16_t getSourcePort() { return source_port_;}
@@ -66,9 +71,9 @@ private:
 	int length_;
 	unsigned char *packet_;
 	int prev_header_size_;
-
 	u_int16_t source_port_;
 	u_int16_t dest_port_;
+	PacketAnomaly pa_;
 };
 
 typedef std::shared_ptr<Packet> PacketPtr;

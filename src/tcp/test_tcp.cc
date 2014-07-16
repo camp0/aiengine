@@ -176,6 +176,35 @@ BOOST_AUTO_TEST_CASE (test6_tcp)
         BOOST_CHECK(info->push == 0);
 }
 
+// Test case for verify tcp bad flags
+BOOST_AUTO_TEST_CASE (test7_tcp)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn_ack_fin);
+        int length1 = raw_packet_ethernet_ip_tcp_syn_ack_fin_length;
+        Packet packet(pkt1,length1,0);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        Flow *flow = tcp->getCurrentFlow();
+
+        BOOST_CHECK(flow != nullptr);
+        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
+        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+	PacketAnomaly pa = flow->getPacketAnomaly();
+
+        BOOST_CHECK(info->syn == 0);
+        BOOST_CHECK(info->fin == 1);
+        BOOST_CHECK(info->syn_ack == 1);
+        BOOST_CHECK(info->ack == 0);
+        BOOST_CHECK(info->push == 0);
+
+	// Verfiy that the packet is bad :D
+	BOOST_CHECK(pa == PacketAnomaly::TCP_BAD_FLAGS);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

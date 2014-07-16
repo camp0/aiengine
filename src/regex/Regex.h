@@ -48,17 +48,19 @@ class Regex: public Signature
 public:
 
 	explicit Regex(const std::string &name, const std::string& exp):
-		Signature(name,exp),
-		next_regex_()
+		Signature(name,exp)
 #if !defined(HAVE_LIBPCRE)
 #if defined(__LINUX__)
 		,exp_(exp,boost::regex_constants::perl|boost::regex::icase)
+		,what_()
 #else
 		,exp_(exp,std::regex_constants::icase)
+		,what_()
 #endif
+		,extract_buffer_()
 #endif
+		,next_regex_(),is_terminal_(true),have_jit_(false)
 	{
-		have_jit_ = false;
 #if defined(HAVE_LIBPCRE)
 		study_exp_ = NULL;
 		const char *errorstr;
@@ -84,8 +86,9 @@ public:
 		study_exp_ = pcre_study(exp_,0,&errorstr);
 #endif
 #endif
-		is_terminal_ = true;
 	}
+
+	explicit Regex(): Regex("None","^.*$") {}
 
 	virtual ~Regex() {
 #if defined(HAVE_LIBPCRE)

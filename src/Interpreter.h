@@ -39,6 +39,11 @@ namespace aiengine {
 
 #ifdef PYTHON_BINDING
 
+// TODO
+#ifndef VERSION
+#define VERSION "0.9"
+#endif
+
 class Interpreter 
 {
 public:

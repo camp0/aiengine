@@ -1,0 +1,23 @@
+include *.h
+include ../README.md
+recursive-include ethernet *.h 
+recursive-include mpls *.h 
+recursive-include vlan *.h 
+recursive-include ip *.h 
+recursive-include ip6 *.h 
+recursive-include tcp *.h 
+recursive-include tcpgeneric *.h 
+recursive-include udp *.h 
+recursive-include udpgeneric *.h 
+recursive-include gprs *.h 
+recursive-include names *.h 
+recursive-include ipset *.h 
+recursive-include flow *.h 
+recursive-include learner *.h 
+recursive-include http *.h 
+recursive-include ssl *.h 
+recursive-include dns *.h 
+recursive-include regex *.h 
+recursive-include frequency *.h 
+recursive-include icmp *.h 
+global-exclude test_* 

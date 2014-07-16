@@ -58,7 +58,7 @@ enum class FlowDirection : std::int8_t {
 
 class Flow : public Serializable {
 public:
-    	Flow() {reset();}
+    	Flow() { reset(); }
     	virtual ~Flow() {}
 	
 	// Common fields of the Flow
@@ -68,6 +68,9 @@ public:
 	void setFlowDirection(FlowDirection dir) { prev_direction_ = direction_; direction_ = dir; }
 	FlowDirection getFlowDirection() { return direction_; }
 	FlowDirection getPrevFlowDirection() { return prev_direction_; }
+
+	void setPacketAnomaly(const PacketAnomaly &pa) { pa_ = pa; }
+	PacketAnomaly getPacketAnomaly() const { return pa_; }
 
 	// IP functions
 	void setFiveTuple(u_int32_t src_a,u_int16_t src_p,u_int16_t proto,u_int32_t dst_a,u_int16_t dst_p);
@@ -149,6 +152,7 @@ private:
 	u_int16_t protocol_;
 	FlowDirection direction_; 
 	FlowDirection prev_direction_; 
+	PacketAnomaly pa_;
 };
 
 } // namespace aiengine 

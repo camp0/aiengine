@@ -71,6 +71,7 @@ void Multiplexer::forwardPacket(Packet &packet) {
                       	Packet pkt_candidate(&packet.getPayload()[header_size_],packet.getLength() - header_size_, prev_header_size);
 
 			if(mux->acceptPacket(pkt_candidate)) { // The packet is accepted by the destination mux
+				pkt_candidate.setPacketAnomaly(packet.getPacketAnomaly());
     				mux->packet_func_(pkt_candidate);
                         	++total_forward_packets_;
                         	mux->forwardPacket(pkt_candidate);

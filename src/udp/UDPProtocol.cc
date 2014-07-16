@@ -107,6 +107,10 @@ void UDPProtocol::processPacket(Packet& packet) {
 		flow->total_bytes += bytes;
 		++flow->total_packets;
 
+		if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
+			flow->setPacketAnomaly(packet.getPacketAnomaly());
+		}
+
 		if(flow_forwarder_.lock()&&(bytes>0)) {
 			FlowForwarderPtr ff = flow_forwarder_.lock();
 

@@ -58,6 +58,8 @@ void IPv6Protocol::processPacket(Packet& packet) {
         MultiplexerPtr mux = mux_.lock();
 	u_int8_t next_proto = getProtocol();
 	int extension_length = 0;
+	bool have_extension_hdr = false;
+	int iter = 0;
 
         ++total_packets_;
 
@@ -67,32 +69,47 @@ void IPv6Protocol::processPacket(Packet& packet) {
 	mux->address.setSourceAddress6(getSourceAddress());
 	mux->address.setDestinationAddress6(getDestinationAddress());
 
-	// I dont like switch statements but sometimes.....
-	switch (getProtocol()) {
-		case IPPROTO_DSTOPTS:
-		case IPPROTO_ROUTING:
-		case IPPROTO_HOPOPTS: { 
-			struct ip6_ext *ip6_generic_ext = reinterpret_cast <struct ip6_ext*> (getPayload()); 
+	do {
+		++iter;
+		// I dont like switch statements but sometimes.....
+		switch (next_proto) {
+			case IPPROTO_DSTOPTS:
+			case IPPROTO_ROUTING:
+			case IPPROTO_HOPOPTS: { 
+				struct ip6_ext *ip6_generic_ext = reinterpret_cast <struct ip6_ext*> (getPayload()); 
 
-			next_proto = ip6_generic_ext->ip6e_nxt;
-			extension_length = (ip6_generic_ext->ip6e_len + 1) * 8;  /* length in units of 8 octets.  */
-			++total_extension_header_packets_;
-			// std::cout << "IPv6Protocol:hdr len="<< header_size << " ext hdr=" << extension_length << std::endl;
-			break;
-		}
-		case IPPROTO_AH: {
-			struct ip6_ext *ip6_generic_ext = reinterpret_cast <struct ip6_ext*> (getPayload()); 
+				next_proto = ip6_generic_ext->ip6e_nxt;
+				extension_length = (ip6_generic_ext->ip6e_len + 1) * 8;  /* length in units of 8 octets.  */
 
-			next_proto = ip6_generic_ext->ip6e_nxt;
-			extension_length = (ip6_generic_ext->ip6e_len) * 6;  /* length in units of 6 octets.  */
-			++total_extension_header_packets_;
-			// std::cout << "IPv6ProtocolAH:hdr len="<< header_size << " ext hdr=" << extension_length << std::endl;
-			break;
-		}
-		case IPPROTO_FRAGMENT: 
-			++total_frag_packets_;
-			break;
-	} 
+				if (have_extension_hdr) {
+					packet.setPacketAnomaly(PacketAnomaly::IPV6_LOOP_EXTENSION_HEADERS);
+				}
+				++total_extension_header_packets_;
+				have_extension_hdr = true;
+				// std::cout << "IPv6Protocol:hdr len="<< header_size << " ext hdr=" << extension_length << std::endl;
+				break;
+			}
+			case IPPROTO_AH: {
+				struct ip6_ext *ip6_generic_ext = reinterpret_cast <struct ip6_ext*> (getPayload()); 
+
+				next_proto = ip6_generic_ext->ip6e_nxt;
+				extension_length = (ip6_generic_ext->ip6e_len) * 6;  /* length in units of 6 octets.  */
+				
+				if (have_extension_hdr) {
+					packet.setPacketAnomaly(PacketAnomaly::IPV6_LOOP_EXTENSION_HEADERS);
+				}
+				
+				++total_extension_header_packets_;
+				have_extension_hdr = true;
+				// std::cout << "IPv6ProtocolAH:hdr len="<< header_size << " ext hdr=" << extension_length << std::endl;
+				break;
+			}
+			case IPPROTO_FRAGMENT: 
+				++total_frag_packets_;
+				packet.setPacketAnomaly(PacketAnomaly::IPV6_FRAGMENTATION);
+				break;
+		} 
+	} while ( iter < 2);
 
         mux->setHeaderSize(header_size + extension_length);
        	mux->setNextProtocolIdentifier(next_proto);

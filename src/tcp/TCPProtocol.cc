@@ -128,6 +128,10 @@ void TCPProtocol::processPacket(Packet &packet) {
 
 			flow->total_bytes += bytes;
 			++flow->total_packets;
+			
+			if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
+				flow->setPacketAnomaly(packet.getPacketAnomaly());
+			}
 
 			computeState(flow.get(),bytes);
 
@@ -205,11 +209,12 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 	bool fin = isFin();
 	bool rst = isRst();
 	int flags = static_cast<int>(TcpFlags::INVALID);
-	char *str_flag = (char*)"None";
-	char *str_num = (char*)"None";
+	char *str_flag __attribute__((unused)) = (char*)"None";
+	char *str_num __attribute__((unused)) = (char*)"None";
 	SharedPointer<TCPInfo> tcp_info = flow->tcp_info.lock();
 
 	if (tcp_info) {
+		bool bad_flags = false;
 		int flowdir = static_cast<int>(flow->getFlowDirection());
 		int prev_flowdir __attribute__((unused)) = static_cast<int>(flow->getPrevFlowDirection());
 		uint32_t seq_num = getSequence();
@@ -233,6 +238,13 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 				tcp_info->seq_num[flowdir] = seq_num + 1;
 				++seq_num;
 			}
+                        if (fin) { 
+				bad_flags = true;
+				++ tcp_info->fin;
+			}
+			if (rst) {
+				bad_flags = true;
+                        }
 		} else {
 			if ((ack)&&(fin)) {
 				flags = static_cast<int>(TcpFlags::FIN);
@@ -251,6 +263,12 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 			}
 			if (isPushSet()) {
 				++ tcp_info->push;
+			}
+		}
+
+		if (bad_flags) {
+			if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
+				flow->setPacketAnomaly(PacketAnomaly::TCP_BAD_FLAGS);
 			}
 		}
 

@@ -58,7 +58,7 @@ def loadRegexFromSnort():
     dm_udp = pyaiengine.RegexManager()
 
     # Parse the file with the snort rules
-    f = open("/root/community.rules","r")
+    f = open("community.rules","r")
 
     lines = f.readlines()
     for line in lines:

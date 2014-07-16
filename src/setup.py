@@ -9,8 +9,6 @@ from distutils.core import setup
 from distutils.extension import Extension
 
 """ List of the files of the lib """
-head_files =  ["Multiplexer.h","FlowForwarder.h","PacketDispatcher.h","Flow.cc","Protocol.h","Signature.h"]
-
 src_files =  ["Multiplexer.cc","FlowForwarder.cc","PacketDispatcher.cc","Flow.cc","Protocol.cc"]
 src_files += ["Signature.cc","Interpreter.cc","NetworkStack.cc"]
 src_files += ["./flow/FlowManager.cc","./ethernet/EthernetProtocol.cc","./vlan/VLanProtocol.cc","./mpls/MPLSProtocol.cc"]
@@ -45,7 +43,7 @@ def setup_compiler():
 aiengine_module = Extension("pyaiengine",
     sources = src_files,
     libraries = ["boost_system","boost_python","pcap","pcre"],
-    define_macros = [('HAVE_CONFIG_H','1'),('PYTHON_BINDING','1')],
+    define_macros = [('PYTHON_BINDING','1'),('HAVE_LIBPCRE','1')],
     extra_compile_args = ["-Wreorder","-std=c++11","-lpthread","-lstdc++"],
     )
 
@@ -66,10 +64,30 @@ if __name__ == "__main__":
         url = "https://bitbucket.org/camp0/aiengine",
         license = "GPLv2",
         package_dir = {'': '.'},
-        package_data = {"" : ["*.h","flow/*.h"] },
         description = "Wrapper for the aiengine",
         long_description = open('../README.md').read(),
         ext_modules = [aiengine_module],
         py_modules = ["pyaiengine"],
+        classifiers=[
+            "Development Status :: 0.8 - Beta",
+            "Environment :: Console",
+            "Intended Audience :: Information Technology",
+            "Intended Audience :: Science/Research",
+            "Intended Audience :: System Administrators",
+            "Intended Audience :: Telecommunications Industry",
+            "Intended Audience :: Developers",
+            "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
+            "Operating System :: POSIX :: BSD :: FreeBSD",
+            "Operating System :: POSIX :: Linux",
+            "Programming Language :: C++",
+            "Programming Language :: Python :: 2.7",
+            "Programming Language :: Python :: 3.3",
+            "Programming Language :: Python :: 3.4",
+            "Topic :: Internet",
+            "Topic :: Scientific/Engineering :: Information Analysis",
+            "Topic :: Security",
+            "Topic :: System :: Networking",
+            "Topic :: System :: Networking :: Monitoring",
+          ],
     )
 
