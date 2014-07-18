@@ -205,6 +205,26 @@ BOOST_AUTO_TEST_CASE (test7_tcp)
 	BOOST_CHECK(pa == PacketAnomaly::TCP_BAD_FLAGS);
 }
 
+// The TCP header is corrupted on terms of length
+BOOST_AUTO_TEST_CASE (test8_tcp)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn_bogus);
+        int length = raw_packet_ethernet_ip_tcp_syn_bogus_length;
+        Packet packet(pkt,length);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        Flow *flow = tcp->getCurrentFlow();
+
+        BOOST_CHECK(flow != nullptr);
+        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
+	PacketAnomaly pa = flow->getPacketAnomaly();
+	BOOST_CHECK(pa == PacketAnomaly::TCP_BOGUS_HEADER);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

@@ -42,16 +42,17 @@ MultiplexerPtrWeak Multiplexer::getUpMultiplexer(int key) const {
 	return mp;
 } 
 
-void Multiplexer::setPacketInfo(unsigned char *packet, int length, int prev_header_size) { 
+void Multiplexer::setPacketInfo(unsigned char *packet, int length, int prev_header_size,PacketAnomaly pa) { 
 
 	packet_.setPayload(packet);
 	packet_.setPayloadLength(length);
 	packet_.setPrevHeaderSize(prev_header_size);
+	packet_.setPacketAnomaly(pa);
 }
 
 void Multiplexer::setPacket(Packet *pkt) {
 
-	setPacketInfo(pkt->getPayload(),pkt->getLength(),pkt->getPrevHeaderSize());
+	setPacketInfo(pkt->getPayload(),pkt->getLength(),pkt->getPrevHeaderSize(),pkt->getPacketAnomaly());
 }
 
 void Multiplexer::forwardPacket(Packet &packet) {
@@ -68,10 +69,10 @@ void Multiplexer::forwardPacket(Packet &packet) {
                 mux = next_mux.lock();
                 if (mux) {
 			int prev_header_size = packet.getPrevHeaderSize();
-                      	Packet pkt_candidate(&packet.getPayload()[header_size_],packet.getLength() - header_size_, prev_header_size);
+			PacketAnomaly pa = packet.getPacketAnomaly();
+                      	Packet pkt_candidate(&packet.getPayload()[header_size_],packet.getLength() - header_size_, prev_header_size,pa);
 
 			if(mux->acceptPacket(pkt_candidate)) { // The packet is accepted by the destination mux
-				pkt_candidate.setPacketAnomaly(packet.getPacketAnomaly());
     				mux->packet_func_(pkt_candidate);
                         	++total_forward_packets_;
                         	mux->forwardPacket(pkt_candidate);

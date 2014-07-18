@@ -35,7 +35,6 @@
 #ifdef PYTHON_BINDING
 #include <boost/python.hpp>
 #include <boost/function.hpp>
-//#include "../Pointer.h"
 #endif
 
 namespace aiengine {
@@ -45,24 +44,18 @@ class Flow;
 class IPAbstractSet 
 {
 public:
-    	explicit IPAbstractSet():total_ips_(0),
+    	explicit IPAbstractSet(const std::string &name):name_(name),total_ips_(0),
 		total_ips_not_on_set_(0),total_ips_on_set_(0)
 		{
-			name_="Generic IPAbstractSet";
 #ifdef PYTHON_BINDING
 			callback_set_ = false;
 			callback_ = nullptr;
 #endif
 		}
-    	explicit IPAbstractSet(const std::string &name):name_(name),
-		total_ips_(0),total_ips_not_on_set_(0),total_ips_on_set_(0)
-		{
-#ifdef PYTHON_BINDING
-			callback_set_ = false;
-			callback_ = nullptr;
-#endif
-		}
-    	virtual ~IPAbstractSet() {}
+    	
+    	explicit IPAbstractSet():IPAbstractSet("Generic IPAbstractSet") {}
+
+	virtual ~IPAbstractSet() {}
 
 	const char *getName() { return name_.c_str();}
 
@@ -74,19 +67,8 @@ public:
 
         bool haveCallback() const { return callback_set_;}
 
-        void setCallback(PyObject *callback) {
-
-                // TODO: Verify that the callback have at least one parameter
-                if (!PyCallable_Check(callback)) {
-                        std::cerr << "Object is not callable." << std::endl;
-                } else {
-                        if ( callback_ ) Py_XDECREF(callback_);
-                        callback_ = callback;
-                        Py_XINCREF(callback_);
-                        callback_set_ = true;
-                }
-        }
-
+        void setCallback(PyObject *callback); 
+	void executeCallback(Flow *flow); 
         PyObject *getCallback() { return callback_;}
 
 #endif

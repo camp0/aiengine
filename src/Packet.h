@@ -32,11 +32,17 @@ namespace aiengine {
 class Packet 
 {
 public:
-    	Packet(unsigned char *packet,int length, int prev_header_size):
+    	explicit Packet(unsigned char *packet,int length, int prev_header_size,PacketAnomaly pa):
 		length_(length),packet_(packet),prev_header_size_(prev_header_size),
-		source_port_(0),dest_port_(0),pa_(PacketAnomaly::NONE) {}
+		source_port_(0),dest_port_(0),pa_(pa) {}
 
-    	Packet():Packet(nullptr,0,0) {}
+	explicit Packet(unsigned char *packet, int length, int prev_header_size):
+		Packet(packet,length,prev_header_size,PacketAnomaly::NONE) {}
+
+	explicit Packet(unsigned char *packet, int length):
+		Packet(packet,length,0,PacketAnomaly::NONE) {}
+
+    	explicit Packet():Packet(nullptr,0,0,PacketAnomaly::NONE) {}
 
     	virtual ~Packet() {}
 
@@ -59,7 +65,8 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& os, const Packet& p) {
 	
-		os << "Begin packet(" << &p << ") length:" << p.length_ << " prev header size:" << p.prev_header_size_ << std::endl;
+		os << "Begin packet(" << &p << ") length:" << p.length_ << " prev header size:" << p.prev_header_size_;
+		os << " anomaly:" << PacketAnomalyToString.at(p.pa_) << std::endl;
 		for (int i = 0;i< p.length_;++i) {
 			os << std::hex << (int)p.packet_[i] << " ";
 		}

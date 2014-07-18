@@ -64,6 +64,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			./vlan/VLanProtocol.cc \
 			./mpls/MPLSProtocol.cc \
 			./ip/IPProtocol.cc \
+			./ipset/IPAbstractSet.cc \
 			./ipset/IPSet.cc \
 			./ipset/IPBloomSet.cc \
 			./ipset/IPSetManager.cc \

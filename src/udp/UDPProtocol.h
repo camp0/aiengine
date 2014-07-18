@@ -79,7 +79,7 @@ public:
                 udp_header_ = reinterpret_cast <struct udphdr*> (raw_packet);
         }
 
-	// Condition for say that a packet its ethernet 
+	// Condition for say that a packet is UDP 
 	bool udpChecker(Packet &packet){ 
 	
                 int length = packet.getLength();

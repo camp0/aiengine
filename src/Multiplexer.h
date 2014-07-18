@@ -96,7 +96,7 @@ public:
 	void setHeaderSize(int size) { header_size_ = size;}
 	int getHeaderSize() { return header_size_;}
 
-	void setPacketInfo(unsigned char *packet, int length, int prev_header_size);
+	void setPacketInfo(unsigned char *packet, int length, int prev_header_size, PacketAnomaly pa);
 	void setPacket(Packet *packet);
 
 	void addChecker(std::function <bool (Packet&)> checker) { check_func_ = checker;}

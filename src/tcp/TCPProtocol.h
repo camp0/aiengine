@@ -88,9 +88,14 @@ public:
 	bool tcpChecker(Packet &packet) { 
 	
                 int length = packet.getLength();
-
 		if (length >= header_size) {
                 	setHeader(packet.getPayload());
+
+			if (getTcpHdrLength() > length ) {
+				// The packet header lengths dont match but there is
+				// a minimal TCP header on the packet
+				packet.setPacketAnomaly(PacketAnomaly::TCP_BOGUS_HEADER);
+			}		
 			++total_validated_packets_;
 			total_bytes_ += length; 
 			return true;
