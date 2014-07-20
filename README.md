@@ -11,13 +11,14 @@ The main functionalities of AIEngine are:
 
 - Support for interact with the user while the engine is running.
 - Support for PCRE JIT for regex matching.
-- Support three types of NetworkStacks(lan,mobile and ipv6)
+- Support for regex graphs.
+- Support three types of NetworkStacks(lan,mobile and ipv6).
 - Support Sets and Bloom filters for IP searches.
 - Support Linux and FreeBSD operating systems.
 - Support for HTTP,DNS and SSL Domains matching.
-- Support for banned domains and hosts for HTTP, DNS and SSL
+- Support for banned domains and hosts for HTTP, DNS and SSL.
 - Frequency analisys for unknown traffic and auto-regex generation.
-- Easy integration with databases (MySQL, Redis, etc...)
+- Easy integration with databases (MySQL, Redis, etc...) for data correlation.
 - Easy integration with other packet engines (Netfilter).
 
 Using AIEngine 
