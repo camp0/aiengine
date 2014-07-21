@@ -21,6 +21,7 @@ AC_PREREQ(2.59)
 AC_PROG_INSTALL
 
 AC_CANONICAL_HOST
+AM_CONDITIONAL([__OPENBSD__],false)
 AM_CONDITIONAL([__FREEBSD__],false)
 AM_CONDITIONAL([__LINUX__],false)
 case $host in
@@ -31,6 +32,10 @@ case $host in
 # in order to fix the problem I just updated the BOOST_PYTHON_LIB
 # and if something is wrong will explode later :D
 	BOOST_PYTHON_LIB="boost_python"
+    ;;
+    *openbsd*)    
+    	AC_DEFINE([__OPENBSD__],[1],[OpenBSD Host])
+    	AM_CONDITIONAL([__OPENBSD__],true)
     ;;
     *linux*)
 	AC_DEFINE([__LINUX__],[1],[Linux Host])
