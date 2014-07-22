@@ -28,6 +28,14 @@
 #include <config.h>
 #endif
 
+#if defined(__OPENBSD__)
+#include <sys/types.h>
+#include <netinet/in_systm.h>
+#include <net/ethertypes.h>
+#else
+#include <net/ethernet.h>
+#endif
+
 #include <iostream>
 #include <fstream>
 #include "Pointer.h"

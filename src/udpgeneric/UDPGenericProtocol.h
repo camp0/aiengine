@@ -38,7 +38,7 @@
 #include "../FlowForwarder.h"
 #include "../Protocol.h"
 #include "../regex/RegexManager.h"
-#include <net/ethernet.h>
+//#include <net/ethernet.h>
 #include <netinet/ip.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>

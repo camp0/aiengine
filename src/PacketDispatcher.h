@@ -52,6 +52,14 @@
 #endif
 #include <sys/resource.h>
 
+#if !defined(PCAP_NETMASK_UNKNOWN)
+/*
+ *  This value depending on the pcap library is defined or not 
+ * 
+ */
+#define PCAP_NETMASK_UNKNOWN    0xffffffff
+#endif
+
 namespace aiengine {
 
 #define PACKET_RECVBUFSIZE    2048        /// receive_from buffer size for a single datagram

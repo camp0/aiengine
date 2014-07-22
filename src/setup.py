@@ -12,7 +12,7 @@ from distutils.extension import Extension
 src_files =  ["Multiplexer.cc","FlowForwarder.cc","PacketDispatcher.cc","Flow.cc","Protocol.cc"]
 src_files += ["Signature.cc","Interpreter.cc","NetworkStack.cc"]
 src_files += ["./flow/FlowManager.cc","./ethernet/EthernetProtocol.cc","./vlan/VLanProtocol.cc","./mpls/MPLSProtocol.cc"]
-src_files += ["./ip/IPProtocol.cc","./ipset/IPSet.cc","./ipset/IPBloomSet.cc","./ipset/IPSetManager.cc"]
+src_files += ["./ip/IPProtocol.cc","./ipset/IPAbstractSet.cc","./ipset/IPSet.cc","./ipset/IPBloomSet.cc","./ipset/IPSetManager.cc"]
 src_files += ["./ip6/IPv6Protocol.cc","./icmp/ICMPProtocol.cc","./udp/UDPProtocol.cc","./tcp/TCPProtocol.cc"]
 src_files += ["./tcpgeneric/TCPGenericProtocol.cc","./udpgeneric/UDPGenericProtocol.cc"]
 src_files += ["./gprs/GPRSProtocol.cc","./http/HTTPProtocol.cc","./ssl/SSLProtocol.cc","./dns/DNSProtocol.cc"]
@@ -26,36 +26,45 @@ def setup_compiler():
     config_vars = distutils.sysconfig._config_vars
 
     includes = list()
+    macros = list()
 
+    macros.append(('PYTHON_BINDING','1'))
+    macros.append(('HAVE_LIBPCRE','1'))
     includes.append("..")
-    
+
     if (sys.platform == 'sunos5'):
         config_vars['LDSHARED'] = "gcc -G"
         config_vars['CCSHARED'] = ""
     elif (sys.platform == 'freebsd10'):
         os.environ["CC"] = "c++"
         includes.append("/usr/local/include")
+        macros.append(('__FREEBSD__','1'))
+    elif (sys.platform == 'openbsd5'):
+        macros.append(('__OPENBSD__','1'))
+        os.environ["CC"] = "eg++"
     else:
         os.environ["CC"] = "g++"
 
-    return includes
+    return includes,macros
 
 aiengine_module = Extension("pyaiengine",
     sources = src_files,
     libraries = ["boost_system","boost_python","pcap","pcre"],
-    define_macros = [('PYTHON_BINDING','1'),('HAVE_LIBPCRE','1')],
+#    define_macros = [('__OPENBSD__','1'),('PYTHON_BINDING','1'),('HAVE_LIBPCRE','1')],
+    # define_macros = [('PYTHON_BINDING','1'),('HAVE_LIBPCRE','1')],
     extra_compile_args = ["-Wreorder","-std=c++11","-lpthread","-lstdc++"],
     )
 
 if __name__ == "__main__":
 
-    includes = setup_compiler()
+    includes,macros = setup_compiler()
 
     print("Compiling aiengine extension for %s" % sys.platform)
     print("\tOS name %s" % (os.name))
     print("\tArchitecture %s" % os.uname()[4])
 
     aiengine_module.include_dirs = includes
+    aiengine_module.define_macros = macros
 
     setup(name="aiengine",
         version = "0.8",

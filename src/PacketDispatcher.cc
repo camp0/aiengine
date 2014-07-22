@@ -312,8 +312,10 @@ void PacketDispatcher::setPcapFilter(const std::string &filter) {
 
 	if ((device_is_ready_)or(pcap_file_ready_)) {
 		struct bpf_program fp;
+		char *c_filter = const_cast<char*>(filter.c_str());
+		//std::string c_filter(filter.c_str());
 
-		if (pcap_compile(pcap_, &fp, filter.c_str(), 1, PCAP_NETMASK_UNKNOWN) == 0) {
+		if (pcap_compile(pcap_, &fp, c_filter, 1, PCAP_NETMASK_UNKNOWN) == 0) {
 			
 			if (pcap_setfilter(pcap_,&fp) == 0) {
 				std::ostringstream msg;

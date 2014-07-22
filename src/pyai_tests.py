@@ -322,7 +322,7 @@ class StackLanTests(unittest.TestCase):
             self.assertEqual(self.ip_called_callback,1)
 
     def test_11_1(self):
-	""" Verify the HTTP fields of the flow """
+        """ Verify the HTTP fields of the flow """
 
         def domain_callback(flow):
             self.called_callback += 1
@@ -335,7 +335,7 @@ class StackLanTests(unittest.TestCase):
         d.setCallback(domain_callback)
         dm.addDomainName(d)
 
-	self.s.setHTTPHostNameManager(dm)
+        self.s.setHTTPHostNameManager(dm)
 
         self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
         self.dis.run()

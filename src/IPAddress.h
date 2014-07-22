@@ -28,20 +28,18 @@
 #include <config.h>
 #endif
 
-#ifdef __FREEBSD__
+#if defined(__FREEBSD__) || defined(__OPENBSD__)
 #include <sys/socket.h>
+#define s6_addr32 __u6_addr.__u6_addr32
+#else
+#define s6_addr32 __in6_u.__u6_addr32
 #endif
+
 #include <iostream>
 #include <netinet/in.h>
 #include <netinet/ip6.h>
 #include <arpa/inet.h>
 #include <cstring>
-
-#ifdef __FREEBSD__ 
-#define s6_addr32 __u6_addr.__u6_addr32
-#else 
-#define s6_addr32 __in6_u.__u6_addr32
-#endif
 
 namespace aiengine {
 

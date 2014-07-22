@@ -95,7 +95,8 @@ else
   LOG4CXX_FLAGS = 
 endif
 
-BOOST_LINK_CORE = -lboost_system -lboost_thread -lboost_regex
+BOOST_LINK_CORE = -lboost_system -lboost_regex
+# BOOST_LINK_CORE = -lboost_system -lboost_thread -lboost_regex
 
 aiengine_SOURCES =      $(aiengine_core_sources) main.cc
 aiengine_CPPFLAGS = 	$(EXTRA_FLAGS) $(BOOST_CPPFLAGS)

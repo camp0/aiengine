@@ -28,11 +28,19 @@
 #include <config.h>
 #endif
 
+#include <sys/socket.h>
 #include "../Multiplexer.h"
 #include "../Packet.h" 
 #include "../Protocol.h"
-#include <net/ethernet.h>
 #include <arpa/inet.h>
+
+#if defined(__OPENBSD__)
+#include <net/if.h>
+#include <netinet/if_ether.h>
+#ifndef ETHER_IS_VALID_LEN
+#define ETHER_IS_VALID_LEN(x) ((x) >= ETHER_MIN_LEN && (x) <= ETHER_MAX_LEN)
+#endif
+#endif
 
 namespace aiengine {
 

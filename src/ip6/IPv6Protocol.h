@@ -30,7 +30,6 @@
 
 #include "../Multiplexer.h"
 #include "../Protocol.h"
-#include <net/ethernet.h>
 #include <netinet/ip6.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>

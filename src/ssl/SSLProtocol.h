@@ -37,7 +37,7 @@
 #include "../Protocol.h"
 #include "SSLHost.h"
 #include "../Cache.h"
-#include <net/ethernet.h>
+//#include <net/ethernet.h>
 #include <netinet/ip.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>

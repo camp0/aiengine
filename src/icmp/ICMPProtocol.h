@@ -54,7 +54,7 @@ public:
 	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
 
-	void processFlow(Flow *flow) { /* No flow to manager */ } 
+	void processFlow(Flow *flow) { /* No flow to manage */ } 
 	void processPacket(Packet& packet);
 
 	void setStatisticsLevel(int level) { stats_level_ = level;}
@@ -73,7 +73,7 @@ public:
 
         void setHeader(unsigned char *raw_packet) { 
        
-#ifdef __FREEBSD__ 
+#if defined(__FREEBSD__) || defined(__OPENBSD__) 
                 icmp_header_ = reinterpret_cast <struct icmp*> (raw_packet);
 #else
                 icmp_header_ = reinterpret_cast <struct icmphdr*> (raw_packet);
@@ -96,7 +96,7 @@ public:
 		}
 	}
 
-#ifdef __FREEBSD__
+#if defined(__FREEBSD__) || defined(__OPENBSD__) 
         u_int8_t getType() const { return icmp_header_->icmp_type; }
         u_int8_t getCode() const { return icmp_header_->icmp_code; }
         u_int16_t getId() const { return ntohs(icmp_header_->icmp_id); }
@@ -111,7 +111,7 @@ public:
 private:
 	int stats_level_;
 	MultiplexerPtrWeak mux_;
-#ifdef __FREEBSD__
+#if defined(__FREEBSD__) || defined(__OPENBSD__) 
 	struct icmp *icmp_header_;
 #else
 	struct icmphdr *icmp_header_;

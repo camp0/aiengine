@@ -94,7 +94,7 @@ public:
 		}
 	}
 
-#ifdef __FREEBSD__
+#if defined(__FREEBSD__) || defined(__OPENBSD__)
 	u_int16_t getSrcPort() const { return ntohs(udp_header_->uh_sport); }
     	u_int16_t getDstPort() const { return ntohs(udp_header_->uh_dport); }
     	u_int16_t getLength() const { return ntohs(udp_header_->uh_ulen); }
