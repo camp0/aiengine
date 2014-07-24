@@ -43,7 +43,7 @@
 #include "./tcp/TCPProtocol.h"
 #include "./tcpgeneric/TCPGenericProtocol.h"
 #include "./udpgeneric/UDPGenericProtocol.h"
-#include "./icmp/ICMPProtocol.h"
+#include "./icmp6/ICMPv6Protocol.h"
 #include "./http/HTTPProtocol.h"
 #include "./ssl/SSLProtocol.h"
 #include "./dns/DNSProtocol.h"
@@ -102,7 +102,7 @@ private:
 	IPv6ProtocolPtr ip6_;
         UDPProtocolPtr udp_;
         TCPProtocolPtr tcp_;
-        ICMPProtocolPtr icmp_;
+        ICMPv6ProtocolPtr icmp6_;
         HTTPProtocolPtr http_;
         SSLProtocolPtr ssl_;
         DNSProtocolPtr dns_;

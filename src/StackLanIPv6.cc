@@ -47,8 +47,8 @@ StackLanIPv6::StackLanIPv6() {
 	addProtocol(tcp_);
         udp_ = UDPProtocolPtr(new UDPProtocol());
 	addProtocol(udp_);
-        icmp_ = ICMPProtocolPtr(new ICMPProtocol());
-	addProtocol(icmp_);
+        icmp6_ = ICMPv6ProtocolPtr(new ICMPv6Protocol());
+	addProtocol(icmp6_);
         
 	http_ = HTTPProtocolPtr(new HTTPProtocol());
 	addProtocol(http_);
@@ -121,12 +121,13 @@ StackLanIPv6::StackLanIPv6() {
 	mux_ip_->addChecker(std::bind(&IPv6Protocol::ip6Checker,ip6_,std::placeholders::_1));
 	mux_ip_->addPacketFunction(std::bind(&IPv6Protocol::processPacket,ip6_,std::placeholders::_1));
 
-	//configure the ICMP Layer 
-	icmp_->setMultiplexer(mux_icmp_);
-	mux_icmp_->setProtocol(static_cast<ProtocolPtr>(icmp_));
-	mux_icmp_->setProtocolIdentifier(IPPROTO_ICMP);
-	mux_icmp_->setHeaderSize(icmp_->getHeaderSize());
-	mux_icmp_->addChecker(std::bind(&ICMPProtocol::icmpChecker,icmp_,std::placeholders::_1));
+	//configure the ICMPv6 Layer 
+	icmp6_->setMultiplexer(mux_icmp_);
+	mux_icmp_->setProtocol(static_cast<ProtocolPtr>(icmp6_));
+	mux_icmp_->setProtocolIdentifier(IPPROTO_ICMPV6);
+	mux_icmp_->setHeaderSize(icmp6_->getHeaderSize());
+	mux_icmp_->addChecker(std::bind(&ICMPv6Protocol::icmp6Checker,icmp6_,std::placeholders::_1));
+	mux_icmp_->addPacketFunction(std::bind(&ICMPv6Protocol::processPacket,icmp6_,std::placeholders::_1));
 
 	//configure the UDP Layer 
 	udp_->setMultiplexer(mux_udp_);
@@ -195,7 +196,7 @@ StackLanIPv6::StackLanIPv6() {
 	mux_udp_->addDownMultiplexer(mux_ip_);
 	mux_ip_->addUpMultiplexer(mux_tcp_,IPPROTO_TCP);
 	mux_tcp_->addDownMultiplexer(mux_ip_);
-	mux_ip_->addUpMultiplexer(mux_icmp_,IPPROTO_ICMP);
+	mux_ip_->addUpMultiplexer(mux_icmp_,IPPROTO_ICMPV6);
 	mux_icmp_->addDownMultiplexer(mux_ip_);
 	
 	// Connect the FlowManager and FlowCache

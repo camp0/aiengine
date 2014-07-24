@@ -29,6 +29,7 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			./ipset/IPSetManager.h \
 			./ip6/IPv6Protocol.h \
 			./icmp/ICMPProtocol.h \
+			./icmp6/ICMPv6Protocol.h \
 			./udp/UDPProtocol.h \
 			./tcp/TCPProtocol.h \
 			./tcpgeneric/TCPGenericProtocol.h \
@@ -70,6 +71,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			./ipset/IPSetManager.cc \
 			./ip6/IPv6Protocol.cc \
 			./icmp/ICMPProtocol.cc \
+			./icmp6/ICMPv6Protocol.cc \
 			./udp/UDPProtocol.cc \
 			./tcp/TCPProtocol.cc \
 			./tcpgeneric/TCPGenericProtocol.cc \
@@ -129,6 +131,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		./gprs/test_gprs.cc \
 		./http/test_http.cc \
 		./icmp/test_icmp.cc \
+		./icmp6/test_icmp6.cc \
 		./frequency/test_frequency.cc \
 		./regex/test_regex.cc \
 		./ssl/test_ssl.cc \

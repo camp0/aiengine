@@ -260,6 +260,7 @@ src/ip6/Makefile
 src/ipset/Makefile
 src/gprs/Makefile
 src/icmp/Makefile
+src/icmp6/Makefile
 src/udp/Makefile
 src/tcp/Makefile
 src/flow/Makefile
