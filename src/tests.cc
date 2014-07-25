@@ -962,6 +962,7 @@ BOOST_AUTO_TEST_CASE ( test_case_5 ) // integrate the learner and the FrequencyG
         BOOST_CHECK(header.compare(0,header.length(),reg,0,header.length())== 0);
 	++it;
 	BOOST_CHECK(it == group.end());
+
 }
 
 // Check the file format support for pcapng files

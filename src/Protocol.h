@@ -28,8 +28,8 @@
 #include <config.h>
 #endif
 
-#if defined(__OPENBSD__)
 #include <sys/types.h>
+#if defined(__OPENBSD__)
 #include <netinet/in_systm.h>
 #include <net/ethertypes.h>
 #else

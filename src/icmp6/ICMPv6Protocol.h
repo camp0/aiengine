@@ -72,12 +72,8 @@ public:
 #endif
 
         void setHeader(unsigned char *raw_packet) { 
-       
-#if defined(__FREEBSD__) || defined(__OPENBSD__) 
-                icmp_header_ = reinterpret_cast <struct icmp*> (raw_packet);
-#else
-                icmp_header_ = reinterpret_cast <struct icmp6_hdr*> (raw_packet);
-#endif
+               
+		 icmp_header_ = reinterpret_cast <struct icmp6_hdr*> (raw_packet);
         }
 
 	// Condition for say that a packet is icmp 
@@ -96,26 +92,15 @@ public:
 		}
 	}
 
-#if defined(__FREEBSD__) || defined(__OPENBSD__) 
-        u_int8_t getType() const { return icmp_header_->icmp_type; }
-        u_int8_t getCode() const { return icmp_header_->icmp_code; }
-        u_int16_t getId() const { return ntohs(icmp_header_->icmp_id); }
-        u_int16_t getSequence() const { return ntohs(icmp_header_->icmp_seq); }
-#else
         u_int8_t getType() const { return icmp_header_->icmp6_type; }
         u_int8_t getCode() const { return icmp_header_->icmp6_code; }
         u_int16_t getId() const { return ntohs(icmp_header_->icmp6_id); }
         u_int16_t getSequence() const { return ntohs(icmp_header_->icmp6_seq); }
-#endif
 
 private:
 	int stats_level_;
 	MultiplexerPtrWeak mux_;
-#if defined(__FREEBSD__) || defined(__OPENBSD__) 
-	struct icmp *icmp_header_;
-#else
 	struct icmp6_hdr *icmp_header_;
-#endif 
 };
 
 typedef std::shared_ptr<ICMPv6Protocol> ICMPv6ProtocolPtr;

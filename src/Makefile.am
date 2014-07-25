@@ -3,6 +3,7 @@ AUTOMAKE_OPTIONS = gnu
 python_PYTHON = pyai_tests.py
 
 # EXTRA_FLAGS = -flto not supported on the freebsd compiler
+# EXTRA_FLAGS = -O3 '-fprofile-arcs -ftest-coverage -g' For enable gcov tool
 EXTRA_FLAGS = -O3 
 
 EXTRA_DIST = py_wrapper.cc setup.py MANIFEST.in
@@ -146,7 +147,8 @@ tests_LDFLAGS = 	-DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ \
 			-lboost_filesystem -lpcap $(LOG4CXX_FLAGS) 
 
 tests_CPPFLAGS = $(BOOST_CPPFLAGS)
-tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread
+# Dont forget to put -lgcov if need on test_LDADD
+tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread 
 
 BUILT_SOURCES = $(srcdir)/pyaiengine.so
 

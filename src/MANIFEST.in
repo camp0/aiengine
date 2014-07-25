@@ -20,4 +20,5 @@ recursive-include dns *.h
 recursive-include regex *.h 
 recursive-include frequency *.h 
 recursive-include icmp *.h 
+recursive-include icmp6 *.h 
 global-exclude test_* 
