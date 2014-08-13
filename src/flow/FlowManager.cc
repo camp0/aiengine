@@ -99,7 +99,9 @@ void FlowManager::showFlows(std::basic_ostream<char>& out) {
 
 		if(flow->ipset.lock()) out << " IPset:" << *flow->ipset.lock()->getName();	
 
-		if(flow->tcp_info.lock()) out << " TCP  :" << *flow->tcp_info.lock();	
+		if(flow->gprs_info.lock()) out << " GPRS:" << *flow->gprs_info.lock();	
+		
+		if(flow->tcp_info.lock()) out << " TCP:" << *flow->tcp_info.lock();	
 
 		if(flow->regex.lock()) out << " Regex:" << flow->regex.lock()->getName();	
 

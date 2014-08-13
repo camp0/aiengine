@@ -26,9 +26,21 @@
 
 namespace aiengine {
 
-void GPRSProtocol::processPacket(Packet& packet) {
+void GPRSProtocol::process_create_pdp_context(Flow *flow) {
 
-	// Nothing to process
+	SharedPointer<GPRSInfo> gprs_info = flow->gprs_info.lock();
+
+	if (!gprs_info) {
+		gprs_info = gprs_info_cache_->acquire().lock();
+                if (gprs_info) {
+			flow->gprs_info = gprs_info;
+                }
+	}
+
+	if (gprs_info) {
+		gprs_create_pdp_hdr *cpd = reinterpret_cast<gprs_create_pdp_hdr*>(gprs_header_->data);
+		gprs_info->setIMSI(cpd->imsi);
+	}
 }
 
 void GPRSProtocol::processFlow(Flow *flow) {
@@ -38,11 +50,11 @@ void GPRSProtocol::processFlow(Flow *flow) {
 	++total_packets_;
 
         if (mux_.lock()&&(bytes > 0)) {
-        
-		unsigned int flags = gprs_header_[1]; 
+       
+		uint8_t type = gprs_header_->type; 
 		
 		// just forward the packet if contains data
-		if (flags == 0xff) {
+		if (type == T_PDU) {
 			MultiplexerPtr mux = mux_.lock();
 
 			Packet *packet = flow->packet;
@@ -54,6 +66,8 @@ void GPRSProtocol::processFlow(Flow *flow) {
 
 			mux->setNextProtocolIdentifier(ETHERTYPE_IP); 
 			mux->forwardPacket(gpacket);
+		} else if (type == CREATE_PDP_CONTEXT_REQUEST) {
+			process_create_pdp_context(flow);
 		}
          }
 
@@ -73,6 +87,11 @@ void GPRSProtocol::statistics(std::basic_ostream<char>& out) {
 					mux_.lock()->statistics(out);
 				if (flow_forwarder_.lock())
 					flow_forwarder_.lock()->statistics(out);
+
+				if (stats_level_ > 3) {
+					if (gprs_info_cache_)
+                                        	gprs_info_cache_->statistics(out);
+				}
 			}
 		}
 	}

@@ -43,6 +43,7 @@
 #include "./dns/DNSDomain.h"
 #include "./ssl/SSLHost.h"
 #include "./tcp/TCPInfo.h"
+#include "./gprs/GPRSInfo.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -92,6 +93,7 @@ public:
 	// Objects that links with the Flow
 	WeakPointer<IPAbstractSet> ipset;
 	WeakPointer<TCPInfo> tcp_info;
+	WeakPointer<GPRSInfo> gprs_info;
 	WeakPointer<DNSDomain> dns_domain;
 	WeakPointer<Regex> regex;
 	WeakPointer<HTTPUri> http_uri;

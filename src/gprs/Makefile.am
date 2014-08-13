@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS = 	test_gprs.h
+noinst_HEADERS = 	GPRSInfo.h test_gprs.h
 
 TEST = test_gprs
 

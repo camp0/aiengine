@@ -75,6 +75,7 @@ public:
 
 		flow_cache_udp_high_->createFlows(value);
 		flow_cache_udp_low_->createFlows(value/8);
+		gprs_->createGPRSInfo(value/8);
 		dns_->createDNSDomains(value / 2);
 	}
 

@@ -45,7 +45,7 @@ class UDPProtocol: public Protocol
 {
 public:
     	explicit UDPProtocol(std::string name):Protocol(name),stats_level_(0),
-		udp_header_(nullptr),total_bytes_(0) {}
+		udp_header_(nullptr),current_flow_(nullptr),total_bytes_(0) {}
     	
 	explicit UDPProtocol():UDPProtocol(UDPProtocol::default_name) {}
 
@@ -113,6 +113,7 @@ public:
 	void setFlowCache(FlowCachePtr flow_cache) { flow_cache_ = flow_cache;}
 	FlowCachePtr getFlowCache() { return flow_cache_;}
 
+	Flow *getCurrentFlow() { return current_flow_;} // used just for testing pourposes
 private:
 	SharedPointer<Flow> getFlow(); 
 
@@ -122,6 +123,7 @@ private:
 	FlowCachePtr flow_cache_;
 	FlowForwarderPtrWeak flow_forwarder_;
 	struct udphdr *udp_header_;
+	Flow *current_flow_;
 	int64_t total_bytes_;
 };
 

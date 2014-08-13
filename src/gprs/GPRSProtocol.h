@@ -31,17 +31,44 @@
 #include "../Multiplexer.h"
 #include "../FlowForwarder.h"
 #include "../Protocol.h"
-//#include <net/ethernet.h>
+#include "../Cache.h"
+#include "GPRSInfo.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
 
 namespace aiengine {
 
+// Minimum GPRS header
+typedef struct {
+        uint8_t flags;          // Flags 
+        uint8_t type;       	// Message type 
+        uint16_t length;        // Length of data
+	uint32_t teid;
+        u_char data[0];         //
+} __attribute__((packed)) gprs_hdr;
+
+typedef struct {
+	uint16_t seq_num;	// Sequence number
+	u_char n_pdu[3];	// N-PDU 
+	uint64_t imsi;		// Imsi
+	u_char m_data[0];
+} __attribute__((packed)) gprs_create_pdp_hdr;
+
+#define CREATE_PDP_CONTEXT_REQUEST 16 
+#define	CREATE_PDP_CONTEXT_RESPONSE 17
+#define	UPDATE_PDP_CONTEXT_REQUEST 18
+#define	UPDATE_PDP_CONTEXT_RESPONSE 19
+#define	DELETE_PDP_CONTEXT_REQUEST 20
+#define	DELETE_PDP_CONTEXT_RESPONSE 21 
+#define	T_PDU 255 
+
 class GPRSProtocol: public Protocol 
 {
 public:
     	explicit GPRSProtocol():Protocol("GPRSProtocol"),stats_level_(0),mux_(),
+		flow_forwarder_(),
+		gprs_info_cache_(new Cache<GPRSInfo>("GPRS info cache")),
 		gprs_header_(nullptr),total_bytes_(0) {}
 
     	virtual ~GPRSProtocol() {}
@@ -56,7 +83,7 @@ public:
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
 
 	void processFlow(Flow *flow);
-	void processPacket(Packet& packet);
+	void processPacket(Packet& packet) {} // Nothing to process
 
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
@@ -73,8 +100,8 @@ public:
 #endif
 
         void setHeader(unsigned char *raw_packet) {
-        
-		gprs_header_ = raw_packet;
+       
+		gprs_header_ = reinterpret_cast<gprs_hdr*>(raw_packet); 
         }
 
 	// Condition for say that a packet is GPRS 
@@ -82,16 +109,10 @@ public:
 	
 		int length = packet.getLength();
 	
-	// 	first byt use to be x32 version for signaling packets 
-	//	second byte is the flags
-	//		flag == 0x10 create pdp contex
-	//		flag == 0x12 update pdp context
-	//		flag == 0x15 delete pdp context
-	// 	packets with data start with x30 and flags == 0xff for data
-	//	
+		//setHeader(packet.getPayload());
 		if (length >= header_size) {
-			if ((packet.getPayload()[0] == 0x30)||(packet.getPayload()[0] == 0x32)) {
-				setHeader(packet.getPayload());
+			setHeader(packet.getPayload());
+			if ((gprs_header_->flags == 0x30)||(gprs_header_->flags == 0x32)) {
 				++total_validated_packets_; 
 				return true;
 			}
@@ -101,13 +122,21 @@ public:
 		return false;
 	}
 
-	unsigned char *getPayload() const { return gprs_header_;}
+	//unsigned char *getPayload() const { return &gprs_header_; }
+	uint16_t getHeaderLength() const { return ntohs(gprs_header_->length); }
+
+        void createGPRSInfo(int number) { gprs_info_cache_->create(number);}
+        void destroyGPRSInfo(int number) { gprs_info_cache_->destroy(number);}
 
 private:
+
+	void process_create_pdp_context(Flow *flow);
+
 	int stats_level_;
 	MultiplexerPtrWeak mux_;
 	FlowForwarderPtrWeak flow_forwarder_;
-	unsigned char *gprs_header_;
+	Cache<GPRSInfo>::CachePtr gprs_info_cache_;
+	gprs_hdr *gprs_header_;
 	int64_t total_bytes_;
 };
 

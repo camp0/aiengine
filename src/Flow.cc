@@ -63,6 +63,7 @@ void Flow::reset() {
 	regex.reset();
 	dns_domain.reset();
 	tcp_info.reset();
+	gprs_info.reset();
 	packet = nullptr;
 	frequency_engine_inspected = false;
 	prev_direction_ = direction_ = FlowDirection::FORWARD;
@@ -96,6 +97,8 @@ void Flow::serialize(std::ostream& stream) {
 	} else { // UDP
 		if(dns_domain.lock())	
 			stream << ", \"dnsdomain\":\"" << dns_domain.lock()->getName() << "\" ";
+		if(gprs_info.lock())	
+			stream << ", \"imsi\":\"" << gprs_info.lock()->getIMSIString() << "\" ";
 	}
 	if(regex.lock())	
 		stream << ", \"matchs\":\"" << regex.lock()->getName() << "\" ";

@@ -96,12 +96,13 @@ SharedPointer<Flow> UDPProtocol::getFlow() {
 void UDPProtocol::processPacket(Packet& packet) {
 
 	SharedPointer<Flow> flow = getFlow();
-	int bytes;
+
+	current_flow_ = flow.get();
 
 	++total_packets_;
 
 	if(flow) {
-		bytes = (getLength() - getHeaderLength());
+		int bytes = (getLength() - getHeaderLength());
 
 		total_bytes_ += bytes;
 		flow->total_bytes += bytes;

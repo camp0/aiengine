@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gtpv1_ip_icmp_echo);
         int length = raw_packet_ethernet_ip_udp_gtpv1_ip_icmp_echo_length;
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
         // executing the packet
         // forward the packet through the multiplexers
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE (test2_gprs)
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gprs_ip_udp_dns_request);
         int length = raw_packet_ethernet_ip_udp_gprs_ip_udp_dns_request_length;
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
 	// Allocate the UDP high part
         MultiplexerPtr mux_udp_high = MultiplexerPtr(new Multiplexer());
@@ -175,7 +175,7 @@ BOOST_AUTO_TEST_CASE (test3_gprs)
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gtpv1_ip_udp_payload);
         int length = raw_packet_ethernet_ip_udp_gtpv1_ip_udp_payload_length;
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
         // Allocate the UDP high part
         MultiplexerPtr mux_udp_high = MultiplexerPtr(new Multiplexer());
@@ -242,7 +242,7 @@ BOOST_AUTO_TEST_CASE (test4_gprs) // with the DNSProtocol
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gprs_ip_udp_dns_request);
         int length = raw_packet_ethernet_ip_udp_gprs_ip_udp_dns_request_length;
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
         // Allocate the UDP high part
         MultiplexerPtr mux_udp_high = MultiplexerPtr(new Multiplexer());
@@ -306,5 +306,42 @@ BOOST_AUTO_TEST_CASE (test4_gprs) // with the DNSProtocol
 
 }
 
+BOOST_AUTO_TEST_CASE (test5_gprs) // Process a pdp context creation
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gprs_pdp_create);
+        int length = raw_packet_ethernet_ip_udp_gprs_pdp_create_length;
+
+        Packet packet(pkt,length);
+
+	gprs->createGPRSInfo(1);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        // check the GPRS layer;
+        BOOST_CHECK(gprs->getTotalBytes() == 159);
+        BOOST_CHECK(gprs->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(gprs->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(gprs->getTotalPackets() == 1);
+
+	// A pdp create dont forward nothing
+        BOOST_CHECK(mux_gprs->getTotalForwardPackets() == 0);
+        BOOST_CHECK(mux_gprs->getTotalReceivedPackets() == 0);
+        BOOST_CHECK(mux_gprs->getTotalFailPackets() == 0);
+
+	// Verify the integrity of the flow
+        Flow *flow = udp_low->getCurrentFlow();
+
+        BOOST_CHECK(flow != nullptr);
+        BOOST_CHECK(flow->gprs_info.lock() != nullptr);
+        SharedPointer<GPRSInfo> info = flow->gprs_info.lock();
+
+	std::string imsi("234308256005467");
+	BOOST_CHECK(imsi.compare(info->getIMSIString()) == 0);
+}
 
 BOOST_AUTO_TEST_SUITE_END( )

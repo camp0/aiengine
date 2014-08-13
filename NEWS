@@ -74,3 +74,4 @@ Features of 0.8
 Features of 0.9
 - Remote python shell TODO.
 - Support for ICMPv6 on the IPv6 stack.
+- Improvements on the GPRS protocol.
