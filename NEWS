@@ -25,7 +25,6 @@ Some benchmark results of 0.4 version
 		Total bytes:         2065338805586
 		Total validated packets:3408802476
 		Total malformed packets:   6723295
-		Total bytes:         2065338805586
 	Multiplexer(0xa52a80) statistics
 		Plugged to object(0xa36010)
 		Total forward packets:  3408802476
@@ -75,3 +74,4 @@ Features of 0.9
 - Remote python shell TODO.
 - Support for ICMPv6 on the IPv6 stack.
 - Improvements on the GPRS protocol.
+- Support for flow serialization compress (30% network bandwith aprox).

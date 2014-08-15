@@ -64,7 +64,7 @@ public:
         friend std::ostream& operator<< (std::ostream& out, const TCPInfo& ti) {
         
                 out << "S(" << ti.syn << ")SA(" << ti.syn_ack << ")A(" << ti.ack;
-                out << ")F(" << ti.fin << ")P(" << ti.push << ")Seq(" << ti.seq_num << ")";
+                out << ")F(" << ti.fin << ")P(" << ti.push << ")Seq(" << ti.seq_num[0] << "," << ti.seq_num[1] << ")";
 //		out << ")Ack(" << ti.ack_num << ")";
                 return out;
         }

@@ -74,7 +74,7 @@ void TCPGenericProtocol::statistics(std::basic_ostream<char>& out) {
 	if (stats_level_ > 0) {
 		out << getName() << "(" << this << ") statistics" << std::dec << std::endl;
 		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
-		out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
+		out << "\t" << "Total bytes:        " << std::setw(14) << total_bytes_ <<std::endl;
 		if (stats_level_ > 1){ 
 			out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
 			out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;

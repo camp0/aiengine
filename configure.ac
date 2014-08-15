@@ -237,6 +237,23 @@ if test x"$bloom_support" = x"yes"; then
 #    	AC_DEFINE([HAVE_BLOOMFILTER],[0],[No bloom filter support])
 fi
 
+##########################################################################
+# Flow serialization compression support
+##########################################################################
+
+AC_MSG_CHECKING([whether to build flow serialization compression support])
+AC_ARG_ENABLE([fscompress],
+    [AS_HELP_STRING([--enable-fscompress],
+        [enable flow serialization compression support (def=no)])],
+    [fscompress_support=yes],
+    [fscompress_support=no])
+AC_MSG_RESULT([$fscompress_support])
+
+if test x"$fscompress_support" = x"yes"; then
+    AC_DEFINE([HAVE_FLOW_SERIALIZATION_COMPRESSION],[1],[Flow serialization compression support])
+#else
+#    AC_DEFINE([HAVE_FLOW_SERIALIZATION_COMPRESSION],[0],[Flow serialization compression support])
+fi
 
 ##########################################################################
 
@@ -301,5 +318,6 @@ echo "
   Pcre JIT............: $pcre_jit_works
   Database support....: $adaptor_support
   Bloom filter support: $bloom_support
+  Flow sc support.....: $fscompress_support
 "
 
