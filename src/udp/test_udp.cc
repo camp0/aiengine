@@ -105,6 +105,108 @@ BOOST_AUTO_TEST_CASE(test4_udp)
 
 }
 
+BOOST_AUTO_TEST_CASE(test5_udp) // Test timeout on UDP traffic 
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo);
+        int length1 = raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo_length;
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dhcp_offer);
+        int length2 = raw_packet_ethernet_ip_udp_dhcp_offer_length;
+
+        Packet packet1(pkt1,length1,0,PacketAnomaly::NONE,0);
+        Packet packet2(pkt2,length2,0,PacketAnomaly::NONE,190);
+
+        FlowCachePtr flow_cache = FlowCachePtr(new FlowCache());
+        FlowManagerPtr flow_mng = FlowManagerPtr(new FlowManager());
+
+	flow_mng->setFlowCache(flow_cache);
+        udp->setFlowCache(flow_cache);
+        udp->setFlowManager(flow_mng);
+
+	flow_cache->createFlows(2);
+
+        // forward the first packet through the multiplexers
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+	BOOST_CHECK(flow_mng->getTotalProcessFlows() == 1);
+	BOOST_CHECK(flow_mng->getTotalFlows() == 1);
+	BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 0);
+
+	BOOST_CHECK(flow_cache->getTotalFlows() == 2);
+	BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
+	BOOST_CHECK(flow_cache->getTotalReleases() == 0);
+	BOOST_CHECK(flow_cache->getTotalFails() == 0);
+
+        // forward the second packet through the multiplexers
+        mux_eth->setPacket(&packet2);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet2);
+
+        BOOST_CHECK(flow_mng->getTotalProcessFlows() == 2);
+        BOOST_CHECK(flow_mng->getTotalFlows() == 1);
+        BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 1);
+
+        BOOST_CHECK(flow_cache->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
+        BOOST_CHECK(flow_cache->getTotalReleases() == 1);
+        BOOST_CHECK(flow_cache->getTotalFails() == 0);
+}
+
+BOOST_AUTO_TEST_CASE(test6_udp) // Test timeout on UDP traffic, no expire flows
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo);
+        int length1 = raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo_length;
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dhcp_offer);
+        int length2 = raw_packet_ethernet_ip_udp_dhcp_offer_length;
+
+        Packet packet1(pkt1,length1,0,PacketAnomaly::NONE,0);
+        Packet packet2(pkt2,length2,0,PacketAnomaly::NONE,120);
+
+        FlowCachePtr flow_cache = FlowCachePtr(new FlowCache());
+        FlowManagerPtr flow_mng = FlowManagerPtr(new FlowManager());
+
+        flow_mng->setFlowCache(flow_cache);
+        udp->setFlowCache(flow_cache);
+        udp->setFlowManager(flow_mng);
+
+        flow_cache->createFlows(2);
+
+        // forward the first packet through the multiplexers
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+        BOOST_CHECK(flow_mng->getTotalProcessFlows() == 1);
+        BOOST_CHECK(flow_mng->getTotalFlows() == 1);
+        BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 0);
+
+        BOOST_CHECK(flow_cache->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
+        BOOST_CHECK(flow_cache->getTotalReleases() == 0);
+        BOOST_CHECK(flow_cache->getTotalFails() == 0);
+
+        // forward the second packet through the multiplexers
+        mux_eth->setPacket(&packet2);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet2);
+
+        BOOST_CHECK(flow_mng->getTotalProcessFlows() == 2);
+        BOOST_CHECK(flow_mng->getTotalFlows() == 2);
+        BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 0);
+
+        BOOST_CHECK(flow_cache->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
+        BOOST_CHECK(flow_cache->getTotalReleases() == 0);
+        BOOST_CHECK(flow_cache->getTotalFails() == 0);
+}
+
+
+
 BOOST_AUTO_TEST_SUITE_END( )
 
 BOOST_FIXTURE_TEST_SUITE(udp_ipv6_suite,StackIPv6UDPTest)

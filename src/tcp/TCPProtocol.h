@@ -49,7 +49,8 @@ public:
     	explicit TCPProtocol(std::string name):Protocol(name),stats_level_(0),mux_(),
                 flow_forwarder_(),flow_table_(),flow_cache_(),
                 tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")), 
-                tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0) {}
+                tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
+		last_timeout_(0),packet_time_(0) {}
 
     	explicit TCPProtocol():TCPProtocol(TCPProtocol::default_name) {}
 
@@ -134,7 +135,7 @@ public:
     	unsigned int getTcpHdrLength() const { return tcp_header_->doff * 4; }
     	unsigned char* getPayload() const { return (unsigned char*)tcp_header_ +getTcpHdrLength(); }
 #endif
-        void setFlowManager(FlowManagerPtr flow_mng) { flow_table_ = flow_mng;}
+        void setFlowManager(FlowManagerPtr flow_mng) { flow_table_ = flow_mng; flow_table_->setTCPInfoCache(tcp_info_cache_);}
         FlowManagerPtr getFlowManager() { return flow_table_; }
 
         void setFlowCache(FlowCachePtr flow_cache) { flow_cache_ = flow_cache; } 
@@ -156,6 +157,8 @@ private:
 	struct tcphdr *tcp_header_;
 	Flow *current_flow_;
 	int64_t total_bytes_;
+       	time_t last_timeout_;
+       	time_t packet_time_;
 };
 
 typedef std::shared_ptr<TCPProtocol> TCPProtocolPtr;

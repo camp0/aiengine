@@ -91,6 +91,11 @@ StackMobile::StackMobile() {
         flow_mng_udp_high_ = FlowManagerPtr(new FlowManager());
         flow_mng_udp_low_ = FlowManagerPtr(new FlowManager());
 
+        // Link the FlowCaches to their corresponding FlowManager for timeouts
+        flow_mng_udp_low_->setFlowCache(flow_cache_udp_low_);
+        flow_mng_udp_high_->setFlowCache(flow_cache_udp_high_);
+        flow_mng_tcp_->setFlowCache(flow_cache_tcp_);
+
 	ff_tcp_ = FlowForwarderPtr(new FlowForwarder());
 	ff_udp_low_ = FlowForwarderPtr(new FlowForwarder());
 	ff_udp_high_ = FlowForwarderPtr(new FlowForwarder());

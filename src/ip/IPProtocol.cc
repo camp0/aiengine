@@ -44,6 +44,11 @@ void IPProtocol::processPacket(Packet& packet) {
 		++total_frag_packets_;
 		packet.setPacketAnomaly(PacketAnomaly::IPV4_FRAGMENTATION);
 	}
+
+#ifdef DEBUG
+	std::cout << __FILE__ << ":" << __func__ << ": ip.src(" << getSrcAddrDotNotation() << ")ip.dst(" << getDstAddrDotNotation() << ")ip.id(" << getID() << ")" << std::endl;
+#endif
+
 }
 
 

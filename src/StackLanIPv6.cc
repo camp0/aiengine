@@ -80,6 +80,10 @@ StackLanIPv6::StackLanIPv6() {
 	flow_cache_udp_ = FlowCachePtr(new FlowCache());
 	flow_cache_tcp_ = FlowCachePtr(new FlowCache());
 
+        // Link the FlowCaches to their corresponding FlowManager for timeouts
+        flow_table_udp_->setFlowCache(flow_cache_udp_);
+        flow_table_tcp_->setFlowCache(flow_cache_tcp_);
+
 	ff_tcp_ = FlowForwarderPtr(new FlowForwarder());
 	ff_udp_ = FlowForwarderPtr(new FlowForwarder());
 	ff_http_ = FlowForwarderPtr(new FlowForwarder());

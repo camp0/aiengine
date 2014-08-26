@@ -92,6 +92,8 @@ struct StackTCPTest
                 flow_mng = FlowManagerPtr(new FlowManager());
                 flow_cache = FlowCachePtr(new FlowCache());
 
+		flow_mng->setFlowCache(flow_cache);
+
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(2);
                 tcp->createTCPInfo(2);

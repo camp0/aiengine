@@ -71,6 +71,7 @@ private:
 };
 
 typedef std::shared_ptr<FlowCache> FlowCachePtr;
+typedef std::weak_ptr<FlowCache> FlowCachePtrWeak;
 
 } // namespace aiengine
 

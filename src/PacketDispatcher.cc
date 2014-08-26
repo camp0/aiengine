@@ -174,7 +174,7 @@ void PacketDispatcher::do_read(boost::system::error_code ec) {
 
 	int len = pcap_next_ex(pcap_,&header_,&pkt_data_);
 	if (len >= 0) { 
-		forward_raw_packet((unsigned char*)pkt_data_,header_->len);
+		forward_raw_packet((unsigned char*)pkt_data_,header_->len,header_->ts.tv_sec);
 	}
 
 // This prevents a problem on the boost asio signal
@@ -193,7 +193,7 @@ void PacketDispatcher::do_read(boost::system::error_code ec) {
 	// else error but not handler
 }
 
-void PacketDispatcher::forward_raw_packet(unsigned char *packet,int length) {
+void PacketDispatcher::forward_raw_packet(unsigned char *packet,int length, time_t packet_time) {
 
 	++total_packets_;
 	total_bytes_ += length;
@@ -202,6 +202,7 @@ void PacketDispatcher::forward_raw_packet(unsigned char *packet,int length) {
 		current_packet_.setPayload(packet);
 		current_packet_.setPayloadLength(length);
 		current_packet_.setPrevHeaderSize(0);
+		current_packet_.setPacketTime(packet_time);
 
 		if (defMux_->acceptPacket(current_packet_)) {
 			defMux_->setPacket(&current_packet_);
@@ -235,7 +236,7 @@ void PacketDispatcher::run_pcap(void) {
 
 	status_ = PacketDispatcherStatus::RUNNING;
 	while (pcap_next_ex(pcap_,&header_,&pkt_data_) >= 0) {
-		forward_raw_packet((unsigned char*)pkt_data_,header_->len);
+		forward_raw_packet((unsigned char*)pkt_data_,header_->len,header_->ts.tv_sec);
 	}
 	status_ = PacketDispatcherStatus::STOP;
 }
@@ -313,7 +314,6 @@ void PacketDispatcher::setPcapFilter(const std::string &filter) {
 	if ((device_is_ready_)or(pcap_file_ready_)) {
 		struct bpf_program fp;
 		char *c_filter = const_cast<char*>(filter.c_str());
-		//std::string c_filter(filter.c_str());
 
 		if (pcap_compile(pcap_, &fp, c_filter, 1, PCAP_NETMASK_UNKNOWN) == 0) {
 			
@@ -333,7 +333,9 @@ void PacketDispatcher::forwardPacket(const std::string &packet, int length) {
 
 	const unsigned char *pkt = reinterpret_cast<const unsigned char *>(packet.c_str()); 
 
-	forward_raw_packet((unsigned char*)pkt,length);
+	// TODO: pass the time to the method forward_raw_packet from the
+	// python binding
+	forward_raw_packet((unsigned char*)pkt,length,0);
 	return;
 }
 

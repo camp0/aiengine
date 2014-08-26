@@ -140,7 +140,7 @@ private:
 	void start_operations(void);
 	void handle_receive(boost::system::error_code error);
 	void do_read(boost::system::error_code error);
-	void forward_raw_packet(unsigned char *packet,int length);
+	void forward_raw_packet(unsigned char *packet,int length,time_t packet_time);
 	void idle_handler(boost::system::error_code error);
 	void default_idle_function(void) const {};
 

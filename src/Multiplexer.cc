@@ -42,17 +42,18 @@ MultiplexerPtrWeak Multiplexer::getUpMultiplexer(int key) const {
 	return mp;
 } 
 
-void Multiplexer::setPacketInfo(unsigned char *packet, int length, int prev_header_size,PacketAnomaly pa) { 
+void Multiplexer::setPacketInfo(unsigned char *packet, int length, int prev_header_size,PacketAnomaly pa,std::time_t packet_time) { 
 
 	packet_.setPayload(packet);
 	packet_.setPayloadLength(length);
 	packet_.setPrevHeaderSize(prev_header_size);
 	packet_.setPacketAnomaly(pa);
+	packet_.setPacketTime(packet_time);
 }
 
 void Multiplexer::setPacket(Packet *pkt) {
 
-	setPacketInfo(pkt->getPayload(),pkt->getLength(),pkt->getPrevHeaderSize(),pkt->getPacketAnomaly());
+	setPacketInfo(pkt->getPayload(),pkt->getLength(),pkt->getPrevHeaderSize(),pkt->getPacketAnomaly(),pkt->getPacketTime());
 }
 
 void Multiplexer::forwardPacket(Packet &packet) {
@@ -70,7 +71,8 @@ void Multiplexer::forwardPacket(Packet &packet) {
                 if (mux) {
 			int prev_header_size = packet.getPrevHeaderSize();
 			PacketAnomaly pa = packet.getPacketAnomaly();
-                      	Packet pkt_candidate(&packet.getPayload()[header_size_],packet.getLength() - header_size_, prev_header_size,pa);
+			std::time_t packet_time = packet.getPacketTime();
+                      	Packet pkt_candidate(&packet.getPayload()[header_size_],packet.getLength() - header_size_, prev_header_size,pa,packet_time);
 
 			if(mux->acceptPacket(pkt_candidate)) { // The packet is accepted by the destination mux
     				mux->packet_func_(pkt_candidate);

@@ -124,6 +124,9 @@ struct StackLanTest
 		flow_cache_udp = FlowCachePtr(new FlowCache());
 		flow_cache_tcp = FlowCachePtr(new FlowCache());
 
+		flow_table_udp->setFlowCache(flow_cache_udp);
+		flow_table_tcp->setFlowCache(flow_cache_tcp);
+
 		ff_tcp = FlowForwarderPtr(new FlowForwarder());
 		ff_tcp6 = FlowForwarderPtr(new FlowForwarder());
 		ff_udp = FlowForwarderPtr(new FlowForwarder());

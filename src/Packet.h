@@ -32,19 +32,23 @@ namespace aiengine {
 class Packet 
 {
 public:
-    	explicit Packet(unsigned char *packet,int length, int prev_header_size,PacketAnomaly pa):
+    	explicit Packet(unsigned char *packet,int length, int prev_header_size,
+		PacketAnomaly pa, time_t packet_time):
 		length_(length),packet_(packet),prev_header_size_(prev_header_size),
-		source_port_(0),dest_port_(0),pa_(pa) {}
+		source_port_(0),dest_port_(0),pa_(pa),packet_time_(packet_time) {}
 
 	explicit Packet(unsigned char *packet, int length, int prev_header_size):
-		Packet(packet,length,prev_header_size,PacketAnomaly::NONE) {}
+		Packet(packet,length,prev_header_size,PacketAnomaly::NONE,0) {}
 
 	explicit Packet(unsigned char *packet, int length):
-		Packet(packet,length,0,PacketAnomaly::NONE) {}
+		Packet(packet,length,0,PacketAnomaly::NONE,0) {}
 
-    	explicit Packet():Packet(nullptr,0,0,PacketAnomaly::NONE) {}
+    	explicit Packet():Packet(nullptr,0,0,PacketAnomaly::NONE,0) {}
 
     	virtual ~Packet() {}
+
+	void setPacketTime(time_t packet_time) { packet_time_ = packet_time; }
+	time_t getPacketTime() const { return packet_time_; }
 
 	void setPayload(unsigned char *packet) { packet_ = packet; }
 	void setPayloadLength(int length) { length_ = length;}
@@ -66,7 +70,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Packet& p) {
 	
 		os << "Begin packet(" << &p << ") length:" << p.length_ << " prev header size:" << p.prev_header_size_;
-		os << " anomaly:" << PacketAnomalyToString.at(p.pa_) << std::endl;
+		os << " anomaly:" << PacketAnomalyToString.at(p.pa_) << " time:" << p.packet_time_ << std::endl;
 		for (int i = 0;i< p.length_;++i) {
 			os << std::hex << (int)p.packet_[i] << " ";
 		}
@@ -81,6 +85,7 @@ private:
 	u_int16_t source_port_;
 	u_int16_t dest_port_;
 	PacketAnomaly pa_;
+	time_t packet_time_;
 };
 
 typedef std::shared_ptr<Packet> PacketPtr;

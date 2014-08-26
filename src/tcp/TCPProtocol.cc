@@ -71,6 +71,12 @@ SharedPointer<Flow> TCPProtocol::getFlow() {
                                 flow = flow_cache_->acquireFlow().lock();
                                 if (flow) {
                                         flow->setId(h1);
+
+                                       	// The time of the flow must be insert on the FlowManager table
+                                       	// in order to keep the index updated
+                                       	flow->setArriveTime(packet_time_);
+                                       	flow->setLastPacketTime(packet_time_);
+
 					if (ipmux->address.getType() == 4) {
                                        		flow->setFiveTuple(ipmux->address.getSourceAddress(),
                                         		getSrcPort(),IPPROTO_TCP,
@@ -111,6 +117,7 @@ SharedPointer<Flow> TCPProtocol::getFlow() {
 
 void TCPProtocol::processPacket(Packet &packet) {
 
+	packet_time_ = packet.getPacketTime();
 	SharedPointer<Flow> flow = getFlow();
 
 	current_flow_ = flow.get();
@@ -128,13 +135,17 @@ void TCPProtocol::processPacket(Packet &packet) {
 
 			flow->total_bytes += bytes;
 			++flow->total_packets;
-			
+
 			if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
 				flow->setPacketAnomaly(packet.getPacketAnomaly());
 			}
 
 			computeState(flow.get(),bytes);
-
+#ifdef DEBUG
+                	char mbstr[100];
+                	std::strftime(mbstr, 100, "%D %X", std::localtime(&packet_time_));
+                	std::cout << __FILE__ << ":" << __func__ << ": flow(" << current_flow_ << ")[" << mbstr << "] pkts:" << flow->total_packets << " " << *tcp_info.get() << std::endl;
+#endif
 			if (flow_forwarder_.lock()&&(bytes > 0)) {
 			
 				FlowForwarderPtr ff = flow_forwarder_.lock();
@@ -153,12 +164,12 @@ void TCPProtocol::processPacket(Packet &packet) {
 				// Retrieve the flow to the flow cache if the flow have been closed	
 				if ((tcp_info->state_prev == static_cast<int>(TcpState::CLOSED))and(tcp_info->state_curr == static_cast<int>(TcpState::CLOSED))) {
 #ifdef DEBUG
-					std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":retrieving to flow cache" << std::endl; 
+					std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << ":retrieving to flow cache" << std::endl; 
 #endif
-					// There is no need to recheck the life of the flow_table_ variabe, must exists on this point
 					tcp_info_cache_->release(tcp_info);
 					flow_table_->removeFlow(flow);
 					flow_cache_->releaseFlow(flow);
+
 #if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
                                         if (getPythonObjectIsSet()) { // There is attached a database object
 						databaseAdaptorRemoveHandler(flow.get());
@@ -174,7 +185,7 @@ void TCPProtocol::processPacket(Packet &packet) {
 						SharedPointer<IPAbstractSet> ipset = ipset_mng_->getMatchedIPSet();
                                         	flow->ipset = ipset;
 #ifdef DEBUG
-						std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":Lookup positive on IPSet:" << ipset->getName() << std::endl;
+						std::cout << __FILE__ << ":" __func__ << ":flow:" << flow << ":Lookup positive on IPSet:" << ipset->getName() << std::endl;
 #endif
 #ifdef PYTHON_BINDING
                                         	if (ipset->haveCallback()) {
@@ -192,6 +203,12 @@ void TCPProtocol::processPacket(Packet &packet) {
                         	}
                 	}
 #endif
+			// Check if we need to update the timers of the flow manager
+               		if ((packet_time_ - flow_table_->getTimeout()) > last_timeout_ ) {
+                       		last_timeout_ = packet_time_;
+                       		flow_table_->updateTimers(packet_time_);
+               		}
+               		flow->setLastPacketTime(packet_time_);
 		}
 	}
 }
@@ -295,7 +312,7 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 #ifdef DEBUG
 		const char *prev_state = ((tcp_states[tcp_info->state_prev]).state)->name;
 		const char *curr_state = ((tcp_states[tcp_info->state_curr]).state)->name;
-		std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << " curr:" << curr_state << " flg:" << str_flag << " " << str_num;
+		std::cout << __FILE__ << ":" __func__ << ":flow:" << flow << " curr:" << curr_state << " flg:" << str_flag << " " << str_num;
 		std::cout << " seq(" << seq_num << ")ack(" << ack_num << ") dir:" << flowdir << " bytes:" << bytes;
 		std::cout << " nseq(" << next_seq_num << ")nack(" << next_ack_num << ")" << std::endl;
 #endif

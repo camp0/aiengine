@@ -43,33 +43,98 @@ void FlowManager::addFlow(SharedPointer<Flow> flow) {
 
 void FlowManager::removeFlow(SharedPointer<Flow> flow) {
 
-	FlowByID::iterator it = flowTable_.find(flow->getId());
+	FlowByID::iterator it = flowTable_.get<flow_table_tag_unique>().find(flow->getId());
 	
 	flowTable_.erase(it);
 	flow.reset();
 }
 
-
 SharedPointer<Flow> FlowManager::findFlow(unsigned long hash1,unsigned long hash2) {
 
-	FlowByID::iterator it = flowTable_.find(hash1);
+	flow_it_ = flowTable_.get<flow_table_tag_unique>().find(hash1);
 	SharedPointer<Flow> fp;
 
-	if (it == flowTable_.end()) {
-		it = flowTable_.find(hash2);
-		if (it == flowTable_.end()) { 
+	if (flow_it_ == flowTable_.end()) {
+		flow_it_ = flowTable_.get<flow_table_tag_unique>().find(hash2);
+		if (flow_it_ == flowTable_.end()) { 
 			return fp;
 		}
 	}
-	fp = (*it);
+	fp = (*flow_it_);
+
 	return fp;
+}
+
+/*
+void FlowManager::__print() {
+
+        FlowByDuration::reverse_iterator end = flowTable_.get<flow_table_tag_duration>().rend();
+        FlowByDuration::reverse_iterator begin = flowTable_.get<flow_table_tag_duration>().rbegin();
+
+        std::cout << __FILE__ << ":flows on table:" << flowTable_.size() << std::endl;
+        for (FlowByDuration::reverse_iterator it = begin ; it != end;++it) {
+                SharedPointer<Flow> flow = (*it);
+                time_t t = flow->getLastPacketTime();
+
+               	char mbstr[100];
+                std::strftime(mbstr, 100, "%D %X", std::localtime(&t));
+	
+		std::cout << __FILE__ << ":Reverse flow:" << *flow.get() << " lastPacketTime:" << mbstr <<std::endl;
+	}
+
+}
+*/
+
+void FlowManager::updateTimers(std::time_t current_time) {
+
+	FlowByDuration::reverse_iterator end = flowTable_.get<flow_table_tag_duration>().rend();
+	FlowByDuration::reverse_iterator begin = flowTable_.get<flow_table_tag_duration>().rbegin();
+	int expire_flows = 0;
+
+#ifdef DEBUG
+	char mbstr[100];
+        std::strftime(mbstr, 100, "%D %X", std::localtime(&current_time));
+
+        std::cout << __FILE__ << ":" << __func__ << ":Checking Timers at " << mbstr << " total flows:" << flowTable_.size() << std::endl;
+#endif
+
+	// We check the iterator backwards because the old flows will be at the end
+	for (FlowByDuration::reverse_iterator it = begin ; it != end;) {
+		SharedPointer<Flow> flow = (*it);
+
+		if (flow->getLastPacketTime() + timeout_ <= current_time ) {
+			++expire_flows;
+			++total_timeout_flows_;
+#ifdef DEBUG
+        		std::cout << __FILE__ << ":" << __func__ << ":Flow Expires: " << *flow.get() <<std::endl;
+#endif
+			flowTable_.get<flow_table_tag_duration>().erase((++it).base());
+
+			if (tcp_info_cache_) {
+				SharedPointer<TCPInfo> tcp_info = flow->tcp_info.lock();
+				if(tcp_info)
+					tcp_info_cache_->release(tcp_info);	
+			}
+			if (flow_cache_) 
+				flow_cache_->releaseFlow(flow);
+			
+		} else {
+			// the multiset is ordered and there is no needd to check more flows
+			break;
+		}
+	}
+#ifdef DEBUG
+        std::cout << __FILE__ << ":" << __func__ << ":Total expire flows " << expire_flows <<std::endl;
+ #endif
 }
 
 std::ostream& operator<< (std::ostream& out, const FlowManager& fm) {
 
         out << fm.name_ << " statistics" << std::endl;
-        out << "\t" << "Total process flows:    " << std::setw(10) << fm.total_process_flows_ <<std::endl;
-        out << "\t" << "Total flows:            " << std::setw(10) << fm.flowTable_.size() <<std::endl;
+	out << "\t" << "Timeout:                " << std::setw(10) << fm.timeout_ << std::endl;
+        out << "\t" << "Total process flows:    " << std::setw(10) << fm.total_process_flows_ << std::endl;
+        out << "\t" << "Total flows:            " << std::setw(10) << fm.flowTable_.size() << std::endl;
+        out << "\t" << "Total timeout flows:    " << std::setw(10) << fm.total_timeout_flows_ << std::endl;
 	return out;
 }
 

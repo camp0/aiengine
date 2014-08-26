@@ -69,6 +69,12 @@ SharedPointer<Flow> UDPProtocol::getFlow() {
 				flow = flow_cache_->acquireFlow().lock();
 				if (flow) {
 					flow->setId(h1);
+
+					// The time of the flow must be insert on the FlowManager table
+					// in order to keep the index updated
+                        		flow->setArriveTime(packet_time_);
+                        		flow->setLastPacketTime(packet_time_);
+
                                         if (ipmux->address.getType() == 4) {
                                                 flow->setFiveTuple(ipmux->address.getSourceAddress(),
                                                         getSrcPort(),IPPROTO_UDP,
@@ -95,6 +101,7 @@ SharedPointer<Flow> UDPProtocol::getFlow() {
 
 void UDPProtocol::processPacket(Packet& packet) {
 
+	packet_time_ = packet.getPacketTime();
 	SharedPointer<Flow> flow = getFlow();
 
 	current_flow_ = flow.get();
@@ -107,7 +114,11 @@ void UDPProtocol::processPacket(Packet& packet) {
 		total_bytes_ += bytes;
 		flow->total_bytes += bytes;
 		++flow->total_packets;
-
+#ifdef DEBUG
+                char mbstr[100];
+                std::strftime(mbstr, 100, "%D %X", std::localtime(&packet_time_));
+                std::cout << __FILE__ << ":" << __func__ << ": flow(" << current_flow_ << ")[" << mbstr << "] pkts:" << flow->total_packets << std::endl;
+#endif
 		if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
 			flow->setPacketAnomaly(packet.getPacketAnomaly());
 		}
@@ -119,7 +130,7 @@ void UDPProtocol::processPacket(Packet& packet) {
                         packet.setPayload(&packet.getPayload()[getHeaderLength()]);
                         packet.setPrevHeaderSize(getHeaderLength());
                         packet.setPayloadLength(packet.getLength() - getHeaderLength());
-
+			//packet.setPacketTime(packet.getPacketTime());
                         packet.setDestinationPort(getDstPort());
                         packet.setSourcePort(getSrcPort());
 
@@ -151,7 +162,14 @@ void UDPProtocol::processPacket(Packet& packet) {
 			} 
 		}
 #endif
+		// Check if we need to update the timers of the flow manager
+		if ((packet_time_ - flow_table_->getTimeout()) > last_timeout_ ) {
+			last_timeout_ = packet_time_;
+			flow_table_->updateTimers(packet_time_);
+		}
+		flow->setLastPacketTime(packet_time_);
 	}
+
 }
 
 } // namespace aiengine

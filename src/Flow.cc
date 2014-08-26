@@ -68,6 +68,8 @@ void Flow::reset() {
 	frequency_engine_inspected = false;
 	prev_direction_ = direction_ = FlowDirection::FORWARD;
 	pa_ = PacketAnomaly::NONE;
+	arrive_time = 0;
+	current_time = 0;
 }
 
 void Flow::serialize(std::ostream& stream) {

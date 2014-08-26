@@ -63,6 +63,7 @@ void GPRSProtocol::processFlow(Flow *flow) {
 			gpacket.setPayload(packet->getPayload());
 			gpacket.setPrevHeaderSize(header_size);
 			gpacket.setPayloadLength(packet->getLength());
+			gpacket.setPacketTime(packet->getPacketTime());
 
 			mux->setNextProtocolIdentifier(ETHERTYPE_IP); 
 			mux->forwardPacket(gpacket);

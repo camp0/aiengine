@@ -749,6 +749,76 @@ BOOST_FIXTURE_TEST_CASE(test_case_17,StackLanTest) // Test a IPv6 flow with  aut
         BOOST_CHECK(tcp_generic6->getTotalBytes() == 103);
 }
 
+BOOST_FIXTURE_TEST_CASE(test_case_18,StackLanTest) // Tests timeouts with two different pcap files 
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+        pd->open("../pcapfiles/accessgoogle.pcap");
+        pd->run();
+        pd->close();
+	
+	BOOST_CHECK(flow_table_udp->getTotalProcessFlows() == 1);
+	BOOST_CHECK(flow_table_udp->getTotalFlows() == 1);
+	BOOST_CHECK(flow_table_udp->getTotalTimeoutFlows() == 0);
+
+	BOOST_CHECK(flow_table_tcp->getTotalProcessFlows() == 1);
+	BOOST_CHECK(flow_table_tcp->getTotalFlows() == 1);
+	BOOST_CHECK(flow_table_tcp->getTotalTimeoutFlows() == 0);
+
+        pd->open("../pcapfiles/amazon_4ssl_flows.pcap");
+        pd->run();
+        pd->close();
+
+	BOOST_CHECK(flow_table_udp->getTotalProcessFlows() == 1);
+	BOOST_CHECK(flow_table_udp->getTotalFlows() == 1);
+
+	// There is no timeout for udp because there is no udp traffic
+	// on the second pcapfile
+	BOOST_CHECK(flow_table_udp->getTotalTimeoutFlows() == 0);
+
+	BOOST_CHECK(flow_table_tcp->getTotalProcessFlows() == 5);
+	BOOST_CHECK(flow_table_tcp->getTotalFlows() == 4);
+	BOOST_CHECK(flow_table_tcp->getTotalTimeoutFlows() == 1);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_case_19,StackLanTest) // Tests timeouts with two different pcap files, timeout of one year
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+	flow_table_udp->setTimeout(60*60*24*365);
+	flow_table_tcp->setTimeout(60*60*24*365);
+
+        pd->open("../pcapfiles/accessgoogle.pcap");
+        pd->run();
+        pd->close();
+
+        BOOST_CHECK(flow_table_udp->getTotalProcessFlows() == 1);
+        BOOST_CHECK(flow_table_udp->getTotalFlows() == 1);
+        BOOST_CHECK(flow_table_udp->getTotalTimeoutFlows() == 0);
+
+        BOOST_CHECK(flow_table_tcp->getTotalProcessFlows() == 1);
+        BOOST_CHECK(flow_table_tcp->getTotalFlows() == 1);
+        BOOST_CHECK(flow_table_tcp->getTotalTimeoutFlows() == 0);
+
+        pd->open("../pcapfiles/amazon_4ssl_flows.pcap");
+        pd->run();
+        pd->close();
+
+        BOOST_CHECK(flow_table_udp->getTotalProcessFlows() == 1);
+        BOOST_CHECK(flow_table_udp->getTotalFlows() == 1);
+        BOOST_CHECK(flow_table_udp->getTotalTimeoutFlows() == 0);
+
+        BOOST_CHECK(flow_table_tcp->getTotalProcessFlows() == 5);
+        BOOST_CHECK(flow_table_tcp->getTotalFlows() == 5);
+        BOOST_CHECK(flow_table_tcp->getTotalTimeoutFlows() == 0);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE (test5_flow_serialize)
 
 	std::ostringstream os;
 #ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION
-	std::string output("{\"5tuple\":\"192.168.1.1:2345:6:54.12.5.1:80\",\"a\":0}");
+	std::string output("{\"5tuple\":\"192.168.1.1:2345:6:54.12.5.1:80\",\"b\":0}");
 #else
 	std::string output("{\"ipsrc\":\"192.168.1.1\",\"portsrc\":2345,\"proto\":6,\"ipdst\":\"54.12.5.1\",\"portdst\":80,\"bytes\":0}");
 #endif
@@ -311,6 +311,168 @@ BOOST_AUTO_TEST_CASE (test2_flowcache_flowmanager)
 	BOOST_CHECK(fc->getTotalReleases() == 64);
 }
 
+BOOST_AUTO_TEST_SUITE_END( )
 
+BOOST_AUTO_TEST_SUITE (flowmanager_time) // test for manage the time 
+
+BOOST_AUTO_TEST_CASE (test1_flowmanager)
+{
+  	FlowManagerPtr fm = FlowManagerPtr(new FlowManager());
+	SharedPointer<Flow> f1 = SharedPointer<Flow>(new Flow());
+	SharedPointer<Flow> f2 = SharedPointer<Flow>(new Flow());
+	SharedPointer<Flow> f3 = SharedPointer<Flow>(new Flow());
+
+	f1->setId(1^2^3^4^5);f1->setFiveTuple(1,1000,6,2,80);
+	f2->setId(1^2^3^4^6);f2->setFiveTuple(1,1000,6,3,80);
+	f3->setId(1^2^3^4^7);f3->setFiveTuple(1,1000,6,4,80);
+
+	f1->setArriveTime(0);
+	f2->setArriveTime(0);
+	f3->setArriveTime(0);
+
+	f1->setLastPacketTime(1);
+	f2->setLastPacketTime(2);
+	f3->setLastPacketTime(3);
+
+        fm->addFlow(f1);
+        fm->addFlow(f2);
+        fm->addFlow(f3);
+ 
+	BOOST_CHECK(fm->getTotalFlows() == 3);
+	BOOST_CHECK(fm->getTotalTimeoutFlows() == 0);	
+
+	// Update the time of the flows
+	fm->updateTimers(200);
+	BOOST_CHECK(fm->getTotalFlows() == 0);
+	BOOST_CHECK(fm->getTotalTimeoutFlows() == 3);	
+}
+
+BOOST_AUTO_TEST_CASE (test2_flowmanager)
+{
+        FlowManagerPtr fm = FlowManagerPtr(new FlowManager());
+        SharedPointer<Flow> f1 = SharedPointer<Flow>(new Flow());
+        SharedPointer<Flow> f2 = SharedPointer<Flow>(new Flow());
+        SharedPointer<Flow> f3 = SharedPointer<Flow>(new Flow());
+
+        f1->setId(1^2^3^4^5);f1->setFiveTuple(1,1000,6,2,80);
+        f2->setId(1^2^3^4^6);f2->setFiveTuple(1,1000,6,3,80);
+        f3->setId(1^2^3^4^7);f3->setFiveTuple(1,1000,6,4,80);
+
+        f1->setArriveTime(0);
+        f2->setArriveTime(0);
+        f3->setArriveTime(0);
+
+        f1->setLastPacketTime(10);
+        f2->setLastPacketTime(200);
+        f3->setLastPacketTime(300);
+
+	fm->setTimeout(120);
+
+        fm->addFlow(f1);
+        fm->addFlow(f2);
+        fm->addFlow(f3);
+
+        BOOST_CHECK(fm->getTotalFlows() == 3);
+        BOOST_CHECK(fm->getTotalTimeoutFlows() == 0);
+
+        // Update the time of the flows
+        fm->updateTimers(301);
+        BOOST_CHECK(fm->getTotalFlows() == 2);
+        BOOST_CHECK(fm->getTotalTimeoutFlows() == 1);
+
+	// flow1 should not exist on the fm
+	SharedPointer<Flow> fout = fm->findFlow(1^2^3^4^5,5^4^3^2^1);
+	
+	BOOST_CHECK(fout.use_count() == 0);
+	BOOST_CHECK(fout == nullptr);
+}
+
+BOOST_AUTO_TEST_CASE (test3_flowmanager)
+{
+        FlowManagerPtr fm = FlowManagerPtr(new FlowManager());
+        SharedPointer<Flow> f1 = SharedPointer<Flow>(new Flow());
+        SharedPointer<Flow> f2 = SharedPointer<Flow>(new Flow());
+        SharedPointer<Flow> f3 = SharedPointer<Flow>(new Flow());
+
+        f1->setId(1^2^3^4^5);f1->setFiveTuple(1,1000,6,2,80);
+        f2->setId(1^2^3^4^6);f2->setFiveTuple(1,1000,6,3,80);
+        f3->setId(1^2^3^4^7);f3->setFiveTuple(1,1000,6,4,80);
+
+        f1->setArriveTime(0);
+        f2->setArriveTime(0);
+        f3->setArriveTime(0);
+
+        f1->setLastPacketTime(100);
+        f2->setLastPacketTime(20);
+        f3->setLastPacketTime(300);
+	
+	fm->setTimeout(210);
+
+        fm->addFlow(f1);
+        fm->addFlow(f2);
+        fm->addFlow(f3);
+
+        BOOST_CHECK(fm->getTotalFlows() == 3);
+        BOOST_CHECK(fm->getTotalTimeoutFlows() == 0);
+
+        // Update the time of the flows
+        fm->updateTimers(301);
+        BOOST_CHECK(fm->getTotalFlows() == 2);
+        BOOST_CHECK(fm->getTotalTimeoutFlows() == 1);
+
+        // flow2 should not exist on the fm
+        SharedPointer<Flow> fout = fm->findFlow(1^2^3^4^6,6^4^3^2^1);
+
+        BOOST_CHECK(fout.use_count() == 0);
+        BOOST_CHECK(fout == nullptr);
+}
+
+BOOST_AUTO_TEST_CASE (test4_flowmanager_with_flowcache_timeout)
+{
+        FlowManagerPtr fm = FlowManagerPtr(new FlowManager());
+        FlowCachePtr fc = FlowCachePtr(new FlowCache());
+
+        fc->createFlows(64);
+
+        for (int i = 0;i< 66; ++i) {
+                SharedPointer<Flow> f = fc->acquireFlow().lock();
+                if(f) {
+                        unsigned long h1 = 1^2^3^4^i;
+                        unsigned long h2 = 4^i^3^1^2;
+                        f->setId(h1);
+			f->setFiveTuple(1,1000,6,2,80+i);
+			f->setArriveTime(0);
+
+                        fm->addFlow(f);
+                        BOOST_CHECK(fm->getTotalFlows() == i+1);
+                }
+        }
+
+	fm->setFlowCache(fc);
+	fm->setTimeout(50);
+
+        for (int i = 0;i< 33; ++i) {
+                unsigned long h1 = 1^2^3^4^i;
+                unsigned long h2 = 4^i^3^1^2;
+                SharedPointer<Flow> f = fm->findFlow(h1,h2);
+		if (f) {
+			f->setLastPacketTime(50);
+		}
+	}
+
+	fm->updateTimers(80);
+
+        BOOST_CHECK(fm->getTotalFlows() == 33);
+        BOOST_CHECK(fm->getTotalProcessFlows() == 64);
+        BOOST_CHECK(fm->getTotalTimeoutFlows() == 31);
+
+        BOOST_CHECK(fc->getTotalFlows() == 64);
+        BOOST_CHECK(fc->getTotalAcquires() == 64);
+        BOOST_CHECK(fc->getTotalReleases() == 31);
+        BOOST_CHECK(fc->getTotalFails() == 2);
+
+	//fm->statistics();
+	//fc->statistics();	
+}
 
 BOOST_AUTO_TEST_SUITE_END( )

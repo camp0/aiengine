@@ -86,6 +86,11 @@ public:
         char* getSrcAddrDotNotation() const { return address_.getSrcAddrDotNotation();}
         char* getDstAddrDotNotation() const { return address_.getDstAddrDotNotation();}
 
+	void setArriveTime(time_t t) { arrive_time = t; }
+	void setLastPacketTime(time_t t) { current_time = t; }
+	int getLastPacketTime() const { return (int)current_time; } 
+	int getDuration() const { return (int)(current_time - arrive_time); }
+
 	int32_t total_bytes;
 	int32_t total_packets_l7;
 	int32_t total_packets;
@@ -155,6 +160,8 @@ private:
 	FlowDirection direction_; 
 	FlowDirection prev_direction_; 
 	PacketAnomaly pa_;
+	time_t arrive_time;
+	time_t current_time;
 };
 
 } // namespace aiengine 

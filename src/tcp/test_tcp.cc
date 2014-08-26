@@ -30,14 +30,13 @@
 #include <boost/test/unit_test.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(tcp_suite1,StackTCPTest)
-
 // check a TCP header values
 //
 BOOST_AUTO_TEST_CASE (test1_tcp)
 {
 	unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_http_get);
         int length = raw_packet_ethernet_ip_tcp_http_get_length;
-	Packet packet(pkt,length,0);
+	Packet packet(pkt,length);
 	
         // executing the packet
         // forward the packet through the multiplexers
@@ -56,7 +55,7 @@ BOOST_AUTO_TEST_CASE (test2_tcp)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
                 
         // executing the packet
         // forward the packet through the multiplexers
@@ -76,7 +75,7 @@ BOOST_AUTO_TEST_CASE (test3_tcp)
 {
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
         int length1 = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
-        Packet packet(pkt1,length1,0);
+        Packet packet(pkt1,length1);
 
         mux_eth->setPacket(&packet);
         eth->setHeader(packet.getPayload());
@@ -100,7 +99,7 @@ BOOST_AUTO_TEST_CASE (test4_tcp)
 {
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn);
         int length1 = raw_packet_ethernet_ip_tcp_syn_length;
-        Packet packet(pkt1,length1,0);
+        Packet packet(pkt1,length1);
 
         mux_eth->setPacket(&packet);
         eth->setHeader(packet.getPayload());
@@ -148,10 +147,10 @@ BOOST_AUTO_TEST_CASE (test6_tcp)
 {
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn);
         int length1 = raw_packet_ethernet_ip_tcp_syn_length;
-        Packet packet1(pkt1,length1,0);
+        Packet packet1(pkt1,length1);
         unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn_ack);
         int length2 = raw_packet_ethernet_ip_tcp_syn_ack_length;
-        Packet packet2(pkt2,length2,0);
+        Packet packet2(pkt2,length2);
 
         mux_eth->setPacket(&packet1);
         eth->setHeader(packet1.getPayload());
@@ -181,7 +180,7 @@ BOOST_AUTO_TEST_CASE (test7_tcp)
 {
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn_ack_fin);
         int length1 = raw_packet_ethernet_ip_tcp_syn_ack_fin_length;
-        Packet packet(pkt1,length1,0);
+        Packet packet(pkt1,length1);
 
         mux_eth->setPacket(&packet);
         eth->setHeader(packet.getPayload());
@@ -406,5 +405,91 @@ BOOST_AUTO_TEST_CASE (test3_tcp)
         BOOST_CHECK ( newstate == static_cast<int>(TcpState::CLOSED));
 
 }
+
+BOOST_AUTO_TEST_SUITE_END( )
+
+BOOST_FIXTURE_TEST_SUITE(tcp_suite_timeouts,StackTCPTest)
+// Unit tests for test the timeouts on the tcp part
+
+BOOST_AUTO_TEST_CASE (test1_tcp) // Two flows, the first expires
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn);
+        int length1 = raw_packet_ethernet_ip_tcp_syn_length;
+        Packet packet1(pkt1,length1,0,PacketAnomaly::NONE,0);
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn_2);
+        int length2 = raw_packet_ethernet_ip_tcp_syn_2_length;
+        Packet packet2(pkt2,length2,0,PacketAnomaly::NONE,100);
+
+	flow_mng->setTimeout(80);
+
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(packet1.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+        BOOST_CHECK(flow_mng->getTotalProcessFlows() == 1);
+        BOOST_CHECK(flow_mng->getTotalFlows() == 1);
+        BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 0);
+
+        BOOST_CHECK(flow_cache->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
+        BOOST_CHECK(flow_cache->getTotalReleases() == 0);
+        BOOST_CHECK(flow_cache->getTotalFails() == 0);
+
+        mux_eth->setPacket(&packet2);
+        eth->setHeader(packet2.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet2);
+
+	BOOST_CHECK(flow_mng->getTotalProcessFlows() == 2);
+	BOOST_CHECK(flow_mng->getTotalFlows() == 1);
+        BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 1);
+
+        BOOST_CHECK(flow_cache->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
+        BOOST_CHECK(flow_cache->getTotalReleases() == 1);
+        BOOST_CHECK(flow_cache->getTotalFails() == 0);
+}
+
+BOOST_AUTO_TEST_CASE (test2_tcp) // Two flows, none of them expires due to the timeout value
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn);
+        int length1 = raw_packet_ethernet_ip_tcp_syn_length;
+        Packet packet1(pkt1,length1,0,PacketAnomaly::NONE,0);
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn_2);
+        int length2 = raw_packet_ethernet_ip_tcp_syn_2_length;
+        Packet packet2(pkt2,length2,0,PacketAnomaly::NONE,100);
+
+        flow_mng->setTimeout(120);
+
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(packet1.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+        BOOST_CHECK(flow_mng->getTotalProcessFlows() == 1);
+        BOOST_CHECK(flow_mng->getTotalFlows() == 1);
+        BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 0);
+
+        BOOST_CHECK(flow_cache->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
+        BOOST_CHECK(flow_cache->getTotalReleases() == 0);
+        BOOST_CHECK(flow_cache->getTotalFails() == 0);
+
+        mux_eth->setPacket(&packet2);
+        eth->setHeader(packet2.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet2);
+
+        BOOST_CHECK(flow_mng->getTotalProcessFlows() == 2);
+        BOOST_CHECK(flow_mng->getTotalFlows() == 2);
+        BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 0);
+
+        BOOST_CHECK(flow_cache->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
+        BOOST_CHECK(flow_cache->getTotalReleases() == 0);
+        BOOST_CHECK(flow_cache->getTotalFails() == 0);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )

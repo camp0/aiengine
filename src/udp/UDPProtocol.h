@@ -45,7 +45,8 @@ class UDPProtocol: public Protocol
 {
 public:
     	explicit UDPProtocol(std::string name):Protocol(name),stats_level_(0),
-		udp_header_(nullptr),current_flow_(nullptr),total_bytes_(0) {}
+		udp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
+		last_timeout_(0),packet_time_(0) {}
     	
 	explicit UDPProtocol():UDPProtocol(UDPProtocol::default_name) {}
 
@@ -125,6 +126,8 @@ private:
 	struct udphdr *udp_header_;
 	Flow *current_flow_;
 	int64_t total_bytes_;
+	time_t last_timeout_;
+	time_t packet_time_;
 };
 
 typedef std::shared_ptr<UDPProtocol> UDPProtocolPtr;
