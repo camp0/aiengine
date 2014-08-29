@@ -28,3 +28,6 @@ Version 0.6
 * Support for IPSets.
 
 Version 0.7
+
+Version 0.9
+ * http://stackoverflow.com/questions/9977446/connecting-to-a-remote-ipython-instance

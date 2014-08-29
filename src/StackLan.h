@@ -77,6 +77,8 @@ public:
 	void enableFrequencyEngine(bool enable);
 	void enableLinkLayerTagging(std::string type);
 
+	void setFlowsTimeout(int timeout);
+
 #ifdef PYTHON_BINDING
         FlowManager &getTCPFlowManager() { return *flow_table_tcp_.get();}
         FlowManager &getUDPFlowManager() { return *flow_table_udp_.get();}

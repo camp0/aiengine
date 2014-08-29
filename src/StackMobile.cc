@@ -87,14 +87,14 @@ StackMobile::StackMobile() {
        	flow_cache_tcp_ = FlowCachePtr(new FlowCache());
         flow_cache_udp_low_ = FlowCachePtr(new FlowCache());
         flow_cache_udp_high_ = FlowCachePtr(new FlowCache());
-        flow_mng_tcp_ = FlowManagerPtr(new FlowManager());
-        flow_mng_udp_high_ = FlowManagerPtr(new FlowManager());
-        flow_mng_udp_low_ = FlowManagerPtr(new FlowManager());
+        flow_table_tcp_ = FlowManagerPtr(new FlowManager());
+        flow_table_udp_high_ = FlowManagerPtr(new FlowManager());
+        flow_table_udp_low_ = FlowManagerPtr(new FlowManager());
 
         // Link the FlowCaches to their corresponding FlowManager for timeouts
-        flow_mng_udp_low_->setFlowCache(flow_cache_udp_low_);
-        flow_mng_udp_high_->setFlowCache(flow_cache_udp_high_);
-        flow_mng_tcp_->setFlowCache(flow_cache_tcp_);
+        flow_table_udp_low_->setFlowCache(flow_cache_udp_low_);
+        flow_table_udp_high_->setFlowCache(flow_cache_udp_high_);
+        flow_table_tcp_->setFlowCache(flow_cache_tcp_);
 
 	ff_tcp_ = FlowForwarderPtr(new FlowForwarder());
 	ff_udp_low_ = FlowForwarderPtr(new FlowForwarder());
@@ -251,13 +251,13 @@ StackMobile::StackMobile() {
 
 	// Connect the FlowManager and FlowCache
 	tcp_->setFlowCache(flow_cache_tcp_);
-	tcp_->setFlowManager(flow_mng_tcp_);
+	tcp_->setFlowManager(flow_table_tcp_);
 			
 	udp_low_->setFlowCache(flow_cache_udp_low_);
-	udp_low_->setFlowManager(flow_mng_udp_low_);
+	udp_low_->setFlowManager(flow_table_udp_low_);
 	
 	udp_high_->setFlowCache(flow_cache_udp_high_);
-	udp_high_->setFlowManager(flow_mng_udp_high_);
+	udp_high_->setFlowManager(flow_table_udp_high_);
 
 	// Configure the FlowForwarders
 	udp_low_->setFlowForwarder(ff_udp_low_);
@@ -291,9 +291,9 @@ StackMobile::StackMobile() {
 void StackMobile::showFlows(std::basic_ostream<char>& out) {
 
 	out << "Flows on memory" << std::endl;
-	flow_mng_udp_low_->showFlows(out);
-	flow_mng_tcp_->showFlows(out);
-	flow_mng_udp_high_->showFlows(out);
+	flow_table_udp_low_->showFlows(out);
+	flow_table_tcp_->showFlows(out);
+	flow_table_udp_high_->showFlows(out);
 }
 
 void StackMobile::setTotalTCPFlows(int value) {
@@ -409,6 +409,13 @@ void StackMobile::enableLinkLayerTagging(std::string type) {
 #endif
                 }
         }
+}
+
+void StackMobile::setFlowsTimeout(int timeout) {
+
+        flow_table_udp_low_->setTimeout(timeout);
+        flow_table_tcp_->setTimeout(timeout);
+        flow_table_udp_high_->setTimeout(timeout);
 }
 
 } // namespace aiengine

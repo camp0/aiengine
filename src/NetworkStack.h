@@ -80,6 +80,8 @@ public:
 	virtual void enableNIDSEngine(bool enable) = 0;
 	virtual void enableLinkLayerTagging(std::string type) = 0;
 
+	virtual void setFlowsTimeout(int timeout) = 0;
+
 #ifdef PYTHON_BINDING
 	virtual FlowManager& getTCPFlowManager() = 0;
 	virtual FlowManager& getUDPFlowManager() = 0;

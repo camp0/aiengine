@@ -343,7 +343,6 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(self.called_callback, 1)
  
-
 class StackLanIPv6Tests(unittest.TestCase):
 
     def setUp(self):

@@ -365,4 +365,10 @@ void StackLanIPv6::enableLinkLayerTagging(std::string type) {
         }
 }
 
+void StackLanIPv6::setFlowsTimeout(int timeout) {
+
+        flow_table_udp_->setTimeout(timeout);
+        flow_table_tcp_->setTimeout(timeout);
+}
+
 } // namespace aiengine

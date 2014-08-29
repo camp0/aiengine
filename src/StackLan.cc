@@ -362,4 +362,10 @@ void StackLan::enableLinkLayerTagging(std::string type) {
         }
 }
 
+void StackLan::setFlowsTimeout(int timeout) {
+
+        flow_table_udp_->setTimeout(timeout);
+        flow_table_tcp_->setTimeout(timeout);
+}
+
 } // namespace aiengine

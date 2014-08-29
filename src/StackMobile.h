@@ -83,9 +83,11 @@ public:
 	void enableFrequencyEngine(bool value);
 	void enableLinkLayerTagging(std::string type);
 
+	void setFlowsTimeout(int timeout);
+
 #ifdef PYTHON_BINDING
-        FlowManager &getTCPFlowManager() { return *flow_mng_tcp_.get();}
-        FlowManager &getUDPFlowManager() { return *flow_mng_udp_high_.get();}
+        FlowManager &getTCPFlowManager() { return *flow_table_tcp_.get();}
+        FlowManager &getUDPFlowManager() { return *flow_table_udp_high_.get();}
         
         void setTCPIPSetManager(IPSetManager& ipset_mng) { tcp_->setIPSetManager(ipset_mng);}
         void setUDPIPSetManager(IPSetManager& ipset_mng) { udp_high_->setIPSetManager(ipset_mng);}
@@ -93,8 +95,8 @@ public:
         void setTCPIPSetManager(SharedPointer<IPSetManager> ipset_mng) { tcp_->setIPSetManager(ipset_mng);}
         void setUDPIPSetManager(SharedPointer<IPSetManager> ipset_mng) { udp_high_->setIPSetManager(ipset_mng);}
 
-        FlowManagerPtrWeak getTCPFlowManager() { return flow_mng_tcp_;}
-        FlowManagerPtrWeak getUDPFlowManager() { return flow_mng_udp_high_;}
+        FlowManagerPtrWeak getTCPFlowManager() { return flow_table_tcp_;}
+        FlowManagerPtrWeak getUDPFlowManager() { return flow_table_udp_high_;}
 #endif
 
 private:
@@ -133,9 +135,9 @@ private:
         FlowCachePtr flow_cache_tcp_;
         FlowCachePtr flow_cache_udp_low_;
         FlowCachePtr flow_cache_udp_high_;
-        FlowManagerPtr flow_mng_tcp_;
-        FlowManagerPtr flow_mng_udp_high_;
-        FlowManagerPtr flow_mng_udp_low_;
+        FlowManagerPtr flow_table_tcp_;
+        FlowManagerPtr flow_table_udp_high_;
+        FlowManagerPtr flow_table_udp_low_;
 
         // FlowForwarders
         FlowForwarderPtr ff_udp_low_;
