@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE (test2_icmp6)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_icmpv6_ping_request);
         int length = raw_packet_ethernet_ipv6_icmpv6_ping_request_length;
-	Packet packet(pkt,length,0);
+	Packet packet(pkt,length);
 
         // executing first the packet
         // forward the packet through the multiplexers
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE (test3_icmp6)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_ethernet_ipv6_icmp6_ra);
         int length = raw_ethernet_ipv6_icmp6_ra_length;
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
         // executing first the packet
         // forward the packet through the multiplexers
@@ -78,6 +78,40 @@ BOOST_AUTO_TEST_CASE (test3_icmp6)
         BOOST_CHECK(icmp6->getTotalPackets() == 1);
 }
 
+// time to live exceed and router solicitation 
+BOOST_AUTO_TEST_CASE (test4_icmp6)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_ethernet_ipv6_icmp6_time_exceed);
+        int length1 = raw_ethernet_ipv6_icmp6_time_exceed_length;
+        Packet packet1(pkt1,length1);
+
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(packet1.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+        BOOST_CHECK(ip6->getProtocol() == IPPROTO_ICMPV6);
+        BOOST_CHECK(icmp6->getType() == ICMP6_TIME_EXCEEDED);
+        BOOST_CHECK(icmp6->getCode() == ICMP6_TIME_EXCEED_TRANSIT);
+        BOOST_CHECK(icmp6->getTotalPackets() == 1);
+
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_ethernet_ipv6_icmp6_router_solicitation);
+        int length2 = raw_ethernet_ipv6_icmp6_router_solicitation_length;
+        Packet packet2(pkt2,length2);
+
+        mux_eth->setPacket(&packet2);
+        eth->setHeader(packet2.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet2);
+
+        BOOST_CHECK(ip6->getProtocol() == IPPROTO_ICMPV6);
+        BOOST_CHECK(icmp6->getType() == ND_ROUTER_SOLICIT);
+        BOOST_CHECK(icmp6->getCode() == 0);
+        BOOST_CHECK(icmp6->getTotalPackets() == 2);
+
+	//icmp6->setStatisticsLevel(5);
+	//icmp6->statistics();
+}
 
 
 BOOST_AUTO_TEST_SUITE_END( )

@@ -52,6 +52,10 @@ typedef struct {
 	uint16_t seq_num;	// Sequence number
 	u_char n_pdu[3];	// N-PDU 
 	uint64_t imsi;		// Imsi
+	u_char pad[2]; 
+	u_char tid_data[5];
+	u_char tid_control_plane[5];
+	u_char nsapi[2];
 	u_char m_data[0];
 } __attribute__((packed)) gprs_create_pdp_hdr;
 

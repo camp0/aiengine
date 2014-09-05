@@ -41,8 +41,10 @@ public:
         void reset() { 
 		imsi_ = 0;
 		imei_ = 0;
+		pdp_type_number_ = 0; // The upper protocol
 	}
 
+	void setPdpTypeNumber(uint8_t type) { pdp_type_number_ = type; }
 	void setIMSI(uint64_t imsi) { imsi_ = imsi; }
 	uint64_t getIMSI() const { return imsi_; }
 
@@ -74,6 +76,7 @@ public:
 private:
 	uint64_t imsi_;
 	uint64_t imei_;
+	uint8_t pdp_type_number_;
 };
 
 } // namespace aiengine

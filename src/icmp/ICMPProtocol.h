@@ -41,7 +41,15 @@ class ICMPProtocol: public Protocol
 {
 public:
     	explicit ICMPProtocol():Protocol("ICMPProtocol"),stats_level_(0),
-		mux_(),icmp_header_(nullptr) {}
+		mux_(),icmp_header_(nullptr),
+        	total_echo_request_(0),
+        	total_echo_replay_(0),
+        	total_destination_unreachable_(0),
+        	total_source_quench_(0),
+        	total_redirect_(0),
+        	total_router_advertisment_(0),
+        	total_router_solicitation_(0),
+        	total_ttl_exceeded_(0) {}
 
     	virtual ~ICMPProtocol() {}
 
@@ -116,6 +124,14 @@ private:
 #else
 	struct icmphdr *icmp_header_;
 #endif 
+        int32_t total_echo_request_;
+        int32_t total_echo_replay_;
+        int32_t total_destination_unreachable_;
+        int32_t total_source_quench_; // Router with congestion
+        int32_t total_redirect_;
+        int32_t total_router_advertisment_;
+        int32_t total_router_solicitation_;
+	int32_t total_ttl_exceeded_;
 };
 
 typedef std::shared_ptr<ICMPProtocol> ICMPProtocolPtr;

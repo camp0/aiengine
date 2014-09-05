@@ -76,14 +76,24 @@ void Interpreter::handle_read_user_input(boost::system::error_code error) {
                 while (std::getline(user_stream, header) && header != "\r") {
                         buffer << header;
                 }
-                //std::cout << buffer.str() << std::endl;
-                //std::cout << "FULL message:" << buffer.str() << "\n";
-                //user_input_buffer_.consume(64);
 
-		std::string cad(buffer.str());
+		std::string cmd(buffer.str());
 
-		if (cad.compare("quit()") == 0) {
-			stop();
+		if (want_exit_) {
+			if (cmd.compare("yes") == 0) {
+				stop();
+				return;
+			}	
+			want_exit_ = false;
+                        user_input_buffer_.consume(64);
+			std::cout << "==> " << std::flush;
+                        return;
+		}		
+
+		if (cmd.compare("quit()") == 0) {
+			std::cout << "Are you sure? (yes/no)" << std::flush;
+                	user_input_buffer_.consume(64);
+			want_exit_ = true;
 			return;
 		}
 
@@ -93,7 +103,7 @@ void Interpreter::handle_read_user_input(boost::system::error_code error) {
   			// Retrieve the main module's namespace
   			boost::python::object global(main.attr("__dict__"));
 
-			boost::python::exec(cad.c_str(),global);
+			boost::python::exec(cmd.c_str(),global);
 		} catch (boost::python::error_already_set const &) {	
 			//std::cout << "JODER" << std::endl;
 			PyErr_Print();
@@ -102,16 +112,6 @@ void Interpreter::handle_read_user_input(boost::system::error_code error) {
 		
 		std::cout << "==> " << std::flush;
 	} 
-/*
-        else if (error== boost::asio::error::not_found) {
-			std::string msg;
-                        std::istream(&user_input_buffer_) >> msg;
-                        std::cout << "handle_read_input NOT FOUND:" << error.message() << " msg:"<< msg << std::endl;
-                }else{
-                        std::cout << "handle_read_input ERROR:" << error.message() << std::endl;
-                }
-*/
-
 }
 
 #endif

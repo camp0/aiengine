@@ -41,7 +41,14 @@ class ICMPv6Protocol: public Protocol
 {
 public:
     	explicit ICMPv6Protocol():Protocol("ICMPv6Protocol"),stats_level_(0),
-		mux_(),icmp_header_(nullptr) {}
+		mux_(),icmp_header_(nullptr),
+                total_echo_request_(0),
+                total_echo_replay_(0),
+                total_destination_unreachable_(0),
+                total_redirect_(0),
+                total_router_advertisment_(0),
+                total_router_solicitation_(0),
+                total_ttl_exceeded_(0) {}
 
     	virtual ~ICMPv6Protocol() {}
 
@@ -101,6 +108,13 @@ private:
 	int stats_level_;
 	MultiplexerPtrWeak mux_;
 	struct icmp6_hdr *icmp_header_;
+        int32_t total_echo_request_;
+        int32_t total_echo_replay_;
+        int32_t total_destination_unreachable_;
+        int32_t total_redirect_;
+        int32_t total_router_advertisment_;
+        int32_t total_router_solicitation_;
+        int32_t total_ttl_exceeded_;
 };
 
 typedef std::shared_ptr<ICMPv6Protocol> ICMPv6ProtocolPtr;

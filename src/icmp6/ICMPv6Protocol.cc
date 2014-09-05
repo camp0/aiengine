@@ -34,6 +34,15 @@ void ICMPv6Protocol::statistics(std::basic_ostream<char>& out) {
 		if (stats_level_ > 1) {
 			out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
 			out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
+                        if(stats_level_ > 3) {
+                                out << "\t" << "Total echo requests:    " << std::setw(10) << total_echo_request_ <<std::endl;
+                                out << "\t" << "Total echo replays:     " << std::setw(10) << total_echo_replay_ <<std::endl;
+                                out << "\t" << "Total dest unreachables:" << std::setw(10) << total_destination_unreachable_ <<std::endl;
+                                out << "\t" << "Total redirects:        " << std::setw(10) << total_redirect_ <<std::endl;
+                                out << "\t" << "Total rt advertistments:" << std::setw(10) << total_router_advertisment_ <<std::endl;
+                                out << "\t" << "Total rt solicitations: " << std::setw(10) << total_router_solicitation_ <<std::endl;
+                                out << "\t" << "Total ttl exceededs:    " << std::setw(10) << total_ttl_exceeded_ <<std::endl;
+                        }
 			if (stats_level_ > 2) {
 				if(mux_.lock())
 					mux_.lock()->statistics(out);
@@ -43,6 +52,23 @@ void ICMPv6Protocol::statistics(std::basic_ostream<char>& out) {
 }
 
 void ICMPv6Protocol::processPacket(Packet &packet) {
+
+        uint16_t type = getType();
+
+        if (type == ICMP6_ECHO_REQUEST)
+                ++total_echo_request_;
+        else if (type == ICMP6_ECHO_REPLY)
+                ++total_echo_replay_;
+        else if (type == ICMP6_DST_UNREACH)
+                ++total_destination_unreachable_;
+        else if (type == ND_REDIRECT)
+                ++total_redirect_;
+        else if (type == ND_ROUTER_ADVERT)
+                ++total_router_advertisment_;
+        else if (type == ND_ROUTER_SOLICIT)
+                ++total_router_solicitation_;
+        else if (type == ICMP6_TIME_EXCEEDED)
+                ++total_ttl_exceeded_;
 
 	++total_packets_;
 }

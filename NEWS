@@ -71,8 +71,8 @@ Features of 0.8
 - Shell support. The system have a interactive shell so the user can interact on realtime with the system.
 
 Features of 0.9
-- Remote python shell TODO.
-- Support for ICMPv6 on the IPv6 stack.
+- Support for ICMPv6 on the IPv6 stack
+- Fix some counters on ICMPv4.
 - Improvements on the GPRS protocol.
 - Support for flow serialization compress (30% network bandwith aprox).
 - Support of TCP/UDP timeout flows (180 seconds).

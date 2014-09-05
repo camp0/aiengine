@@ -39,6 +39,29 @@ void GPRSProtocol::process_create_pdp_context(Flow *flow) {
 
 	if (gprs_info) {
 		gprs_create_pdp_hdr *cpd = reinterpret_cast<gprs_create_pdp_hdr*>(gprs_header_->data);
+		u_char *extensions = &cpd->m_data[0];
+		short token = extensions[0];
+
+		std::cout << "value=" << token << std::endl;
+		if (token == 0x1a) { // Charging Characteristics
+			token = extensions[3];
+			extensions = &extensions[3];	
+			std::cout << "new value=" << token << std::endl;
+		}
+		if (token == 0x80) {
+			//extensions = &extensions[2];	
+			//uint16_t length = ((extensions[0] << 8) + extensions[1]);
+			uint16_t length = ((extensions[1] << 8) + extensions[0]);
+			std::cout << "pepe 1 length=" << length << std::endl;
+			std::cout << extensions[0] << " " << extensions[1] << std::endl;
+		} else {
+			std::cout << "value=" << token << std::endl;
+			if (token == 0x80) {
+				uint16_t length = ((extensions[0] << 8) + extensions[1]);
+				//uint16_t length = ((user_data[1] << 8) + user_data[0]);
+				std::cout << "pepe 2 length=" << length << std::endl;
+			}
+		}
 		gprs_info->setIMSI(cpd->imsi);
 	}
 }

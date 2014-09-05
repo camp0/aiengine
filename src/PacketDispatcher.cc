@@ -351,7 +351,7 @@ std::ostream& operator<< (std::ostream& out, const PacketDispatcher& pdis) {
 	out << "PacketDispatcher(" << &pdis <<") statistics" << std::endl;
 	out << "\t" << "Connected to " << pdis.stack_name_ <<std::endl;
 	out << "\t" << "Total packets:          " << std::setw(10) << pdis.total_packets_ <<std::endl;
-	out << "\t" << "Total bytes:            " << std::setw(10) << pdis.total_bytes_ <<std::endl;
+	out << "\t" << "Total bytes:        " << std::setw(14) << pdis.total_bytes_ <<std::endl;
 
         return out;
 }

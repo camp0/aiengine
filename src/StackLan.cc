@@ -129,6 +129,7 @@ StackLan::StackLan() {
 	mux_icmp_->setProtocolIdentifier(IPPROTO_ICMP);
 	mux_icmp_->setHeaderSize(icmp_->getHeaderSize());
 	mux_icmp_->addChecker(std::bind(&ICMPProtocol::icmpChecker,icmp_,std::placeholders::_1));
+	mux_icmp_->addPacketFunction(std::bind(&ICMPProtocol::processPacket,icmp_,std::placeholders::_1));
 
 	//configure the UDP Layer 
 	udp_->setMultiplexer(mux_udp_);

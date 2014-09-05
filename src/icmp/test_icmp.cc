@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE (test2_icmp)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_icmp_echo_request);
         int length = raw_packet_ethernet_ip_icmp_echo_request_length;
-	Packet packet1(pkt,length,0);
+	Packet packet1(pkt,length);
 
         // executing first the packet
         // forward the packet through the multiplexers
@@ -85,6 +85,47 @@ BOOST_AUTO_TEST_CASE (test2_icmp)
 	BOOST_CHECK(id = icmp->getId());
 
 }
+
+// Test a router solicitation packet
+BOOST_AUTO_TEST_CASE (test3_icmp)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_icmp_router_solicitation);
+        int length = raw_packet_ethernet_ip_icmp_router_solicitation_length;
+        Packet packet(pkt,length);
+
+	mux_icmp->addPacketFunction(std::bind(&ICMPProtocol::processPacket,icmp,std::placeholders::_1));
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);
+        BOOST_CHECK(icmp->getType() == ICMP_ROUTERSOLICIT);
+        BOOST_CHECK(icmp->getCode() == 0);
+        BOOST_CHECK(icmp->getTotalPackets() == 1);
+}
+
+// Test a router redirection 
+BOOST_AUTO_TEST_CASE (test4_icmp)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_icmp_redirect_for_host);
+        int length = raw_packet_ethernet_ip_icmp_redirect_for_host_length;
+        Packet packet(pkt,length);
+
+        mux_icmp->addPacketFunction(std::bind(&ICMPProtocol::processPacket,icmp,std::placeholders::_1));
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);
+        BOOST_CHECK(icmp->getType() == ICMP_REDIRECT);
+        BOOST_CHECK(icmp->getCode() == ICMP_REDIR_HOST);
+        BOOST_CHECK(icmp->getTotalPackets() == 1);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

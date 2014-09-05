@@ -53,7 +53,8 @@ public:
 	Interpreter(boost::asio::io_service &io_service_, int fd):
 		user_input_(io_service_,::dup(fd)),
 		user_input_buffer_(64),
-		python_shell_enable_(false) {}
+		python_shell_enable_(false),
+		want_exit_(false) {}
 
 
     	virtual ~Interpreter() { user_input_.close(); }
@@ -70,6 +71,7 @@ private:
 	boost::asio::posix::stream_descriptor user_input_;
 	boost::asio::streambuf user_input_buffer_;
 	bool python_shell_enable_;
+	bool want_exit_;
 };
 
 #endif // PYTHON_BINDING
