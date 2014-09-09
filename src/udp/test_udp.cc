@@ -78,10 +78,10 @@ BOOST_AUTO_TEST_CASE(test3_udp)
 
 BOOST_AUTO_TEST_CASE(test4_udp)
 {
-        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo);
-        int length = raw_packet_ethernet_ip_udp_gprs_ip_icmp_echo_length;
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gtpv1_ip_icmp_echo);
+        int length = raw_packet_ethernet_ip_udp_gtpv1_ip_icmp_echo_length;
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
 	FlowCachePtr flow_cache = FlowCachePtr(new FlowCache());
 	FlowManagerPtr flow_mng = FlowManagerPtr(new FlowManager());
@@ -101,8 +101,7 @@ BOOST_AUTO_TEST_CASE(test4_udp)
 	BOOST_CHECK(ip->getTotalPackets() == 1);
 	BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
 	BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
-	BOOST_CHECK(ip->getTotalBytes() == 132);
-
+	BOOST_CHECK(ip->getTotalBytes() == 72);
 }
 
 BOOST_AUTO_TEST_CASE(test5_udp) // Test timeout on UDP traffic 
@@ -112,7 +111,7 @@ BOOST_AUTO_TEST_CASE(test5_udp) // Test timeout on UDP traffic
         unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dhcp_offer);
         int length2 = raw_packet_ethernet_ip_udp_dhcp_offer_length;
 
-        Packet packet1(pkt1,length1,0,PacketAnomaly::NONE,0);
+        Packet packet1(pkt1,length1,0,PacketAnomaly::NONE);
         Packet packet2(pkt2,length2,0,PacketAnomaly::NONE,190);
 
         FlowCachePtr flow_cache = FlowCachePtr(new FlowCache());

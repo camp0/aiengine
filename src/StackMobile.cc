@@ -260,6 +260,9 @@ StackMobile::StackMobile() {
 	udp_high_->setFlowCache(flow_cache_udp_high_);
 	udp_high_->setFlowManager(flow_table_udp_high_);
 
+	// The low FlowManager have a 24 hours timeout to keep the Context on memory
+        flow_table_udp_low_->setTimeout(86400);
+
 	// Configure the FlowForwarders
 	udp_low_->setFlowForwarder(ff_udp_low_);
 	ff_udp_low_->addUpFlowForwarder(ff_gprs_);

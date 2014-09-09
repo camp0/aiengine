@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE (test4_icmp)
 
         BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);
         BOOST_CHECK(icmp->getType() == ICMP_REDIRECT);
-        BOOST_CHECK(icmp->getCode() == ICMP_REDIR_HOST);
+        BOOST_CHECK(icmp->getCode() == ICMP_REDIRECT_HOST);
         BOOST_CHECK(icmp->getTotalPackets() == 1);
 }
 

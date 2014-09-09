@@ -20,7 +20,7 @@ test_gprs_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
 			../dns/DNSProtocol.cc \
 			GPRSProtocol.cc test_gprs.cc
 
-test_gprs_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
+test_gprs_CPPFLAGS = -g $(BOOST_CPPFLAGS) -DSTAND_ALONE
 test_gprs_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so

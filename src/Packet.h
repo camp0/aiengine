@@ -36,6 +36,9 @@ public:
 		PacketAnomaly pa, time_t packet_time):
 		length_(length),packet_(packet),prev_header_size_(prev_header_size),
 		source_port_(0),dest_port_(0),pa_(pa),packet_time_(packet_time) {}
+	
+	explicit Packet(unsigned char *packet, int length, int prev_header_size,
+		PacketAnomaly pa): Packet(packet,length,prev_header_size,pa,0) {}
 
 	explicit Packet(unsigned char *packet, int length, int prev_header_size):
 		Packet(packet,length,prev_header_size,PacketAnomaly::NONE,0) {}

@@ -26,6 +26,7 @@
 
 #include <string>
 #include "../../test/tests_packets.h"
+#include "../../test/gprs_packets.h"
 #include "../Protocol.h"
 #include "../Multiplexer.h"
 #include "../flow/FlowCache.h"
@@ -46,7 +47,7 @@ struct Stack3Gtest
         UDPProtocolPtr udp_low;
         GPRSProtocolPtr gprs;
 	ICMPProtocolPtr icmp;
-        MultiplexerPtr mux_eth;
+        MultiplexerPtr mux_eth,mux_vlan;
         MultiplexerPtr mux_ip_low;
         MultiplexerPtr mux_udp_low;
 	FlowForwarderPtr ff_udp_low;

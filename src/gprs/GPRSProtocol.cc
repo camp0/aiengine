@@ -39,30 +39,58 @@ void GPRSProtocol::process_create_pdp_context(Flow *flow) {
 
 	if (gprs_info) {
 		gprs_create_pdp_hdr *cpd = reinterpret_cast<gprs_create_pdp_hdr*>(gprs_header_->data);
-		u_char *extensions = &cpd->m_data[0];
-		short token = extensions[0];
+		u_char *extensions = &cpd->data[0];
+		uint8_t token = extensions[0];
 
-		std::cout << "value=" << token << std::endl;
-		if (token == 0x1a) { // Charging Characteristics
-			token = extensions[3];
-			extensions = &extensions[3];	
-			std::cout << "new value=" << token << std::endl;
-		}
-		if (token == 0x80) {
-			//extensions = &extensions[2];	
-			//uint16_t length = ((extensions[0] << 8) + extensions[1]);
-			uint16_t length = ((extensions[1] << 8) + extensions[0]);
-			std::cout << "pepe 1 length=" << length << std::endl;
-			std::cout << extensions[0] << " " << extensions[1] << std::endl;
-		} else {
-			std::cout << "value=" << token << std::endl;
-			if (token == 0x80) {
-				uint16_t length = ((extensions[0] << 8) + extensions[1]);
-				//uint16_t length = ((user_data[1] << 8) + user_data[0]);
-				std::cout << "pepe 2 length=" << length << std::endl;
+//		std::cout << "Code(" << (int)cpd->code << ")presence(" << (int)cpd->presence << ")" << std::endl;
+
+		if (cpd->presence == 0x02) {
+			gprs_info->setIMSI(cpd->un.reg.imsi);
+			extensions = &cpd->un.reg.hdr[0];
+			token = extensions[0];
+		}else {
+			// And extension header
+			if (cpd->presence == 0x01) {
+				extensions = &cpd->data[0];
+				token = extensions[0];
+				gprs_info->setIMSI(cpd->un.ext.imsi);
 			}
 		}
-		gprs_info->setIMSI(cpd->imsi);
+
+		if (token == 0x03) { // Routing Area Identity Header
+			gprs_create_pdp_hdr_routing *rhdr = reinterpret_cast<gprs_create_pdp_hdr_routing*>(extensions);
+			extensions = &rhdr->data[0];
+			token = extensions[0];
+		}
+
+		if (token == 0x0e) { // Recovery 
+			extensions = &extensions[2];
+			token = extensions[0];
+		}
+		if (token == 0x0f) { 
+			gprs_create_pdp_hdr_ext *hext = reinterpret_cast<gprs_create_pdp_hdr_ext*>(&extensions[2]);
+			extensions = &hext->data[0];
+			token = extensions[0];
+
+			if (token == 0x1a) { // Charging Characteristics
+				token = extensions[3];
+				extensions = &extensions[4];	
+			} else {
+				extensions = &extensions[1];	
+			}
+			if (token == 0x80) {
+				uint16_t length = ntohs((extensions[1] << 8) + extensions[0]);
+				if (length == 2) {
+					uint8_t type_org = extensions[2];
+					uint8_t type_num = extensions[3];
+					// type_num eq 0x21 is IPv4
+					// type_num eq 0x57 is IPv6
+					
+					gprs_info->setPdpTypeNumber(type_num);
+				}
+			}
+
+		}
 	}
 }
 

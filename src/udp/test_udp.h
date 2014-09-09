@@ -27,6 +27,7 @@
 #include <string>
 #include "../Protocol.h"
 #include "../../test/tests_packets.h"
+#include "../../test/gprs_packets.h"
 #include "../../test/ipv6_test_packets.h"
 #include "../Multiplexer.h"
 #include "../ethernet/EthernetProtocol.h"

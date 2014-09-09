@@ -308,8 +308,8 @@ BOOST_AUTO_TEST_CASE (test4_gprs) // with the DNSProtocol
 
 BOOST_AUTO_TEST_CASE (test5_gprs) // Process a pdp context creation
 {
-        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gprs_pdp_create);
-        int length = raw_packet_ethernet_ip_udp_gprs_pdp_create_length;
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gtpv1_pdp_create);
+        int length = raw_packet_ethernet_ip_udp_gtpv1_pdp_create_length;
 
         Packet packet(pkt,length);
 
@@ -342,6 +342,91 @@ BOOST_AUTO_TEST_CASE (test5_gprs) // Process a pdp context creation
 
 	std::string imsi("234308256005467");
 	BOOST_CHECK(imsi.compare(info->getIMSIString()) == 0);
+	BOOST_CHECK(info->getPdpTypeNumber() == PDP_END_USER_TYPE_IPV4); // IPv4 
 }
+
+BOOST_AUTO_TEST_CASE (test6_gprs) // Process a pdp context creation
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gtpv1_pdp_create_2);
+        int length = raw_packet_ethernet_ip_udp_gtpv1_pdp_create_2_length;
+
+        Packet packet(pkt,length);
+
+        gprs->createGPRSInfo(1);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        // Verify the integrity of the flow
+        Flow *flow = udp_low->getCurrentFlow();
+
+        BOOST_CHECK(flow != nullptr);
+        BOOST_CHECK(flow->gprs_info.lock() != nullptr);
+        SharedPointer<GPRSInfo> info = flow->gprs_info.lock();
+
+        std::string imsi("460004100000101");
+        BOOST_CHECK(imsi.compare(info->getIMSIString()) == 0);
+	BOOST_CHECK(info->getPdpTypeNumber() == PDP_END_USER_TYPE_IPV4); // IPv4 
+}
+
+BOOST_AUTO_TEST_CASE (test7_gprs) // Process a pdp context creation
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gtpv1_pdp_create_3);
+        int length = raw_packet_ethernet_ip_udp_gtpv1_pdp_create_3_length;
+
+        Packet packet(pkt,length);
+
+        gprs->createGPRSInfo(1);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        // Verify the integrity of the flow
+        Flow *flow = udp_low->getCurrentFlow();
+
+        BOOST_CHECK(flow != nullptr);
+        BOOST_CHECK(flow->gprs_info.lock() != nullptr);
+        SharedPointer<GPRSInfo> info = flow->gprs_info.lock();
+
+        BOOST_CHECK(info->getPdpTypeNumber() == PDP_END_USER_TYPE_IPV6); // IPv6
+}
+
+BOOST_AUTO_TEST_CASE (test8_gprs) // Process a pdp context creation with ipv6 and extension header
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gtpv1_pdp_create_4);
+        int length = raw_packet_ethernet_ip_udp_gtpv1_pdp_create_4_length;
+
+        Packet packet(pkt,length);
+
+        gprs->createGPRSInfo(1);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        // Verify the integrity of the flow
+        Flow *flow = udp_low->getCurrentFlow();
+
+        BOOST_CHECK(flow != nullptr);
+        BOOST_CHECK(flow->gprs_info.lock() != nullptr);
+        SharedPointer<GPRSInfo> info = flow->gprs_info.lock();
+
+//	std::cout <<  *info << std::endl;
+        std::string imsi("262026201608297");
+        BOOST_CHECK(imsi.compare(info->getIMSIString()) == 0);
+        BOOST_CHECK(info->getPdpTypeNumber() == PDP_END_USER_TYPE_IPV6); // IPv6
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )

@@ -39,7 +39,7 @@
 
 namespace aiengine {
 
-// Minimum GPRS header
+// Minimum GPRS header, for data and signaling
 typedef struct {
         uint8_t flags;          // Flags 
         uint8_t type;       	// Message type 
@@ -48,16 +48,41 @@ typedef struct {
         u_char data[0];         //
 } __attribute__((packed)) gprs_hdr;
 
+// Minimum PDP Context Request
 typedef struct {
 	uint16_t seq_num;	// Sequence number
-	u_char n_pdu[3];	// N-PDU 
-	uint64_t imsi;		// Imsi
-	u_char pad[2]; 
+	uint8_t n_pdu;		// N-PDU 
+	uint8_t code;
+	uint8_t presence;
+	union {
+		struct { // For extension header
+			u_char hdr[4];
+			uint64_t imsi;
+		} __attribute__((packed)) ext;
+		struct { // Regular header
+			uint64_t imsi;
+			u_char hdr[4];
+		} __attribute__((packed)) reg;
+	} un;	
+	u_char data[0]; 
+} __attribute__((packed)) gprs_create_pdp_hdr;
+
+typedef struct {
 	u_char tid_data[5];
 	u_char tid_control_plane[5];
 	u_char nsapi[2];
-	u_char m_data[0];
-} __attribute__((packed)) gprs_create_pdp_hdr;
+	u_char data[0];
+} __attribute__((packed)) gprs_create_pdp_hdr_ext;
+
+// Routing area identity header 0x03
+typedef struct {
+        uint16_t mcc;           // Mobile Country Code
+        uint16_t mnc;           // Mobile Network Code
+        uint16_t lac;
+        uint8_t rac;
+	u_char data[0];
+} __attribute__((packed)) gprs_create_pdp_hdr_routing;
+
 
 #define CREATE_PDP_CONTEXT_REQUEST 16 
 #define	CREATE_PDP_CONTEXT_RESPONSE 17
@@ -116,7 +141,9 @@ public:
 		//setHeader(packet.getPayload());
 		if (length >= header_size) {
 			setHeader(packet.getPayload());
-			if ((gprs_header_->flags == 0x30)||(gprs_header_->flags == 0x32)) {
+			if (gprs_header_->flags & 0x30) {
+			//if ((gprs_header_->flags == 0x30)or(gprs_header_->flags == 0x32)
+			//	or (gprs_header_->flags == 0x36)) {
 				++total_validated_packets_; 
 				return true;
 			}

@@ -32,6 +32,9 @@
 
 namespace aiengine {
 
+#define PDP_END_USER_TYPE_IPV4 0x21
+#define PDP_END_USER_TYPE_IPV6 0x57
+
 class GPRSInfo 
 {
 public:
@@ -45,6 +48,7 @@ public:
 	}
 
 	void setPdpTypeNumber(uint8_t type) { pdp_type_number_ = type; }
+	uint8_t getPdpTypeNumber() const { return pdp_type_number_; }
 	void setIMSI(uint64_t imsi) { imsi_ = imsi; }
 	uint64_t getIMSI() const { return imsi_; }
 
@@ -71,6 +75,8 @@ public:
         friend std::ostream& operator<< (std::ostream& out, const GPRSInfo& gi) {
         
                 out << "IMSI(" << gi.getIMSIString() << ")";
+		if (gi.pdp_type_number_ == PDP_END_USER_TYPE_IPV4) out << "IPv4";
+		if (gi.pdp_type_number_ == PDP_END_USER_TYPE_IPV6) out << "IPv6";
                 return out;
         }
 private:
