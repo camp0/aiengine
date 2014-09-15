@@ -77,7 +77,7 @@ AC_CHECK_HEADER(pcap.h,
 # Boost support
 ##########################################################################
 
-AX_BOOST_BASE([1.48.0])
+AX_BOOST_BASE([1.49.0])
 AX_BOOST_ASIO
 AX_BOOST_SYSTEM
 AX_BOOST_REGEX
@@ -276,6 +276,7 @@ src/ip/Makefile
 src/ip6/Makefile
 src/ipset/Makefile
 src/gprs/Makefile
+src/vxlan/Makefile
 src/icmp/Makefile
 src/icmp6/Makefile
 src/udp/Makefile

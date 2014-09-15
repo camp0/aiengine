@@ -1248,7 +1248,7 @@ BOOST_AUTO_TEST_CASE ( test_case_12 )
   	backup = std::cout.rdbuf();     // back up cout's streambuf
   	psbuf = filestr.rdbuf();        // get file's streambuf
   	std::cout.rdbuf(psbuf);         // assign streambuf to cout
-	stack->statistics("Ethernet");
+	stack->statistics("EthernetProtocol");
   	std::cout.rdbuf(backup);        // restore cout's original streambuf
   	filestr.close();
 

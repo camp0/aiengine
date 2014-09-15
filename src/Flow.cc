@@ -89,7 +89,7 @@ void Flow::serialize(std::ostream& stream) {
                 stream << ",\"i\":\"" << ipset.lock()->getName() << "\"";
 	
 	if(pa_ != PacketAnomaly::NONE)
-		stream << ",\"a\":\"" << PacketAnomalyToString.at(pa_) << "\"";
+		stream << ",\"a\":\"" << PacketAnomalyToString.at(static_cast<std::int8_t>(pa_)) << "\"";
 
         if (protocol_ == IPPROTO_TCP) {
                 if(tcp_info.lock())
@@ -127,7 +127,7 @@ void Flow::serialize(std::ostream& stream) {
 		stream << ",\"ipset\":\"" << ipset.lock()->getName() << "\"";
 
 	if(pa_ != PacketAnomaly::NONE)
-		stream << ",\"anomaly\":\"" << PacketAnomalyToString.at(pa_) << "\"";
+		stream << ",\"anomaly\":\"" << PacketAnomalyToString.at(static_cast<std::int8_t>(pa_)) << "\"";
 
 	if (protocol_ == IPPROTO_TCP) {
 		if(tcp_info.lock())	

@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE (test5_tcp)
 {
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn_ack);
         int length1 = raw_packet_ethernet_ip_tcp_syn_ack_length;
-        Packet packet(pkt1,length1,0);
+        Packet packet(pkt1,length1);
 
         mux_eth->setPacket(&packet);
         eth->setHeader(packet.getPayload());
@@ -233,7 +233,7 @@ BOOST_AUTO_TEST_CASE (test1_tcp)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get);
         int length = raw_packet_ethernet_ipv6_tcp_http_get_length;
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
         // executing the packet
         // forward the packet through the multiplexers
@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE (test2_tcp)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_ethernet_ipv6_dstopthdr_tcp_http_get);
         int length = raw_ethernet_ipv6_dstopthdr_tcp_http_get_length;
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
         // executing the packet
         // forward the packet through the multiplexers
@@ -271,7 +271,7 @@ BOOST_AUTO_TEST_CASE (test3_tcp)
 {
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_ethernet_ipv6_ahhdr_tcp_syn_flow1);
         int length1 = raw_ethernet_ipv6_ahhdr_tcp_syn_flow1_length;
-        Packet packet1(pkt1,length1,0);
+        Packet packet1(pkt1,length1);
 
         // executing the packet
         // forward the packet through the multiplexers

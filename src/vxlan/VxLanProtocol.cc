@@ -21,42 +21,51 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#include "EthernetProtocol.h"
-#include <iomanip> // setw
+#include "VxLanProtocol.h"
+#include <iomanip>
 
 namespace aiengine {
 
-// Just used when there is ethernet on the middle part of a stack
-// Check vxlan for further details
+void VxLanProtocol::processFlow(Flow *flow) {
 
-void EthernetProtocol::processPacket(Packet& packet) { 
+        int bytes = flow->packet->getLength();
+        total_bytes_ += bytes;
+        ++total_packets_;
 
-	++total_packets_;
-	MultiplexerPtr mux = mux_.lock();
+        if (mux_.lock()&&(bytes > 0)) {
+		// TODO: Check the VNI and forward the packet
+                MultiplexerPtr mux = mux_.lock();
 
-        if (mux) {
-                mux->setNextProtocolIdentifier(getEthernetType());
+                Packet *packet = flow->packet;
+                Packet gpacket;
 
-                mux->setHeaderSize(header_size);
-                packet.setPrevHeaderSize(header_size);
-	}
+                gpacket.setPayload(packet->getPayload());
+                gpacket.setPrevHeaderSize(header_size);
+                gpacket.setPayloadLength(packet->getLength());
+                gpacket.setPacketTime(packet->getPacketTime());
+
+                mux->setNextProtocolIdentifier(0);
+                mux->forwardPacket(gpacket);
+         }
 }
-	
-void EthernetProtocol::statistics(std::basic_ostream<char>& out) { 
+
+void VxLanProtocol::statistics(std::basic_ostream<char>& out){ 
 
 	if (stats_level_ > 0) {
-		out << getName() << "(" << this <<") statistics" << std::endl;
+		out << "VxLanProtocol(" << this << ") statistics" << std::endl;
 		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
 		out << "\t" << "Total bytes:        " << std::setw(14) << total_bytes_ <<std::endl;
 		if (stats_level_> 1) {
 			out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
 			out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
-			if (stats_level_> 2) {
+			if (stats_level_ > 2) {
 				if(mux_.lock())
 					mux_.lock()->statistics(out);
+                                if (flow_forwarder_.lock())
+                                        flow_forwarder_.lock()->statistics(out);
 			}
 		}
 	}
 }
 
-} // namespace aiengine 
+} // namespace aiengine

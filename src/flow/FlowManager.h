@@ -55,7 +55,7 @@ typedef boost::multi_index::multi_index_container<
                         boost::multi_index::tag<flow_table_tag_duration>,
                         boost::multi_index::const_mem_fun<Flow,int,&Flow::getLastPacketTime>,
                         std::greater<int> // The multiset is order by the most recent activity on the flow!!! 
-                >
+                > 
 	>
 >FlowTable;
 

@@ -36,6 +36,7 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			./tcpgeneric/TCPGenericProtocol.h \
 			./udpgeneric/UDPGenericProtocol.h \
 			./gprs/GPRSProtocol.h \
+			./vxlan/VxLanProtocol.h \
 			./http/HTTPProtocol.h \
 			./ssl/SSLProtocol.h \
 			./dns/DNSProtocol.h \
@@ -78,6 +79,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			./tcpgeneric/TCPGenericProtocol.cc \
 			./udpgeneric/UDPGenericProtocol.cc \
 			./gprs/GPRSProtocol.cc \
+			./vxlan/VxLanProtocol.cc \
 			./http/HTTPProtocol.cc \
 			./ssl/SSLProtocol.cc \
 			./dns/DNSProtocol.cc \
@@ -130,6 +132,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		./udpgeneric/test_udpgeneric.cc \
 		./dns/test_dns.cc \
 		./gprs/test_gprs.cc \
+		./vxlan/test_vxlan.cc \
 		./http/test_http.cc \
 		./icmp/test_icmp.cc \
 		./icmp6/test_icmp6.cc \

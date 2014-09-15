@@ -122,7 +122,7 @@ void FlowManager::updateTimers(std::time_t current_time) {
 			// the multiset is ordered and there is no needd to check more flows
 			break;
 		}
-	}
+	} 
 #ifdef DEBUG
         std::cout << __FILE__ << ":" << __func__ << ":Total expire flows " << expire_flows <<std::endl;
  #endif
@@ -160,7 +160,8 @@ void FlowManager::showFlows(std::basic_ostream<char>& out) {
 
 		out << boost::format("%-64s %-10d %-10d %-18s") % fivetuple.str() % flow->total_bytes % flow->total_packets % proto_name;
 
-		if (flow->getPacketAnomaly() != PacketAnomaly::NONE) out << " Anomaly:" << PacketAnomalyToString.at(flow->getPacketAnomaly());
+		if (flow->getPacketAnomaly() != PacketAnomaly::NONE) 
+			out << " Anomaly:" << PacketAnomalyToString.at(static_cast<std::int8_t>(flow->getPacketAnomaly()));
 
 		if(flow->ipset.lock()) out << " IPset:" << *flow->ipset.lock()->getName();	
 

@@ -28,8 +28,7 @@
 #include <config.h>
 #endif
 
-#include <boost/assign/list_of.hpp>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 namespace aiengine {
 
@@ -42,14 +41,14 @@ enum class PacketAnomaly : std::int8_t {
 	TCP_BOGUS_HEADER = 5 
 };
 
-const boost::unordered_map<PacketAnomaly,const char*> PacketAnomalyToString = boost::assign::map_list_of
-	(PacketAnomaly::NONE, "None")
-	(PacketAnomaly::IPV4_FRAGMENTATION, "IPv4 Fragmentation")
-	(PacketAnomaly::IPV6_FRAGMENTATION, "IPv6 Fragmentation")
-	(PacketAnomaly::IPV6_LOOP_EXTENSION_HEADERS, "IPv6 Loop extension headers")
-	(PacketAnomaly::TCP_BAD_FLAGS, "TCP bad flags")
-	(PacketAnomaly::TCP_BOGUS_HEADER, "TCP bogus header")
-;
+const std::unordered_map<std::int8_t,std::string> PacketAnomalyToString {
+	{ static_cast<std::int8_t>(PacketAnomaly::NONE), "None" },
+	{ static_cast<std::int8_t>(PacketAnomaly::IPV4_FRAGMENTATION), "IPv4 Fragmentation" },
+	{ static_cast<std::int8_t>(PacketAnomaly::IPV6_FRAGMENTATION), "IPv6 Fragmentation" },
+	{ static_cast<std::int8_t>(PacketAnomaly::IPV6_LOOP_EXTENSION_HEADERS), "IPv6 Loop extension headers" },
+	{ static_cast<std::int8_t>(PacketAnomaly::TCP_BAD_FLAGS), "TCP bad flags" },
+	{ static_cast<std::int8_t>(PacketAnomaly::TCP_BOGUS_HEADER), "TCP bogus header" }
+};
 
 } // namespace aiengine 
 

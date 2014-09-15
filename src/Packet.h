@@ -73,7 +73,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Packet& p) {
 	
 		os << "Begin packet(" << &p << ") length:" << p.length_ << " prev header size:" << p.prev_header_size_;
-		os << " anomaly:" << PacketAnomalyToString.at(p.pa_) << " time:" << p.packet_time_ << std::endl;
+		os << " anomaly:"  /*<<  PacketAnomalyToString.at(p.pa_) */ << " time:" << p.packet_time_ << std::endl;
 		for (int i = 0;i< p.length_;++i) {
 			os << std::hex << (int)p.packet_[i] << " ";
 		}
