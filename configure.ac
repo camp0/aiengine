@@ -277,6 +277,7 @@ src/ip6/Makefile
 src/ipset/Makefile
 src/gprs/Makefile
 src/vxlan/Makefile
+src/gre/Makefile
 src/icmp/Makefile
 src/icmp6/Makefile
 src/udp/Makefile

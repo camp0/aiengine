@@ -29,6 +29,7 @@
 #include "StackLan.h"
 #include "StackLanIPv6.h"
 #include "StackMobile.h"
+#include "StackVirtual.h"
 #include "PacketDispatcher.h"
 #include "NetworkStack.h"
 #include "./frequency/FrequencyGroup.h"
@@ -161,7 +162,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackLan::*statisticsByProtocolLan)(const std::string& name) =           	&StackLan::statistics;
 
 	boost::python::class_<StackLan, bases<NetworkStack> >("StackLan",
-		"Class that implemnents a network stack for lan enviroments")
+		"Class that implements a network stack for lan enviroments")
 		.def("getName",&StackLan::getName)
 		.def("setUDPRegexManager",setUDPRegexManagerLan)	
 		.def("setTCPRegexManager",setTCPRegexManagerLan)	
@@ -208,7 +209,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackMobile::*statisticsByProtocolMobile)(const std::string& name) =           	&StackMobile::statistics;
 
         boost::python::class_<StackMobile, bases<NetworkStack> >("StackMobile",
-		"Class that implemnents a network stack for mobile enviroments")
+		"Class that implements a network stack for mobile enviroments")
 		.def("getName",&StackMobile::getName)
 		.def("setUDPRegexManager",setUDPRegexManagerMobile)	
 		.def("setTCPRegexManager",setTCPRegexManagerMobile)	
@@ -256,7 +257,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackLanIPv6::*statisticsByProtocolLanIPv6)(const std::string& name) =           	&StackLanIPv6::statistics;
 
         boost::python::class_<StackLanIPv6, bases<NetworkStack> >("StackLanIPv6",
-		"Class that implemnents a network stack for lan enviroments with IPv6")
+		"Class that implements a network stack for lan enviroments with IPv6")
 		.def("getName",&StackLanIPv6::getName)
                 .def("setUDPRegexManager",setUDPRegexManagerLanIPv6)
                 .def("setTCPRegexManager",setTCPRegexManagerLanIPv6)
@@ -284,6 +285,53 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setTCPIPSetManager", &StackLanIPv6::setTCPIPSetManager)
 		.def("setUDPIPSetManager", &StackLanIPv6::setUDPIPSetManager)
 		.def("setFlowsTimeout", &StackLanIPv6::setFlowsTimeout)
+        ;
+
+        // Definitions for the StackVirtual class
+        void (StackVirtual::*showFlowsVirtual)() =                                             &StackVirtual::showFlows;
+        void (StackVirtual::*setUDPRegexManagerVirtual)(RegexManager&) =                        &StackVirtual::setUDPRegexManager;
+        void (StackVirtual::*setTCPRegexManagerVirtual)(RegexManager&) =                        &StackVirtual::setTCPRegexManager;
+        void (StackVirtual::*setDNSDomainNameManagerVirt1)(DomainNameManager&) =              	&StackVirtual::setDNSDomainNameManager;
+        void (StackVirtual::*setDNSDomainNameManagerVirt2)(DomainNameManager&, bool) =         &StackVirtual::setDNSDomainNameManager;
+        void (StackVirtual::*setHTTPHostNameManagerVirt1)(DomainNameManager&) =               &StackVirtual::setHTTPHostNameManager;
+        void (StackVirtual::*setHTTPHostNameManagerVirt2)(DomainNameManager&, bool) =         &StackVirtual::setHTTPHostNameManager;
+        void (StackVirtual::*setSSLHostNameManagerVirt1)(DomainNameManager&) =                &StackVirtual::setSSLHostNameManager;
+        void (StackVirtual::*setSSLHostNameManagerVirt2)(DomainNameManager&, bool) =          &StackVirtual::setSSLHostNameManager;
+        void (StackVirtual::*setTCPDatabaseAdaptorVirt1)(boost::python::object&) =            &StackVirtual::setTCPDatabaseAdaptor;
+        void (StackVirtual::*setTCPDatabaseAdaptorVirt2)(boost::python::object&, int) =       &StackVirtual::setTCPDatabaseAdaptor;
+        void (StackVirtual::*setUDPDatabaseAdaptorVirt1)(boost::python::object&) =            &StackVirtual::setUDPDatabaseAdaptor;
+        void (StackVirtual::*setUDPDatabaseAdaptorVirt2)(boost::python::object&, int) =       &StackVirtual::setUDPDatabaseAdaptor;
+        void (StackVirtual::*statisticsByProtocolVirt)(const std::string& name) =             &StackVirtual::statistics;
+
+        boost::python::class_<StackVirtual, bases<NetworkStack> >("StackVirtual",
+                "Class that implements a network stack for cloud/virtual enviroments")
+                .def("getName",&StackVirtual::getName)
+                .def("setUDPRegexManager",setUDPRegexManagerVirtual)
+                .def("setTCPRegexManager",setTCPRegexManagerVirtual)
+                .def("setDNSDomainNameManager",setDNSDomainNameManagerVirt1)
+                .def("setDNSDomainNameManager",setDNSDomainNameManagerVirt2)
+                .def("setHTTPHostNameManager",setHTTPHostNameManagerVirt1)
+                .def("setHTTPHostNameManager",setHTTPHostNameManagerVirt2)
+                .def("setSSLHostNameManager",setSSLHostNameManagerVirt1)
+                .def("setSSLHostNameManager",setSSLHostNameManagerVirt2)
+                .def("setTotalTCPFlows",&StackVirtual::setTotalTCPFlows)
+                .def("setTotalUDPFlows",&StackVirtual::setTotalUDPFlows)
+                .def(self_ns::str(self_ns::self))
+                .def("getStatistics",statisticsByProtocolVirt)
+                .def("showFlows",showFlowsVirtual)
+                .def("enableFrequencyEngine",&StackVirtual::enableFrequencyEngine)
+                .def("enableLinkLayerTagging",&StackVirtual::enableLinkLayerTagging)
+                .def("enableNIDSEngine",&StackVirtual::enableNIDSEngine)
+                .def("getTCPFlowManager",&StackVirtual::getTCPFlowManager,return_internal_reference<>())
+                .def("getUDPFlowManager",&StackVirtual::getUDPFlowManager,return_internal_reference<>())
+                .def("setStatisticsLevel",&StackVirtual::setStatisticsLevel)
+                .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorVirt1)
+                .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorVirt2)
+                .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorVirt1)
+                .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorVirt2)
+                .def("setTCPIPSetManager", &StackVirtual::setTCPIPSetManager)
+                .def("setUDPIPSetManager", &StackVirtual::setUDPIPSetManager)
+                .def("setFlowsTimeout", &StackVirtual::setFlowsTimeout)
         ;
 	
 	boost::python::class_<Regex, SharedPointer<Regex>,boost::noncopyable>("Regex",init<const std::string&,const std::string&>())

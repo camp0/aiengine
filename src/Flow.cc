@@ -52,7 +52,8 @@ void Flow::reset() {
 	address_.reset();
 	source_port_ = 0;
 	dest_port_ = 0;
-	protocol_ = 0;	
+	protocol_ = 0;
+	tag_ = 0xffffffff;	
 	ipset.reset();	
 	forwarder.reset();
 	frequencies.reset();

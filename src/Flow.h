@@ -66,6 +66,9 @@ public:
 	void setId(unsigned long hash) { hash_=hash;}
 	unsigned long getId() const { return hash_;}
 
+	void setTag(uint32_t tag) { tag_ = tag; }
+	uint32_t getTag() const { return tag_; }
+
 	void setFlowDirection(FlowDirection dir) { prev_direction_ = direction_; direction_ = dir; }
 	FlowDirection getFlowDirection() { return direction_; }
 	FlowDirection getPrevFlowDirection() { return prev_direction_; }
@@ -157,6 +160,7 @@ private:
 	u_int16_t source_port_;
 	u_int16_t dest_port_;
 	u_int16_t protocol_;
+	uint32_t tag_;
 	FlowDirection direction_; 
 	FlowDirection prev_direction_; 
 	PacketAnomaly pa_;

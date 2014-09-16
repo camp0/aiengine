@@ -51,17 +51,20 @@ void UDPProtocol::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
-SharedPointer<Flow> UDPProtocol::getFlow() { 
+SharedPointer<Flow> UDPProtocol::getFlow(const Packet& packet) { 
 
-	unsigned long h1;
-	unsigned long h2;
 	SharedPointer<Flow> flow;
 	MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();	
 	MultiplexerPtr ipmux = downmux.lock();
 
 	if (flow_table_) {
-                h1 = ipmux->address.getHash(getSrcPort(),IPPROTO_UDP,getDstPort());
-                h2 = ipmux->address.getHash(getDstPort(),IPPROTO_UDP,getSrcPort());
+                unsigned long h1 = ipmux->address.getHash(getSrcPort(),IPPROTO_UDP,getDstPort());
+                unsigned long h2 = ipmux->address.getHash(getDstPort(),IPPROTO_UDP,getSrcPort());
+
+		if (packet.haveTag() == true) {
+			h1 = h1 ^ packet.getTag();
+			h2 = h2 ^ packet.getTag();
+		}
 
 		flow = flow_table_->findFlow(h1,h2);
 		if (!flow){
@@ -69,6 +72,9 @@ SharedPointer<Flow> UDPProtocol::getFlow() {
 				flow = flow_cache_->acquireFlow().lock();
 				if (flow) {
 					flow->setId(h1);
+					if (packet.haveTag() == true) { 
+						flow->setTag(packet.getTag());
+					}
 
 					// The time of the flow must be insert on the FlowManager table
 					// in order to keep the index updated
@@ -102,7 +108,7 @@ SharedPointer<Flow> UDPProtocol::getFlow() {
 void UDPProtocol::processPacket(Packet& packet) {
 
 	packet_time_ = packet.getPacketTime();
-	SharedPointer<Flow> flow = getFlow();
+	SharedPointer<Flow> flow = getFlow(packet);
 
 	current_flow_ = flow.get();
 

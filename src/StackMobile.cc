@@ -417,7 +417,6 @@ void StackMobile::enableLinkLayerTagging(std::string type) {
 
 void StackMobile::setFlowsTimeout(int timeout) {
 
-        flow_table_udp_low_->setTimeout(timeout);
         flow_table_tcp_->setTimeout(timeout);
         flow_table_udp_high_->setTimeout(timeout);
 }

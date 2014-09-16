@@ -43,6 +43,7 @@
 #include "StackLan.h"
 #include "StackMobile.h"
 #include "StackLanIPv6.h"
+#include "StackVirtual.h"
 #include <boost/date_time/posix_time/posix_time_io.hpp>
 
 using namespace aiengine;
@@ -65,7 +66,8 @@ std::map<std::string,std::function <void(FlowManagerPtr)>> group_map_options;
 std::map<std::string, std::function<aiengine::NetworkStackPtr()>> stack_factory {
 	{ "lan",	[](){return aiengine::NetworkStackPtr(new aiengine::StackLan());}},
 	{ "mobile",	[](){return aiengine::NetworkStackPtr(new aiengine::StackMobile());}},
-	{ "lan6",	[](){return aiengine::NetworkStackPtr(new aiengine::StackLanIPv6());}}
+	{ "lan6",	[](){return aiengine::NetworkStackPtr(new aiengine::StackLanIPv6());}},
+	{ "virtual",	[](){return aiengine::NetworkStackPtr(new aiengine::StackVirtual());}}
 };
 
 std::string option_link_type_tag;
@@ -313,7 +315,7 @@ int main(int argc, char* argv[]) {
 	po::options_description optional_ops("Optional arguments");
 	optional_ops.add_options()
 		("stack,n",		po::value<std::string>(&option_stack_name)->default_value("lan"),
-				      	"Sets the network stack (lan,mobile,lan6).")
+				      	"Sets the network stack (lan,mobile,lan6,virtual).")
 		("dumpflows,d",      	"Dump the flows to stdout.")
 		("statistics,s",	po::value<int>(&option_statistics_level)->default_value(0),
 					"Show statistics of the network stack (5 levels).")

@@ -35,7 +35,8 @@ public:
     	explicit Packet(unsigned char *packet,int length, int prev_header_size,
 		PacketAnomaly pa, time_t packet_time):
 		length_(length),packet_(packet),prev_header_size_(prev_header_size),
-		source_port_(0),dest_port_(0),pa_(pa),packet_time_(packet_time) {}
+		source_port_(0),dest_port_(0),pa_(pa),packet_time_(packet_time),
+		have_tag_(false),tag_(0) {}
 	
 	explicit Packet(unsigned char *packet, int length, int prev_header_size,
 		PacketAnomaly pa): Packet(packet,length,prev_header_size,pa,0) {}
@@ -49,6 +50,10 @@ public:
     	explicit Packet():Packet(nullptr,0,0,PacketAnomaly::NONE,0) {}
 
     	virtual ~Packet() {}
+
+	void setTag(uint32_t tag) { have_tag_ = true; tag_ = tag; }
+	bool haveTag() const { return have_tag_; }
+	uint32_t getTag() const { return tag_; }
 
 	void setPacketTime(time_t packet_time) { packet_time_ = packet_time; }
 	time_t getPacketTime() const { return packet_time_; }
@@ -73,7 +78,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Packet& p) {
 	
 		os << "Begin packet(" << &p << ") length:" << p.length_ << " prev header size:" << p.prev_header_size_;
-		os << " anomaly:"  /*<<  PacketAnomalyToString.at(p.pa_) */ << " time:" << p.packet_time_ << std::endl;
+		os << " anomaly:" << PacketAnomalyToString.at(static_cast<int8_t>(p.pa_)) << " time:" << p.packet_time_ << std::endl;
 		for (int i = 0;i< p.length_;++i) {
 			os << std::hex << (int)p.packet_[i] << " ";
 		}
@@ -89,6 +94,8 @@ private:
 	u_int16_t dest_port_;
 	PacketAnomaly pa_;
 	time_t packet_time_;
+	bool have_tag_;
+	uint32_t tag_;
 };
 
 typedef std::shared_ptr<Packet> PacketPtr;

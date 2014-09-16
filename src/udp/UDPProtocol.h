@@ -116,7 +116,7 @@ public:
 
 	Flow *getCurrentFlow() { return current_flow_;} // used just for testing pourposes
 private:
-	SharedPointer<Flow> getFlow(); 
+	SharedPointer<Flow> getFlow(const Packet& packet); 
 
 	int stats_level_;	
 	MultiplexerPtrWeak mux_;
