@@ -20,7 +20,7 @@ test_vxlan_SOURCES = 	../Multiplexer.cc \
 			../icmp/ICMPProtocol.cc \
 			VxLanProtocol.cc test_vxlan.cc
 
-test_vxlan_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
+test_vxlan_CPPFLAGS = -g $(BOOST_CPPFLAGS) -DSTAND_ALONE
 test_vxlan_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so

@@ -153,6 +153,9 @@ BOOST_AUTO_TEST_CASE (test4_vxlan)
         BOOST_CHECK(flow_udp != nullptr);
         BOOST_CHECK(flow_vir != nullptr);
 
+	// The virtual flow is tagged to zero
+	BOOST_CHECK(flow_vir->getTag() == 0);
+
 	BOOST_CHECK(flow_udp->getSourcePort() == 32894);
 	BOOST_CHECK(flow_udp->getDestinationPort() == 4789);
 	BOOST_CHECK(flow_vir->getSourcePort() == 47864);
@@ -166,6 +169,71 @@ BOOST_AUTO_TEST_CASE (test4_vxlan)
 	BOOST_CHECK(domain.compare(dns_info->getName()) == 0);
 }
 
+// Test the Tag functionatliy with two identical udp flows but in different vni networks
+
+BOOST_AUTO_TEST_CASE (test5_vxlan)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_udp_dns_request);
+        int length1 = raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_udp_dns_request_length;
+        Packet packet1(pkt1,length1);
+
+        dns_vir->createDNSDomains(2);
+
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(packet1.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+	// Verify the number of flows that should be on the cache and table
+	BOOST_CHECK(flow_cache->getTotalFlows() == 3);
+	BOOST_CHECK(flow_cache->getTotalAcquires() == 2); // One at physical layer and one virtual
+	BOOST_CHECK(flow_cache->getTotalReleases() == 0); 
+	BOOST_CHECK(flow_cache->getTotalFails() == 0);
+
+	BOOST_CHECK(flow_mng->getTotalProcessFlows() == 2);
+	BOOST_CHECK(flow_mng->getTotalFlows() == 2);
+        
+	Flow *flow_udp1 = udp_vir->getCurrentFlow();
+
+	// Inject the second packet
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_udp_dns_request_2);
+        int length2 = raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_udp_dns_request_2_length;
+        Packet packet2(pkt2,length2);
+
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet2);
+        eth->setHeader(packet2.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet2);
+	
+	Flow *flow_udp2 = udp_vir->getCurrentFlow();
+
+	BOOST_CHECK(flow_udp1->dns_domain.lock() != nullptr);
+        SharedPointer<DNSDomain> dns_info = flow_udp1->dns_domain.lock();
+
+	std::string domain("github.com");
+
+	BOOST_CHECK(domain.compare(dns_info->getName()) == 0);
+	
+	BOOST_CHECK(flow_udp2->dns_domain.lock() != nullptr);
+        dns_info = flow_udp2->dns_domain.lock();
+
+	domain = "gitgit.com";
+	BOOST_CHECK(domain.compare(dns_info->getName()) == 0);
+
+	BOOST_CHECK(flow_udp1 != flow_udp2);
+
+        // Verify again the number of flows that should be on the cache and table
+        BOOST_CHECK(flow_cache->getTotalFlows() == 3);
+        BOOST_CHECK(flow_cache->getTotalAcquires() == 3); // One at physical layer and one virtual
+        BOOST_CHECK(flow_cache->getTotalReleases() == 0);
+        BOOST_CHECK(flow_cache->getTotalFails() == 0);
+
+        BOOST_CHECK(flow_mng->getTotalProcessFlows() == 3);
+        BOOST_CHECK(flow_mng->getTotalFlows() == 3);
+
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 

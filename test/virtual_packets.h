@@ -32,6 +32,7 @@ static int raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_icmp_reply_length = 148;
 
 // Ethernet and IP and UDP and DNS request
 // DNS request to github.com
+// The VNI is 0
 
 static char *raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_udp_dns_request =
         "\x36\xdc\x85\x1e\xb3\x40\x00\x16\x3e\x08\x71\xcf\x08\x00\x45\x00"
@@ -45,6 +46,23 @@ static char *raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_udp_dns_request =
 	"\x6d\x00\x00\x01\x00\x01";
 
 static int raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_udp_dns_request_length = 120;
+
+// Ethernet and IP and UDP and DNS request
+// DNS request to gitgit.com
+// The VNI is 12340 
+
+static char *raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_udp_dns_request_2 =
+        "\x36\xdc\x85\x1e\xb3\x40\x00\x16\x3e\x08\x71\xcf\x08\x00\x45\x00"
+        "\x00\x86\xb8\x03\x40\x00\x3e\x11\x6e\x0f\xc0\xa8\xca\x01\xc0\xa8"
+        "\xcb\x01\x80\x7e\x12\xb5\x00\x46\x00\x00\x08\x00\x00\x00\x00\x30"
+        "\x34\x00"
+        "\x24\x76\x7d\x39\xb8\x71\x8c\xa9\x82\x49\x43\x5c\x08\x00\x45\x00"
+        "\x00\x38\x64\xc0\x40\x00\x40\x11\x1a\xd5\xc0\xa8\x01\x0d\x59\x65"
+        "\xa0\x05\xba\xf8\x00\x35\x00\x24\x74\xcd\x08\xc4\x01\x00\x00\x01"
+        "\x00\x00\x00\x00\x00\x00\x06\x67\x69\x74\x67\x69\x74\x03\x63\x6f"
+        "\x6d\x00\x00\x01\x00\x01";
+
+static int raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_udp_dns_request_2_length = 120;
 
 // Ethernet IP and ICMP request with GRE
 

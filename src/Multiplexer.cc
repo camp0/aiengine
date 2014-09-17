@@ -69,10 +69,11 @@ void Multiplexer::forwardPacket(Packet &packet) {
 	if(!next_mux.expired()) {
                 mux = next_mux.lock();
                 if (mux) {
-			int prev_header_size = packet.getPrevHeaderSize();
-			PacketAnomaly pa = packet.getPacketAnomaly();
-			std::time_t packet_time = packet.getPacketTime();
-                      	Packet pkt_candidate(&packet.getPayload()[header_size_],packet.getLength() - header_size_, prev_header_size,pa,packet_time);
+                      	Packet pkt_candidate(packet); 
+
+			// Modify just the packet payload and the length of it
+			pkt_candidate.setPayload(&packet.getPayload()[header_size_]);
+			pkt_candidate.setPayloadLength(packet.getLength() - header_size_);
 
 			if(mux->acceptPacket(pkt_candidate)) { // The packet is accepted by the destination mux
     				mux->packet_func_(pkt_candidate);

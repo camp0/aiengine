@@ -170,7 +170,7 @@ struct StackTestVxlan
 
                 // Connect the FlowManager and FlowCache
 		// On this case the udp protocols use the same cache and manager
-                flow_cache->createFlows(2);
+                flow_cache->createFlows(3);
                 udp->setFlowCache(flow_cache);
                 udp->setFlowManager(flow_mng);
                 udp_vir->setFlowCache(flow_cache);

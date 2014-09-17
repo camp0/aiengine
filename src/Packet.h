@@ -36,7 +36,7 @@ public:
 		PacketAnomaly pa, time_t packet_time):
 		length_(length),packet_(packet),prev_header_size_(prev_header_size),
 		source_port_(0),dest_port_(0),pa_(pa),packet_time_(packet_time),
-		have_tag_(false),tag_(0) {}
+		have_tag_(false),tag_(0xffffffff) {}
 	
 	explicit Packet(unsigned char *packet, int length, int prev_header_size,
 		PacketAnomaly pa): Packet(packet,length,prev_header_size,pa,0) {}
@@ -48,6 +48,13 @@ public:
 		Packet(packet,length,0,PacketAnomaly::NONE,0) {}
 
     	explicit Packet():Packet(nullptr,0,0,PacketAnomaly::NONE,0) {}
+
+	Packet(const Packet& p):length_(p.length_),packet_(p.packet_),
+		prev_header_size_(p.prev_header_size_),
+		source_port_(p.source_port_),
+		dest_port_(p.dest_port_),
+		pa_(p.pa_),packet_time_(p.packet_time_),
+		have_tag_(p.have_tag_),tag_(p.tag_) {}
 
     	virtual ~Packet() {}
 

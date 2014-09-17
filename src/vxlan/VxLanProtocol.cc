@@ -37,12 +37,14 @@ void VxLanProtocol::processFlow(Flow *flow) {
                 MultiplexerPtr mux = mux_.lock();
 
                 Packet *packet = flow->packet;
-                Packet gpacket;
+		setHeader(packet->getPayload());
 
-                gpacket.setPayload(packet->getPayload());
-                gpacket.setPrevHeaderSize(header_size);
-                gpacket.setPayloadLength(packet->getLength());
-                gpacket.setPacketTime(packet->getPacketTime());
+                Packet gpacket(*packet);
+
+		// Sets the Tag for the packet
+		gpacket.setTag(getVni());
+
+                //gpacket.setPrevHeaderSize(header_size);
 
                 mux->setNextProtocolIdentifier(0);
                 mux->forwardPacket(gpacket);

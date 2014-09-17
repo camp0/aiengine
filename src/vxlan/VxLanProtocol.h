@@ -37,7 +37,8 @@ namespace aiengine {
 struct vxlan_hdr {
         uint8_t		flags;   
         u_char		reserved[3];
-	uint32_t	vni;	
+	u_char		vni[3];
+	u_char		reserv;
 } __attribute__((packed));
 
 
@@ -102,7 +103,7 @@ public:
 		}
 	}
 
-	uint32_t getVni() const { return vxlan_header_->vni; }
+	uint32_t getVni() const { return ntohl(vxlan_header_->vni[2] << 24 | vxlan_header_->vni[1] << 16 | vxlan_header_->vni[0] << 8); }
 
 private:
 	int stats_level_;
