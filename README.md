@@ -12,7 +12,7 @@ The main functionalities of AIEngine are:
 - Support for interact with the user while the engine is running.
 - Support for PCRE JIT for regex matching.
 - Support for regex graphs.
-- Support three types of NetworkStacks(lan,mobile and ipv6).
+- Support four types of NetworkStacks (lan,mobile, ipv6 and virtual).
 - Support Sets and Bloom filters for IP searches.
 - Support Linux and FreeBSD operating systems.
 - Support for HTTP,DNS and SSL Domains matching.
@@ -27,7 +27,7 @@ Using AIEngine
 To use AIEngine just execute the binary aiengine or use the python binding.
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
-	aiengine 0.8
+	aiengine 0.9
 	Mandatory arguments:
 	  -I [ --input ] arg                Sets the network interface ,pcap file or 
 	                                    directory with pcap files.
@@ -56,12 +56,24 @@ To use AIEngine just execute the binary aiengine or use the python binding.
 	  -k [ --key-learner ] arg (=80)    Sets the key for the Learner engine.
 
 	Optional arguments:
-	  -n [ --stack ] arg (=lan)    Sets the network stack (lan,mobile,lan6).
+	  -n [ --stack ] arg (=lan)    Sets the network stack (lan,mobile,lan6,virtual).
 	  -d [ --dumpflows ]           Dump the flows to stdout.
 	  -s [ --statistics ] arg (=0) Show statistics of the network stack (5 levels).
 	  -p [ --pstatistics ]         Show statistics of the process.
 	  -h [ --help ]                Show help.
 	  -v [ --version ]             Show version string.
+
+Stack types
+---------------
+There is four types of Network stack provided depending on the network topology.
+
+- StackLan (lan) Local Area Network.
+
+- StackLanIPv6 (lan6) Local Area Network with just IPv6 support.
+
+- StackMobile (mobile) Network Mobile (Gn interface).
+
+- StackVirtual (virtual) Stack for virtual/cloud environments with VxLan and GRE Transparent.
 
 Integrating AIEngine with other systems 
 ---------------------------------------
@@ -88,6 +100,7 @@ The main objects that the python module provide are the following ones.
             StackLan
             StackLanIPv6
             StackMobile
+            StackVirtual
         PacketDispatcher
         PacketFrequencies
         Regex
@@ -129,4 +142,3 @@ Develop new functionality
 AIEngine have been develop using test driven development. So in order to maintain the same life cicle, the new functionatly
  should have unit test on the directory created of the new functionality and for integrate with all the system, later integrate
 with the main tests.cc file on the /src directory
-
