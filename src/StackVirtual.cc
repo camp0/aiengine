@@ -42,6 +42,8 @@ StackVirtual::StackVirtual() {
 	addProtocol(mpls_);
         ip_ = IPProtocolPtr(new IPProtocol());
 	addProtocol(ip_);
+        gre_ = GREProtocolPtr(new GREProtocol());
+	addProtocol(gre_);
         udp_ = UDPProtocolPtr(new UDPProtocol());
 	addProtocol(udp_);
 	vxlan_ = VxLanProtocolPtr(new VxLanProtocol());
@@ -80,6 +82,7 @@ StackVirtual::StackVirtual() {
         mux_ip_ = MultiplexerPtr(new Multiplexer());
 	mux_udp_ = MultiplexerPtr(new Multiplexer());
 	mux_vxlan_ = MultiplexerPtr(new Multiplexer());
+	mux_gre_ = MultiplexerPtr(new Multiplexer());
 	mux_eth_vir_ = MultiplexerPtr(new Multiplexer());
 	mux_ip_vir_ = MultiplexerPtr(new Multiplexer());
 	mux_udp_vir_ = MultiplexerPtr(new Multiplexer());
@@ -112,14 +115,14 @@ StackVirtual::StackVirtual() {
         ff_tcp_freqs_ = FlowForwarderPtr(new FlowForwarder());
         ff_udp_freqs_ = FlowForwarderPtr(new FlowForwarder());
 
-	//configure the Ethernet Layer 
+	// Configure the lower Ethernet Layer 
 	eth_->setMultiplexer(mux_eth_);
 	mux_eth_->setProtocol(static_cast<ProtocolPtr>(eth_));
 	mux_eth_->setProtocolIdentifier(0);
 	mux_eth_->setHeaderSize(eth_->getHeaderSize());
 	mux_eth_->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth_,std::placeholders::_1));
 
-	//configure the VLan tagging Layer 
+	// Configure the VLan tagging Layer 
 	vlan_->setMultiplexer(mux_vlan_);
 	mux_vlan_->setProtocol(static_cast<ProtocolPtr>(vlan_));
 	mux_vlan_->setProtocolIdentifier(ETHERTYPE_VLAN);
@@ -127,7 +130,7 @@ StackVirtual::StackVirtual() {
 	mux_vlan_->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan_,std::placeholders::_1));
 	mux_vlan_->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan_,std::placeholders::_1));
 
-	//configure the MPLS Layer 
+	// Configure the MPLS Layer 
 	mpls_->setMultiplexer(mux_mpls_);
 	mux_mpls_->setProtocol(static_cast<ProtocolPtr>(mpls_));
 	mux_mpls_->setProtocolIdentifier(ETHERTYPE_MPLS);
@@ -143,7 +146,15 @@ StackVirtual::StackVirtual() {
 	mux_ip_->addChecker(std::bind(&IPProtocol::ipChecker,ip_,std::placeholders::_1));
 	mux_ip_->addPacketFunction(std::bind(&IPProtocol::processPacket,ip_,std::placeholders::_1));
 
-        //configure the UDP Layer
+        // configure the gre layer
+        gre_->setMultiplexer(mux_gre_);
+        mux_gre_->setProtocol(static_cast<ProtocolPtr>(gre_));
+        mux_gre_->setHeaderSize(gre_->getHeaderSize());
+        mux_gre_->setProtocolIdentifier(IPPROTO_GRE);
+        mux_gre_->addChecker(std::bind(&GREProtocol::greChecker,gre_,std::placeholders::_1));
+        mux_gre_->addPacketFunction(std::bind(&GREProtocol::processPacket,gre_,std::placeholders::_1));
+
+        // Configure the UDP Layer
         udp_->setMultiplexer(mux_udp_);
         mux_udp_->setProtocol(static_cast<ProtocolPtr>(udp_));
         ff_udp_->setProtocol(static_cast<ProtocolPtr>(udp_));
@@ -152,6 +163,16 @@ StackVirtual::StackVirtual() {
         mux_udp_->addChecker(std::bind(&UDPProtocol::udpChecker,udp_,std::placeholders::_1));
         mux_udp_->addPacketFunction(std::bind(&UDPProtocol::processPacket,udp_,std::placeholders::_1));
 
+        // Configure the vxlan
+        vxlan_->setFlowForwarder(ff_vxlan_);
+        vxlan_->setMultiplexer(mux_vxlan_);
+        mux_vxlan_->setProtocol(static_cast<ProtocolPtr>(vxlan_));
+        mux_vxlan_->setHeaderSize(vxlan_->getHeaderSize());
+        mux_vxlan_->setProtocolIdentifier(0);
+        ff_vxlan_->setProtocol(static_cast<ProtocolPtr>(vxlan_));
+        ff_vxlan_->addChecker(std::bind(&VxLanProtocol::vxlanChecker,vxlan_,std::placeholders::_1));
+        ff_vxlan_->addFlowFunction(std::bind(&VxLanProtocol::processFlow,vxlan_,std::placeholders::_1));
+
 	// configure the ICMP Layer 
 	icmp_->setMultiplexer(mux_icmp_);
 	mux_icmp_->setProtocol(static_cast<ProtocolPtr>(icmp_));
@@ -159,8 +180,6 @@ StackVirtual::StackVirtual() {
 	mux_icmp_->setHeaderSize(icmp_->getHeaderSize());
 	mux_icmp_->addChecker(std::bind(&ICMPProtocol::icmpChecker,icmp_,std::placeholders::_1));
 	mux_icmp_->addPacketFunction(std::bind(&ICMPProtocol::processPacket,icmp_,std::placeholders::_1));
-
-
 
 	// Configuring the Virtual layers 
         //
@@ -245,9 +264,16 @@ StackVirtual::StackVirtual() {
 	mux_ip_->addDownMultiplexer(mux_eth_);
 	mux_ip_->addUpMultiplexer(mux_udp_,IPPROTO_UDP);
 	mux_udp_->addDownMultiplexer(mux_ip_);
+	mux_ip_->addUpMultiplexer(mux_gre_,IPPROTO_GRE);
+	mux_gre_->addDownMultiplexer(mux_ip_);
 
         // configure the multiplexers of the virtual layers
+        mux_gre_->addUpMultiplexer(mux_eth_vir_,0);
         mux_vxlan_->addUpMultiplexer(mux_eth_vir_,0);
+
+	// TODO: The mux_eth_vir_ should have two mux down
+	// but the reference is just for keep the memory under control.
+	// 
         mux_eth_vir_->addDownMultiplexer(mux_vxlan_);
         mux_eth_vir_->addUpMultiplexer(mux_ip_vir_,ETHERTYPE_IP);
         mux_ip_vir_->addDownMultiplexer(mux_eth_vir_);
@@ -269,7 +295,8 @@ StackVirtual::StackVirtual() {
 	udp_->setFlowManager(flow_table_udp_);
 
 	// Configure the FlowForwarders
-	udp_->setFlowForwarder(ff_udp_);	
+	udp_->setFlowForwarder(ff_udp_);
+	ff_udp_->addUpFlowForwarder(ff_vxlan_);	
 	vxlan_->setFlowForwarder(ff_vxlan_);	
 	tcp_vir_->setFlowForwarder(ff_tcp_vir_);	
 	udp_vir_->setFlowForwarder(ff_udp_vir_);	

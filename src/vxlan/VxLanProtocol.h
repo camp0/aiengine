@@ -92,15 +92,15 @@ public:
 
 		if(length >= header_size) {
 			setHeader(packet.getPayload());
-	
+
+			std::cout << "vxlanChecker:" << (int)vxlan_header_->flags << std::endl;	
 			if (vxlan_header_->flags & 0x08) {
 				++total_validated_packets_; 
 				return true;
 			}
-		} else {
-			++total_malformed_packets_;
-			return false;
-		}
+		} 
+		++total_malformed_packets_;
+		return false;
 	}
 
 	uint32_t getVni() const { return ntohl(vxlan_header_->vni[2] << 24 | vxlan_header_->vni[1] << 16 | vxlan_header_->vni[0] << 8); }

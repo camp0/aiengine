@@ -20,6 +20,55 @@
  *
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
+ * Configuration diagram of the stack
+ *
+ *                         +--------------------+
+ *                         | TCPGenericProtocol |                    
+ *                         +-------+------------+                    
+ *                                 |                                 
+ *          +--------------------+ |              +--------------------+
+ *          |     SSLProtocol    | |              | UDPGenericProtocol |
+ *          +--------------+-----+ |              +-----------+--------+
+ *                         |       |                          |      
+ * +--------------------+  |       |  +--------------------+  |      
+ * |    HTTPProtocol    |  |       |  |    DNSProtocol     |  |      
+ * +------------------+-+  |       |  +------------+-------+  |      
+ *                    |    |       |               |          |      
+ *                 +--+----+-------+----+    +-----+----------+---+  
+ *                 |    TCPProtocol     |    |    UDPProtocol     |  
+ *                 +------------------+-+    +-+------------------+  
+ *                                    |        |                     
+ *      +--------------------+        |        |                     
+ *      |   ICMPProtocol     +-----+  |        |                     
+ *      +--------------------+     |  |        |                     
+ *                               +-+--+--------+------+              
+ *                               |     IPProtocol     |              
+ *                               +---------+----------+              
+ *                                         |                         
+ *                               +---------+----------+              
+ *                               |  EthernetProtocol  +--+           
+ *                               +--+-----------------+  |           
+ *                                  |                    |           
+ *                                  |          +---------+----------+
+ *                                  |          |   VxLanProtocol    |
+ *                                  |          +---------+----------+
+ *                                  |                    |           
+ *                +-----------------+--+       +---------+----------+
+ *                |    GREProtocol     |       |    UDPProtocol     |
+ *                +-----------------+--+       +--+-----------------+
+ *                                  |             |                  
+ *                               +--+-------------+---+              
+ *                         +---> |     IPProtocol     | <---+        
+ *                         |     +---------+----------+     |        
+ *                         |               |                |        
+ *                +--------+-----------+   |   +------------+-------+
+ *                |    VLANProtocol    |   |   |    MPLSProtocol    |
+ *                +--------+-----------+   |   +------------+-------+
+ *                         |               |                |        
+ *                         |     +---------+----------+     |        
+ *                         +-----+  EthernetProtocol  +-----+        
+ *                               +--------------------+              
+ *
  */
 #ifndef SRC_STACKVIRTUAL_H_
 #define SRC_STACKVIRTUAL_H_
@@ -45,6 +94,7 @@
 #include "./udpgeneric/UDPGenericProtocol.h"
 #include "./icmp/ICMPProtocol.h"
 #include "./vxlan/VxLanProtocol.h"
+#include "./gre/GREProtocol.h"
 #include "./http/HTTPProtocol.h"
 #include "./ssl/SSLProtocol.h"
 #include "./dns/DNSProtocol.h"
@@ -106,6 +156,7 @@ private:
 	IPProtocolPtr ip_;
         UDPProtocolPtr udp_;
 	VxLanProtocolPtr vxlan_;
+	GREProtocolPtr gre_;
 	EthernetProtocolPtr eth_vir_;
 	IPProtocolPtr ip_vir_;
 	UDPProtocolPtr udp_vir_;
@@ -126,6 +177,7 @@ private:
         MultiplexerPtr mux_ip_;
         MultiplexerPtr mux_udp_;
         MultiplexerPtr mux_vxlan_;
+        MultiplexerPtr mux_gre_;
         MultiplexerPtr mux_eth_vir_;
         MultiplexerPtr mux_ip_vir_;
         MultiplexerPtr mux_udp_vir_;

@@ -2,7 +2,8 @@ AIEngine (Artificial Inteligent Engine)
 =========
 
 AIEngine is a next generation interactive packet inspection engine with capabilities of learning
-without any human intervention and other functionalities.  
+without any human intervention and other functionalities such as NIDS functionality, 
+domain classification, network collector and many others.  
 
 AIEngine helps network/security profesionals to identify traffic and develop
 signatures for use them on NIDS, Firewalls, Traffic classifiers and so on.
@@ -63,15 +64,15 @@ To use AIEngine just execute the binary aiengine or use the python binding.
 	  -h [ --help ]                Show help.
 	  -v [ --version ]             Show version string.
 
-Stack types
+NetworkStack types
 ---------------
-There is four types of Network stack provided depending on the network topology.
+AIEngine supports four types of Network stacks depending on the network topology.
 
-- StackLan (lan) Local Area Network.
+- StackLan (lan) Local Area Network based on IPv4.
 
-- StackLanIPv6 (lan6) Local Area Network with just IPv6 support.
+- StackLanIPv6 (lan6) Local Area Network with IPv6 support.
 
-- StackMobile (mobile) Network Mobile (Gn interface).
+- StackMobile (mobile) Network Mobile (Gn interface) for IPv4.
 
 - StackVirtual (virtual) Stack for virtual/cloud environments with VxLan and GRE Transparent.
 

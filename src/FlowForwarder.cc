@@ -41,12 +41,12 @@ void FlowForwarder::forwardFlow(Flow *flow) {
 	FlowForwarderPtr ff = flow->forwarder.lock();
 
 #ifdef DEBUG
-	std::cout << __PRETTY_FUNCTION__ << ":" << this << ":forwardFlow(" << flow << ")" << std::endl;
+	std::cout << __PRETTY_FUNCTION__ << ":" << this << ":forwardFlow(" << *flow << ")" << std::endl;
 #endif
 	++total_received_flows_;     
 	if(ff) {
 #ifdef DEBUG
-		std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":attached to:" << ff << std::endl;
+		std::cout << __PRETTY_FUNCTION__ << ":flow:" << *flow << ":attached to:" << ff << std::endl;
 #endif
 		ff->flow_func_(flow);
 		return;
@@ -60,12 +60,15 @@ void FlowForwarder::forwardFlow(Flow *flow) {
 			flow->forwarder = (*it);
 			ff->flow_func_(flow);
 #ifdef DEBUG
-			std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":assigned to:" << ff << std::endl;
+			std::cout << __PRETTY_FUNCTION__ << ":flow:" << *flow << ":assigned to:" << ff << std::endl;
 #endif
 			++total_forward_flows_;
 			return;	
 		}
 	}
+#ifdef DEBUG
+	std::cout << __PRETTY_FUNCTION__ << ":flow:" << *flow << ": can not be forward" << std::endl;
+#endif
 	++total_fail_flows_;	
 }
 

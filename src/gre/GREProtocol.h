@@ -105,10 +105,8 @@ public:
 				return true;
 			}
 		}
-		//} else {
-			++total_malformed_packets_;
-			return false;
-		//}
+		++total_malformed_packets_;
+		return false;
 	}
 
 	uint16_t getProtocol() const { return ntohs(gre_header_->protocol); }

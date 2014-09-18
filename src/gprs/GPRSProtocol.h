@@ -141,15 +141,13 @@ public:
 		//setHeader(packet.getPayload());
 		if (length >= header_size) {
 			setHeader(packet.getPayload());
+		
 			if (gprs_header_->flags & 0x30) {
-			//if ((gprs_header_->flags == 0x30)or(gprs_header_->flags == 0x32)
-			//	or (gprs_header_->flags == 0x36)) {
 				++total_validated_packets_; 
 				return true;
 			}
-		} else {
-			++total_malformed_packets_;
 		}
+		++total_malformed_packets_;
 		return false;
 	}
 

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2013  Luis Campo Giralte
  *
- * This library is free software; you can redistribute it and/or
+ * Thio library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
@@ -19,6 +19,39 @@
  * Boston, MA  02110-1301, USA.
  *
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
+ *
+ * Configuration diagram of the stack
+ *
+ *                         +--------------------+
+ *                         | TCPGenericProtocol |
+ *                         +-------+------------+
+ *                                 |
+ *          +--------------------+ |              +--------------------+
+ *          |     SSLProtocol    | |              | UDPGenericProtocol |
+ *          +--------------+-----+ |              +-----------+--------+
+ *                         |       |                          |
+ * +--------------------+  |       |  +--------------------+  |
+ * |    HTTPProtocol    |  |       |  |    DNSProtocol     |  |
+ * +------------------+-+  |       |  +------------+-------+  |
+ *                    |    |       |               |          |
+ *                 +--+----+-------+----+    +-----+----------+---+
+ *                 |    TCPProtocol     |    |    UDPProtocol     |
+ *                 +------------------+-+    +-+------------------+
+ *                                    |        |
+ *      +--------------------+        |        |
+ *      |   ICMPProtocol     +-----+  |        |
+ *      +--------------------+     |  |        |
+ *                               +-+--+--------+------+
+ *                         +---> |     IPProtocol     | <---+
+ *                         |     +---------+----------+     |
+ *                         |               |                |
+ *                +--------+-----------+   |   +------------+-------+
+ *                |    VLANProtocol    |   |   |    MPLSProtocol    |
+ *                +--------+-----------+   |   +------------+-------+
+ *                         |               |                |
+ *                         |     +---------+----------+     |
+ *                         +-----+  EthernetProtocol  +-----+
+ *                               +--------------------+
  *
  */
 #ifndef SRC_STACKLAN_H_
