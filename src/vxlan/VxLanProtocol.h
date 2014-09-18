@@ -93,7 +93,6 @@ public:
 		if(length >= header_size) {
 			setHeader(packet.getPayload());
 
-			std::cout << "vxlanChecker:" << (int)vxlan_header_->flags << std::endl;	
 			if (vxlan_header_->flags & 0x08) {
 				++total_validated_packets_; 
 				return true;

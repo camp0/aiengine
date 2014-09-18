@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE (test2_vxlan)
         BOOST_CHECK(vxlan->getTotalMalformedPackets() == 0);
         BOOST_CHECK(vxlan->getTotalBytes() == 50);
 
-	// The Ethernet protocolo have a checker IS_ETHER_HEADER that
+	// TODO:The Ethernet protocolo have a checker IS_ETHER_HEADER that
 	// is form 64 to 1518, so the ARP packets are consider as malformed
         BOOST_CHECK(eth_vir->getTotalMalformedPackets() == 1);
         BOOST_CHECK(eth_vir->getTotalPackets() == 0);
@@ -232,6 +232,70 @@ BOOST_AUTO_TEST_CASE (test5_vxlan)
 
         BOOST_CHECK(flow_mng->getTotalProcessFlows() == 3);
         BOOST_CHECK(flow_mng->getTotalFlows() == 3);
+
+}
+
+// Inject to tcp packets of the same virtual flow
+
+BOOST_AUTO_TEST_CASE (test6_vxlan)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_tcp_syn);
+        int length1 = raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_tcp_syn_length;
+        Packet packet1(pkt1,length1);
+
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(packet1.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+	BOOST_CHECK(tcp_vir->getTotalPackets() == 1);
+	BOOST_CHECK(tcp_vir->getTotalBytes() == 28);
+	BOOST_CHECK(tcp_vir->getTotalValidatedPackets() == 1);
+	BOOST_CHECK(tcp_vir->getTotalMalformedPackets() == 0);
+
+	BOOST_CHECK(flow_mng->getTotalProcessFlows() == 2);
+	BOOST_CHECK(flow_mng->getTotalFlows() == 2);
+
+	BOOST_CHECK(flow_cache->getTotalFlows() == 3);
+	BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
+	BOOST_CHECK(flow_cache->getTotalReleases() == 0);
+	BOOST_CHECK(flow_cache->getTotalFails() == 0);
+
+	// Inject the second tcp packet
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_tcp_synack);
+        int length2 = raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_tcp_synack_length;
+        Packet packet2(pkt2,length2);
+        
+	mux_eth->setPacket(&packet2);
+        eth->setHeader(packet2.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet2);
+
+        BOOST_CHECK(tcp_vir->getTotalPackets() == 2);
+        BOOST_CHECK(tcp_vir->getTotalBytes() == 56);
+        BOOST_CHECK(tcp_vir->getTotalValidatedPackets() == 2);
+        BOOST_CHECK(tcp_vir->getTotalMalformedPackets() == 0);
+
+        BOOST_CHECK(flow_mng->getTotalProcessFlows() == 2);
+        BOOST_CHECK(flow_mng->getTotalFlows() == 2);
+
+        BOOST_CHECK(flow_cache->getTotalFlows() == 3);
+        BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
+        BOOST_CHECK(flow_cache->getTotalReleases() == 0);
+        BOOST_CHECK(flow_cache->getTotalFails() == 0);
+
+        Flow *flow = tcp_vir->getCurrentFlow();
+
+        BOOST_CHECK(flow != nullptr);
+        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
+        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+
+        BOOST_CHECK(info->syn == 1);
+        BOOST_CHECK(info->fin == 0);
+        BOOST_CHECK(info->syn_ack == 1);
+        BOOST_CHECK(info->ack == 0);
+        BOOST_CHECK(info->push == 0);
 
 }
 

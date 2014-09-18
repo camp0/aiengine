@@ -32,6 +32,7 @@
 #include "../ip/IPProtocol.h"
 #include "../icmp/ICMPProtocol.h"
 #include "../udp/UDPProtocol.h"
+#include "../tcp/TCPProtocol.h"
 #include "../dns/DNSProtocol.h"
 #include "VxLanProtocol.h"
 #include <cstring>
@@ -46,19 +47,21 @@ struct StackTestVxlan
         EthernetProtocolPtr eth_vir;
 	IPProtocolPtr ip,ip_vir;
 	UDPProtocolPtr udp,udp_vir;
+	TCPProtocolPtr tcp_vir;
 	ICMPProtocolPtr icmp_vir;
 	DNSProtocolPtr dns_vir;
         VxLanProtocolPtr vxlan;
         MultiplexerPtr mux_eth;
         MultiplexerPtr mux_eth_vir;
         MultiplexerPtr mux_ip,mux_ip_vir;
-        MultiplexerPtr mux_udp,mux_udp_vir;
+        MultiplexerPtr mux_udp,mux_udp_vir,mux_tcp_vir;
         MultiplexerPtr mux_vxlan;
         MultiplexerPtr mux_icmp_vir;
 	FlowCachePtr flow_cache;
 	FlowManagerPtr flow_mng;
 	FlowForwarderPtr ff_udp;
 	FlowForwarderPtr ff_udp_vir;
+	FlowForwarderPtr ff_tcp_vir;
 	FlowForwarderPtr ff_vxlan;
 	FlowForwarderPtr ff_dns_vir;
 
@@ -71,6 +74,7 @@ struct StackTestVxlan
                 ip_vir = IPProtocolPtr(new IPProtocol("Virtual IPProtocol"));
                 udp = UDPProtocolPtr(new UDPProtocol());
                 udp_vir = UDPProtocolPtr(new UDPProtocol());
+                tcp_vir = TCPProtocolPtr(new TCPProtocol());
                 dns_vir = DNSProtocolPtr(new DNSProtocol());
                 vxlan = VxLanProtocolPtr(new VxLanProtocol());
                 icmp_vir = ICMPProtocolPtr(new ICMPProtocol());
@@ -83,9 +87,11 @@ struct StackTestVxlan
 		mux_eth_vir = MultiplexerPtr(new Multiplexer());
 		mux_ip_vir = MultiplexerPtr(new Multiplexer());
 		mux_udp_vir = MultiplexerPtr(new Multiplexer());
+		mux_tcp_vir = MultiplexerPtr(new Multiplexer());
 
 		ff_udp = FlowForwarderPtr(new FlowForwarder());
 		ff_udp_vir = FlowForwarderPtr(new FlowForwarder());
+		ff_tcp_vir = FlowForwarderPtr(new FlowForwarder());
 		ff_vxlan = FlowForwarderPtr(new FlowForwarder());
 		ff_dns_vir = FlowForwarderPtr(new FlowForwarder());
 
@@ -147,6 +153,15 @@ struct StackTestVxlan
                 mux_icmp_vir->addChecker(std::bind(&ICMPProtocol::icmpChecker,icmp_vir,std::placeholders::_1));
 		mux_icmp_vir->addPacketFunction(std::bind(&ICMPProtocol::processPacket,icmp_vir,std::placeholders::_1));
 
+        	//configure the TCP Layer
+        	tcp_vir->setMultiplexer(mux_tcp_vir);
+        	mux_tcp_vir->setProtocol(static_cast<ProtocolPtr>(tcp_vir));
+        	ff_tcp_vir->setProtocol(static_cast<ProtocolPtr>(tcp_vir));
+        	mux_tcp_vir->setProtocolIdentifier(IPPROTO_TCP);
+        	mux_tcp_vir->setHeaderSize(tcp_vir->getHeaderSize());
+        	mux_tcp_vir->addChecker(std::bind(&TCPProtocol::tcpChecker,tcp_vir,std::placeholders::_1));
+        	mux_tcp_vir->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp_vir,std::placeholders::_1));
+
                 //configure the udp virtual
                 udp_vir->setMultiplexer(mux_udp_vir);
                 mux_udp_vir->setProtocol(static_cast<ProtocolPtr>(udp_vir));
@@ -175,6 +190,9 @@ struct StackTestVxlan
                 udp->setFlowManager(flow_mng);
                 udp_vir->setFlowCache(flow_cache);
                 udp_vir->setFlowManager(flow_mng);
+                tcp_vir->setFlowCache(flow_cache);
+                tcp_vir->setFlowManager(flow_mng);
+		tcp_vir->createTCPInfo(2);
 
                 // Configure the FlowForwarders
                 udp->setFlowForwarder(ff_udp);
@@ -189,6 +207,8 @@ struct StackTestVxlan
                 mux_icmp_vir->addDownMultiplexer(mux_ip_vir);
                 mux_ip_vir->addUpMultiplexer(mux_udp_vir,IPPROTO_UDP);
                 mux_udp_vir->addDownMultiplexer(mux_ip_vir);
+                mux_ip_vir->addUpMultiplexer(mux_tcp_vir,IPPROTO_TCP);
+                mux_tcp_vir->addDownMultiplexer(mux_ip_vir);
 
                 udp_vir->setFlowForwarder(ff_udp_vir);
                 ff_udp_vir->addUpFlowForwarder(ff_dns_vir);
@@ -217,11 +237,9 @@ struct StackTestVxlan
 		ip_vir->setStatisticsLevel(5);
 		ip_vir->statistics();
 		
-		udp_vir->setStatisticsLevel(5);
-		udp_vir->statistics();
+		tcp_vir->setStatisticsLevel(5);
+		tcp_vir->statistics();
 
-		dns_vir->setStatisticsLevel(5);
-		dns_vir->statistics();
 	}
 };
 

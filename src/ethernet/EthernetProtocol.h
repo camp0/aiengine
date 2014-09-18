@@ -37,15 +37,12 @@
 #if defined(__OPENBSD__)
 #include <net/if.h>
 #include <netinet/if_ether.h>
-#ifndef ETHER_IS_VALID_LEN
-#define ETHER_IS_VALID_LEN(x) ((x) >= ETHER_MIN_LEN && (x) <= ETHER_MAX_LEN)
-#endif
 #endif
 
 namespace aiengine {
 
 /// ETHER_MAX_LEN and ETHER_MIN_LEN are the limits for a ethernet header
-/// Check on the ETHER_IS_VALID_LEN macro
+/// Dont use the macro Check on the ETHER_IS_VALID_LEN macro
 
 class EthernetProtocol: public Protocol 
 {
@@ -92,7 +89,7 @@ public:
 	
 		int length = packet.getLength();
 
-		if (ETHER_IS_VALID_LEN(length)) {
+		if (length >= 54 && length <= ETHER_MAX_LEN) {
 			setHeader(packet.getPayload());
 
 			// The packet dont contains an anomaly by default
