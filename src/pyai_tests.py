@@ -578,6 +578,117 @@ class StackLanLearningTests(unittest.TestCase):
         except:
             self.assertFalse(False)	
 
+class StackVirtualTests(unittest.TestCase):
+
+    def setUp(self):
+        self.s = pyaiengine.StackVirtual()
+        self.dis = pyaiengine.PacketDispatcher()
+        self.dis.setStack(self.s)
+        self.s.setTotalTCPFlows(2048)
+        self.s.setTotalUDPFlows(1024)
+        self.called_callback = 0
+
+    def tearDown(self):
+        del self.s
+        del self.dis
+
+    def test1(self):
+        """ Create a regex for a detect the flow on a virtual network """
+
+        rm = pyaiengine.RegexManager()
+        r = pyaiengine.Regex("Bin directory","^bin$")
+        rm.addRegex(r)
+        self.s.setTCPRegexManager(rm)
+
+        self.dis.open("../pcapfiles/vxlan_ftp.pcap")
+        self.dis.run()
+        self.dis.close()
+
+        self.assertEqual(r.getMatchs(), 1)
+
+    def test2(self):
+        """ Create a regex for a detect the flow on a virtual network on the GRE side """
+
+        rm = pyaiengine.RegexManager()
+        r = pyaiengine.Regex("Bin directory",b"^SSH-2.0.*$")
+        rm.addRegex(r)
+        self.s.setTCPRegexManager(rm)
+
+        self.dis.open("../pcapfiles/gre_ssh.pcap")
+        self.dis.run()
+        self.dis.close()
+
+        self.assertEqual(r.getMatchs(), 1)
+        ft = self.s.getTCPFlowManager()
+        fu = self.s.getUDPFlowManager()
+
+        self.assertEqual(len(ft), 1)
+        self.assertEqual(len(fu), 0)
+
+
+    def test3(self):
+        """ Inject two pcapfiles with gre and vxlan traffic and verify regex """
+
+        rm = pyaiengine.RegexManager()
+        r = pyaiengine.Regex("SSH activity",b"^SSH-2.0.*$")
+        rm.addRegex(r)
+        self.s.setTCPRegexManager(rm)
+
+        self.s.enableNIDSEngine(True)	
+
+        # The first packet of the pcapfile is from 18 sep 2014
+        self.dis.open("../pcapfiles/vxlan_ftp.pcap")
+        self.dis.run()
+        self.dis.close()
+
+        """ This FlowManagers points to the virtualize layer """
+        ft = self.s.getTCPFlowManager()
+        fu = self.s.getUDPFlowManager()
+
+        self.assertEqual(ft.getTotalFlows() , 1)
+        self.assertEqual(ft.getTotalProcessFlows() , 1)
+        self.assertEqual(ft.getTotalTimeoutFlows() , 0)
+
+        self.assertEqual(r.getMatchs(), 0)
+        self.assertEqual(len(ft), 1)
+        self.assertEqual(len(fu), 0)
+
+        self.s.setFlowsTimeout(60 * 60 * 24)
+
+        # The first packet of the pcapfile is from 19 sep 2014
+        self.dis.open("../pcapfiles/gre_ssh.pcap")
+        self.dis.run()
+        self.dis.close()
+      
+        self.assertEqual(ft.getTotalFlows() , 2)
+        self.assertEqual(ft.getTotalProcessFlows() , 2)
+        self.assertEqual(ft.getTotalTimeoutFlows() , 0)
+
+        self.assertEqual(r.getMatchs(), 1)
+        self.assertEqual(len(ft), 2)
+        self.assertEqual(len(fu), 0)
+
+    def test4(self):
+        """ Test the extraction of the tag from the flow when matches """
+
+        def virt_callback(flow):
+            if ((flow.haveTag() == True)and(flow.getTag() == 1)):
+                self.called_callback += 1
+
+        rm = pyaiengine.RegexManager()
+        r = pyaiengine.Regex("Bin directory",b"^bin$")
+        r.setCallback(virt_callback)
+        rm.addRegex(r)
+        self.s.setTCPRegexManager(rm)
+
+        self.s.enableNIDSEngine(True)
+
+        self.dis.open("../pcapfiles/vxlan_ftp.pcap")
+        self.dis.run()
+        self.dis.close()
+
+        self.assertEqual(r.getMatchs(), 1)
+        self.assertEqual(self.called_callback,1)
 
 if __name__ == '__main__':
 

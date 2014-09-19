@@ -53,6 +53,7 @@ void Flow::reset() {
 	source_port_ = 0;
 	dest_port_ = 0;
 	protocol_ = 0;
+	have_tag_ = false;
 	tag_ = 0xffffffff;	
 	ipset.reset();	
 	forwarder.reset();
@@ -69,8 +70,8 @@ void Flow::reset() {
 	frequency_engine_inspected = false;
 	prev_direction_ = direction_ = FlowDirection::FORWARD;
 	pa_ = PacketAnomaly::NONE;
-	arrive_time = 0;
-	current_time = 0;
+	arrive_time_ = 0;
+	current_time_ = 0;
 }
 
 void Flow::serialize(std::ostream& stream) {

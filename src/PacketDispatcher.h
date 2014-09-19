@@ -47,6 +47,7 @@
 #include "StackLan.h"
 #include "StackMobile.h"
 #include "StackLanIPv6.h"
+#include "StackVirtual.h"
 #ifdef PYTHON_BINDING
 #include "Interpreter.h"
 #endif
@@ -130,6 +131,7 @@ public:
 	void setStack(StackLan& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
 	void setStack(StackMobile& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
 	void setStack(StackLanIPv6& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
+	void setStack(StackVirtual& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
 
 	void setDefaultMultiplexer(MultiplexerPtr mux); // just use for the unit tests
 	void setIdleFunction(std::function <void ()> idle_function) { idle_function_ = idle_function;}

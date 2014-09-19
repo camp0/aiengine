@@ -52,7 +52,7 @@ StackVirtual::StackVirtual() {
 	eth_vir_ = EthernetProtocolPtr(new EthernetProtocol("Virtual EthernetProtocol"));
 	addProtocol(eth_vir_);
         ip_vir_ = IPProtocolPtr(new IPProtocol("Virtual IPProtocol"));
-	addProtocol(ip_);
+	addProtocol(ip_vir_);
         tcp_vir_ = TCPProtocolPtr(new TCPProtocol("Virtual TCPProtocol"));
 	addProtocol(tcp_vir_);
         udp_vir_ = UDPProtocolPtr(new UDPProtocol("Virtual UDPProtocol"));
@@ -300,7 +300,9 @@ StackVirtual::StackVirtual() {
 	vxlan_->setFlowForwarder(ff_vxlan_);	
 	tcp_vir_->setFlowForwarder(ff_tcp_vir_);	
 	udp_vir_->setFlowForwarder(ff_udp_vir_);	
-	
+
+
+	// Layer 7 plugins	
 	ff_tcp_vir_->addUpFlowForwarder(ff_http_);
 	ff_tcp_vir_->addUpFlowForwarder(ff_ssl_);
 	ff_tcp_vir_->addUpFlowForwarder(ff_tcp_generic_);

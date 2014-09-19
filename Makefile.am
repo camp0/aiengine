@@ -18,6 +18,7 @@ SUBDIRS = 	src \
 		src/vxlan \
 		src/gre \
 		src/icmp \
+		src/icmp6 \
 		src/udp \
 		src/tcp \
 		src/http \

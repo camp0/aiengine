@@ -76,4 +76,5 @@ Features of 0.9
 - Improvements on the GPRS protocol.
 - Support for flow serialization compress (30% network bandwith aprox).
 - Support of TCP/UDP timeout flows (180 seconds).
-- Support for specific statistics on the protocols(python binding).
+- Support for specific statistics on the protocols (python binding).
+- Support for Virtual/Cloud enviroments with transparent GRE and VxLan on a new stack (StackVirtual).

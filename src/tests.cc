@@ -40,6 +40,7 @@
 #include "./frequency/FrequencyGroup.h"
 #include "./learner/LearnerEngine.h"
 #include "StackLanTest.h"
+#include "StackVirtual.h"
 #include "./ipset/IPSet.h"
 #include "./ipset/IPBloomSet.h"
 
@@ -1313,6 +1314,57 @@ BOOST_AUTO_TEST_CASE (test_case_14) // Test the TCP regex with IPv6 extension he
 
         BOOST_CHECK(r_generic->getMatchs() == 1);
         BOOST_CHECK(r_generic->getTotalEvaluates() == 1);
+}
+
+// Test the virtual Stack and the RegexManager
+
+BOOST_AUTO_TEST_CASE (test_case_15) 
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        NetworkStackPtr stack = NetworkStackPtr(new StackVirtual());
+        RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
+        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("Bin directory","^bin$"));
+
+        // connect with the stack
+        pd->setStack(stack);
+
+	stack->setTotalUDPFlows(32);
+        stack->setTotalTCPFlows(1);
+
+        rmng->addRegex(r_generic);
+        stack->setTCPRegexManager(rmng);
+
+        pd->open("../pcapfiles/vxlan_ftp.pcap");
+        pd->run();
+        pd->close();
+
+        BOOST_CHECK(r_generic->getMatchs() == 1);
+        BOOST_CHECK(r_generic->getTotalEvaluates() == 1);
+}
+
+// Similar test as previous but with failing regex
+BOOST_AUTO_TEST_CASE (test_case_16)
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        NetworkStackPtr stack = NetworkStackPtr(new StackVirtual());
+        RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
+        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("Bin directory","^bin$"));
+
+        // connect with the stack
+        pd->setStack(stack);
+
+        stack->setTotalUDPFlows(32);
+        stack->setTotalTCPFlows(1);
+
+        rmng->addRegex(r_generic);
+        stack->setTCPRegexManager(rmng);
+
+        pd->open("../pcapfiles/gre_ssh.pcap");
+        pd->run();
+        pd->close();
+
+        BOOST_CHECK(r_generic->getMatchs() == 0);
+        BOOST_CHECK(r_generic->getTotalEvaluates() == 74);
 }
 
 

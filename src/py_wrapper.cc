@@ -349,9 +349,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
 	// for overload the methods within the class
-	void (PacketDispatcher::*setStackLan)(StackLan&) = &PacketDispatcher::setStack;
-	void (PacketDispatcher::*setStackMobile)(StackMobile&) = &PacketDispatcher::setStack;
-	void (PacketDispatcher::*setStackLanIPv6)(StackLanIPv6&) = &PacketDispatcher::setStack;
+	void (PacketDispatcher::*setStackLan)(StackLan&) = 		&PacketDispatcher::setStack;
+	void (PacketDispatcher::*setStackMobile)(StackMobile&) = 	&PacketDispatcher::setStack;
+	void (PacketDispatcher::*setStackLanIPv6)(StackLanIPv6&) = 	&PacketDispatcher::setStack;
+	void (PacketDispatcher::*setStackVirtual)(StackVirtual&) = 	&PacketDispatcher::setStack;
 
 	boost::python::class_<PacketDispatcher,boost::noncopyable>("PacketDispatcher",
 		"Class that manage the packets and forwards to the associated network stack")
@@ -370,6 +371,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setStack",setStackLan)
 		.def("setStack",setStackMobile)
 		.def("setStack",setStackLanIPv6)
+		.def("setStack",setStackVirtual)
 		.def("enableShell",&PacketDispatcher::enableShell,
 			"Enables a python shell in order to interact with the system on real time")
 		.def(self_ns::str(self_ns::self))
@@ -391,6 +393,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("__iter__",boost::python::range(&FlowManager::begin,&FlowManager::end))
 		.def("__len__", &FlowManager::getTotalFlows)
 		.def("getTotalFlows", &FlowManager::getTotalFlows)
+		.def("getTotalProcessFlows", &FlowManager::getTotalProcessFlows)
+		.def("getTotalTimeoutFlows", &FlowManager::getTotalTimeoutFlows)
 		.def(self_ns::str(self_ns::self))
 	;
 	
@@ -412,6 +416,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Returns the total number of packets on the flow.")
 		.def("getTotalBytes",&Flow::getTotalBytes,
 			"Returns the total number of bytes.")
+		.def("haveTag",&Flow::haveTag,
+			"Returns if the flow have tag from lower network layers.")
+		.def("getTag",&Flow::getTag,
+			"Returns the tag from lower network layers.")
 		.def("getHTTPUri",&Flow::getHTTPUri,return_internal_reference<>(),
 			"Returns the HTTP URI of the flow if the flow is HTTP.")
 		.def("getHTTPHost",&Flow::getHTTPHost,return_internal_reference<>(),

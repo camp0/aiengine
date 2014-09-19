@@ -9,7 +9,7 @@ EXTRA_FLAGS = -O3
 EXTRA_DIST = py_wrapper.cc setup.py MANIFEST.in
 
 noinst_HEADERS =        Packet.h Pointer.h \
-			Protocol.h \
+			Protocol.h PacketAnomaly.h \
 			PacketDispatcher.h \
 			NetworkStack.h \
 			StackLan.h \
