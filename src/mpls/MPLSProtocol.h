@@ -28,8 +28,6 @@
 #include <config.h>
 #endif
 
-#include "../Multiplexer.h"
-#include "../FlowForwarder.h"
 #include "../Protocol.h"
 //#include <net/ethernet.h>
 #include <netinet/ip.h>
@@ -76,12 +74,6 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { return mux_;}
-
-        void setFlowForwarder(FlowForwarderPtrWeak ff) {}
-        FlowForwarderPtrWeak getFlowForwarder() { FlowForwarderPtrWeak ptr; return ptr; }
-
 #ifdef PYTHON_BINDING
         void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
 #endif
@@ -110,7 +102,6 @@ public:
 
 private:
 	int stats_level_;
-	MultiplexerPtrWeak mux_;
 	unsigned char *mpls_header_;
 	int64_t total_bytes_;
 };

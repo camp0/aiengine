@@ -28,7 +28,6 @@
 #include <config.h>
 #endif
 
-#include "../Multiplexer.h"
 #include "../Protocol.h"
 #include <arpa/inet.h>
 
@@ -44,7 +43,7 @@ struct vlan_tag {
 class VLanProtocol: public Protocol 
 {
 public:
-    	explicit VLanProtocol():Protocol("VLanProtocol"),stats_level_(0),mux_(),
+    	explicit VLanProtocol():Protocol("VLanProtocol"),stats_level_(0),
 		vlan_header_(nullptr),total_bytes_(0) {}
     	virtual ~VLanProtocol() {}
 
@@ -64,12 +63,6 @@ public:
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
-
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { return mux_;}
-
-        void setFlowForwarder(FlowForwarderPtrWeak ff) {}
-        FlowForwarderPtrWeak getFlowForwarder() { FlowForwarderPtrWeak ptr; return ptr; }
 
 #ifdef PYTHON_BINDING
         void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
@@ -100,7 +93,6 @@ public:
 
 private:
 	int stats_level_;
-	MultiplexerPtrWeak mux_;
 	struct vlan_tag *vlan_header_;
 	int64_t total_bytes_;
 };

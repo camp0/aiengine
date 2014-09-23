@@ -204,7 +204,38 @@ BOOST_AUTO_TEST_CASE(test6_udp) // Test timeout on UDP traffic, no expire flows
         BOOST_CHECK(flow_cache->getTotalFails() == 0);
 }
 
+BOOST_AUTO_TEST_CASE(test7_udp) // Test small packet udp , one byte packet
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_short);
+        int length = raw_packet_ethernet_ip_udp_short_length;
 
+        Packet packet(pkt,length);
+
+        FlowCachePtr flow_cache = FlowCachePtr(new FlowCache());
+        FlowManagerPtr flow_mng = FlowManagerPtr(new FlowManager());
+
+        flow_mng->setFlowCache(flow_cache);
+        udp->setFlowCache(flow_cache);
+        udp->setFlowManager(flow_mng);
+
+        flow_cache->createFlows(1);
+
+        // forward the first packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+	BOOST_CHECK(ip->getTotalPackets() == 1);
+	BOOST_CHECK(ip->getTotalBytes() == 29);
+	BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
+	BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+
+	BOOST_CHECK(udp->getTotalPackets() == 1);
+	BOOST_CHECK(udp->getTotalBytes() == 1);
+	BOOST_CHECK(udp->getTotalValidatedPackets() == 1);
+	BOOST_CHECK(udp->getTotalMalformedPackets() == 0);
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 

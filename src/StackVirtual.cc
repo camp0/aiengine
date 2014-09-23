@@ -98,7 +98,10 @@ StackVirtual::StackVirtual() {
 	flow_cache_tcp_vir_ = FlowCachePtr(new FlowCache());
 
 	// Link the FlowCaches to their corresponding FlowManager for timeouts
-	flow_table_udp_->setTimeout(3600);
+
+	// The physic FlowManager have a 24 hours timeout 
+	flow_table_udp_->setTimeout(86400);
+
 	flow_table_udp_->setFlowCache(flow_cache_udp_);
 	flow_table_udp_vir_->setFlowCache(flow_cache_udp_vir_);
 	flow_table_tcp_vir_->setFlowCache(flow_cache_tcp_vir_);

@@ -21,44 +21,45 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef SRC_DNS_DNSDOMAIN_H_
-#define SRC_DNS_DNSDOMAIN_H_
+#ifndef SRC_DNS_DNSQUERYTYPES_H_
+#define SRC_DNS_DNSQUERYTYPES_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-#include <iostream>
+#include <unordered_map>
 
 namespace aiengine {
 
-class DNSDomain 
-{
-public:
-    	explicit DNSDomain(const std::string& name):domain_name_(name) {}
-    	explicit DNSDomain() { reset(); }
-    	virtual ~DNSDomain() {}
+#define DNS_STANDARD_QUERY 0x0100
+#define DNS_DYNAMIC_UPDATE 0x2800
 
-	void reset() { domain_name_ = ""; qtype_ = 0;}
-	std::string &getName() { return domain_name_; }
-	void setName(const std::string& name) { domain_name_ = name;}
-
-	uint16_t getQueryType() const { return qtype_; }
-	void setQueryType(uint16_t qtype) { qtype_ = qtype; }
-
-#ifdef PYTHON_BINDING
-	friend std::ostream& operator<< (std::ostream& out, const DNSDomain& domain) {
-	
-		out << domain.domain_name_;
-        	return out;
-	}
-#endif
-
-private:
-	std::string domain_name_;
-	uint16_t qtype_;
+// Some of the most used Dns types
+enum class DNSQueryTypes : std::uint16_t {
+	DNS_TYPE_A =            1,
+	DNS_TYPE_NS =           2,
+	DNS_TYPE_CNAME =        5,
+	DNS_TYPE_SOA =          6,
+	DNS_TYPE_MB =           7,
+	DNS_TYPE_MG =           8,
+	DNS_TYPE_MR =           9,
+	DNS_TYPE_NULL =         10,
+	DNS_TYPE_PTR =          12,
+	DNS_TYPE_MX =           15,
+	DNS_TYPE_TXT =          16,
+	DNS_TYPE_AAAA =         28,
+	DNS_TYPE_LOC =          29,
+	DNS_TYPE_SRV =          33,
+	DNS_TYPE_DS =           43,
+	DNS_TYPE_DNSKEY =       48,
+	DNS_TYPE_ANY =          255
 };
 
-} // namespace aiengine
+const std::unordered_map<std::uint16_t,std::string> DNSQueryTypeToString {
+	{ static_cast<std::uint16_t>(DNSQueryTypes::DNS_TYPE_A), "A" }
+};
 
-#endif  // SRC_DNS_DNSDOMAIN_H_
+} // namespace aiengine 
+
+#endif  // SRC_DNS_DNSQUERYTYPES_H_ 

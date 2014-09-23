@@ -115,6 +115,8 @@ struct StackDNStest
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(1);
 
+		dns->createDNSDomains(1);
+
                 udp->setFlowCache(flow_cache);
                 udp->setFlowManager(flow_mng);
 
@@ -124,6 +126,14 @@ struct StackDNStest
                 ff_udp->addUpFlowForwarder(ff_dns);
 
         }
+
+	void show() {
+		udp->setStatisticsLevel(5);
+		udp->statistics();
+		dns->setStatisticsLevel(5);
+		dns->statistics();
+	}
+
         ~StackDNStest()
         {
         }

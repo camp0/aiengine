@@ -32,11 +32,9 @@
 #ifdef HAVE_LIBLOG4CXX
 #include "log4cxx/logger.h"
 #endif
-#include "../Multiplexer.h"
-#include "../FlowForwarder.h"
 #include "../Protocol.h"
 #include "DNSDomain.h"
-//#include <net/ethernet.h>
+#include "DNSQueryTypes.h"
 #include <netinet/ip.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -48,12 +46,35 @@
 
 namespace aiengine {
 
+struct dns_header {
+        uint16_t	xid;           
+        uint16_t       	flags;       
+        uint16_t       	questions;       
+        uint16_t       	answers;       
+        uint16_t       	authorities;
+	uint16_t	additionals;     
+	u_char		data[0];
+} __attribute__((packed));
+
 class DNSProtocol: public Protocol 
 {
 public:
-    	explicit DNSProtocol():Protocol(DNSProtocol::default_name),stats_level_(0),flow_forwarder_(),
+    	explicit DNSProtocol():Protocol(DNSProtocol::default_name),stats_level_(0),
 		dns_header_(nullptr),total_bytes_(0),
 		total_allow_queries_(0),total_ban_queries_(0),
+		total_dns_type_a_(0),
+        	total_dns_type_ns_(0),
+        	total_dns_type_cname_(0),
+        	total_dns_type_soa_(0),
+        	total_dns_type_ptr_(0),
+        	total_dns_type_mx_(0),
+        	total_dns_type_txt_(0),
+        	total_dns_type_aaaa_(0),
+        	total_dns_type_loc_(0),
+        	total_dns_type_srv_(0),
+        	total_dns_type_ds_(0),
+        	total_dns_type_dnskey_(0),
+		total_dns_type_others_(0),
 		domain_mng_(),ban_domain_mng_(),
 		domain_cache_(new Cache<DNSDomain>("Domain cache")),
 		domain_map_() {}
@@ -62,7 +83,7 @@ public:
 
 	static constexpr char *default_name = "DNSProtocol";	
 	static const u_int16_t id = 0;
-	static const int header_size = 2;
+	static const int header_size = sizeof(struct dns_header);
 	int getHeaderSize() const { return header_size;}
 
 	int64_t getTotalBytes() const { return total_bytes_; }
@@ -77,19 +98,13 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-        void setMultiplexer(MultiplexerPtrWeak mux) { }
-        MultiplexerPtrWeak getMultiplexer() { MultiplexerPtrWeak mux; return mux;}
-
-        void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
-        FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
-
 #ifdef PYTHON_BINDING
         void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
 #endif
 
         void setHeader(unsigned char *raw_packet) {
                 
-		dns_header_ = raw_packet;
+		dns_header_ = reinterpret_cast <struct dns_header*> (raw_packet);
         }
 
 	// Condition for say that a payload is DNS 
@@ -116,14 +131,29 @@ public:
 	int32_t getTotalBanQueries() const { return total_ban_queries_;}
 
 private:
-	void attachDNStoFlow(Flow *flow, std::string &domain);
+	void attach_dns_to_flow(Flow *flow, std::string &domain, uint16_t qtype);
+	void update_query_types(uint16_t type);
 
 	int stats_level_;
-	FlowForwarderPtrWeak flow_forwarder_;	
-	unsigned char *dns_header_;
+	struct dns_header *dns_header_;
         int64_t total_bytes_;
         int32_t total_allow_queries_;
         int32_t total_ban_queries_;
+
+	// Some statistics of the Dns Types
+	int32_t total_dns_type_a_;
+	int32_t total_dns_type_ns_;
+	int32_t total_dns_type_cname_;
+	int32_t total_dns_type_soa_;
+	int32_t total_dns_type_ptr_;
+	int32_t total_dns_type_mx_;
+	int32_t total_dns_type_txt_;
+	int32_t total_dns_type_aaaa_;
+	int32_t total_dns_type_loc_;
+	int32_t total_dns_type_srv_;
+	int32_t total_dns_type_ds_;
+	int32_t total_dns_type_dnskey_;
+	int32_t total_dns_type_others_;
 
 	DomainNameManagerPtrWeak domain_mng_;
 	DomainNameManagerPtrWeak ban_domain_mng_;

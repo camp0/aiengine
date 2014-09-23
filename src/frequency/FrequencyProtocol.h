@@ -28,10 +28,7 @@
 #include <config.h>
 #endif
 
-#include "../Multiplexer.h"
-#include "../FlowForwarder.h"
 #include "../Protocol.h"
-//#include <net/ethernet.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
@@ -45,8 +42,8 @@ namespace aiengine {
 class FrequencyProtocol: public Protocol 
 {
 public:
-    	explicit FrequencyProtocol(std::string name):Protocol(name),stats_level_(0),mux_(),
-		flow_forwarder_(),freq_header_(nullptr),total_bytes_(0),
+    	explicit FrequencyProtocol(std::string name):Protocol(name),stats_level_(0),
+		freq_header_(nullptr),total_bytes_(0),
 		inspection_limit_(100),
 		freqs_cache_(new Cache<Frequencies>),
 		packet_freqs_cache_(new Cache<PacketFrequencies>) {}
@@ -70,12 +67,6 @@ public:
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
-
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { return mux_;}
-
-        void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
-        FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
 
 #ifdef PYTHON_BINDING
         void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
@@ -108,8 +99,6 @@ public:
 
 private:
 	int stats_level_;
-	MultiplexerPtrWeak mux_;
-	FlowForwarderPtrWeak flow_forwarder_;	
 	unsigned char *freq_header_;
         int64_t total_bytes_;
 	int inspection_limit_;

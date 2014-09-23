@@ -28,7 +28,6 @@
 #include <config.h>
 #endif
 
-#include "../Multiplexer.h"
 #include "../Protocol.h"
 #include <netinet/ip6.h>
 #include <netinet/icmp6.h>
@@ -41,7 +40,7 @@ class ICMPv6Protocol: public Protocol
 {
 public:
     	explicit ICMPv6Protocol():Protocol("ICMPv6Protocol"),stats_level_(0),
-		mux_(),icmp_header_(nullptr),
+		icmp_header_(nullptr),
                 total_echo_request_(0),
                 total_echo_replay_(0),
                 total_destination_unreachable_(0),
@@ -67,12 +66,6 @@ public:
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
-
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { return mux_;}
-
-        void setFlowForwarder(FlowForwarderPtrWeak ff) {}
-        FlowForwarderPtrWeak getFlowForwarder() { FlowForwarderPtrWeak ptr; return ptr; }
 
 #ifdef PYTHON_BINDING
         void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
@@ -106,7 +99,6 @@ public:
 
 private:
 	int stats_level_;
-	MultiplexerPtrWeak mux_;
 	struct icmp6_hdr *icmp_header_;
         int32_t total_echo_request_;
         int32_t total_echo_replay_;

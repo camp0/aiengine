@@ -32,8 +32,6 @@
 #ifdef HAVE_LIBLOG4CXX
 #include "log4cxx/logger.h"
 #endif
-#include "../Multiplexer.h"
-#include "../FlowForwarder.h"
 #include "../Protocol.h"
 //#include <net/ethernet.h>
 #include <netinet/ip.h>
@@ -54,7 +52,7 @@ namespace aiengine {
 class HTTPProtocol: public Protocol 
 {
 public:
-    	explicit HTTPProtocol():Protocol(HTTPProtocol::default_name),stats_level_(0),flow_forwarder_(),
+    	explicit HTTPProtocol():Protocol(HTTPProtocol::default_name),stats_level_(0),
                 http_regex_(new Regex("Main HTTP expression","^(GET|POST|HEAD|PUT|TRACE).*HTTP/1.")),
                 http_host_(new Regex("Host expression","Host: .*?\r\n")),
                 http_ua_(new Regex("User Agent expression","User-Agent: .*?\r\n")),
@@ -84,12 +82,6 @@ public:
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
-
-        void setMultiplexer(MultiplexerPtrWeak mux) { }
-      	MultiplexerPtrWeak getMultiplexer() { MultiplexerPtrWeak mux; return mux;}
-
-        void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
-        FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
 
 #ifdef PYTHON_BINDING
         void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
@@ -142,7 +134,6 @@ private:
 	void extractUserAgentValue(Flow *flow, const char *header);
 
 	int stats_level_;
-	FlowForwarderPtrWeak flow_forwarder_;
 	SharedPointer<Regex> http_regex_,http_host_,http_ua_;
 	unsigned char *http_header_;
 	int64_t total_bytes_;

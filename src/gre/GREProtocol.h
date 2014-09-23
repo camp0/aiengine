@@ -28,7 +28,6 @@
 #include <config.h>
 #endif
 
-#include "../Multiplexer.h"
 #include "../Protocol.h"
 #include <arpa/inet.h>
 
@@ -53,7 +52,6 @@ class GREProtocol: public Protocol
 {
 public:
     	explicit GREProtocol():Protocol("GREProtocol"),stats_level_(0),
-		mux_(),flow_forwarder_(),
 		gre_header_(nullptr),total_bytes_(0) {}
 
     	virtual ~GREProtocol() {}
@@ -74,12 +72,6 @@ public:
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
-
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { return mux_;}
-
-        void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
-        FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
 
 #ifdef PYTHON_BINDING
         void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
@@ -113,8 +105,6 @@ public:
 
 private:
 	int stats_level_;
-	MultiplexerPtrWeak mux_;
-	FlowForwarderPtrWeak flow_forwarder_;
 	struct gre_hdr *gre_header_;
 	int64_t total_bytes_;
 };

@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS =	test_dns.h DNSDomain.h
+noinst_HEADERS =	test_dns.h DNSDomain.h DNSQueryTypes.h
 
 TEST = test_dns
 

@@ -37,11 +37,11 @@ void System::statistics(std::basic_ostream<char>& out) {
         out << "System process statistics" << std::dec <<  std::endl;
         out << "\t" << "Elapsed time:      " << duration <<std::endl;
         out << "\t" << "Lock memory:                 " << std::setw(5) << (is_memory_lock_ ? "yes":"no") <<std::endl;
-        out << "\t" << "Resident memory size:        " << std::setw(5) << usage.ru_maxrss <<std::endl;
+        out << "\t" << "Resident memory size:      " << std::setw(7) << usage.ru_maxrss <<std::endl;
         out << "\t" << "Shared memory size:          " << std::setw(5) << usage.ru_ixrss <<std::endl;
         out << "\t" << "Unshared data size:          " << std::setw(5) << usage.ru_idrss <<std::endl;
         out << "\t" << "Unshared stack size:         " << std::setw(5) << usage.ru_isrss <<std::endl;
-        out << "\t" << "Page reclaims:               " << std::setw(5) << usage.ru_minflt <<std::endl;
+        out << "\t" << "Page reclaims:             " << std::setw(7) << usage.ru_minflt <<std::endl;
         out << "\t" << "Page faults:                 " << std::setw(5) << usage.ru_majflt <<std::endl;
         out << "\t" << "Swaps:                       " << std::setw(5) << usage.ru_nswap <<std::endl;
         out << "\t" << "Block input operations:      " << std::setw(5) << usage.ru_inblock <<std::endl;

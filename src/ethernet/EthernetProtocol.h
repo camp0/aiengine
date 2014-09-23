@@ -48,7 +48,7 @@ class EthernetProtocol: public Protocol
 {
 public:
     	explicit EthernetProtocol(std::string name):Protocol(name),stats_level_(0),
-		mux_(),eth_header_(nullptr),total_bytes_(0) {}
+		eth_header_(nullptr),total_bytes_(0) {}
 
 	explicit EthernetProtocol():EthernetProtocol("EthernetProtocol") {}
 
@@ -69,12 +69,6 @@ public:
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
-
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { return mux_;}
-
-        void setFlowForwarder(FlowForwarderPtrWeak ff) {}
-        FlowForwarderPtrWeak getFlowForwarder() { FlowForwarderPtrWeak ptr; return ptr; }
 
 #ifdef PYTHON_BINDING
 	void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
@@ -108,7 +102,6 @@ public:
 
 private:
 	int stats_level_;
-	MultiplexerPtrWeak mux_;
 	struct ether_header *eth_header_;
 	int64_t total_bytes_;
 };

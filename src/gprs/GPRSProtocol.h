@@ -28,8 +28,6 @@
 #include <config.h>
 #endif
 
-#include "../Multiplexer.h"
-#include "../FlowForwarder.h"
 #include "../Protocol.h"
 #include "../Cache.h"
 #include "GPRSInfo.h"
@@ -95,8 +93,7 @@ typedef struct {
 class GPRSProtocol: public Protocol 
 {
 public:
-    	explicit GPRSProtocol():Protocol("GPRSProtocol"),stats_level_(0),mux_(),
-		flow_forwarder_(),
+    	explicit GPRSProtocol():Protocol("GPRSProtocol"),stats_level_(0),
 		gprs_info_cache_(new Cache<GPRSInfo>("GPRS info cache")),
 		gprs_header_(nullptr),total_bytes_(0) {}
 
@@ -162,8 +159,6 @@ private:
 	void process_create_pdp_context(Flow *flow);
 
 	int stats_level_;
-	MultiplexerPtrWeak mux_;
-	FlowForwarderPtrWeak flow_forwarder_;
 	Cache<GPRSInfo>::CachePtr gprs_info_cache_;
 	gprs_hdr *gprs_header_;
 	int64_t total_bytes_;

@@ -28,7 +28,6 @@
 #include <config.h>
 #endif
 
-#include "../Multiplexer.h"
 #include "../Protocol.h"
 #include <netinet/ip.h>
 #include <netinet/in.h>
@@ -40,7 +39,7 @@ namespace aiengine {
 class IPProtocol: public Protocol 
 {
 public:
-    	explicit IPProtocol(std::string name):Protocol(name),stats_level_(0),mux_(),
+    	explicit IPProtocol(std::string name):Protocol(name),stats_level_(0),
 		ip_header_(nullptr),total_bytes_(0),total_frag_packets_(0) {}
 
     	explicit IPProtocol():IPProtocol("IPProtocol") {}
@@ -62,12 +61,6 @@ public:
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
-
-        void setFlowForwarder(FlowForwarderPtrWeak ff) {}
-        FlowForwarderPtrWeak getFlowForwarder() { FlowForwarderPtrWeak ptr; return ptr; }
-
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { return mux_;}
 
 #ifdef PYTHON_BINDING
         void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
@@ -111,7 +104,6 @@ public:
 
 private:
 	int stats_level_;
-	MultiplexerPtrWeak mux_;
 	struct ip *ip_header_;
 	int64_t total_bytes_;
 	int32_t total_frag_packets_;

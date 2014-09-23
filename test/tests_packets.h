@@ -475,4 +475,14 @@ static char *raw_packet_ethernet_ip_icmp_redirect_for_host =
 	"\x1a\x5c\x02\x00\x31\x00";
 
 static int raw_packet_ethernet_ip_icmp_redirect_for_host_length = 70;
+
+
+// ethernet, ip, udp and one byte packet 
+static char *raw_packet_ethernet_ip_udp_short =
+        "\x00\x0c\x29\x2e\x3c\x2a\x90\x84\x0d\x62\xd8\x04\x08\x00\x45\x00"
+        "\x00\x1d\x8a\x0d\x00\x00\xec\x11\xf4\x4f\xc0\xa8\x01\x76\x50\x3a"
+        "\x3d\xfa\xe9\xb3\x00\x35\x00\x09\x05\x94\x01";
+
+static int raw_packet_ethernet_ip_udp_short_length = 43;
+
 #endif

@@ -32,8 +32,6 @@
 #ifdef HAVE_LIBLOG4CXX
 #include "log4cxx/logger.h"
 #endif
-#include "../Multiplexer.h"
-#include "../FlowForwarder.h"
 #include "../Protocol.h"
 #include "SSLHost.h"
 #include "../Cache.h"
@@ -105,7 +103,7 @@ typedef struct {
 class SSLProtocol: public Protocol 
 {
 public:
-    	explicit SSLProtocol():Protocol(SSLProtocol::default_name),stats_level_(0),flow_forwarder_(),
+    	explicit SSLProtocol():Protocol(SSLProtocol::default_name),stats_level_(0),
 		ssl_header_(nullptr),total_bytes_(0),
 		total_client_hellos_(0),total_server_hellos_(0),
 		total_certificates_(0),total_records_(0),total_ban_hosts_(0),
@@ -131,12 +129,6 @@ public:
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
-
-        void setMultiplexer(MultiplexerPtrWeak mux) {}
-        MultiplexerPtrWeak getMultiplexer() { MultiplexerPtrWeak mux; return mux;}
-
-        void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
-        FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
 
 #ifdef PYTHON_BINDING
         void setDatabaseAdaptor(boost::python::object &dbptr) {} 
@@ -175,7 +167,6 @@ public:
 
 private:
 	int stats_level_;
-	FlowForwarderPtrWeak flow_forwarder_;	
 	ssl_record *ssl_header_;
         int64_t total_bytes_;
 	int32_t total_client_hellos_;

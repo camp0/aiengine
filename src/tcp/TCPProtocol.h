@@ -29,7 +29,6 @@
 #include <config.h>
 #endif
 
-#include "../Multiplexer.h"
 #include <netinet/tcp.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -46,8 +45,8 @@ namespace aiengine {
 class TCPProtocol: public Protocol 
 {
 public:
-    	explicit TCPProtocol(std::string name):Protocol(name),stats_level_(0),mux_(),
-                flow_forwarder_(),flow_table_(),flow_cache_(),
+    	explicit TCPProtocol(std::string name):Protocol(name),stats_level_(0),
+                flow_table_(),flow_cache_(),
                 tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")), 
                 tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
 		last_timeout_(0),packet_time_(0) {}
@@ -65,12 +64,6 @@ public:
 	int64_t getTotalPackets() const { return total_packets_;}
 	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
-
-        void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
-        FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
-
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { return mux_;}
 
 	void processFlow(Flow *flow) {}; // This protocol generates flows but not for destination.
 	void processPacket(Packet &packet);
@@ -149,8 +142,6 @@ private:
         SharedPointer<Flow> getFlow(const Packet& packet);
 
 	int stats_level_;
-	MultiplexerPtrWeak mux_;
-	FlowForwarderPtrWeak flow_forwarder_;
 	FlowManagerPtr flow_table_;
 	FlowCachePtr flow_cache_;
 	Cache<TCPInfo>::CachePtr tcp_info_cache_;

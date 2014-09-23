@@ -78,3 +78,6 @@ Features of 0.9
 - Support of TCP/UDP timeout flows (180 seconds).
 - Support for specific statistics on the protocols (python binding).
 - Support for Virtual/Cloud enviroments with transparent GRE and VxLan on a new stack (StackVirtual).
+
+Features/Changes of 1.0
+- Improvements on the DNSProtocol.

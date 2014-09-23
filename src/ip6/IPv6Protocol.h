@@ -28,7 +28,6 @@
 #include <config.h>
 #endif
 
-#include "../Multiplexer.h"
 #include "../Protocol.h"
 #include <netinet/ip6.h>
 #include <netinet/in.h>
@@ -40,7 +39,7 @@ namespace aiengine {
 class IPv6Protocol: public Protocol 
 {
 public:
-    	explicit IPv6Protocol():Protocol("IPv6Protocol"),stats_level_(0),mux_(),
+    	explicit IPv6Protocol():Protocol("IPv6Protocol"),stats_level_(0),
 		ip6_header_(nullptr),total_bytes_(0),total_frag_packets_(0),
 		total_extension_header_packets_(0) {}
 
@@ -62,12 +61,6 @@ public:
 	void statistics() { statistics(std::cout);};
 
 	void setStatisticsLevel(int level) { stats_level_ = level; }
-
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { return mux_;}
-
-        void setFlowForwarder(FlowForwarderPtrWeak ff) {}
-        FlowForwarderPtrWeak getFlowForwarder() { FlowForwarderPtrWeak ptr; return ptr; }
 
 #ifdef PYTHON_BINDING
         void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
@@ -104,7 +97,6 @@ public:
 
 private:
 	int stats_level_;
-	MultiplexerPtrWeak mux_;
 	struct ip6_hdr *ip6_header_;
 	int64_t total_bytes_;
 	int32_t total_frag_packets_;

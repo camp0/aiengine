@@ -53,7 +53,9 @@ class Protocol
 public:
     	explicit Protocol(const std::string& name):ipset_mng_(),
 		total_malformed_packets_(0),total_validated_packets_(0),
-		total_packets_(0),name_(name),protocol_id_(0)
+		total_packets_(0),
+		mux_(), flow_forwarder_(),
+		name_(name),protocol_id_(0)
 #ifdef PYTHON_BINDING
 		,dbptr_(),is_set_db_(false),packet_sampling_(32)
 #endif
@@ -70,11 +72,11 @@ public:
 	virtual void processFlow(Flow *flow) = 0;
 	virtual void processPacket(Packet &packet) = 0;
 
-	virtual void setMultiplexer(MultiplexerPtrWeak mux) = 0;
-	virtual MultiplexerPtrWeak getMultiplexer() = 0; 
+	void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
+	MultiplexerPtrWeak getMultiplexer() { return mux_; } 
 
-	virtual void setFlowForwarder(FlowForwarderPtrWeak ff) = 0;
-	virtual FlowForwarderPtrWeak getFlowForwarder() = 0; 
+	void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_ = ff; }
+	FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_; } 
 
 #ifdef PYTHON_BINDING
 	void setDatabaseAdaptor(boost::python::object &dbptr); 
@@ -97,6 +99,8 @@ public:
 	mutable int64_t total_malformed_packets_;
 	mutable int64_t total_validated_packets_;
 	mutable int64_t total_packets_;
+        MultiplexerPtrWeak mux_;
+        FlowForwarderPtrWeak flow_forwarder_;
 private:
 	std::string name_;
 	u_int16_t protocol_id_;

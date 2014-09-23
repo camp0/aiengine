@@ -28,7 +28,6 @@
 #include <config.h>
 #endif
 
-#include "../Multiplexer.h"
 #include "../Protocol.h"
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
@@ -41,7 +40,7 @@ class ICMPProtocol: public Protocol
 {
 public:
     	explicit ICMPProtocol():Protocol("ICMPProtocol"),stats_level_(0),
-		mux_(),icmp_header_(nullptr),
+		icmp_header_(nullptr),
         	total_echo_request_(0),
         	total_echo_replay_(0),
         	total_destination_unreachable_(0),
@@ -68,12 +67,6 @@ public:
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
-
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { return mux_;}
-
-        void setFlowForwarder(FlowForwarderPtrWeak ff) {}
-        FlowForwarderPtrWeak getFlowForwarder() { FlowForwarderPtrWeak ptr; return ptr; }
 
 #ifdef PYTHON_BINDING
         void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
@@ -118,7 +111,6 @@ public:
 
 private:
 	int stats_level_;
-	MultiplexerPtrWeak mux_;
 #if defined(__FREEBSD__) || defined(__OPENBSD__) 
 	struct icmp *icmp_header_;
 #else

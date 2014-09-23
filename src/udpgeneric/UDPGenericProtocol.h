@@ -34,8 +34,6 @@
 #ifdef HAVE_LIBLOG4CXX
 #include "log4cxx/logger.h"
 #endif
-#include "../Multiplexer.h"
-#include "../FlowForwarder.h"
 #include "../Protocol.h"
 #include "../regex/RegexManager.h"
 //#include <net/ethernet.h>
@@ -72,12 +70,6 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { return mux_;}
-
-        void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
-        FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
-
 #ifdef PYTHON_BINDING
         void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
 #endif
@@ -103,8 +95,6 @@ private:
 	static log4cxx::LoggerPtr logger;
 #endif
 	int stats_level_;
-	FlowForwarderPtrWeak flow_forwarder_;	
-	MultiplexerPtrWeak mux_;
 	unsigned char *udp_generic_header_;
         int64_t total_bytes_;
 	RegexManagerPtrWeak sigs_;
