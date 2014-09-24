@@ -55,7 +55,6 @@ void DNSProtocol::attach_dns_to_flow(Flow *flow, std::string &domain, uint16_t q
 
 void DNSProtocol::processFlow(Flow *flow) {
 
-	DomainNameManagerPtr dnm,ban_dnm;
 	int length = flow->packet->getLength();
 	total_bytes_ += length;
 	++total_packets_;
@@ -91,7 +90,7 @@ void DNSProtocol::processFlow(Flow *flow) {
 
 			if (domain.length() > 0) { // The domain is valid
 
-				ban_dnm = ban_domain_mng_.lock();
+				DomainNameManagerPtr ban_dnm = ban_domain_mng_.lock();
 				if (ban_dnm) {
 					SharedPointer<DomainName> domain_candidate = ban_dnm->getDomainName(domain);
 					if (domain_candidate) {
@@ -107,7 +106,7 @@ void DNSProtocol::processFlow(Flow *flow) {
 		
 				attach_dns_to_flow(flow,domain,qtype);	
 				
-				dnm = domain_mng_.lock();
+				DomainNameManagerPtr dnm = domain_mng_.lock();
 				if (dnm) {
 					SharedPointer<DomainName> domain_candidate = dnm->getDomainName(domain);
 					if (domain_candidate) {

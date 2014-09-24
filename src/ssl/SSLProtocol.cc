@@ -131,7 +131,6 @@ void SSLProtocol::handleCertificate(Flow *flow,int offset, unsigned char *data) 
 
 void SSLProtocol::processFlow(Flow *flow) {
 
-	DomainNameManagerPtr host_mng;
 	++total_packets_;
 	total_bytes_ += flow->packet->getLength();
 	++flow->total_packets_l7;
@@ -183,7 +182,7 @@ void SSLProtocol::processFlow(Flow *flow) {
 				if (maxattemps == 4 ) break;
 			}while(offset < flow->packet->getLength());
 
-			host_mng = host_mng_.lock();
+			DomainNameManagerPtr host_mng = host_mng_.lock();
 			if (host_mng) {
 				SharedPointer<SSLHost> host_name = flow->ssl_host.lock();
 

@@ -32,14 +32,12 @@ log4cxx::LoggerPtr HTTPProtocol::logger(log4cxx::Logger::getLogger("aiengine.htt
 
 void HTTPProtocol::extractHostValue(Flow *flow, const char *header) {
 
-	DomainNameManagerPtr ban_hosts;
-
 	if (http_host_->matchAndExtract(header)) {
 
         	std::string host_raw(http_host_->getExtract());
                 std::string host(host_raw,6,host_raw.length()-8); // remove also the \r\n
 
-		ban_hosts = ban_host_mng_.lock();
+		DomainNameManagerPtr ban_hosts = ban_host_mng_.lock();
 		if (ban_hosts) {
 			SharedPointer<DomainName> host_candidate = ban_hosts->getDomainName(host);
 			if (host_candidate) {
@@ -153,8 +151,6 @@ void HTTPProtocol::extractUriValue(Flow *flow, const char *header) {
 
 void HTTPProtocol::processFlow(Flow *flow) {
 
-	DomainNameManagerPtr host_mng;
-
 	++total_packets_;	
 	total_bytes_ += flow->packet->getLength();
 	++flow->total_packets_l7;
@@ -169,7 +165,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
 
 		extractUserAgentValue(flow,header);
 
-                host_mng = host_mng_.lock();
+                DomainNameManagerPtr host_mng = host_mng_.lock();
                 if (host_mng) {
 			SharedPointer<HTTPHost> host_name = flow->http_host.lock();
 

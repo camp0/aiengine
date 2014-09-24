@@ -53,11 +53,12 @@ void UDPProtocol::statistics(std::basic_ostream<char>& out) {
 
 SharedPointer<Flow> UDPProtocol::getFlow(const Packet& packet) { 
 
-	SharedPointer<Flow> flow;
-	MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();	
-	MultiplexerPtr ipmux = downmux.lock();
+	SharedPointer<Flow> flow; 
 
 	if (flow_table_) {
+		MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();	
+		MultiplexerPtr ipmux = downmux.lock();
+
                 unsigned long h1 = ipmux->address.getHash(getSrcPort(),IPPROTO_UDP,getDstPort());
                 unsigned long h2 = ipmux->address.getHash(getDstPort(),IPPROTO_UDP,getSrcPort());
 

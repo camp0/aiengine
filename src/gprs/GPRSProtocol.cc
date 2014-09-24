@@ -105,24 +105,33 @@ void GPRSProtocol::processFlow(Flow *flow) {
 		uint8_t type = gprs_header_->type; 
 		
 		// just forward the packet if contains data
+		// TODO: Applie a visitor pattern :)
 		if (type == T_PDU) {
 			MultiplexerPtr mux = mux_.lock();
 
-			Packet *packet = flow->packet;
-			Packet gpacket;
+			Packet gpacket(*(flow->packet));
 			
-			gpacket.setPayload(packet->getPayload());
 			gpacket.setPrevHeaderSize(header_size);
-			gpacket.setPayloadLength(packet->getLength());
-			gpacket.setPacketTime(packet->getPacketTime());
 
 			mux->setNextProtocolIdentifier(ETHERTYPE_IP); 
 			mux->forwardPacket(gpacket);
+
+			++total_tpdus_;
 		} else if (type == CREATE_PDP_CONTEXT_REQUEST) {
 			process_create_pdp_context(flow);
+			++total_create_pdp_ctx_requests_;
+		} else if (type == CREATE_PDP_CONTEXT_RESPONSE) {
+			++total_create_pdp_ctx_responses_;
+		} else if (type == UPDATE_PDP_CONTEXT_REQUEST) {
+			++total_update_pdp_ctx_requests_;
+		} else if (type == UPDATE_PDP_CONTEXT_RESPONSE) {
+			++total_update_pdp_ctx_responses_;
+		} else if (type == DELETE_PDP_CONTEXT_REQUEST) {
+			++total_delete_pdp_ctx_requests_;
+		} else if (type == DELETE_PDP_CONTEXT_RESPONSE) {
+			++total_delete_pdp_ctx_responses_;
 		}
          }
-
 }
 
 void GPRSProtocol::statistics(std::basic_ostream<char>& out) {
@@ -134,6 +143,17 @@ void GPRSProtocol::statistics(std::basic_ostream<char>& out) {
 		if (stats_level_ > 1) { 
 			out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
 			out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
+                       	if (stats_level_ > 3) {
+
+                                out << "\t" << "Total create pdp reqs:  " << std::setw(10) << total_create_pdp_ctx_requests_ <<std::endl;
+                                out << "\t" << "Total create pdp ress:  " << std::setw(10) << total_create_pdp_ctx_responses_ <<std::endl;
+                                out << "\t" << "Total update pdp reqs:  " << std::setw(10) << total_update_pdp_ctx_requests_ <<std::endl;
+                                out << "\t" << "Total update pdp ress:  " << std::setw(10) << total_update_pdp_ctx_responses_ <<std::endl;
+                                out << "\t" << "Total delete pdp reqs:  " << std::setw(10) << total_delete_pdp_ctx_requests_ <<std::endl;
+                                out << "\t" << "Total delete pdp ress:  " << std::setw(10) << total_delete_pdp_ctx_responses_ <<std::endl;
+                                out << "\t" << "Total tpdus:          " << std::setw(12) << total_tpdus_ <<std::endl;
+                        }
+
 			if (stats_level_ > 2) {
 				if (mux_.lock())
 					mux_.lock()->statistics(out);

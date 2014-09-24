@@ -95,7 +95,14 @@ class GPRSProtocol: public Protocol
 public:
     	explicit GPRSProtocol():Protocol("GPRSProtocol"),stats_level_(0),
 		gprs_info_cache_(new Cache<GPRSInfo>("GPRS info cache")),
-		gprs_header_(nullptr),total_bytes_(0) {}
+		gprs_header_(nullptr),total_bytes_(0),
+        	total_create_pdp_ctx_requests_(0),
+        	total_create_pdp_ctx_responses_(0),
+        	total_update_pdp_ctx_requests_(0),
+        	total_update_pdp_ctx_responses_(0),
+        	total_delete_pdp_ctx_requests_(0),
+        	total_delete_pdp_ctx_responses_(0),
+        	total_tpdus_(0) {}
 
     	virtual ~GPRSProtocol() {}
 
@@ -162,6 +169,13 @@ private:
 	Cache<GPRSInfo>::CachePtr gprs_info_cache_;
 	gprs_hdr *gprs_header_;
 	int64_t total_bytes_;
+	int32_t total_create_pdp_ctx_requests_;
+	int32_t total_create_pdp_ctx_responses_;
+	int32_t total_update_pdp_ctx_requests_;
+	int32_t total_update_pdp_ctx_responses_;
+	int32_t total_delete_pdp_ctx_requests_;
+	int32_t total_delete_pdp_ctx_responses_;
+	int32_t total_tpdus_;
 };
 
 typedef std::shared_ptr<GPRSProtocol> GPRSProtocolPtr;

@@ -59,7 +59,6 @@ void Multiplexer::setPacket(Packet *pkt) {
 void Multiplexer::forwardPacket(Packet &packet) {
 
 	MultiplexerPtrWeak next_mux;
-	MultiplexerPtr mux;
 
 #ifdef DEBUG
 	std::cout << __FILE__ << "(" << this << "):forwardPacket,next proto:"<< next_protocol_id_ <<std::endl;
@@ -67,7 +66,7 @@ void Multiplexer::forwardPacket(Packet &packet) {
         ++total_received_packets_;
 	next_mux = getUpMultiplexer(next_protocol_id_);
 	if(!next_mux.expired()) {
-                mux = next_mux.lock();
+                MultiplexerPtr mux = next_mux.lock();
                 if (mux) {
                       	Packet pkt_candidate(packet); 
 
