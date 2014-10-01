@@ -251,5 +251,28 @@ BOOST_AUTO_TEST_CASE (test8_dns)
         BOOST_CHECK(domain.compare(dom->getName()) == 0);
 }
 
+BOOST_AUTO_TEST_CASE (test9_dns)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dns_dnskey_ietfdotorg);
+        int length = raw_packet_ethernet_ip_udp_dns_dnskey_ietfdotorg_length;
+        Packet packet(pkt,length);
+
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        Flow *flow = udp->getCurrentFlow();
+
+        BOOST_CHECK( flow != nullptr);
+        BOOST_CHECK( flow->dns_domain.lock() != nullptr);
+
+	dns->releaseCache();
+
+        BOOST_CHECK( flow->dns_domain.lock() == nullptr);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END( )
 

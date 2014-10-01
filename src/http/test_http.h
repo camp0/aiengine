@@ -120,6 +120,7 @@ struct StackHTTPtest
 
                 tcp->setFlowCache(flow_cache);
                 tcp->setFlowManager(flow_mng);
+                http->setFlowManager(flow_mng);
 
                 // Configure the FlowForwarders
                 tcp->setFlowForwarder(ff_tcp);
@@ -216,6 +217,7 @@ struct StackIPv6HTTPtest
 
                 tcp->setFlowCache(flow_cache);
                 tcp->setFlowManager(flow_mng);
+                http->setFlowManager(flow_mng);
 
                 // Configure the FlowForwarders
                 tcp->setFlowForwarder(ff_tcp);
@@ -223,6 +225,14 @@ struct StackIPv6HTTPtest
                 ff_tcp->addUpFlowForwarder(ff_http);
 
         }
+
+	void showFlows() { flow_mng->showFlows(); }
+
+	void show() {
+		http->setStatisticsLevel(5);
+		http->statistics();
+	}
+
         ~StackIPv6HTTPtest()
         {
         }

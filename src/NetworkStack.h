@@ -82,7 +82,12 @@ public:
 
 	virtual void setFlowsTimeout(int timeout) = 0;
 
+	// Release the memory of the caches of every protocol on the stack
+	void releaseCache(const std::string &name);
+	void releaseCaches();
+
 #ifdef PYTHON_BINDING
+
 	virtual FlowManager& getTCPFlowManager() = 0;
 	virtual FlowManager& getUDPFlowManager() = 0;
 	

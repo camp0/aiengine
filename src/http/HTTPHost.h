@@ -39,7 +39,7 @@ public:
     	explicit HTTPHost() { reset(); }
     	virtual ~HTTPHost() {}
 
-	void reset() { host_name_ = "";}	
+	void reset() { host_name_ = ""; }	
 	std::string &getName() { return host_name_; }
 	void setName(const std::string& name) { host_name_ = name;}
 

@@ -46,7 +46,7 @@ public:
 
     	virtual ~IPProtocol() {}
 
-	static const u_int16_t id = ETHERTYPE_IP;
+	static const uint16_t id = ETHERTYPE_IP;
 	static const int header_size = 20;
 	int getHeaderSize() const { return header_size;}
 
@@ -62,9 +62,7 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-#ifdef PYTHON_BINDING
-        void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
-#endif
+        void releaseCache() {} // No need to free cache
 
         void setHeader(unsigned char *raw_packet) {
         
@@ -87,20 +85,20 @@ public:
 	}
 
 	/* Fields from IP headers */
-    	u_int8_t getTTL() const { return ip_header_->ip_ttl; }
-    	u_int16_t getPacketLength() const { return ntohs(ip_header_->ip_len); }
-    	u_int16_t getIPHeaderLength() const { return ip_header_->ip_hl * 4; }
+    	uint8_t getTTL() const { return ip_header_->ip_ttl; }
+    	uint16_t getPacketLength() const { return ntohs(ip_header_->ip_len); }
+    	uint16_t getIPHeaderLength() const { return ip_header_->ip_hl * 4; }
     	bool isIP() const { return ip_header_ ? true : false ; }
     	bool isIPver4() const { return ip_header_->ip_v == 4; }
     	bool isFragment() const { return (ip_header_->ip_off & IP_MF); }
-    	u_int16_t getID() const { return ntohs(ip_header_->ip_id); }
+    	uint16_t getID() const { return ntohs(ip_header_->ip_id); }
     	int getVersion() const { return ip_header_->ip_v; }
-    	u_int16_t getProtocol () const { return ip_header_->ip_p; }
-    	u_int32_t getSrcAddr() const { return ip_header_->ip_src.s_addr; }
-    	u_int32_t getDstAddr() const { return ip_header_->ip_dst.s_addr; }
+    	uint16_t getProtocol () const { return ip_header_->ip_p; }
+    	uint32_t getSrcAddr() const { return ip_header_->ip_src.s_addr; }
+    	uint32_t getDstAddr() const { return ip_header_->ip_dst.s_addr; }
     	const char* getSrcAddrDotNotation() const { return inet_ntoa(ip_header_->ip_src); }
     	const char* getDstAddrDotNotation() const { return inet_ntoa(ip_header_->ip_dst); }
-    	u_int32_t getIPPayloadLength() const { return getPacketLength() - getIPHeaderLength(); }
+    	uint32_t getIPPayloadLength() const { return getPacketLength() - getIPHeaderLength(); }
 
 private:
 	int stats_level_;

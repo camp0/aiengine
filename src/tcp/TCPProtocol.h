@@ -56,7 +56,7 @@ public:
     	virtual ~TCPProtocol() {}
 
 	static constexpr char *default_name = "TCPProtocol";
-	static const u_int16_t id = IPPROTO_TCP;
+	static const uint16_t id = IPPROTO_TCP;
 	static const int header_size = 20;
 	int getHeaderSize() const { return header_size;}
 
@@ -72,6 +72,8 @@ public:
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
+
+        void releaseCache() {} // No need to free cache
 
         void setHeader(unsigned char *raw_packet) {
         
@@ -101,11 +103,11 @@ public:
 
 
 #if defined(__FREEBSD__) || (__OPENBSD__)
-    	u_int16_t getSrcPort() const { return ntohs(tcp_header_->th_sport); }
-    	u_int16_t getDstPort() const { return ntohs(tcp_header_->th_dport); }
-    	u_int32_t getSequence() const  { return ntohl(tcp_header_->th_seq); }
-    	u_int32_t getAckSequence() const  { return ntohl(tcp_header_->th_ack); }
-    	// u_int16_t getWindow() const { return tcp_header_->window; }
+    	uint16_t getSrcPort() const { return ntohs(tcp_header_->th_sport); }
+    	uint16_t getDstPort() const { return ntohs(tcp_header_->th_dport); }
+    	uint32_t getSequence() const  { return ntohl(tcp_header_->th_seq); }
+    	uint32_t getAckSequence() const  { return ntohl(tcp_header_->th_ack); }
+    	// uint16_t getWindow() const { return tcp_header_->window; }
     	bool isSyn() const { return (tcp_header_->th_flags & TH_SYN) == TH_SYN; }
     	bool isFin() const { return (tcp_header_->th_flags & TH_FIN) == TH_FIN; }
     	bool isAck() const { return (tcp_header_->th_flags & TH_ACK) == TH_ACK; }
@@ -123,8 +125,8 @@ public:
     	bool isPushSet() const { return tcp_header_->psh == 1; }
     	uint32_t getSequence() const  { return ntohl(tcp_header_->seq); }
     	uint32_t getAckSequence() const  { return ntohl(tcp_header_->ack_seq); }
-    	u_int16_t getSrcPort() const { return ntohs(tcp_header_->source); }
-    	u_int16_t getDstPort() const { return ntohs(tcp_header_->dest); }
+    	uint16_t getSrcPort() const { return ntohs(tcp_header_->source); }
+    	uint16_t getDstPort() const { return ntohs(tcp_header_->dest); }
     	unsigned int getTcpHdrLength() const { return tcp_header_->doff * 4; }
     	unsigned char* getPayload() const { return (unsigned char*)tcp_header_ +getTcpHdrLength(); }
 #endif

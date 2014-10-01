@@ -34,8 +34,8 @@
 namespace aiengine {
 
 struct vlan_tag {
-        u_int16_t       vlan_tpid;              /* ETH_P_8021Q/ETHERTYPE_VLAN */
-        u_int16_t       vlan_tci;               /* VLAN TCI */
+        uint16_t       vlan_tpid;              /* ETH_P_8021Q/ETHERTYPE_VLAN */
+        uint16_t       vlan_tci;               /* VLAN TCI */
 } __attribute__((packed));
 
 #define VLAN_TAG_LEN    4
@@ -47,7 +47,7 @@ public:
 		vlan_header_(nullptr),total_bytes_(0) {}
     	virtual ~VLanProtocol() {}
 
-	static const u_int16_t id = ETHERTYPE_VLAN;	
+	static const uint16_t id = ETHERTYPE_VLAN;	
 	static const int header_size = VLAN_TAG_LEN;
 
 	int getHeaderSize() const { return header_size;}
@@ -64,9 +64,7 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-#ifdef PYTHON_BINDING
-        void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
-#endif
+        void releaseCache() {} // No need to free cache
 
 	void setHeader(unsigned char *raw_packet){ 
 
@@ -89,7 +87,7 @@ public:
 		}
 	}
 
-	u_int16_t getEthernetType() const { return ntohs(vlan_header_->vlan_tci);}
+	uint16_t getEthernetType() const { return ntohs(vlan_header_->vlan_tci);}
 
 private:
 	int stats_level_;

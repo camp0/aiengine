@@ -6,7 +6,8 @@ check_PROGRAMS = test_http
 
 noinst_HEADERS = 	HTTPProtocol.h HTTPUri.h HTTPHost.h HTTPUserAgent.h HTTPReferer.h test_http.h
 
-test_http_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
+test_http_SOURCES = 	../Multiplexer.cc ../Protocol.cc \
+			../FlowForwarder.cc \
 			../ethernet/EthernetProtocol.cc \
 			../ip/IPProtocol.cc \
 			../ipset/IPSetManager.cc \

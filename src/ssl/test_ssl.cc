@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_CASE (test10_ssl)
 
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
         ssl->createSSLHosts(1);
         ssl->setDomainNameBanManager(host_mng_weak);
@@ -274,6 +274,41 @@ BOOST_AUTO_TEST_CASE (test10_ssl)
 
         BOOST_CHECK(ssl->getTotalAllowHosts() == 0);
         BOOST_CHECK(ssl->getTotalBanHosts() == 1);
+}
+
+BOOST_AUTO_TEST_CASE (test11_ssl)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
+        int length1 = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
+        Packet packet1(pkt1,length1);
+
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_tor_hello);
+        int length2 = raw_packet_ethernet_ip_tcp_ssl_tor_hello_length;
+        Packet packet2(pkt2,length2);
+
+        ssl->createSSLHosts(2);
+
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+        mux_eth->setPacket(&packet2);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet2);
+
+	auto fm = tcp->getFlowManager();
+
+	for (auto &f: fm->getFlowTable()) {
+		BOOST_CHECK(f->ssl_host.lock() != nullptr);
+	}
+
+	ssl->releaseCache();
+
+	for (auto &f: fm->getFlowTable()) {
+		BOOST_CHECK(f->ssl_host.lock() == nullptr);
+	}
 }
 
 

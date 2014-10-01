@@ -35,13 +35,13 @@
 #include "../Protocol.h"
 #include "SSLHost.h"
 #include "../Cache.h"
-//#include <net/ethernet.h>
 #include <netinet/ip.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
 #include <cstring>
 #include "../names/DomainNameManager.h"
+#include "../flow/FlowManager.h"
 
 namespace aiengine {
 
@@ -109,12 +109,13 @@ public:
 		total_certificates_(0),total_records_(0),total_ban_hosts_(0),
 		total_allow_hosts_(0),
 		host_cache_(new Cache<SSLHost>("Host cache")),
-		host_map_(),host_mng_(),ban_host_mng_() {}
+		host_map_(),host_mng_(),ban_host_mng_(),
+		flow_mng_() {}
 
     	virtual ~SSLProtocol() {}
 
 	static constexpr char *default_name = "SSLProtocol";	
-	static const u_int16_t id = 0;
+	static const uint16_t id = 0;
 	static const int header_size = 2;
 	int getHeaderSize() const { return header_size;}
 
@@ -130,9 +131,7 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-#ifdef PYTHON_BINDING
-        void setDatabaseAdaptor(boost::python::object &dbptr) {} 
-#endif
+	void releaseCache();
 
         void setHeader(unsigned char *raw_packet) {
         
@@ -165,6 +164,7 @@ public:
 	void setDomainNameManager(DomainNameManagerPtrWeak dnm) { host_mng_ = dnm;}
 	void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) { ban_host_mng_ = dnm;}
 
+	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 private:
 	int stats_level_;
 	ssl_record *ssl_header_;
@@ -184,12 +184,13 @@ private:
 
         DomainNameManagerPtrWeak host_mng_;
         DomainNameManagerPtrWeak ban_host_mng_;
+	FlowManagerPtrWeak flow_mng_;
 
-	void handleClientHello(Flow *flow,int offset, unsigned char *data);
-	void handleServerHello(Flow *flow,int offset, unsigned char *data);
-	void handleCertificate(Flow *flow,int offset, unsigned char *data);
+	void handle_client_hello(Flow *flow,int offset, unsigned char *data);
+	void handle_server_hello(Flow *flow,int offset, unsigned char *data);
+	void handle_certificate(Flow *flow,int offset, unsigned char *data);
 
-	void attachHostToFlow(Flow *flow, std::string &servername); 
+	void attach_host_to_flow(Flow *flow, std::string &servername); 
 
 #ifdef HAVE_LIBLOG4CXX
         static log4cxx::LoggerPtr logger;

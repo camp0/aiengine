@@ -78,15 +78,15 @@ public:
 	PacketAnomaly getPacketAnomaly() const { return pa_; }
 
 	// IP functions
-	void setFiveTuple(u_int32_t src_a,u_int16_t src_p,u_int16_t proto,u_int32_t dst_a,u_int16_t dst_p);
-       	void setFiveTuple6(struct in6_addr *src_a,u_int16_t src_p,u_int16_t proto,struct in6_addr *dst_a,u_int16_t dst_p); 
+	void setFiveTuple(uint32_t src_a,uint16_t src_p,uint16_t proto,uint32_t dst_a,uint16_t dst_p);
+       	void setFiveTuple6(struct in6_addr *src_a,uint16_t src_p,uint16_t proto,struct in6_addr *dst_a,uint16_t dst_p); 
 
 	// Methods for access to the IP addresses, ports and protocol
-	u_int32_t getSourceAddress() const { return address_.getSourceAddress();}
-	u_int32_t getDestinationAddress() const { return address_.getDestinationAddress();}
-	u_int16_t getSourcePort() const { return source_port_;}
-	u_int16_t getDestinationPort() const { return dest_port_;}
-	u_int16_t getProtocol() const { return protocol_;}
+	uint32_t getSourceAddress() const { return address_.getSourceAddress();}
+	uint32_t getDestinationAddress() const { return address_.getDestinationAddress();}
+	uint16_t getSourcePort() const { return source_port_;}
+	uint16_t getDestinationPort() const { return dest_port_;}
+	uint16_t getProtocol() const { return protocol_;}
         char* getSrcAddrDotNotation() const { return address_.getSrcAddrDotNotation();}
         char* getDstAddrDotNotation() const { return address_.getDstAddrDotNotation();}
 
@@ -159,9 +159,9 @@ public:
 private:
 	unsigned long hash_;
 	IPAddress address_;
-	u_int16_t source_port_;
-	u_int16_t dest_port_;
-	u_int16_t protocol_;
+	uint16_t source_port_;
+	uint16_t dest_port_;
+	uint16_t protocol_;
 	uint32_t tag_;
 	bool have_tag_;
 	FlowDirection direction_; 

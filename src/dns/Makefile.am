@@ -6,7 +6,8 @@ TEST = test_dns
 
 check_PROGRAMS = test_dns
 
-test_dns_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
+test_dns_SOURCES = 	../Multiplexer.cc ../Protocol.cc \
+			../FlowForwarder.cc \
 			../ethernet/EthernetProtocol.cc \
 			../ip/IPProtocol.cc \
 			../ipset/IPSetManager.cc \

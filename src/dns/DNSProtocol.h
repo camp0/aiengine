@@ -43,6 +43,7 @@
 #include "../Cache.h"
 #include <unordered_map>
 #include "../names/DomainNameManager.h"
+#include "../flow/FlowManager.h"
 
 namespace aiengine {
 
@@ -77,12 +78,13 @@ public:
 		total_dns_type_others_(0),
 		domain_mng_(),ban_domain_mng_(),
 		domain_cache_(new Cache<DNSDomain>("Domain cache")),
-		domain_map_() {}
+		domain_map_(),
+		flow_mng_() {}
 
     	virtual ~DNSProtocol() {}
 
 	static constexpr char *default_name = "DNSProtocol";	
-	static const u_int16_t id = 0;
+	static const uint16_t id = 0;
 	static const int header_size = sizeof(struct dns_header);
 	int getHeaderSize() const { return header_size;}
 
@@ -98,9 +100,7 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-#ifdef PYTHON_BINDING
-        void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
-#endif
+	void releaseCache(); 
 
         void setHeader(unsigned char *raw_packet) {
                 
@@ -129,6 +129,8 @@ public:
 
 	int32_t getTotalAllowQueries() const { return total_allow_queries_;}
 	int32_t getTotalBanQueries() const { return total_ban_queries_;}
+
+	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 
 private:
 	void attach_dns_to_flow(Flow *flow, std::string &domain, uint16_t qtype);
@@ -162,7 +164,8 @@ private:
 
 	typedef std::pair<SharedPointer<DNSDomain>,int32_t> DomainHits;
 	typedef std::map<std::string,DomainHits> DomainMapType;
-	DomainMapType domain_map_;	
+	DomainMapType domain_map_;
+	FlowManagerPtrWeak flow_mng_;	
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
 #endif

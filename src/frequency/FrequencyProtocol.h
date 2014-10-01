@@ -52,7 +52,7 @@ public:
 
     	virtual ~FrequencyProtocol() {}
 	
-	static const u_int16_t id = 0;
+	static const uint16_t id = 0;
 	static const int header_size = 2;
 	int getHeaderSize() const { return header_size;}
 
@@ -68,9 +68,7 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-#ifdef PYTHON_BINDING
-        void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
-#endif
+	void releaseCache() {} // No need to free cache
 
         void setHeader(unsigned char *raw_packet) {
         

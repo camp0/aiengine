@@ -69,14 +69,14 @@ public:
 	void setPayloadLength(int length) { length_ = length;}
 	void setPrevHeaderSize(int size) { prev_header_size_ = size;}
 
-	void setDestinationPort(u_int16_t port) { dest_port_ = port;}
-	void setSourcePort(u_int16_t port) { source_port_ = port;}
+	void setDestinationPort(uint16_t port) { dest_port_ = port;}
+	void setSourcePort(uint16_t port) { source_port_ = port;}
 
 	void setPacketAnomaly(const PacketAnomaly &pa) { pa_ = pa; }
 	PacketAnomaly getPacketAnomaly() const { return pa_;} 
 
-	u_int16_t getDestinationPort() { return dest_port_;}
-	u_int16_t getSourcePort() { return source_port_;}
+	uint16_t getDestinationPort() { return dest_port_;}
+	uint16_t getSourcePort() { return source_port_;}
 
 	unsigned char *getPayload() { return packet_;}
 	int getLength()  { return length_;}
@@ -97,8 +97,8 @@ private:
 	int length_;
 	unsigned char *packet_;
 	int prev_header_size_;
-	u_int16_t source_port_;
-	u_int16_t dest_port_;
+	uint16_t source_port_;
+	uint16_t dest_port_;
 	PacketAnomaly pa_;
 	time_t packet_time_;
 	bool have_tag_;

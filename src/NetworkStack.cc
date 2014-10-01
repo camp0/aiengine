@@ -215,6 +215,23 @@ void NetworkStack::setTCPDatabaseAdaptor(boost::python::object &dbptr, int packe
         }
 }
 
+void NetworkStack::releaseCache(const std::string& name) {
+
+	ProtocolPtr proto = get_protocol(name);
+
+        if (proto) {
+        	proto->releaseCache();
+        }
+}
+
+void NetworkStack::releaseCaches() {
+
+	std::for_each (proto_vector_.begin(), proto_vector_.end(), [&] (ProtocolPair const &pp) {
+        	ProtocolPtr proto = pp.second;
+
+                proto->releaseCache();
+        });
+}
 
 
 #endif

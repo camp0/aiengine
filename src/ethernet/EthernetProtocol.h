@@ -54,7 +54,7 @@ public:
 
     	virtual ~EthernetProtocol() {}
 
-	static const u_int16_t id = 0x0000; //Ethernet dont need a id
+	static const uint16_t id = 0x0000; //Ethernet dont need a id
 	static const int header_size = 14;
 	int getHeaderSize() const { return header_size;}
 
@@ -70,9 +70,8 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};
 
-#ifdef PYTHON_BINDING
-	void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
-#endif
+	void releaseCache() {} // No need to free cache
+
 	void setHeader(unsigned char *raw_packet) { 
 
 		eth_header_ = reinterpret_cast <struct ether_header*> (raw_packet);
@@ -97,7 +96,7 @@ public:
 		}
 	}
 
-	u_int16_t getEthernetType() const { return ntohs(eth_header_->ether_type);}
+	uint16_t getEthernetType() const { return ntohs(eth_header_->ether_type);}
 	struct ether_header *getEthernetHeader() const { return eth_header_;}
 
 private:

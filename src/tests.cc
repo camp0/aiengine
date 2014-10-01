@@ -820,6 +820,33 @@ BOOST_FIXTURE_TEST_CASE(test_case_19,StackLanTest) // Tests timeouts with two di
         BOOST_CHECK(flow_table_tcp->getTotalTimeoutFlows() == 0);
 }
 
+BOOST_FIXTURE_TEST_CASE(test_case_20,StackLanTest) // Tests for release the caches
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+	ssl->createSSLHosts(4);
+
+        //flow_table_udp->setTimeout(60*60*24*365);
+        //flow_table_tcp->setTimeout(60*60*24*365);
+
+        pd->open("../pcapfiles/amazon_4ssl_flows.pcap");
+        pd->run();
+        pd->close();
+
+        BOOST_CHECK(flow_table_tcp->getTotalProcessFlows() == 4);
+        BOOST_CHECK(flow_table_tcp->getTotalFlows() == 4); 
+        BOOST_CHECK(flow_table_tcp->getTotalTimeoutFlows() == 0);
+
+	releaseCaches();
+
+	for (auto &f: flow_table_tcp->getFlowTable()) {
+		BOOST_CHECK(f->ssl_host.lock() == nullptr);
+	}
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

@@ -33,7 +33,6 @@
 #include "log4cxx/logger.h"
 #endif
 #include "../Protocol.h"
-//#include <net/ethernet.h>
 #include <netinet/ip.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -46,6 +45,7 @@
 #include <unordered_map>
 #include "../names/DomainNameManager.h"
 #include "../regex/Regex.h"
+#include "../flow/FlowManager.h"
 
 namespace aiengine {
 
@@ -62,12 +62,13 @@ public:
 		host_cache_(new Cache<HTTPHost>("Host cache")),
 		ua_cache_(new Cache<HTTPUserAgent>("UserAgent cache")),
 		ua_map_(),host_map_(),uri_map_(),
-		host_mng_(),ban_host_mng_() {}	
+		host_mng_(),ban_host_mng_(),
+		flow_mng_() {}	
 
     	virtual ~HTTPProtocol() {}
 
 	static constexpr char *default_name = "HTTPProtocol";
-	static const u_int16_t id = 0;
+	static const uint16_t id = 0;
 	static const int header_size = 0;
 	int getHeaderSize() const { return header_size;}
 
@@ -83,15 +84,12 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-#ifdef PYTHON_BINDING
-        void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
-#endif
+	void releaseCache(); // Three caches will be clear 
 
         void setHeader(unsigned char *raw_packet) {
         
                 http_header_ = reinterpret_cast <unsigned char*> (raw_packet);
         }
-
 
         // Condition for say that a payload is HTTP 
         bool httpChecker(Packet& packet) {
@@ -121,17 +119,19 @@ public:
 	void setDomainNameManager(DomainNameManagerPtrWeak dnm) { host_mng_ = dnm;}
 	void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) { ban_host_mng_ = dnm;}
 
+	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
+
 	int32_t getTotalAllowHosts() const { return total_allow_hosts_;}
 	int32_t getTotalBanHosts() const { return total_ban_hosts_;}
 
 private:
 
-	void attachUriToFlow(Flow *flow, std::string &host);
-	void attachHostToFlow(Flow *flow, std::string &host);
-	void attachUserAgentToFlow(Flow *flow, std::string &ua);
-	void extractUriValue(Flow *flow, const char *header);
-	void extractHostValue(Flow *flow, const char *header);
-	void extractUserAgentValue(Flow *flow, const char *header);
+	void attach_uri_to_flow(Flow *flow, std::string &host);
+	void attach_host_to_flow(Flow *flow, std::string &host);
+	void attach_useragent_to_flow(Flow *flow, std::string &ua);
+	void extract_uri_value(Flow *flow, const char *header);
+	void extract_host_value(Flow *flow, const char *header);
+	void extract_useragent_value(Flow *flow, const char *header);
 
 	int stats_level_;
 	SharedPointer<Regex> http_regex_,http_host_,http_ua_;
@@ -159,6 +159,7 @@ private:
 	DomainNameManagerPtrWeak host_mng_;
 	DomainNameManagerPtrWeak ban_host_mng_;
 
+	FlowManagerPtrWeak flow_mng_;
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
 #endif

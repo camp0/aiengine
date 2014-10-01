@@ -45,7 +45,7 @@ public:
 
     	virtual ~IPv6Protocol() {}
 
-	static const u_int16_t id = ETHERTYPE_IPV6;
+	static const uint16_t id = ETHERTYPE_IPV6;
 	static const int header_size = 40;
 	int getHeaderSize() const { return header_size;}
 
@@ -62,9 +62,7 @@ public:
 
 	void setStatisticsLevel(int level) { stats_level_ = level; }
 
-#ifdef PYTHON_BINDING
-        void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
-#endif
+        void releaseCache() {} // No need to free cache
 
         void setHeader(unsigned char *raw_packet) {
         
@@ -87,8 +85,8 @@ public:
         }
 
 	bool isIPver6() const { return (ip6_header_->ip6_vfc >> 4) == 6 ;}
-	u_int8_t getProtocol() const { return ip6_header_->ip6_nxt;}
-    	u_int16_t getPayloadLength() const { return ntohs(ip6_header_->ip6_plen); }
+	uint8_t getProtocol() const { return ip6_header_->ip6_nxt;}
+    	uint16_t getPayloadLength() const { return ntohs(ip6_header_->ip6_plen); }
     	char* getSrcAddrDotNotation() const ; 
     	char* getDstAddrDotNotation() const ; 
 	struct in6_addr *getSourceAddress() const { return (struct in6_addr*)&(ip6_header_->ip6_src);}

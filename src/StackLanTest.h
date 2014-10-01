@@ -267,7 +267,10 @@ struct StackLanTest
 		tcp->setFlowManager(flow_table_tcp);
 		tcp6->setFlowCache(flow_cache_tcp);
 		tcp6->setFlowManager(flow_table_tcp);
-		
+
+		http->setFlowManager(flow_table_tcp);	
+		ssl->setFlowManager(flow_table_tcp);	
+	
 		tcp->createTCPInfo(1024);
 		tcp6->createTCPInfo(1024);
 		
@@ -284,6 +287,14 @@ struct StackLanTest
 		ff_tcp6->addUpFlowForwarder(ff_tcp_generic6);
 
         }
+
+
+	void releaseCaches() {
+
+		http->releaseCache();
+		ssl->releaseCache();
+
+	}
 
 	void statistics() {
 	

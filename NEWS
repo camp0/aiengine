@@ -81,3 +81,7 @@ Features of 0.9
 
 Features/Changes of 1.0
 - Improvements on the DNSProtocol.
+- Filtering flows by condition (TODO)
+- Port to Mac/Windows (TODO)
+- flush/clear protocol caches method(TODO)
+.

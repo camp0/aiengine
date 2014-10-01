@@ -39,7 +39,7 @@ public:
     	explicit DNSDomain() { reset(); }
     	virtual ~DNSDomain() {}
 
-	void reset() { domain_name_ = ""; qtype_ = 0;}
+	void reset() { domain_name_ = ""; qtype_ = 0; }
 	std::string &getName() { return domain_name_; }
 	void setName(const std::string& name) { domain_name_ = name;}
 

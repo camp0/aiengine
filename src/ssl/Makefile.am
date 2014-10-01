@@ -6,7 +6,8 @@ TEST = test_ssl
 
 check_PROGRAMS = test_ssl
 
-test_ssl_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
+test_ssl_SOURCES = 	../Multiplexer.cc ../Protocol.cc \
+			../FlowForwarder.cc \
 			../ethernet/EthernetProtocol.cc \
 			../ip/IPProtocol.cc \
 			../ipset/IPSetManager.cc \

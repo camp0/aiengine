@@ -53,7 +53,7 @@ public:
     	virtual ~UDPProtocol() {}
 
 	static constexpr char *default_name = "UDPProtocol";
-	static const u_int16_t id = IPPROTO_UDP;
+	static const uint16_t id = IPPROTO_UDP;
 	static const int header_size = 8;
 	int getHeaderSize() const { return header_size;}
 
@@ -62,18 +62,14 @@ public:
 	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
 
-        void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
-        MultiplexerPtrWeak getMultiplexer() { return mux_;}
-
-	void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
-	FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
-
 	void processFlow(Flow *flow) {} // This protocol generates flows but not for destination.
 	void processPacket(Packet& packet);
 
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
+
+        void releaseCache() {} // No need to free cache
 
         void setHeader(unsigned char *raw_packet) {
         
@@ -96,14 +92,14 @@ public:
 	}
 
 #if defined(__FREEBSD__) || defined(__OPENBSD__)
-	u_int16_t getSrcPort() const { return ntohs(udp_header_->uh_sport); }
-    	u_int16_t getDstPort() const { return ntohs(udp_header_->uh_dport); }
-    	u_int16_t getLength() const { return ntohs(udp_header_->uh_ulen); }
+	uint16_t getSrcPort() const { return ntohs(udp_header_->uh_sport); }
+    	uint16_t getDstPort() const { return ntohs(udp_header_->uh_dport); }
+    	uint16_t getLength() const { return ntohs(udp_header_->uh_ulen); }
     	unsigned int getPayloadLength() const { return ntohs(udp_header_->uh_ulen) - sizeof(struct udphdr); }
 #else
-	u_int16_t getSrcPort() const { return ntohs(udp_header_->source); }
-    	u_int16_t getDstPort() const { return ntohs(udp_header_->dest); }
-    	u_int16_t getLength() const { return ntohs(udp_header_->len); }
+	uint16_t getSrcPort() const { return ntohs(udp_header_->source); }
+    	uint16_t getDstPort() const { return ntohs(udp_header_->dest); }
+    	uint16_t getLength() const { return ntohs(udp_header_->len); }
     	unsigned int getPayloadLength() const { return ntohs(udp_header_->len) - sizeof(udphdr); }
 #endif
     	unsigned int getHeaderLength() const { return sizeof(struct udphdr); }
@@ -119,10 +115,8 @@ private:
 	SharedPointer<Flow> getFlow(const Packet& packet); 
 
 	int stats_level_;	
-	MultiplexerPtrWeak mux_;
 	FlowManagerPtr flow_table_;
 	FlowCachePtr flow_cache_;
-	FlowForwarderPtrWeak flow_forwarder_;
 	struct udphdr *udp_header_;
 	Flow *current_flow_;
 	int64_t total_bytes_;

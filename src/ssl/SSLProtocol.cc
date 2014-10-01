@@ -30,7 +30,56 @@ namespace aiengine {
 log4cxx::LoggerPtr SSLProtocol::logger(log4cxx::Logger::getLogger("aiengine.ssl"));
 #endif
 
-void SSLProtocol::attachHostToFlow(Flow *flow, std::string &servername) {
+void SSLProtocol::releaseCache() {
+
+        FlowManagerPtr fm = flow_mng_.lock();
+
+        if (fm) {
+                auto ft = fm->getFlowTable();
+
+                std::ostringstream msg;
+                msg << "Releasing " << getName() << " cache";
+
+                infoMessage(msg.str());
+
+		int64_t total_bytes_released = 0;
+		int64_t total_bytes_released_by_flows = 0;
+                int32_t release_flows = 0;
+                int32_t release_hosts = host_map_.size();
+
+                // Compute the size of the strings used as keys on the map
+                std::for_each (host_map_.begin(), host_map_.end(), [&total_bytes_released] (std::pair<std::string,HostHits> const &ht) {
+                        total_bytes_released += ht.first.size();
+                });
+
+                for (auto it = ft.begin(); it != ft.end(); ++ it) {
+                        SharedPointer<Flow> flow = (*it); 
+                        SharedPointer<SSLHost> host = flow->ssl_host.lock();
+
+                        if (host) { // The flow have a host attatched
+                                flow->ssl_host.reset();
+				total_bytes_released_by_flows += host->getName().size();
+                                host_cache_->release(host);
+				++release_flows;
+                        }
+                } 
+                host_map_.clear();
+
+                double cache_compression_rate = 0;
+
+                if (total_bytes_released > 0 ) {
+                        cache_compression_rate = 100 - ((total_bytes_released*100)/total_bytes_released_by_flows);
+                }
+        
+        	msg.str("");
+                msg << "\tRelease " << release_hosts << " hosts, " << release_flows << " flows";
+		msg << ", " << total_bytes_released << " bytes, compression rate " << cache_compression_rate << "%";
+                infoMessage(msg.str());
+        }
+}
+
+
+void SSLProtocol::attach_host_to_flow(Flow *flow, std::string &servername) {
 
 	SharedPointer<SSLHost> host_ptr = flow->ssl_host.lock();
 
@@ -41,6 +90,7 @@ void SSLProtocol::attachHostToFlow(Flow *flow, std::string &servername) {
 			if (host_ptr) {
 				host_ptr->setName(servername);
 				flow->ssl_host = host_ptr;
+
 				host_map_.insert(std::make_pair(servername,std::make_pair(host_ptr,1)));
 			}
 		} else {
@@ -52,7 +102,7 @@ void SSLProtocol::attachHostToFlow(Flow *flow, std::string &servername) {
 }
 
 
-void SSLProtocol::handleClientHello(Flow *flow,int offset, u_char *data) {
+void SSLProtocol::handle_client_hello(Flow *flow,int offset, u_char *data) {
 
 	int payload_length = flow->packet->getLength();
 	ssl_hello *hello = reinterpret_cast<ssl_hello*>(data); 
@@ -109,7 +159,7 @@ void SSLProtocol::handleClientHello(Flow *flow,int offset, u_char *data) {
 							}
 							++total_allow_hosts_;
 
-							attachHostToFlow(flow,servername);
+							attach_host_to_flow(flow,servername);
 						}	
 					} // Server name 
 				}
@@ -118,13 +168,13 @@ void SSLProtocol::handleClientHello(Flow *flow,int offset, u_char *data) {
 	} // end version 
 }
 
-void SSLProtocol::handleServerHello(Flow *flow,int offset,unsigned char *data) {
+void SSLProtocol::handle_server_hello(Flow *flow,int offset,unsigned char *data) {
 
 	ssl_hello *hello __attribute__((unused)) = reinterpret_cast<ssl_hello*>(data); 
 	++ total_server_hellos_;
 }
 
-void SSLProtocol::handleCertificate(Flow *flow,int offset, unsigned char *data) {
+void SSLProtocol::handle_certificate(Flow *flow,int offset, unsigned char *data) {
 
 	++ total_certificates_;
 }
@@ -157,13 +207,13 @@ void SSLProtocol::processFlow(Flow *flow) {
 					bool have_data = false;
 
 					if (type == SSL3_MT_CLIENT_HELLO)  {
-						handleClientHello(flow,offset,ssl_data);
+						handle_client_hello(flow,offset,ssl_data);
 						have_data = true;
 					} else if (type == SSL3_MT_SERVER_HELLO)  {
-						handleServerHello(flow,offset,ssl_data);
+						handle_server_hello(flow,offset,ssl_data);
 						have_data = true;
 					} else if (type == SSL3_MT_CERTIFICATE) {
-						handleCertificate(flow,offset,ssl_data);
+						handle_certificate(flow,offset,ssl_data);
 						have_data = true;
 					}
 

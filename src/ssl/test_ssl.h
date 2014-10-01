@@ -118,6 +118,7 @@ struct StackSSLtest
 
                 tcp->setFlowCache(flow_cache);
                 tcp->setFlowManager(flow_mng);
+                ssl->setFlowManager(flow_mng);
 
                 // Configure the FlowForwarders
                 tcp->setFlowForwarder(ff_tcp);
@@ -125,6 +126,12 @@ struct StackSSLtest
                 ff_tcp->addUpFlowForwarder(ff_ssl);
 
         }
+
+	void show() {
+		ssl->setStatisticsLevel(5);
+		ssl->statistics();
+	}
+
         ~StackSSLtest()
         {
         }

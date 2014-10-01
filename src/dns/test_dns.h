@@ -113,9 +113,10 @@ struct StackDNStest
                 mux_udp->addDownMultiplexer(mux_ip);
 
                 // Connect the FlowManager and FlowCache
-                flow_cache->createFlows(1);
+                flow_cache->createFlows(2);
 
-		dns->createDNSDomains(1);
+		dns->setFlowManager(flow_mng);
+		dns->createDNSDomains(2);
 
                 udp->setFlowCache(flow_cache);
                 udp->setFlowManager(flow_mng);
@@ -132,6 +133,12 @@ struct StackDNStest
 		udp->statistics();
 		dns->setStatisticsLevel(5);
 		dns->statistics();
+	}
+
+	void showFlows() {
+
+		flow_mng->showFlows();
+
 	}
 
         ~StackDNStest()

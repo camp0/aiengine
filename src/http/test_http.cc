@@ -272,8 +272,7 @@ BOOST_AUTO_TEST_CASE (test8_http)
                         "\r\n";
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header1);
         int length1 = strlen(header1);
-
-        Packet packet1(pkt1,length1,0);
+        Packet packet1(pkt1,length1);
         SharedPointer<Flow> flow1 = SharedPointer<Flow>(new Flow());
 
         http->createHTTPHosts(2);
@@ -305,7 +304,7 @@ BOOST_AUTO_TEST_CASE (test8_http)
         unsigned char *pkt2 = reinterpret_cast <unsigned char*> (header2);
         int length2 = strlen(header2);
 
-        Packet packet2(pkt2,length2,0);
+        Packet packet2(pkt2,length2);
         SharedPointer<Flow> flow2 = SharedPointer<Flow>(new Flow());
 
         flow2->packet = const_cast<Packet*>(&packet2);
@@ -331,7 +330,7 @@ BOOST_AUTO_TEST_CASE (test9_http)
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header1);
         int length1 = strlen(header1);
 
-        Packet packet1(pkt1,length1,0);
+        Packet packet1(pkt1,length1);
         SharedPointer<Flow> flow1 = SharedPointer<Flow>(new Flow());
 
         http->createHTTPHosts(2);
@@ -363,7 +362,7 @@ BOOST_AUTO_TEST_CASE (test9_http)
         unsigned char *pkt2 = reinterpret_cast <unsigned char*> (header2);
         int length2 = strlen(header2);
 
-        Packet packet2(pkt2,length2,0);
+        Packet packet2(pkt2,length2);
         SharedPointer<Flow> flow2 = SharedPointer<Flow>(new Flow());
 
         flow2->packet = const_cast<Packet*>(&packet2);
@@ -405,7 +404,7 @@ BOOST_AUTO_TEST_CASE (test10_http)
 	WeakPointer<DomainNameManager> host_mng_weak = host_mng;
 	SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("example",".bu.ba.com"));
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
 	http->setDomainNameManager(host_mng_weak);
@@ -444,7 +443,7 @@ BOOST_AUTO_TEST_CASE (test11_http)
         WeakPointer<DomainNameManager> host_mng_weak = host_mng;
         SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("example",".bu.ba.com"));
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         http->setDomainNameManager(host_mng_weak);
@@ -483,7 +482,7 @@ BOOST_AUTO_TEST_CASE (test12_http)
         WeakPointer<DomainNameManager> host_mng_weak = host_mng;
         SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("example","onedomain.com"));
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         http->setDomainNameManager(host_mng_weak);
@@ -521,7 +520,7 @@ BOOST_AUTO_TEST_CASE (test13_http)
         WeakPointer<DomainNameManager> host_mng_weak = host_mng;
         SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("example","onedomain.com"));
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         http->setDomainNameBanManager(host_mng_weak);
@@ -555,10 +554,10 @@ BOOST_AUTO_TEST_CASE (test14_http)
 
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header1);
         int length1 = strlen(header1);
-        Packet packet1(pkt1,length1,0);
+        Packet packet1(pkt1,length1);
         unsigned char *pkt2 = reinterpret_cast <unsigned char*> (header2);
         int length2 = strlen(header2);
-        Packet packet2(pkt2,length2,0);
+        Packet packet2(pkt2,length2);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         http->createHTTPUris(1);
@@ -597,7 +596,7 @@ BOOST_AUTO_TEST_CASE (test1_http)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get);
         int length = raw_packet_ethernet_ipv6_tcp_http_get_length;
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
         mux_eth->setPacket(&packet);
         eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
@@ -639,7 +638,7 @@ BOOST_AUTO_TEST_CASE (test2_http)
 {
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get);
         int length1 = raw_packet_ethernet_ipv6_tcp_http_get_length;
-        Packet packet1(pkt1,length1,0);
+        Packet packet1(pkt1,length1);
 
         mux_eth->setPacket(&packet1);
         eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
@@ -648,7 +647,7 @@ BOOST_AUTO_TEST_CASE (test2_http)
 
         unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get2);
         int length2 = raw_packet_ethernet_ipv6_tcp_http_get2_length;
-        Packet packet2(pkt2,length2,0);
+        Packet packet2(pkt2,length2);
 
         mux_eth->setPacket(&packet2);
         eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
@@ -679,7 +678,7 @@ BOOST_AUTO_TEST_CASE (test3_http)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_ethernet_ipv6_dstopthdr_tcp_http_get);
         int length = raw_ethernet_ipv6_dstopthdr_tcp_http_get_length;
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
         mux_eth->setPacket(&packet);
         eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
@@ -699,6 +698,74 @@ BOOST_AUTO_TEST_CASE (test3_http)
         BOOST_CHECK(http->getTotalBytes() == 0);
 
 }
+
+// Release items to their corresponding cache test with a emppy cache
+BOOST_AUTO_TEST_CASE (test4_http)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get);
+        int length1 = raw_packet_ethernet_ipv6_tcp_http_get_length;
+        Packet packet1(pkt1,length1);
+
+        // Dont create any items on the cache
+        http->createHTTPHosts(0);
+        http->createHTTPUris(0);
+        http->createHTTPUserAgents(0);
+
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+	auto fm = tcp->getFlowManager();
+
+	for (auto &f: fm->getFlowTable()) {
+		BOOST_CHECK(f->http_host.lock() == nullptr);
+		BOOST_CHECK(f->http_uri.lock() == nullptr);
+		BOOST_CHECK(f->http_ua.lock() == nullptr);
+	}
+
+	http->releaseCache(); // Nothing to release
+
+        for (auto &f: fm->getFlowTable()) {
+                BOOST_CHECK(f->http_host.lock() == nullptr);
+                BOOST_CHECK(f->http_uri.lock() == nullptr);
+                BOOST_CHECK(f->http_ua.lock() == nullptr);
+        }
+}
+
+// Release items to their corresponding cache test 
+BOOST_AUTO_TEST_CASE (test5_http)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get);
+        int length1 = raw_packet_ethernet_ipv6_tcp_http_get_length;
+        Packet packet1(pkt1,length1);
+
+        // create any items on the cache
+        http->createHTTPHosts(1);
+        http->createHTTPUris(1);
+        http->createHTTPUserAgents(1);
+
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+        auto fm = tcp->getFlowManager();
+
+        for (auto &f: fm->getFlowTable()) {
+                BOOST_CHECK(f->http_host.lock() != nullptr);
+                BOOST_CHECK(f->http_uri.lock() != nullptr);
+                BOOST_CHECK(f->http_ua.lock() != nullptr);
+        }
+        http->releaseCache(); 
+
+        for (auto &f: fm->getFlowTable()) {
+                BOOST_CHECK(f->http_host.lock() == nullptr);
+                BOOST_CHECK(f->http_uri.lock() == nullptr);
+                BOOST_CHECK(f->http_ua.lock() == nullptr);
+        }
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

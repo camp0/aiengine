@@ -91,5 +91,24 @@ void Protocol::setIPSetManager(const IPSetManager& ipset_mng) { ipset_mng_ = boo
 
 #endif
 
+void Protocol::infoMessage(const std::string& msg) {
+
+#ifdef HAVE_LIBLOG4CXX
+        LOG4CXX_INFO(logger, msg);
+#else
+        std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
+        std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+#ifdef __clang__
+        std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
+#else
+        char mbstr[100];
+        std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
+        std::cout << "[" << mbstr << "] ";
+#endif
+        std::cout << msg << std::endl;
+#endif
+}
+
+
 } // namespace aiengine  
 

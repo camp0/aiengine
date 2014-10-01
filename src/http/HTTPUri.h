@@ -39,7 +39,7 @@ public:
     	explicit HTTPUri() { reset(); }
     	virtual ~HTTPUri() {}
 
-	void reset() { uri_name_ = "";}	
+	void reset() { uri_name_ = ""; }	
 	std::string &getName() { return uri_name_; }
 	void setName(const std::string& name) { uri_name_ = name;}
 

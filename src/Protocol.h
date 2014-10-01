@@ -38,6 +38,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <chrono>
 #include "Pointer.h"
 #include "FlowForwarder.h"
 #include "Multiplexer.h"
@@ -78,7 +79,13 @@ public:
 	void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_ = ff; }
 	FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_; } 
 
+	void infoMessage(const std::string& msg);
+
+	// Clear cache resources
+	virtual void releaseCache() = 0;
+
 #ifdef PYTHON_BINDING
+
 	void setDatabaseAdaptor(boost::python::object &dbptr); 
 	void setDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling);  
 
@@ -103,7 +110,7 @@ public:
         FlowForwarderPtrWeak flow_forwarder_;
 private:
 	std::string name_;
-	u_int16_t protocol_id_;
+	uint16_t protocol_id_;
 #ifdef PYTHON_BINDING
         boost::python::object dbptr_;
         bool is_set_db_;

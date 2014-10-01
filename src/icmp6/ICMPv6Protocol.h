@@ -51,7 +51,7 @@ public:
 
     	virtual ~ICMPv6Protocol() {}
 
-	static const u_int16_t id = IPPROTO_ICMP;
+	static const uint16_t id = IPPROTO_ICMP;
 	static const int header_size = 8;
 
 	int getHeaderSize() const { return header_size;}
@@ -67,9 +67,7 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-#ifdef PYTHON_BINDING
-        void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
-#endif
+	void releaseCache() {} // No need to free cache
 
         void setHeader(unsigned char *raw_packet) { 
                
@@ -92,10 +90,10 @@ public:
 		}
 	}
 
-        u_int8_t getType() const { return icmp_header_->icmp6_type; }
-        u_int8_t getCode() const { return icmp_header_->icmp6_code; }
-        u_int16_t getId() const { return ntohs(icmp_header_->icmp6_id); }
-        u_int16_t getSequence() const { return ntohs(icmp_header_->icmp6_seq); }
+        uint8_t getType() const { return icmp_header_->icmp6_type; }
+        uint8_t getCode() const { return icmp_header_->icmp6_code; }
+        uint16_t getId() const { return ntohs(icmp_header_->icmp6_id); }
+        uint16_t getSequence() const { return ntohs(icmp_header_->icmp6_seq); }
 
 private:
 	int stats_level_;

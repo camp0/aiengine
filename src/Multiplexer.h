@@ -86,10 +86,10 @@ public:
 
 	int getNumberUpMultiplexers() const { return muxUpMap_.size(); }
 
-	void setProtocolIdentifier(u_int16_t protocol_id) { protocol_id_ = protocol_id; } 
-	u_int16_t getProtocolIdentifier() const { return protocol_id_; }
-	u_int16_t getNextProtocolIdentifier() const { return next_protocol_id_; }
-	void setNextProtocolIdentifier(u_int16_t protocol_id) { next_protocol_id_ = protocol_id;}
+	void setProtocolIdentifier(uint16_t protocol_id) { protocol_id_ = protocol_id; } 
+	uint16_t getProtocolIdentifier() const { return protocol_id_; }
+	uint16_t getNextProtocolIdentifier() const { return next_protocol_id_; }
+	void setNextProtocolIdentifier(uint16_t protocol_id) { next_protocol_id_ = protocol_id;}
 	void setProtocol(ProtocolPtr proto) { proto_ = proto; }
 	ProtocolPtr getProtocol() { return proto_;}
 
@@ -112,7 +112,7 @@ public:
 
 	IPAddress address;
 	// This is realy uggly puagggggg
-	u_int16_t total_length;
+	uint16_t total_length;
 private:
 	ProtocolPtr proto_;
 	bool default_check(Packet&) const { return true;};
@@ -124,8 +124,8 @@ private:
 	MultiplexerPtrWeak muxDown_;
 	int header_size_;
 	int offset_;
-	u_int16_t protocol_id_; // the protocol analiyzer owned by the multiplexer
-	u_int16_t next_protocol_id_; // the next protocol to check by the multiplexer
+	uint16_t protocol_id_; // the protocol analiyzer owned by the multiplexer
+	uint16_t next_protocol_id_; // the next protocol to check by the multiplexer
     	typedef std::map<int,MultiplexerPtrWeak> MuxMap;
 	MuxMap muxUpMap_;
 	std::function <bool (Packet&)> check_func_;	

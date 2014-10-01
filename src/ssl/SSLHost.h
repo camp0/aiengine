@@ -39,7 +39,7 @@ public:
     	explicit SSLHost() { reset(); }
     	virtual ~SSLHost() {}
 
-	void reset() { host_name_ = "";}	
+	void reset() { host_name_ = ""; }	
 	std::string &getName() { return host_name_; }
 	void setName(const std::string& name) { host_name_ = name;}
 
@@ -50,7 +50,6 @@ public:
         	return out;
 	}
 #endif
-
 private:
 	std::string host_name_;
 };

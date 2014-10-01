@@ -30,6 +30,55 @@ namespace aiengine {
 log4cxx::LoggerPtr DNSProtocol::logger(log4cxx::Logger::getLogger("aiengine.dns"));
 #endif
 
+void DNSProtocol::releaseCache() {
+
+	FlowManagerPtr fm = flow_mng_.lock();
+
+	if (fm) {
+		auto ft = fm->getFlowTable();
+
+		std::ostringstream msg;
+        	msg << "Releasing " << getName() << " cache";
+
+		infoMessage(msg.str());
+
+		int64_t total_bytes_released = 0;
+		int64_t total_bytes_released_by_flows = 0;
+		int32_t release_flows = 0;
+		int32_t release_doms = domain_map_.size();
+
+		// Compute the size of the strings used as keys on the map
+		std::for_each (domain_map_.begin(), domain_map_.end(), [&total_bytes_released] (std::pair<std::string,DomainHits> const &dt) {
+			total_bytes_released += dt.first.size();
+		});
+
+		for (auto it = ft.begin(); it != ft.end(); ++ it) {
+			SharedPointer<Flow> flow = (*it);
+			SharedPointer<DNSDomain> domain = flow->dns_domain.lock();
+
+			if (domain) { // The flow have a domain attatched
+				flow->dns_domain.reset();
+				total_bytes_released_by_flows += domain->getName().size();
+				domain_cache_->release(domain);
+				++release_flows;
+			}
+		} 
+		domain_map_.clear();
+
+		double cache_compression_rate = 0;
+
+		if (total_bytes_released > 0 ) {
+			cache_compression_rate = 100 - ((total_bytes_released*100)/total_bytes_released_by_flows);	
+		}
+
+		msg.str("");
+		msg << "Release " << release_doms << " domains, " << release_flows << " flows";
+		msg << ", " << total_bytes_released + total_bytes_released_by_flows << " bytes";
+		msg << ", compression rate " << cache_compression_rate << "%";	
+		infoMessage(msg.str());
+	}
+}
+
 void DNSProtocol::attach_dns_to_flow(Flow *flow, std::string &domain, uint16_t qtype) {
 
 	SharedPointer<DNSDomain> dom_ptr = flow->dns_domain.lock();
@@ -41,7 +90,7 @@ void DNSProtocol::attach_dns_to_flow(Flow *flow, std::string &domain, uint16_t q
                         if (dom_ptr) {
                         	dom_ptr->setName(domain);
 				dom_ptr->setQueryType(qtype);
-
+				
                                 flow->dns_domain = dom_ptr;
                                 domain_map_.insert(std::make_pair(domain,std::make_pair(dom_ptr,1)));
                         }

@@ -25,7 +25,7 @@
 
 namespace aiengine {
 
-void Flow::setFiveTuple(u_int32_t src_a,u_int16_t src_p,u_int16_t proto,u_int32_t dst_a,u_int16_t dst_p) {
+void Flow::setFiveTuple(uint32_t src_a,uint16_t src_p,uint16_t proto,uint32_t dst_a,uint16_t dst_p) {
 	
 	address_.setSourceAddress(src_a);
 	address_.setDestinationAddress(dst_a);
@@ -34,7 +34,7 @@ void Flow::setFiveTuple(u_int32_t src_a,u_int16_t src_p,u_int16_t proto,u_int32_
 	protocol_ = proto;
 }
 
-void Flow::setFiveTuple6(struct in6_addr *src_a,u_int16_t src_p,u_int16_t proto,struct in6_addr *dst_a,u_int16_t dst_p) {
+void Flow::setFiveTuple6(struct in6_addr *src_a,uint16_t src_p,uint16_t proto,struct in6_addr *dst_a,uint16_t dst_p) {
 
         address_.setSourceAddress6(src_a);
         address_.setDestinationAddress6(dst_a);

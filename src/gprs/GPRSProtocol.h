@@ -106,7 +106,7 @@ public:
 
     	virtual ~GPRSProtocol() {}
 
-	static const u_int16_t id = 0;
+	static const uint16_t id = 0;
 	static const int header_size = 8; // GTP version 1
 	int getHeaderSize() const { return header_size;}
 
@@ -128,9 +128,7 @@ public:
         void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
         FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
 
-#ifdef PYTHON_BINDING
-        void setDatabaseAdaptor(boost::python::object &dbptr) {} ;
-#endif
+	void releaseCache() {} // No need to free cache
 
         void setHeader(unsigned char *raw_packet) {
        

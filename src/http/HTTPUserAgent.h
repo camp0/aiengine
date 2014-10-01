@@ -39,7 +39,7 @@ public:
     	explicit HTTPUserAgent():ua_name_("") {}
     	virtual ~HTTPUserAgent() {}
 
-        void reset() { ua_name_ = "";}
+        void reset() { ua_name_ = ""; }
         void setName(const std::string& name) { ua_name_ = name;}
 	std::string &getName() { return ua_name_; }
 

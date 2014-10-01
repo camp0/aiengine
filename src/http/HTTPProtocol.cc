@@ -30,7 +30,82 @@ namespace aiengine {
 log4cxx::LoggerPtr HTTPProtocol::logger(log4cxx::Logger::getLogger("aiengine.http"));
 #endif
 
-void HTTPProtocol::extractHostValue(Flow *flow, const char *header) {
+void HTTPProtocol::releaseCache() {
+
+        FlowManagerPtr fm = flow_mng_.lock();
+
+        if (fm) {
+                auto ft = fm->getFlowTable();
+
+                std::ostringstream msg;
+                msg << "Releasing " << getName() << " cache";
+
+                infoMessage(msg.str());
+
+		int32_t total_bytes_released = 0;
+		int32_t total_bytes_released_by_flows = 0;
+                int32_t release_flows = 0;
+                int32_t release_hosts = host_map_.size();
+                int32_t release_uris = uri_map_.size();
+                int32_t release_uas = ua_map_.size();
+
+                // Compute the size of the strings used as keys on the map
+                std::for_each (host_map_.begin(), host_map_.end(), [&total_bytes_released] (std::pair<std::string,HostHits> const &ht) {
+                        total_bytes_released += ht.first.size();
+                });
+                std::for_each (ua_map_.begin(), ua_map_.end(), [&total_bytes_released] (std::pair<std::string,UAHits> const &ht) {
+                        total_bytes_released += ht.first.size();
+                });
+                std::for_each (uri_map_.begin(), uri_map_.end(), [&total_bytes_released] (std::pair<std::string,UriHits> const &ht) {
+                        total_bytes_released += ht.first.size();
+                });
+
+                for (auto it = ft.begin(); it != ft.end(); ++ it) {
+                        SharedPointer<Flow> flow = (*it); 
+                        SharedPointer<HTTPHost> host = flow->http_host.lock();
+
+                        if (host) { // The flow have a host attatched and uri and uas
+				SharedPointer<HTTPUserAgent> ua = flow->http_ua.lock();
+				SharedPointer<HTTPUri> uri = flow->http_uri.lock();
+
+				if (ua) {
+					flow->http_ua.reset();
+					total_bytes_released_by_flows += ua->getName().size();
+					ua_cache_->release(ua);
+				}
+ 
+				if (uri) {
+					flow->http_uri.reset(); 
+					total_bytes_released_by_flows += uri->getName().size();
+					uri_cache_->release(uri);
+				}
+	
+                                flow->http_host.reset();
+				total_bytes_released_by_flows += host->getName().size();
+                                host_cache_->release(host);
+                                ++release_flows;
+                        }
+                } 
+                host_map_.clear();
+		uri_map_.clear();
+		ua_map_.clear();
+
+                double cache_compression_rate = 0;
+
+                if (total_bytes_released > 0 ) {
+                        cache_compression_rate = 100 - ((total_bytes_released*100)/total_bytes_released_by_flows);
+                }
+
+                msg.str("");
+                msg << "\tRelease " << release_hosts << " hosts, " << release_uas;
+		msg << " useragents, " << release_uris << " uris, " << release_flows << " flows";
+		msg << ", " << total_bytes_released << " bytes, compression rate " << cache_compression_rate << "%";
+                infoMessage(msg.str());
+        }
+}
+
+
+void HTTPProtocol::extract_host_value(Flow *flow, const char *header) {
 
 	if (http_host_->matchAndExtract(header)) {
 
@@ -50,12 +125,12 @@ void HTTPProtocol::extractHostValue(Flow *flow, const char *header) {
 		}
 		++total_allow_hosts_;
 
-		attachHostToFlow(flow,host);
+		attach_host_to_flow(flow,host);
 	}
 }
 
 
-void HTTPProtocol::attachHostToFlow(Flow *flow, std::string &host) {
+void HTTPProtocol::attach_host_to_flow(Flow *flow, std::string &host) {
 
 	SharedPointer<HTTPHost> host_ptr = flow->http_host.lock();
 
@@ -77,18 +152,18 @@ void HTTPProtocol::attachHostToFlow(Flow *flow, std::string &host) {
 }
 
 
-void HTTPProtocol::extractUserAgentValue(Flow *flow, const char *header) {
+void HTTPProtocol::extract_useragent_value(Flow *flow, const char *header) {
 
 	if (http_ua_->matchAndExtract(header)) {
 
 		std::string ua_raw(http_ua_->getExtract());
 		std::string ua(ua_raw,12,ua_raw.length()-14); // remove also the \r\n
 
-		attachUserAgentToFlow(flow,ua);
+		attach_useragent_to_flow(flow,ua);
 	}
 }
 
-void HTTPProtocol::attachUserAgentToFlow(Flow *flow, std::string &ua) {
+void HTTPProtocol::attach_useragent_to_flow(Flow *flow, std::string &ua) {
 
 	SharedPointer<HTTPUserAgent> ua_ptr = flow->http_ua.lock();
 
@@ -110,7 +185,7 @@ void HTTPProtocol::attachUserAgentToFlow(Flow *flow, std::string &ua) {
 }
 
 // The URI should be updated on every request
-void HTTPProtocol::attachUriToFlow(Flow *flow, std::string &uri) {
+void HTTPProtocol::attach_uri_to_flow(Flow *flow, std::string &uri) {
 
 	UriMapType::iterator it = uri_map_.find(uri);
         if (it == uri_map_.end()) {
@@ -129,7 +204,7 @@ void HTTPProtocol::attachUriToFlow(Flow *flow, std::string &uri) {
 }
 
 
-void HTTPProtocol::extractUriValue(Flow *flow, const char *header) {
+void HTTPProtocol::extract_uri_value(Flow *flow, const char *header) {
 
 	int offset = 0;
 	std::string http_header(header);
@@ -144,7 +219,7 @@ void HTTPProtocol::extractUriValue(Flow *flow, const char *header) {
 		if (end > 0) {
 			std::string uri(http_header,offset,(end-offset) -1);
 		
-			attachUriToFlow(flow,uri);	
+			attach_uri_to_flow(flow,uri);	
 		}
 	}
 }
@@ -159,11 +234,11 @@ void HTTPProtocol::processFlow(Flow *flow) {
 	if (flow->total_packets_l7 == 1) { 
 		const char *header = reinterpret_cast <const char*> (flow->packet->getPayload());
 
-		extractUriValue(flow,header);
+		extract_uri_value(flow,header);
 	
-		extractHostValue(flow,header);	
+		extract_host_value(flow,header);	
 
-		extractUserAgentValue(flow,header);
+		extract_useragent_value(flow,header);
 
                 DomainNameManagerPtr host_mng = host_mng_.lock();
                 if (host_mng) {
@@ -187,7 +262,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
 		if (flow->getFlowDirection() == FlowDirection::FORWARD) {
 			const char *header = reinterpret_cast <const char*> (flow->packet->getPayload());
 
-			extractUriValue(flow,header);
+			extract_uri_value(flow,header);
 		}
 	}
 }

@@ -97,7 +97,7 @@ private:
 	uint64_t total_forward_flows_;
 	uint64_t total_fail_flows_;
 	FlowForwarderPtrWeak muxDown_;
-	u_int16_t protocol_id_; // the protocol analiyzer owned by the multiplexer
+	uint16_t protocol_id_; // the protocol analiyzer owned by the multiplexer
     	std::vector<FlowForwarderPtrWeak> flowForwarderVector_;
 	std::function <void (Flow*)> flow_func_;
 	std::function <bool (Packet&)> check_func_;	

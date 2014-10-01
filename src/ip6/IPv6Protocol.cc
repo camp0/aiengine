@@ -56,7 +56,7 @@ char* IPv6Protocol::getDstAddrDotNotation() const {
 void IPv6Protocol::processPacket(Packet& packet) {
 
         MultiplexerPtr mux = mux_.lock();
-	u_int8_t next_proto = getProtocol();
+	uint8_t next_proto = getProtocol();
 	int extension_length = 0;
 	bool have_extension_hdr = false;
 	int iter = 0;

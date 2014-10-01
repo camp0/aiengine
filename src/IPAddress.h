@@ -87,10 +87,10 @@ public:
 		return h;
 	}
 
-	u_int32_t getSourceAddress() const { return ip4_src_;}
-	u_int32_t getDestinationAddress() const { return ip4_dst_;}
-	void setSourceAddress(u_int32_t address) { ip4_src_ = address;type_=4;}
-	void setDestinationAddress(u_int32_t address) { ip4_dst_ = address;type_=4;}
+	uint32_t getSourceAddress() const { return ip4_src_;}
+	uint32_t getDestinationAddress() const { return ip4_dst_;}
+	void setSourceAddress(uint32_t address) { ip4_src_ = address;type_=4;}
+	void setDestinationAddress(uint32_t address) { ip4_dst_ = address;type_=4;}
 	
 	void setSourceAddress6(struct in6_addr *address) {
  
@@ -142,8 +142,8 @@ public:
 private:
 	struct in6_addr ip6_src_;
 	struct in6_addr ip6_dst_;
-	u_int32_t ip4_src_;
-	u_int32_t ip4_dst_;
+	uint32_t ip4_src_;
+	uint32_t ip4_dst_;
 	short type_;
 	mutable char src_address_6_[INET6_ADDRSTRLEN];
 	mutable char dst_address_6_[INET6_ADDRSTRLEN];

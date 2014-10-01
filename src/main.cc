@@ -79,6 +79,7 @@ std::string option_freqs_group_value;
 std::string option_freqs_type_flows;
 std::string option_regex_type_flows;
 std::string option_regex;
+std::string option_selected_protocol;
 bool option_show_flows = false;
 bool option_enable_frequencies = false;
 bool option_enable_regex = false;
@@ -224,11 +225,16 @@ void learnerCallback() {
 	}
 }
 
-void showStackStatistics(std::basic_ostream<char>& out) {
+void showStackStatistics() {
 
 	std::cout << *pktdis;
-	if (option_statistics_level > 0) 
-		stack->statistics(out);
+       	if (option_statistics_level > 0) {
+        	if (option_selected_protocol.length() > 0) {
+                	stack->statistics(option_selected_protocol);
+               	} else {
+                	stack->statistics();
+               	}
+       	}
 }
 
 
@@ -237,7 +243,7 @@ void aiengineExit() {
 	if (stack) {
 		pktdis->stop();
 
-		showStackStatistics(std::cout);
+		showStackStatistics();
 
 		if (option_show_flows)
               		stack->showFlows();
@@ -319,6 +325,8 @@ int main(int argc, char* argv[]) {
 		("dumpflows,d",      	"Dump the flows to stdout.")
 		("statistics,s",	po::value<int>(&option_statistics_level)->default_value(0),
 					"Show statistics of the network stack (5 levels).")
+               	("protocol,P",          po::value<std::string>(&option_selected_protocol)->default_value(""),
+                                       	"Show statistics of a specific protocol of the network stack.")
 		("pstatistics,p",      	"Show statistics of the process.")
 		("help,h",     		"Show help.")
 		("version,v",   	"Show version string.")
