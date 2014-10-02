@@ -139,6 +139,7 @@ struct Stack3Gtest
 		flow_cache->createFlows(10);
 		udp_low->setFlowCache(flow_cache);
 		udp_low->setFlowManager(flow_mng);
+		gprs->setFlowManager(flow_mng);
 
 		// Configure the FlowForwarders
 		udp_low->setFlowForwarder(ff_udp_low);

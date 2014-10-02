@@ -26,6 +26,40 @@
 
 namespace aiengine {
 
+void GPRSProtocol::releaseCache() {
+
+        FlowManagerPtr fm = flow_mng_.lock();
+
+        if (fm) {
+                auto ft = fm->getFlowTable();
+
+                std::ostringstream msg;
+                msg << "Releasing " << getName() << " cache";
+
+                infoMessage(msg.str());
+
+                int64_t total_bytes_released_by_flows = 0;
+                int32_t release_flows = 0;
+
+                for (auto it = ft.begin(); it != ft.end(); ++ it) {
+                        SharedPointer<Flow> flow = (*it);
+                        SharedPointer<GPRSInfo> info = flow->gprs_info.lock();
+
+                        if (info) { // The flow have gprs info attatched
+                                flow->gprs_info.reset();
+                                total_bytes_released_by_flows += info->getIMSIString().size() + 16; // 16 bytes from the uint16_t
+                                gprs_info_cache_->release(info);
+                                ++release_flows;
+                        }
+                }
+
+                msg.str("");
+                msg << "Release " << release_flows << " flows";
+                msg << ", " << total_bytes_released_by_flows << " bytes";
+                infoMessage(msg.str());
+        }
+}
+
 void GPRSProtocol::process_create_pdp_context(Flow *flow) {
 
 	SharedPointer<GPRSInfo> gprs_info = flow->gprs_info.lock();
@@ -81,7 +115,7 @@ void GPRSProtocol::process_create_pdp_context(Flow *flow) {
 			if (token == 0x80) {
 				uint16_t length = ntohs((extensions[1] << 8) + extensions[0]);
 				if (length == 2) {
-					uint8_t type_org = extensions[2];
+					uint8_t type_org __attribute__((unused)) = extensions[2];
 					uint8_t type_num = extensions[3];
 					// type_num eq 0x21 is IPv4
 					// type_num eq 0x57 is IPv6

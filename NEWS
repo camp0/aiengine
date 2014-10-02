@@ -83,5 +83,5 @@ Features/Changes of 1.0
 - Improvements on the DNSProtocol.
 - Filtering flows by condition (TODO)
 - Port to Mac/Windows (TODO)
-- flush/clear protocol caches method(TODO)
+- Release/clean protocol caches method.
 .

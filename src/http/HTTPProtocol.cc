@@ -97,7 +97,7 @@ void HTTPProtocol::releaseCache() {
                 }
 
                 msg.str("");
-                msg << "\tRelease " << release_hosts << " hosts, " << release_uas;
+                msg << "Release " << release_hosts << " hosts, " << release_uas;
 		msg << " useragents, " << release_uris << " uris, " << release_flows << " flows";
 		msg << ", " << total_bytes_released << " bytes, compression rate " << cache_compression_rate << "%";
                 infoMessage(msg.str());

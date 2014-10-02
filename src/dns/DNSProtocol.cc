@@ -107,7 +107,6 @@ void DNSProtocol::processFlow(Flow *flow) {
 	int length = flow->packet->getLength();
 	total_bytes_ += length;
 	++total_packets_;
-	const unsigned char *payload = flow->packet->getPayload();
 
 	// Just get the standard queries
 	if (length > header_size) { // Minimum header size consider

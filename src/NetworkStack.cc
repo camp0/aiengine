@@ -215,6 +215,8 @@ void NetworkStack::setTCPDatabaseAdaptor(boost::python::object &dbptr, int packe
         }
 }
 
+#endif
+
 void NetworkStack::releaseCache(const std::string& name) {
 
 	ProtocolPtr proto = get_protocol(name);
@@ -233,7 +235,5 @@ void NetworkStack::releaseCaches() {
         });
 }
 
-
-#endif
 
 } // namespace aiengine

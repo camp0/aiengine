@@ -80,14 +80,17 @@ std::string option_freqs_type_flows;
 std::string option_regex_type_flows;
 std::string option_regex;
 std::string option_selected_protocol;
+std::string option_release_cache_protocol;
 bool option_show_flows = false;
 bool option_enable_frequencies = false;
 bool option_enable_regex = false;
 bool option_enable_learner = false;
 bool option_show_pstatistics = false;
+bool option_release_caches = false;
 int tcp_flows_cache;
 int udp_flows_cache;
 int option_statistics_level = 0;
+int option_flows_timeout = 180;
 
 void signalHandler( int signum ){
 
@@ -254,6 +257,14 @@ void aiengineExit() {
 				showLearnerResults();
 		}
 
+		if (option_release_caches) {
+			stack->releaseCaches();
+		} else { 
+			if (option_release_cache_protocol.length() > 0) {
+				stack->releaseCache(option_release_cache_protocol);
+			}
+		}
+
 		if (option_show_pstatistics)	
 			if (system_stats)	
 				system_stats->statistics();
@@ -325,8 +336,13 @@ int main(int argc, char* argv[]) {
 		("dumpflows,d",      	"Dump the flows to stdout.")
 		("statistics,s",	po::value<int>(&option_statistics_level)->default_value(0),
 					"Show statistics of the network stack (5 levels).")
+		("timeout,T",		po::value<int>(&option_flows_timeout)->default_value(180),
+					"Sets the flows timeout.")
                	("protocol,P",          po::value<std::string>(&option_selected_protocol)->default_value(""),
                                        	"Show statistics of a specific protocol of the network stack.")
+                ("release,e",  		"Release the caches.") 
+                ("release-cache,l",  	po::value<std::string>(&option_release_cache_protocol)->default_value(""),
+					"Release a specific cache.") 
 		("pstatistics,p",      	"Show statistics of the process.")
 		("help,h",     		"Show help.")
 		("version,v",   	"Show version string.")
@@ -361,6 +377,7 @@ int main(int argc, char* argv[]) {
 		if (var_map.count("dumpflows")) option_show_flows = true;
 		if (var_map.count("pstatistics")) option_show_pstatistics = true;
 		if (var_map.count("enable-learner")) option_enable_learner = true;
+		if (var_map.count("release")) option_release_caches = true;
 
         	po::notify(var_map);
     	
@@ -404,7 +421,7 @@ int main(int argc, char* argv[]) {
 	}
 	
 	stack->setStatisticsLevel(option_statistics_level);
-
+	stack->setFlowsTimeout(option_flows_timeout);
 	stack->setTotalTCPFlows(tcp_flows_cache);	
 	stack->setTotalUDPFlows(udp_flows_cache);	
 

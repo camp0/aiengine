@@ -7,7 +7,7 @@ aiengine \- AIEngine is a packet inspection engine with capabilities of learning
 aiengine --help
 .SH DESCRIPTION
 AIEngine helps network/security profesionals to identify traffic and develop signatures for use them on NIDS, Firewalls, Traffic classifiers and so on.
-AIEngine system is based on c++11
+AIEngine system is based on c++11 and Python
 .SH OPTIONS
 .PP
 Mandatory arguments to long options are mandatory for short options too.
@@ -74,13 +74,25 @@ The Learner engine needs a key for analyze the flows that have been process by t
 Optional arguments.
 .TP
 \fB\-n\fR, \fB\-\-stack\fR
-Selects the Network stack for the analysis. There is only two network stacks availables at the moment. The Stack Lans contains the configuration of a LAN network (ethernet,ip,tcp,udp), and the Stack mobile contains a 3G stack (ethernet,ip,udp,gprs,ip,udp,tcp). 
+Selects the Network stack for the analysis. There is four network stacks availables at the moment. The StackLan contains the configuration of a LAN network (ethernet,ip,tcp,udp),the StackMobile contains a 3G stack (ethernet,ip,udp,gprs,ip,udp,tcp), StackLanIPv6 contains the configuration of a LAN network with IPv6 support and StackVirtual that have the configuration of Virtual/Cloud enviroments with support for tunnels GRE/VxLan (ethernet,ip,udp,gre,vxlan,ip,udp,tcp). 
 .TP
 \fB\-d\fR, \fB\-\-dumpflows\fR
 Dumps the flows processes to the stdout.
 .TP
 \fB\-s\fR, \fB\-\-statistics\fR
 Shows details of statistics of every object plugged to the stack. There is 5 levels of statistics level.
+.TP
+\fB\-T\fR, \fB\-\-timeout\fR
+Sets the flows timeout. 180 secs is the default value for the timeout for every flow.
+.TP
+\fB\-P\fR, \fB\-\-protocol\fR
+Show statistics of a specific protocol of the network stack.
+.TP
+\fB\-e\fR, \fB\-\-release\fR
+Release the caches.
+.TP
+\fB\-l\fR, \fB\-\-release-cache\fR
+Release a specific cache, given a protocol as parameter.
 .TP
 \fB\-p\fR, \fB\-\-pstatistics\fR
 Shows process statistics, such as memory comsumption, context switching, and so on.
@@ -90,7 +102,6 @@ display this help and exit
 .TP
 \fB\-v\fR, \fB\-\-version\fR
 output version information and exit
-
 .SH EXAMPLES
 .SH BUGS
 No known bugs.

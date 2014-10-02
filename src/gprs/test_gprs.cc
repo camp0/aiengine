@@ -399,7 +399,7 @@ BOOST_AUTO_TEST_CASE (test7_gprs) // Process a pdp context creation
         BOOST_CHECK(info->getPdpTypeNumber() == PDP_END_USER_TYPE_IPV6); // IPv6
 }
 
-BOOST_AUTO_TEST_CASE (test8_gprs) // Process a pdp context creation with ipv6 and extension header
+BOOST_AUTO_TEST_CASE (test8_gprs) // Process a pdp context creation with ipv6 and extension header and release the flows 
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_gtpv1_pdp_create_4);
         int length = raw_packet_ethernet_ip_udp_gtpv1_pdp_create_4_length;
@@ -422,10 +422,14 @@ BOOST_AUTO_TEST_CASE (test8_gprs) // Process a pdp context creation with ipv6 an
         BOOST_CHECK(flow->gprs_info.lock() != nullptr);
         SharedPointer<GPRSInfo> info = flow->gprs_info.lock();
 
-//	std::cout <<  *info << std::endl;
         std::string imsi("262026201608297");
         BOOST_CHECK(imsi.compare(info->getIMSIString()) == 0);
         BOOST_CHECK(info->getPdpTypeNumber() == PDP_END_USER_TYPE_IPV6); // IPv6
+
+	gprs->releaseCache();
+
+        BOOST_CHECK(flow->gprs_info.lock() == nullptr);
+
 }
 
 

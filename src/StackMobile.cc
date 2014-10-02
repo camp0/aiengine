@@ -260,6 +260,12 @@ StackMobile::StackMobile() {
 	udp_high_->setFlowCache(flow_cache_udp_high_);
 	udp_high_->setFlowManager(flow_table_udp_high_);
 
+        // Connect to upper layers the FlowManager
+        http_->setFlowManager(flow_table_tcp_);
+        ssl_->setFlowManager(flow_table_tcp_);
+        dns_->setFlowManager(flow_table_udp_high_);
+        gprs_->setFlowManager(flow_table_udp_low_);
+
 	// The low FlowManager have a 24 hours timeout to keep the Context on memory
         flow_table_udp_low_->setTimeout(86400);
 

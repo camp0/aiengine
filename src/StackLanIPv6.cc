@@ -209,6 +209,11 @@ StackLanIPv6::StackLanIPv6() {
 			
 	udp_->setFlowCache(flow_cache_udp_);
 	udp_->setFlowManager(flow_table_udp_);
+
+        // Connect to upper layers the FlowManager
+        http_->setFlowManager(flow_table_tcp_);
+        ssl_->setFlowManager(flow_table_tcp_);
+        dns_->setFlowManager(flow_table_udp_);
 	
 	// Configure the FlowForwarders
 	tcp_->setFlowForwarder(ff_tcp_);	

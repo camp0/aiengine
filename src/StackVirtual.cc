@@ -297,6 +297,11 @@ StackVirtual::StackVirtual() {
 	udp_->setFlowCache(flow_cache_udp_);
 	udp_->setFlowManager(flow_table_udp_);
 
+        // Connect to upper layers the FlowManager
+        http_->setFlowManager(flow_table_tcp_vir_);
+        ssl_->setFlowManager(flow_table_tcp_vir_);
+        dns_->setFlowManager(flow_table_udp_vir_);
+
 	// Configure the FlowForwarders
 	udp_->setFlowForwarder(ff_udp_);
 	ff_udp_->addUpFlowForwarder(ff_vxlan_);	

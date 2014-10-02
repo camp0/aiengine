@@ -72,7 +72,7 @@ void SSLProtocol::releaseCache() {
                 }
         
         	msg.str("");
-                msg << "\tRelease " << release_hosts << " hosts, " << release_flows << " flows";
+                msg << "Release " << release_hosts << " hosts, " << release_flows << " flows";
 		msg << ", " << total_bytes_released << " bytes, compression rate " << cache_compression_rate << "%";
                 infoMessage(msg.str());
         }

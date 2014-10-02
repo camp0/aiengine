@@ -1394,6 +1394,50 @@ BOOST_AUTO_TEST_CASE (test_case_16)
         BOOST_CHECK(r_generic->getTotalEvaluates() == 74);
 }
 
+// Test the release cache funcionality
+BOOST_AUTO_TEST_CASE ( test_case_17 )
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        StackLanPtr stack = StackLanPtr(new StackLan());
+
+        stack->setTotalTCPFlows(2);
+        stack->setTotalUDPFlows(2);
+        pd->setStack(stack);
+
+        pd->open("../pcapfiles/accessgoogle.pcap");
+        pd->run();
+        pd->close();
+
+        FlowManagerPtr flows_tcp = stack->getTCPFlowManager().lock();
+
+        BOOST_CHECK(flows_tcp->getTotalFlows() == 1);
+        for (auto &flow: flows_tcp->getFlowTable()) {
+                BOOST_CHECK(flow->http_host.lock() != nullptr);
+                BOOST_CHECK(flow->http_ua.lock() != nullptr);
+                BOOST_CHECK(flow->http_uri.lock() != nullptr);
+        }
+        FlowManagerPtr flows_udp = stack->getUDPFlowManager().lock();
+
+        BOOST_CHECK(flows_udp->getTotalFlows() == 1);
+        for (auto &flow: flows_udp->getFlowTable()) {
+                BOOST_CHECK(flow->dns_domain.lock() != nullptr);
+        }
+
+	stack->releaseCaches();
+
+        BOOST_CHECK(flows_tcp->getTotalFlows() == 1);
+        for (auto &flow: flows_tcp->getFlowTable()) {
+                BOOST_CHECK(flow->http_host.lock() == nullptr);
+                BOOST_CHECK(flow->http_ua.lock() == nullptr);
+                BOOST_CHECK(flow->http_uri.lock() == nullptr);
+        }
+
+        BOOST_CHECK(flows_udp->getTotalFlows() == 1);
+        for (auto &flow: flows_udp->getFlowTable()) {
+                BOOST_CHECK(flow->dns_domain.lock() == nullptr);
+        }
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

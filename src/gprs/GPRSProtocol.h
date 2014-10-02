@@ -34,6 +34,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
+#include "../flow/FlowManager.h"
 
 namespace aiengine {
 
@@ -128,7 +129,7 @@ public:
         void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
         FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
 
-	void releaseCache() {} // No need to free cache
+	void releaseCache(); // Release the objets attached to the flows 
 
         void setHeader(unsigned char *raw_packet) {
        
@@ -159,6 +160,8 @@ public:
         void createGPRSInfo(int number) { gprs_info_cache_->create(number);}
         void destroyGPRSInfo(int number) { gprs_info_cache_->destroy(number);}
 
+	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
+
 private:
 
 	void process_create_pdp_context(Flow *flow);
@@ -174,6 +177,7 @@ private:
 	int32_t total_delete_pdp_ctx_requests_;
 	int32_t total_delete_pdp_ctx_responses_;
 	int32_t total_tpdus_;
+	FlowManagerPtrWeak flow_mng_;
 };
 
 typedef std::shared_ptr<GPRSProtocol> GPRSProtocolPtr;

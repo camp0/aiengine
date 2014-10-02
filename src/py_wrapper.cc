@@ -98,8 +98,9 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (NetworkStack::*setTCPDatabaseAdaptor2)(boost::python::object&, int) = 	&NetworkStack::setTCPDatabaseAdaptor;
 	void (NetworkStack::*setUDPDatabaseAdaptor1)(boost::python::object&) = 		&NetworkStack::setUDPDatabaseAdaptor;
 	void (NetworkStack::*setUDPDatabaseAdaptor2)(boost::python::object&, int) = 	&NetworkStack::setUDPDatabaseAdaptor;
-	//void (NetworkStack::*statisticsAll)() = 					&NetworkStack::statistics;
 	void (NetworkStack::*statisticsByProtocol)(const std::string& name) = 		&NetworkStack::statistics;
+	void (NetworkStack::*releaseCache)(const std::string& name) =			&NetworkStack::releaseCache;
+	void (NetworkStack::*releaseCaches)() =						&NetworkStack::releaseCaches;
 
         boost::python::class_<NetworkStack, boost::noncopyable>("NetworkStack",no_init)
                 .def("setUDPRegexManager",pure_virtual(setUDPRegexManager),
@@ -143,6 +144,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setUDPIPSetManager", pure_virtual(&NetworkStack::setUDPIPSetManager))
 		.def("setFlowsTimeout", pure_virtual(&NetworkStack::setFlowsTimeout),
 			"Sets the timeouts for all the flows of the Network Stack.")
+                .def("releaseCache",pure_virtual(releaseCache),
+			"Release the cache of a specific protocol given.")
+                .def("releaseCaches",pure_virtual(releaseCaches),
+			"Release all the caches of the stack.")
         ;
 
 	// Definitions for the StackLan class
@@ -160,6 +165,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (StackLan::*setUDPDatabaseAdaptorLan1)(boost::python::object&) = 		&StackLan::setUDPDatabaseAdaptor;
 	void (StackLan::*setUDPDatabaseAdaptorLan2)(boost::python::object&, int) = 	&StackLan::setUDPDatabaseAdaptor;
         void (StackLan::*statisticsByProtocolLan)(const std::string& name) =           	&StackLan::statistics;
+	void (StackLan::*releaseCacheLan)(const std::string& name) =			&StackLan::releaseCache;
+	void (StackLan::*releaseCachesLan)() =						&StackLan::releaseCaches;
 
 	boost::python::class_<StackLan, bases<NetworkStack> >("StackLan",
 		"Class that implements a network stack for lan enviroments")
@@ -190,6 +197,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setTCPIPSetManager", &StackLan::setTCPIPSetManager)
 		.def("setUDPIPSetManager", &StackLan::setUDPIPSetManager)
 		.def("setFlowsTimeout", &StackLan::setFlowsTimeout)
+		.def("releaseCache", releaseCacheLan)
+		.def("releaseCaches", releaseCachesLan)
 	;
 
 	// Definitions for the StackMobile class
@@ -207,6 +216,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackMobile::*setUDPDatabaseAdaptorMobile1)(boost::python::object&) =       	&StackMobile::setUDPDatabaseAdaptor;
         void (StackMobile::*setUDPDatabaseAdaptorMobile2)(boost::python::object&, int) =	&StackMobile::setUDPDatabaseAdaptor;
         void (StackMobile::*statisticsByProtocolMobile)(const std::string& name) =           	&StackMobile::statistics;
+	void (StackMobile::*releaseCacheMobile)(const std::string& name) =			&StackMobile::releaseCache;
+	void (StackMobile::*releaseCachesMobile)() =						&StackMobile::releaseCaches;
 
         boost::python::class_<StackMobile, bases<NetworkStack> >("StackMobile",
 		"Class that implements a network stack for mobile enviroments")
@@ -237,6 +248,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setTCPIPSetManager", &StackMobile::setTCPIPSetManager)
 		.def("setUDPIPSetManager", &StackMobile::setUDPIPSetManager)
 		.def("setFlowsTimeout", &StackMobile::setFlowsTimeout)
+		.def("releaseCache", releaseCacheMobile)
+		.def("releaseCaches", releaseCachesMobile)
         ;
 
 
@@ -255,6 +268,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackLanIPv6::*setUDPDatabaseAdaptorLanIPv61)(boost::python::object&) =     	&StackLanIPv6::setUDPDatabaseAdaptor;
         void (StackLanIPv6::*setUDPDatabaseAdaptorLanIPv62)(boost::python::object&, int) =	&StackLanIPv6::setUDPDatabaseAdaptor;
         void (StackLanIPv6::*statisticsByProtocolLanIPv6)(const std::string& name) =           	&StackLanIPv6::statistics;
+	void (StackLanIPv6::*releaseCacheLanIPv6)(const std::string& name) =			&StackLanIPv6::releaseCache;
+	void (StackLanIPv6::*releaseCachesLanIPv6)() =						&StackLanIPv6::releaseCaches;
 
         boost::python::class_<StackLanIPv6, bases<NetworkStack> >("StackLanIPv6",
 		"Class that implements a network stack for lan enviroments with IPv6")
@@ -285,23 +300,27 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setTCPIPSetManager", &StackLanIPv6::setTCPIPSetManager)
 		.def("setUDPIPSetManager", &StackLanIPv6::setUDPIPSetManager)
 		.def("setFlowsTimeout", &StackLanIPv6::setFlowsTimeout)
+		.def("releaseCache", releaseCacheLanIPv6)
+		.def("releaseCaches", releaseCachesLanIPv6)
         ;
 
         // Definitions for the StackVirtual class
-        void (StackVirtual::*showFlowsVirtual)() =                                             &StackVirtual::showFlows;
+        void (StackVirtual::*showFlowsVirtual)() =                                             	&StackVirtual::showFlows;
         void (StackVirtual::*setUDPRegexManagerVirtual)(RegexManager&) =                        &StackVirtual::setUDPRegexManager;
         void (StackVirtual::*setTCPRegexManagerVirtual)(RegexManager&) =                        &StackVirtual::setTCPRegexManager;
         void (StackVirtual::*setDNSDomainNameManagerVirt1)(DomainNameManager&) =              	&StackVirtual::setDNSDomainNameManager;
-        void (StackVirtual::*setDNSDomainNameManagerVirt2)(DomainNameManager&, bool) =         &StackVirtual::setDNSDomainNameManager;
-        void (StackVirtual::*setHTTPHostNameManagerVirt1)(DomainNameManager&) =               &StackVirtual::setHTTPHostNameManager;
-        void (StackVirtual::*setHTTPHostNameManagerVirt2)(DomainNameManager&, bool) =         &StackVirtual::setHTTPHostNameManager;
-        void (StackVirtual::*setSSLHostNameManagerVirt1)(DomainNameManager&) =                &StackVirtual::setSSLHostNameManager;
-        void (StackVirtual::*setSSLHostNameManagerVirt2)(DomainNameManager&, bool) =          &StackVirtual::setSSLHostNameManager;
-        void (StackVirtual::*setTCPDatabaseAdaptorVirt1)(boost::python::object&) =            &StackVirtual::setTCPDatabaseAdaptor;
-        void (StackVirtual::*setTCPDatabaseAdaptorVirt2)(boost::python::object&, int) =       &StackVirtual::setTCPDatabaseAdaptor;
-        void (StackVirtual::*setUDPDatabaseAdaptorVirt1)(boost::python::object&) =            &StackVirtual::setUDPDatabaseAdaptor;
-        void (StackVirtual::*setUDPDatabaseAdaptorVirt2)(boost::python::object&, int) =       &StackVirtual::setUDPDatabaseAdaptor;
-        void (StackVirtual::*statisticsByProtocolVirt)(const std::string& name) =             &StackVirtual::statistics;
+        void (StackVirtual::*setDNSDomainNameManagerVirt2)(DomainNameManager&, bool) =         	&StackVirtual::setDNSDomainNameManager;
+        void (StackVirtual::*setHTTPHostNameManagerVirt1)(DomainNameManager&) =               	&StackVirtual::setHTTPHostNameManager;
+        void (StackVirtual::*setHTTPHostNameManagerVirt2)(DomainNameManager&, bool) =         	&StackVirtual::setHTTPHostNameManager;
+        void (StackVirtual::*setSSLHostNameManagerVirt1)(DomainNameManager&) =                	&StackVirtual::setSSLHostNameManager;
+        void (StackVirtual::*setSSLHostNameManagerVirt2)(DomainNameManager&, bool) =          	&StackVirtual::setSSLHostNameManager;
+        void (StackVirtual::*setTCPDatabaseAdaptorVirt1)(boost::python::object&) =            	&StackVirtual::setTCPDatabaseAdaptor;
+        void (StackVirtual::*setTCPDatabaseAdaptorVirt2)(boost::python::object&, int) =       	&StackVirtual::setTCPDatabaseAdaptor;
+        void (StackVirtual::*setUDPDatabaseAdaptorVirt1)(boost::python::object&) =            	&StackVirtual::setUDPDatabaseAdaptor;
+        void (StackVirtual::*setUDPDatabaseAdaptorVirt2)(boost::python::object&, int) =       	&StackVirtual::setUDPDatabaseAdaptor;
+        void (StackVirtual::*statisticsByProtocolVirt)(const std::string& name) =             	&StackVirtual::statistics;
+	void (StackVirtual::*releaseCacheVirtual)(const std::string& name) =			&StackVirtual::releaseCache;
+	void (StackVirtual::*releaseCachesVirtual)() =						&StackVirtual::releaseCaches;
 
         boost::python::class_<StackVirtual, bases<NetworkStack> >("StackVirtual",
                 "Class that implements a network stack for cloud/virtual enviroments")
@@ -332,6 +351,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setTCPIPSetManager", &StackVirtual::setTCPIPSetManager)
                 .def("setUDPIPSetManager", &StackVirtual::setUDPIPSetManager)
                 .def("setFlowsTimeout", &StackVirtual::setFlowsTimeout)
+		.def("releaseCache", releaseCacheVirtual)
+		.def("releaseCaches", releaseCachesVirtual)
         ;
 	
 	boost::python::class_<Regex, SharedPointer<Regex>,boost::noncopyable>("Regex",init<const std::string&,const std::string&>())
