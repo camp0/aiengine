@@ -49,9 +49,8 @@ void RegexManager::evaluate(const std::string& data, bool *result) {
 //
 //        });
 	
-	for (auto it = signatures_.begin(); it != signatures_.end(); ++it) {
-		SharedPointer<Regex> sig = *it;
-	
+	for (auto &sig: signatures_) {
+
 		if (sig->evaluate(data)) {
 			++total_matched_signatures_;
 			current_signature_ = sig;
@@ -65,18 +64,18 @@ void RegexManager::evaluate(const std::string& data, bool *result) {
 std::ostream& operator<< (std::ostream& out, const RegexManager& sig) {
 
 	out << "RegexManager(" << &sig << ") statistics" << std::dec <<  std::endl;	
-	for (auto it = sig.signatures_.begin(); it != sig.signatures_.end(); ++it) {
-		SharedPointer<Regex> sig = (*it);
+        for (auto it = sig.signatures_.begin(); it != sig.signatures_.end(); ++it) {
+                SharedPointer<Regex> ssig = (*it);
 		std::ostringstream tabs;	
 
 		bool no_more_regex = false;
 
 		while (no_more_regex == false) {
 			tabs << "\t";
-			out << tabs.str() << "Regex:" << sig->getName() << " matches:" << sig->getMatchs() << std::endl;
-			if (sig->isTerminal() == false) { 
+			out << tabs.str() << "Regex:" << ssig->getName() << " matches:" << ssig->getMatchs() << std::endl;
+			if (ssig->isTerminal() == false) { 
 				no_more_regex = false;
-				sig = sig->getNextRegex();
+				ssig = ssig->getNextRegex();
 			} else {
 				no_more_regex = true;
 			}

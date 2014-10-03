@@ -21,6 +21,7 @@ The main functionalities of AIEngine are:
 - Frequency analisys for unknown traffic and auto-regex generation.
 - Easy integration with databases (MySQL, Redis, etc...) for data correlation.
 - Easy integration with other packet engines (Netfilter).
+- Support memory clean caches for refresh stored memory information.
 
 Using AIEngine 
 ---------------
@@ -28,7 +29,7 @@ Using AIEngine
 To use AIEngine just execute the binary aiengine or use the python binding.
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
-	aiengine 0.9
+	aiengine 0.10
 	Mandatory arguments:
 	  -I [ --input ] arg                Sets the network interface ,pcap file or 
 	                                    directory with pcap files.
@@ -60,6 +61,11 @@ To use AIEngine just execute the binary aiengine or use the python binding.
 	  -n [ --stack ] arg (=lan)    Sets the network stack (lan,mobile,lan6,virtual).
 	  -d [ --dumpflows ]           Dump the flows to stdout.
 	  -s [ --statistics ] arg (=0) Show statistics of the network stack (5 levels).
+          -T [ --timeout ] arg (=180)  Sets the flows timeout.
+          -P [ --protocol ] arg        Show statistics of a specific protocol of the 
+                                       network stack.
+          -e [ --release ]             Release the caches.
+          -l [ --release-cache ] arg   Release a specific cache.
 	  -p [ --pstatistics ]         Show statistics of the process.
 	  -h [ --help ]                Show help.
 	  -v [ --version ]             Show version string.

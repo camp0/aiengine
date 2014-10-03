@@ -36,6 +36,7 @@
 #include "Frequencies.h"
 #include "PacketFrequencies.h"
 #include "../Cache.h"
+#include "../flow/FlowManager.h"
 
 namespace aiengine {
 
@@ -46,7 +47,8 @@ public:
 		freq_header_(nullptr),total_bytes_(0),
 		inspection_limit_(100),
 		freqs_cache_(new Cache<Frequencies>),
-		packet_freqs_cache_(new Cache<PacketFrequencies>) {}
+		packet_freqs_cache_(new Cache<PacketFrequencies>),
+		flow_mng_() {}
 
 	explicit FrequencyProtocol():FrequencyProtocol("FrequencyProtocol") {}
 
@@ -68,7 +70,7 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-	void releaseCache() {} // No need to free cache
+	void releaseCache(); 
 
         void setHeader(unsigned char *raw_packet) {
         
@@ -95,6 +97,8 @@ public:
 		packet_freqs_cache_->destroy(number);
 	}
 
+	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
+
 private:
 	int stats_level_;
 	unsigned char *freq_header_;
@@ -102,6 +106,7 @@ private:
 	int inspection_limit_;
 	Cache<Frequencies>::CachePtr freqs_cache_;
 	Cache<PacketFrequencies>::CachePtr packet_freqs_cache_;
+	FlowManagerPtrWeak flow_mng_;
 };
 
 typedef std::shared_ptr<FrequencyProtocol> FrequencyProtocolPtr;

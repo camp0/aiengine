@@ -52,8 +52,7 @@ void SSLProtocol::releaseCache() {
                         total_bytes_released += ht.first.size();
                 });
 
-                for (auto it = ft.begin(); it != ft.end(); ++ it) {
-                        SharedPointer<Flow> flow = (*it); 
+                for (auto &flow: ft) {
                         SharedPointer<SSLHost> host = flow->ssl_host.lock();
 
                         if (host) { // The flow have a host attatched

@@ -348,12 +348,20 @@ void StackMobile::enableFrequencyEngine(bool enable) {
 
                 ff_tcp_->insertUpFlowForwarder(ff_tcp_freqs_);
                 ff_udp_high_->insertUpFlowForwarder(ff_udp_freqs_);
+
+                // Link the FlowManagers so the caches will be released if called
+                freqs_tcp_->setFlowManager(flow_table_tcp_);
+                freqs_udp_->setFlowManager(flow_table_udp_high_);
         } else {
                 freqs_tcp_->destroyFrequencies(tcp_flows_created);
                 freqs_udp_->destroyFrequencies(udp_flows_created);
 
                 ff_tcp_->removeUpFlowForwarder(ff_tcp_freqs_);
                 ff_udp_high_->removeUpFlowForwarder(ff_udp_freqs_);
+                
+		// Unlink the FlowManagers 
+                freqs_tcp_->setFlowManager(FlowManagerPtrWeak());
+                freqs_udp_->setFlowManager(FlowManagerPtrWeak());
         }
 }
 

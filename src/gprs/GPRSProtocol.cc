@@ -41,8 +41,7 @@ void GPRSProtocol::releaseCache() {
                 int64_t total_bytes_released_by_flows = 0;
                 int32_t release_flows = 0;
 
-                for (auto it = ft.begin(); it != ft.end(); ++ it) {
-                        SharedPointer<Flow> flow = (*it);
+                for (auto &flow: ft) {
                         SharedPointer<GPRSInfo> info = flow->gprs_info.lock();
 
                         if (info) { // The flow have gprs info attatched

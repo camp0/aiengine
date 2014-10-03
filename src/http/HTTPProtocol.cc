@@ -60,8 +60,7 @@ void HTTPProtocol::releaseCache() {
                         total_bytes_released += ht.first.size();
                 });
 
-                for (auto it = ft.begin(); it != ft.end(); ++ it) {
-                        SharedPointer<Flow> flow = (*it); 
+                for (auto &flow: ft) {
                         SharedPointer<HTTPHost> host = flow->http_host.lock();
 
                         if (host) { // The flow have a host attatched and uri and uas

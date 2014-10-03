@@ -26,6 +26,46 @@
 
 namespace aiengine {
 
+void FrequencyProtocol::releaseCache() {
+
+        FlowManagerPtr fm = flow_mng_.lock();
+
+        if (fm) {
+                auto ft = fm->getFlowTable();
+
+                std::ostringstream msg;
+                msg << "Releasing " << getName() << " cache";
+
+                infoMessage(msg.str());
+
+                int64_t total_bytes_released_by_flows = 0;
+                int32_t release_flows = 0;
+
+                for (auto &flow: ft) {
+                        SharedPointer<Frequencies> freq = flow->frequencies.lock();
+                	SharedPointer<PacketFrequencies> pkt_freq = flow->packet_frequencies.lock();
+
+                        if (freq) { // The flow have frequencies attached
+                                flow->frequencies.reset();
+                                total_bytes_released_by_flows += 255; // Sizeof Frequencies class 
+                                freqs_cache_->release(freq);
+                                ++release_flows;
+                        }
+                        if (pkt_freq) { // The flow have packet frequencies attached
+                                flow->packet_frequencies.reset();
+                                total_bytes_released_by_flows += MAX_PACKET_FREQUENCIES_VALUES; // Sizeof PacketFrequencies class aprox 
+                                packet_freqs_cache_->release(pkt_freq);
+                                ++release_flows;
+                        }
+                }
+
+                msg.str("");
+                msg << "Release " << release_flows << " flows";
+                msg << ", " << total_bytes_released_by_flows << " bytes";
+                infoMessage(msg.str());
+        }
+}
+
 void FrequencyProtocol::processFlow(Flow *flow) {
 
 	++total_packets_;

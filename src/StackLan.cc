@@ -273,13 +273,21 @@ void StackLan::enableFrequencyEngine(bool enable) {
 		freqs_udp_->createFrequencies(udp_flows_created);	
 
 		ff_tcp_->insertUpFlowForwarder(ff_tcp_freqs_);	
-		ff_udp_->insertUpFlowForwarder(ff_udp_freqs_);	
+		ff_udp_->insertUpFlowForwarder(ff_udp_freqs_);
+
+		// Link the FlowManagers so the caches will be released if called 
+		freqs_tcp_->setFlowManager(flow_table_tcp_);	
+		freqs_udp_->setFlowManager(flow_table_udp_);	
 	} else {
 		freqs_tcp_->destroyFrequencies(tcp_flows_created);	
 		freqs_udp_->destroyFrequencies(udp_flows_created);	
 		
 		ff_tcp_->removeUpFlowForwarder(ff_tcp_freqs_);
 		ff_udp_->removeUpFlowForwarder(ff_udp_freqs_);
+		
+		// Unlink the FlowManagers 
+		freqs_tcp_->setFlowManager(FlowManagerPtrWeak());	
+		freqs_udp_->setFlowManager(FlowManagerPtrWeak());	
 	}
 }
 

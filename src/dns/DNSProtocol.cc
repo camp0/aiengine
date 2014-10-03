@@ -52,8 +52,7 @@ void DNSProtocol::releaseCache() {
 			total_bytes_released += dt.first.size();
 		});
 
-		for (auto it = ft.begin(); it != ft.end(); ++ it) {
-			SharedPointer<Flow> flow = (*it);
+		for (auto &flow: ft) {
 			SharedPointer<DNSDomain> domain = flow->dns_domain.lock();
 
 			if (domain) { // The flow have a domain attatched

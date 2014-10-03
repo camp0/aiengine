@@ -876,12 +876,26 @@ BOOST_AUTO_TEST_CASE ( test_case_1 )
 
         FrequencyGroup<std::string> group_by_port;
 
+	FlowManagerPtr fm = stack->getTCPFlowManager().lock();
+
         group_by_port.setName("by destination port");
-        group_by_port.agregateFlowsByDestinationPort(stack->getTCPFlowManager().lock());
+        group_by_port.agregateFlowsByDestinationPort(fm);
         group_by_port.compute();
 
 	BOOST_CHECK(group_by_port.getTotalProcessFlows() == 0);
 	BOOST_CHECK(group_by_port.getTotalComputedFrequencies() == 0);
+
+	// Check the relaseCache functionality with the frequencies
+
+	for (auto &flow: fm->getFlowTable()) {
+		BOOST_CHECK(flow->frequencies.lock() != nullptr);
+		BOOST_CHECK(flow->packet_frequencies.lock() != nullptr);
+	} 
+	stack->releaseCaches();
+	for (auto &flow: fm->getFlowTable()) {
+		BOOST_CHECK(flow->frequencies.lock() == nullptr);
+		BOOST_CHECK(flow->packet_frequencies.lock() == nullptr);
+	} 
 }
 
 BOOST_AUTO_TEST_CASE ( test_case_2 )
@@ -1088,15 +1102,11 @@ BOOST_AUTO_TEST_CASE ( test_case_6 )
 	BOOST_CHECK(flows_udp->getTotalFlows() == 1);
 
 	auto ft = flows_tcp->getFlowTable();
-	for (auto it = ft.begin(); it != ft.end(); ++it) {
-		SharedPointer<Flow> flow = *it;
-
+	for (auto &flow: ft) {
 		BOOST_CHECK(flow->getProtocol() == IPPROTO_TCP);
 	}
 	ft = flows_udp->getFlowTable();
-	for (auto it = ft.begin(); it != ft.end(); ++it) {
-		SharedPointer<Flow> flow = *it;
-
+	for (auto &flow: ft) {
 		BOOST_CHECK(flow->getProtocol() == IPPROTO_UDP);
 	}
 }
