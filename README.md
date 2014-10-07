@@ -1,7 +1,7 @@
 AIEngine (Artificial Inteligent Engine)
 =========
 
-AIEngine is a next generation interactive packet inspection engine with capabilities of learning
+AIEngine is a next generation interactive/programmable packet inspection engine with capabilities of learning
 without any human intervention and other functionalities such as NIDS functionality, 
 domain classification, network collector and many others.  
 
