@@ -29,6 +29,7 @@
 #endif
 
 #include <iostream>
+#include <vector> 
 
 namespace aiengine {
 
@@ -39,7 +40,7 @@ public:
     	explicit DNSDomain() { reset(); }
     	virtual ~DNSDomain() {}
 
-	void reset() { domain_name_ = ""; qtype_ = 0; }
+	void reset() { domain_name_ = ""; qtype_ = 0; ips_.clear(); }
 	std::string &getName() { return domain_name_; }
 	void setName(const std::string& name) { domain_name_ = name;}
 
@@ -53,10 +54,15 @@ public:
         	return out;
 	}
 #endif
+	void addIPAddress(const char* ipstr) { ips_.push_back(ipstr); }
+
+	std::vector<std::string>::const_iterator begin() { return ips_.begin(); }
+	std::vector<std::string>::const_iterator end() { return ips_.end(); }
 
 private:
 	std::string domain_name_;
 	uint16_t qtype_;
+	std::vector<std::string> ips_;
 };
 
 } // namespace aiengine

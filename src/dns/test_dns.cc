@@ -273,6 +273,91 @@ BOOST_AUTO_TEST_CASE (test9_dns)
         BOOST_CHECK( flow->dns_domain.lock() == nullptr);
 }
 
+// Process query and response
+BOOST_AUTO_TEST_CASE (test10_dns)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dns_query_youtube);
+        int length1 = raw_packet_ethernet_ip_udp_dns_query_youtube_length;
+        Packet packet1(pkt1,length1);
+        
+	unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dns_response_youtube);
+        int length2 = raw_packet_ethernet_ip_udp_dns_response_youtube_length;
+        Packet packet2(pkt2,length2);
+
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+        mux_eth->setPacket(&packet2);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet2);
+
+        Flow *flow = udp->getCurrentFlow();
+	//show();
+        BOOST_CHECK( flow != nullptr);
+        BOOST_CHECK( flow->dns_domain.lock() != nullptr);
+        SharedPointer<DNSDomain> dom = flow->dns_domain.lock();
+	int i = 0;
+	for (auto &ip: *dom) {
+		++i;
+	} 
+	BOOST_CHECK( i == 0);// There is no DomainNameManager so the IPs are not extracted
+}
+
+// Process query and response and IP address extraction
+BOOST_AUTO_TEST_CASE (test11_dns)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dns_query_youtube);
+        int length1 = raw_packet_ethernet_ip_udp_dns_query_youtube_length;
+        Packet packet1(pkt1,length1);
+
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dns_response_youtube);
+        int length2 = raw_packet_ethernet_ip_udp_dns_response_youtube_length;
+        Packet packet2(pkt2,length2);
+
+        SharedPointer<DomainNameManager> dom_mng = SharedPointer<DomainNameManager>(new DomainNameManager());
+        SharedPointer<DomainName> dom_name = SharedPointer<DomainName>(new DomainName("Youtube test",".youtube.com"));
+
+        dns->setDomainNameManager(dom_mng);
+        dom_mng->addDomainName(dom_name);
+
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+        mux_eth->setPacket(&packet2);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet2);
+
+        Flow *flow = udp->getCurrentFlow();
+        //show();
+        BOOST_CHECK( flow != nullptr);
+        BOOST_CHECK( flow->dns_domain.lock() != nullptr);
+        SharedPointer<DNSDomain> dom = flow->dns_domain.lock();
+
+	std::set<std::string> ips {
+		{ "74.125.24.139" },	
+		{ "74.125.24.138" },	
+		{ "74.125.24.100" },	
+		{ "74.125.24.101" },	
+		{ "74.125.24.102" },	
+		{ "74.125.24.113" }	
+	};
+        int i = 0;
+	std::set<std::string>::iterator it = ips.end();
+
+        for (auto &ip: *dom) {
+               	BOOST_CHECK( ips.find(ip) != it);
+		++i; 
+        }
+        BOOST_CHECK( i == 6);
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 

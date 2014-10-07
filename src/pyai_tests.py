@@ -535,6 +535,29 @@ class StackLanIPv6Tests(unittest.TestCase):
         self.assertEqual(len(im), 3)
         self.assertEqual(self.called_callback , 0)
 
+    def test_7(self):
+        """ Extract IPv6 address from a DomainName matched """
+        def dns_callback(flow):
+            for ip in flow.getDNSDomain():
+                if (ip == "2607:f8b0:4001:c05::6a"):
+                    self.called_callback += 1
+
+        d = pyaiengine.DomainName("Google test",".google.com")
+        d.setCallback(dns_callback)
+
+        dm = pyaiengine.DomainNameManager()
+        dm.addDomainName(d)
+
+        self.s.setDNSDomainNameManager(dm)
+
+        self.dis.open("../pcapfiles/ipv6_google_dns.pcap")
+        self.dis.run()
+        self.dis.close()
+
+        self.assertEqual(self.called_callback , 1)
+
+
+
 class StackLanLearningTests(unittest.TestCase):
 
     def setUp(self):

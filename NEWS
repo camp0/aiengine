@@ -79,9 +79,9 @@ Features of 0.9
 - Support for specific statistics on the protocols (python binding).
 - Support for Virtual/Cloud enviroments with transparent GRE and VxLan on a new stack (StackVirtual).
 
-Features/Changes of 1.0
-- Improvements on the DNSProtocol.
+Features/Changes of 0.10
+- Improvements on the DNSProtocol (DNS hijack).
 - Filtering flows by condition (TODO)
 - Port to Mac/Windows (TODO)
 - Release/clean protocol caches method. (Clean cache memory).
-.
+

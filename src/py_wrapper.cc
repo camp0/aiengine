@@ -465,6 +465,9 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
 	boost::python::class_<DNSDomain, SharedPointer<DNSDomain>,boost::noncopyable>("DNSDomain")
+		.def("__iter__",boost::python::range(&DNSDomain::begin,&DNSDomain::end))
+                .def("getName",&DNSDomain::getName,return_value_policy<return_by_value>(),
+			"Returns the DNS domain name.")
 		.def(self_ns::str(self_ns::self))
 	;
 

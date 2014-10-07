@@ -38,7 +38,8 @@ enum class PacketAnomaly : std::int8_t {
 	IPV6_FRAGMENTATION = 2,
 	IPV6_LOOP_EXTENSION_HEADERS = 3,
 	TCP_BAD_FLAGS = 4,
-	TCP_BOGUS_HEADER = 5 
+	TCP_BOGUS_HEADER = 5, 
+	DNS_BOGUS_HEADER = 6 
 };
 
 const std::unordered_map<std::int8_t,std::string> PacketAnomalyToString {
@@ -47,7 +48,8 @@ const std::unordered_map<std::int8_t,std::string> PacketAnomalyToString {
 	{ static_cast<std::int8_t>(PacketAnomaly::IPV6_FRAGMENTATION), "IPv6 Fragmentation" },
 	{ static_cast<std::int8_t>(PacketAnomaly::IPV6_LOOP_EXTENSION_HEADERS), "IPv6 Loop extension headers" },
 	{ static_cast<std::int8_t>(PacketAnomaly::TCP_BAD_FLAGS), "TCP bad flags" },
-	{ static_cast<std::int8_t>(PacketAnomaly::TCP_BOGUS_HEADER), "TCP bogus header" }
+	{ static_cast<std::int8_t>(PacketAnomaly::TCP_BOGUS_HEADER), "TCP bogus header" },
+	{ static_cast<std::int8_t>(PacketAnomaly::DNS_BOGUS_HEADER), "DNS bogus header" }
 };
 
 } // namespace aiengine 

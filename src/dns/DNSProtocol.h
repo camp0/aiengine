@@ -57,6 +57,15 @@ struct dns_header {
 	u_char		data[0];
 } __attribute__((packed));
 
+struct dns_address {
+	uint16_t 	name;
+	uint16_t 	type;
+	uint16_t 	class_type;
+	uint32_t	ttl;
+	uint16_t	length;
+	u_char		data[0];
+} __attribute__((packed));
+
 class DNSProtocol: public Protocol 
 {
 public:
@@ -112,7 +121,7 @@ public:
 	
 		// I dont like this idea of ports but...
 		if ((packet.getSourcePort() == 53)||(packet.getDestinationPort() == 53)) {
-			setHeader(packet.getPayload());
+			// setHeader(packet.getPayload());
 			++total_validated_packets_; 
 			return true;
 		} else {
@@ -135,6 +144,8 @@ public:
 private:
 	void attach_dns_to_flow(Flow *flow, std::string &domain, uint16_t qtype);
 	void update_query_types(uint16_t type);
+	void handle_standard_query(Flow *flow,int length);
+	void handle_standard_response(Flow *flow,int length);
 
 	int stats_level_;
 	struct dns_header *dns_header_;

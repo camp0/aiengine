@@ -33,6 +33,7 @@
 namespace aiengine {
 
 #define DNS_STANDARD_QUERY 0x0100
+#define DNS_STANDARD_RESPONSE 0x8180
 #define DNS_DYNAMIC_UPDATE 0x2800
 
 // Some of the most used Dns types

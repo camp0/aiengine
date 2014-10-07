@@ -107,70 +107,143 @@ void DNSProtocol::processFlow(Flow *flow) {
 	total_bytes_ += length;
 	++total_packets_;
 
-	// Just get the standard queries
 	if (length > header_size) { // Minimum header size consider
+		setHeader(flow->packet->getPayload());
 		uint16_t flags = ntohs(dns_header_->flags);
 
-		if ((flags == DNS_STANDARD_QUERY)or(flags == DNS_DYNAMIC_UPDATE)) { 
-			std::string domain;
-			int i = 1; 
-		
-			// Probably i will need to do it better :(	
-			while (dns_header_->data[i] != '\x00') {
-				if(dns_header_->data[i] < '\x17' )
-					domain += ".";
-				else
-					domain += dns_header_->data[i];
-				++i;
-				// TODO: extra check for bogus packets check length
+		if ((flags == DNS_STANDARD_QUERY)or(flags == DNS_DYNAMIC_UPDATE)) {
+			if (ntohs(dns_header_->questions) > 0) {  
+				handle_standard_query(flow,length);
 			}
-
-			if (i == 1) { // There is no name, a root record
-				i = 0;
-				domain = "<Root>";
-			}
-
-			uint16_t qtype = ntohs((dns_header_->data[i+2] << 8) + dns_header_->data[i+1]);
-			// std::cout << "Domain(" << domain << ")type(" << qtype << ")i(" << i << ")" << std::endl;
-
-			update_query_types(qtype);
-
-			if (domain.length() > 0) { // The domain is valid
-
-				DomainNameManagerPtr ban_dnm = ban_domain_mng_.lock();
-				if (ban_dnm) {
-					SharedPointer<DomainName> domain_candidate = ban_dnm->getDomainName(domain);
-					if (domain_candidate) {
-#ifdef HAVE_LIBLOG4CXX
-						LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with banned domain " << domain_candidate->getName());
-#endif
-						++total_ban_queries_;
-						return;
-					}
-				}
-
-				++total_allow_queries_;
-		
-				attach_dns_to_flow(flow,domain,qtype);	
-				
-				DomainNameManagerPtr dnm = domain_mng_.lock();
-				if (dnm) {
-					SharedPointer<DomainName> domain_candidate = dnm->getDomainName(domain);
-					if (domain_candidate) {
-#ifdef HAVE_LIBLOG4CXX
-						LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << domain_candidate->getName());
-#endif
-#ifdef PYTHON_BINDING
-						if(domain_candidate->haveCallback()) { 
-							domain_candidate->executeCallback(flow);
-						}							
-#endif
-					}
-				}
+		} else if (flags == DNS_STANDARD_RESPONSE) {
+			if (ntohs(dns_header_->answers) > 0) {
+				handle_standard_response(flow,length);
 			}
 		}
-	}	
+	} else {
+               	if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
+               		flow->setPacketAnomaly(PacketAnomaly::DNS_BOGUS_HEADER);
+		}
+	}
 	return;
+} 
+
+void DNSProtocol::handle_standard_query(Flow *flow,int length) {
+	std::string domain;
+	int i = 1; 
+		
+	// Probably i will need to do it better :(	
+	while (dns_header_->data[i] != '\x00') {
+		if(dns_header_->data[i] < '\x17' )
+			domain += ".";
+		else
+			domain += dns_header_->data[i];
+		++i;
+		// TODO: extra check for bogus packets check length
+	}
+
+	if (i == 1) { // There is no name, a root record
+		i = 0;
+		domain = "<Root>";
+	}
+
+	// Check if the payload is malformed
+	if (header_size + i > length) {
+               	if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
+               		flow->setPacketAnomaly(PacketAnomaly::DNS_BOGUS_HEADER);
+		}
+		std::cout << "Bad packet on " << *flow << std::endl;
+	}
+
+	//std::cout << "DNSProtocol::handle_standard_query:length:" << length << " i:" << i ;
+	//std::cout << " header size:" << header_size << std::endl;
+	uint16_t qtype = ntohs((dns_header_->data[i+2] << 8) + dns_header_->data[i+1]);
+
+	update_query_types(qtype);
+
+	if (domain.length() > 0) { // The domain is valid
+
+		DomainNameManagerPtr ban_dnm = ban_domain_mng_.lock();
+		if (ban_dnm) {
+			SharedPointer<DomainName> domain_candidate = ban_dnm->getDomainName(domain);
+			if (domain_candidate) {
+#ifdef HAVE_LIBLOG4CXX
+				LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with banned domain " << domain_candidate->getName());
+#endif
+				++total_ban_queries_;
+				return;
+			}
+		}
+
+		++total_allow_queries_;
+		
+		attach_dns_to_flow(flow,domain,qtype);	
+	}
+}
+
+void DNSProtocol::handle_standard_response(Flow *flow,int length) {
+
+	SharedPointer<DNSDomain> dom_ptr = flow->dns_domain.lock();
+
+        if (dom_ptr) { // There is a domain name attached to the flow
+
+		// Check if the DNSProtocol have a DomainNameManager attached for match domains
+                DomainNameManagerPtr dnm = domain_mng_.lock();
+                if (dnm) {
+                        SharedPointer<DomainName> domain_candidate = dnm->getDomainName(dom_ptr->getName());
+                        if (domain_candidate) {
+                		int offset = 1;
+
+                		// Pass over the query request
+                		while (dns_header_->data[offset] != '\x00') {
+                        		++offset;
+                        		// TODO: extra check for bogus packets check length
+                		}
+
+				// Need to increase by 4 the generate offset due to the type and class dns fields
+				offset = offset + 5;
+				uint16_t answers = ntohs(dns_header_->answers);
+				u_char *ptr = &(dns_header_->data[offset]);
+
+#ifdef HAVE_LIBLOG4CXX
+                                LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << domain_candidate->getName());
+#endif
+
+				// Extract the IP addresses and store on the DNSDomain just when the domain have been matched
+				for (int i = 0; i < answers; ++i) {
+					struct dns_address *addr = reinterpret_cast <struct dns_address*> (ptr);
+					uint16_t block_length = ntohs(addr->length);
+					uint16_t type = ntohs(addr->type);
+					uint16_t class_type = ntohs(addr->class_type);
+
+					if (class_type == 0x0001) { // class IN 
+						if((type == 0x0001)and(block_length == 4)) { // IPv4
+							uint32_t ipv4addr =  ((addr->data[3] << 24) + (addr->data[2] << 16) + (addr->data[1] << 8) + addr->data[0]);
+							in_addr a;
+
+							a.s_addr = ipv4addr;
+							dom_ptr->addIPAddress(inet_ntoa(a));
+						} else if ((type == 0x001c)and(block_length == 16)) { // IPv6
+							char ipv6addr[INET6_ADDRSTRLEN];
+							in6_addr *in6addr = (in6_addr*)&(addr->data[0]);
+
+							inet_ntop(AF_INET6,in6addr,ipv6addr,INET6_ADDRSTRLEN);
+
+							dom_ptr->addIPAddress(ipv6addr);
+						}
+					}	
+					
+					// TODO: Check offset size lengths and possible anomalies	
+					ptr = &(addr->data[block_length]);	
+				}	
+#ifdef PYTHON_BINDING
+                                if(domain_candidate->haveCallback()) {
+                                        domain_candidate->executeCallback(flow);
+                                }
+#endif
+                        }
+                }
+	}
 }
 
 void DNSProtocol::update_query_types(uint16_t type) {
