@@ -8,7 +8,7 @@ TEST = test_frequency
 
 check_PROGRAMS = test_frequency
 
-test_frequency_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc \
+test_frequency_SOURCES = 	../Multiplexer.cc ../FlowForwarder.cc ../Protocol.cc \
 			../ethernet/EthernetProtocol.cc \
 			../ip/IPProtocol.cc \
 			../ipset/IPSetManager.cc \
