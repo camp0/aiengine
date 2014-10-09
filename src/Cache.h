@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013  Luis Campo Giralte
+ * Copyright (C) 2013-2014  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

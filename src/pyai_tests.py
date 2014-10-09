@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
-#  AIEngine.
+# AIEngine.
 #
-# Copyright (C) 2013  Luis Campo Giralte
+# Copyright (C) 2013-2014  Luis Campo Giralte
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Library General Public
@@ -19,7 +19,7 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 #
-# Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
+# Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
 #
 """ Unit tests for the pyaiengine python wrapper """
 import os

@@ -11,6 +11,7 @@ EXTRA_DIST = 	bitcoinminer.py \
 		tor.py \
 		netfilter.py \
 		parallel.py \
-		snort.py
+		snort.py \
+		query.py
 
 MAINTAINERCLEANFILES = Makefile.in 

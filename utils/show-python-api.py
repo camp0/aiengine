@@ -1,6 +1,6 @@
 """Shows the python api for aiengine """
 __author__ = "Luis Campo Giralte"
-__copyright__ = "Copyright (C) 2013 by Luis Campo Giralte"
+__copyright__ = "Copyright (C) 2013-2014 by Luis Campo Giralte"
 __revision__ = "$Id$"
 __version__ = "0.1"
 import types

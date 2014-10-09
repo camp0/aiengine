@@ -21,7 +21,7 @@
 #
 # Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
 #
-""" Example for integrate NIDS functionality with iptables """
+""" Example for integrate with malware domains """
 __author__ = "Luis Campo Giralte"
 __copyright__ = "Copyright (C) 2013-2014 by Luis Campo Giralte"
 __revision__ = "$Id$"
@@ -32,27 +32,26 @@ import os
 sys.path.append("../src/")
 import pyaiengine
 
-def callback_drop_packets(flow_name):
-    """ Send a command to the Iptables in other to drop the packets """
-    source_ip = str(flow_name).split(":")[0]
-#    os.system("iptables -A INPUT -i eth0 -s %s -j DROP" % source_ip)
+def queryFlows(flows,cond):
 
-def loadSignaturesForTcp():
-     """ Load the signatures from source, Snort, Suricata, etc. """
+    m_bytes = 0 
+    t_bytes = 0 
+    t_flows = 0
+    m_flows = 0
+    print("Executing condition:%s" % cond)
+    for flow in flows:
+        t_flows += 1
+        if (eval(cond)):
+            m_bytes += flow.getTotalBytes()
+            m_flows += 1
+        t_bytes += flow.getTotalBytes()
 
-     sm = pyaiengine.RegexManager()
-
-     sig = pyaiengine.Regex("Shellcode Generic Exploit","\x90\x90\x90\x90\x90\x90\x90\x90\x90")
-
-     """ Sets a specific callback to the signature created """
-     sig.setCallback(callback_drop_packets)
-     sm.addRegex(sig)
-
-     return sm
+    print("Total bytes       %d , flows       %d " % (t_bytes,t_flows))
+    print("Total query bytes %d , query flows %d " % (m_bytes,m_flows))
 
 if __name__ == '__main__':
 
-     # Load an instance of a Network Stack
+     # Load an instance of a Network Stack on Mobile network (GN interface)
      st = pyaiengine.StackLan()
 
      # Create a instace of a PacketDispatcher
@@ -61,15 +60,15 @@ if __name__ == '__main__':
      # Plug the stack on the PacketDispatcher
      pdis.setStack(st)
 
-     # Load Signatures/Rules in order to detect the traffic
-     s_tcp = loadSignaturesForTcp()
-     st.setTCPRegexManager(s_tcp)
-
-     st.enableNIDSEngine(True)
-
-     st.setTotalTCPFlows(327680)
      st.setTotalUDPFlows(163840)
+     st.setTotalTCPFlows(163840)
 
+     flows_tcp = st.getTCPFlowManager()    
+     flows_udp = st.getUDPFlowManager()    
+
+     # queryFlows(flows,"('facebook.com' in str(flow.getSSLHost())) or ('facebook.com' in str(flow.getHTTPHost()))")
+
+     pdis.enableShell(True)
      pdis.open("eth0")
 
      try:
@@ -80,11 +79,6 @@ if __name__ == '__main__':
      
      pdis.close()
 
-     # Dump on file the statistics of the stack
-     st.setStatisticsLevel(5)
-     f = open("statistics.log","w")
-     f.write(str(st))
-     f.close()
-
+     # queryFlows(flows,"('facebook.com' in str(flow.getSSLHost())) or ('facebook.com' in str(flow.getHTTPHost()))")
+ 
      sys.exit(0)
-

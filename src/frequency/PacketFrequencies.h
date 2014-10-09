@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 2013
  *
  */
-#ifndef _PacketFrequencies_H_
-#define _PacketFrequencies_H_
+#ifndef SRC_FREQUENCY_PACKETFREQUENCIES_H_
+#define SRC_FREQUENCY_PACKETFREQUENCIES_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -182,4 +182,4 @@ private:
 
 } // namespace aiengine
 
-#endif
+#endif // SRC_FREQUENCY_PACKETFREQUENCIES_H_
