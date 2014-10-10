@@ -253,12 +253,14 @@ StackMobile::StackMobile() {
 	// Connect the FlowManager and FlowCache
 	tcp_->setFlowCache(flow_cache_tcp_);
 	tcp_->setFlowManager(flow_table_tcp_);
+	flow_table_tcp_->setProtocol(tcp_);
 			
 	udp_low_->setFlowCache(flow_cache_udp_low_);
 	udp_low_->setFlowManager(flow_table_udp_low_);
 	
 	udp_high_->setFlowCache(flow_cache_udp_high_);
 	udp_high_->setFlowManager(flow_table_udp_high_);
+	flow_table_udp_high_->setProtocol(udp_high_);
 
         // Connect to upper layers the FlowManager
         http_->setFlowManager(flow_table_tcp_);

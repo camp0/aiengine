@@ -204,9 +204,11 @@ StackLan::StackLan() {
 	// Connect the FlowManager and FlowCache
 	tcp_->setFlowCache(flow_cache_tcp_);
 	tcp_->setFlowManager(flow_table_tcp_);
-			
+	flow_table_tcp_->setProtocol(tcp_);	
+		
 	udp_->setFlowCache(flow_cache_udp_);
 	udp_->setFlowManager(flow_table_udp_);
+	flow_table_udp_->setProtocol(udp_);	
 
 	// Connect to upper layers the FlowManager
 	http_->setFlowManager(flow_table_tcp_);

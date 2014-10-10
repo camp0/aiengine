@@ -115,7 +115,7 @@ public:
     	bool isPushSet() const { return (tcp_header_->th_flags & TH_PUSH) == TH_PUSH; }
     	// unsigned int getTcpSegmentLength() const { return ntohs(ip->tot_len) - ip->ihl * 4; }
     	// unsigned int getPayloadLength() const { return ntohs(ip->tot_len) - 20 /* ip->ihl * 4 */ - tcp->doff * 4; }
-    	unsigned int getTcpHdrLength() const { return tcp_header_->th_off * 4; }
+    	uint16_t getTcpHdrLength() const { return tcp_header_->th_off * 4; }
     	unsigned char* getPayload() const { return (unsigned char*)tcp_header_ +getTcpHdrLength(); }
 #else
     	bool isSyn() const { return tcp_header_->syn == 1; }
@@ -127,7 +127,7 @@ public:
     	uint32_t getAckSequence() const  { return ntohl(tcp_header_->ack_seq); }
     	uint16_t getSrcPort() const { return ntohs(tcp_header_->source); }
     	uint16_t getDstPort() const { return ntohs(tcp_header_->dest); }
-    	unsigned int getTcpHdrLength() const { return tcp_header_->doff * 4; }
+    	uint16_t getTcpHdrLength() const { return tcp_header_->doff * 4; }
     	unsigned char* getPayload() const { return (unsigned char*)tcp_header_ +getTcpHdrLength(); }
 #endif
         void setFlowManager(FlowManagerPtr flow_mng) { flow_table_ = flow_mng; flow_table_->setTCPInfoCache(tcp_info_cache_);}

@@ -110,6 +110,16 @@ void FlowManager::updateTimers(std::time_t current_time) {
 #endif
 			flowTable_.get<flow_table_tag_duration>().erase((++it).base());
 
+#if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
+
+			ProtocolPtr proto = protocol_.lock();
+
+			if (proto) {
+				if (proto->getPythonObjectIsSet()) {
+					proto->databaseAdaptorRemoveHandler(flow.get());
+				}
+			}
+#endif
 			if (tcp_info_cache_) {
 				SharedPointer<TCPInfo> tcp_info = flow->tcp_info.lock();
 				if(tcp_info)

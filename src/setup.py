@@ -31,6 +31,7 @@ def setup_compiler():
 
     macros.append(('PYTHON_BINDING','1'))
     macros.append(('HAVE_LIBPCRE','1'))
+    macros.append(('HAVE_ADAPTOR','1'))
     includes.append("..")
 
     if (sys.platform == 'sunos5'):
@@ -68,7 +69,7 @@ if __name__ == "__main__":
     aiengine_module.define_macros = macros
 
     setup(name="aiengine",
-        version = "0.8",
+        version = "0.10",
         author = "Luis Campo Giralte",
         author_email = "luis.camp0.2009 at gmail.com",
         url = "https://bitbucket.org/camp0/aiengine",
@@ -79,7 +80,7 @@ if __name__ == "__main__":
         ext_modules = [aiengine_module],
         py_modules = ["pyaiengine"],
         classifiers=[
-            "Development Status :: 0.8 - Beta",
+            "Development Status :: 0.10 - Beta",
             "Environment :: Console",
             "Intended Audience :: Information Technology",
             "Intended Audience :: Science/Research",

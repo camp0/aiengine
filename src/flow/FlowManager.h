@@ -67,7 +67,7 @@ class FlowManager
 public:
     	explicit FlowManager(std::string name):name_(name),total_process_flows_(0),
 		total_timeout_flows_(0),timeout_(180),flowTable_(),flow_it_(),flow_cache_(),
-		tcp_info_cache_() {}
+		tcp_info_cache_(),protocol_() {}
     	explicit FlowManager(): FlowManager("FlowManager") {}
 
     	virtual ~FlowManager();
@@ -102,7 +102,9 @@ public:
 	// Methods for exposing the class to python iterable methods
 	FlowTable::iterator begin() { return flowTable_.begin(); }
 	FlowTable::iterator end() { return flowTable_.end(); }
+
 #endif
+	void setProtocol(ProtocolPtrWeak proto) { protocol_ = proto; }
 
 private:
 	std::string name_;
@@ -114,6 +116,7 @@ private:
 	FlowByID::iterator flow_it_; // a cacheable iterator
 	FlowCachePtr flow_cache_;
 	Cache<TCPInfo>::CachePtr tcp_info_cache_;
+	ProtocolPtrWeak protocol_;
 };
 
 typedef std::shared_ptr<FlowManager> FlowManagerPtr;

@@ -120,6 +120,7 @@ private:
 };
 
 typedef std::shared_ptr <Protocol> ProtocolPtr;
+typedef std::weak_ptr <Protocol> ProtocolPtrWeak;
 
 } // namespace aiengine  
 

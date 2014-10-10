@@ -386,6 +386,24 @@ class StackLanTests(unittest.TestCase):
         for flow in fu:
             self.assertEqual(flow.getDNSDomain(),None)
 
+    def test14(self):
+        """ Attach a database to the engine and test timeouts on udp flows """
+
+        db = databaseTestAdaptor()
+
+        self.s.enableLinkLayerTagging("vlan")
+        self.s.setUDPDatabaseAdaptor(db,16)
+
+        self.s.setFlowsTimeout(1)
+
+        self.dis.open("../pcapfiles/flow_vlan_netbios.pcap");
+        self.dis.run();
+        self.dis.close();
+
+        self.assertEqual(db.getInserts(), 1)
+        self.assertEqual(db.getUpdates(), 1)
+        self.assertEqual(db.getRemoves(), 1)
+
  
 class StackLanIPv6Tests(unittest.TestCase):
 

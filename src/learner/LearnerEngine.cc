@@ -154,7 +154,7 @@ void LearnerEngine::agregateFlows(std::vector<WeakPointer<Flow>> &flows) {
 std::string LearnerEngine::getAsciiExpression() {
 	std::ostringstream out;
 
-	for (int i = 0;i<raw_expression_.length(); i=i+2) {
+	for (std::size_t i = 0; i<raw_expression_.length(); i=i+2) {
 		int a = (raw_expression_[i] - 48)*16;
 		int b = raw_expression_[i+1];
 		if((b>=97)&&(b<=102))

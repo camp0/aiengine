@@ -290,12 +290,15 @@ StackVirtual::StackVirtual() {
 	// Connect the FlowManager and FlowCache
 	tcp_vir_->setFlowCache(flow_cache_tcp_vir_);
 	tcp_vir_->setFlowManager(flow_table_tcp_vir_);
-			
+	flow_table_tcp_vir_->setProtocol(tcp_vir_);	
+		
 	udp_vir_->setFlowCache(flow_cache_udp_vir_);
 	udp_vir_->setFlowManager(flow_table_udp_vir_);
+	flow_table_udp_vir_->setProtocol(udp_vir_);	
 	
 	udp_->setFlowCache(flow_cache_udp_);
 	udp_->setFlowManager(flow_table_udp_);
+	flow_table_udp_->setProtocol(udp_);	
 
         // Connect to upper layers the FlowManager
         http_->setFlowManager(flow_table_tcp_vir_);

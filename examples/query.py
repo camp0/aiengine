@@ -50,35 +50,37 @@ def queryFlows(flows,cond):
     print("Total query bytes %d , query flows %d " % (m_bytes,m_flows))
 
 if __name__ == '__main__':
+    
+    # Load an instance of a Network Stack on Mobile network (GN interface)
+    st = pyaiengine.StackLan()
 
-     # Load an instance of a Network Stack on Mobile network (GN interface)
-     st = pyaiengine.StackLan()
+    # Create a instace of a PacketDispatcher
+    pdis = pyaiengine.PacketDispatcher()
 
-     # Create a instace of a PacketDispatcher
-     pdis = pyaiengine.PacketDispatcher()
+    # Plug the stack on the PacketDispatcher
+    pdis.setStack(st)
 
-     # Plug the stack on the PacketDispatcher
-     pdis.setStack(st)
+    st.setTotalUDPFlows(80000)
+    st.setTotalTCPFlows(200000)
 
-     st.setTotalUDPFlows(163840)
-     st.setTotalTCPFlows(163840)
+    flows_tcp = st.getTCPFlowManager()    
+    flows_udp = st.getUDPFlowManager()    
 
-     flows_tcp = st.getTCPFlowManager()    
-     flows_udp = st.getUDPFlowManager()    
+    # Some query examples
+    # query = "('google.com' in str(flow.getSSLHost())) or ('google.com' in str(flow.getHTTPHost()))"
+    # query = "('mybogusdomain' in str(flow.getDNSDomain()))"
+    # query = "('Shellcode' in str(flow.getRegex().getName()))"
+    # queryFlows(flows_tcp,query)
 
-     # queryFlows(flows,"('facebook.com' in str(flow.getSSLHost())) or ('facebook.com' in str(flow.getHTTPHost()))")
+    pdis.enableShell(True)
+    pdis.open("eth0")
 
-     pdis.enableShell(True)
-     pdis.open("eth0")
-
-     try:
-         pdis.run()
-     except:
-         e = sys.exc_info()[0]
-         print("Interrupt during capturing packets:",e)
+    try:
+        pdis.run()
+    except:
+        e = sys.exc_info()[0]
+        print("Interrupt during capturing packets:",e)
      
-     pdis.close()
-
-     # queryFlows(flows,"('facebook.com' in str(flow.getSSLHost())) or ('facebook.com' in str(flow.getHTTPHost()))")
+    pdis.close()
  
-     sys.exit(0)
+    sys.exit(0)
