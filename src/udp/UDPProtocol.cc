@@ -118,14 +118,21 @@ void UDPProtocol::processPacket(Packet& packet) {
 	if(flow) {
 		int bytes = (getLength() - getHeaderLength());
 
+		if (bytes > packet.getLength()) { // The length of the packet is corrupted or not valid
+			bytes = packet.getLength();
+			flow->setPacketAnomaly(PacketAnomaly::UDP_BOGUS_HEADER);
+		}
+
 		total_bytes_ += bytes;
 		flow->total_bytes += bytes;
 		++flow->total_packets;
 #ifdef DEBUG
                 char mbstr[100];
                 std::strftime(mbstr, 100, "%D %X", std::localtime(&packet_time_));
-                std::cout << __FILE__ << ":" << __func__ << ": flow(" << current_flow_ << ")[" << mbstr << "] pkts:" << flow->total_packets << std::endl;
+                std::cout << __FILE__ << ":" << __func__ << ": flow(" << current_flow_ << ")[" << mbstr << "] pkts:" << flow->total_packets;
+                std::cout << " bytes:" << bytes << " pktlen:" << packet.getLength() << std::endl;
 #endif
+
 		if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
 			flow->setPacketAnomaly(packet.getPacketAnomaly());
 		}
@@ -137,7 +144,6 @@ void UDPProtocol::processPacket(Packet& packet) {
                         packet.setPayload(&packet.getPayload()[getHeaderLength()]);
                         packet.setPrevHeaderSize(getHeaderLength());
                         packet.setPayloadLength(packet.getLength() - getHeaderLength());
-			//packet.setPacketTime(packet.getPacketTime());
                         packet.setDestinationPort(getDstPort());
                         packet.setSourcePort(getSrcPort());
 
