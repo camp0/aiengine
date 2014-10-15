@@ -33,6 +33,7 @@
 #include "../icmp/ICMPProtocol.h"
 #include "../udp/UDPProtocol.h"
 #include "../udpgeneric/UDPGenericProtocol.h"
+#include "../tcpgeneric/TCPGenericProtocol.h"
 #include "../tcp/TCPProtocol.h"
 #include "../dns/DNSProtocol.h"
 #include "OpenFlowProtocol.h"
@@ -47,6 +48,7 @@ struct StackTestOpenFlow
 	IPProtocolPtr ip,ip_vir;
 	UDPProtocolPtr udp_vir;
 	UDPGenericProtocolPtr udpg_vir;
+	TCPGenericProtocolPtr tcpg_vir;
 	TCPProtocolPtr tcp,tcp_vir;
 	ICMPProtocolPtr icmp_vir;
 	DNSProtocolPtr dns_vir;
@@ -61,7 +63,7 @@ struct StackTestOpenFlow
 	FlowManagerPtr flow_mng;
 	FlowForwarderPtr ff_tcp;
 	FlowForwarderPtr ff_udp_vir,ff_udpg_vir;
-	FlowForwarderPtr ff_tcp_vir;
+	FlowForwarderPtr ff_tcp_vir,ff_tcpg_vir;
 	FlowForwarderPtr ff_of;
 	FlowForwarderPtr ff_dns_vir;
 
@@ -75,6 +77,7 @@ struct StackTestOpenFlow
                 tcp = TCPProtocolPtr(new TCPProtocol());
                 udp_vir = UDPProtocolPtr(new UDPProtocol());
                 udpg_vir = UDPGenericProtocolPtr(new UDPGenericProtocol());
+                tcpg_vir = TCPGenericProtocolPtr(new TCPGenericProtocol());
                 tcp_vir = TCPProtocolPtr(new TCPProtocol());
                 dns_vir = DNSProtocolPtr(new DNSProtocol());
                 of = OpenFlowProtocolPtr(new OpenFlowProtocol());
@@ -93,6 +96,7 @@ struct StackTestOpenFlow
 		ff_tcp = FlowForwarderPtr(new FlowForwarder());
 		ff_udp_vir = FlowForwarderPtr(new FlowForwarder());
 		ff_udpg_vir = FlowForwarderPtr(new FlowForwarder());
+		ff_tcpg_vir = FlowForwarderPtr(new FlowForwarder());
 		ff_tcp_vir = FlowForwarderPtr(new FlowForwarder());
 		ff_of = FlowForwarderPtr(new FlowForwarder());
 		ff_dns_vir = FlowForwarderPtr(new FlowForwarder());
@@ -178,6 +182,12 @@ struct StackTestOpenFlow
                 ff_udpg_vir->addChecker(std::bind(&UDPGenericProtocol::udpGenericChecker,udpg_vir,std::placeholders::_1));
                 ff_udpg_vir->addFlowFunction(std::bind(&UDPGenericProtocol::processFlow,udpg_vir,std::placeholders::_1));
 
+                // configure the generic tcp 
+                tcpg_vir->setFlowForwarder(ff_tcpg_vir);
+                ff_tcpg_vir->setProtocol(static_cast<ProtocolPtr>(tcpg_vir));
+                ff_tcpg_vir->addChecker(std::bind(&TCPGenericProtocol::tcpGenericChecker,tcpg_vir,std::placeholders::_1));
+                ff_tcpg_vir->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,tcpg_vir,std::placeholders::_1));
+
         	// configure the DNS Layer
         	dns_vir->setFlowForwarder(ff_dns_vir);
         	ff_dns_vir->setProtocol(static_cast<ProtocolPtr>(dns_vir));
@@ -218,7 +228,10 @@ struct StackTestOpenFlow
                 mux_ip_vir->addUpMultiplexer(mux_tcp_vir,IPPROTO_TCP);
                 mux_tcp_vir->addDownMultiplexer(mux_ip_vir);
 
-                udp_vir->setFlowForwarder(ff_udp_vir);
+		tcp_vir->setFlowForwarder(ff_tcp_vir);
+		ff_tcp_vir->addUpFlowForwarder(ff_tcpg_vir);
+
+	        udp_vir->setFlowForwarder(ff_udp_vir);
                 ff_udp_vir->addUpFlowForwarder(ff_dns_vir);
                 ff_udp_vir->addUpFlowForwarder(ff_udpg_vir);
 	}
@@ -240,8 +253,8 @@ struct StackTestOpenFlow
 		tcp_vir->setStatisticsLevel(5);
 		tcp_vir->statistics();
 
-		udp_vir->setStatisticsLevel(5);
-		udp_vir->statistics();
+		tcpg_vir->setStatisticsLevel(5);
+		tcpg_vir->statistics();
 	}
 };
 

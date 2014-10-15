@@ -30,6 +30,7 @@
 #include "StackLanIPv6.h"
 #include "StackMobile.h"
 #include "StackVirtual.h"
+#include "StackOpenFlow.h"
 #include "PacketDispatcher.h"
 #include "NetworkStack.h"
 #include "./frequency/FrequencyGroup.h"
@@ -272,7 +273,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (StackLanIPv6::*releaseCachesLanIPv6)() =						&StackLanIPv6::releaseCaches;
 
         boost::python::class_<StackLanIPv6, bases<NetworkStack> >("StackLanIPv6",
-		"Class that implements a network stack for lan enviroments with IPv6")
+		"Class that implements a network stack for lan environments with IPv6")
 		.def("getName",&StackLanIPv6::getName)
                 .def("setUDPRegexManager",setUDPRegexManagerLanIPv6)
                 .def("setTCPRegexManager",setTCPRegexManagerLanIPv6)
@@ -323,7 +324,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (StackVirtual::*releaseCachesVirtual)() =						&StackVirtual::releaseCaches;
 
         boost::python::class_<StackVirtual, bases<NetworkStack> >("StackVirtual",
-                "Class that implements a network stack for cloud/virtual enviroments")
+                "Class that implements a network stack for cloud/virtual environments")
                 .def("getName",&StackVirtual::getName)
                 .def("setUDPRegexManager",setUDPRegexManagerVirtual)
                 .def("setTCPRegexManager",setTCPRegexManagerVirtual)
@@ -354,6 +355,57 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("releaseCache", releaseCacheVirtual)
 		.def("releaseCaches", releaseCachesVirtual)
         ;
+
+        // Definitions for the StackOpenFlow class
+        void (StackOpenFlow::*showFlowsOpenFlow)() =                                            &StackOpenFlow::showFlows;
+        void (StackOpenFlow::*setUDPRegexManagerOpenFlow)(RegexManager&) =                      &StackOpenFlow::setUDPRegexManager;
+        void (StackOpenFlow::*setTCPRegexManagerOpenFlow)(RegexManager&) =                      &StackOpenFlow::setTCPRegexManager;
+        void (StackOpenFlow::*setDNSDomainNameManagerOF1)(DomainNameManager&) =                	&StackOpenFlow::setDNSDomainNameManager;
+        void (StackOpenFlow::*setDNSDomainNameManagerOF2)(DomainNameManager&, bool) =          	&StackOpenFlow::setDNSDomainNameManager;
+        void (StackOpenFlow::*setHTTPHostNameManagerOF1)(DomainNameManager&) =                 	&StackOpenFlow::setHTTPHostNameManager;
+        void (StackOpenFlow::*setHTTPHostNameManagerOF2)(DomainNameManager&, bool) =           	&StackOpenFlow::setHTTPHostNameManager;
+        void (StackOpenFlow::*setSSLHostNameManagerOF1)(DomainNameManager&) =                  	&StackOpenFlow::setSSLHostNameManager;
+        void (StackOpenFlow::*setSSLHostNameManagerOF2)(DomainNameManager&, bool) =            	&StackOpenFlow::setSSLHostNameManager;
+        void (StackOpenFlow::*setTCPDatabaseAdaptorOF1)(boost::python::object&) =              	&StackOpenFlow::setTCPDatabaseAdaptor;
+        void (StackOpenFlow::*setTCPDatabaseAdaptorOF2)(boost::python::object&, int) =         	&StackOpenFlow::setTCPDatabaseAdaptor;
+        void (StackOpenFlow::*setUDPDatabaseAdaptorOF1)(boost::python::object&) =              	&StackOpenFlow::setUDPDatabaseAdaptor;
+        void (StackOpenFlow::*setUDPDatabaseAdaptorOF2)(boost::python::object&, int) =         	&StackOpenFlow::setUDPDatabaseAdaptor;
+        void (StackOpenFlow::*statisticsByProtocolOF)(const std::string& name) =              	&StackOpenFlow::statistics;
+        void (StackOpenFlow::*releaseCacheOpenFlow)(const std::string& name) =                  &StackOpenFlow::releaseCache;
+        void (StackOpenFlow::*releaseCachesOpenFlow)() =                          		&StackOpenFlow::releaseCaches;
+
+        boost::python::class_<StackOpenFlow, bases<NetworkStack> >("StackOpenFlow",
+                "Class that implements a network stack for openflow environments")
+                .def("getName",&StackOpenFlow::getName)
+                .def("setUDPRegexManager",setUDPRegexManagerOpenFlow)
+                .def("setTCPRegexManager",setTCPRegexManagerOpenFlow)
+                .def("setDNSDomainNameManager",setDNSDomainNameManagerOF1)
+                .def("setDNSDomainNameManager",setDNSDomainNameManagerOF2)
+                .def("setHTTPHostNameManager",setHTTPHostNameManagerOF1)
+                .def("setHTTPHostNameManager",setHTTPHostNameManagerOF2)
+                .def("setSSLHostNameManager",setSSLHostNameManagerOF1)
+                .def("setSSLHostNameManager",setSSLHostNameManagerOF2)
+                .def("setTotalTCPFlows",&StackOpenFlow::setTotalTCPFlows)
+                .def("setTotalUDPFlows",&StackOpenFlow::setTotalUDPFlows)
+                .def(self_ns::str(self_ns::self))
+                .def("getStatistics",statisticsByProtocolOF)
+                .def("showFlows",showFlowsOpenFlow)
+                .def("enableFrequencyEngine",&StackOpenFlow::enableFrequencyEngine)
+                .def("enableLinkLayerTagging",&StackOpenFlow::enableLinkLayerTagging)
+                .def("enableNIDSEngine",&StackOpenFlow::enableNIDSEngine)
+                .def("getTCPFlowManager",&StackOpenFlow::getTCPFlowManager,return_internal_reference<>())
+                .def("getUDPFlowManager",&StackOpenFlow::getUDPFlowManager,return_internal_reference<>())
+                .def("setStatisticsLevel",&StackOpenFlow::setStatisticsLevel)
+                .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorOF1)
+                .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorOF2)
+                .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorOF1)
+                .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorOF2)
+                .def("setTCPIPSetManager", &StackOpenFlow::setTCPIPSetManager)
+                .def("setUDPIPSetManager", &StackOpenFlow::setUDPIPSetManager)
+                .def("setFlowsTimeout", &StackOpenFlow::setFlowsTimeout)
+                .def("releaseCache", releaseCacheOpenFlow)
+                .def("releaseCaches", releaseCachesOpenFlow)
+	;
 	
 	boost::python::class_<Regex, SharedPointer<Regex>,boost::noncopyable>("Regex",init<const std::string&,const std::string&>())
 		.def("getExpression",&Regex::getExpression,return_value_policy<return_by_value>(),
@@ -374,6 +426,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (PacketDispatcher::*setStackMobile)(StackMobile&) = 	&PacketDispatcher::setStack;
 	void (PacketDispatcher::*setStackLanIPv6)(StackLanIPv6&) = 	&PacketDispatcher::setStack;
 	void (PacketDispatcher::*setStackVirtual)(StackVirtual&) = 	&PacketDispatcher::setStack;
+	void (PacketDispatcher::*setStackOpenFlow)(StackOpenFlow&) = 	&PacketDispatcher::setStack;
 
 	boost::python::class_<PacketDispatcher,boost::noncopyable>("PacketDispatcher",
 		"Class that manage the packets and forwards to the associated network stack")
@@ -393,6 +446,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setStack",setStackMobile)
 		.def("setStack",setStackLanIPv6)
 		.def("setStack",setStackVirtual)
+		.def("setStack",setStackOpenFlow)
 		.def("enableShell",&PacketDispatcher::enableShell,
 			"Enables a python shell in order to interact with the system on real time")
 		.def(self_ns::str(self_ns::self))

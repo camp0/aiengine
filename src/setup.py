@@ -19,7 +19,7 @@ src_files += ["./gre/GREProtocol.cc","./vxlan/VxLanProtocol.cc","./openflow/Open
 src_files += ["./gprs/GPRSProtocol.cc","./http/HTTPProtocol.cc","./ssl/SSLProtocol.cc","./dns/DNSProtocol.cc"]
 src_files += ["./regex/Regex.cc","./regex/RegexManager.cc","./frequency/FrequencyProtocol.cc"]
 src_files += ["./frequency/FrequencyCounter.cc","./learner/LearnerEngine.cc","./names/DomainNameManager.cc"]
-src_files += ["System.cc","StackMobile.cc","StackLan.cc","StackLanIPv6.cc","StackVirtual.cc"]
+src_files += ["System.cc","StackMobile.cc","StackLan.cc","StackLanIPv6.cc","StackVirtual.cc","StackOpenFlow.cc"]
 src_files += ["py_wrapper.cc"]
 
 def setup_compiler():

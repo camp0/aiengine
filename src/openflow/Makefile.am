@@ -16,6 +16,7 @@ test_openflow_SOURCES =	../Multiplexer.cc ../Protocol.cc \
 			../ipset/IPSetManager.cc \
 			../udp/UDPProtocol.cc \
 			../udpgeneric/UDPGenericProtocol.cc \
+			../tcpgeneric/TCPGenericProtocol.cc \
 			../tcp/TCPProtocol.cc \
 			../regex/RegexManager.cc \
 			../regex/Regex.cc \

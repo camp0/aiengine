@@ -41,6 +41,7 @@
 #include "./learner/LearnerEngine.h"
 #include "StackLanTest.h"
 #include "StackVirtual.h"
+#include "StackOpenFlow.h"
 #include "./ipset/IPSet.h"
 #include "./ipset/IPBloomSet.h"
 
@@ -1448,6 +1449,50 @@ BOOST_AUTO_TEST_CASE ( test_case_17 )
         }
 }
 
+// Test the OpenFlow stack funcionality with regex and a ipset
+BOOST_AUTO_TEST_CASE ( test_case_18 )
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        StackOpenFlowPtr stack = StackOpenFlowPtr(new StackOpenFlow());
+        RegexManagerPtr re = RegexManagerPtr(new RegexManager());
+        SharedPointer<Regex> r = SharedPointer<Regex>(new Regex("a signature","^\x26\x01"));
+        SharedPointer<IPSet> ipset_tcp = SharedPointer<IPSet>(new IPSet("IPSet 1"));
+        SharedPointer<IPSetManager> ipset_mng = SharedPointer<IPSetManager>(new IPSetManager());
+
+        ipset_mng->addIPSet(ipset_tcp);
+        ipset_tcp->addIPAddress("192.168.2.14");
+
+        stack->setTCPIPSetManager(ipset_mng);
+
+        re->addRegex(r);
+        stack->setTCPRegexManager(re);
+
+        stack->setTotalTCPFlows(8);
+        stack->setTotalUDPFlows(8);
+        pd->setStack(stack);
+
+        pd->open("../pcapfiles/openflow.pcap");
+        pd->run();
+        pd->close();
+
+	// stack->showFlows();
+	// stack->setStatisticsLevel(4);
+	// stack->statistics();
+
+        FlowManagerPtr flows_tcp = stack->getTCPFlowManager().lock();
+
+        BOOST_CHECK(flows_tcp->getTotalFlows() == 1);
+        for (auto &flow: flows_tcp->getFlowTable()) {
+                BOOST_CHECK(flow->regex.lock() == r);
+		BOOST_CHECK(flow->ipset.lock() == ipset_tcp);
+        }
+
+        FlowManagerPtr flows_udp = stack->getUDPFlowManager().lock();
+        BOOST_CHECK(flows_udp->getTotalFlows() == 1);
+        for (auto &flow: flows_udp->getFlowTable()) {
+                BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomaly::UDP_BOGUS_HEADER);
+        }
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 

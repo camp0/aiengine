@@ -13,7 +13,7 @@ The main functionalities of AIEngine are:
 - Support for interact with the user while the engine is running.
 - Support for PCRE JIT for regex matching.
 - Support for regex graphs.
-- Support four types of NetworkStacks (lan,mobile, ipv6 and virtual).
+- Support five types of NetworkStacks (lan,mobile,ipv6,virtual and oflow).
 - Support Sets and Bloom filters for IP searches.
 - Support Linux and FreeBSD operating systems.
 - Support for HTTP,DNS and SSL Domains matching.
@@ -58,7 +58,8 @@ To use AIEngine just execute the binary aiengine or use the python binding.
 	  -k [ --key-learner ] arg (=80)    Sets the key for the Learner engine.
 
 	Optional arguments:
-	  -n [ --stack ] arg (=lan)    Sets the network stack (lan,mobile,lan6,virtual).
+	  -n [ --stack ] arg (=lan)    Sets the network stack (lan,mobile,lan6,virtual,
+				       oflow).
 	  -d [ --dumpflows ]           Dump the flows to stdout.
 	  -s [ --statistics ] arg (=0) Show statistics of the network stack (5 levels).
           -T [ --timeout ] arg (=180)  Sets the flows timeout.
@@ -72,7 +73,7 @@ To use AIEngine just execute the binary aiengine or use the python binding.
 
 NetworkStack types
 ---------------
-AIEngine supports four types of Network stacks depending on the network topology.
+AIEngine supports five types of Network stacks depending on the network topology.
 
 - StackLan (lan) Local Area Network based on IPv4.
 
@@ -81,6 +82,8 @@ AIEngine supports four types of Network stacks depending on the network topology
 - StackMobile (mobile) Network Mobile (Gn interface) for IPv4.
 
 - StackVirtual (virtual) Stack for virtual/cloud environments with VxLan and GRE Transparent.
+
+- StackOpenFlow (oflow) Stack for openflow environments.
 
 Integrating AIEngine with other systems 
 ---------------------------------------
@@ -108,6 +111,7 @@ The main objects that the python module provide are the following ones.
             StackLanIPv6
             StackMobile
             StackVirtual
+            StackOpenFlow
         PacketDispatcher
         PacketFrequencies
         Regex

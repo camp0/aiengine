@@ -1,9 +1,9 @@
 AIEngine (Artificial Inteligent Engine)
 =========
 
-AIEngine is a next generation interactive packet inspection engine with capabilities of learning
+AIEngine is a next generation interactive/programmable packet inspection engine with capabilities of learning
 without any human intervention and other functionalities such as NIDS functionality, 
-domain classification and so on.  
+domain classification, network collector and many others.  
 
 AIEngine helps network/security profesionals to identify traffic and develop
 signatures for use them on NIDS, Firewalls, Traffic classifiers and so on.
@@ -13,7 +13,7 @@ The main functionalities of AIEngine are:
 - Support for interact with the user while the engine is running.
 - Support for PCRE JIT for regex matching.
 - Support for regex graphs.
-- Support four types of NetworkStacks (lan,mobile, ipv6 and virtual).
+- Support five types of NetworkStacks (lan,mobile,ipv6,virtual and oflow).
 - Support Sets and Bloom filters for IP searches.
 - Support Linux and FreeBSD operating systems.
 - Support for HTTP,DNS and SSL Domains matching.
@@ -21,6 +21,7 @@ The main functionalities of AIEngine are:
 - Frequency analisys for unknown traffic and auto-regex generation.
 - Easy integration with databases (MySQL, Redis, etc...) for data correlation.
 - Easy integration with other packet engines (Netfilter).
+- Support memory clean caches for refresh stored memory information.
 
 Using AIEngine 
 ---------------
@@ -28,7 +29,7 @@ Using AIEngine
 To use AIEngine just execute the binary aiengine or use the python binding.
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
-	aiengine 0.9
+	aiengine 0.10
 	Mandatory arguments:
 	  -I [ --input ] arg                Sets the network interface ,pcap file or 
 	                                    directory with pcap files.
@@ -57,16 +58,22 @@ To use AIEngine just execute the binary aiengine or use the python binding.
 	  -k [ --key-learner ] arg (=80)    Sets the key for the Learner engine.
 
 	Optional arguments:
-	  -n [ --stack ] arg (=lan)    Sets the network stack (lan,mobile,lan6,virtual).
+	  -n [ --stack ] arg (=lan)    Sets the network stack (lan,mobile,lan6,virtual,
+				       oflow).
 	  -d [ --dumpflows ]           Dump the flows to stdout.
 	  -s [ --statistics ] arg (=0) Show statistics of the network stack (5 levels).
+          -T [ --timeout ] arg (=180)  Sets the flows timeout.
+          -P [ --protocol ] arg        Show statistics of a specific protocol of the 
+                                       network stack.
+          -e [ --release ]             Release the caches.
+          -l [ --release-cache ] arg   Release a specific cache.
 	  -p [ --pstatistics ]         Show statistics of the process.
 	  -h [ --help ]                Show help.
 	  -v [ --version ]             Show version string.
 
 NetworkStack types
 ---------------
-AIEngine supports four types of Network stacks depending on the network topology.
+AIEngine supports five types of Network stacks depending on the network topology.
 
 - StackLan (lan) Local Area Network based on IPv4.
 
@@ -75,6 +82,8 @@ AIEngine supports four types of Network stacks depending on the network topology
 - StackMobile (mobile) Network Mobile (Gn interface) for IPv4.
 
 - StackVirtual (virtual) Stack for virtual/cloud environments with VxLan and GRE Transparent.
+
+- StackOpenFlow (oflow) Stack for openflow environments.
 
 Integrating AIEngine with other systems 
 ---------------------------------------
@@ -102,6 +111,7 @@ The main objects that the python module provide are the following ones.
             StackLanIPv6
             StackMobile
             StackVirtual
+            StackOpenFlow
         PacketDispatcher
         PacketFrequencies
         Regex

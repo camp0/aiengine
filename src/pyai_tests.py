@@ -575,7 +575,6 @@ class StackLanIPv6Tests(unittest.TestCase):
         self.assertEqual(self.called_callback , 1)
 
 
-
 class StackLanLearningTests(unittest.TestCase):
 
     def setUp(self):
@@ -774,6 +773,35 @@ class StackVirtualTests(unittest.TestCase):
 
         self.assertEqual(r.getMatchs(), 1)
         self.assertEqual(self.called_callback,1)
+
+class StackOpenFlowTests(unittest.TestCase):
+
+    def setUp(self):
+        self.s = pyaiengine.StackOpenFlow()
+        self.dis = pyaiengine.PacketDispatcher()
+        self.dis.setStack(self.s)
+        self.s.setTotalTCPFlows(2048)
+        self.s.setTotalUDPFlows(1024)
+        self.called_callback = 0
+
+    def tearDown(self):
+        del self.s
+        del self.dis
+
+    def test1(self):
+        """ Create a regex for a detect the flow on a openflow network """
+
+        rm = pyaiengine.RegexManager()
+        r = pyaiengine.Regex("Bin directory",b"^\x26\x01")
+        rm.addRegex(r)
+        self.s.setTCPRegexManager(rm)
+
+        self.dis.open("../pcapfiles/openflow.pcap")
+        self.dis.run()
+        self.dis.close()
+
+        self.assertEqual(r.getMatchs(), 1)
+
 
 if __name__ == '__main__':
 

@@ -10,7 +10,8 @@ EXTRA_DIST = 	4udppackets.pcap sslflow.pcap \
 		tor_4flows.pcap \
 		amazon_4ssl_flows.pcap \
 		ipv6_google_dns.pcap ipv6_ah.pcap \
-		icq.pcapng vxlan_ftp.pcap gre_ssh.pcap
+		icq.pcapng vxlan_ftp.pcap gre_ssh.pcap \
+		openflow.pcap
 
 MAINTAINERCLEANFILES = Makefile.in 
 
