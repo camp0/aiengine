@@ -848,6 +848,45 @@ BOOST_FIXTURE_TEST_CASE(test_case_20,StackLanTest) // Tests for release the cach
 	}
 }
 
+// Test Regex linked with a generic ipv6 exploit
+BOOST_FIXTURE_TEST_CASE(test_case_21,StackLanTest)
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
+        SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("generic exploit1","^(No hacker).*$"));
+        SharedPointer<Regex> r2 = SharedPointer<Regex>(new Regex("generic exploit2","^(Upgrade Your Liquor Cabinet).*$"));
+        SharedPointer<Regex> r3 = SharedPointer<Regex>(new Regex("generic exploit3","^\x90\x90\x90\x90\x90\x90\x90\x90.*$"));
+        SharedPointer<Regex> r4 = SharedPointer<Regex>(new Regex("generic exploit4","^(Upgrade Your Liquor Cabinet).*$"));
+
+	r1->setNextRegex(r2);
+	r2->setNextRegex(r3);
+	r3->setNextRegex(r4);
+
+        rmng->addRegex(r1);
+
+        tcp_generic6->setRegexManager(rmng);
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+        pd->open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap");
+        pd->run();
+        pd->close();
+
+        // Check the regex for results
+        BOOST_CHECK(r1->getMatchs() == 1);
+        BOOST_CHECK(r1->getTotalEvaluates() == 1);
+
+        BOOST_CHECK(r2->getMatchs() == 1);
+        BOOST_CHECK(r2->getTotalEvaluates() == 46);
+        
+	BOOST_CHECK(r3->getMatchs() == 1);
+        BOOST_CHECK(r3->getTotalEvaluates() == 1);
+        
+	BOOST_CHECK(r4->getMatchs() == 1);
+        BOOST_CHECK(r4->getTotalEvaluates() == 1);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

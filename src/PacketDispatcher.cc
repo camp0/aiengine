@@ -344,6 +344,12 @@ void PacketDispatcher::enableShell(bool enable) {
 	user_shell_->enableShell(enable);	
 }
 
+void PacketDispatcher::unsetStack() {
+
+	stack_name_ = "None";
+       	defMux_.reset();
+}
+
 #endif
 
 std::ostream& operator<< (std::ostream& out, const PacketDispatcher& pdis) {

@@ -74,7 +74,7 @@ The Learner engine needs a key for analyze the flows that have been process by t
 Optional arguments.
 .TP
 \fB\-n\fR, \fB\-\-stack\fR
-Selects the Network stack for the analysis. There is four network stacks availables at the moment. The StackLan contains the configuration of a LAN network (ethernet,ip,tcp,udp),the StackMobile contains a 3G stack (ethernet,ip,udp,gprs,ip,udp,tcp), StackLanIPv6 contains the configuration of a LAN network with IPv6 support and StackVirtual that have the configuration of Virtual/Cloud enviroments with support for tunnels GRE/VxLan (ethernet,ip,udp,gre,vxlan,ip,udp,tcp). 
+Selects the Network stack for the analysis. There is five network stacks availables at the moment (lan,lan6.mobile,virtual.oflow). The StackLan(lan) contains the configuration of a LAN network (ethernet,ip,tcp,udp),the StackMobile(mobile) contains a 3G stack (ethernet,ip,udp,gprs,ip,udp,tcp), StackLanIPv6(lan6) contains the configuration of a LAN network with IPv6 support, StackVirtual(virtual) that have the configuration of Virtual/Cloud enviroments with support for tunnels GRE/VxLan (ethernet,ip,udp,gre,vxlan,ip,udp,tcp) and StackOpenFlowi(oflow) that contains the configuration for openflow networks (ethernet,ip,tcp,openflow,ethernet,ip,udp,tcp). 
 .TP
 \fB\-d\fR, \fB\-\-dumpflows\fR
 Dumps the flows processes to the stdout.

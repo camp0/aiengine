@@ -447,6 +447,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setStack",setStackLanIPv6)
 		.def("setStack",setStackVirtual)
 		.def("setStack",setStackOpenFlow)
+		.def("unsetStack",&PacketDispatcher::unsetStack)
 		.def("enableShell",&PacketDispatcher::enableShell,
 			"Enables a python shell in order to interact with the system on real time")
 		.def(self_ns::str(self_ns::self))

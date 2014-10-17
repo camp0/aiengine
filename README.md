@@ -2,10 +2,9 @@ AIEngine (Artificial Inteligent Engine)
 =========
 
 AIEngine is a next generation interactive/programmable packet inspection engine with capabilities of learning
-without any human intervention and other functionalities such as NIDS functionality, 
-domain classification, network collector and many others.  
+without any human intervention, NIDS functionality, DNS domain classification, network collector and many others. 
 
-AIEngine helps network/security profesionals to identify traffic and develop
+AIEngine also helps network/security profesionals to identify traffic and develop
 signatures for use them on NIDS, Firewalls, Traffic classifiers and so on.
 
 The main functionalities of AIEngine are:

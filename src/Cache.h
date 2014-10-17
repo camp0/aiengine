@@ -51,8 +51,8 @@ public:
 	typedef std::shared_ptr <A_Type> A_TypePtr;
 	typedef std::weak_ptr <A_Type> A_TypePtrWeak;
 #endif
-    	explicit Cache():total_(0),total_acquires_(0),total_releases_(0),total_fails_(0),name_("") {}
     	explicit Cache(std::string name):total_(0),total_acquires_(0),total_releases_(0),total_fails_(0),name_(name) {}
+    	explicit Cache():Cache("") {}
     	virtual ~Cache() { items_.clear();}
 
 	void release(A_TypePtr a) {  
@@ -91,7 +91,7 @@ public:
 	
 		int real_items = 0;
 
-		if(number > total_)
+		if((std::size_t)number > total_)
 			real_items = total_;
 		else
 			real_items = number;
@@ -121,7 +121,7 @@ public:
         void statistics() { statistics(std::cout);}
 
 private:
-	int32_t total_;
+	std::size_t total_;
 	int32_t total_acquires_;
 	int32_t total_releases_;
 	int32_t total_fails_;
