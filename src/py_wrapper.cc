@@ -516,6 +516,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Returns a list of the bytes of the payload of the flow.")
 		.def("getIPSet",&Flow::getIPSet,return_internal_reference<>(),
 			"Returns the IPset attached to the flow if they IPs matchs.")
+		.def("getAnomaly",&Flow::getFlowAnomaly,return_value_policy<return_by_value>(),
+			"Returns the attached anomaly of the flow.")
 		.def(self_ns::str(self_ns::self))
 	;
 

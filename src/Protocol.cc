@@ -34,9 +34,15 @@ void Protocol::setDatabaseAdaptor(boost::python::object &dbptr) {
 
 void Protocol::setDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) { 
 
-	dbptr_ = dbptr; 
-	is_set_db_ = true; 
-	packet_sampling_ = packet_sampling; 
+	// The user could unref the DatabaseAdaptor on execution time
+	if (dbptr.is_none()) {
+		is_set_db_ = false;
+		Py_DECREF(dbptr_.ptr());
+	} else {
+		dbptr_ = dbptr; 
+		is_set_db_ = true; 
+		packet_sampling_ = packet_sampling; 
+	}
 }
 
 #ifdef HAVE_ADAPTOR
