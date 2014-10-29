@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#ifndef SRC_FREQUENCY_FREQUENCIES_H_
-#define SRC_FREQUENCY_FREQUENCIES_H_
+#ifndef SRC_PROTOCOLS_FREQUENCY_FREQUENCIES_H_
+#define SRC_PROTOCOLS_FREQUENCY_FREQUENCIES_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -161,4 +161,4 @@ private:
 
 } // namespace aiengine
 
-#endif  // SRC_FREQUENCY_FREQUENCIES_H_
+#endif  // SRC_PROTOCOLS_FREQUENCY_FREQUENCIES_H_
