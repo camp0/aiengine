@@ -30,11 +30,11 @@
 #include "../../test/tests_packets.h"
 #include "../Protocol.h"
 #include "../Multiplexer.h"
-#include "../ethernet/EthernetProtocol.h"
-#include "../vlan/VLanProtocol.h"
-#include "../ip/IPProtocol.h"
-#include "../ip6/IPv6Protocol.h"
-#include "../tcp/TCPProtocol.h"
+#include "../protocols/ethernet/EthernetProtocol.h"
+#include "../protocols/vlan/VLanProtocol.h"
+#include "../protocols/ip/IPProtocol.h"
+#include "../protocols/ip6/IPv6Protocol.h"
+#include "../protocols/tcp/TCPProtocol.h"
 
 #ifdef HAVE_BLOOMFILTER
 #include <boost/bloom_filter/basic_bloom_filter.hpp>

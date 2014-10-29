@@ -25,9 +25,9 @@
 #define _test_learner_H_
 
 #include <string>
-#include "../../test/tests_packets.h"
+#include "../test/tests_packets.h"
 #include "LearnerEngine.h"
-#include "../frequency/FrequencyGroup.h"
+#include "protocols/frequency/FrequencyGroup.h"
 
 using namespace aiengine;
 

@@ -21,38 +21,38 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			FlowForwarder.h \
 			Signature.h \
 			Interpreter.h \
-			./ethernet/EthernetProtocol.h \
-			./vlan/VLanProtocol.h \
-			./mpls/MPLSProtocol.h \
-			./ip/IPProtocol.h \
-			./ipset/IPAbstractSet.h \
-			./ipset/IPBloomSet.h \
-			./ipset/IPSet.h \
-			./ipset/IPSetManager.h \
-			./ip6/IPv6Protocol.h \
-			./icmp/ICMPProtocol.h \
-			./icmp6/ICMPv6Protocol.h \
-			./udp/UDPProtocol.h \
-			./tcp/TCPProtocol.h \
-			./tcpgeneric/TCPGenericProtocol.h \
-			./udpgeneric/UDPGenericProtocol.h \
-			./gprs/GPRSProtocol.h \
-			./vxlan/VxLanProtocol.h \
-			./openflow/OpenFlowProtocol.h \
-			./gre/GREProtocol.h \
-			./http/HTTPProtocol.h \
-			./ssl/SSLProtocol.h \
-			./dns/DNSProtocol.h \
-                        ./flow/FlowCache.h \
-                        ./flow/FlowManager.h \
+                        flow/FlowCache.h \
+                        flow/FlowManager.h \
                         Flow.h \
-			./frequency/Frequencies.h \
-			./frequency/PacketFrequencies.h \
-			./frequency/FrequencyProtocol.h \
-			./learner/LearnerEngine.h \
-			./names/DomainName.h \
-			./names/DomainNode.h \
-			./names/DomainNameManager.h \
+			ipset/IPAbstractSet.h \
+			ipset/IPBloomSet.h \
+			ipset/IPSet.h \
+			ipset/IPSetManager.h \
+			learner/LearnerEngine.h \
+			names/DomainName.h \
+			names/DomainNode.h \
+			names/DomainNameManager.h \
+			protocols/ethernet/EthernetProtocol.h \
+			protocols/vlan/VLanProtocol.h \
+			protocols/mpls/MPLSProtocol.h \
+			protocols/ip/IPProtocol.h \
+			protocols/ip6/IPv6Protocol.h \
+			protocols/icmp/ICMPProtocol.h \
+			protocols/icmp6/ICMPv6Protocol.h \
+			protocols/udp/UDPProtocol.h \
+			protocols/tcp/TCPProtocol.h \
+			protocols/tcpgeneric/TCPGenericProtocol.h \
+			protocols/udpgeneric/UDPGenericProtocol.h \
+			protocols/gprs/GPRSProtocol.h \
+			protocols/vxlan/VxLanProtocol.h \
+			protocols/openflow/OpenFlowProtocol.h \
+			protocols/gre/GREProtocol.h \
+			protocols/http/HTTPProtocol.h \
+			protocols/ssl/SSLProtocol.h \
+			protocols/dns/DNSProtocol.h \
+			protocols/frequency/Frequencies.h \
+			protocols/frequency/PacketFrequencies.h \
+			protocols/frequency/FrequencyProtocol.h \
 			System.h \
 			StackLanTest.h \
 			Serializable.h \
@@ -65,35 +65,35 @@ aiengine_core_sources =	Multiplexer.cc \
 			Protocol.cc \
 			Signature.cc \
 			Interpreter.cc \
-			./flow/FlowManager.cc \
-			./ethernet/EthernetProtocol.cc \
-			./vlan/VLanProtocol.cc \
-			./mpls/MPLSProtocol.cc \
-			./ip/IPProtocol.cc \
-			./ipset/IPAbstractSet.cc \
-			./ipset/IPSet.cc \
-			./ipset/IPBloomSet.cc \
-			./ipset/IPSetManager.cc \
-			./ip6/IPv6Protocol.cc \
-			./icmp/ICMPProtocol.cc \
-			./icmp6/ICMPv6Protocol.cc \
-			./udp/UDPProtocol.cc \
-			./tcp/TCPProtocol.cc \
-			./tcpgeneric/TCPGenericProtocol.cc \
-			./udpgeneric/UDPGenericProtocol.cc \
-			./gprs/GPRSProtocol.cc \
-			./vxlan/VxLanProtocol.cc \
-			./openflow/OpenFlowProtocol.cc \
-			./gre/GREProtocol.cc \
-			./http/HTTPProtocol.cc \
-			./ssl/SSLProtocol.cc \
-			./dns/DNSProtocol.cc \
-			./regex/Regex.cc \
-			./regex/RegexManager.cc \
-			./frequency/FrequencyProtocol.cc \
-			./frequency/FrequencyCounter.cc \
-			./learner/LearnerEngine.cc \
-			./names/DomainNameManager.cc \
+			flow/FlowManager.cc \
+			protocols/ethernet/EthernetProtocol.cc \
+			protocols/vlan/VLanProtocol.cc \
+			protocols/mpls/MPLSProtocol.cc \
+			protocols/ip/IPProtocol.cc \
+			ipset/IPAbstractSet.cc \
+			ipset/IPSet.cc \
+			ipset/IPBloomSet.cc \
+			ipset/IPSetManager.cc \
+			protocols/ip6/IPv6Protocol.cc \
+			protocols/icmp/ICMPProtocol.cc \
+			protocols/icmp6/ICMPv6Protocol.cc \
+			protocols/udp/UDPProtocol.cc \
+			protocols/tcp/TCPProtocol.cc \
+			protocols/tcpgeneric/TCPGenericProtocol.cc \
+			protocols/udpgeneric/UDPGenericProtocol.cc \
+			protocols/gprs/GPRSProtocol.cc \
+			protocols/vxlan/VxLanProtocol.cc \
+			protocols/openflow/OpenFlowProtocol.cc \
+			protocols/gre/GREProtocol.cc \
+			protocols/http/HTTPProtocol.cc \
+			protocols/ssl/SSLProtocol.cc \
+			protocols/dns/DNSProtocol.cc \
+			regex/Regex.cc \
+			regex/RegexManager.cc \
+			protocols/frequency/FrequencyProtocol.cc \
+			protocols/frequency/FrequencyCounter.cc \
+			learner/LearnerEngine.cc \
+			names/DomainNameManager.cc \
 			System.cc \
 			NetworkStack.cc \
 			StackMobile.cc StackLan.cc \
@@ -125,31 +125,31 @@ TEST = tests
 check_PROGRAMS = tests 
 
 tests_SOURCES = $(aiengine_core_sources) \
-		./ethernet/test_ethernet.cc \
-		./vlan/test_vlan.cc \
-		./mpls/test_mpls.cc \
-		./flow/test_flows.cc \
-		./ip/test_ip.cc \
-		./ip6/test_ip6.cc \
-		./ipset/test_ipset.cc \
-		./udp/test_udp.cc \
-		./tcp/test_tcp.cc \
-		./tcpgeneric/test_tcpgeneric.cc \
-		./udpgeneric/test_udpgeneric.cc \
-		./dns/test_dns.cc \
-		./gprs/test_gprs.cc \
-		./vxlan/test_vxlan.cc \
-		./openflow/test_openflow.cc \
-		./gre/test_gre.cc \
-		./http/test_http.cc \
-		./icmp/test_icmp.cc \
-		./icmp6/test_icmp6.cc \
-		./frequency/test_frequency.cc \
-		./regex/test_regex.cc \
-		./ssl/test_ssl.cc \
-		./user/test_users.cc \
-		./learner/test_learner.cc \
-		./names/test_names.cc \
+		protocols/ethernet/test_ethernet.cc \
+		protocols/vlan/test_vlan.cc \
+		protocols/mpls/test_mpls.cc \
+		flow/test_flows.cc \
+		ipset/test_ipset.cc \
+		protocols/ip/test_ip.cc \
+		protocols/ip6/test_ip6.cc \
+		protocols/udp/test_udp.cc \
+		protocols/tcp/test_tcp.cc \
+		protocols/tcpgeneric/test_tcpgeneric.cc \
+		protocols/udpgeneric/test_udpgeneric.cc \
+		protocols/dns/test_dns.cc \
+		protocols/gprs/test_gprs.cc \
+		protocols/vxlan/test_vxlan.cc \
+		protocols/openflow/test_openflow.cc \
+		protocols/gre/test_gre.cc \
+		protocols/http/test_http.cc \
+		protocols/icmp/test_icmp.cc \
+		protocols/icmp6/test_icmp6.cc \
+		protocols/frequency/test_frequency.cc \
+		protocols/ssl/test_ssl.cc \
+		regex/test_regex.cc \
+		user/test_users.cc \
+		learner/test_learner.cc \
+		names/test_names.cc \
 		tests.cc 
 
 tests_LDFLAGS = 	-DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ \

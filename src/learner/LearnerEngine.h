@@ -38,9 +38,9 @@
 #include <boost/python.hpp>
 #endif
 
-#include "../frequency/PacketFrequencies.h"
-#include "../flow/FlowManager.h"
-#include "../frequency/FrequencyGroup.h"
+#include "protocols/frequency/PacketFrequencies.h"
+#include "protocols/frequency/FrequencyGroup.h"
+#include "flow/FlowManager.h"
 
 namespace aiengine {
 

@@ -33,11 +33,11 @@
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/mem_fun.hpp>
 #include <fstream>
-#include "../Flow.h"
-#include "../Protocol.h"
+#include "Flow.h"
+#include "Protocol.h"
 #include "FlowCache.h"
-#include "../Cache.h"
-#include "../tcp/TCPInfo.h"
+#include "Cache.h"
+#include "../protocols/tcp/TCPInfo.h"
 
 namespace aiengine {
 

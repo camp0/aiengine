@@ -37,8 +37,8 @@
 #include "log4cxx/basicconfigurator.h"
 #endif
 #include "PacketDispatcher.h"
-#include "./frequency/FrequencyGroup.h"
-#include "./learner/LearnerEngine.h"
+#include "protocols/frequency/FrequencyGroup.h"
+#include "learner/LearnerEngine.h"
 #include "System.h"
 #include "StackLan.h"
 #include "StackMobile.h"

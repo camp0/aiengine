@@ -8,31 +8,31 @@ SUBDIRS = 	src \
 		utils \
 		examples \
 		pcapfiles \
-		src/ethernet \
-		src/vlan \
-		src/mpls \
-		src/ip \
-		src/ip6 \
 		src/ipset \
-		src/gprs \
-		src/vxlan \
-		src/openflow \
-		src/gre \
-		src/icmp \
-		src/icmp6 \
-		src/udp \
-		src/tcp \
-		src/http \
-		src/ssl \
-		src/dns \
-		src/flow \
-		src/tcpgeneric \
-		src/udpgeneric \
 		src/regex \
 		src/user \
-		src/frequency \
 		src/learner \
-		src/names 
+		src/names \
+		src/flow \
+		src/protocols/ethernet \
+		src/protocols/vlan \
+		src/protocols/mpls \
+		src/protocols/ip \
+		src/protocols/ip6 \
+		src/protocols/gprs \
+		src/protocols/vxlan \
+		src/protocols/openflow \
+		src/protocols/gre \
+		src/protocols/icmp \
+		src/protocols/icmp6 \
+		src/protocols/udp \
+		src/protocols/tcp \
+		src/protocols/http \
+		src/protocols/ssl \
+		src/protocols/dns \
+		src/protocols/tcpgeneric \
+		src/protocols/udpgeneric \
+		src/protocols/frequency 
 
 dist_noinst_SCRIPTS = autogen.sh
 

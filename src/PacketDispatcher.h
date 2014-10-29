@@ -42,7 +42,7 @@
 #endif
 #include "NetworkStack.h"
 #include "Multiplexer.h"
-#include "./ethernet/EthernetProtocol.h"
+#include "./protocols/ethernet/EthernetProtocol.h"
 #include "Protocol.h"
 #include "StackLan.h"
 #include "StackMobile.h"

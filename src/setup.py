@@ -11,14 +11,21 @@ from distutils.extension import Extension
 """ List of the files of the lib """
 src_files =  ["Multiplexer.cc","FlowForwarder.cc","PacketDispatcher.cc","Flow.cc","Protocol.cc"]
 src_files += ["Signature.cc","Interpreter.cc","NetworkStack.cc"]
-src_files += ["./flow/FlowManager.cc","./ethernet/EthernetProtocol.cc","./vlan/VLanProtocol.cc","./mpls/MPLSProtocol.cc"]
-src_files += ["./ip/IPProtocol.cc","./ipset/IPAbstractSet.cc","./ipset/IPSet.cc","./ipset/IPBloomSet.cc","./ipset/IPSetManager.cc"]
-src_files += ["./ip6/IPv6Protocol.cc","./icmp6/ICMPv6Protocol.cc","./icmp/ICMPProtocol.cc","./udp/UDPProtocol.cc","./tcp/TCPProtocol.cc"]
-src_files += ["./tcpgeneric/TCPGenericProtocol.cc","./udpgeneric/UDPGenericProtocol.cc"]
-src_files += ["./gre/GREProtocol.cc","./vxlan/VxLanProtocol.cc","./openflow/OpenFlowProtocol.cc"]
-src_files += ["./gprs/GPRSProtocol.cc","./http/HTTPProtocol.cc","./ssl/SSLProtocol.cc","./dns/DNSProtocol.cc"]
-src_files += ["./regex/Regex.cc","./regex/RegexManager.cc","./frequency/FrequencyProtocol.cc"]
-src_files += ["./frequency/FrequencyCounter.cc","./learner/LearnerEngine.cc","./names/DomainNameManager.cc"]
+src_files += ["flow/FlowManager.cc"] 
+src_files += ["protocols/ethernet/EthernetProtocol.cc"]
+src_files += ["protocols/vlan/VLanProtocol.cc"]
+src_files += ["protocols/mpls/MPLSProtocol.cc"]
+src_files += ["protocols/ip/IPProtocol.cc"]
+src_files += ["ipset/IPAbstractSet.cc","ipset/IPSet.cc","ipset/IPBloomSet.cc","ipset/IPSetManager.cc"]
+src_files += ["protocols/ip6/IPv6Protocol.cc"]
+src_files += ["protocols/icmp6/ICMPv6Protocol.cc"]
+src_files += ["protocols/icmp/ICMPProtocol.cc"]
+src_files += ["protocols/udp/UDPProtocol.cc","protocols/tcp/TCPProtocol.cc"]
+src_files += ["protocols/tcpgeneric/TCPGenericProtocol.cc","protocols/udpgeneric/UDPGenericProtocol.cc"]
+src_files += ["protocols/gre/GREProtocol.cc","protocols/vxlan/VxLanProtocol.cc","protocols/openflow/OpenFlowProtocol.cc"]
+src_files += ["protocols/gprs/GPRSProtocol.cc","protocols/http/HTTPProtocol.cc","protocols/ssl/SSLProtocol.cc","protocols/dns/DNSProtocol.cc"]
+src_files += ["regex/Regex.cc","regex/RegexManager.cc","protocols/frequency/FrequencyProtocol.cc"]
+src_files += ["protocols/frequency/FrequencyCounter.cc","learner/LearnerEngine.cc","names/DomainNameManager.cc"]
 src_files += ["System.cc","StackMobile.cc","StackLan.cc","StackLanIPv6.cc","StackVirtual.cc","StackOpenFlow.cc"]
 src_files += ["py_wrapper.cc"]
 
@@ -32,7 +39,9 @@ def setup_compiler():
     macros.append(('PYTHON_BINDING','1'))
     macros.append(('HAVE_LIBPCRE','1'))
     macros.append(('HAVE_ADAPTOR','1'))
+    includes.append(".")
     includes.append("..")
+    includes.append("../..")
 
     if (sys.platform == 'sunos5'):
         config_vars['LDSHARED'] = "gcc -G"
@@ -69,7 +78,7 @@ if __name__ == "__main__":
     aiengine_module.define_macros = macros
 
     setup(name="aiengine",
-        version = "0.10",
+        version = "0.11",
         author = "Luis Campo Giralte",
         author_email = "luis.camp0.2009 at gmail.com",
         url = "https://bitbucket.org/camp0/aiengine",
@@ -80,7 +89,7 @@ if __name__ == "__main__":
         ext_modules = [aiengine_module],
         py_modules = ["pyaiengine"],
         classifiers=[
-            "Development Status :: 0.10 - Beta",
+            "Development Status :: 0.11 - Beta",
             "Environment :: Console",
             "Intended Audience :: Information Technology",
             "Intended Audience :: Science/Research",

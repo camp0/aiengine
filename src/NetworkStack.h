@@ -27,18 +27,18 @@
 #include <iostream>
 #include <fstream>
 #include "Multiplexer.h"
-#include "./names/DomainNameManager.h"
-#include "./regex/RegexManager.h"
-#include "./flow/FlowManager.h"
+#include "names/DomainNameManager.h"
+#include "regex/RegexManager.h"
+#include "flow/FlowManager.h"
 #include "DatabaseAdaptor.h"
-#include "./ipset/IPSetManager.h"
-#include "./tcp/TCPProtocol.h"
-#include "./udp/UDPProtocol.h"
-#include "./tcpgeneric/TCPGenericProtocol.h"
-#include "./udpgeneric/UDPGenericProtocol.h"
-#include "./dns/DNSProtocol.h"
-#include "./ssl/SSLProtocol.h"
-#include "./http/HTTPProtocol.h"
+#include "ipset/IPSetManager.h"
+#include "./protocols/tcp/TCPProtocol.h"
+#include "./protocols/udp/UDPProtocol.h"
+#include "./protocols/tcpgeneric/TCPGenericProtocol.h"
+#include "./protocols/udpgeneric/UDPGenericProtocol.h"
+#include "./protocols/dns/DNSProtocol.h"
+#include "./protocols/ssl/SSLProtocol.h"
+#include "./protocols/http/HTTPProtocol.h"
 
 namespace aiengine {
 
