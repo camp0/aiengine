@@ -62,6 +62,9 @@ void Flow::reset() {
 	http_host.reset();
 	ssl_host.reset();
 	http_ua.reset();
+	sip_uri.reset();
+	sip_from.reset();
+	sip_to.reset();
 	regex.reset();
 	dns_domain.reset();
 	tcp_info.reset();

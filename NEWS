@@ -89,3 +89,4 @@ Features/Changes of 0.11
 - Port to Mac/Windows (TODO)
 - DatabaseAdaptors can be removed and added on execution.
 - Fix DNSQueryTypes minor issue.
+- Support for SIP protocol.

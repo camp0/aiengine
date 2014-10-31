@@ -291,6 +291,7 @@ src/protocols/tcp/Makefile
 src/protocols/http/Makefile
 src/protocols/ssl/Makefile
 src/protocols/dns/Makefile
+src/protocols/sip/Makefile
 src/protocols/tcpgeneric/Makefile
 src/protocols/udpgeneric/Makefile
 src/protocols/frequency/Makefile

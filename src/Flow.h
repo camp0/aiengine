@@ -44,6 +44,9 @@
 #include "protocols/ssl/SSLHost.h"
 #include "protocols/tcp/TCPInfo.h"
 #include "protocols/gprs/GPRSInfo.h"
+#include "protocols/sip/SIPUri.h"
+#include "protocols/sip/SIPFrom.h"
+#include "protocols/sip/SIPTo.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -110,6 +113,9 @@ public:
 	WeakPointer<HTTPHost> http_host;
 	WeakPointer<HTTPUserAgent> http_ua;	
 	WeakPointer<SSLHost> ssl_host;
+	WeakPointer<SIPUri> sip_uri;
+	WeakPointer<SIPFrom> sip_from;
+	WeakPointer<SIPTo> sip_to;
 	WeakPointer<Frequencies> frequencies;
 	WeakPointer<PacketFrequencies> packet_frequencies;
 	FlowForwarderPtrWeak forwarder;

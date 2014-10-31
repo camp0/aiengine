@@ -193,6 +193,12 @@ void FlowManager::showFlows(std::basic_ostream<char>& out) {
 		
 		if(flow->ssl_host.lock()) out << " Host:" << flow->ssl_host.lock()->getName();	
 		
+		if(flow->sip_uri.lock()) out << " SIPUri:" << flow->sip_uri.lock()->getName();	
+		
+		if(flow->sip_from.lock()) out << " SIPFrom:" << flow->sip_from.lock()->getName();	
+		
+		if(flow->sip_to.lock()) out << " SIPTo:" << flow->sip_to.lock()->getName();	
+		
 		if(flow->frequencies.lock()) out << boost::format("%-8s") % flow->frequencies.lock()->getFrequenciesString();
 
 		out << std::endl;
