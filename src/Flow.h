@@ -35,18 +35,12 @@
 #include "IPAddress.h"
 #include "ipset/IPAbstractSet.h"
 #include "regex/Regex.h"
+#include "StringCache.h"
 #include "protocols/frequency/Frequencies.h"
 #include "protocols/frequency/PacketFrequencies.h"
-#include "protocols/http/HTTPUri.h"
-#include "protocols/http/HTTPHost.h"
-#include "protocols/http/HTTPUserAgent.h"
 #include "protocols/dns/DNSDomain.h"
-#include "protocols/ssl/SSLHost.h"
 #include "protocols/tcp/TCPInfo.h"
 #include "protocols/gprs/GPRSInfo.h"
-#include "protocols/sip/SIPUri.h"
-#include "protocols/sip/SIPFrom.h"
-#include "protocols/sip/SIPTo.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -109,13 +103,14 @@ public:
 	WeakPointer<GPRSInfo> gprs_info;
 	WeakPointer<DNSDomain> dns_domain;
 	WeakPointer<Regex> regex;
-	WeakPointer<HTTPUri> http_uri;
-	WeakPointer<HTTPHost> http_host;
-	WeakPointer<HTTPUserAgent> http_ua;	
-	WeakPointer<SSLHost> ssl_host;
-	WeakPointer<SIPUri> sip_uri;
-	WeakPointer<SIPFrom> sip_from;
-	WeakPointer<SIPTo> sip_to;
+	WeakPointer<StringCache> http_uri;
+	WeakPointer<StringCache> http_host;
+	WeakPointer<StringCache> http_ua;	
+	WeakPointer<StringCache> ssl_host;
+	WeakPointer<StringCache> sip_uri;
+	WeakPointer<StringCache> sip_from;
+	WeakPointer<StringCache> sip_to;
+	WeakPointer<StringCache> sip_via;
 	WeakPointer<Frequencies> frequencies;
 	WeakPointer<PacketFrequencies> packet_frequencies;
 	FlowForwarderPtrWeak forwarder;
@@ -150,14 +145,14 @@ public:
 		return l;
 	} 
 
-	HTTPUri& getHTTPUri() const { return *http_uri.lock().get();}
-	HTTPHost& getHTTPHost() const { return *http_host.lock().get();}
-	HTTPUserAgent& getHTTPUserAgent() const { return *http_ua.lock().get();}
+	StringCache& getHTTPUri() const { return *http_uri.lock().get();}
+	StringCache& getHTTPHost() const { return *http_host.lock().get();}
+	StringCache& getHTTPUserAgent() const { return *http_ua.lock().get();}
 	Frequencies& getFrequencies() const { return *frequencies.lock().get();}
 	PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.lock().get();}
 	Regex& getRegex() const { return *regex.lock().get();}
 	DNSDomain& getDNSDomain() const { return *dns_domain.lock().get();}
-	SSLHost& getSSLHost() const { return *ssl_host.lock().get();}
+	StringCache& getSSLHost() const { return *ssl_host.lock().get();}
 	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
 	std::string getFlowAnomaly() const { return PacketAnomalyToString.at(static_cast<std::int8_t>(pa_)); }
 

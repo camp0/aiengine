@@ -115,6 +115,32 @@ void Protocol::infoMessage(const std::string& msg) {
 #endif
 }
 
+void Protocol::showCacheMap(std::basic_ostream<char>& out,GenericMapType &mt, const std::string &title, const std::string &item_name) {
+
+        out << "\t" << title << " usage" << std::endl;
+
+        std::vector<std::pair<std::string,StringCacheHits>> g_list(mt.begin(),mt.end());
+        // Sort by using lambdas
+        std::sort(
+                g_list.begin(),
+                g_list.end(),
+                [](std::pair<std::string,StringCacheHits> const &a,
+                        std::pair<std::string,StringCacheHits> const &b)
+                {
+                        int v1 = std::get<1>(a.second);
+                        int v2 = std::get<1>(b.second);
+
+                        return v1 > v2;
+        });
+
+        for(auto it = g_list.begin(); it!=g_list.end(); ++it) {
+                SharedPointer<StringCache> uri = std::get<0>((*it).second);
+                int count = std::get<1>((*it).second);
+                if(uri)
+                         out << "\t\t" << item_name << ":" << uri->getName() <<":" << count << std::endl;
+        }
+}
+
 
 } // namespace aiengine  
 

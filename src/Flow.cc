@@ -65,6 +65,7 @@ void Flow::reset() {
 	sip_uri.reset();
 	sip_from.reset();
 	sip_to.reset();
+	sip_via.reset();
 	regex.reset();
 	dns_domain.reset();
 	tcp_info.reset();

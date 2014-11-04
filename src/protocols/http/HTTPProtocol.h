@@ -37,10 +37,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
-#include "HTTPUri.h"
-#include "HTTPHost.h"
-#include "HTTPUserAgent.h"
-#include "HTTPReferer.h"
+#include "StringCache.h"
 #include "Cache.h"
 #include <unordered_map>
 #include "names/DomainNameManager.h"
@@ -58,9 +55,9 @@ public:
                 http_ua_(new Regex("User Agent expression","User-Agent: .*?\r\n")),
 		http_header_(nullptr),total_bytes_(0),
 		total_allow_hosts_(0),total_ban_hosts_(0),total_requests_(0),
-		uri_cache_(new Cache<HTTPUri>("Uri cache")),
-		host_cache_(new Cache<HTTPHost>("Host cache")),
-		ua_cache_(new Cache<HTTPUserAgent>("UserAgent cache")),
+		uri_cache_(new Cache<StringCache>("Uri cache")),
+		host_cache_(new Cache<StringCache>("Host cache")),
+		ua_cache_(new Cache<StringCache>("UserAgent cache")),
 		ua_map_(),host_map_(),uri_map_(),
 		host_mng_(),ban_host_mng_(),
 		flow_mng_() {}	
@@ -141,17 +138,13 @@ private:
 	int32_t total_ban_hosts_;
 	int32_t total_requests_;
 
-	Cache<HTTPUri>::CachePtr uri_cache_;
-	Cache<HTTPHost>::CachePtr host_cache_;
-	Cache<HTTPUserAgent>::CachePtr ua_cache_;
+	Cache<StringCache>::CachePtr uri_cache_;
+	Cache<StringCache>::CachePtr host_cache_;
+	Cache<StringCache>::CachePtr ua_cache_;
 
-	typedef std::pair<SharedPointer<HTTPUri>,int32_t> UriHits;
-	typedef std::pair<SharedPointer<HTTPHost>,int32_t> HostHits;
-	typedef std::pair<SharedPointer<HTTPUserAgent>,int32_t> UAHits;
-
-	typedef std::map<std::string,UriHits> UriMapType;
-	typedef std::map<std::string,HostHits> HostMapType;
-	typedef std::map<std::string,UAHits> UAMapType;
+	typedef std::map<std::string,StringCacheHits> UriMapType;
+	typedef std::map<std::string,StringCacheHits> HostMapType;
+	typedef std::map<std::string,StringCacheHits> UAMapType;
 	UAMapType ua_map_;	
 	HostMapType host_map_;	
 	UriMapType uri_map_;	

@@ -33,7 +33,7 @@
 #include "log4cxx/logger.h"
 #endif
 #include "Protocol.h"
-#include "SSLHost.h"
+#include "StringCache.h"
 #include "Cache.h"
 #include <netinet/ip.h>
 #include <netinet/in.h>
@@ -108,7 +108,7 @@ public:
 		total_client_hellos_(0),total_server_hellos_(0),
 		total_certificates_(0),total_records_(0),total_ban_hosts_(0),
 		total_allow_hosts_(0),
-		host_cache_(new Cache<SSLHost>("Host cache")),
+		host_cache_(new Cache<StringCache>("Host cache")),
 		host_map_(),host_mng_(),ban_host_mng_(),
 		flow_mng_() {}
 
@@ -176,10 +176,9 @@ private:
 	int32_t total_ban_hosts_;
 	int32_t total_allow_hosts_;
 
-	Cache<SSLHost>::CachePtr host_cache_;
+	Cache<StringCache>::CachePtr host_cache_;
 
-	typedef std::pair<SharedPointer<SSLHost>,int32_t> HostHits;
-        typedef std::map<std::string,HostHits> HostMapType;
+        typedef std::map<std::string,StringCacheHits> HostMapType;
         HostMapType host_map_;
 
         DomainNameManagerPtrWeak host_mng_;

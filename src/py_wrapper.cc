@@ -528,19 +528,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def(self_ns::str(self_ns::self))
 	;
 
-	boost::python::class_<HTTPUri, SharedPointer<HTTPUri>,boost::noncopyable>("HTTPUri")
-		.def(self_ns::str(self_ns::self))
-	;
-
-	boost::python::class_<HTTPHost, SharedPointer<HTTPHost>,boost::noncopyable>("HTTPHost")
-		.def(self_ns::str(self_ns::self))
-	;
-
-	boost::python::class_<HTTPUserAgent, SharedPointer<HTTPUserAgent>, boost::noncopyable>("HTTPUserAgent")
-		.def(self_ns::str(self_ns::self))
-	;
-
-	boost::python::class_<SSLHost, SharedPointer<SSLHost>, boost::noncopyable>("SSLHost")
+	boost::python::class_<StringCache, SharedPointer<StringCache>,boost::noncopyable>("StringCache")
 		.def(self_ns::str(self_ns::self))
 	;
 

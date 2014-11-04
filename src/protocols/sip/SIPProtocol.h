@@ -33,13 +33,11 @@
 #include "log4cxx/logger.h"
 #endif
 #include "Protocol.h"
+#include "StringCache.h"
 #include <netinet/ip.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
-#include "SIPUri.h"
-#include "SIPTo.h"
-#include "SIPFrom.h"
 #include "Cache.h"
 #include <unordered_map>
 #include "names/DomainNameManager.h"
@@ -55,12 +53,14 @@ public:
                 sip_regex_(new Regex("Main SIP expression","^(REGISTER|INVITE|OPTIONS).*SIP/2.")),
                 sip_from_(new Regex("From expression","From: .*?\r\n")),
                 sip_to_(new Regex("To expression","To: .*?\r\n")),
+                sip_via_(new Regex("Via expression","Via: .*?\r\n")),
 		sip_header_(nullptr),total_bytes_(0),
 		total_requests_(0),
-		uri_cache_(new Cache<SIPUri>("Uri cache")),
-		from_cache_(new Cache<SIPFrom>("From cache")),
-		to_cache_(new Cache<SIPTo>("To cache")),
-		to_map_(),from_map_(),uri_map_(),
+		uri_cache_(new Cache<StringCache>("Uri cache")),
+		via_cache_(new Cache<StringCache>("Via cache")),
+		from_cache_(new Cache<StringCache>("From cache")),
+		to_cache_(new Cache<StringCache>("To cache")),
+		uri_map_(),via_map_(),from_map_(),to_map_(),
 		flow_mng_() {}	
 
     	virtual ~SIPProtocol() {}
@@ -92,9 +92,8 @@ public:
         // Condition for say that a payload is SIP
         bool sipChecker(Packet& packet) {
         
-		const char * header = reinterpret_cast<const char*>(packet.getPayload());
-
-		if (sip_regex_->evaluate(header)) {
+		// TODO: I dont like this idea of ports but...
+                if ((packet.getSourcePort() == 5060)||(packet.getDestinationPort() == 5060)) {
 
 			setHeader(packet.getPayload());
                         ++total_validated_packets_;
@@ -113,7 +112,9 @@ public:
         void destroySIPFroms(int number) { from_cache_->destroy(number);}
         void createSIPTos(int number) { to_cache_->create(number);}
         void destroySIPTos(int number) { to_cache_->destroy(number);}
-
+        void createSIPVias(int number) { via_cache_->create(number);}
+        void destroySIPVias(int number) { via_cache_->destroy(number);}
+	
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 
 private:
@@ -121,30 +122,31 @@ private:
 	void attach_uri_to_flow(Flow *flow, std::string &host);
 	void attach_from_to_flow(Flow *flow, std::string &host);
 	void attach_to_to_flow(Flow *flow, std::string &ua);
+	void attach_via_to_flow(Flow *flow, std::string &via);
 	void extract_uri_value(Flow *flow, const char *header);
 	void extract_from_value(Flow *flow, const char *header);
 	void extract_to_value(Flow *flow, const char *header);
+	void extract_via_value(Flow *flow, const char *header);
 
 	int stats_level_;
-	SharedPointer<Regex> sip_regex_,sip_from_,sip_to_;
+	SharedPointer<Regex> sip_regex_,sip_from_,sip_to_,sip_via_;
 	unsigned char *sip_header_;
 	int64_t total_bytes_;
 	int32_t total_requests_;
 
-	Cache<SIPUri>::CachePtr uri_cache_;
-	Cache<SIPFrom>::CachePtr from_cache_;
-	Cache<SIPTo>::CachePtr to_cache_;
+	Cache<StringCache>::CachePtr uri_cache_;
+	Cache<StringCache>::CachePtr via_cache_;
+	Cache<StringCache>::CachePtr from_cache_;
+	Cache<StringCache>::CachePtr to_cache_;
 
-	typedef std::pair<SharedPointer<SIPUri>,int32_t> UriHits;
-	typedef std::pair<SharedPointer<SIPFrom>,int32_t> FromHits;
-	typedef std::pair<SharedPointer<SIPTo>,int32_t> ToHits;
-
-	typedef std::map<std::string,UriHits> UriMapType;
-	typedef std::map<std::string,FromHits> FromMapType;
-	typedef std::map<std::string,ToHits> ToMapType;
+	typedef std::map<std::string,StringCacheHits> UriMapType;
+	typedef std::map<std::string,StringCacheHits> FromMapType;
+	typedef std::map<std::string,StringCacheHits> ToMapType;
+	typedef std::map<std::string,StringCacheHits> ViaMapType;
+	UriMapType uri_map_;	
+	ViaMapType via_map_;
 	FromMapType from_map_;	
 	ToMapType to_map_;	
-	UriMapType uri_map_;	
 
 	FlowManagerPtrWeak flow_mng_;
 #ifdef HAVE_LIBLOG4CXX

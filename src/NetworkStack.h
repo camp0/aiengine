@@ -37,8 +37,10 @@
 #include "./protocols/tcpgeneric/TCPGenericProtocol.h"
 #include "./protocols/udpgeneric/UDPGenericProtocol.h"
 #include "./protocols/dns/DNSProtocol.h"
+#include "./protocols/sip/SIPProtocol.h"
 #include "./protocols/ssl/SSLProtocol.h"
 #include "./protocols/http/HTTPProtocol.h"
+#include "protocols/frequency/FrequencyProtocol.h"
 
 namespace aiengine {
 
@@ -49,10 +51,7 @@ typedef std::vector<ProtocolPair> ProtocolVector;
 class NetworkStack 
 {
 public:
-    	NetworkStack():sigs_tcp(),sigs_udp(),
-		stats_level_(0),proto_map_(),proto_vector_(),
-		domain_mng_list_() {}
-
+    	NetworkStack();
     	virtual ~NetworkStack() {}
 
 	virtual void showFlows(std::basic_ostream<char>& out) = 0;
@@ -122,6 +121,25 @@ public:
         // References to the RegexsManagers
         RegexManagerPtr sigs_tcp;
         RegexManagerPtr sigs_udp;
+
+	// Protocols shared with all the stacks, layer 7
+        HTTPProtocolPtr http;
+        SSLProtocolPtr ssl;
+        DNSProtocolPtr dns;
+        SIPProtocolPtr sip;
+        TCPGenericProtocolPtr tcp_generic;
+        UDPGenericProtocolPtr udp_generic;
+        FrequencyProtocolPtr freqs_tcp;
+        FrequencyProtocolPtr freqs_udp;
+
+        FlowForwarderPtr ff_http;
+        FlowForwarderPtr ff_ssl;
+        FlowForwarderPtr ff_dns;
+        FlowForwarderPtr ff_sip;
+        FlowForwarderPtr ff_tcp_generic;
+        FlowForwarderPtr ff_udp_generic;
+        FlowForwarderPtr ff_tcp_freqs;
+        FlowForwarderPtr ff_udp_freqs;
 
 private:
 	template <class T> 

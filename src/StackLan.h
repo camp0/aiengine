@@ -72,15 +72,7 @@
 #include "protocols/vlan/VLanProtocol.h"
 #include "protocols/mpls/MPLSProtocol.h"
 #include "protocols/ip/IPProtocol.h"
-#include "protocols/udp/UDPProtocol.h"
-#include "protocols/tcp/TCPProtocol.h"
-#include "protocols/tcpgeneric/TCPGenericProtocol.h"
-#include "protocols/udpgeneric/UDPGenericProtocol.h"
 #include "protocols/icmp/ICMPProtocol.h"
-#include "protocols/http/HTTPProtocol.h"
-#include "protocols/ssl/SSLProtocol.h"
-#include "protocols/dns/DNSProtocol.h"
-#include "protocols/frequency/FrequencyProtocol.h"
 #include "flow/FlowManager.h"
 #include "flow/FlowCache.h"
 #include "NetworkStack.h"
@@ -139,13 +131,6 @@ private:
         UDPProtocolPtr udp_;
         TCPProtocolPtr tcp_;
         ICMPProtocolPtr icmp_;
-        HTTPProtocolPtr http_;
-        SSLProtocolPtr ssl_;
-        DNSProtocolPtr dns_;
-	TCPGenericProtocolPtr tcp_generic_;
-	UDPGenericProtocolPtr udp_generic_;
-	FrequencyProtocolPtr freqs_tcp_;
-	FrequencyProtocolPtr freqs_udp_;
 
         // Multiplexers
         MultiplexerPtr mux_eth_;
@@ -165,13 +150,6 @@ private:
         // FlowForwarders
         FlowForwarderPtr ff_tcp_;
         FlowForwarderPtr ff_udp_;
-        FlowForwarderPtr ff_http_;
-        FlowForwarderPtr ff_ssl_;
-	FlowForwarderPtr ff_dns_;
-	FlowForwarderPtr ff_tcp_generic_;
-	FlowForwarderPtr ff_udp_generic_;
-	FlowForwarderPtr ff_tcp_freqs_;
-	FlowForwarderPtr ff_udp_freqs_;
 };
 
 typedef std::shared_ptr<StackLan> StackLanPtr;

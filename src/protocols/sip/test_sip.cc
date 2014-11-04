@@ -104,14 +104,17 @@ BOOST_AUTO_TEST_CASE (test2_sip)
         BOOST_CHECK(flow->sip_uri.lock() != nullptr);
         BOOST_CHECK(flow->sip_from.lock() != nullptr);
         BOOST_CHECK(flow->sip_to.lock() != nullptr);
+        BOOST_CHECK(flow->sip_via.lock() != nullptr);
  
         std::string from("<tel:+34660205001>;tag=dc14dec3e94795a5-5e8c1947.0");
         std::string uri("tel:+3460918501");
         std::string to("<tel:+3460000001>");
+	std::string via("SIP/2.0/UDP 10.145.124.112:23099;branch=z9hG4bK3c1ba7bf736134dcfbe316cd54c99706");
  
         BOOST_CHECK(uri.compare(flow->sip_uri.lock()->getName()) == 0);
         BOOST_CHECK(from.compare(flow->sip_from.lock()->getName()) == 0);
         BOOST_CHECK(to.compare(flow->sip_to.lock()->getName()) == 0);
+        BOOST_CHECK(via.compare(flow->sip_via.lock()->getName()) == 0);
 
 }
 
@@ -151,7 +154,29 @@ BOOST_AUTO_TEST_CASE (test3_sip)
 			"a=fmtp:97 mode=20\r\n"
 			"a=sendrecv\r\n";
 
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
 
+        Packet packet(pkt,length);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        flow->packet = const_cast<Packet*>(&packet);
+        sip->processFlow(flow.get());
+
+        BOOST_CHECK(flow->sip_uri.lock() != nullptr);
+        BOOST_CHECK(flow->sip_from.lock() != nullptr);
+        BOOST_CHECK(flow->sip_to.lock() != nullptr);
+        BOOST_CHECK(flow->sip_via.lock() != nullptr);
+
+        std::string from("\"arik\" <sip:voi18062@sip.cybercity.dk>;tag=51449dc");
+        std::string uri("sip:0097239287044@sip.cybercity.dk");
+        std::string to("<sip:0097239287044@sip.cybercity.dk>");
+	std::string via("SIP/2.0/UDP 192.168.1.2;branch=z9hG4bKnp83260863-46304c10192.168.1.2;rport");
+
+        BOOST_CHECK(uri.compare(flow->sip_uri.lock()->getName()) == 0);
+        BOOST_CHECK(from.compare(flow->sip_from.lock()->getName()) == 0);
+        BOOST_CHECK(to.compare(flow->sip_to.lock()->getName()) == 0);
+        BOOST_CHECK(via.compare(flow->sip_via.lock()->getName()) == 0);
 }
 
 

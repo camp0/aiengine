@@ -48,12 +48,12 @@ void SSLProtocol::releaseCache() {
                 int32_t release_hosts = host_map_.size();
 
                 // Compute the size of the strings used as keys on the map
-                std::for_each (host_map_.begin(), host_map_.end(), [&total_bytes_released] (std::pair<std::string,HostHits> const &ht) {
+                std::for_each (host_map_.begin(), host_map_.end(), [&total_bytes_released] (std::pair<std::string,StringCacheHits> const &ht) {
                         total_bytes_released += ht.first.size();
                 });
 
                 for (auto &flow: ft) {
-                        SharedPointer<SSLHost> host = flow->ssl_host.lock();
+                        SharedPointer<StringCache> host = flow->ssl_host.lock();
 
                         if (host) { // The flow have a host attatched
                                 flow->ssl_host.reset();
@@ -80,7 +80,7 @@ void SSLProtocol::releaseCache() {
 
 void SSLProtocol::attach_host_to_flow(Flow *flow, std::string &servername) {
 
-	SharedPointer<SSLHost> host_ptr = flow->ssl_host.lock();
+	SharedPointer<StringCache> host_ptr = flow->ssl_host.lock();
 
 	if (!host_ptr) { // There is no Host object attached to the flow
 		HostMapType::iterator it = host_map_.find(servername);
@@ -89,7 +89,6 @@ void SSLProtocol::attach_host_to_flow(Flow *flow, std::string &servername) {
 			if (host_ptr) {
 				host_ptr->setName(servername);
 				flow->ssl_host = host_ptr;
-
 				host_map_.insert(std::make_pair(servername,std::make_pair(host_ptr,1)));
 			}
 		} else {
@@ -233,7 +232,7 @@ void SSLProtocol::processFlow(Flow *flow) {
 
 			DomainNameManagerPtr host_mng = host_mng_.lock();
 			if (host_mng) {
-				SharedPointer<SSLHost> host_name = flow->ssl_host.lock();
+				SharedPointer<StringCache> host_name = flow->ssl_host.lock();
 
 				// TODO: just handled the client hello, so there is no need of checking on packetsl7 > than 1
 				if ((host_name)and(flow->total_packets_l7 == 1)) {
@@ -280,28 +279,7 @@ void SSLProtocol::statistics(std::basic_ostream<char>& out) {
 			if (stats_level_ > 3) {
 				host_cache_->statistics(out);
 				if(stats_level_ > 4) {
-					out << "\tSSL Hosts usage" << std::endl;
-
-                                        std::vector<std::pair<std::string,HostHits>> h_list(host_map_.begin(),host_map_.end());
-                                        // Sort The host_map by using lambdas
-                                        std::sort(
-                                        	h_list.begin(),
-                                                h_list.end(),
-                                                [](std::pair<std::string,HostHits> const &a,
-                                                std::pair<std::string,HostHits> const &b)
-                                        {
-                                                int v1 = std::get<1>(a.second);
-                                                int v2 = std::get<1>(b.second);
-
-                                                return v1 > v2;
-                                        });
-
-					for(auto it = h_list.begin(); it!=h_list.end(); ++it) {
-						SharedPointer<SSLHost> host = std::get<0>((*it).second);
-						int count = std::get<1>((*it).second);
-						if(host)
-							out << "\t\tHost:" << host->getName() <<":" << count << std::endl;
-					}
+					showCacheMap(out,host_map_,"SSL Hosts","Host");
 				}
 			}
 		}

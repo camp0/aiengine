@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#ifndef SRC_PROTOCOLS_SIP_SIPTO_H_
-#define SRC_PROTOCOLS_SIP_SIPTO_H_
+#ifndef SRC_STRINGCACHE_H_
+#define SRC_STRINGCACHE_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -32,29 +32,29 @@
 
 namespace aiengine {
 
-class SIPTo 
+class StringCache 
 {
 public:
-    	explicit SIPTo(const std::string& to):to_(to) {}
-    	explicit SIPTo() { reset(); }
-    	virtual ~SIPTo() {}
+    	explicit StringCache(const std::string &value):value_(value) {}
+    	explicit StringCache() { reset(); }
+    	virtual ~StringCache() { value_.clear();}
 
-	void reset() { to_ = ""; }	
-	std::string &getName() { return to_; }
-	void setName(const std::string& to) { to_ = to;}
+	void reset() { value_ = ""; }
+	std::string &getName() { return value_; }
+	void setName(const std::string& name) { value_ = name;}
 
 #ifdef PYTHON_BINDING
-	friend std::ostream& operator<< (std::ostream& out, const SIPTo& to) {
+	friend std::ostream& operator<< (std::ostream& out, const StringCache& sc) {
 	
-		out << to.to_;
+		out << sc.value_;
         	return out;
 	}
 #endif
 
 private:
-	std::string to_;
+	std::string value_;
 };
 
 } // namespace aiengine  
 
-#endif  // SRC_PROTOCOLS_SIP_SIPTO_H_
+#endif  // SRC_STRINGCACHE_H_

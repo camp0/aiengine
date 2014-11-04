@@ -58,20 +58,15 @@ StackOpenFlow::StackOpenFlow() {
 
         icmp_ = ICMPProtocolPtr(new ICMPProtocol());
 	addProtocol(icmp_);
-	http_ = HTTPProtocolPtr(new HTTPProtocol());
-	addProtocol(http_);
-        ssl_ = SSLProtocolPtr(new SSLProtocol());
-	addProtocol(ssl_);
-        dns_ = DNSProtocolPtr(new DNSProtocol());
-	addProtocol(dns_);
-	tcp_generic_ = TCPGenericProtocolPtr(new TCPGenericProtocol());
-	addProtocol(tcp_generic_);
-	udp_generic_ = UDPGenericProtocolPtr(new UDPGenericProtocol());
-	addProtocol(udp_generic_);
-	freqs_tcp_ = FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol"));
-	addProtocol(freqs_tcp_);
-	freqs_udp_ = FrequencyProtocolPtr(new FrequencyProtocol("UDPFrequencyProtocol"));
-	addProtocol(freqs_udp_);
+
+	addProtocol(http);
+	addProtocol(ssl);
+	addProtocol(dns);
+	addProtocol(sip);
+	addProtocol(tcp_generic);
+	addProtocol(udp_generic);
+	addProtocol(freqs_tcp);
+	addProtocol(freqs_udp);
 
 	// Allocate the Multiplexers
         mux_eth_ = MultiplexerPtr(new Multiplexer());
@@ -106,13 +101,6 @@ StackOpenFlow::StackOpenFlow() {
 	ff_of_ = FlowForwarderPtr(new FlowForwarder());
 	ff_tcp_vir_ = FlowForwarderPtr(new FlowForwarder());
 	ff_udp_vir_ = FlowForwarderPtr(new FlowForwarder());
-	ff_http_ = FlowForwarderPtr(new FlowForwarder());
-	ff_ssl_ = FlowForwarderPtr(new FlowForwarder());
-	ff_dns_ = FlowForwarderPtr(new FlowForwarder());
-        ff_tcp_generic_ = FlowForwarderPtr(new FlowForwarder());
-        ff_udp_generic_ = FlowForwarderPtr(new FlowForwarder());
-        ff_tcp_freqs_ = FlowForwarderPtr(new FlowForwarder());
-        ff_udp_freqs_ = FlowForwarderPtr(new FlowForwarder());
 
 	//configure the Ethernet Layer 
 	eth_->setMultiplexer(mux_eth_);
@@ -205,47 +193,6 @@ StackOpenFlow::StackOpenFlow() {
         mux_icmp_->addChecker(std::bind(&ICMPProtocol::icmpChecker,icmp_,std::placeholders::_1));
 	mux_icmp_->addPacketFunction(std::bind(&ICMPProtocol::processPacket,icmp_,std::placeholders::_1));
 
-	// configure the HTTP Layer 
-	http_->setFlowForwarder(ff_http_);
-	ff_http_->setProtocol(static_cast<ProtocolPtr>(http_));
-	ff_http_->addChecker(std::bind(&HTTPProtocol::httpChecker,http_,std::placeholders::_1));
-	ff_http_->addFlowFunction(std::bind(&HTTPProtocol::processFlow,http_,std::placeholders::_1));
-	
-	// configure the SSL Layer 
-	ssl_->setFlowForwarder(ff_ssl_);
-	ff_ssl_->setProtocol(static_cast<ProtocolPtr>(ssl_));
-	ff_ssl_->addChecker(std::bind(&SSLProtocol::sslChecker,ssl_,std::placeholders::_1));
-	ff_ssl_->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl_,std::placeholders::_1));
-
-        // configure the DNS Layer
-        dns_->setFlowForwarder(ff_dns_);
-        ff_dns_->setProtocol(static_cast<ProtocolPtr>(dns_));
-        ff_dns_->addChecker(std::bind(&DNSProtocol::dnsChecker,dns_,std::placeholders::_1));
-        ff_dns_->addFlowFunction(std::bind(&DNSProtocol::processFlow,dns_,std::placeholders::_1));
-
-        // configure the TCP generic Layer
-        tcp_generic_->setFlowForwarder(ff_tcp_generic_);
-        ff_tcp_generic_->setProtocol(static_cast<ProtocolPtr>(tcp_generic_));
-        ff_tcp_generic_->addChecker(std::bind(&TCPGenericProtocol::tcpGenericChecker,tcp_generic_,std::placeholders::_1));
-        ff_tcp_generic_->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,tcp_generic_,std::placeholders::_1));
-
-        // configure the UDP generic Layer
-        udp_generic_->setFlowForwarder(ff_udp_generic_);
-        ff_udp_generic_->setProtocol(static_cast<ProtocolPtr>(udp_generic_));
-        ff_udp_generic_->addChecker(std::bind(&UDPGenericProtocol::udpGenericChecker,udp_generic_,std::placeholders::_1));
-        ff_udp_generic_->addFlowFunction(std::bind(&UDPGenericProtocol::processFlow,udp_generic_,std::placeholders::_1));
-
-        // configure the TCP frequencies
-        freqs_tcp_->setFlowForwarder(ff_tcp_freqs_);
-        ff_tcp_freqs_->setProtocol(static_cast<ProtocolPtr>(freqs_tcp_));
-        ff_tcp_freqs_->addChecker(std::bind(&FrequencyProtocol::freqChecker,freqs_tcp_,std::placeholders::_1));
-        ff_tcp_freqs_->addFlowFunction(std::bind(&FrequencyProtocol::processFlow,freqs_tcp_,std::placeholders::_1));
-
-        // configure the UDP frequencies
-        freqs_udp_->setFlowForwarder(ff_udp_freqs_);
-        ff_udp_freqs_->setProtocol(static_cast<ProtocolPtr>(freqs_udp_));
-        ff_udp_freqs_->addChecker(std::bind(&FrequencyProtocol::freqChecker,freqs_udp_,std::placeholders::_1));
-        ff_udp_freqs_->addFlowFunction(std::bind(&FrequencyProtocol::processFlow,freqs_udp_,std::placeholders::_1));
 
 	// Configure the multiplexers of the physical side
 	mux_eth_->addUpMultiplexer(mux_ip_,ETHERTYPE_IP);
@@ -281,9 +228,10 @@ StackOpenFlow::StackOpenFlow() {
 	flow_table_udp_vir_->setProtocol(udp_vir_);
 
         // Connect to upper layers the FlowManager
-        http_->setFlowManager(flow_table_tcp_vir_);
-        ssl_->setFlowManager(flow_table_tcp_vir_);
-        dns_->setFlowManager(flow_table_udp_vir_);
+        http->setFlowManager(flow_table_tcp_vir_);
+        ssl->setFlowManager(flow_table_tcp_vir_);
+        dns->setFlowManager(flow_table_udp_vir_);
+        sip->setFlowManager(flow_table_udp_vir_);
 
 	// The low FlowManager have a 24 hours timeout to keep the Context on memory
         flow_table_tcp_->setTimeout(86400);
@@ -296,11 +244,12 @@ StackOpenFlow::StackOpenFlow() {
         udp_vir_->setFlowForwarder(ff_udp_vir_);
 
         // Layer 7 plugins
-        ff_tcp_vir_->addUpFlowForwarder(ff_http_);
-        ff_tcp_vir_->addUpFlowForwarder(ff_ssl_);
-        ff_tcp_vir_->addUpFlowForwarder(ff_tcp_generic_);
-        ff_udp_vir_->addUpFlowForwarder(ff_dns_);
-        ff_udp_vir_->addUpFlowForwarder(ff_udp_generic_);
+        ff_tcp_vir_->addUpFlowForwarder(ff_http);
+        ff_tcp_vir_->addUpFlowForwarder(ff_ssl);
+        ff_tcp_vir_->addUpFlowForwarder(ff_tcp_generic);
+        ff_udp_vir_->addUpFlowForwarder(ff_dns);
+        ff_udp_vir_->addUpFlowForwarder(ff_sip);
+        ff_udp_vir_->addUpFlowForwarder(ff_udp_generic);
 
 #ifdef HAVE_LIBLOG4CXX
 	LOG4CXX_INFO (logger, name_<< " ready.");
@@ -336,12 +285,24 @@ void StackOpenFlow::setTotalTCPFlows(int value) {
         
 	// The vast majority of the traffic of internet is HTTP
         // so create 75% of the value received for the http caches
-	http_->createHTTPUris(value * 1.5);
-        http_->createHTTPHosts(value * 0.75);
-        http_->createHTTPUserAgents(value * 0.75);
+	http->createHTTPUris(value * 1.5);
+        http->createHTTPHosts(value * 0.75);
+        http->createHTTPUserAgents(value * 0.75);
 
         // The 40% of the traffic is SSL
-        ssl_->createSSLHosts(value * 0.4);
+        ssl->createSSLHosts(value * 0.4);
+}
+
+void StackOpenFlow::setTotalUDPFlows(int value) {
+
+        flow_cache_udp_vir_->createFlows(value);
+        dns->createDNSDomains(value / 2);
+
+        // SIP values
+        sip->createSIPUris(value * 0.2);
+        sip->createSIPFroms(value * 0.2);
+        sip->createSIPTos(value * 0.2);
+        sip->createSIPVias(value * 0.2);
 }
 
 void StackOpenFlow::enableFrequencyEngine(bool enable) {
@@ -366,34 +327,35 @@ void StackOpenFlow::enableFrequencyEngine(bool enable) {
 #endif
 		std::cout <<  "Enable FrequencyEngine on " << name_ << std::endl;
 #endif 
-                freqs_tcp_->createFrequencies(tcp_flows_created);
-                freqs_udp_->createFrequencies(udp_flows_created);
+                freqs_tcp->createFrequencies(tcp_flows_created);
+                freqs_udp->createFrequencies(udp_flows_created);
 
-                ff_tcp_vir_->insertUpFlowForwarder(ff_tcp_freqs_);
-                ff_udp_vir_->insertUpFlowForwarder(ff_udp_freqs_);
+                ff_tcp_vir_->insertUpFlowForwarder(ff_tcp_freqs);
+                ff_udp_vir_->insertUpFlowForwarder(ff_udp_freqs);
 
                 // Link the FlowManagers so the caches will be released if called
-                freqs_tcp_->setFlowManager(flow_table_tcp_vir_);
-                freqs_udp_->setFlowManager(flow_table_udp_vir_);
+                freqs_tcp->setFlowManager(flow_table_tcp_vir_);
+                freqs_udp->setFlowManager(flow_table_udp_vir_);
         } else {
-                freqs_tcp_->destroyFrequencies(tcp_flows_created);
-                freqs_udp_->destroyFrequencies(udp_flows_created);
+                freqs_tcp->destroyFrequencies(tcp_flows_created);
+                freqs_udp->destroyFrequencies(udp_flows_created);
 
-                ff_tcp_vir_->removeUpFlowForwarder(ff_tcp_freqs_);
-                ff_udp_vir_->removeUpFlowForwarder(ff_udp_freqs_);
+                ff_tcp_vir_->removeUpFlowForwarder(ff_tcp_freqs);
+                ff_udp_vir_->removeUpFlowForwarder(ff_udp_freqs);
                 
 		// Unlink the FlowManagers 
-                freqs_tcp_->setFlowManager(FlowManagerPtrWeak());
-                freqs_udp_->setFlowManager(FlowManagerPtrWeak());
+                freqs_tcp->setFlowManager(FlowManagerPtrWeak());
+                freqs_udp->setFlowManager(FlowManagerPtrWeak());
         }
 }
 
 void StackOpenFlow::enableNIDSEngine(bool enable) {
 
         if (enable) {
-                ff_tcp_vir_->removeUpFlowForwarder(ff_http_);
-                ff_tcp_vir_->removeUpFlowForwarder(ff_ssl_);
-                ff_udp_vir_->removeUpFlowForwarder(ff_dns_);
+                ff_tcp_vir_->removeUpFlowForwarder(ff_http);
+                ff_tcp_vir_->removeUpFlowForwarder(ff_ssl);
+                ff_udp_vir_->removeUpFlowForwarder(ff_dns);
+                ff_udp_vir_->removeUpFlowForwarder(ff_sip);
 #ifdef HAVE_LIBLOG4CXX
                 LOG4CXX_INFO (logger, "Enable NIDSEngine on " << name_ );
 #else
@@ -409,14 +371,15 @@ void StackOpenFlow::enableNIDSEngine(bool enable) {
                 std::cout << "Enable NIDSEngine on " << name_ << std::endl;
 #endif
         } else {
-                ff_tcp_vir_->removeUpFlowForwarder(ff_tcp_generic_);
-                ff_udp_vir_->removeUpFlowForwarder(ff_udp_generic_);
+                ff_tcp_vir_->removeUpFlowForwarder(ff_tcp_generic);
+                ff_udp_vir_->removeUpFlowForwarder(ff_udp_generic);
 
-                ff_tcp_vir_->addUpFlowForwarder(ff_http_);
-                ff_tcp_vir_->addUpFlowForwarder(ff_ssl_);
-                ff_tcp_vir_->addUpFlowForwarder(ff_tcp_generic_);
-                ff_udp_vir_->addUpFlowForwarder(ff_dns_);
-                ff_udp_vir_->addUpFlowForwarder(ff_udp_generic_);
+                ff_tcp_vir_->addUpFlowForwarder(ff_http);
+                ff_tcp_vir_->addUpFlowForwarder(ff_ssl);
+                ff_tcp_vir_->addUpFlowForwarder(ff_tcp_generic);
+                ff_udp_vir_->addUpFlowForwarder(ff_dns);
+                ff_udp_vir_->addUpFlowForwarder(ff_sip);
+                ff_udp_vir_->addUpFlowForwarder(ff_udp_generic);
         }
 }
 

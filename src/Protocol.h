@@ -50,6 +50,9 @@ namespace aiengine {
 
 class Flow;
 
+typedef std::pair<SharedPointer<StringCache>,int32_t> StringCacheHits;
+typedef std::map<std::string,StringCacheHits> GenericMapType;
+
 class Protocol 
 {
 public:
@@ -102,6 +105,9 @@ public:
 #else
 	void setIPSetManager(SharedPointer<IPSetManager> ipset_mng) { ipset_mng_ = ipset_mng;} 
 #endif
+
+	// Helper for show the content of cache of StringCache types
+	void showCacheMap(std::basic_ostream<char>& out,GenericMapType &mt, const std::string &title, const std::string &item_name);
 
 	SharedPointer<IPSetManager> ipset_mng_;
 	mutable int64_t total_malformed_packets_;

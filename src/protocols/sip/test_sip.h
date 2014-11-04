@@ -117,6 +117,7 @@ struct StackSIPtest
 		sip->createSIPUris(1);
 		sip->createSIPFroms(1);
 		sip->createSIPTos(1);
+		sip->createSIPVias(1);
 
                 udp->setFlowCache(flow_cache);
                 udp->setFlowManager(flow_mng);

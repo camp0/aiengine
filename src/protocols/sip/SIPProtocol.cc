@@ -48,44 +48,55 @@ void SIPProtocol::releaseCache() {
                 int32_t release_from = from_map_.size();
                 int32_t release_uris = uri_map_.size();
                 int32_t release_to = to_map_.size();
+                int32_t release_via = via_map_.size();
 
                 // Compute the size of the strings used as keys on the map
-                std::for_each (from_map_.begin(), from_map_.end(), [&total_bytes_released] (std::pair<std::string,FromHits> const &f) {
+                std::for_each (from_map_.begin(), from_map_.end(), [&total_bytes_released] (std::pair<std::string,StringCacheHits> const &f) {
                         total_bytes_released += f.first.size();
                 });
-                std::for_each (uri_map_.begin(), uri_map_.end(), [&total_bytes_released] (std::pair<std::string,UriHits> const &u) {
+                std::for_each (uri_map_.begin(), uri_map_.end(), [&total_bytes_released] (std::pair<std::string,StringCacheHits> const &u) {
                         total_bytes_released += u.first.size();
                 });
-                std::for_each (to_map_.begin(), to_map_.end(), [&total_bytes_released] (std::pair<std::string,ToHits> const &t) {
+                std::for_each (to_map_.begin(), to_map_.end(), [&total_bytes_released] (std::pair<std::string,StringCacheHits> const &t) {
+                        total_bytes_released += t.first.size();
+                });
+                std::for_each (via_map_.begin(), via_map_.end(), [&total_bytes_released] (std::pair<std::string,StringCacheHits> const &t) {
                         total_bytes_released += t.first.size();
                 });
 
                 for (auto &flow: ft) {
-                        SharedPointer<SIPUri> uri = flow->sip_uri.lock();
-			if (uri) {
+                        SharedPointer<StringCache> sc = flow->sip_uri.lock();
+			if (sc) {
 				flow->sip_uri.reset();
-				total_bytes_released_by_flows += uri->getName().size();
-				uri_cache_->release(uri);
+				total_bytes_released_by_flows += sc->getName().size();
+				uri_cache_->release(sc);
 			}
 
-                        SharedPointer<SIPFrom> from = flow->sip_from.lock();
-                        if (from) {
+                        sc = flow->sip_from.lock();
+                        if (sc) {
                                 flow->sip_from.reset();
-                                total_bytes_released_by_flows += from->getName().size();
-                                from_cache_->release(from);
+                                total_bytes_released_by_flows += sc->getName().size();
+                                from_cache_->release(sc);
                         }
 
-                        SharedPointer<SIPTo> to = flow->sip_to.lock();
-                        if (to) {
+                        sc = flow->sip_to.lock();
+                        if (sc) {
                                 flow->sip_to.reset();
-                                total_bytes_released_by_flows += to->getName().size();
-                                to_cache_->release(to);
+                                total_bytes_released_by_flows += sc->getName().size();
+                                to_cache_->release(sc);
+                        }
+                        sc = flow->sip_via.lock();
+                        if (sc) {
+                                flow->sip_via.reset();
+                                total_bytes_released_by_flows += sc->getName().size();
+                                to_cache_->release(sc);
                         }
                         ++release_flows;
                 } 
                 uri_map_.clear();
                 from_map_.clear();
                 to_map_.clear();
+                via_map_.clear();
 
                 double cache_compression_rate = 0;
 
@@ -94,13 +105,23 @@ void SIPProtocol::releaseCache() {
                 }
         
         	msg.str("");
-                msg << "Release " << release_uris << " uris, " << release_from;
+                msg << "Release " << release_uris << " uris, " << release_via << " vias, " << release_from;
                 msg << " froms, " << release_to << " tos, " << release_flows << " flows";
                 msg << ", " << total_bytes_released << " bytes, compression rate " << cache_compression_rate << "%";
                 infoMessage(msg.str());
         }
 }
 
+void SIPProtocol::extract_via_value(Flow *flow, const char *header) {
+
+        if (sip_via_->matchAndExtract(header)) {
+
+                std::string via_raw(sip_via_->getExtract());
+                std::string via(via_raw,5,via_raw.length() - 7); // remove also the \r\n
+
+                attach_via_to_flow(flow,via);
+        }
+}
 
 void SIPProtocol::extract_from_value(Flow *flow, const char *header) {
 
@@ -116,7 +137,7 @@ void SIPProtocol::extract_from_value(Flow *flow, const char *header) {
 
 void SIPProtocol::attach_from_to_flow(Flow *flow, std::string &from) {
 
-	SharedPointer<SIPFrom> from_ptr = flow->sip_from.lock();
+	SharedPointer<StringCache> from_ptr = flow->sip_from.lock();
 
 	if (!from_ptr) { 
 		FromMapType::iterator it = from_map_.find(from);
@@ -143,14 +164,12 @@ void SIPProtocol::extract_to_value(Flow *flow, const char *header) {
 		std::string to(to_raw,4,to_raw.length() - 6); // remove also the \r\n
 
 		attach_to_to_flow(flow,to);
-
 	}
 }
 
 void SIPProtocol::attach_to_to_flow(Flow *flow, std::string &to) {
 
-
-	SharedPointer<SIPTo> to_ptr = flow->sip_to.lock();
+	SharedPointer<StringCache> to_ptr = flow->sip_to.lock();
 
 	if (!to_ptr) { 
 		ToMapType::iterator it = to_map_.find(to);
@@ -170,11 +189,33 @@ void SIPProtocol::attach_to_to_flow(Flow *flow, std::string &to) {
 
 }
 
+void SIPProtocol::attach_via_to_flow(Flow *flow, std::string &via) {
+
+        SharedPointer<StringCache> via_ptr = flow->sip_via.lock();
+
+        if (!via_ptr) {
+                ViaMapType::iterator it = via_map_.find(via);
+                if (it == via_map_.end()) {
+                        via_ptr = via_cache_->acquire().lock();
+                        if (via_ptr) {
+                                via_ptr->setName(via);
+                                flow->sip_via = via_ptr;
+                                via_map_.insert(std::make_pair(via,std::make_pair(via_ptr,1)));
+                        }
+                } else {
+                        int *counter = &std::get<1>(it->second);
+                        ++(*counter);
+                        flow->sip_via = std::get<0>(it->second);
+                }
+        }
+}
+
+
 void SIPProtocol::attach_uri_to_flow(Flow *flow, std::string &uri) {
 
 	UriMapType::iterator it = uri_map_.find(uri);
         if (it == uri_map_.end()) {
-        	SharedPointer<SIPUri> uri_ptr = uri_cache_->acquire().lock();
+        	SharedPointer<StringCache> uri_ptr = uri_cache_->acquire().lock();
                 if (uri_ptr) {
                 	uri_ptr->setName(uri);
                         flow->sip_uri = uri_ptr;
@@ -223,6 +264,8 @@ void SIPProtocol::processFlow(Flow *flow) {
 
 		extract_uri_value(flow,header);
 	
+		extract_via_value(flow,header);
+		
 		extract_from_value(flow,header);	
 
 		extract_to_value(flow,header);
@@ -247,77 +290,14 @@ void SIPProtocol::statistics(std::basic_ostream<char>& out) {
 					flow_forwarder_.lock()->statistics(out);
 				if (stats_level_ > 3) {
 					uri_cache_->statistics(out);
+					via_cache_->statistics(out);
 					from_cache_->statistics(out);
 					to_cache_->statistics(out);
 					if(stats_level_ > 4) {
-                                                out << "\tSIP Uris usage" << std::endl;
-
-                                                std::vector<std::pair<std::string,UriHits>> uri_list(uri_map_.begin(),uri_map_.end());
-                                                // Sort The uri_map by using lambdas
-                                                std::sort(
-                                                        uri_list.begin(),
-                                                        uri_list.end(),
-                                                        [](std::pair<std::string,UriHits> const &a,
-                                                        std::pair<std::string,UriHits> const &b)
-                                                {
-                                                        int v1 = std::get<1>(a.second);
-                                                        int v2 = std::get<1>(b.second);
-                         
-                                                        return v1 > v2;
-                                                });
-         
-                                                for(auto it = uri_list.begin(); it!=uri_list.end(); ++it) {
-                                                        SharedPointer<SIPUri> uri = std::get<0>((*it).second);
-                                                        int count = std::get<1>((*it).second);
-                                                        if(uri)
-                                                                out << "\t\tUri:" << uri->getName() <<":" << count << std::endl;
-                                                }
-                                                
-						out << "\tSIP Froms usage" << std::endl;
-                                                std::vector<std::pair<std::string,FromHits>> f_list(from_map_.begin(),from_map_.end());
-                                                // Sort by using lambdas   
-                                                std::sort(
-                                                        f_list.begin(),
-                                                        f_list.end(), 
-                                                        [](std::pair<std::string,FromHits> const &a, 
-                                                        std::pair<std::string,FromHits> const &b) 
-                                                {  
-                                                        int v1 = std::get<1>(a.second);
-                                                        int v2 = std::get<1>(b.second);
-                
-                                                        return v1 > v2;
-                                                }); 
-
-                                                for(auto it = f_list.begin(); it!=f_list.end(); ++it) {
-                                                //for(auto it = f_list.begin(); it!=f_list.end(); ++it) {
-                                                        SharedPointer<SIPFrom> from = std::get<0>((*it).second);
-                                                        int count = std::get<1>((*it).second);
-                                                        if(from)
-                                                                out << "\t\tFrom:" << from->getName() <<":" << count << std::endl;
-                                                }
-
-                                                out << "\tHTTP Tos usage" << std::endl;
-                                                std::vector<std::pair<std::string,ToHits>> t_list(to_map_.begin(),to_map_.end());
-                                                // Sort by using lambdas   
-                                                std::sort(
-                                                        t_list.begin(),
-                                                        t_list.end(), 
-                                                        [](std::pair<std::string,ToHits> const &a, 
-                                                        std::pair<std::string,ToHits> const &b) 
-                                                {  
-                                                        int v1 = std::get<1>(a.second);
-                                                        int v2 = std::get<1>(b.second);
-                
-                                                        return v1 > v2;
-                                                }); 
-
-                                                for(auto it = t_list.begin(); it!=t_list.end(); ++it) {
-                                                        SharedPointer<SIPTo> to = std::get<0>((*it).second);
-                                                        int count = std::get<1>((*it).second);
-                                                        if(to)
-                                                                out << "\t\tTo:" << to->getName() <<":" << count << std::endl;
-                                                }
- 
+						showCacheMap(out,uri_map_,"SIP Uris","Uri");
+						showCacheMap(out,via_map_,"SIP Vias","Via");
+						showCacheMap(out,from_map_,"SIP Froms","From");
+						showCacheMap(out,to_map_,"SIP Tos","To");
 					}
 				}
 			}
