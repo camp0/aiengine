@@ -82,7 +82,7 @@ if __name__ == "__main__":
     aiengine_module.define_macros = macros
 
     setup(name="aiengine",
-        version = "0.11",
+        version = "1.0",
         author = "Luis Campo Giralte",
         author_email = "luis.camp0.2009 at gmail.com",
         url = "https://bitbucket.org/camp0/aiengine",

@@ -215,7 +215,29 @@ BOOST_AUTO_TEST_CASE (test4_sip)
 			"a=rtpmap:31 h261/90000\r\n"
 			"a=fmtp:31 CIF=1;QCIF=2\r\n";
 
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
 
+        Packet packet(pkt,length);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        flow->packet = const_cast<Packet*>(&packet);
+        sip->processFlow(flow.get());
+
+        BOOST_CHECK(flow->sip_uri.lock() != nullptr);
+        BOOST_CHECK(flow->sip_from.lock() != nullptr);
+        BOOST_CHECK(flow->sip_to.lock() != nullptr);
+        BOOST_CHECK(flow->sip_via.lock() != nullptr);
+
+        std::string from("\"sam netmon \" <sip:admind@178.45.73.241>;tag=bc86060b-146f-e011-809a-0019cb53db77");
+        std::string uri("sip:echo@iptel.org");
+        std::string to("<sip:echo@iptel.org>");
+        std::string via("SIP/2.0/UDP 178.45.73.241:5060;branch=z9hG4bK16a1230b-146f-e011-809a-0019cb53db77;rport");
+
+        BOOST_CHECK(uri.compare(flow->sip_uri.lock()->getName()) == 0);
+        BOOST_CHECK(from.compare(flow->sip_from.lock()->getName()) == 0);
+        BOOST_CHECK(to.compare(flow->sip_to.lock()->getName()) == 0);
+        BOOST_CHECK(via.compare(flow->sip_via.lock()->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test5_sip) 
@@ -235,6 +257,30 @@ BOOST_AUTO_TEST_CASE (test5_sip)
 			"Signal= 4\r\n"
 			"Duration= 180\r\n";
 
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+
+        Packet packet(pkt,length);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        flow->packet = const_cast<Packet*>(&packet);
+        sip->processFlow(flow.get());
+
+        BOOST_CHECK(flow->sip_uri.lock() != nullptr);
+        BOOST_CHECK(flow->sip_from.lock() != nullptr);
+        BOOST_CHECK(flow->sip_to.lock() != nullptr);
+        BOOST_CHECK(flow->sip_via.lock() != nullptr);
+
+        std::string from("\"sam netmon \" <sip:admind@178.45.73.241>;tag=bc86060b-146f-e011-809a-0019cb53db77");
+        std::string uri("sip:echo@213.192.59.78:5080");
+        std::string to("<sip:echo@iptel.org>;tag=420976BC-4DB7D064000EE90C-B692BBB0");
+        std::string via("SIP/2.0/UDP 178.45.73.241:5060;branch=z9hG4bK7827b838-146f-e011-809a-0019cb53db77;rport");
+
+        BOOST_CHECK(uri.compare(flow->sip_uri.lock()->getName()) == 0);
+        BOOST_CHECK(from.compare(flow->sip_from.lock()->getName()) == 0);
+        BOOST_CHECK(to.compare(flow->sip_to.lock()->getName()) == 0);
+        BOOST_CHECK(via.compare(flow->sip_via.lock()->getName()) == 0);
+
 }
 
 
@@ -250,6 +296,110 @@ BOOST_AUTO_TEST_CASE (test6_sip)
 
 
 }
+
+BOOST_AUTO_TEST_CASE (test7_sip) 
+{
+
+	char *header =	"NOTIFY sip:116c01a9-067c-48fd-bbf9-f1c336662590@192.168.13.245:44503 SIP/2.0\r\n"
+			"Date: Sun, 25 Jan 2009 10:56:16 GMT\r\n"
+			"From: <sip:8001@192.168.13.198>;tag=1746816090\r\n"
+			"Event: presence\r\n"
+			"Content-Length: 831\r\n"
+			"User-Agent: Cisco-CUCM7.0\r\n"
+			"To: <sip:116c01a9-067c-48fd-bbf9-f1c336662590@192.168.13.245>\r\n"
+			"Contact: <sip:8001@192.168.13.198:5060;transport=udp>\r\n"
+			"Content-Type: application/pidf+xml\r\n"
+			"Call-ID: 90808b00-97c14197-80-c60da8c0@192.168.13.198\r\n"
+			"Subscription-State: active\r\n"
+			"Via: SIP/2.0/UDP 192.168.13.198:5060;branch=z9hG4bKa56da5d2a2\r\n"
+			"CSeq: 114 NOTIFY\r\n"
+			"Max-Forwards: 70\r\n"
+			"\r\n"
+			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n"
+			"<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"sip:8001@192.168.13.198\" xmlns:e=\"urn:ietf:params:xml:ns:pidf:status:rpid\" xmlns:dm=\"urn:ietf:params:xml:ns:pidf:data-model\" xmlns:ce=\"urn:cisco:params:xml:ns:pidf:rpid\" xmlns:sc=\"urn:ietf:params:xml:ns:pidf:servcaps\">\r\n"
+  			"  <dm:person>\r\n"
+    			"    <status>\r\n"
+    			"      <basic>open</basic>\r\n"
+    			"    </status>\r\n"
+			"    <e:activities>\r\n"
+			"      <e:on-the-phone/>\r\n"
+			"    </e:activities>\r\n"
+			"  </dm:person>\r\n"
+			"  <tuple id=\"cmp-8001-162\">\r\n"
+			"    <status>\r\n"
+			"      <basic>open</basic>\r\n"
+			"      <e:activities>\r\n"
+			"        <e:on-the-phone/>\r\n"
+			"      </e:activities>\r\n"
+			"    </status>\r\n"
+			"    <sc:servcaps>\r\n"
+			"      <sc:audio>true</sc:audio>\r\n"
+			"    </sc:servcaps>\r\n"
+			"    <contact priority=\"0.8\">sip:8001@192.168.13.198:5060</contact>\r\n"
+			"    <timestamp>2009-01-25T10:56:16Z</timestamp>\r\n"
+			"  </tuple>\r\n"
+			"</presence>\r\n";
+
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+
+        Packet packet(pkt,length);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        flow->packet = const_cast<Packet*>(&packet);
+        sip->processFlow(flow.get());
+
+        BOOST_CHECK(flow->sip_uri.lock() != nullptr);
+        BOOST_CHECK(flow->sip_from.lock() != nullptr);
+        BOOST_CHECK(flow->sip_to.lock() != nullptr);
+        BOOST_CHECK(flow->sip_via.lock() != nullptr);
+
+        std::string from("<sip:8001@192.168.13.198>;tag=1746816090");
+        std::string uri("sip:116c01a9-067c-48fd-bbf9-f1c336662590@192.168.13.245:44503");
+        std::string to("<sip:116c01a9-067c-48fd-bbf9-f1c336662590@192.168.13.245>");
+        std::string via("SIP/2.0/UDP 192.168.13.198:5060;branch=z9hG4bKa56da5d2a2");
+
+        BOOST_CHECK(uri.compare(flow->sip_uri.lock()->getName()) == 0);
+        BOOST_CHECK(from.compare(flow->sip_from.lock()->getName()) == 0);
+        BOOST_CHECK(to.compare(flow->sip_to.lock()->getName()) == 0);
+        BOOST_CHECK(via.compare(flow->sip_via.lock()->getName()) == 0);
+}
+
+BOOST_AUTO_TEST_CASE(test8_sip)
+{
+	char *header = 	"SIP/2.0 200 OK\r\n"
+			"Via: SIP/2.0/UDP 192.168.13.198:5060;branch=z9hG4bKb038804283\r\n"
+			"From: <sip:8001@192.168.13.198>;tag=1746816090\r\n"
+			"To: <sip:116c01a9-067c-48fd-bbf9-f1c336662590@192.168.13.245>\r\n"
+			"Call-ID: 90808b00-97c14197-80-c60da8c0@192.168.13.198\r\n"
+			"Date: Sun, 25 Jan 2009 10:56:20 GMT\r\n"
+			"CSeq: 115 NOTIFY\r\n"
+			"Content-Length: 0\r\n"
+			"\r\n";
+
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+
+        Packet packet(pkt,length);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        flow->packet = const_cast<Packet*>(&packet);
+        sip->processFlow(flow.get());
+
+        BOOST_CHECK(flow->sip_uri.lock() == nullptr);
+        BOOST_CHECK(flow->sip_from.lock() != nullptr);
+        BOOST_CHECK(flow->sip_to.lock() != nullptr);
+        BOOST_CHECK(flow->sip_via.lock() != nullptr);
+
+        std::string from("<sip:8001@192.168.13.198>;tag=1746816090");
+        std::string to("<sip:116c01a9-067c-48fd-bbf9-f1c336662590@192.168.13.245>");
+        std::string via("SIP/2.0/UDP 192.168.13.198:5060;branch=z9hG4bKb038804283");
+
+        BOOST_CHECK(from.compare(flow->sip_from.lock()->getName()) == 0);
+        BOOST_CHECK(to.compare(flow->sip_to.lock()->getName()) == 0);
+        BOOST_CHECK(via.compare(flow->sip_via.lock()->getName()) == 0);
+}
+
 /******
 
 
