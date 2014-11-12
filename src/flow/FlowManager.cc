@@ -185,9 +185,13 @@ void FlowManager::showFlows(std::basic_ostream<char>& out) {
 
 		if(flow->regex.lock()) out << " Regex:" << flow->regex.lock()->getName();	
 
-		if(flow->http_host.lock()) out << "Host:" << flow->http_host.lock()->getName();	
-	
-		if(flow->http_ua.lock()) out << " UserAgent:" << flow->http_ua.lock()->getName();
+		SharedPointer<HTTPInfo> hinfo = flow->http_info.lock();
+
+		if(hinfo) {
+			if (hinfo->getIsBanned()) out << "Banned ";
+			if(hinfo->host.lock()) out << "Host:" << hinfo->host.lock()->getName();	
+			if(hinfo->ua.lock()) out << " UserAgent:" << hinfo->ua.lock()->getName();
+		}
 
 		if(flow->dns_domain.lock()) out << " Domain:" << flow->dns_domain.lock()->getName();	
 		

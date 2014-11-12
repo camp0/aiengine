@@ -496,12 +496,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Returns if the flow have tag from lower network layers.")
 		.def("getTag",&Flow::getTag,
 			"Returns the tag from lower network layers.")
-		.def("getHTTPUri",&Flow::getHTTPUri,return_internal_reference<>(),
-			"Returns the HTTP URI of the flow if the flow is HTTP.")
-		.def("getHTTPHost",&Flow::getHTTPHost,return_internal_reference<>(),
-			"Returns the HTTP Host of the flow if the flow is HTTP.")
-		.def("getHTTPUserAgent",&Flow::getHTTPUserAgent,return_internal_reference<>(),
-			"Returns the HTTP UserAgent of the flow if the flow is HTTP.")
+		.def("getHTTPInfo",&Flow::getHTTPInfo,return_internal_reference<>(),
+			"Returns the HTTP Info of the flow if the flow is HTTP.")
 		.def("getFrequencies",&Flow::getFrequencies,return_internal_reference<>(),
 			"Returns a map of frequencies of the payload of the flow.")
 		.def("getPacketFrequencies",&Flow::getPacketFrequencies,return_internal_reference<>(),
@@ -526,6 +522,15 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("getName",&DNSDomain::getName,return_value_policy<return_by_value>(),
 			"Returns the DNS domain name.")
 		.def(self_ns::str(self_ns::self))
+	;
+
+	boost::python::class_<HTTPInfo, SharedPointer<HTTPInfo>, boost::noncopyable>("HTTPInfo")
+                .def("getUri",&HTTPInfo::getUri,return_internal_reference<>(),
+                      "Returns the HTTP URI of the flow if the flow is HTTP.")
+                .def("getHost",&HTTPInfo::getHost,return_internal_reference<>(),
+                      "Returns the HTTP Host of the flow if the flow is HTTP.")
+                .def("getUserAgent",&HTTPInfo::getUserAgent,return_internal_reference<>(),
+                      "Returns the HTTP UserAgent of the flow if the flow is HTTP.")
 	;
 
 	boost::python::class_<StringCache, SharedPointer<StringCache>,boost::noncopyable>("StringCache")

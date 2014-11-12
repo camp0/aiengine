@@ -38,6 +38,7 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include "StringCache.h"
+#include "HTTPInfo.h"
 #include "Cache.h"
 #include <unordered_map>
 #include "names/DomainNameManager.h"
@@ -46,6 +47,10 @@
 
 namespace aiengine {
 
+// Methods and response with statistics
+typedef std::tuple<const char*,int,const char*,int32_t> HttpMethodType;
+typedef std::function <bool (HTTPInfo*,const char *parameter)> HttpParameterHandler;
+
 class HTTPProtocol: public Protocol 
 {
 public:
@@ -53,14 +58,26 @@ public:
                 http_regex_(new Regex("Main HTTP expression","^(GET|POST|HEAD|PUT|TRACE).*HTTP/1.")),
                 http_host_(new Regex("Host expression","Host: .*?\r\n")),
                 http_ua_(new Regex("User Agent expression","User-Agent: .*?\r\n")),
-		http_header_(nullptr),total_bytes_(0),
-		total_allow_hosts_(0),total_ban_hosts_(0),total_requests_(0),
+		http_header_(nullptr),
+		http_header_size_(0),total_bytes_(0),
+		total_allow_hosts_(0),total_ban_hosts_(0),
+		total_requests_(0),total_responses_(0),total_http_others_(0),
+		info_cache_(new Cache<HTTPInfo>("Info Cache")),
 		uri_cache_(new Cache<StringCache>("Uri cache")),
 		host_cache_(new Cache<StringCache>("Host cache")),
 		ua_cache_(new Cache<StringCache>("UserAgent cache")),
 		ua_map_(),host_map_(),uri_map_(),
 		host_mng_(),ban_host_mng_(),
-		flow_mng_() {}	
+		flow_mng_() {
+
+		// Add the parameters that wants to be process by the HTTPProtocol		
+		parameters_.insert(std::make_pair<std::string,HttpParameterHandler>("Host",
+			std::bind(&HTTPProtocol::process_host_parameter,this,std::placeholders::_1,std::placeholders::_2)));
+		parameters_.insert(std::make_pair<std::string,HttpParameterHandler>("User-Agent",
+			std::bind(&HTTPProtocol::process_ua_parameter,this,std::placeholders::_1,std::placeholders::_2)));
+		parameters_.insert(std::make_pair<std::string,HttpParameterHandler>("Content-Length",
+			std::bind(&HTTPProtocol::process_content_length_parameter,this,std::placeholders::_1,std::placeholders::_2)));
+	}	
 
     	virtual ~HTTPProtocol() {}
 
@@ -106,12 +123,8 @@ public:
 
 	unsigned char *getPayload() { return http_header_; }
 
-        void createHTTPUris(int number) { uri_cache_->create(number);}
-        void destroyHTTPUris(int number) { uri_cache_->destroy(number);}
-        void createHTTPHosts(int number) { host_cache_->create(number);}
-        void destroyHTTPHosts(int number) { host_cache_->destroy(number);}
-        void createHTTPUserAgents(int number) { ua_cache_->create(number);}
-        void destroyHTTPUserAgents(int number) { ua_cache_->destroy(number);}
+	void createHTTPInfos(int number);
+	void destroyHTTPInfos(int number);
 
 	void setDomainNameManager(DomainNameManagerPtrWeak dnm) { host_mng_ = dnm;}
 	void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) { ban_host_mng_ = dnm;}
@@ -121,23 +134,38 @@ public:
 	int32_t getTotalAllowHosts() const { return total_allow_hosts_;}
 	int32_t getTotalBanHosts() const { return total_ban_hosts_;}
 
+	int16_t getHTTPHeaderSize() const { return http_header_size_; }
 private:
 
-	void attach_uri_to_flow(Flow *flow, std::string &host);
-	void attach_host_to_flow(Flow *flow, std::string &host);
-	void attach_useragent_to_flow(Flow *flow, std::string &ua);
-	void extract_uri_value(Flow *flow, const char *header);
-	void extract_host_value(Flow *flow, const char *header);
-	void extract_useragent_value(Flow *flow, const char *header);
+	void attach_uri(HTTPInfo *info, std::string &host);
+	void attach_host(HTTPInfo *info, std::string &host);
+	void attach_useragent(HTTPInfo *info, std::string &ua);
+
+	int extract_uri(HTTPInfo *info, const char *header);
+
+	void parse_header(HTTPInfo *info, const char *parameters);
+	bool process_host_parameter(HTTPInfo *info,const char *parameter);
+	bool process_ua_parameter(HTTPInfo *info,const char *parameter);
+	bool process_content_length_parameter(HTTPInfo *info,const char *parameter);
+
+	int32_t release_http_info(HTTPInfo *info);
+	void release_http_info_cache(HTTPInfo *info);
+
+	static std::vector<HttpMethodType> methods_;
+	std::unordered_map<std::string,HttpParameterHandler> parameters_;
 
 	int stats_level_;
 	SharedPointer<Regex> http_regex_,http_host_,http_ua_;
 	unsigned char *http_header_;
+	int16_t http_header_size_;	
 	int64_t total_bytes_;
 	int32_t total_allow_hosts_;
 	int32_t total_ban_hosts_;
 	int32_t total_requests_;
+	int32_t total_responses_;
+	int32_t total_http_others_;
 
+	Cache<HTTPInfo>::CachePtr info_cache_;
 	Cache<StringCache>::CachePtr uri_cache_;
 	Cache<StringCache>::CachePtr host_cache_;
 	Cache<StringCache>::CachePtr ua_cache_;

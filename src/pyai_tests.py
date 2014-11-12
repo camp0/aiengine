@@ -135,7 +135,7 @@ class StackLanTests(unittest.TestCase):
     	    http_flow = flow
     	    break
 
-        self.assertEqual(str(http_flow.getHTTPHost()),"www.google.com")
+        self.assertEqual(str(http_flow.getHTTPInfo().getHost()),"www.google.com")
 
     def test4(self):
         """ Verify SSL traffic """
@@ -322,12 +322,36 @@ class StackLanTests(unittest.TestCase):
             self.assertEqual(self.ip_called_callback,1)
 
     def test12(self):
-        """ Verify the HTTP fields of the flow """
+        """ Verify all the URIs of an HTTP flow """
 
         def domain_callback(flow):
+            urls = ("/css/global.css?v=20121120a","/js/jquery.hoverIntent.js","/js/ecom/ecomPlacement.js","/js/scrolldock/scrolldock.css?v=20121120a",
+                "/images_blogs/gadgetlab/2013/07/MG_9640edit-200x100.jpg","/images_blogs/underwire/2013/08/Back-In-Time-200x100.jpg",
+                "/images_blogs/thisdayintech/2013/03/set.jpg","/js/scrolldock/i/sub_righttab.gif","/images/global_header/new/Marriott_217x109.jpg",
+                "/images/global_header/subscribe/gh_flyout_failsafe.jpg","/images/global_header/new/the-connective.jpg","/images/covers/120x164.jpg",
+                "/images/subscribe/xrail_headline.gif","/images_blogs/gadgetlab/2013/08/bb10-bg.jpg","/images_blogs/autopia/2013/08/rescuer_cam06_110830-200x100.jpg",
+                "/images_blogs/wiredscience/2013/08/earth-ring-200x100.jpg","/images_blogs/underwire/2013/08/breaking-bad-small-200x100.png",
+                "/insights/wp-content/uploads/2013/08/dotcombubble_660-200x100.jpg","/geekdad/wp-content/uploads/2013/03/wreck-it-ralph-title1-200x100.png",
+                "/wiredenterprise/wp-content/uploads/2013/08/apple-logo-pixels-200x100.jpg","/images_blogs/threatlevel/2013/08/drone-w.jpg",
+                "/images_blogs/rawfile/2013/08/CirculationDesk-200x100.jpg","/images_blogs/magazine/2013/07/theoptimist_wired-200x100.jpg",
+                "/images_blogs/underwire/2013/08/Back-In-Time-w.jpg","/design/wp-content/uploads/2013/08/dyson-w.jpg",
+                "/images_blogs/threatlevel/2013/08/aaron_swartz-w.jpg","/images_blogs/threatlevel/2013/08/aaron_swartz-w.jpg",
+                "/images_blogs/wiredscience/2013/08/NegativelyRefracting-w.jpg","/images_blogs/wiredscience/2013/08/bee-w.jpg",
+                "/gadgetlab/2013/08/blackberry-failures/","/gadgetlab/wp-content/themes/wired-global/style.css?ver=20121114",
+                "/css/global.css?ver=20121114","/js/cn-fe-common/jquery-1.7.2.min.js?ver=1.7.2","/js/cn.minified.js?ver=20121114",
+                "/js/videos/MobileCompatibility.js?ver=20121114","/images_blogs/gadgetlab/2013/06/internets.png",
+                "/gadgetlab/wp-content/themes/wired-responsive/i/design-sprite.png","/images_blogs/gadgetlab/2013/08/Blackberry8820.jpg",
+                "/images_blogs/gadgetlab/2013/08/vsapple-60x60.jpg","/images_blogs/gadgetlab/2013/08/AP090714043057-60x60.jpg"
+            )
             self.called_callback += 1
-            self.assertEqual(str(flow.getHTTPUri()),"/css/global.css?v=20121120a")
-            self.assertEqual(str(flow.getHTTPHost()),"www.wired.com")
+
+            sw = False
+            for url in urls:
+                if (str(flow.getHTTPInfo().getUri()) == url):
+                    sw = True
+
+            self.assertEqual(sw,True)
+            self.assertEqual(str(flow.getHTTPInfo().getHost()),"www.wired.com")
 
         d = pyaiengine.DomainName("Wired domain",".wired.com")
 
@@ -341,7 +365,7 @@ class StackLanTests(unittest.TestCase):
         self.dis.run()
         self.dis.close()
 
-        self.assertEqual(self.called_callback, 1)
+        self.assertEqual(self.called_callback, 74)
 
     def test13(self):
         """ Verify cache release functionality """
@@ -381,7 +405,7 @@ class StackLanTests(unittest.TestCase):
 
         for flow in ft:
             self.assertEqual(flow.getSSLHost(),None)
-            self.assertEqual(flow.getHTTPHost(),None)
+            self.assertEqual(flow.getHTTPInfo(),None)
 
         for flow in fu:
             self.assertEqual(flow.getDNSDomain(),None)
@@ -403,6 +427,34 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(db.getInserts(), 1)
         self.assertEqual(db.getUpdates(), 1)
         self.assertEqual(db.getRemoves(), 1)
+
+    def test15(self):
+        """ Verify that ban domains dont take memory """
+
+        d = pyaiengine.DomainName("Wired domain",".wired.com")
+
+        dm = pyaiengine.DomainNameManager()
+        dm.addDomainName(d)
+
+        self.s.setHTTPHostNameManager(dm,False)
+
+        self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
+        self.dis.run()
+        self.dis.close()
+
+        self.assertEqual(d.getMatchs(), 1)
+
+        ft = self.s.getTCPFlowManager()
+
+        self.assertEqual(len(ft), 2)
+
+        # Only the first flow is the banned
+        for flow in ft:
+            info = flow.getHTTPInfo()
+            self.assertEqual(info.getHost(), None)
+            self.assertEqual(info.getUserAgent(), None)
+            self.assertEqual(info.getUri(), None)
+            break
 
  
 class StackLanIPv6Tests(unittest.TestCase):

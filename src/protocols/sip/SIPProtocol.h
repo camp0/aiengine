@@ -46,6 +46,9 @@
 
 namespace aiengine {
 
+// Methods and response with statistics
+typedef std::tuple<const char*,int,const char*,int32_t> SipMethodType;
+
 class SIPProtocol: public Protocol 
 {
 public:
@@ -57,19 +60,6 @@ public:
 		sip_header_(nullptr),total_bytes_(0),
         	total_requests_(0),
         	total_responses_(0),
-        	total_sip_register_(0),
-        	total_sip_invite_(0),
-        	total_sip_ack_(0),
-        	total_sip_cancel_(0),
-        	total_sip_bye_(0),
-        	total_sip_options_(0),
-        	total_sip_publish_(0),
-        	total_sip_subscribe_(0),
-        	total_sip_notify_(0),
-        	total_sip_refer_(0),
-        	total_sip_message_(0),
-        	total_sip_info_(0),
-        	total_sip_ping_(0),
         	total_sip_others_(0),
 		uri_cache_(new Cache<StringCache>("Uri cache")),
 		via_cache_(new Cache<StringCache>("Via cache")),
@@ -143,6 +133,9 @@ private:
 	void extract_to_value(Flow *flow, const char *header);
 	void extract_via_value(Flow *flow, const char *header);
 
+	static std::vector<SipMethodType> methods_;
+	static std::vector<SipMethodType> responses_;
+
 	int stats_level_;
 	SharedPointer<Regex> sip_regex_,sip_from_,sip_to_,sip_via_;
 	unsigned char *sip_header_;
@@ -151,19 +144,6 @@ private:
 	// Some statistics of the SIP methods 
 	int32_t total_requests_;
 	int32_t total_responses_;
-	int32_t total_sip_register_;
-	int32_t total_sip_invite_;
-	int32_t total_sip_ack_;
-	int32_t total_sip_cancel_;
-	int32_t total_sip_bye_;
-	int32_t total_sip_options_;
-	int32_t total_sip_publish_;
-	int32_t total_sip_subscribe_;
-	int32_t total_sip_notify_;
-	int32_t total_sip_refer_;
-	int32_t total_sip_message_;
-	int32_t total_sip_info_;
-	int32_t total_sip_ping_;
 	int32_t total_sip_others_;
 
 	Cache<StringCache>::CachePtr uri_cache_;

@@ -1462,9 +1462,9 @@ BOOST_AUTO_TEST_CASE ( test_case_17 )
 
         BOOST_CHECK(flows_tcp->getTotalFlows() == 1);
         for (auto &flow: flows_tcp->getFlowTable()) {
-                BOOST_CHECK(flow->http_host.lock() != nullptr);
-                BOOST_CHECK(flow->http_ua.lock() != nullptr);
-                BOOST_CHECK(flow->http_uri.lock() != nullptr);
+                BOOST_CHECK(flow->http_info.lock() != nullptr);
+                BOOST_CHECK(flow->http_info.lock()->ua.lock() != nullptr);
+                BOOST_CHECK(flow->http_info.lock()->uri.lock() != nullptr);
         }
         FlowManagerPtr flows_udp = stack->getUDPFlowManager().lock();
 
@@ -1477,9 +1477,7 @@ BOOST_AUTO_TEST_CASE ( test_case_17 )
 
         BOOST_CHECK(flows_tcp->getTotalFlows() == 1);
         for (auto &flow: flows_tcp->getFlowTable()) {
-                BOOST_CHECK(flow->http_host.lock() == nullptr);
-                BOOST_CHECK(flow->http_ua.lock() == nullptr);
-                BOOST_CHECK(flow->http_uri.lock() == nullptr);
+                BOOST_CHECK(flow->http_info.lock() == nullptr);
         }
 
         BOOST_CHECK(flows_udp->getTotalFlows() == 1);

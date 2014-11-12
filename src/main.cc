@@ -61,8 +61,6 @@ aiengine::RegexManagerPtr sm;
 aiengine::FrequencyGroup<std::string> group;
 aiengine::LearnerEngine learner;
 
-std::map<std::string,std::function <void(FlowManagerPtr)>> group_map_options;
-
 /* Factory of NetworkStacks implemented with lambdas */
 std::map<std::string, std::function<aiengine::NetworkStackPtr()>> stack_factory {
 	{ "lan",	[](){return aiengine::NetworkStackPtr(new aiengine::StackLan());}},

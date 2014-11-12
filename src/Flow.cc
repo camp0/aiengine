@@ -58,10 +58,8 @@ void Flow::reset() {
 	ipset.reset();	
 	forwarder.reset();
 	frequencies.reset();
-	http_uri.reset();
-	http_host.reset();
+	http_info.reset();
 	ssl_host.reset();
-	http_ua.reset();
 	sip_uri.reset();
 	sip_from.reset();
 	sip_to.reset();
@@ -138,9 +136,12 @@ void Flow::serialize(std::ostream& stream) {
 	if (protocol_ == IPPROTO_TCP) {
 		if(tcp_info.lock())	
 			stream << ",\"tcpflags\":\"" << *tcp_info.lock() << "\"";
-		
-		if(http_host.lock())	
-			stream << ",\"httphost\":\"" << http_host.lock()->getName() << "\"";
+	
+		if (http_info.lock()) {
+			SharedPointer<HTTPInfo> info = http_info.lock();
+			if(info->host.lock())	
+				stream << ",\"httphost\":\"" << info->host.lock()->getName() << "\"";
+		}	
 
 		if(ssl_host.lock())	
 			stream << ",\"sslhost\":\"" << ssl_host.lock()->getName() << "\"";

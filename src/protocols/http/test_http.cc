@@ -87,36 +87,43 @@ BOOST_AUTO_TEST_CASE (test2_http)
 	flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
-	BOOST_CHECK(flow->http_uri.lock() == nullptr); // there is no items on the cache
-	BOOST_CHECK(flow->http_host.lock() == nullptr); // there is no items on the cache
-	BOOST_CHECK(flow->http_ua.lock() == nullptr); // there is no items on the cache
+	BOOST_CHECK(flow->http_info.lock() == nullptr);
 }
 
 
 BOOST_AUTO_TEST_CASE (test3_http)
 {
-        char *header = 	"GET / HTTP/1.1\r\n"
-			"Host: www.google.com\r\n"
-			"Connection: close\r\n\r\n";
+        char *header = 	"GET / HTTP/1.1\r\n" 		// 16 bytes
+			"Host: www.google.com\r\n"	// 22 bytes 
+			"Connection: close\r\n\r\n";    // 21 bytes
         unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
         int length = strlen(header);
 
         Packet packet(pkt,length,0);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPHosts(10);
+        http->createHTTPInfos(10);
 
+	flow->setFlowDirection(FlowDirection::FORWARD);
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
-        BOOST_CHECK(flow->http_uri.lock() == nullptr);
-        BOOST_CHECK(flow->http_host.lock() != nullptr);
+	// Verify the size of the Header
+	BOOST_CHECK(http->getHTTPHeaderSize() == 59);
+
+	BOOST_CHECK(flow->http_info.lock() != nullptr);
+	SharedPointer<HTTPInfo> info = flow->http_info.lock();
+
+        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(info->host.lock() != nullptr);
 
 	std::string cad("www.google.com");
+	std::string uri("/");
 
 	// The host is valid
-	BOOST_CHECK(cad.compare(flow->http_host.lock()->getName()) == 0);
-	BOOST_CHECK(flow->http_ua.lock() == nullptr);
+	BOOST_CHECK(cad.compare(info->host.lock()->getName()) == 0);
+	BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+	BOOST_CHECK(info->ua.lock() == nullptr);
 }
 
 BOOST_AUTO_TEST_CASE (test4_http)
@@ -131,21 +138,25 @@ BOOST_AUTO_TEST_CASE (test4_http)
         Packet packet(pkt,length,0);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPHosts(1);
-        http->createHTTPUserAgents(1);
+        http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
-        std::string cad_host("www.g00gle.com");
+	BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header));
+        
+	std::string cad_host("www.g00gle.com");
         std::string cad_ua("LuisAgent");
 
-        BOOST_CHECK(flow->http_ua.lock() != nullptr);
-        BOOST_CHECK(flow->http_host.lock() != nullptr);
+	BOOST_CHECK(flow->http_info.lock() != nullptr);
+	SharedPointer<HTTPInfo> info = flow->http_info.lock();
+
+        BOOST_CHECK(info->ua.lock() != nullptr);
+        BOOST_CHECK(info->host.lock() != nullptr);
 
         // The host is valid
-        BOOST_CHECK(cad_host.compare(flow->http_host.lock()->getName()) == 0);
-        BOOST_CHECK(cad_ua.compare(flow->http_ua.lock()->getName()) == 0);
+        BOOST_CHECK(cad_host.compare(info->host.lock()->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(info->ua.lock()->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test5_http)
@@ -163,24 +174,26 @@ BOOST_AUTO_TEST_CASE (test5_http)
         Packet packet(pkt,length,0);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPUris(1);
-        http->createHTTPHosts(1);
-        http->createHTTPUserAgents(1);
+        http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
+	BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header));
+	
 	std::string cad_uri("/someur-oonnnnn-a-/somefile.php");
         std::string cad_host("www.g00gle.com");
         std::string cad_ua("LuisAgent");
 
-        BOOST_CHECK(flow->http_ua.lock() != nullptr);
-        BOOST_CHECK(flow->http_host.lock() != nullptr);
-        BOOST_CHECK(flow->http_uri.lock() != nullptr);
+	BOOST_CHECK(flow->http_info.lock() != nullptr);
+	SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        BOOST_CHECK(info->ua.lock() != nullptr);
+        BOOST_CHECK(info->host.lock() != nullptr);
+        BOOST_CHECK(info->uri.lock() != nullptr);
 
-        BOOST_CHECK(cad_uri.compare(flow->http_uri.lock()->getName()) == 0);
-        BOOST_CHECK(cad_host.compare(flow->http_host.lock()->getName()) == 0);
-        BOOST_CHECK(cad_ua.compare(flow->http_ua.lock()->getName()) == 0);
+        BOOST_CHECK(cad_uri.compare(info->uri.lock()->getName()) == 0);
+        BOOST_CHECK(cad_host.compare(info->host.lock()->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(info->ua.lock()->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test6_http)
@@ -200,21 +213,26 @@ BOOST_AUTO_TEST_CASE (test6_http)
         Packet packet(pkt,length,0);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPHosts(1);
-        http->createHTTPUserAgents(1);
+        http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
+	 // Verify the size of the Header
+	BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header));
+
         std::string cad_host("www.g00gle.com");
         std::string cad_ua("LuisAgent CFNetwork/609 Darwin/13.0.0");
 
-        BOOST_CHECK(flow->http_ua.lock() != nullptr);
-        BOOST_CHECK(flow->http_host.lock() != nullptr);
+        BOOST_CHECK(flow->http_info.lock() != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        BOOST_CHECK(info->ua.lock() != nullptr);
+        BOOST_CHECK(info->host.lock() != nullptr);
+        BOOST_CHECK(info->uri.lock() != nullptr);
 
         // The host is valid
-        BOOST_CHECK(cad_host.compare(flow->http_host.lock()->getName()) == 0);
-        BOOST_CHECK(cad_ua.compare(flow->http_ua.lock()->getName()) == 0);
+        BOOST_CHECK(cad_host.compare(info->host.lock()->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(info->ua.lock()->getName()) == 0);
 }
 
 
@@ -238,21 +256,26 @@ BOOST_AUTO_TEST_CASE (test7_http)
         Packet packet(pkt,length,0);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPHosts(1);
-        http->createHTTPUserAgents(1);
+        http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
+	 // Verify the size of the Header
+	BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header));
+
         std::string cad_host("onedomain.com");
         std::string cad_ua("LuisAgent CFNetwork/609 Darwin/13.0.0");
 
-        BOOST_CHECK(flow->http_ua.lock() != nullptr);
-        BOOST_CHECK(flow->http_host.lock() != nullptr);
+        BOOST_CHECK(flow->http_info.lock() != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        BOOST_CHECK(info->ua.lock() != nullptr);
+        BOOST_CHECK(info->host.lock() != nullptr);
+        BOOST_CHECK(info->uri.lock() != nullptr);
 
         // The host is valid
-        BOOST_CHECK(cad_host.compare(flow->http_host.lock()->getName()) == 0);
-        BOOST_CHECK(cad_ua.compare(flow->http_ua.lock()->getName()) == 0);
+        BOOST_CHECK(cad_host.compare(info->host.lock()->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(info->ua.lock()->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test8_http)
@@ -274,21 +297,26 @@ BOOST_AUTO_TEST_CASE (test8_http)
         Packet packet1(pkt1,length1);
         SharedPointer<Flow> flow1 = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPHosts(2);
-        http->createHTTPUserAgents(2);
+        http->createHTTPInfos(2);
 
         flow1->packet = const_cast<Packet*>(&packet1);
         http->processFlow(flow1.get());
 
+         // Verify the size of the Header
+        BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header1));
+
         std::string cad_host("onedomain.com");
         std::string cad_ua("LuisAgent CFNetwork/609 Darwin/13.0.0");
 
-        BOOST_CHECK(flow1->http_ua.lock() != nullptr);
-        BOOST_CHECK(flow1->http_host.lock() != nullptr);
+        BOOST_CHECK(flow1->http_info.lock() != nullptr);
+        SharedPointer<HTTPInfo> info1 = flow1->http_info.lock();
+        BOOST_CHECK(info1->ua.lock() != nullptr);
+        BOOST_CHECK(info1->host.lock() != nullptr);
+        BOOST_CHECK(info1->uri.lock() != nullptr);
 
         // The host is valid
-        BOOST_CHECK(cad_host.compare(flow1->http_host.lock()->getName()) == 0);
-        BOOST_CHECK(cad_ua.compare(flow1->http_ua.lock()->getName()) == 0);
+        BOOST_CHECK(cad_host.compare(info1->host.lock()->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(info1->ua.lock()->getName()) == 0);
 
         char *header2 =  "GET /access/megustaelfary.mp4?version=4&lid=1187884873&token=JJz8QucMbPrjzSq4y7ffuLUTFO2Etiqu"
                         "Evd4Y34WVkhvAPWJK1%2F7nJlhnAkhXOPT9GCuPlZLgLnIxANviI%2FgtwRfJ9qh9QWwUS2WvW2JAOlS7bvHoIL9JbgA8"
@@ -308,8 +336,17 @@ BOOST_AUTO_TEST_CASE (test8_http)
 
         flow2->packet = const_cast<Packet*>(&packet2);
         http->processFlow(flow2.get());
+         
+	// Verify the size of the Header
+        BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2));
 
-	BOOST_CHECK(flow1->http_ua.lock() == flow2->http_ua.lock());
+        BOOST_CHECK(flow2->http_info.lock() != nullptr);
+        SharedPointer<HTTPInfo> info2 = flow2->http_info.lock();
+        BOOST_CHECK(info2->ua.lock() != nullptr);
+        BOOST_CHECK(info2->host.lock() != nullptr);
+        BOOST_CHECK(info2->uri.lock() != nullptr);
+
+	BOOST_CHECK(info1->ua.lock() == info2->ua.lock());
 }
 
 BOOST_AUTO_TEST_CASE (test9_http)
@@ -332,21 +369,29 @@ BOOST_AUTO_TEST_CASE (test9_http)
         Packet packet1(pkt1,length1);
         SharedPointer<Flow> flow1 = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPHosts(2);
-        http->createHTTPUserAgents(2);
+        http->createHTTPInfos(2);
 
         flow1->packet = const_cast<Packet*>(&packet1);
         http->processFlow(flow1.get());
 
+        // Verify the size of the Header
+        BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header1));
+
         std::string cad_host("onedomain.com");
         std::string cad_ua("LuisAgent CFNetwork/609 Darwin/13.0.0");
 
-        BOOST_CHECK(flow1->http_ua.lock() != nullptr);
-        BOOST_CHECK(flow1->http_host.lock() != nullptr);
+        BOOST_CHECK(flow1->http_info.lock() != nullptr);
+        SharedPointer<HTTPInfo> info1 = flow1->http_info.lock();
+        BOOST_CHECK(info1->ua.lock() != nullptr);
+        BOOST_CHECK(info1->host.lock() != nullptr);
+        BOOST_CHECK(info1->uri.lock() != nullptr);
+
+        BOOST_CHECK(info1->ua.lock() != nullptr);
+        BOOST_CHECK(info1->host.lock() != nullptr);
 
         // The host is valid
-        BOOST_CHECK(cad_host.compare(flow1->http_host.lock()->getName()) == 0);
-        BOOST_CHECK(cad_ua.compare(flow1->http_ua.lock()->getName()) == 0);
+        BOOST_CHECK(cad_host.compare(info1->host.lock()->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(info1->ua.lock()->getName()) == 0);
 
         char *header2 =  "GET /access/megustaelfary.mp4?version=4&lid=1187884873&token=JJz8QucMbPrjzSq4y7ffuLUTFO2Etiqu"
                         "Evd4Y34WVkhvAPWJK1%2F7nJlhnAkhXOPT9GCuPlZLgLnIxANviI%2FgtwRfJ9qh9QWwUS2WvW2JAOlS7bvHoIL9JbgA8"
@@ -367,18 +412,22 @@ BOOST_AUTO_TEST_CASE (test9_http)
         flow2->packet = const_cast<Packet*>(&packet2);
         http->processFlow(flow2.get());
 
+        // Verify the size of the Header
+        BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2));
+
         std::string cad_ua2("LuisAgent CFNetwork/609 Darwin/13.2.0");
 
-        BOOST_CHECK(flow2->http_ua.lock() != nullptr);
-        BOOST_CHECK(flow2->http_host.lock() != nullptr);
+        BOOST_CHECK(flow2->http_info.lock() != nullptr);
+        SharedPointer<HTTPInfo> info2 = flow2->http_info.lock();
+        BOOST_CHECK(info2->ua.lock() != nullptr);
+        BOOST_CHECK(info2->host.lock() != nullptr);
+        BOOST_CHECK(info2->uri.lock() != nullptr);
 
         // The host is valid
-        BOOST_CHECK(cad_host.compare(flow2->http_host.lock()->getName()) == 0);
-        BOOST_CHECK(cad_ua2.compare(flow2->http_ua.lock()->getName()) == 0);
-        ///
-        //http->statistics();
-	BOOST_CHECK(flow1->http_host.lock() == flow2->http_host.lock());
+        BOOST_CHECK(cad_host.compare(info2->host.lock()->getName()) == 0);
+        BOOST_CHECK(cad_ua2.compare(info2->ua.lock()->getName()) == 0);
 
+	BOOST_CHECK(info1->host.lock() == info2->host.lock());
 }
 
 // Test the HTTPProtocol with the DomainNameManager attached
@@ -410,13 +459,15 @@ BOOST_AUTO_TEST_CASE (test10_http)
 	host_mng->addDomainName(host_name);
 
 	// Dont create any items on the cache
-        http->createHTTPHosts(0);
-        http->createHTTPUserAgents(0);
+        http->createHTTPInfos(0);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
-	BOOST_CHECK(flow->http_host.lock() == nullptr);
+        // Size of the header equals 0 
+        BOOST_CHECK(http->getHTTPHeaderSize() == 0);
+
+	BOOST_CHECK(flow->http_info.lock() == nullptr);
 	BOOST_CHECK(host_name->getMatchs() == 0);
 }
 
@@ -449,13 +500,15 @@ BOOST_AUTO_TEST_CASE (test11_http)
         host_mng->addDomainName(host_name);
 
         // Dont create any items on the cache
-        http->createHTTPHosts(1);
-        http->createHTTPUserAgents(0);
+        http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
-        BOOST_CHECK(flow->http_host.lock() != nullptr);
+        // Verify the size of the Header
+        BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header));
+
+        BOOST_CHECK(flow->http_info.lock() != nullptr);
         BOOST_CHECK(host_name->getMatchs() == 0);
 }
 
@@ -488,13 +541,19 @@ BOOST_AUTO_TEST_CASE (test12_http)
         host_mng->addDomainName(host_name);
 
         // Dont create any items on the cache
-        http->createHTTPHosts(1);
-        http->createHTTPUserAgents(0);
+        http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
-        BOOST_CHECK(flow->http_host.lock() != nullptr);
+        BOOST_CHECK(flow->http_info.lock() != nullptr);
+	SharedPointer<HTTPInfo> info = flow->http_info.lock();
+
+	BOOST_CHECK(info->getIsBanned() == false);
+	BOOST_CHECK(info->uri.lock() != nullptr);
+	BOOST_CHECK(info->host.lock() != nullptr);
+	BOOST_CHECK(info->ua.lock() != nullptr);
+
         BOOST_CHECK(host_name->getMatchs() == 1);
 }
 
@@ -522,6 +581,8 @@ BOOST_AUTO_TEST_CASE (test13_http)
         Packet packet(pkt,length);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
+	http->createHTTPInfos(1);
+
         http->setDomainNameBanManager(host_mng_weak);
         host_mng->addDomainName(host_name);
 
@@ -530,6 +591,18 @@ BOOST_AUTO_TEST_CASE (test13_http)
 
 	BOOST_CHECK( http->getTotalAllowHosts() == 0);
 	BOOST_CHECK( http->getTotalBanHosts() == 1);
+
+	// Verify that the flow dont have references in order to save memory
+	SharedPointer<HTTPInfo> info = flow->http_info.lock();
+
+	BOOST_CHECK(info->getIsBanned() == true);
+	BOOST_CHECK(info->uri.lock() == nullptr);
+	BOOST_CHECK(info->ua.lock() == nullptr);
+	BOOST_CHECK(info->host.lock() == nullptr);
+
+	// TODO: The caches also should contain no entries
+	//http->setStatisticsLevel(5);
+	//http->statistics();
 }
 
 // Test the URI functionality
@@ -559,33 +632,256 @@ BOOST_AUTO_TEST_CASE (test14_http)
         Packet packet2(pkt2,length2);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPUris(1);
+        http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet1);
         http->processFlow(flow.get());
+
+        // Verify the size of the Header
+        BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header1));
                         
         std::string cad_uri1("/someur-oonnnnn-a-/somefile.php");
         std::string cad_uri2("/VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB/oonnnnn-a-/otherfile.html");
+
+	BOOST_CHECK(flow->http_info.lock() != nullptr);
+	SharedPointer<HTTPInfo> info = flow->http_info.lock();
  
-        BOOST_CHECK(flow->http_uri.lock() != nullptr);
-        BOOST_CHECK(cad_uri1.compare(flow->http_uri.lock()->getName()) == 0);
+        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(cad_uri1.compare(info->uri.lock()->getName()) == 0);
 
 	// Inject the next header
         flow->packet = const_cast<Packet*>(&packet2);
         http->processFlow(flow.get());
 
+        // TODO: Verify the size of the Header
+	// std::cout << "Header size:" << http->getHTTPHeaderSize() << " h1:" << strlen(header1) << " h2:" << strlen(header2) << std::endl;
+        // BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2));
+	
 	// There is no uris on the cache so the flow keeps the last uri seen
-        BOOST_CHECK(cad_uri1.compare(flow->http_uri.lock()->getName()) == 0);
+        BOOST_CHECK(cad_uri1.compare(info->uri.lock()->getName()) == 0);
 
 	// Now create a uri on the cache 
-        http->createHTTPUris(1);
+        http->createHTTPInfos(1);
         
 	http->processFlow(flow.get());
 
+	SharedPointer<HTTPInfo> info2 = flow->http_info.lock();
+
 	// There is no uris on the cache so the flow keeps the last uri seen
-        BOOST_CHECK(cad_uri2.compare(flow->http_uri.lock()->getName()) == 0);
+        BOOST_CHECK(cad_uri2.compare(info2->uri.lock()->getName()) == 0);
 }
 
+BOOST_AUTO_TEST_CASE (test15_http)
+{
+	char *header = 	"HTTP/1.1 200 OK\r\n"
+			"Server: Cengine\r\n"
+			"Date: Fri, 07 Nov 2013 11:18:45 GMT\r\n"
+			"Content-Type: text/plain;charset=UTF-8\r\n"
+			"Content-Length: 125\r\n"
+			"Connection: keep-alive\r\n"
+			"Accept-Charset: utf-8\r\n"
+			"Access-Control-Allow-Credentials: true\r\n"
+			"\r\n"
+			"var cb_c847hj = {\"data\":{\"qidan_home\":[],\"dingyue\":[],\"data\":[],\"qidan_cnt\":0,\"watchlater\":[],\"playlist\":[]},\"code\":\"A00000\"}";
+
+	char *header_ext = "var cb_c847hj = {\"data\":{\"qidan_home\":[],\"dingyue\":[],\"data\":[],\"qidan_cnt\":0,\"watchlater\":[],\"playlist\":[]},\"code\":\"A00000\"}";
+	
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+        Packet packet(pkt,length);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->createHTTPInfos(1);
+	
+	flow->setFlowDirection(FlowDirection::BACKWARD);
+
+        flow->packet = const_cast<Packet*>(&packet);
+        http->processFlow(flow.get());
+
+        // Verify the size of the Header
+	// std::cout << "http header size:" << http->getHTTPHeaderSize() << " h:" << strlen(header) << " he:" << strlen(header_ext) << std::endl;
+        BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header)-strlen(header_ext)) ;
+
+        BOOST_CHECK(flow->http_info.lock() != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+
+	BOOST_CHECK(info->getContentLength() == 125);
+
+        // http->setStatisticsLevel(5);
+        // http->statistics();
+}
+
+BOOST_AUTO_TEST_CASE (test16_http) 
+{
+        char *header =  "GET /VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB/oonnnnn-a-/otherfile.html HTTP/1.0\r\n"
+                        "Connection: close\r\n"
+                        "Accept-Language: en-gb\r\n"
+                        "Accept: */*\r\n"
+			"Cookie: PREF=ID=765870cb5ff303a3:TM=1209230140:LM=1209255358:GM=1:S=tFGcUUKdZTTlFhg8; "
+				"rememberme=true; SID=DQAAAHcAAADymnf27WSdmq8VK7DtQkDCYwpT6yEH1c8p6crrirTO3HsXN"
+				"2N_pOcW-T82lcNyvlUHgXiVPsZYrH6TnjQrgCEOLjUSOCrlLFh5I0BdGjioxzmksgWrrfeMV-y7bx1"
+				"T1LPCMDOW0Wkw0XFqWOpMlkBCHsdt2Vcsha0j20VpIaw6yg; NID=10=jMYWNkozslA4UaRu8zyFSL"
+				"Ens8iWVz4GdkeefkqVm5dFS0F0ztc8hDlNJRllb_WeYe9Wx6a8Yo7MnrFzqwZczgXV5e-RFbCrrJ9dfU5gs79L_v3BSdueIg_OOfjpScSh\r\n"
+                        "User-Agent: LuisAgent\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Host: www.bu.com\r\n\r\n";
+
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+        Packet packet(pkt,length);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->createHTTPInfos(1);
+
+        flow->packet = const_cast<Packet*>(&packet);
+        http->processFlow(flow.get());
+
+
+	// Verify the size of the Header
+        BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header));
+
+        std::string host("www.bu.com");
+        std::string ua("LuisAgent");
+
+        BOOST_CHECK(flow->http_info.lock() != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+
+        BOOST_CHECK(info->host.lock() != nullptr);
+        BOOST_CHECK(info->ua.lock() != nullptr);
+        BOOST_CHECK(host.compare(info->host.lock()->getName()) == 0);
+        BOOST_CHECK(ua.compare(info->ua.lock()->getName()) == 0);
+}
+
+
+BOOST_AUTO_TEST_CASE (test17_http) 
+{
+        char *header1 =  "GET /someur-oonnnnn-a-/somefile.php HTTP/1.0\r\n"
+                        "Host: www.bu.com\r\n"
+                        "Connection: close\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Accept-Language: en-gb\r\n"
+                        "Accept: */*\r\n"
+                        "User-Agent: LuisAgent\r\n\r\n";
+
+        char *header2 =  "GET /VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB/oonnnnn-a-/otherfile.html HTTP/1.0\r\n"
+                        "Host: www.bu.com\r\n"
+                        "Connection: close\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Accept-Language: en-gb\r\n"
+                        "Accept: */*\r\n"
+                        "User-Agent: LuisAgent\r\n\r\n";
+
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header1);
+        int length1 = strlen(header1);
+        Packet packet1(pkt1,length1);
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (header2);
+        int length2 = strlen(header2);
+        Packet packet2(pkt2,length2);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        SharedPointer<DomainNameManager> host_mng = SharedPointer<DomainNameManager>(new DomainNameManager());
+        WeakPointer<DomainNameManager> host_mng_weak = host_mng;
+        SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("Banned domain","bu.com"));
+
+        http->createHTTPInfos(1);
+
+        http->setDomainNameBanManager(host_mng_weak);
+        host_mng->addDomainName(host_name);
+
+        http->createHTTPInfos(2);
+
+        flow->packet = const_cast<Packet*>(&packet1);
+        http->processFlow(flow.get());
+
+        flow->packet = const_cast<Packet*>(&packet2);
+        http->processFlow(flow.get());
+
+        BOOST_CHECK(flow->http_info.lock() != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+
+	BOOST_CHECK(host_name->getMatchs() == 1);
+	BOOST_CHECK(info->getIsBanned() == true);
+        BOOST_CHECK(info->host.lock() == nullptr);
+        BOOST_CHECK(info->uri.lock() == nullptr);
+        BOOST_CHECK(info->ua.lock() == nullptr);
+}
+
+BOOST_AUTO_TEST_CASE (test18_http) 
+{
+
+	char *header =	"POST /open/1 HTTP/1.1\r\n"
+			"Content-Type: application/x-fcs\r\n"
+			"User-Agent: Shockwave Flash\r\n"
+			"Host: 86.19.100.102\r\n"
+			"Content-Length: 1\r\n"
+			"Connection: Keep-Alive\r\n"
+			"Cache-Control: no-cache\r\n"
+			"\r\n"
+			".";
+
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+        Packet packet(pkt,length);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->createHTTPInfos(1);
+
+        flow->packet = const_cast<Packet*>(&packet);
+        http->processFlow(flow.get());
+
+        // Verify the size of the Header
+        BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header) - 1);
+
+        std::string host("86.19.100.102");
+        std::string ua("Shockwave Flash");
+	std::string uri("/open/1");
+
+        BOOST_CHECK(flow->http_info.lock() != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+
+        BOOST_CHECK(info->host.lock() != nullptr);
+        BOOST_CHECK(info->ua.lock() != nullptr);
+        BOOST_CHECK(host.compare(info->host.lock()->getName()) == 0);
+        BOOST_CHECK(ua.compare(info->ua.lock()->getName()) == 0);
+        BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+
+	BOOST_CHECK(info->getContentLength() == 1);
+}
+
+BOOST_AUTO_TEST_CASE (test19_http) 
+{
+
+	char *header =	"HTTP/1.1 200 OK\r\n"
+			"Cache-Control: no-cache\r\n"
+			"Connection: Keep-Alive\r\n"
+			"Content-Length: 17\r\n"
+			"Server: FlashCom/3.5.7\r\n"
+			"Content-Type:  application/x-fcs\r\n"
+			"\r\n"
+			"Cuomdz02wSLGeYbI.";
+
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+        Packet packet(pkt,length);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->createHTTPInfos(1);
+
+        flow->packet = const_cast<Packet*>(&packet);
+        http->processFlow(flow.get());
+
+        // Verify the size of the Header
+        BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header) - 17);
+
+        BOOST_CHECK(flow->http_info.lock() != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+
+        BOOST_CHECK(info->host.lock() == nullptr);
+        BOOST_CHECK(info->ua.lock() == nullptr);
+        BOOST_CHECK(info->uri.lock() == nullptr);
+
+        BOOST_CHECK(info->getContentLength() == 17);
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 
@@ -706,9 +1002,7 @@ BOOST_AUTO_TEST_CASE (test4_http)
         Packet packet1(pkt1,length1);
 
         // Dont create any items on the cache
-        http->createHTTPHosts(0);
-        http->createHTTPUris(0);
-        http->createHTTPUserAgents(0);
+        http->createHTTPInfos(0);
 
         mux_eth->setPacket(&packet1);
         eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
@@ -718,17 +1012,13 @@ BOOST_AUTO_TEST_CASE (test4_http)
 	auto fm = tcp->getFlowManager();
 
 	for (auto &f: fm->getFlowTable()) {
-		BOOST_CHECK(f->http_host.lock() == nullptr);
-		BOOST_CHECK(f->http_uri.lock() == nullptr);
-		BOOST_CHECK(f->http_ua.lock() == nullptr);
+		BOOST_CHECK(f->http_info.lock() == nullptr);
 	}
 
 	http->releaseCache(); // Nothing to release
 
         for (auto &f: fm->getFlowTable()) {
-                BOOST_CHECK(f->http_host.lock() == nullptr);
-                BOOST_CHECK(f->http_uri.lock() == nullptr);
-                BOOST_CHECK(f->http_ua.lock() == nullptr);
+                BOOST_CHECK(f->http_info.lock() == nullptr);
         }
 }
 
@@ -740,9 +1030,7 @@ BOOST_AUTO_TEST_CASE (test5_http)
         Packet packet1(pkt1,length1);
 
         // create any items on the cache
-        http->createHTTPHosts(1);
-        http->createHTTPUris(1);
-        http->createHTTPUserAgents(1);
+        http->createHTTPInfos(1);
 
         mux_eth->setPacket(&packet1);
         eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
@@ -752,16 +1040,14 @@ BOOST_AUTO_TEST_CASE (test5_http)
         auto fm = tcp->getFlowManager();
 
         for (auto &f: fm->getFlowTable()) {
-                BOOST_CHECK(f->http_host.lock() != nullptr);
-                BOOST_CHECK(f->http_uri.lock() != nullptr);
-                BOOST_CHECK(f->http_ua.lock() != nullptr);
+                BOOST_CHECK(f->http_info.lock() != nullptr);
+                BOOST_CHECK(f->http_info.lock()->uri.lock() != nullptr);
+                BOOST_CHECK(f->http_info.lock()->ua.lock() != nullptr);
         }
         http->releaseCache(); 
 
         for (auto &f: fm->getFlowTable()) {
-                BOOST_CHECK(f->http_host.lock() == nullptr);
-                BOOST_CHECK(f->http_uri.lock() == nullptr);
-                BOOST_CHECK(f->http_ua.lock() == nullptr);
+                BOOST_CHECK(f->http_info.lock() == nullptr);
         }
 }
 

@@ -41,6 +41,7 @@
 #include "protocols/dns/DNSDomain.h"
 #include "protocols/tcp/TCPInfo.h"
 #include "protocols/gprs/GPRSInfo.h"
+#include "protocols/http/HTTPInfo.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -103,9 +104,7 @@ public:
 	WeakPointer<GPRSInfo> gprs_info;
 	WeakPointer<DNSDomain> dns_domain;
 	WeakPointer<Regex> regex;
-	WeakPointer<StringCache> http_uri;
-	WeakPointer<StringCache> http_host;
-	WeakPointer<StringCache> http_ua;	
+	WeakPointer<HTTPInfo> http_info;
 	WeakPointer<StringCache> ssl_host;
 	WeakPointer<StringCache> sip_uri;
 	WeakPointer<StringCache> sip_from;
@@ -145,9 +144,10 @@ public:
 		return l;
 	} 
 
-	StringCache& getHTTPUri() const { return *http_uri.lock().get();}
-	StringCache& getHTTPHost() const { return *http_host.lock().get();}
-	StringCache& getHTTPUserAgent() const { return *http_ua.lock().get();}
+	//StringCache& getHTTPUri() const { return *http_uri.lock().uri.get();}
+	//StringCache& getHTTPHost() const { return *http_host.lock().host.get();}
+	//StringCache& getHTTPUserAgent() const { return *http_ua.lock().ua.get();}
+	HTTPInfo& getHTTPInfo() const { return *http_info.lock().get();}
 	Frequencies& getFrequencies() const { return *frequencies.lock().get();}
 	PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.lock().get();}
 	Regex& getRegex() const { return *regex.lock().get();}

@@ -59,14 +59,14 @@ StackOpenFlow::StackOpenFlow() {
         icmp_ = ICMPProtocolPtr(new ICMPProtocol());
 	addProtocol(icmp_);
 
-	addProtocol(http);
-	addProtocol(ssl);
-	addProtocol(dns);
-	addProtocol(sip);
-	addProtocol(tcp_generic);
-	addProtocol(udp_generic);
-	addProtocol(freqs_tcp);
-	addProtocol(freqs_udp);
+        addProtocol(http);
+        addProtocol(ssl);
+        addProtocol(tcp_generic);
+        addProtocol(freqs_tcp);
+        addProtocol(dns);
+        addProtocol(sip);
+        addProtocol(udp_generic);
+        addProtocol(freqs_udp);
 
 	// Allocate the Multiplexers
         mux_eth_ = MultiplexerPtr(new Multiplexer());
@@ -285,9 +285,7 @@ void StackOpenFlow::setTotalTCPFlows(int value) {
         
 	// The vast majority of the traffic of internet is HTTP
         // so create 75% of the value received for the http caches
-	http->createHTTPUris(value * 1.5);
-        http->createHTTPHosts(value * 0.75);
-        http->createHTTPUserAgents(value * 0.75);
+	http->createHTTPInfos(value * 0.75);
 
         // The 40% of the traffic is SSL
         ssl->createSSLHosts(value * 0.4);

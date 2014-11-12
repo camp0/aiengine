@@ -294,7 +294,29 @@ BOOST_AUTO_TEST_CASE (test6_sip)
 			"CSeq: 2 ACK\r\n"
 			"Content-Length: 0\r\n\r\n";
 
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
 
+        Packet packet(pkt,length);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        flow->packet = const_cast<Packet*>(&packet);
+        sip->processFlow(flow.get());
+
+        BOOST_CHECK(flow->sip_uri.lock() != nullptr);
+        BOOST_CHECK(flow->sip_from.lock() != nullptr);
+        BOOST_CHECK(flow->sip_to.lock() != nullptr);
+        BOOST_CHECK(flow->sip_via.lock() != nullptr);
+
+        std::string from("\"arik\" <sip:voi18062@sip.cybercity.dk>;tag=51449dc");
+        std::string uri("sip:0097239287044@sip.cybercity.dk");
+        std::string to("<sip:0097239287044@sip.cybercity.dk>;tag=00-04071-1701b4ad-52a186e31");
+        std::string via("SIP/2.0/UDP 192.168.1.2;branch=z9hG4bKnp83260863-46304c10192.168.1.2;rport");
+
+        BOOST_CHECK(uri.compare(flow->sip_uri.lock()->getName()) == 0);
+        BOOST_CHECK(from.compare(flow->sip_from.lock()->getName()) == 0);
+        BOOST_CHECK(to.compare(flow->sip_to.lock()->getName()) == 0);
+        BOOST_CHECK(via.compare(flow->sip_via.lock()->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test7_sip) 

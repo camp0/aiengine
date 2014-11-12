@@ -51,6 +51,9 @@ public:
 	// The rest from the base class
 };
 
+typedef std::shared_ptr<DomainName> DomainNamePtr;
+typedef std::weak_ptr<DomainName> DomainNamePtrWeak;
+
 } // namespace aiengine
 
 #endif  // SRC_NAMES_DOMAINNAME_H_

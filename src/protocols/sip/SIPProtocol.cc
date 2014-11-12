@@ -30,6 +30,23 @@ namespace aiengine {
 log4cxx::LoggerPtr SIPProtocol::logger(log4cxx::Logger::getLogger("aiengine.sip"));
 #endif
 
+// List of support request methods 
+std::vector<SipMethodType> SIPProtocol::methods_ {
+	std::make_tuple("REGISTER"	,8,	"registers"	,0),
+	std::make_tuple("INVITE"	,6,	"invites"	,0),
+	std::make_tuple("ACK"		,3,	"acks"		,0),
+	std::make_tuple("CANCEL"	,6,	"cancels"	,0),
+	std::make_tuple("BYE"		,3,	"byes"		,0),
+	std::make_tuple("MESSAGE"	,7,	"messages"	,0),
+	std::make_tuple("OPTIONS"	,7,	"options"	,0),
+	std::make_tuple("PUBLISH"	,7,	"publishs"	,0),
+	std::make_tuple("SUBSCRIBE"	,9,	"subcribes"	,0),
+	std::make_tuple("NOTIFY"	,6,	"notifies"	,0),
+	std::make_tuple("REFER"		,5,	"refers"	,0),
+	std::make_tuple("INFO"		,4,	"infos"		,0),
+	std::make_tuple("PING"		,4,	"pings"		,0)
+};
+
 void SIPProtocol::releaseCache() {
 
         FlowManagerPtr fm = flow_mng_.lock();
@@ -231,56 +248,32 @@ void SIPProtocol::attach_uri_to_flow(Flow *flow, std::string &uri) {
 void SIPProtocol::extract_uri_value(Flow *flow, const char *header) {
 
 	int offset = 0;
+	bool found = false;
 	std::string sip_header(header);
 
-	// TODO, is quite clear :D
+	// Check if is a response 
         if (std::memcmp("SIP/2.",&header[0],6) == 0) {
                 ++total_responses_;
 
                 // No uri to extract
-	} else if (std::memcmp("REGISTER",&header[0],8) == 0) {
-		offset = 9;
-		++total_sip_register_;
-	} else if (std::memcmp("INVITE",&header[0],6) == 0) {
-		offset = 7;
-		++total_sip_invite_;
-	} else if (std::memcmp("ACK",&header[0],3) == 0) {
-		offset = 4;
-		++total_sip_ack_;
-	} else if (std::memcmp("CANCEL",&header[0],6) == 0) {
-		offset = 7;
-		++total_sip_cancel_;
-	} else if (std::memcmp("BYE",&header[0],3) == 0) {
-		offset = 4;
-		++total_sip_bye_;
-	} else if (std::memcmp("OPTIONS",&header[0],7) == 0) {
-		offset = 8;
-		++total_sip_options_;
-	} else if (std::memcmp("PUBLISH",&header[0],7) == 0) {
-		offset = 8;
-		++total_sip_publish_;
-	} else if (std::memcmp("SUBSCRIBE",&header[0],9) == 0) {
-		offset = 10;
-		++total_sip_subscribe_;
-	} else if (std::memcmp("NOTIFY",&header[0],6) == 0) {
-		offset = 7;
-		++total_sip_notify_;
-	} else if (std::memcmp("REFER",&header[0],5) == 0) {
-		offset = 6;
-		++total_sip_refer_;
-	} else if (std::memcmp("MESSAGE",&header[0],7) == 0) {
-		offset = 7;
-		++total_sip_message_;
-	} else if (std::memcmp("INFO",&header[0],4) == 0) {
-		offset = 5;
-		++total_sip_info_;
-	} else if (std::memcmp("PING",&header[0],4) == 0) {
-		offset = 5;
-		++total_sip_ping_;
-	} else {
-		++total_sip_others_;
+		return;
+	} 
+
+	for (auto &method: methods_) {
+		const char *m = std::get<0>(method);
+		offset = std::get<1>(method);
+
+		if (std::memcmp(m,&header[0],offset) == 0) {
+			int32_t *hits = &std::get<3>(method);
+
+			found = true;
+			++offset;
+			++(*hits);
+			break;
+		}
 	}
-	if (offset > 0) {
+
+	if ((found)and(offset > 0)) {
 		int end = sip_header.find("SIP/2.");
 		if (end > 0) {
 			std::string uri(sip_header,offset,(end-offset) -1);
@@ -288,6 +281,8 @@ void SIPProtocol::extract_uri_value(Flow *flow, const char *header) {
 			++total_requests_;	
 			attach_uri_to_flow(flow,uri);	
 		}
+	}else{
+		++total_sip_others_;
 	}
 }
 
@@ -321,19 +316,12 @@ void SIPProtocol::statistics(std::basic_ostream<char>& out) {
 			
 				out << "\t" << "Total requests:         " << std::setw(10) << total_requests_ <<std::endl;
 				out << "\t" << "Total responses:        " << std::setw(10) << total_responses_ <<std::endl;
-				out << "\t" << "Total registers:        " << std::setw(10) << total_sip_register_ <<std::endl;
-				out << "\t" << "Total invites:          " << std::setw(10) << total_sip_invite_ <<std::endl;
-				out << "\t" << "Total acks:             " << std::setw(10) << total_sip_ack_ <<std::endl;
-				out << "\t" << "Total cancels:          " << std::setw(10) << total_sip_cancel_ <<std::endl;
-				out << "\t" << "Total byes:             " << std::setw(10) << total_sip_bye_ <<std::endl;
-				out << "\t" << "Total options:          " << std::setw(10) << total_sip_options_ <<std::endl;
-				out << "\t" << "Total publishs:         " << std::setw(10) << total_sip_publish_ <<std::endl;
-				out << "\t" << "Total subcribes:        " << std::setw(10) << total_sip_subscribe_ <<std::endl;
-				out << "\t" << "Total notifys:          " << std::setw(10) << total_sip_notify_ <<std::endl;
-				out << "\t" << "Total refers:           " << std::setw(10) << total_sip_refer_ <<std::endl;
-				out << "\t" << "Total messages:         " << std::setw(10) << total_sip_message_ <<std::endl;
-				out << "\t" << "Total infos:            " << std::setw(10) << total_sip_info_ <<std::endl;
-				out << "\t" << "Total pings:            " << std::setw(10) << total_sip_ping_ <<std::endl;
+				for (auto &method: methods_) {
+					const char *label = std::get<2>(method);
+					int32_t hits = std::get<3>(method);
+					out << "\t" << "Total " << label << ":" << std::right << std::setfill(' ') << std::setw(27 - strlen(label)) << hits <<std::endl;
+
+				}
 				out << "\t" << "Total others:           " << std::setw(10) << total_sip_others_ <<std::endl;
 			}
 			if (stats_level_ > 2) {
