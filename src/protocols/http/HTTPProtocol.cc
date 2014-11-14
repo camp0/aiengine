@@ -42,12 +42,7 @@ std::vector<HttpMethodType> HTTPProtocol::methods_ {
         std::make_tuple("TRACE"         ,5,     "traces"        ,0)
 };
 
-// List of parameters supported
-//std::unordered_map<std::string,HttpParameterHandler> HTTPProtocol::parameters_ {
-//	{ std::make_pair<std::string,HttpParameterHandler>("Host",std::bind(&HTTPProtocol::process_host_parameter,this,std::placeholders::_1)) }
-//};
-
-
+// Removes or decrements the hits of the maps.
 void HTTPProtocol::release_http_info_cache(HTTPInfo *info) {
 
         SharedPointer<StringCache> ua_ptr = info->ua.lock();
@@ -221,10 +216,16 @@ bool HTTPProtocol::process_ua_parameter(HTTPInfo *info, const char *parameter) {
 bool HTTPProtocol::process_content_length_parameter(HTTPInfo *info, const char *parameter) {
 
 	std::string value(parameter);
-	int32_t length = std::stoi(value);
+	int32_t length = 0;
 
-	info->setContentLength(length);
-	info->setHaveData(true);
+	try {
+		length = std::stoi(value);
+		info->setContentLength(length);
+		info->setHaveData(true);
+	} catch(std::invalid_argument&) { //or catch(...) to catch all exceptions
+		length = 0;
+	}
+
 	// std::cout << "Content-length:" << length << std::endl;
 	return true;
 }
@@ -392,7 +393,16 @@ void HTTPProtocol::processFlow(Flow *flow) {
 	} 
 
 	if (info->getIsBanned() == true) {
-		// std::cout << "Flow:" << flow << " have been banned" << std::endl; 
+#ifdef PYTHON_BINDING
+		// The HTTP flow could be banned from the python side
+		if (info->getIsRelease() == true) {
+			release_http_info_cache(info.get());
+
+			// The resouces have been released so there is no
+			// need for call again the release_http_info_cache method
+			info->setIsRelease(false); 
+		}
+#endif
 		return;
 	}
 
@@ -401,7 +411,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
 	if (flow->getFlowDirection() == FlowDirection::FORWARD) {
 
 		int offset = extract_uri(info.get(),header);
-		if ((offset > 0)and(flow->total_packets_l7 == 1)) {
+		if (offset > 0) {
 
 			http_header_size_ = offset;
 			parse_header(info.get(),&header[offset]);

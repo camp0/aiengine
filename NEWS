@@ -85,8 +85,9 @@ Features/Changes of 0.10
 - Release/clean protocol caches method. (Clean cache memory).
 - Support for OpenFlow networks.
 
-Features/Changes of 0.11
+Features/Changes of 1.0
 - Port to Mac/Windows (TODO)
 - DatabaseAdaptors can be removed and added on execution.
 - Fix DNSQueryTypes minor issue.
 - Support for SIP protocol.
+- Support for ban HTTPFlows on callbaks using external intelligence (check test20 on pyai_tests.py)

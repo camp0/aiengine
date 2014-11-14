@@ -456,6 +456,48 @@ class StackLanTests(unittest.TestCase):
             self.assertEqual(info.getUri(), None)
             break
 
+    def test16(self):
+        """ Verify the ban functionatly on the fly with a callback """
+
+        def domain_callback(flow):
+            self.called_callback += 1
+            
+            info = flow.getHTTPInfo()
+            url = str(info.getUri())
+
+            # Some URI analsys could be done here
+            if (url == "/js/jquery.hoverIntent.js"):
+                info.setBanned(True)
+
+        d = pyaiengine.DomainName("Wired domain",".wired.com")
+
+        dm = pyaiengine.DomainNameManager()
+        d.setCallback(domain_callback)
+        dm.addDomainName(d)
+
+        self.s.setHTTPHostNameManager(dm)
+
+        self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
+        self.dis.run()
+        self.dis.close()
+
+        # The callback is call only two times, the uri should match on the second request
+        self.assertEqual(self.called_callback, 2)
+
+        ft = self.s.getTCPFlowManager()
+
+        self.assertEqual(len(ft), 2)
+
+        # Only the first flow is the banned and released
+        for flow in ft:
+            inf = flow.getHTTPInfo()
+            self.assertNotEqual(inf, None)
+            self.assertEqual(inf.getUri(), None)
+            self.assertEqual(inf.getUserAgent(), None)
+            self.assertEqual(inf.getHost(), None)
+            break
+
+
  
 class StackLanIPv6Tests(unittest.TestCase):
 

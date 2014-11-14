@@ -654,8 +654,7 @@ BOOST_AUTO_TEST_CASE (test14_http)
         http->processFlow(flow.get());
 
         // TODO: Verify the size of the Header
-	// std::cout << "Header size:" << http->getHTTPHeaderSize() << " h1:" << strlen(header1) << " h2:" << strlen(header2) << std::endl;
-        // BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2));
+        BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2));
 	
 	// There is no uris on the cache so the flow keeps the last uri seen
         BOOST_CHECK(cad_uri1.compare(info->uri.lock()->getName()) == 0);
@@ -665,6 +664,7 @@ BOOST_AUTO_TEST_CASE (test14_http)
         
 	http->processFlow(flow.get());
 
+        BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2));
 	SharedPointer<HTTPInfo> info2 = flow->http_info.lock();
 
 	// There is no uris on the cache so the flow keeps the last uri seen
@@ -882,6 +882,69 @@ BOOST_AUTO_TEST_CASE (test19_http)
 
         BOOST_CHECK(info->getContentLength() == 17);
 }
+
+BOOST_AUTO_TEST_CASE (test20_http)
+{
+
+        char *header1 =  "POST /open/1 HTTP/1.1\r\n"
+                        "Content-Type: application/x-fcs\r\n"
+                        "User-Agent: Shockwave Flash\r\n"
+                        "Host: 86.19.100.102\r\n"
+                        "Content-Length: 1\r\n"
+                        "Connection: Keep-Alive\r\n"
+                        "Cache-Control: no-cache\r\n"
+                        "\r\n"
+                        ".";
+
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header1);
+        int length1 = strlen(header1);
+        Packet packet1(pkt1,length1);
+
+        char *header2 =  "HTTP/1.1 200 OK\r\n"
+                        "Cache-Control: no-cache\r\n"
+                        "Connection: Keep-Alive\r\n"
+                        "Content-Length: 17\r\n"
+                        "Server: FlashCom/3.5.7\r\n"
+                        "Content-Type:  application/x-fcs\r\n"
+                        "\r\n"
+                        "Cuomdz02wSLGeYbI.";
+
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (header2);
+        int length2 = strlen(header2);
+        Packet packet2(pkt2,length2);
+
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->createHTTPInfos(1);
+
+        flow->packet = const_cast<Packet*>(&packet1);
+	flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+
+	flow->setFlowDirection(FlowDirection::BACKWARD);
+        flow->packet = const_cast<Packet*>(&packet2);
+        http->processFlow(flow.get());
+        
+	// Verify the size of the Header
+        BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2) - 17);
+
+        std::string host("86.19.100.102");
+        std::string ua("Shockwave Flash");
+        std::string uri("/open/1");
+
+        BOOST_CHECK(flow->http_info.lock() != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+
+        BOOST_CHECK(info->host.lock() != nullptr);
+        BOOST_CHECK(info->ua.lock() != nullptr);
+        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(host.compare(info->host.lock()->getName()) == 0);
+        BOOST_CHECK(ua.compare(info->ua.lock()->getName()) == 0);
+        BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+
+        BOOST_CHECK(info->getContentLength() == 17);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

@@ -526,11 +526,13 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	boost::python::class_<HTTPInfo, SharedPointer<HTTPInfo>, boost::noncopyable>("HTTPInfo")
                 .def("getUri",&HTTPInfo::getUri,return_internal_reference<>(),
-                      "Returns the HTTP URI of the flow if the flow is HTTP.")
+                      	"Returns the HTTP URI of the flow if the flow is HTTP.")
                 .def("getHost",&HTTPInfo::getHost,return_internal_reference<>(),
-                      "Returns the HTTP Host of the flow if the flow is HTTP.")
+                      	"Returns the HTTP Host of the flow if the flow is HTTP.")
                 .def("getUserAgent",&HTTPInfo::getUserAgent,return_internal_reference<>(),
-                      "Returns the HTTP UserAgent of the flow if the flow is HTTP.")
+                      	"Returns the HTTP UserAgent of the flow if the flow is HTTP.")
+		.def("setBanned",&HTTPInfo::setBanAndRelease,
+		     	"Sets the flow to banned for no more analysis on the python side and release resources.")
 	;
 
 	boost::python::class_<StringCache, SharedPointer<StringCache>,boost::noncopyable>("StringCache")
