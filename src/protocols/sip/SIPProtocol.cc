@@ -82,33 +82,40 @@ void SIPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-                        SharedPointer<StringCache> sc = flow->sip_uri.lock();
-			if (sc) {
-				flow->sip_uri.reset();
-				total_bytes_released_by_flows += sc->getName().size();
-				uri_cache_->release(sc);
+			SharedPointer<SIPInfo> sinfo = flow->sip_info.lock();
+			if (sinfo) {
+	
+                        	SharedPointer<StringCache> sc = sinfo->uri.lock();
+				if (sc) {
+					sinfo->uri.reset();
+					total_bytes_released_by_flows += sc->getName().size();
+					uri_cache_->release(sc);
+				}
+
+                        	sc = sinfo->from.lock();
+                        	if (sc) {
+                                	sinfo->from.reset();
+                                	total_bytes_released_by_flows += sc->getName().size();
+                                	from_cache_->release(sc);
+                        	}
+
+                        	sc = sinfo->to.lock();
+                        	if (sc) {
+                                	sinfo->to.reset();
+                                	total_bytes_released_by_flows += sc->getName().size();
+                                	to_cache_->release(sc);
+                        	}
+                        	sc = sinfo->via.lock();
+                        	if (sc) {
+                                	sinfo->via.reset();
+                                	total_bytes_released_by_flows += sc->getName().size();
+                                	to_cache_->release(sc);
+                        	}
+                        	++release_flows;
+				sinfo.reset();
+				flow->sip_info.reset();
+				info_cache_->release(sinfo);
 			}
-
-                        sc = flow->sip_from.lock();
-                        if (sc) {
-                                flow->sip_from.reset();
-                                total_bytes_released_by_flows += sc->getName().size();
-                                from_cache_->release(sc);
-                        }
-
-                        sc = flow->sip_to.lock();
-                        if (sc) {
-                                flow->sip_to.reset();
-                                total_bytes_released_by_flows += sc->getName().size();
-                                to_cache_->release(sc);
-                        }
-                        sc = flow->sip_via.lock();
-                        if (sc) {
-                                flow->sip_via.reset();
-                                total_bytes_released_by_flows += sc->getName().size();
-                                to_cache_->release(sc);
-                        }
-                        ++release_flows;
                 } 
                 uri_map_.clear();
                 from_map_.clear();
@@ -129,32 +136,32 @@ void SIPProtocol::releaseCache() {
         }
 }
 
-void SIPProtocol::extract_via_value(Flow *flow, const char *header) {
+void SIPProtocol::extract_via_value(SIPInfo *info, const char *header) {
 
         if (sip_via_->matchAndExtract(header)) {
 
                 std::string via_raw(sip_via_->getExtract());
                 std::string via(via_raw,5,via_raw.length() - 7); // remove also the \r\n
 
-                attach_via_to_flow(flow,via);
+                attach_via_to_flow(info,via);
         }
 }
 
-void SIPProtocol::extract_from_value(Flow *flow, const char *header) {
+void SIPProtocol::extract_from_value(SIPInfo *info, const char *header) {
 
 	if (sip_from_->matchAndExtract(header)) {
 
         	std::string from_raw(sip_from_->getExtract());
                 std::string from(from_raw,6,from_raw.length()-8); // remove also the \r\n
 
-		attach_from_to_flow(flow,from);
+		attach_from_to_flow(info,from);
 	}
 }
 
 
-void SIPProtocol::attach_from_to_flow(Flow *flow, std::string &from) {
+void SIPProtocol::attach_from_to_flow(SIPInfo *info, std::string &from) {
 
-	SharedPointer<StringCache> from_ptr = flow->sip_from.lock();
+	SharedPointer<StringCache> from_ptr = info->from.lock();
 
 	if (!from_ptr) { 
 		FromMapType::iterator it = from_map_.find(from);
@@ -162,31 +169,31 @@ void SIPProtocol::attach_from_to_flow(Flow *flow, std::string &from) {
 			from_ptr = from_cache_->acquire().lock();
 			if (from_ptr) {
 				from_ptr->setName(from);
-				flow->sip_from = from_ptr;
+				info->from = from_ptr;
 				from_map_.insert(std::make_pair(from,std::make_pair(from_ptr,1)));
 			}
 		} else {
 			int *counter = &std::get<1>(it->second);
 			++(*counter);
-			flow->sip_from = std::get<0>(it->second);
+			info->from = std::get<0>(it->second);
 		}
 	}
 }
 
-void SIPProtocol::extract_to_value(Flow *flow, const char *header) {
+void SIPProtocol::extract_to_value(SIPInfo *info, const char *header) {
 
 	if (sip_to_->matchAndExtract(header)) {
 
 		std::string to_raw(sip_to_->getExtract());
 		std::string to(to_raw,4,to_raw.length() - 6); // remove also the \r\n
 
-		attach_to_to_flow(flow,to);
+		attach_to_to_flow(info,to);
 	}
 }
 
-void SIPProtocol::attach_to_to_flow(Flow *flow, std::string &to) {
+void SIPProtocol::attach_to_to_flow(SIPInfo *info, std::string &to) {
 
-	SharedPointer<StringCache> to_ptr = flow->sip_to.lock();
+	SharedPointer<StringCache> to_ptr = info->to.lock();
 
 	if (!to_ptr) { 
 		ToMapType::iterator it = to_map_.find(to);
@@ -194,21 +201,21 @@ void SIPProtocol::attach_to_to_flow(Flow *flow, std::string &to) {
 			to_ptr = to_cache_->acquire().lock();
 			if (to_ptr) {
 				to_ptr->setName(to);
-				flow->sip_to = to_ptr;
+				info->to = to_ptr;
 				to_map_.insert(std::make_pair(to,std::make_pair(to_ptr,1)));
 			}	
 		} else {
 			int *counter = &std::get<1>(it->second);
 			++(*counter);
-			flow->sip_to = std::get<0>(it->second);	
+			info->to = std::get<0>(it->second);	
 		}
 	}
 
 }
 
-void SIPProtocol::attach_via_to_flow(Flow *flow, std::string &via) {
+void SIPProtocol::attach_via_to_flow(SIPInfo *info, std::string &via) {
 
-        SharedPointer<StringCache> via_ptr = flow->sip_via.lock();
+        SharedPointer<StringCache> via_ptr = info->via.lock();
 
         if (!via_ptr) {
                 ViaMapType::iterator it = via_map_.find(via);
@@ -216,36 +223,38 @@ void SIPProtocol::attach_via_to_flow(Flow *flow, std::string &via) {
                         via_ptr = via_cache_->acquire().lock();
                         if (via_ptr) {
                                 via_ptr->setName(via);
-                                flow->sip_via = via_ptr;
+                                info->via = via_ptr;
                                 via_map_.insert(std::make_pair(via,std::make_pair(via_ptr,1)));
                         }
                 } else {
                         int *counter = &std::get<1>(it->second);
                         ++(*counter);
-                        flow->sip_via = std::get<0>(it->second);
+                        info->via = std::get<0>(it->second);
                 }
         }
 }
 
 
-void SIPProtocol::attach_uri_to_flow(Flow *flow, std::string &uri) {
+void SIPProtocol::attach_uri_to_flow(SIPInfo *info, std::string &uri) {
 
 	UriMapType::iterator it = uri_map_.find(uri);
         if (it == uri_map_.end()) {
         	SharedPointer<StringCache> uri_ptr = uri_cache_->acquire().lock();
                 if (uri_ptr) {
                 	uri_ptr->setName(uri);
-                        flow->sip_uri = uri_ptr;
+                        info->uri = uri_ptr;
                         uri_map_.insert(std::make_pair(uri,std::make_pair(uri_ptr,1)));
                 } 
         } else {
 		// Update the URI of the flow
-		flow->sip_uri = std::get<0>(it->second);
+                int *counter = &std::get<1>(it->second);
+                ++(*counter);
+		info->uri = std::get<0>(it->second);
 	}
 }
 
 
-void SIPProtocol::extract_uri_value(Flow *flow, const char *header) {
+void SIPProtocol::extract_uri_value(SIPInfo *info, const char *header) {
 
 	int offset = 0;
 	bool found = false;
@@ -279,7 +288,7 @@ void SIPProtocol::extract_uri_value(Flow *flow, const char *header) {
 			std::string uri(sip_header,offset,(end-offset) -1);
 	
 			++total_requests_;	
-			attach_uri_to_flow(flow,uri);	
+			attach_uri_to_flow(info,uri);	
 		}
 	}else{
 		++total_sip_others_;
@@ -294,13 +303,44 @@ void SIPProtocol::processFlow(Flow *flow) {
 
 	const char *header = reinterpret_cast <const char*> (flow->packet->getPayload());
 
-	extract_uri_value(flow,header);
-	
-	extract_via_value(flow,header);
-		
-	extract_from_value(flow,header);	
+	SharedPointer<SIPInfo> sinfo = flow->sip_info.lock();
 
-	extract_to_value(flow,header);
+        if(!sinfo) {
+                sinfo = info_cache_->acquire().lock();
+                if (!sinfo) {
+                        return;
+                }
+                flow->sip_info = sinfo;
+        }
+
+	extract_uri_value(sinfo.get(),header);
+	
+	extract_via_value(sinfo.get(),header);
+		
+	extract_from_value(sinfo.get(),header);	
+
+	extract_to_value(sinfo.get(),header);
+	
+}
+
+
+void SIPProtocol::createSIPInfos(int number) {
+
+	info_cache_->create(number);
+	uri_cache_->create(number);
+	from_cache_->create(number);
+	to_cache_->create(number);
+	via_cache_->create(number);
+}
+
+
+void SIPProtocol::destroySIPInfos(int number) {
+
+	info_cache_->destroy(number);
+	uri_cache_->destroy(number);
+	from_cache_->destroy(number);
+	to_cache_->destroy(number);
+	via_cache_->destroy(number);
 }
 
 void SIPProtocol::statistics(std::basic_ostream<char>& out) {
@@ -328,6 +368,7 @@ void SIPProtocol::statistics(std::basic_ostream<char>& out) {
 				if (flow_forwarder_.lock())
 					flow_forwarder_.lock()->statistics(out);
 				if (stats_level_ > 3) {
+					info_cache_->statistics(out);
 					uri_cache_->statistics(out);
 					via_cache_->statistics(out);
 					from_cache_->statistics(out);

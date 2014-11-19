@@ -114,10 +114,7 @@ struct StackSIPtest
 
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(1);
-		sip->createSIPUris(1);
-		sip->createSIPFroms(1);
-		sip->createSIPTos(1);
-		sip->createSIPVias(1);
+		sip->createSIPInfos(1);
 
                 udp->setFlowCache(flow_cache);
                 udp->setFlowManager(flow_mng);

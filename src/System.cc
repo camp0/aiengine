@@ -44,7 +44,7 @@ void System::statistics(std::basic_ostream<char>& out) {
         out << "\t" << "Page reclaims:             " << std::setw(7) << usage.ru_minflt <<std::endl;
         out << "\t" << "Page faults:                 " << std::setw(5) << usage.ru_majflt <<std::endl;
         out << "\t" << "Swaps:                       " << std::setw(5) << usage.ru_nswap <<std::endl;
-        out << "\t" << "Block input operations:      " << std::setw(5) << usage.ru_inblock <<std::endl;
+        out << "\t" << "Block input operations: " << std::setw(10) << usage.ru_inblock <<std::endl;
         out << "\t" << "Block output operations:     " << std::setw(5) << usage.ru_oublock <<std::endl;
         out << "\t" << "IPC messages sent:           " << std::setw(5) << usage.ru_msgsnd <<std::endl;
         out << "\t" << "IPC messages received:       " << std::setw(5) << usage.ru_msgrcv <<std::endl;

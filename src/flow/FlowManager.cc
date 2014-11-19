@@ -177,33 +177,39 @@ void FlowManager::showFlows(std::basic_ostream<char>& out) {
 		if (flow->getPacketAnomaly() != PacketAnomaly::NONE) 
 			out << " Anomaly:" << PacketAnomalyToString.at(static_cast<std::int8_t>(flow->getPacketAnomaly()));
 
-		if(flow->ipset.lock()) out << " IPset:" << *flow->ipset.lock()->getName();	
+		if (flow->ipset.lock()) out << " IPset:" << *flow->ipset.lock()->getName();	
 
-		if(flow->gprs_info.lock()) out << " GPRS:" << *flow->gprs_info.lock();	
+		if (flow->gprs_info.lock()) out << " GPRS:" << *flow->gprs_info.lock();	
 		
-		if(flow->tcp_info.lock()) out << " TCP:" << *flow->tcp_info.lock();	
+		if (flow->tcp_info.lock()) out << " TCP:" << *flow->tcp_info.lock();	
 
-		if(flow->regex.lock()) out << " Regex:" << flow->regex.lock()->getName();	
+		if (flow->regex.lock()) out << " Regex:" << flow->regex.lock()->getName();	
 
 		SharedPointer<HTTPInfo> hinfo = flow->http_info.lock();
 
 		if(hinfo) {
 			if (hinfo->getIsBanned()) out << "Banned ";
-			if(hinfo->host.lock()) out << "Host:" << hinfo->host.lock()->getName();	
-			if(hinfo->ua.lock()) out << " UserAgent:" << hinfo->ua.lock()->getName();
+			if (hinfo->host.lock()) out << "Host:" << hinfo->host.lock()->getName();	
+			if (hinfo->ua.lock()) out << " UserAgent:" << hinfo->ua.lock()->getName();
 		}
 
-		if(flow->dns_domain.lock()) out << " Domain:" << flow->dns_domain.lock()->getName();	
+		if (flow->dns_domain.lock()) out << " Domain:" << flow->dns_domain.lock()->getName();	
 		
-		if(flow->ssl_host.lock()) out << " Host:" << flow->ssl_host.lock()->getName();	
+		if (flow->ssl_host.lock()) out << " Host:" << flow->ssl_host.lock()->getName();	
+	
+		SharedPointer<SIPInfo> sinfo = flow->sip_info.lock();
+
+		if (sinfo) {
+			if (sinfo->uri.lock()) out << " SIPUri:" << sinfo->uri.lock()->getName();	
 		
-		if(flow->sip_uri.lock()) out << " SIPUri:" << flow->sip_uri.lock()->getName();	
+			if (sinfo->from.lock()) out << " SIPFrom:" << sinfo->from.lock()->getName();	
 		
-		if(flow->sip_from.lock()) out << " SIPFrom:" << flow->sip_from.lock()->getName();	
-		
-		if(flow->sip_to.lock()) out << " SIPTo:" << flow->sip_to.lock()->getName();	
-		
-		if(flow->frequencies.lock()) out << boost::format("%-8s") % flow->frequencies.lock()->getFrequenciesString();
+			if (sinfo->to.lock()) out << " SIPTo:" << sinfo->to.lock()->getName();	
+			
+			if (sinfo->via.lock()) out << " SIPVia:" << sinfo->via.lock()->getName();	
+		}
+	
+		if (flow->frequencies.lock()) out << boost::format("%-8s") % flow->frequencies.lock()->getFrequenciesString();
 
 		out << std::endl;
 	}

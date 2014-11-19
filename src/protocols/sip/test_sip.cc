@@ -59,17 +59,21 @@ BOOST_AUTO_TEST_CASE (test1_sip)
         flow->packet = const_cast<Packet*>(&packet);
         sip->processFlow(flow.get());
 
-        BOOST_CHECK(flow->sip_uri.lock() != nullptr); 
-        BOOST_CHECK(flow->sip_from.lock() != nullptr); 
-        BOOST_CHECK(flow->sip_to.lock() != nullptr); 
+	SharedPointer<SIPInfo> info = flow->sip_info.lock();
+
+	BOOST_CHECK(info != nullptr);
+        BOOST_CHECK(info->uri.lock() != nullptr); 
+        BOOST_CHECK(info->from.lock() != nullptr); 
+        BOOST_CHECK(info->to.lock() != nullptr); 
+        BOOST_CHECK(info->via.lock() != nullptr); 
 
 	std::string from("<sip:262015947002222@ims.mnc001.mcc262.3gppnetwork.org>;tag=48790594");
 	std::string uri("sip:ims.mnc011.mcc012.3gppnetwork.org");
 	std::string to("<sip:262015947002222@ims.mnc001.mcc262.3gppnetwork.org>");
 
-	BOOST_CHECK(uri.compare(flow->sip_uri.lock()->getName()) == 0);
-	BOOST_CHECK(from.compare(flow->sip_from.lock()->getName()) == 0);
-	BOOST_CHECK(to.compare(flow->sip_to.lock()->getName()) == 0);
+	BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+	BOOST_CHECK(from.compare(info->from.lock()->getName()) == 0);
+	BOOST_CHECK(to.compare(info->to.lock()->getName()) == 0);
 }
 
 
@@ -100,21 +104,24 @@ BOOST_AUTO_TEST_CASE (test2_sip)
 
         flow->packet = const_cast<Packet*>(&packet);
         sip->processFlow(flow.get());
-  
-        BOOST_CHECK(flow->sip_uri.lock() != nullptr);
-        BOOST_CHECK(flow->sip_from.lock() != nullptr);
-        BOOST_CHECK(flow->sip_to.lock() != nullptr);
-        BOOST_CHECK(flow->sip_via.lock() != nullptr);
+ 
+	SharedPointer<SIPInfo> info = flow->sip_info.lock();
+
+        BOOST_CHECK(info != nullptr); 
+        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(info->from.lock() != nullptr);
+        BOOST_CHECK(info->to.lock() != nullptr);
+        BOOST_CHECK(info->via.lock() != nullptr);
  
         std::string from("<tel:+34660205001>;tag=dc14dec3e94795a5-5e8c1947.0");
         std::string uri("tel:+3460918501");
         std::string to("<tel:+3460000001>");
 	std::string via("SIP/2.0/UDP 10.145.124.112:23099;branch=z9hG4bK3c1ba7bf736134dcfbe316cd54c99706");
  
-        BOOST_CHECK(uri.compare(flow->sip_uri.lock()->getName()) == 0);
-        BOOST_CHECK(from.compare(flow->sip_from.lock()->getName()) == 0);
-        BOOST_CHECK(to.compare(flow->sip_to.lock()->getName()) == 0);
-        BOOST_CHECK(via.compare(flow->sip_via.lock()->getName()) == 0);
+        BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+        BOOST_CHECK(from.compare(info->from.lock()->getName()) == 0);
+        BOOST_CHECK(to.compare(info->to.lock()->getName()) == 0);
+        BOOST_CHECK(via.compare(info->via.lock()->getName()) == 0);
 
 }
 
@@ -163,20 +170,23 @@ BOOST_AUTO_TEST_CASE (test3_sip)
         flow->packet = const_cast<Packet*>(&packet);
         sip->processFlow(flow.get());
 
-        BOOST_CHECK(flow->sip_uri.lock() != nullptr);
-        BOOST_CHECK(flow->sip_from.lock() != nullptr);
-        BOOST_CHECK(flow->sip_to.lock() != nullptr);
-        BOOST_CHECK(flow->sip_via.lock() != nullptr);
+	SharedPointer<SIPInfo> info = flow->sip_info.lock();
+
+        BOOST_CHECK(info != nullptr);
+        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(info->from.lock() != nullptr);
+        BOOST_CHECK(info->to.lock() != nullptr);
+        BOOST_CHECK(info->via.lock() != nullptr);
 
         std::string from("\"arik\" <sip:voi18062@sip.cybercity.dk>;tag=51449dc");
         std::string uri("sip:0097239287044@sip.cybercity.dk");
         std::string to("<sip:0097239287044@sip.cybercity.dk>");
 	std::string via("SIP/2.0/UDP 192.168.1.2;branch=z9hG4bKnp83260863-46304c10192.168.1.2;rport");
 
-        BOOST_CHECK(uri.compare(flow->sip_uri.lock()->getName()) == 0);
-        BOOST_CHECK(from.compare(flow->sip_from.lock()->getName()) == 0);
-        BOOST_CHECK(to.compare(flow->sip_to.lock()->getName()) == 0);
-        BOOST_CHECK(via.compare(flow->sip_via.lock()->getName()) == 0);
+        BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+        BOOST_CHECK(from.compare(info->from.lock()->getName()) == 0);
+        BOOST_CHECK(to.compare(info->to.lock()->getName()) == 0);
+        BOOST_CHECK(via.compare(info->via.lock()->getName()) == 0);
 }
 
 
@@ -224,20 +234,24 @@ BOOST_AUTO_TEST_CASE (test4_sip)
         flow->packet = const_cast<Packet*>(&packet);
         sip->processFlow(flow.get());
 
-        BOOST_CHECK(flow->sip_uri.lock() != nullptr);
-        BOOST_CHECK(flow->sip_from.lock() != nullptr);
-        BOOST_CHECK(flow->sip_to.lock() != nullptr);
-        BOOST_CHECK(flow->sip_via.lock() != nullptr);
+        SharedPointer<SIPInfo> info = flow->sip_info.lock();
+
+        BOOST_CHECK(info != nullptr);
+        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(info->from.lock() != nullptr);
+        BOOST_CHECK(info->to.lock() != nullptr);
+        BOOST_CHECK(info->via.lock() != nullptr);
 
         std::string from("\"sam netmon \" <sip:admind@178.45.73.241>;tag=bc86060b-146f-e011-809a-0019cb53db77");
         std::string uri("sip:echo@iptel.org");
         std::string to("<sip:echo@iptel.org>");
         std::string via("SIP/2.0/UDP 178.45.73.241:5060;branch=z9hG4bK16a1230b-146f-e011-809a-0019cb53db77;rport");
 
-        BOOST_CHECK(uri.compare(flow->sip_uri.lock()->getName()) == 0);
-        BOOST_CHECK(from.compare(flow->sip_from.lock()->getName()) == 0);
-        BOOST_CHECK(to.compare(flow->sip_to.lock()->getName()) == 0);
-        BOOST_CHECK(via.compare(flow->sip_via.lock()->getName()) == 0);
+        BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+        BOOST_CHECK(from.compare(info->from.lock()->getName()) == 0);
+        BOOST_CHECK(to.compare(info->to.lock()->getName()) == 0);
+        BOOST_CHECK(via.compare(info->via.lock()->getName()) == 0);
+
 }
 
 BOOST_AUTO_TEST_CASE (test5_sip) 
@@ -266,21 +280,23 @@ BOOST_AUTO_TEST_CASE (test5_sip)
         flow->packet = const_cast<Packet*>(&packet);
         sip->processFlow(flow.get());
 
-        BOOST_CHECK(flow->sip_uri.lock() != nullptr);
-        BOOST_CHECK(flow->sip_from.lock() != nullptr);
-        BOOST_CHECK(flow->sip_to.lock() != nullptr);
-        BOOST_CHECK(flow->sip_via.lock() != nullptr);
+        SharedPointer<SIPInfo> info = flow->sip_info.lock();
+
+        BOOST_CHECK(info != nullptr);
+        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(info->from.lock() != nullptr);
+        BOOST_CHECK(info->to.lock() != nullptr);
+        BOOST_CHECK(info->via.lock() != nullptr);
 
         std::string from("\"sam netmon \" <sip:admind@178.45.73.241>;tag=bc86060b-146f-e011-809a-0019cb53db77");
         std::string uri("sip:echo@213.192.59.78:5080");
         std::string to("<sip:echo@iptel.org>;tag=420976BC-4DB7D064000EE90C-B692BBB0");
         std::string via("SIP/2.0/UDP 178.45.73.241:5060;branch=z9hG4bK7827b838-146f-e011-809a-0019cb53db77;rport");
 
-        BOOST_CHECK(uri.compare(flow->sip_uri.lock()->getName()) == 0);
-        BOOST_CHECK(from.compare(flow->sip_from.lock()->getName()) == 0);
-        BOOST_CHECK(to.compare(flow->sip_to.lock()->getName()) == 0);
-        BOOST_CHECK(via.compare(flow->sip_via.lock()->getName()) == 0);
-
+        BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+        BOOST_CHECK(from.compare(info->from.lock()->getName()) == 0);
+        BOOST_CHECK(to.compare(info->to.lock()->getName()) == 0);
+        BOOST_CHECK(via.compare(info->via.lock()->getName()) == 0);
 }
 
 
@@ -303,20 +319,23 @@ BOOST_AUTO_TEST_CASE (test6_sip)
         flow->packet = const_cast<Packet*>(&packet);
         sip->processFlow(flow.get());
 
-        BOOST_CHECK(flow->sip_uri.lock() != nullptr);
-        BOOST_CHECK(flow->sip_from.lock() != nullptr);
-        BOOST_CHECK(flow->sip_to.lock() != nullptr);
-        BOOST_CHECK(flow->sip_via.lock() != nullptr);
+        SharedPointer<SIPInfo> info = flow->sip_info.lock();
+
+        BOOST_CHECK(info != nullptr);
+        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(info->from.lock() != nullptr);
+        BOOST_CHECK(info->to.lock() != nullptr);
+        BOOST_CHECK(info->via.lock() != nullptr);
 
         std::string from("\"arik\" <sip:voi18062@sip.cybercity.dk>;tag=51449dc");
         std::string uri("sip:0097239287044@sip.cybercity.dk");
         std::string to("<sip:0097239287044@sip.cybercity.dk>;tag=00-04071-1701b4ad-52a186e31");
         std::string via("SIP/2.0/UDP 192.168.1.2;branch=z9hG4bKnp83260863-46304c10192.168.1.2;rport");
 
-        BOOST_CHECK(uri.compare(flow->sip_uri.lock()->getName()) == 0);
-        BOOST_CHECK(from.compare(flow->sip_from.lock()->getName()) == 0);
-        BOOST_CHECK(to.compare(flow->sip_to.lock()->getName()) == 0);
-        BOOST_CHECK(via.compare(flow->sip_via.lock()->getName()) == 0);
+        BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+        BOOST_CHECK(from.compare(info->from.lock()->getName()) == 0);
+        BOOST_CHECK(to.compare(info->to.lock()->getName()) == 0);
+        BOOST_CHECK(via.compare(info->via.lock()->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test7_sip) 
@@ -371,20 +390,23 @@ BOOST_AUTO_TEST_CASE (test7_sip)
         flow->packet = const_cast<Packet*>(&packet);
         sip->processFlow(flow.get());
 
-        BOOST_CHECK(flow->sip_uri.lock() != nullptr);
-        BOOST_CHECK(flow->sip_from.lock() != nullptr);
-        BOOST_CHECK(flow->sip_to.lock() != nullptr);
-        BOOST_CHECK(flow->sip_via.lock() != nullptr);
+        SharedPointer<SIPInfo> info = flow->sip_info.lock();
+
+        BOOST_CHECK(info != nullptr);
+        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(info->from.lock() != nullptr);
+        BOOST_CHECK(info->to.lock() != nullptr);
+        BOOST_CHECK(info->via.lock() != nullptr);
 
         std::string from("<sip:8001@192.168.13.198>;tag=1746816090");
         std::string uri("sip:116c01a9-067c-48fd-bbf9-f1c336662590@192.168.13.245:44503");
         std::string to("<sip:116c01a9-067c-48fd-bbf9-f1c336662590@192.168.13.245>");
         std::string via("SIP/2.0/UDP 192.168.13.198:5060;branch=z9hG4bKa56da5d2a2");
 
-        BOOST_CHECK(uri.compare(flow->sip_uri.lock()->getName()) == 0);
-        BOOST_CHECK(from.compare(flow->sip_from.lock()->getName()) == 0);
-        BOOST_CHECK(to.compare(flow->sip_to.lock()->getName()) == 0);
-        BOOST_CHECK(via.compare(flow->sip_via.lock()->getName()) == 0);
+        BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+        BOOST_CHECK(from.compare(info->from.lock()->getName()) == 0);
+        BOOST_CHECK(to.compare(info->to.lock()->getName()) == 0);
+        BOOST_CHECK(via.compare(info->via.lock()->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE(test8_sip)
@@ -408,18 +430,21 @@ BOOST_AUTO_TEST_CASE(test8_sip)
         flow->packet = const_cast<Packet*>(&packet);
         sip->processFlow(flow.get());
 
-        BOOST_CHECK(flow->sip_uri.lock() == nullptr);
-        BOOST_CHECK(flow->sip_from.lock() != nullptr);
-        BOOST_CHECK(flow->sip_to.lock() != nullptr);
-        BOOST_CHECK(flow->sip_via.lock() != nullptr);
+        SharedPointer<SIPInfo> info = flow->sip_info.lock();
+
+        BOOST_CHECK(info != nullptr);
+        BOOST_CHECK(info->uri.lock() == nullptr);
+        BOOST_CHECK(info->from.lock() != nullptr);
+        BOOST_CHECK(info->to.lock() != nullptr);
+        BOOST_CHECK(info->via.lock() != nullptr);
 
         std::string from("<sip:8001@192.168.13.198>;tag=1746816090");
         std::string to("<sip:116c01a9-067c-48fd-bbf9-f1c336662590@192.168.13.245>");
         std::string via("SIP/2.0/UDP 192.168.13.198:5060;branch=z9hG4bKb038804283");
 
-        BOOST_CHECK(from.compare(flow->sip_from.lock()->getName()) == 0);
-        BOOST_CHECK(to.compare(flow->sip_to.lock()->getName()) == 0);
-        BOOST_CHECK(via.compare(flow->sip_via.lock()->getName()) == 0);
+        BOOST_CHECK(from.compare(info->from.lock()->getName()) == 0);
+        BOOST_CHECK(to.compare(info->to.lock()->getName()) == 0);
+        BOOST_CHECK(via.compare(info->via.lock()->getName()) == 0);
 }
 
 /******

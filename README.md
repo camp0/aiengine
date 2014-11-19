@@ -28,7 +28,7 @@ Using AIEngine
 To use AIEngine just execute the binary aiengine or use the python binding.
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
-	aiengine 0.10
+	aiengine 1.0
 	Mandatory arguments:
 	  -I [ --input ] arg                Sets the network interface ,pcap file or 
 	                                    directory with pcap files.
@@ -98,9 +98,7 @@ The main objects that the python module provide are the following ones.
         FlowManager
         Frequencies
         FrequencyGroup
-        HTTPHost
-        HTTPUri
-        HTTPUserAgent
+        HTTPInfo
         IPAbstractSet (Abstract class)
             IPSet
         IPSetManager
@@ -109,13 +107,14 @@ The main objects that the python module provide are the following ones.
             StackLan
             StackLanIPv6
             StackMobile
-            StackVirtual
             StackOpenFlow
+            StackVirtual
         PacketDispatcher
         PacketFrequencies
         Regex
         RegexManager
-        SSLHost
+        SIPInfo
+        StringCache
 
 For a complete description of the class methods 
 

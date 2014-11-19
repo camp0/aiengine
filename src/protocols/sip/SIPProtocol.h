@@ -43,6 +43,7 @@
 #include "names/DomainNameManager.h"
 #include "regex/Regex.h"
 #include "flow/FlowManager.h"
+#include "SIPInfo.h"
 
 namespace aiengine {
 
@@ -61,6 +62,7 @@ public:
         	total_requests_(0),
         	total_responses_(0),
         	total_sip_others_(0),
+		info_cache_(new Cache<SIPInfo>("Info cache")),
 		uri_cache_(new Cache<StringCache>("Uri cache")),
 		via_cache_(new Cache<StringCache>("Via cache")),
 		from_cache_(new Cache<StringCache>("From cache")),
@@ -111,27 +113,21 @@ public:
 
 	unsigned char *getPayload() { return sip_header_; }
 
-        void createSIPUris(int number) { uri_cache_->create(number);}
-        void destroySIPUris(int number) { uri_cache_->destroy(number);}
-        void createSIPFroms(int number) { from_cache_->create(number);}
-        void destroySIPFroms(int number) { from_cache_->destroy(number);}
-        void createSIPTos(int number) { to_cache_->create(number);}
-        void destroySIPTos(int number) { to_cache_->destroy(number);}
-        void createSIPVias(int number) { via_cache_->create(number);}
-        void destroySIPVias(int number) { via_cache_->destroy(number);}
-	
+        void createSIPInfos(int number); 
+        void destroySIPInfos(int number);
+        
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 
 private:
 
-	void attach_uri_to_flow(Flow *flow, std::string &host);
-	void attach_from_to_flow(Flow *flow, std::string &host);
-	void attach_to_to_flow(Flow *flow, std::string &ua);
-	void attach_via_to_flow(Flow *flow, std::string &via);
-	void extract_uri_value(Flow *flow, const char *header);
-	void extract_from_value(Flow *flow, const char *header);
-	void extract_to_value(Flow *flow, const char *header);
-	void extract_via_value(Flow *flow, const char *header);
+	void attach_uri_to_flow(SIPInfo *info, std::string &host);
+	void attach_from_to_flow(SIPInfo *info, std::string &host);
+	void attach_to_to_flow(SIPInfo *info, std::string &ua);
+	void attach_via_to_flow(SIPInfo *info, std::string &via);
+	void extract_uri_value(SIPInfo *info, const char *header);
+	void extract_from_value(SIPInfo *info, const char *header);
+	void extract_to_value(SIPInfo *info, const char *header);
+	void extract_via_value(SIPInfo *info, const char *header);
 
 	static std::vector<SipMethodType> methods_;
 	static std::vector<SipMethodType> responses_;
@@ -146,6 +142,7 @@ private:
 	int32_t total_responses_;
 	int32_t total_sip_others_;
 
+	Cache<SIPInfo>::CachePtr info_cache_;
 	Cache<StringCache>::CachePtr uri_cache_;
 	Cache<StringCache>::CachePtr via_cache_;
 	Cache<StringCache>::CachePtr from_cache_;

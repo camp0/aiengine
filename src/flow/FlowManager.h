@@ -38,6 +38,7 @@
 #include "FlowCache.h"
 #include "Cache.h"
 #include "../protocols/tcp/TCPInfo.h"
+#include "../protocols/sip/SIPInfo.h"
 
 namespace aiengine {
 

@@ -60,10 +60,7 @@ void Flow::reset() {
 	frequencies.reset();
 	http_info.reset();
 	ssl_host.reset();
-	sip_uri.reset();
-	sip_from.reset();
-	sip_to.reset();
-	sip_via.reset();
+	sip_info.reset();
 	regex.reset();
 	dns_domain.reset();
 	tcp_info.reset();
@@ -99,8 +96,11 @@ void Flow::serialize(std::ostream& stream) {
                 if(tcp_info.lock())
                         stream << ",\"t\":\"" << *tcp_info.lock() << "\"";
 
-                if(http_host.lock())
-                        stream << ",\"h\":\"" << http_host.lock()->getName() << "\"";
+		if (http_info.lock()) {
+			SharedPointer<HTTPInfo> info = http_info.lock();
+			if(info->host.lock())	
+                        	stream << ",\"h\":\"" << info->host.lock()->getName() << "\"";
+		}
 
                 if(ssl_host.lock())
                         stream << ",\"s\":\"" << ssl_host.lock()->getName() << "\"";

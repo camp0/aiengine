@@ -295,10 +295,7 @@ void StackLan::setTotalUDPFlows(int value) {
 	dns->createDNSDomains(value / 2);
 
 	// SIP values
-	sip->createSIPUris(value * 0.2);
-	sip->createSIPFroms(value * 0.2);
-	sip->createSIPTos(value * 0.2);
-	sip->createSIPVias(value * 0.2);
+	sip->createSIPInfos(value * 0.2);
 }
 
 void StackLan::enableLinkLayerTagging(std::string type) {

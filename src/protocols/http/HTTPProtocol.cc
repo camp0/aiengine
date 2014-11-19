@@ -142,7 +142,8 @@ void HTTPProtocol::releaseCache() {
 				total_bytes_released_by_flows += release_http_info(info.get());
 				total_bytes_released_by_flows += sizeof(info);
 				info.reset();
-				flow->http_info.reset();	
+				flow->http_info.reset();
+				++ release_flows;	
                         }
                 } 
                 host_map_.clear();
@@ -150,8 +151,8 @@ void HTTPProtocol::releaseCache() {
 		ua_map_.clear();
 
                 double cache_compression_rate = 0;
-
-                if (total_bytes_released > 0 ) {
+                
+		if (total_bytes_released_by_flows > 0 ) {
                         cache_compression_rate = 100 - ((total_bytes_released*100)/total_bytes_released_by_flows);
                 }
 

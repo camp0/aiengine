@@ -42,6 +42,7 @@
 #include "protocols/tcp/TCPInfo.h"
 #include "protocols/gprs/GPRSInfo.h"
 #include "protocols/http/HTTPInfo.h"
+#include "protocols/sip/SIPInfo.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -106,10 +107,7 @@ public:
 	WeakPointer<Regex> regex;
 	WeakPointer<HTTPInfo> http_info;
 	WeakPointer<StringCache> ssl_host;
-	WeakPointer<StringCache> sip_uri;
-	WeakPointer<StringCache> sip_from;
-	WeakPointer<StringCache> sip_to;
-	WeakPointer<StringCache> sip_via;
+	WeakPointer<SIPInfo> sip_info;
 	WeakPointer<Frequencies> frequencies;
 	WeakPointer<PacketFrequencies> packet_frequencies;
 	FlowForwarderPtrWeak forwarder;
@@ -144,10 +142,8 @@ public:
 		return l;
 	} 
 
-	//StringCache& getHTTPUri() const { return *http_uri.lock().uri.get();}
-	//StringCache& getHTTPHost() const { return *http_host.lock().host.get();}
-	//StringCache& getHTTPUserAgent() const { return *http_ua.lock().ua.get();}
 	HTTPInfo& getHTTPInfo() const { return *http_info.lock().get();}
+	SIPInfo& getSIPInfo() const { return *sip_info.lock().get();}
 	Frequencies& getFrequencies() const { return *frequencies.lock().get();}
 	PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.lock().get();}
 	Regex& getRegex() const { return *regex.lock().get();}

@@ -498,6 +498,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Returns the tag from lower network layers.")
 		.def("getHTTPInfo",&Flow::getHTTPInfo,return_internal_reference<>(),
 			"Returns the HTTP Info of the flow if the flow is HTTP.")
+		.def("getSIPInfo",&Flow::getSIPInfo,return_internal_reference<>(),
+			"Returns the SIP Info of the flow if the flow is SIP.")
 		.def("getFrequencies",&Flow::getFrequencies,return_internal_reference<>(),
 			"Returns a map of frequencies of the payload of the flow.")
 		.def("getPacketFrequencies",&Flow::getPacketFrequencies,return_internal_reference<>(),
@@ -534,6 +536,17 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setBanned",&HTTPInfo::setBanAndRelease,
 		     	"Sets the flow to banned for no more analysis on the python side and release resources.")
 	;
+
+        boost::python::class_<SIPInfo, SharedPointer<SIPInfo>, boost::noncopyable>("SIPInfo")
+                .def("getUri",&SIPInfo::getUri,return_internal_reference<>(),
+                        "Returns the SIP URI of the flow if the flow is SIP.")
+                .def("getFrom",&SIPInfo::getFrom,return_internal_reference<>(),
+                        "Returns the SIP From of the flow if the flow is SIP.")
+                .def("getTo",&SIPInfo::getTo,return_internal_reference<>(),
+                        "Returns the SIP To of the flow if the flow is SIP.")
+                .def("getVia",&SIPInfo::getVia,return_internal_reference<>(),
+                        "Returns the SIP Via of the flow if the flow is SIP.")
+        ;
 
 	boost::python::class_<StringCache, SharedPointer<StringCache>,boost::noncopyable>("StringCache")
 		.def(self_ns::str(self_ns::self))
