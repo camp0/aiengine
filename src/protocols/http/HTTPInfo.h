@@ -42,6 +42,7 @@ public:
 
 	void reset() { 
 		content_length_ = 0; 
+		data_chunk_length_ = 0; 
 		have_data_ = false; 
 		is_banned_ = false; 
 #ifdef PYTHON_BINDING
@@ -52,9 +53,12 @@ public:
 
 	void resetStrings() { uri.reset(); host.reset(); ua.reset(); }
 
-	int16_t getContentLength() const { return content_length_; }
-	void setContentLength(int16_t content_length) { content_length_ = content_length; }
+	int32_t getContentLength() const { return content_length_; }
+	void setContentLength(int32_t content_length) { content_length_ = content_length; }
 
+	int32_t getDataChunkLength() const { return data_chunk_length_; }
+	void setDataChunkLength(int32_t length) { data_chunk_length_ = length; }
+	
 	void setIsBanned(bool value) { is_banned_ = value; }
 	bool getIsBanned() const { return is_banned_; }
 
@@ -88,7 +92,8 @@ private:
 #ifdef PYTHON_BINDING
 	bool needs_release_;
 #endif
-	int16_t content_length_;	
+	int32_t content_length_;	
+	int32_t data_chunk_length_;	
 };
 
 } // namespace aiengine

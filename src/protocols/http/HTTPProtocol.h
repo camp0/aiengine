@@ -59,7 +59,8 @@ public:
                 http_host_(new Regex("Host expression","Host: .*?\r\n")),
                 http_ua_(new Regex("User Agent expression","User-Agent: .*?\r\n")),
 		http_header_(nullptr),
-		http_header_size_(0),total_bytes_(0),
+		http_header_size_(0),
+		total_bytes_(0),total_l7_bytes_(0),
 		total_allow_hosts_(0),total_ban_hosts_(0),
 		total_requests_(0),total_responses_(0),total_http_others_(0),
 		info_cache_(new Cache<HTTPInfo>("Info Cache")),
@@ -87,6 +88,7 @@ public:
 	int getHeaderSize() const { return header_size;}
 
 	int64_t getTotalBytes() const { return total_bytes_; }
+	int64_t getTotalL7Bytes() const { return total_l7_bytes_; }
 	int64_t getTotalPackets() const { return total_packets_;}
 	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
@@ -159,6 +161,7 @@ private:
 	unsigned char *http_header_;
 	int16_t http_header_size_;	
 	int64_t total_bytes_;
+	int64_t total_l7_bytes_;// with no http headers;
 	int32_t total_allow_hosts_;
 	int32_t total_ban_hosts_;
 	int32_t total_requests_;

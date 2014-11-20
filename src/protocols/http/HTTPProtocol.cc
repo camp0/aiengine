@@ -221,7 +221,9 @@ bool HTTPProtocol::process_content_length_parameter(HTTPInfo *info, const char *
 	try {
 		length = std::stoi(value);
 		info->setContentLength(length);
+		info->setDataChunkLength(length);
 		info->setHaveData(true);
+
 	} catch(std::invalid_argument&) { //or catch(...) to catch all exceptions
 		length = 0;
 	}
@@ -378,8 +380,9 @@ void HTTPProtocol::parse_header(HTTPInfo *info, const char *parameters) {
 void HTTPProtocol::processFlow(Flow *flow) {
 
 	http_header_size_ = 0;
+	int16_t flow_bytes = flow->packet->getLength();
 	++total_packets_;	
-	total_bytes_ += flow->packet->getLength();
+	total_bytes_ += flow_bytes;
 	++flow->total_packets_l7;
 
 	SharedPointer<HTTPInfo> info = flow->http_info.lock();
@@ -403,6 +406,23 @@ void HTTPProtocol::processFlow(Flow *flow) {
 			info->setIsRelease(false); 
 		}
 #endif
+		return;
+	}
+
+	if (info->getHaveData() == true) {
+		total_l7_bytes_ += flow_bytes;
+		int32_t left_length = info->getDataChunkLength() - flow_bytes;	
+
+		// std::cout << "DATA PACKET: left_length == "<< left_length;
+		// std::cout << " flow_bytes == "<< flow_bytes ;
+		// std::cout << " info->getDataChunkLength() == "<< info->getDataChunkLength() << std::endl;
+		
+		if (left_length > 0) {
+			info->setDataChunkLength(left_length);
+		} else {
+			info->setDataChunkLength(0);
+			info->setHaveData(false);
+		}
 		return;
 	}
 
@@ -436,15 +456,30 @@ void HTTPProtocol::processFlow(Flow *flow) {
 			}
 		}
 	} else {
-
+		// Responses from the server
 		int offset = extract_uri(info.get(),header);
 		if (offset > 0) {
 			
 			http_header_size_ = offset;
 			parse_header(info.get(),&header[offset]);
-
 		}
 	}
+
+        if(info->getHaveData() == true) {
+
+		int32_t data_size = flow_bytes - http_header_size_;
+		int32_t data_chunk = info->getDataChunkLength();
+		int32_t delta = data_chunk - data_size;
+
+		total_l7_bytes_ += data_size;
+
+		if (delta > 0) {
+			info->setDataChunkLength(delta);
+		} else {
+			info->setDataChunkLength(0);
+			info->setHaveData(false);
+		}
+	}            
 }
 
 
@@ -470,6 +505,7 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 		out << getName() << "(" << this << ") statistics" << std::dec <<  std::endl;
 		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
 		out << "\t" << "Total bytes:        " << std::setw(14) << total_bytes_ <<std::endl;
+		out << "\t" << "Total L7 bytes:     " << std::setw(14) << total_l7_bytes_ <<std::endl;
 		if (stats_level_ > 1) {
         		out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
         		out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;

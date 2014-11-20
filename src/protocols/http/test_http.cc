@@ -921,19 +921,26 @@ BOOST_AUTO_TEST_CASE (test20_http)
 	flow->setFlowDirection(FlowDirection::FORWARD);
         http->processFlow(flow.get());
 
+	// Some checks
+        BOOST_CHECK(flow->http_info.lock() != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+
+	// Should be false because the data is still on the packet
+	BOOST_CHECK(info->getHaveData() == false);
+
+	BOOST_CHECK(http->getTotalL7Bytes() == 1);
+
 	flow->setFlowDirection(FlowDirection::BACKWARD);
         flow->packet = const_cast<Packet*>(&packet2);
         http->processFlow(flow.get());
         
+	BOOST_CHECK(http->getTotalL7Bytes() == 18);
 	// Verify the size of the Header
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2) - 17);
 
         std::string host("86.19.100.102");
         std::string ua("Shockwave Flash");
         std::string uri("/open/1");
-
-        BOOST_CHECK(flow->http_info.lock() != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info.lock();
 
         BOOST_CHECK(info->host.lock() != nullptr);
         BOOST_CHECK(info->ua.lock() != nullptr);
@@ -943,6 +950,149 @@ BOOST_AUTO_TEST_CASE (test20_http)
         BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
 
         BOOST_CHECK(info->getContentLength() == 17);
+}
+
+BOOST_AUTO_TEST_CASE (test21_http)
+{
+        char *header1 = "GET /open/file.xml HTTP/1.1\r\n"
+                        "User-Agent: Shockwave Flash\r\n"
+                        "Host: 86.19.100.102\r\n"
+                        "Connection: Keep-Alive\r\n"
+                        "Cache-Control: no-cache\r\n"
+                        "\r\n";
+
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header1);
+        int length1 = strlen(header1);
+        Packet packet1(pkt1,length1);
+
+        char *header2 = "HTTP/1.1 200 OK\r\n"
+                        "Cache-Control: no-cache\r\n"
+                        "Connection: Keep-Alive\r\n"
+                        "Content-Length: 37\r\n"
+                        "Server: FlashCom/3.5.7\r\n"
+                        "Content-Type:  application/x-fcs\r\n"
+                        "\r\n"
+                        "Cuomdz02wSLGeYbI.";
+
+	char *data1 = "AAAAAAAAAAAAAAAAAAAA";
+        unsigned char *data_pkt = reinterpret_cast <unsigned char*> (data1);
+
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (header2);
+        int length2 = strlen(header2);
+        Packet packet2(pkt2,length2);
+	Packet packet3(data_pkt,strlen(data1));
+
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->createHTTPInfos(1);
+
+	// Process First packet request
+        flow->packet = const_cast<Packet*>(&packet1);
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+
+        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+
+        // Should be false because the data is still on the packet
+        BOOST_CHECK(info->getHaveData() == false);
+        BOOST_CHECK(http->getTotalL7Bytes() == 0);
+
+	// Process second packet response with data
+        flow->setFlowDirection(FlowDirection::BACKWARD);
+        flow->packet = const_cast<Packet*>(&packet2);
+        http->processFlow(flow.get());
+
+        BOOST_CHECK(http->getTotalL7Bytes() == 17);
+        // Verify the size of the Header
+        BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2) - 17);
+
+	// Process the last packet with data
+        flow->setFlowDirection(FlowDirection::BACKWARD);
+        flow->packet = const_cast<Packet*>(&packet3);
+        http->processFlow(flow.get());
+
+	// Verify the counters
+
+        BOOST_CHECK(http->getTotalL7Bytes() == 37);
+	// No header size
+        BOOST_CHECK(http->getHTTPHeaderSize() == 0);
+	BOOST_CHECK(info->getHaveData() == false);
+	BOOST_CHECK(info->getDataChunkLength() == 0);
+}
+
+BOOST_AUTO_TEST_CASE (test22_http)
+{
+
+        char *header1 =  "POST /open/1 HTTP/1.1\r\n"
+                        "Content-Type: application/x-fcs\r\n"
+                        "User-Agent: Shockwave Flash\r\n"
+                        "Host: 86.19.100.102\r\n"
+                        "Content-Length: 290\r\n"
+                        "Connection: Keep-Alive\r\n"
+                        "Cache-Control: no-cache\r\n"
+                        "\r\n"
+			"AAAAAAAAAAAAAAAAAAAA"
+			"AAAAAAAAAAAAAAAAAAAA"
+			"AAAAAAAAAAAAAAAAAAAA"
+			"AAAAAAAAAAAAAAAAAAAA"
+			"AAAAAAAAAAAAAAAAAAAA";
+
+	char *data1 = 	"AAAAAAAAAAAAAAAAAAAA" "AAAAAAAAAAAAAAAAAAAA" "AAAAAAAAAAAAAAAAAAAA" "AAAAAAAAAAAAAAAAAAAA"
+			"AAAAAAAAAAAAAAAAAAAA" "AAAAAAAAAAAAAAAAAAAA" "AAAAAAAAAAAAAAAAAAAA" "AAAAAAAAAAAAAAAAAAAA";
+
+        unsigned char *data_pkt = reinterpret_cast <unsigned char*> (data1);
+
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header1);
+        int length1 = strlen(header1);
+        Packet packet1(pkt1,length1);
+
+        char *header2 =  "HTTP/1.1 200 OK\r\n"
+                        "Cache-Control: no-cache\r\n"
+                        "Connection: Keep-Alive\r\n"
+                        "Server: FlashCom/3.5.7\r\n"
+                        "\r\n";
+
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (header2);
+        int length2 = strlen(header2);
+        Packet packet2(data_pkt,190);
+        Packet packet3(pkt2,length2);
+
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->createHTTPInfos(1);
+
+        flow->packet = const_cast<Packet*>(&packet1);
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+
+        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+	
+	// Verify values of the first packet
+        BOOST_CHECK(http->getTotalL7Bytes() == 100);
+        // No header size
+        BOOST_CHECK(info->getHaveData() == true);
+        BOOST_CHECK(info->getDataChunkLength() == 190);
+
+	// Insert the second packet that is the payload
+        flow->packet = const_cast<Packet*>(&packet2);
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+
+        // Verify values of the  packet
+        BOOST_CHECK(http->getTotalL7Bytes() == 290);
+        // No header size
+        BOOST_CHECK(info->getHaveData() == false);
+        BOOST_CHECK(info->getDataChunkLength() == 0);
+	BOOST_CHECK(http->getHTTPHeaderSize() == 0);
+
+	// Insert the response
+        flow->packet = const_cast<Packet*>(&packet3);
+        flow->setFlowDirection(FlowDirection::BACKWARD);
+        http->processFlow(flow.get());
+
+        BOOST_CHECK(info->getHaveData() == false);
+        BOOST_CHECK(http->getTotalL7Bytes() == 290);
+	BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2));
 }
 
 
