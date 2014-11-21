@@ -543,4 +543,31 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
+
+#ifdef PYTHON_BINDING
+
+boost::python::dict HTTPProtocol::getCounters() const {
+	boost::python::dict counters;
+
+        counters["packets"] = total_packets_;
+        counters["bytes"] = total_bytes_;
+        counters["L7 bytes"] = total_l7_bytes_;
+	counters["allow hosts"] = total_allow_hosts_;
+	counters["banned hosts"] = total_ban_hosts_;
+	counters["requests"] = total_requests_;
+	counters["responses"] = total_responses_;
+
+	for (auto &method: methods_) {
+		const char *label = std::get<2>(method);
+
+		counters[label] = std::get<3>(method);
+	}
+	counters["others"] = total_http_others_;
+
+        return counters;
+}
+
+#endif
+
+
 } // namespace aiengine 

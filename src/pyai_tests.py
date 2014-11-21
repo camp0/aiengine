@@ -497,6 +497,30 @@ class StackLanTests(unittest.TestCase):
             self.assertEqual(inf.getHost(), None)
             break
 
+    def test16(self):
+        """ Verify the getCounters functionatly """
+
+        self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
+        self.dis.run()
+        self.dis.close()
+
+        c = self.s.getCounters("EthernetProtocol")
+
+        self.assertEqual(c.has_key("packets"), True) 
+        self.assertEqual(c.has_key("bytes"), True) 
+
+        c = self.s.getCounters("TCPProtocol")
+
+	self.assertEqual(c["bytes"], 888524)
+	self.assertEqual(c["packets"], 886)
+	self.assertEqual(c["syns"], 2)
+	self.assertEqual(c["synacks"], 2)
+	self.assertEqual(c["acks"], 882)
+	self.assertEqual(c["rsts"], 0)
+	self.assertEqual(c["fins"], 0)
+
+	c = self.s.getCounters("UnknownProtocol")
+	self.assertEqual(len(c), 0)
 
  
 class StackLanIPv6Tests(unittest.TestCase):

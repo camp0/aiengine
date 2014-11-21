@@ -78,4 +78,17 @@ void MPLSProtocol::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
+#ifdef PYTHON_BINDING
+
+boost::python::dict MPLSProtocol::getCounters() const {
+        boost::python::dict counters;
+
+        counters["packets"] = total_packets_;
+        counters["bytes"] = total_bytes_;
+
+        return counters;
+}
+
+#endif
+
 } // namespace aiengine

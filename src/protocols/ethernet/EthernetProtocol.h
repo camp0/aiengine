@@ -99,6 +99,11 @@ public:
 	uint16_t getEthernetType() const { return ntohs(eth_header_->ether_type);}
 	struct ether_header *getEthernetHeader() const { return eth_header_;}
 
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const ;
+#endif
+
 private:
 	int stats_level_;
 	struct ether_header *eth_header_;

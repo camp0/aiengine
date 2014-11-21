@@ -21,6 +21,7 @@ The main functionalities of AIEngine are:
 - Easy integration with databases (MySQL, Redis, etc...) for data correlation.
 - Easy integration with other packet engines (Netfilter).
 - Support memory clean caches for refresh stored memory information.
+- Support for detect DDoS at network/application layer.
 
 Using AIEngine 
 ---------------

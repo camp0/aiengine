@@ -103,7 +103,10 @@ public:
 		stats_(),header_(nullptr),pkt_data_(nullptr),
 		eth_(),current_packet_(),defMux_(),stack_name_(),input_name_()
 #ifdef PYTHON_BINDING
-		,user_shell_(SharedPointer<Interpreter>(new Interpreter(io_service_)))
+		,user_shell_(SharedPointer<Interpreter>(new Interpreter(io_service_))),
+        	scheduler_set_(false),
+        	scheduler_callback_(nullptr),
+        	scheduler_seconds_(0)
 #endif
 		{	
 		setIdleFunction(std::bind(&PacketDispatcher::default_idle_function,this));
@@ -124,6 +127,7 @@ public:
 	void forwardPacket(const std::string &packet, int length);
 	void enableShell(bool enable);
 	void unsetStack();
+	void setScheduler(PyObject *callback, int seconds);
 #endif
 
 	uint64_t getTotalBytes(void) const { return total_bytes_;}
@@ -187,6 +191,9 @@ private:
 
 #ifdef PYTHON_BINDING
 	SharedPointer<Interpreter> user_shell_;
+	bool scheduler_set_;
+	PyObject *scheduler_callback_;
+	int scheduler_seconds_;
 #endif
 };
 

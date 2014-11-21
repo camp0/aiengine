@@ -101,6 +101,11 @@ public:
 
 	uint16_t getProtocol() const { return ntohs(gre_header_->protocol); }
 
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const;
+#endif
+
 private:
 	int stats_level_;
 	struct gre_hdr *gre_header_;

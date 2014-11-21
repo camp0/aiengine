@@ -91,4 +91,23 @@ void OpenFlowProtocol::statistics(std::basic_ostream<char>& out){
 	}
 }
 
+#ifdef PYTHON_BINDING
+
+boost::python::dict OpenFlowProtocol::getCounters() const {
+        boost::python::dict counters;
+
+        counters["packets"] = total_packets_;
+        counters["bytes"] = total_bytes_;
+        counters["hellos"] = total_ofp_hellos_;
+        counters["feature requests"] = total_ofp_feature_requests_;
+        counters["feature replys"] = total_ofp_feature_replys_;
+        counters["set configs"] = total_ofp_set_configs_;
+        counters["packets in"] = total_ofp_packets_in_;
+        counters["packets out"] = total_ofp_packets_out_;
+
+        return counters;
+}
+
+#endif
+
 } // namespace aiengine

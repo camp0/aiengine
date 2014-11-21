@@ -385,4 +385,25 @@ void SIPProtocol::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
+#ifdef PYTHON_BINDING
+
+boost::python::dict SIPProtocol::getCounters() const {
+        boost::python::dict counters;
+
+        counters["packets"] = total_packets_;
+        counters["bytes"] = total_bytes_;
+        counters["requests"] = total_requests_;
+        counters["responses"] = total_requests_;
+	for (auto &method: methods_) {
+		const char *label = std::get<2>(method);
+
+		counters[label] = std::get<3>(method);
+	}
+        counters["others"] = total_sip_others_;
+
+        return counters;
+}
+
+#endif
+
 } // namespace aiengine 

@@ -286,4 +286,23 @@ void SSLProtocol::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
+#ifdef PYTHON_BINDING
+
+boost::python::dict SSLProtocol::getCounters() const {
+	boost::python::dict counters;
+
+	counters["packets"] = total_packets_;
+	counters["bytes"] = total_bytes_;
+	counters["allow hosts"] = total_allow_hosts_;
+	counters["banned hosts"] = total_ban_hosts_;
+	counters["client hellos"] = total_client_hellos_;
+	counters["server hellos"] = total_server_hellos_;
+	counters["certificates"] = total_certificates_;
+	counters["records"] = total_records_;
+
+        return counters;
+}
+
+#endif
+
 } // namespace aiengine

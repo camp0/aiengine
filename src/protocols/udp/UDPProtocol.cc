@@ -185,4 +185,18 @@ void UDPProtocol::processPacket(Packet& packet) {
 
 }
 
+
+#ifdef PYTHON_BINDING
+
+boost::python::dict UDPProtocol::getCounters() const {
+	boost::python::dict counters;
+
+        counters["Total packets"] = total_packets_;
+        counters["Total bytes"] = total_bytes_;
+
+       return counters;
+}
+
+#endif
+
 } // namespace aiengine

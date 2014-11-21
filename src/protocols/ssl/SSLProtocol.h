@@ -165,6 +165,12 @@ public:
 	void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) { ban_host_mng_ = dnm;}
 
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
+
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const;
+#endif
+
 private:
 	int stats_level_;
 	ssl_record *ssl_header_;

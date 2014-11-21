@@ -99,6 +99,16 @@ public:
 
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const {
+                boost::python::dict counters;
+
+                return counters;
+        }
+
+#endif
+
 private:
 	int stats_level_;
 	unsigned char *freq_header_;

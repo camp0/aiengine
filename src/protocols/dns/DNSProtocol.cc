@@ -346,5 +346,31 @@ void DNSProtocol::statistics(std::basic_ostream<char>& out)
 	}
 }
 
+#ifdef PYTHON_BINDING
+
+boost::python::dict DNSProtocol::getCounters() const {
+	boost::python::dict counters;
+
+        counters["total allow queries"] = total_allow_queries_;
+        counters["total banned queries"] = total_ban_queries_;
+        counters["total type A"] = total_dns_type_a_;
+        counters["total type NS"] = total_dns_type_ns_;
+        counters["total type CNAME"] = total_dns_type_cname_;
+        counters["total type SOA"] = total_dns_type_soa_;
+        counters["total type PTR"] = total_dns_type_ptr_;
+        counters["total type MX"] = total_dns_type_mx_;
+        counters["total type TXT"] = total_dns_type_txt_;
+        counters["total type AAAA"] = total_dns_type_aaaa_;
+        counters["total type LOC"] = total_dns_type_loc_;
+        counters["total type SRV"] = total_dns_type_srv_;
+        counters["total type DS"] = total_dns_type_ds_;
+        counters["total type DNSKEY"] = total_dns_type_dnskey_;
+        counters["total type others"] = total_dns_type_others_;
+
+	return counters;
+}
+
+#endif
+
 } // namespace aiengine
 

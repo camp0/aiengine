@@ -93,6 +93,11 @@ public:
 	struct in6_addr *getDestinationAddress() const { return (struct in6_addr*)&(ip6_header_->ip6_dst);}
 	unsigned char* getPayload() const { return (unsigned char*)ip6_header_ + 40; }
 
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const;
+#endif
+
 private:
 	int stats_level_;
 	struct ip6_hdr *ip6_header_;

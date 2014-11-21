@@ -35,6 +35,14 @@ void TCPProtocol::statistics(std::basic_ostream<char>& out) {
                 if (stats_level_ > 1) {
                         out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
                         out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
+                        if(stats_level_ > 3) {
+
+                                out << "\t" << "Total syns:             " << std::setw(10) << total_flags_syn_ <<std::endl;
+                                out << "\t" << "Total synacks:          " << std::setw(10) << total_flags_synack_ <<std::endl;
+                                out << "\t" << "Total acks:             " << std::setw(10) << total_flags_ack_ <<std::endl;
+                                out << "\t" << "Total fins:             " << std::setw(10) << total_flags_fin_ <<std::endl;
+                                out << "\t" << "Total rsts:             " << std::setw(10) << total_flags_rst_ <<std::endl;
+                        }
                         if (stats_level_ > 2) {
                                 if (mux_.lock())
                                         mux_.lock()->statistics(out);
@@ -246,12 +254,14 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 				flags = static_cast<int>(TcpFlags::SYNACK);
 				str_flag = (char*)"SynAck";
 				++ tcp_info->syn_ack;
+				++ total_flags_synack_;
 				
 				tcp_info->seq_num[flowdir] = seq_num;
 			} else {
 				flags = static_cast<int>(TcpFlags::SYN);
 				str_flag = (char*)"Syn";
 				++ tcp_info->syn;
+				++ total_flags_syn_;
 
 				tcp_info->seq_num[flowdir] = seq_num + 1;
 				++seq_num;
@@ -259,6 +269,7 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
                         if (fin) { 
 				bad_flags = true;
 				++ tcp_info->fin;
+				++ total_flags_fin_;
 			}
 			if (rst) {
 				bad_flags = true;
@@ -267,15 +278,18 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 			if ((ack)&&(fin)) {
 				flags = static_cast<int>(TcpFlags::FIN);
 				str_flag = (char*)"Fin";
+				++ total_flags_fin_;
 				++ tcp_info->fin;
 			} else {
 				if (fin) {
 					flags = static_cast<int>(TcpFlags::FIN);
 					str_flag = (char*)"Fin";
+					++ total_flags_fin_;
 					++ tcp_info->fin;
 				} else {
 					flags = static_cast<int>(TcpFlags::ACK);
 					str_flag = (char*)"Ack";
+					++ total_flags_ack_;
 					++ tcp_info->ack;
 				}
 			}
@@ -315,6 +329,7 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 			// Hard reset, close the flow 
 			tcp_info->state_prev = static_cast<int>(TcpState::CLOSED);
 			tcp_info->state_curr = static_cast<int>(TcpState::CLOSED);
+			++ total_flags_rst_;
 		}
 #ifdef DEBUG
 		const char *prev_state = ((tcp_states[tcp_info->state_prev]).state)->name;
@@ -326,5 +341,23 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 
 	} // end tcp_info
 }
+
+#ifdef PYTHON_BINDING
+
+boost::python::dict TCPProtocol::getCounters() const {
+        boost::python::dict counters;
+
+        counters["packets"] = total_packets_;
+        counters["bytes"] = total_bytes_;
+        counters["syns"] = total_flags_syn_;
+        counters["synacks"] = total_flags_synack_;
+        counters["acks"] = total_flags_ack_;
+        counters["fins"] = total_flags_fin_;
+        counters["rsts"] = total_flags_rst_;
+
+        return counters;
+}
+
+#endif
 
 } // namespace aiengine

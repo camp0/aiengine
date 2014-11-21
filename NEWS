@@ -91,3 +91,4 @@ Features/Changes of 1.0
 - Fix DNSQueryTypes minor issue.
 - Support for SIP protocol.
 - Support for ban HTTPFlows on callbaks using external intelligence (check test20 on pyai_tests.py)
+- Support for DDoS attacks by ussing getCounters functionatliy and the setScheduler method (check examples)

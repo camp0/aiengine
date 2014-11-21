@@ -107,6 +107,11 @@ public:
         uint16_t getSequence() const { return ntohs(icmp_header_->un.echo.sequence); }
 #endif
 
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const;
+#endif
+
 private:
 	int stats_level_;
 #if defined(__FREEBSD__) || defined(__OPENBSD__) 

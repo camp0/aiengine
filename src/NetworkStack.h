@@ -104,6 +104,9 @@ public:
 	
 	virtual void setTCPIPSetManager(IPSetManager& ipset_mng) = 0;
 	virtual void setUDPIPSetManager(IPSetManager& ipset_mng) = 0;
+
+	boost::python::dict getCounters(const std::string &name);
+
 #else
 	virtual void setTCPIPSetManager(SharedPointer<IPSetManager> ipset_mng) = 0;
 	virtual void setUDPIPSetManager(SharedPointer<IPSetManager> ipset_mng) = 0;

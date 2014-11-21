@@ -111,6 +111,12 @@ public:
 	FlowCachePtr getFlowCache() { return flow_cache_;}
 
 	Flow *getCurrentFlow() { return current_flow_;} // used just for testing pourposes
+
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const;
+#endif
+
 private:
 	SharedPointer<Flow> getFlow(const Packet& packet); 
 

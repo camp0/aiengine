@@ -147,14 +147,30 @@ void PacketDispatcher::idle_handler(boost::system::error_code error) {
 	TimevalSub(&difftime_user,&(usage.ru_utime),&(stats_.ru_utime));
 	TimevalSub(&difftime_sys,&(usage.ru_stime),&(stats_.ru_stime));
  
-	idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(idle_work_interval_));
-        idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
-        	boost::asio::placeholders::error));
+	//idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(scheduler_seconds_));
+        //idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
+        //	boost::asio::placeholders::error));
 #ifdef HAVE_LIBLOG4CXX
 	LOG4CXX_DEBUG(logger,
 		"Packets per interval:" << total_packets_ - stats_.prev_total_packets_per_interval <<  
 		" usage seconds:" << difftime_user.tv_sec << ":"<< difftime_user.tv_usec <<
 		" sys:" << difftime_sys.tv_sec << ":" << difftime_sys.tv_usec ); 
+#endif
+
+#ifdef PYTHON_BINDING
+	idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(scheduler_seconds_));
+        idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
+        	boost::asio::placeholders::error));
+
+	PyGILState_STATE state(PyGILState_Ensure());
+        try {
+		// TODO: Fix
+        	boost::python::call<void>(scheduler_callback_);
+        } catch (std::exception &e) {
+        	std::cout << "ERROR:" << e.what() << std::endl;
+        }
+        PyGILState_Release(state);
+
 #endif
 
 	// TODO: Some statistics
@@ -246,10 +262,13 @@ void PacketDispatcher::run_device(void) {
 
 	if (device_is_ready_) {
 
-        	idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(5));
-                idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
-                        boost::asio::placeholders::error));
-
+#ifdef PYTHON_BINDING
+		if (scheduler_set_ == true) {
+        		idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(scheduler_seconds_));
+                	idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
+                        	boost::asio::placeholders::error));
+		}
+#endif
         	std::ostringstream msg;
         	msg << "Processing packets from device " << input_name_.c_str();
 
@@ -348,6 +367,19 @@ void PacketDispatcher::unsetStack() {
 
 	stack_name_ = "None";
        	defMux_.reset();
+}
+
+void PacketDispatcher::setScheduler(PyObject *callback, int seconds) {
+
+        if (!PyCallable_Check(callback)) {
+                std::cerr << "Object is not callable." << std::endl;
+        } else {
+                if ( scheduler_callback_ ) Py_XDECREF(scheduler_callback_);
+                scheduler_callback_ = callback;
+                Py_XINCREF(scheduler_callback_);
+                scheduler_set_ = true;
+		scheduler_seconds_ = seconds;
+        }
 }
 
 #endif

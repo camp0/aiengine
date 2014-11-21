@@ -137,6 +137,12 @@ public:
 	int32_t getTotalBanHosts() const { return total_ban_hosts_;}
 
 	int16_t getHTTPHeaderSize() const { return http_header_size_; }
+
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const;
+#endif
+
 private:
 
 	void attach_uri(HTTPInfo *info, std::string &host);

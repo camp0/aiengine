@@ -77,5 +77,25 @@ void ICMPProtocol::processPacket(Packet &packet) {
 	
 }
 
+#ifdef PYTHON_BINDING
+
+boost::python::dict ICMPProtocol::getCounters() const {
+	boost::python::dict counters;
+
+	counters["packets"] = total_packets_;
+	counters["echo"] = total_echo_request_;
+	counters["echoreply"] = total_echo_replay_;
+	counters["destination unreach"] = total_destination_unreachable_;
+	counters["source quench"] = total_source_quench_;
+	counters["redirect"] = total_redirect_;
+	counters["router advertisment"] = total_router_advertisment_;
+	counters["router solicitation"] = total_router_solicitation_;
+	counters["time exceeded"] = total_ttl_exceeded_;
+
+        return counters;
+}
+
+#endif
+
 } // namespace aiengine
  

@@ -202,5 +202,25 @@ void GPRSProtocol::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
+#ifdef PYTHON_BINDING
+
+boost::python::dict GPRSProtocol::getCounters() const {
+        boost::python::dict counters;
+
+        counters["packets"] = total_packets_;
+        counters["bytes"] = total_bytes_;
+        counters["create pdp reqs"] = total_create_pdp_ctx_requests_;
+        counters["create pdp ress"] = total_create_pdp_ctx_responses_;
+        counters["update pdp reqs"] = total_update_pdp_ctx_requests_;
+        counters["update pdp ress"] = total_update_pdp_ctx_responses_;
+        counters["delete pdp reqs"] = total_delete_pdp_ctx_requests_;
+        counters["delete pdp ress"] = total_delete_pdp_ctx_responses_;
+        counters["tpdus"] = total_tpdus_;
+
+        return counters;
+}
+
+#endif
+
 } // namespace aiengine 
 

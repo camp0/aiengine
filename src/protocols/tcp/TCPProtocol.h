@@ -48,7 +48,13 @@ public:
     	explicit TCPProtocol(std::string name):Protocol(name),stats_level_(0),
                 flow_table_(),flow_cache_(),
                 tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")), 
-                tcp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
+                tcp_header_(nullptr),current_flow_(nullptr),
+		total_bytes_(0),
+		total_flags_syn_(0),
+		total_flags_synack_(0),
+		total_flags_ack_(0),
+		total_flags_rst_(0),
+		total_flags_fin_(0),
 		last_timeout_(0),packet_time_(0) {}
 
     	explicit TCPProtocol():TCPProtocol(TCPProtocol::default_name) {}
@@ -140,6 +146,12 @@ public:
         void destroyTCPInfo(int number) { tcp_info_cache_->destroy(number);}
 
 	Flow *getCurrentFlow() { return current_flow_;} // used just for testing pourposes
+
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const;
+#endif
+
 private:
         SharedPointer<Flow> getFlow(const Packet& packet);
 
@@ -150,6 +162,11 @@ private:
 	struct tcphdr *tcp_header_;
 	Flow *current_flow_;
 	int64_t total_bytes_;
+	int32_t total_flags_syn_;
+	int32_t total_flags_synack_;
+	int32_t total_flags_ack_;
+	int32_t total_flags_rst_;
+	int32_t total_flags_fin_;
        	time_t last_timeout_;
        	time_t packet_time_;
 };

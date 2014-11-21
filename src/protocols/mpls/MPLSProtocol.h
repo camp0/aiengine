@@ -97,6 +97,11 @@ public:
 
 	//unsigned char *getPayload() const { return mpls_header_;};
 
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const;
+#endif
+
 private:
 	int stats_level_;
 	unsigned char *mpls_header_;

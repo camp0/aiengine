@@ -78,4 +78,18 @@ void IPProtocol::statistics(std::basic_ostream<char>& out){
 	}
 }
 
+#ifdef PYTHON_BINDING
+
+boost::python::dict IPProtocol::getCounters() const {
+	boost::python::dict counters;
+
+	counters["packets"] = total_packets_;
+	counters["bytes"] = total_bytes_;
+	counters["fragmented packets"] = total_frag_packets_;
+
+       	return counters;
+}
+
+#endif
+
 } // namespace aiengine

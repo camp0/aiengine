@@ -90,4 +90,18 @@ void TCPGenericProtocol::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
+
+#ifdef PYTHON_BINDING
+
+boost::python::dict TCPGenericProtocol::getCounters() const {
+        boost::python::dict counters;
+
+        counters["packets"] = total_packets_;
+        counters["bytes"] = total_bytes_;
+
+        return counters;
+}
+
+#endif
+
 } // namespace aiengine

@@ -88,6 +88,11 @@ public:
 
 	void setRegexManager(RegexManagerPtrWeak sig) { sigs_ = sig;}
 
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const;
+#endif
+
 private:
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;

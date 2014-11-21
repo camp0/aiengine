@@ -89,6 +89,11 @@ public:
 	void setRegexManager(RegexManagerPtrWeak sig) { sigs_ = sig;} 
 	unsigned char *getPayload() const { return tcp_generic_header_;}
 
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const;
+#endif
+
 private:
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;

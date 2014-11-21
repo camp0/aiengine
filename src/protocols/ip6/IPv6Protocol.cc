@@ -138,4 +138,19 @@ void IPv6Protocol::statistics(std::basic_ostream<char>& out) {
         }
 }
 
+#ifdef PYTHON_BINDING
+
+boost::python::dict IPv6Protocol::getCounters() const {
+        boost::python::dict counters;
+
+        counters["packets"] = total_packets_;
+        counters["bytes"] = total_bytes_;
+        counters["fragmented packets"] = total_frag_packets_;
+	counters["extension header packets"] = total_extension_header_packets_;
+
+        return counters;
+}
+
+#endif
+
 } // namespace aiengine

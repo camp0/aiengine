@@ -162,6 +162,11 @@ public:
 
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const;
+#endif
+
 private:
 
 	void process_create_pdp_context(Flow *flow);

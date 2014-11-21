@@ -100,6 +100,11 @@ public:
     	const char* getDstAddrDotNotation() const { return inet_ntoa(ip_header_->ip_dst); }
     	uint32_t getIPPayloadLength() const { return getPacketLength() - getIPHeaderLength(); }
 
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const;
+#endif
+
 private:
 	int stats_level_;
 	struct ip *ip_header_;

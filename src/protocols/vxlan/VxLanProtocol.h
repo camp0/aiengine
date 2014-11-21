@@ -94,6 +94,11 @@ public:
 
 	uint32_t getVni() const { return ntohl(vxlan_header_->vni[2] << 24 | vxlan_header_->vni[1] << 16 | vxlan_header_->vni[0] << 8); }
 
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const;
+#endif
+
 private:
 	int stats_level_;
 	struct vxlan_hdr *vxlan_header_;

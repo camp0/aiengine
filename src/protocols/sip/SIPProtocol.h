@@ -118,6 +118,11 @@ public:
         
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const;
+#endif
+
 private:
 
 	void attach_uri_to_flow(SIPInfo *info, std::string &host);

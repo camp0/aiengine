@@ -102,6 +102,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (NetworkStack::*statisticsByProtocol)(const std::string& name) = 		&NetworkStack::statistics;
 	void (NetworkStack::*releaseCache)(const std::string& name) =			&NetworkStack::releaseCache;
 	void (NetworkStack::*releaseCaches)() =						&NetworkStack::releaseCaches;
+	boost::python::dict (NetworkStack::*getCounters)(const std::string& name) =	&NetworkStack::getCounters;
 
         boost::python::class_<NetworkStack, boost::noncopyable>("NetworkStack",no_init)
                 .def("setUDPRegexManager",pure_virtual(setUDPRegexManager),
@@ -149,6 +150,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Release the cache of a specific protocol given.")
                 .def("releaseCaches",pure_virtual(releaseCaches),
 			"Release all the caches of the stack.")
+                .def("getCounters",pure_virtual(getCounters),
+			"Gets the counters of a given protocol.")
         ;
 
 	// Definitions for the StackLan class
@@ -168,6 +171,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackLan::*statisticsByProtocolLan)(const std::string& name) =           	&StackLan::statistics;
 	void (StackLan::*releaseCacheLan)(const std::string& name) =			&StackLan::releaseCache;
 	void (StackLan::*releaseCachesLan)() =						&StackLan::releaseCaches;
+	boost::python::dict (StackLan::*getCountersLan)(const std::string& name) =	&StackLan::getCounters;
 
 	boost::python::class_<StackLan, bases<NetworkStack> >("StackLan",
 		"Class that implements a network stack for lan enviroments")
@@ -200,6 +204,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setFlowsTimeout", &StackLan::setFlowsTimeout)
 		.def("releaseCache", releaseCacheLan)
 		.def("releaseCaches", releaseCachesLan)
+		.def("getCounters", getCountersLan)
 	;
 
 	// Definitions for the StackMobile class
@@ -219,6 +224,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackMobile::*statisticsByProtocolMobile)(const std::string& name) =           	&StackMobile::statistics;
 	void (StackMobile::*releaseCacheMobile)(const std::string& name) =			&StackMobile::releaseCache;
 	void (StackMobile::*releaseCachesMobile)() =						&StackMobile::releaseCaches;
+	boost::python::dict (StackMobile::*getCountersMobile)(const std::string& name) =	&StackMobile::getCounters;
 
         boost::python::class_<StackMobile, bases<NetworkStack> >("StackMobile",
 		"Class that implements a network stack for mobile enviroments")
@@ -251,6 +257,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setFlowsTimeout", &StackMobile::setFlowsTimeout)
 		.def("releaseCache", releaseCacheMobile)
 		.def("releaseCaches", releaseCachesMobile)
+		.def("getCounters", getCountersMobile)
         ;
 
 
@@ -271,6 +278,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackLanIPv6::*statisticsByProtocolLanIPv6)(const std::string& name) =           	&StackLanIPv6::statistics;
 	void (StackLanIPv6::*releaseCacheLanIPv6)(const std::string& name) =			&StackLanIPv6::releaseCache;
 	void (StackLanIPv6::*releaseCachesLanIPv6)() =						&StackLanIPv6::releaseCaches;
+	boost::python::dict (StackLanIPv6::*getCountersLanIPv6)(const std::string& name) =	&StackLanIPv6::getCounters;
 
         boost::python::class_<StackLanIPv6, bases<NetworkStack> >("StackLanIPv6",
 		"Class that implements a network stack for lan environments with IPv6")
@@ -303,6 +311,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setFlowsTimeout", &StackLanIPv6::setFlowsTimeout)
 		.def("releaseCache", releaseCacheLanIPv6)
 		.def("releaseCaches", releaseCachesLanIPv6)
+		.def("getCounters", getCountersLanIPv6)
         ;
 
         // Definitions for the StackVirtual class
@@ -322,6 +331,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackVirtual::*statisticsByProtocolVirt)(const std::string& name) =             	&StackVirtual::statistics;
 	void (StackVirtual::*releaseCacheVirtual)(const std::string& name) =			&StackVirtual::releaseCache;
 	void (StackVirtual::*releaseCachesVirtual)() =						&StackVirtual::releaseCaches;
+	boost::python::dict (StackVirtual::*getCountersVirtual)(const std::string& name) =	&StackVirtual::getCounters;
 
         boost::python::class_<StackVirtual, bases<NetworkStack> >("StackVirtual",
                 "Class that implements a network stack for cloud/virtual environments")
@@ -354,6 +364,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setFlowsTimeout", &StackVirtual::setFlowsTimeout)
 		.def("releaseCache", releaseCacheVirtual)
 		.def("releaseCaches", releaseCachesVirtual)
+		.def("getCounters", getCountersVirtual)
         ;
 
         // Definitions for the StackOpenFlow class
@@ -373,6 +384,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackOpenFlow::*statisticsByProtocolOF)(const std::string& name) =              	&StackOpenFlow::statistics;
         void (StackOpenFlow::*releaseCacheOpenFlow)(const std::string& name) =                  &StackOpenFlow::releaseCache;
         void (StackOpenFlow::*releaseCachesOpenFlow)() =                          		&StackOpenFlow::releaseCaches;
+	boost::python::dict (StackOpenFlow::*getCountersOpenFlow)(const std::string& name) =	&StackOpenFlow::getCounters;
 
         boost::python::class_<StackOpenFlow, bases<NetworkStack> >("StackOpenFlow",
                 "Class that implements a network stack for openflow environments")
@@ -405,6 +417,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setFlowsTimeout", &StackOpenFlow::setFlowsTimeout)
                 .def("releaseCache", releaseCacheOpenFlow)
                 .def("releaseCaches", releaseCachesOpenFlow)
+                .def("getCounters", getCountersOpenFlow)
 	;
 	
 	boost::python::class_<Regex, SharedPointer<Regex>,boost::noncopyable>("Regex",init<const std::string&,const std::string&>())
@@ -450,6 +463,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("unsetStack",&PacketDispatcher::unsetStack)
 		.def("enableShell",&PacketDispatcher::enableShell,
 			"Enables a python shell in order to interact with the system on real time")
+		.def("setScheduler",&PacketDispatcher::setScheduler,
+			"Sets the scheduler for make periodically task.")
 		.def(self_ns::str(self_ns::self))
 	;
 

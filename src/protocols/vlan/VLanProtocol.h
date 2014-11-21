@@ -89,6 +89,11 @@ public:
 
 	uint16_t getEthernetType() const { return ntohs(vlan_header_->vlan_tci);}
 
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const;
+#endif
+
 private:
 	int stats_level_;
 	struct vlan_tag *vlan_header_;

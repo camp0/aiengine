@@ -90,6 +90,8 @@ public:
 
 #ifdef PYTHON_BINDING
 
+        virtual boost::python::dict getCounters() const = 0;
+
 	void setDatabaseAdaptor(boost::python::object &dbptr); 
 	void setDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling);  
 

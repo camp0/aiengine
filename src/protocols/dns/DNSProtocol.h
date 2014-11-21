@@ -141,6 +141,11 @@ public:
 
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 
+#ifdef PYTHON_BINDING
+
+	boost::python::dict getCounters() const;
+#endif
+
 private:
 	void attach_dns_to_flow(Flow *flow, std::string &domain, uint16_t qtype);
 	void update_query_types(uint16_t type);

@@ -95,6 +95,11 @@ public:
         uint16_t getId() const { return ntohs(icmp_header_->icmp6_id); }
         uint16_t getSequence() const { return ntohs(icmp_header_->icmp6_seq); }
 
+#ifdef PYTHON_BINDING
+
+        boost::python::dict getCounters() const; 
+#endif
+
 private:
 	int stats_level_;
 	struct icmp6_hdr *icmp_header_;
