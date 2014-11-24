@@ -38,8 +38,10 @@ def scheduler_handler():
 
     print("DDoS Checker")
     c = st.getCounters("TCPProtocol")
-    # Code the desier intelligence for detect DDoS based on 
+    # Code the intelligence for detect DDoS based on 
     # combination flags, bytes, packets and so on. 
+    if ((c["syn"] * 10)> c["synack"]):
+        print("System under a SYN DDoS attack)
 
 if __name__ == '__main__':
 
@@ -55,6 +57,8 @@ if __name__ == '__main__':
     st.setTotalUDPFlows(16384)
     st.setTotalTCPFlows(16384)
 
+    # Sets a handler method that will be call
+    # every 5 seconds for check the values
     pdis.setScheduler(scheduler_handler,5)
 
     pdis.open("ens7")

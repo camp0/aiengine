@@ -4,7 +4,7 @@ AIEngine (Artificial Inteligent Engine)
 AIEngine is a next generation interactive/programmable packet inspection engine with capabilities of learning
 without any human intervention, NIDS functionality, DNS domain classification, network collector and many others. 
 
-AIEngine also helps network/security profesionals to identify traffic and develop
+AIEngine also helps network/security professionals to identify traffic and develop
 signatures for use them on NIDS, Firewalls, Traffic classifiers and so on.
 
 The main functionalities of AIEngine are:
@@ -17,10 +17,11 @@ The main functionalities of AIEngine are:
 - Support Linux and FreeBSD operating systems.
 - Support for HTTP,DNS and SSL Domains matching.
 - Support for banned domains and hosts for HTTP, DNS and SSL.
-- Frequency analisys for unknown traffic and auto-regex generation.
+- Frequency analysis for unknown traffic and auto-regex generation.
 - Easy integration with databases (MySQL, Redis, etc...) for data correlation.
 - Easy integration with other packet engines (Netfilter).
 - Support memory clean caches for refresh stored memory information.
+- Support for detect DDoS at network/application layer.
 
 Using AIEngine 
 ---------------
