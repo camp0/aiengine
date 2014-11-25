@@ -159,6 +159,55 @@ void Flow::serialize(std::ostream& stream) {
 #endif
 }
 
+void Flow::showFlowInfo(std::ostream& out) {
+
+	if (haveTag() == true) {
+        	out << " Tag:" << getTag();
+        }
+
+        if (getPacketAnomaly() != PacketAnomaly::NONE)
+        	out << " Anomaly:" << PacketAnomalyToString.at(static_cast<std::int8_t>(getPacketAnomaly()));
+
+        if (ipset.lock()) out << " IPset:" << ipset.lock()->getName();
+
+	if (protocol_ == IPPROTO_TCP) {
+		if (tcp_info.lock()) out << " TCP:" << *tcp_info.lock();
+
+        	SharedPointer<HTTPInfo> hinfo = http_info.lock();
+
+        	if (hinfo) {
+                	out << "REQ(" << hinfo->getTotalRequests() << ")RES(" << hinfo->getTotalResponses() << ") ";
+                	if (hinfo->getIsBanned()) out << " Banned ";
+                	if (hinfo->host.lock()) out << "Host:" << hinfo->host.lock()->getName();
+                	if (hinfo->ua.lock()) out << " UserAgent:" << hinfo->ua.lock()->getName();
+        	}
+
+        	if (ssl_host.lock()) out << " Host:" << ssl_host.lock()->getName();
+
+	} else {
+		if (gprs_info.lock()) out << " GPRS:" << *gprs_info.lock();
+
+        	if (dns_domain.lock()) out << " Domain:" << dns_domain.lock()->getName();
+
+        	SharedPointer<SIPInfo> sinfo = sip_info.lock();
+
+        	if (sinfo) {
+                	if (sinfo->uri.lock()) out << " SIPUri:" << sinfo->uri.lock()->getName();
+
+                	if (sinfo->from.lock()) out << " SIPFrom:" << sinfo->from.lock()->getName();
+
+                	if (sinfo->to.lock()) out << " SIPTo:" << sinfo->to.lock()->getName();
+
+                	if (sinfo->via.lock()) out << " SIPVia:" << sinfo->via.lock()->getName();
+        	}
+	}
+
+        if (regex.lock()) out << " Regex:" << regex.lock()->getName();
+
+        if (frequencies.lock()) out << boost::format("%-8s") % frequencies.lock()->getFrequenciesString();
+
+	return;
+}
 
 } // namespace aiengine 
 

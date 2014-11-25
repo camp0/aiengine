@@ -284,6 +284,8 @@ int HTTPProtocol::extract_uri(HTTPInfo *info, const char *header) {
         // Check if is a response
         if (std::memcmp("HTTP/1.",&header[0],6) == 0) {
                 ++total_responses_;
+		info->incTotalResponses();
+
 		int end = http_header.find("\r\n");
 		if (end > 0) {
 			method_size = end + 2;
@@ -312,6 +314,7 @@ int HTTPProtocol::extract_uri(HTTPInfo *info, const char *header) {
                 if (end > 0) {
                         std::string uri(http_header,offset,(end-offset) -1);
 
+			info->incTotalRequests();
                         ++total_requests_;
                         attach_uri(info,uri);
 			method_size = end + 10;

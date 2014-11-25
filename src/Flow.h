@@ -29,6 +29,7 @@
 #include <config.h>
 #endif
 
+#include <boost/format.hpp>
 #include "Pointer.h"
 #include "Packet.h"
 #include "Serializable.h"
@@ -127,6 +128,8 @@ public:
 
     	void serialize(std::ostream& stream);
     	void deserialize(std::istream& stream) {} 
+
+	void showFlowInfo(std::ostream& out);
 
 #ifdef PYTHON_BINDING
 	int32_t getTotalBytes() const { return total_bytes;}

@@ -123,6 +123,8 @@ BOOST_AUTO_TEST_CASE (test3_http)
 	// The host is valid
 	BOOST_CHECK(cad.compare(info->host.lock()->getName()) == 0);
 	BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+	BOOST_CHECK(info->getTotalRequests()  == 1);
+	BOOST_CHECK(info->getTotalResponses()  == 0);
 	BOOST_CHECK(info->ua.lock() == nullptr);
 }
 
@@ -345,6 +347,9 @@ BOOST_AUTO_TEST_CASE (test8_http)
         BOOST_CHECK(info2->ua.lock() != nullptr);
         BOOST_CHECK(info2->host.lock() != nullptr);
         BOOST_CHECK(info2->uri.lock() != nullptr);
+
+	BOOST_CHECK(info2->getTotalRequests()  == 1);
+        BOOST_CHECK(info2->getTotalResponses()  == 0);
 
 	BOOST_CHECK(info1->ua.lock() == info2->ua.lock());
 }
@@ -706,6 +711,9 @@ BOOST_AUTO_TEST_CASE (test15_http)
         SharedPointer<HTTPInfo> info = flow->http_info.lock();
 
 	BOOST_CHECK(info->getContentLength() == 125);
+
+        BOOST_CHECK(info->getTotalRequests()  == 0);
+        BOOST_CHECK(info->getTotalResponses()  == 1);
 
         // http->setStatisticsLevel(5);
         // http->statistics();

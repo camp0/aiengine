@@ -86,9 +86,13 @@ Features/Changes of 0.10
 - Support for OpenFlow networks.
 
 Features/Changes of 1.0
-- Port to Mac/Windows (TODO)
 - DatabaseAdaptors can be removed and added on execution.
 - Fix DNSQueryTypes minor issue.
 - Support for SIP protocol.
 - Support for ban HTTPFlows on callbaks using external intelligence (check test20 on pyai_tests.py)
 - Support for DDoS attacks by ussing getCounters functionatliy and the setScheduler method (check examples)
+
+Features/Changes of 1.1
+- Port to Mac/Windows (TODO)
+- HTTPProtocol improvements (minor).
+

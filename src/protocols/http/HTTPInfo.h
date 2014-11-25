@@ -44,7 +44,9 @@ public:
 		content_length_ = 0; 
 		data_chunk_length_ = 0; 
 		have_data_ = false; 
-		is_banned_ = false; 
+		is_banned_ = false;
+		total_requests_ = 0;
+		total_responses_ = 0; 
 #ifdef PYTHON_BINDING
 		needs_release_ = false; 
 #endif
@@ -64,6 +66,12 @@ public:
 
 	void setHaveData(bool value) { have_data_ = value; }
 	bool getHaveData() const { return have_data_; }
+
+	void incTotalRequests() { ++total_requests_; }
+	void incTotalResponses() { ++total_responses_; }
+
+	int16_t getTotalRequests() const { return total_requests_; }
+	int16_t getTotalResponses() const { return total_responses_; }
 
         WeakPointer<StringCache> uri;
         WeakPointer<StringCache> host;
@@ -93,7 +101,9 @@ private:
 	bool needs_release_;
 #endif
 	int32_t content_length_;	
-	int32_t data_chunk_length_;	
+	int32_t data_chunk_length_;
+	int16_t total_requests_;
+	int16_t total_responses_;	
 };
 
 } // namespace aiengine
