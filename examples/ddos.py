@@ -41,7 +41,7 @@ def scheduler_handler():
     # Code the intelligence for detect DDoS based on 
     # combination flags, bytes, packets and so on. 
     if ((c["syn"] * 10)> c["synack"]):
-        print("System under a SYN DDoS attack)
+        print("System under a SYN DDoS attack")
 
 if __name__ == '__main__':
 
