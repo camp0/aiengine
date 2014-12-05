@@ -95,4 +95,4 @@ Features/Changes of 1.0
 Features/Changes of 1.1
 - Port to Mac/Windows (TODO)
 - HTTPProtocol improvements (minor).
-
+- Update on real time the setScheduler functionality.

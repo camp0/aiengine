@@ -98,12 +98,13 @@ public:
     	explicit PacketDispatcher():status_(PacketDispatcherStatus::STOP),
 		stream_(),pcap_file_ready_(false),read_in_progress_(false),
 		device_is_ready_(false),total_packets_(0),total_bytes_(0),pcap_(nullptr),
-		io_service_(),idle_work_(io_service_,boost::posix_time::seconds(0)),
-		signals_(io_service_, SIGINT, SIGTERM),idle_work_interval_(5),
+		io_service_(),
+		signals_(io_service_, SIGINT, SIGTERM),
 		stats_(),header_(nullptr),pkt_data_(nullptr),
 		eth_(),current_packet_(),defMux_(),stack_name_(),input_name_()
 #ifdef PYTHON_BINDING
-		,user_shell_(SharedPointer<Interpreter>(new Interpreter(io_service_))),
+		,timer_(SharedPointer<boost::asio::deadline_timer>(new boost::asio::deadline_timer(io_service_))),
+		user_shell_(SharedPointer<Interpreter>(new Interpreter(io_service_))),
         	scheduler_set_(false),
         	scheduler_callback_(nullptr),
         	scheduler_seconds_(0)
@@ -150,7 +151,7 @@ private:
 	void handle_receive(boost::system::error_code error);
 	void do_read(boost::system::error_code error);
 	void forward_raw_packet(unsigned char *packet,int length,time_t packet_time);
-	void idle_handler(boost::system::error_code error);
+	void scheduler_handler(boost::system::error_code error);
 	void default_idle_function(void) const {};
 
         void open_device(std::string device);
@@ -175,9 +176,7 @@ private:
 	uint64_t total_bytes_;	
     	pcap_t* pcap_;
 	boost::asio::io_service io_service_;
-	boost::asio::deadline_timer idle_work_;
 	boost::asio::signal_set signals_;
-	int idle_work_interval_;
 	Statistics stats_;
 	struct pcap_pkthdr *header_;
 	const u_char *pkt_data_;
@@ -190,6 +189,7 @@ private:
 	std::string input_name_;
 
 #ifdef PYTHON_BINDING
+	SharedPointer<boost::asio::deadline_timer> timer_;
 	SharedPointer<Interpreter> user_shell_;
 	bool scheduler_set_;
 	PyObject *scheduler_callback_;

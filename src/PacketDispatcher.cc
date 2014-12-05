@@ -59,14 +59,14 @@ void PacketDispatcher::open_device(std::string device) {
 
 	char errorbuf[PCAP_ERRBUF_SIZE];
 #ifdef __FREEBSD__
-	int timeout = 1000; //miliseconds
+	int timeout = 1000; // miliseconds
 #else
 	int timeout = -1;
 #endif
 
 	pcap_ = pcap_open_live(device.c_str(), PACKET_RECVBUFSIZE, 0, timeout, errorbuf);
 	if (pcap_ == nullptr) {
-#ifdef HAVE_LIBLOG4CXX 
+#ifdef HAVE_LIBLOG4CXX
 		LOG4CXX_ERROR(logger,"Device:" <<device.c_str() << " error:" << errorbuf );
 #else
 		std::cerr << "Device:" << device.c_str() << " error:" << errorbuf << std::endl;
@@ -76,7 +76,7 @@ void PacketDispatcher::open_device(std::string device) {
 		return;
 	}
 	int ifd = pcap_get_selectable_fd(pcap_);
-	if (pcap_setnonblock(pcap_, 1, errorbuf) == 1) { 
+	if (pcap_setnonblock(pcap_, 1, errorbuf) == 1) {
 		device_is_ready_ = false;
 		return;
 	}
@@ -103,13 +103,13 @@ void PacketDispatcher::open_pcap_file(std::string filename) {
         pcap_ = pcap_open_offline(filename.c_str(),errorbuf);
         if (pcap_ == nullptr) {
 		pcap_file_ready_ = false;
-#ifdef HAVE_LIBLOG4CXX 
+#ifdef HAVE_LIBLOG4CXX
 		LOG4CXX_ERROR(logger,"Unknown pcapfile:" << filename.c_str());
 #else
 		std::cerr << "Unkown pcapfile:" << filename.c_str() << std::endl;
 #endif
 		exit(-1);
-	} else {	
+	} else {
 		pcap_file_ready_ = true;
 		input_name_ = filename;
 	}
@@ -123,73 +123,10 @@ void PacketDispatcher::close_pcap_file(void) {
 	}
 }
 
-
-static void TimevalSub(struct timeval *r, struct timeval *a, struct timeval *b) {
-
-        if (a->tv_usec < b->tv_usec) {
-                r->tv_usec = (a->tv_usec + 1000000) - b->tv_usec;
-                r->tv_sec = a->tv_sec - b->tv_sec - 1;
-        } else {
-                r->tv_usec = a->tv_usec - b->tv_usec;
-                r->tv_sec = a->tv_sec - b->tv_sec;
-        }
-}
-
-void PacketDispatcher::idle_handler(boost::system::error_code error) {
-
-	struct rusage usage;
-	struct timeval difftime_user;
-	struct timeval difftime_sys;
-	
-	// Check the cpu comsumption and packets per second
-	getrusage(RUSAGE_SELF,&usage);
-
-	TimevalSub(&difftime_user,&(usage.ru_utime),&(stats_.ru_utime));
-	TimevalSub(&difftime_sys,&(usage.ru_stime),&(stats_.ru_stime));
- 
-	//idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(scheduler_seconds_));
-        //idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
-        //	boost::asio::placeholders::error));
-#ifdef HAVE_LIBLOG4CXX
-	LOG4CXX_DEBUG(logger,
-		"Packets per interval:" << total_packets_ - stats_.prev_total_packets_per_interval <<  
-		" usage seconds:" << difftime_user.tv_sec << ":"<< difftime_user.tv_usec <<
-		" sys:" << difftime_sys.tv_sec << ":" << difftime_sys.tv_usec ); 
-#endif
-
-#ifdef PYTHON_BINDING
-	idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(scheduler_seconds_));
-        idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
-        	boost::asio::placeholders::error));
-
-	PyGILState_STATE state(PyGILState_Ensure());
-        try {
-		// TODO: Fix
-        	boost::python::call<void>(scheduler_callback_);
-        } catch (std::exception &e) {
-        	std::cout << "ERROR:" << e.what() << std::endl;
-        }
-        PyGILState_Release(state);
-
-#endif
-
-	// TODO: Some statistics
-	// 3% cpu comsumption with 4000 packets on 5 seconds. usage seconds:0:4001 sys:0:168010
-	if (total_packets_ < 10000) {
-		idle_function_();
-	}
-
-	stats_.prev_total_packets_per_interval = total_packets_;
-	stats_.ru_utime.tv_sec = usage.ru_utime.tv_sec;
-	stats_.ru_utime.tv_usec = usage.ru_utime.tv_usec;
-	stats_.ru_stime.tv_sec = usage.ru_stime.tv_sec;
-	stats_.ru_stime.tv_usec = usage.ru_stime.tv_usec;
-}
-
 void PacketDispatcher::do_read(boost::system::error_code ec) {
 
 	int len = pcap_next_ex(pcap_,&header_,&pkt_data_);
-	if (len >= 0) { 
+	if (len >= 0) {
 		forward_raw_packet((unsigned char*)pkt_data_,header_->len,header_->ts.tv_sec);
 	}
 
@@ -213,7 +150,7 @@ void PacketDispatcher::forward_raw_packet(unsigned char *packet,int length, time
 
 	++total_packets_;
 	total_bytes_ += length;
-	
+
 	if (defMux_) {
 		current_packet_.setPayload(packet);
 		current_packet_.setPayloadLength(length);
@@ -262,13 +199,6 @@ void PacketDispatcher::run_device(void) {
 
 	if (device_is_ready_) {
 
-#ifdef PYTHON_BINDING
-		if (scheduler_set_ == true) {
-        		idle_work_.expires_at(idle_work_.expires_at() + boost::posix_time::seconds(scheduler_seconds_));
-                	idle_work_.async_wait(boost::bind(&PacketDispatcher::idle_handler, this,
-                        	boost::asio::placeholders::error));
-		}
-#endif
         	std::ostringstream msg;
         	msg << "Processing packets from device " << input_name_.c_str();
 
@@ -278,8 +208,7 @@ void PacketDispatcher::run_device(void) {
 			status_ = PacketDispatcherStatus::RUNNING;
 			start_operations();
 			io_service_.run();
-		}
-		catch (std::exception& e) {
+		} catch (std::exception& e) {
         		std::cerr << e.what() << std::endl;
         	}
 		status_ = PacketDispatcherStatus::STOP;
@@ -287,7 +216,7 @@ void PacketDispatcher::run_device(void) {
 
                 std::ostringstream msg;
                 msg << "The device is not ready to run";
-     
+
                 info_message(msg.str());
 	}
 }
@@ -348,9 +277,35 @@ void PacketDispatcher::setPcapFilter(const std::string &filter) {
 
 #ifdef PYTHON_BINDING
 
+void PacketDispatcher::scheduler_handler(boost::system::error_code error) {
+
+	// Check if the timer have been cancel
+        if (error ==  boost::asio::error::operation_aborted) {
+            	return;
+        }
+
+	// Update the values of the timer and reschedule
+        timer_->expires_at(timer_->expires_at() + boost::posix_time::seconds(scheduler_seconds_));
+        timer_->async_wait(boost::bind(&PacketDispatcher::scheduler_handler, this,
+                boost::asio::placeholders::error));
+
+	PyGILState_STATE state(PyGILState_Ensure());
+        try {
+        	// TODO: Fix
+                boost::python::call<void>(scheduler_callback_);
+	} catch (std::exception &e) {
+        	std::cout << "ERROR:" << e.what() << std::endl;
+        }
+        PyGILState_Release(state);
+
+	return;
+}
+
+
+
 void PacketDispatcher::forwardPacket(const std::string &packet, int length) {
 
-	const unsigned char *pkt = reinterpret_cast<const unsigned char *>(packet.c_str()); 
+	const unsigned char *pkt = reinterpret_cast<const unsigned char *>(packet.c_str());
 
 	// TODO: pass the time to the method forward_raw_packet from the
 	// python binding
@@ -360,7 +315,7 @@ void PacketDispatcher::forwardPacket(const std::string &packet, int length) {
 
 void PacketDispatcher::enableShell(bool enable) {
 
-	user_shell_->enableShell(enable);	
+	user_shell_->enableShell(enable);
 }
 
 void PacketDispatcher::unsetStack() {
@@ -371,15 +326,37 @@ void PacketDispatcher::unsetStack() {
 
 void PacketDispatcher::setScheduler(PyObject *callback, int seconds) {
 
-        if (!PyCallable_Check(callback)) {
-                std::cerr << "Object is not callable." << std::endl;
-        } else {
-                if ( scheduler_callback_ ) Py_XDECREF(scheduler_callback_);
-                scheduler_callback_ = callback;
-                Py_XINCREF(scheduler_callback_);
-                scheduler_set_ = true;
-		scheduler_seconds_ = seconds;
-        }
+	if (timer_) // cancel the timer if exists
+		timer_->cancel();
+
+	// reset the values of the scheduler
+	if ((callback == Py_None)or(seconds <= 0)) {
+		scheduler_set_ = false;
+		scheduler_seconds_ = 0;
+               	if (scheduler_callback_)
+			Py_XDECREF(scheduler_callback_);
+
+		timer_.reset();
+	} else {
+        	if (!PyCallable_Check(callback)) {
+                	std::cerr << "Object is not callable." << std::endl;
+        	} else {
+	
+			if ( scheduler_callback_ ) Py_XDECREF(scheduler_callback_);
+                	scheduler_callback_ = callback;
+                	Py_XINCREF(scheduler_callback_);
+                	scheduler_set_ = true;
+			scheduler_seconds_ = seconds;
+
+			// reset the shared pointer and create a new timer.
+			timer_.reset(new boost::asio::deadline_timer(io_service_,
+				boost::posix_time::seconds(scheduler_seconds_)));
+
+                        timer_->expires_at(timer_->expires_at() + boost::posix_time::seconds(scheduler_seconds_));
+                        timer_->async_wait(boost::bind(&PacketDispatcher::scheduler_handler, this,
+                                boost::asio::placeholders::error));
+        	}
+	}
 }
 
 #endif
@@ -398,7 +375,7 @@ void PacketDispatcher::status(void) {
 
 	std::ostringstream msg;
         msg << "PacketDispatcher ";
-	if (status_ == PacketDispatcherStatus::RUNNING) 
+	if (status_ == PacketDispatcherStatus::RUNNING)
 		msg << "running";
 	else
 		msg << "stoped";
