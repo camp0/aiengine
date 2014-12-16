@@ -161,7 +161,7 @@ static struct TCPState ST_TCPStateEstablished = {
         },
         {       /* INVALID */   0,
                 /* SYN */       0,
-                /* SYNACK */    0,
+                /* SYNACK */	static_cast<int>(TcpState::OK),	/* SYN-ACK may be retransmitted. */
                 /* ACK */       static_cast<int>(TcpState::OK),
                 /* FIN */      	static_cast<int>(TcpState::FIN_SEEN) /* FIN by the receiver. */ 
         }}
