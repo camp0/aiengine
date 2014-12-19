@@ -36,7 +36,7 @@ void FlowForwarder::statistics(std::basic_ostream<char>& out) {
         out << "\t" << "Total fail flows:       " << std::setw(10) << total_fail_flows_ <<std::endl;
 }
 
-void FlowForwarder::forwardFlow(Flow *flow) {
+void FlowForwarder::forwardFlow(Flow *flow, bool close) {
 
 	FlowForwarderPtr ff = flow->forwarder.lock();
 
@@ -48,7 +48,7 @@ void FlowForwarder::forwardFlow(Flow *flow) {
 #ifdef DEBUG
 		std::cout << __PRETTY_FUNCTION__ << ":flow:" << *flow << ":attached to:" << ff << std::endl;
 #endif
-		ff->flow_func_(flow);
+		ff->flow_func_(flow,close);
 		return;
 	}
 
@@ -58,7 +58,7 @@ void FlowForwarder::forwardFlow(Flow *flow) {
 		if(ff->acceptPacket(*(flow->packet))) {
 			// The packet have been accepted by the FlowForwarder
 			flow->forwarder = (*it);
-			ff->flow_func_(flow);
+			ff->flow_func_(flow, close);
 #ifdef DEBUG
 			std::cout << __PRETTY_FUNCTION__ << ":flow:" << *flow << ":assigned to:" << ff << std::endl;
 #endif

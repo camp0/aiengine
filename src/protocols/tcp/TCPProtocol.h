@@ -36,7 +36,7 @@
 #include "flow/FlowManager.h"
 #include "flow/FlowCache.h"
 #include "FlowForwarder.h"
-#include "Cache.h"
+#include "CacheManager.h"
 #include "TCPStates.h"
 #include "TCPInfo.h"
 
@@ -55,7 +55,10 @@ public:
 		total_flags_ack_(0),
 		total_flags_rst_(0),
 		total_flags_fin_(0),
-		last_timeout_(0),packet_time_(0) {}
+		last_timeout_(0),packet_time_(0) {
+
+		CacheManager::getInstance()->setCache(tcp_info_cache_);
+	}
 
     	explicit TCPProtocol():TCPProtocol(TCPProtocol::default_name) {}
 
@@ -71,7 +74,7 @@ public:
 	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
 
-	void processFlow(Flow *flow) {}; // This protocol generates flows but not for destination.
+	void processFlow(Flow *flow, bool close) {}; // This protocol generates flows but not for destination.
 	void processPacket(Packet &packet);
 	void computeState(Flow *flow,int32_t bytes);
 

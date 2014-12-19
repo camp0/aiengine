@@ -174,7 +174,7 @@ void TCPProtocol::processPacket(Packet &packet) {
 				packet.setSourcePort(getSrcPort());
 
 				flow->packet = const_cast<Packet*>(&packet);
-				ff->forwardFlow(flow.get());
+				ff->forwardFlow(flow.get(),false);
 			} else {
 				// Retrieve the flow to the flow cache if the flow have been closed	
 				if ((tcp_info->state_prev == static_cast<int>(TcpState::CLOSED))and(tcp_info->state_curr == static_cast<int>(TcpState::CLOSED))) {

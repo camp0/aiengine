@@ -66,7 +66,7 @@ void FrequencyProtocol::releaseCache() {
         }
 }
 
-void FrequencyProtocol::processFlow(Flow *flow) {
+void FrequencyProtocol::processFlow(Flow *flow, bool close) {
 
 	++total_packets_;
 	total_bytes_ += flow->packet->getLength();

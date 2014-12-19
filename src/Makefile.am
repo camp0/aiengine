@@ -14,7 +14,7 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			NetworkStack.h \
 			StackLan.h \
 			StackLanIPv6.h \
-			Cache.h IPAddress.h \
+			Cache.h CacheManager.h IPAddress.h \
 			StackMobile.h StackVirtual.h \
 			StackOpenFlow.h \
 			Multiplexer.h \
@@ -51,6 +51,7 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			protocols/ssl/SSLProtocol.h \
 			protocols/dns/DNSProtocol.h \
 			protocols/sip/SIPProtocol.h \
+			protocols/dhcp/DHCPProtocol.h \
 			protocols/frequency/Frequencies.h \
 			protocols/frequency/PacketFrequencies.h \
 			protocols/frequency/FrequencyProtocol.h \
@@ -62,7 +63,7 @@ noinst_HEADERS =        Packet.h Pointer.h \
 aiengine_core_sources =	Multiplexer.cc \
 			FlowForwarder.cc \
 			PacketDispatcher.cc \
-			Flow.cc \
+			Flow.cc CacheManager.cc \
 			Protocol.cc \
 			Signature.cc \
 			Interpreter.cc \
@@ -90,6 +91,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/ssl/SSLProtocol.cc \
 			protocols/dns/DNSProtocol.cc \
 			protocols/sip/SIPProtocol.cc \
+			protocols/dhcp/DHCPProtocol.cc \
 			regex/Regex.cc \
 			regex/RegexManager.cc \
 			protocols/frequency/FrequencyProtocol.cc \
@@ -149,6 +151,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		protocols/frequency/test_frequency.cc \
 		protocols/ssl/test_ssl.cc \
 		protocols/sip/test_sip.cc \
+		protocols/dhcp/test_dhcp.cc \
 		regex/test_regex.cc \
 		user/test_users.cc \
 		learner/test_learner.cc \

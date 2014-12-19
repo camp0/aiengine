@@ -177,7 +177,7 @@ void SSLProtocol::handle_certificate(Flow *flow,int offset, unsigned char *data)
 	++ total_certificates_;
 }
 
-void SSLProtocol::processFlow(Flow *flow) {
+void SSLProtocol::processFlow(Flow *flow, bool close) {
 
 	++total_packets_;
 	total_bytes_ += flow->packet->getLength();

@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE (test4_ssl)
         ssl->createSSLHosts(0);
 
         flow->packet = const_cast<Packet*>(&packet1);
-        ssl->processFlow(flow.get());
+        ssl->processFlow(flow.get(),false);
 
         BOOST_CHECK(flow->ssl_host.lock() == nullptr);
 }
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE (test5_ssl)
         ssl->createSSLHosts(1);
 
         flow->packet = const_cast<Packet*>(&packet1);
-        ssl->processFlow(flow.get());
+        ssl->processFlow(flow.get(),false);
 
         BOOST_CHECK(flow->ssl_host.lock() != nullptr);
 	std::string cad("0.drive.google.com");
@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE (test6_ssl)
         ssl->createSSLHosts(1);
 
         flow->packet = const_cast<Packet*>(&packet1);
-        ssl->processFlow(flow.get());
+        ssl->processFlow(flow.get(),false);
 
         BOOST_CHECK(flow->ssl_host.lock() != nullptr);
         std::string cad("atv-ps.amazon.com");
@@ -195,7 +195,7 @@ BOOST_AUTO_TEST_CASE (test7_ssl)
         ssl->createSSLHosts(1);
 
         flow->packet = const_cast<Packet*>(&packet1);
-        ssl->processFlow(flow.get());
+        ssl->processFlow(flow.get(),false);
 
         BOOST_CHECK(flow->ssl_host.lock() != nullptr);
         std::string cad("www.6k6fnxstu.com");

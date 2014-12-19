@@ -295,7 +295,7 @@ void SIPProtocol::extract_uri_value(SIPInfo *info, const char *header) {
 	}
 }
 
-void SIPProtocol::processFlow(Flow *flow) {
+void SIPProtocol::processFlow(Flow *flow, bool close) {
 
 	++total_packets_;	
 	total_bytes_ += flow->packet->getLength();

@@ -122,7 +122,8 @@ struct StackTCPGenericTest {
                 gtcp->setFlowForwarder(ff_gtcp);
                 ff_gtcp->setProtocol(static_cast<ProtocolPtr>(gtcp));
                 ff_gtcp->addChecker(std::bind(&TCPGenericProtocol::tcpGenericChecker,gtcp,std::placeholders::_1));
-                ff_gtcp->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,gtcp,std::placeholders::_1));
+                ff_gtcp->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,gtcp,
+			std::placeholders::_1,std::placeholders::_2));
 
                 //configure the tcp for ipv6
                 tcp6->setMultiplexer(mux_tcp6);
@@ -136,7 +137,8 @@ struct StackTCPGenericTest {
                 gtcp6->setFlowForwarder(ff_gtcp6);
                 ff_gtcp6->setProtocol(static_cast<ProtocolPtr>(gtcp6));
                 ff_gtcp6->addChecker(std::bind(&TCPGenericProtocol::tcpGenericChecker,gtcp6,std::placeholders::_1));
-                ff_gtcp6->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,gtcp6,std::placeholders::_1));
+                ff_gtcp6->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,gtcp6,
+			std::placeholders::_1,std::placeholders::_2));
 
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
                 mux_eth->addUpMultiplexer(mux_ip6,ETHERTYPE_IPV6);

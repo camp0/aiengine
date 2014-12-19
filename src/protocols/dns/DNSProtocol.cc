@@ -101,7 +101,7 @@ void DNSProtocol::attach_dns_to_flow(Flow *flow, std::string &domain, uint16_t q
 	}
 }
 
-void DNSProtocol::processFlow(Flow *flow) {
+void DNSProtocol::processFlow(Flow *flow, bool close) {
 
 	int length = flow->packet->getLength();
 	total_bytes_ += length;

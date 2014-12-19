@@ -52,7 +52,7 @@ void IPProtocol::processPacket(Packet& packet) {
 }
 
 
-void IPProtocol::processFlow(Flow *flow) {
+void IPProtocol::processFlow(Flow *flow, bool close) {
 
 	// TODO: Encapsulations such as ip over ip	
 }

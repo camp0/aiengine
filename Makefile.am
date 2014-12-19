@@ -31,6 +31,7 @@ SUBDIRS = 	src \
 		src/protocols/ssl \
 		src/protocols/dns \
 		src/protocols/sip \
+		src/protocols/dhcp \
 		src/protocols/tcpgeneric \
 		src/protocols/udpgeneric \
 		src/protocols/frequency 

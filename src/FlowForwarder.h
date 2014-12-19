@@ -55,7 +55,7 @@ public:
 		total_fail_flows_ = 0;
 		protocol_id_ =  0;
 		addChecker(std::bind(&FlowForwarder::default_check,this,std::placeholders::_1));
-		addFlowFunction(std::bind(&FlowForwarder::default_flow_func,this,std::placeholders::_1));
+		addFlowFunction(std::bind(&FlowForwarder::default_flow_func,this,std::placeholders::_1,std::placeholders::_2));
 	}
     	virtual ~FlowForwarder() {}
 
@@ -73,7 +73,7 @@ public:
 			flowForwarderVector_.erase(it);
 	}
 
-	void forwardFlow(Flow *flow);
+	void forwardFlow(Flow *flow, bool close);
 
         void statistics(std::basic_ostream<char>& out);
         void statistics() { statistics(std::cout);};
@@ -83,23 +83,23 @@ public:
 
 	bool acceptPacket(Packet& packet) const { return check_func_(packet);}
 	void addChecker(std::function <bool (Packet&)> checker) { check_func_ = checker;}
-	void addFlowFunction(std::function <void (Flow*)> flow_func) { flow_func_ = flow_func;}
+	void addFlowFunction(std::function <void (Flow*,bool)> flow_func) { flow_func_ = flow_func;}
 
-	uint64_t getTotalForwardFlows() const { return total_forward_flows_;}
-	uint64_t getTotalFailFlows() const { return total_fail_flows_;}
-	uint64_t getTotalReceivedFlows() const { return total_received_flows_;}
+	int64_t getTotalForwardFlows() const { return total_forward_flows_;}
+	int64_t getTotalFailFlows() const { return total_fail_flows_;}
+	int64_t getTotalReceivedFlows() const { return total_received_flows_;}
 
 private:
 	ProtocolPtr proto_;
 	bool default_check(Packet&) const { return true;};
-	void default_flow_func(Flow*) const { };
-	uint64_t total_received_flows_;
-	uint64_t total_forward_flows_;
-	uint64_t total_fail_flows_;
+	void default_flow_func(Flow*,bool) const { };
+	int64_t total_received_flows_;
+	int64_t total_forward_flows_;
+	int64_t total_fail_flows_;
 	FlowForwarderPtrWeak muxDown_;
 	uint16_t protocol_id_; // the protocol analiyzer owned by the multiplexer
     	std::vector<FlowForwarderPtrWeak> flowForwarderVector_;
-	std::function <void (Flow*)> flow_func_;
+	std::function <void (Flow*,bool)> flow_func_;
 	std::function <bool (Packet&)> check_func_;	
 };
 

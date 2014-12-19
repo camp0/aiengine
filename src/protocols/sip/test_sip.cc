@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE (test1_sip)
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         flow->packet = const_cast<Packet*>(&packet);
-        sip->processFlow(flow.get());
+        sip->processFlow(flow.get(),false);
 
 	SharedPointer<SIPInfo> info = flow->sip_info.lock();
 
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE (test2_sip)
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         flow->packet = const_cast<Packet*>(&packet);
-        sip->processFlow(flow.get());
+        sip->processFlow(flow.get(),false);
  
 	SharedPointer<SIPInfo> info = flow->sip_info.lock();
 
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE (test3_sip)
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         flow->packet = const_cast<Packet*>(&packet);
-        sip->processFlow(flow.get());
+        sip->processFlow(flow.get(),false);
 
 	SharedPointer<SIPInfo> info = flow->sip_info.lock();
 
@@ -232,7 +232,7 @@ BOOST_AUTO_TEST_CASE (test4_sip)
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         flow->packet = const_cast<Packet*>(&packet);
-        sip->processFlow(flow.get());
+        sip->processFlow(flow.get(),false);
 
         SharedPointer<SIPInfo> info = flow->sip_info.lock();
 
@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE (test5_sip)
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         flow->packet = const_cast<Packet*>(&packet);
-        sip->processFlow(flow.get());
+        sip->processFlow(flow.get(),false);
 
         SharedPointer<SIPInfo> info = flow->sip_info.lock();
 
@@ -317,7 +317,7 @@ BOOST_AUTO_TEST_CASE (test6_sip)
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         flow->packet = const_cast<Packet*>(&packet);
-        sip->processFlow(flow.get());
+        sip->processFlow(flow.get(),false);
 
         SharedPointer<SIPInfo> info = flow->sip_info.lock();
 
@@ -388,7 +388,7 @@ BOOST_AUTO_TEST_CASE (test7_sip)
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         flow->packet = const_cast<Packet*>(&packet);
-        sip->processFlow(flow.get());
+        sip->processFlow(flow.get(),false);
 
         SharedPointer<SIPInfo> info = flow->sip_info.lock();
 
@@ -428,7 +428,7 @@ BOOST_AUTO_TEST_CASE(test8_sip)
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         flow->packet = const_cast<Packet*>(&packet);
-        sip->processFlow(flow.get());
+        sip->processFlow(flow.get(),false);
 
         SharedPointer<SIPInfo> info = flow->sip_info.lock();
 

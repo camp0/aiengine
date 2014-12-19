@@ -96,7 +96,8 @@ struct StackUDPGenericTest
                 gudp->setFlowForwarder(ff_gudp);
                 ff_gudp->setProtocol(static_cast<ProtocolPtr>(gudp));
                 ff_gudp->addChecker(std::bind(&UDPGenericProtocol::udpGenericChecker,gudp,std::placeholders::_1));
-                ff_gudp->addFlowFunction(std::bind(&UDPGenericProtocol::processFlow,gudp,std::placeholders::_1));
+                ff_gudp->addFlowFunction(std::bind(&UDPGenericProtocol::processFlow,gudp,
+			std::placeholders::_1,std::placeholders::_2));
 
 		mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
 		mux_ip->addDownMultiplexer(mux_eth);

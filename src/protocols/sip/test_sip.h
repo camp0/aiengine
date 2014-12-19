@@ -104,7 +104,8 @@ struct StackSIPtest
                 sip->setFlowForwarder(ff_sip);
                 ff_sip->setProtocol(static_cast<ProtocolPtr>(sip));
                 ff_sip->addChecker(std::bind(&SIPProtocol::sipChecker,sip,std::placeholders::_1));
-                ff_sip->addFlowFunction(std::bind(&SIPProtocol::processFlow,sip,std::placeholders::_1));
+                ff_sip->addFlowFunction(std::bind(&SIPProtocol::processFlow,sip,
+			std::placeholders::_1,std::placeholders::_2));
 	
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);

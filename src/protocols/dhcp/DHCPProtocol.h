@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#ifndef SRC_PROTOCOLS_GRE_GREPROTOCOL_H_
-#define SRC_PROTOCOLS_GRE_GREPROTOCOL_H_
+#ifndef SRC_PROTOCOLS_DHCP_DHCPPROTOCOL_H_
+#define SRC_PROTOCOLS_DHCP_DHCPPROTOCOL_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -33,31 +33,57 @@
 
 namespace aiengine {
 
-#ifndef ETH_P_TEB
-#define ETH_P_TEB	0x6558
-#endif
+// ftp://ftp.isc.org/isc/dhcp/4.3.1rc1/
 
-struct gre_hdr {
-        uint8_t		flags;   
-        uint8_t		version;   
-	uint16_t	protocol;	
+struct dhcp_hdr {
+	uint8_t op;
+	uint8_t htype;
+	uint8_t hlen;
+	uint8_t hops;
+    	uint32_t xid;
+    	uint16_t secs;
+    	uint16_t flags;
+    	uint32_t ciaddr;
+    	uint32_t yiaddr;
+    	uint32_t siaddr;
+    	uint32_t giaddr;
+    	char chaddr[16];
+    	char sname[64];
+    	char file[128];
+    	char magic[4];
+    	char opt[3];
 } __attribute__((packed));
 
+enum dhcp_type_code {
+	DHCPDISCOVER = 1,
+	DHCPOFFER,
+	DHCPREQUEST,
+	DHCPDECLINE,
+	DHCPACK,
+	DHCPNAK,
+	DHCPRELEASE,
+	DHCPINFORM
+};
 
-// This class implements the Generic Routing Encapsulation
-// At the moment we just cover the Transparent ethernet bridging
-// that is wide spread on Cloud environments
 
-class GREProtocol: public Protocol 
+class DHCPProtocol: public Protocol 
 {
 public:
-    	explicit GREProtocol():Protocol("GREProtocol"),stats_level_(0),
-		gre_header_(nullptr),total_bytes_(0) {}
+    	explicit DHCPProtocol():Protocol("DHCPProtocol"),stats_level_(0),
+		dhcp_header_(nullptr),total_bytes_(0),
+        	total_dhcp_discover_(0),
+        	total_dhcp_offer_(0),
+        	total_dhcp_request_(0),
+        	total_dhcp_decline_(0),
+        	total_dhcp_ack_(0),
+        	total_dhcp_nak_(0),
+        	total_dhcp_release_(0),
+        	total_dhcp_inform_(0) {}
 
-    	virtual ~GREProtocol() {}
+    	virtual ~DHCPProtocol() {}
 
-	static const uint16_t id = IPPROTO_GRE;	
-	static const int header_size = sizeof(struct gre_hdr);
+	static const uint16_t id = 0;	
+	static constexpr int header_size = sizeof(struct dhcp_hdr);
 
 	int getHeaderSize() const { return header_size;}
 
@@ -66,8 +92,8 @@ public:
 	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
 
-        void processFlow(Flow *flow, bool close) {}
-        void processPacket(Packet& packet); 
+        void processFlow(Flow *flow, bool close);
+        void processPacket(Packet& packet) {} 
 
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
@@ -77,20 +103,17 @@ public:
 
 	void setHeader(unsigned char *raw_packet){ 
 
-		gre_header_ = reinterpret_cast <struct gre_hdr*> (raw_packet);
+		dhcp_header_ = reinterpret_cast <struct dhcp_hdr*> (raw_packet);
 	}
 
-	// Condition for say that a packet is gre
-	bool greChecker(Packet &packet){ 
+	// Condition for say that a packet is dhcp 
+	bool dhcpChecker(Packet &packet){ 
 	
 		int length = packet.getLength();
 
 		if(length >= header_size) {
-			setHeader(packet.getPayload());
-
-			if ( getProtocol() == ETH_P_TEB) {	
-				// We just accept packets that are full transparent
-				// 	
+			if ((packet.getSourcePort() == 67)||(packet.getDestinationPort() == 67)) {
+				setHeader(packet.getPayload());
 				++total_validated_packets_; 
 				return true;
 			}
@@ -99,21 +122,30 @@ public:
 		return false;
 	}
 
-	uint16_t getProtocol() const { return ntohs(gre_header_->protocol); }
+	uint8_t getType() const { return dhcp_header_->op; }
 
 #ifdef PYTHON_BINDING
-
         boost::python::dict getCounters() const;
 #endif
 
 private:
 	int stats_level_;
-	struct gre_hdr *gre_header_;
+	struct dhcp_hdr *dhcp_header_;
 	int64_t total_bytes_;
+        
+	// Some statistics 
+        int32_t total_dhcp_discover_;
+        int32_t total_dhcp_offer_;
+        int32_t total_dhcp_request_;
+        int32_t total_dhcp_decline_;
+        int32_t total_dhcp_ack_;
+        int32_t total_dhcp_nak_;
+        int32_t total_dhcp_release_;
+        int32_t total_dhcp_inform_;
 };
 
-typedef std::shared_ptr<GREProtocol> GREProtocolPtr;
+typedef std::shared_ptr<DHCPProtocol> DHCPProtocolPtr;
 
 } // namespace aiengine
 
-#endif  // SRC_PROTOCOLS_GRE_GREPROTOCOL_H_
+#endif  // SRC_PROTOCOLS_DHCP_DHCPPROTOCOL_H_

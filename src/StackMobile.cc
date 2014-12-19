@@ -144,7 +144,8 @@ StackMobile::StackMobile() {
 	mux_gprs_->setProtocolIdentifier(0);
 	ff_gprs_->setProtocol(static_cast<ProtocolPtr>(gprs_));
 	ff_gprs_->addChecker(std::bind(&GPRSProtocol::gprsChecker,gprs_,std::placeholders::_1));
-	ff_gprs_->addFlowFunction(std::bind(&GPRSProtocol::processFlow,gprs_,std::placeholders::_1));
+	ff_gprs_->addFlowFunction(std::bind(&GPRSProtocol::processFlow,gprs_,
+		std::placeholders::_1,std::placeholders::_2));
 
      	// configure the high ip handler
         ip_high_->setMultiplexer(mux_ip_high_);

@@ -38,6 +38,7 @@
 #include "./protocols/udpgeneric/UDPGenericProtocol.h"
 #include "./protocols/dns/DNSProtocol.h"
 #include "./protocols/sip/SIPProtocol.h"
+#include "./protocols/dhcp/DHCPProtocol.h"
 #include "./protocols/ssl/SSLProtocol.h"
 #include "./protocols/http/HTTPProtocol.h"
 #include "protocols/frequency/FrequencyProtocol.h"
@@ -130,6 +131,7 @@ public:
         SSLProtocolPtr ssl;
         DNSProtocolPtr dns;
         SIPProtocolPtr sip;
+        DHCPProtocolPtr dhcp;
         TCPGenericProtocolPtr tcp_generic;
         UDPGenericProtocolPtr udp_generic;
         FrequencyProtocolPtr freqs_tcp;
@@ -139,6 +141,7 @@ public:
         FlowForwarderPtr ff_ssl;
         FlowForwarderPtr ff_dns;
         FlowForwarderPtr ff_sip;
+        FlowForwarderPtr ff_dhcp;
         FlowForwarderPtr ff_tcp_generic;
         FlowForwarderPtr ff_udp_generic;
         FlowForwarderPtr ff_tcp_freqs;

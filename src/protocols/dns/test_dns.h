@@ -104,7 +104,7 @@ struct StackDNStest
                 dns->setFlowForwarder(ff_dns);
                 ff_dns->setProtocol(static_cast<ProtocolPtr>(dns));
                 ff_dns->addChecker(std::bind(&DNSProtocol::dnsChecker,dns,std::placeholders::_1));
-                ff_dns->addFlowFunction(std::bind(&DNSProtocol::processFlow,dns,std::placeholders::_1));
+                ff_dns->addFlowFunction(std::bind(&DNSProtocol::processFlow,dns,std::placeholders::_1,std::placeholders::_2));
 
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);

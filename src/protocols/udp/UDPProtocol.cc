@@ -148,7 +148,7 @@ void UDPProtocol::processPacket(Packet& packet) {
                         packet.setSourcePort(getSrcPort());
 
                         flow->packet = const_cast<Packet*>(&packet);
-                        ff->forwardFlow(flow.get());
+                        ff->forwardFlow(flow.get(),false);
 		}
 		
 		if (flow->total_packets == 1) { // Just need to check once per flow

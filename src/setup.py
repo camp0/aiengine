@@ -10,7 +10,7 @@ from distutils.extension import Extension
 
 """ List of the files of the lib """
 src_files =  ["Multiplexer.cc","FlowForwarder.cc","PacketDispatcher.cc","Flow.cc","Protocol.cc"]
-src_files += ["Signature.cc","Interpreter.cc","NetworkStack.cc"]
+src_files += ["Signature.cc","Interpreter.cc","NetworkStack.cc","CacheManager.cc"]
 src_files += ["flow/FlowManager.cc"] 
 src_files += ["protocols/ethernet/EthernetProtocol.cc"]
 src_files += ["protocols/vlan/VLanProtocol.cc"]
@@ -28,6 +28,7 @@ src_files += ["protocols/http/HTTPProtocol.cc"]
 src_files += ["protocols/ssl/SSLProtocol.cc"]
 src_files += ["protocols/dns/DNSProtocol.cc"]
 src_files += ["protocols/sip/SIPProtocol.cc"]
+src_files += ["protocols/dhcp/DHCPProtocol.cc"]
 src_files += ["regex/Regex.cc","regex/RegexManager.cc","protocols/frequency/FrequencyProtocol.cc"]
 src_files += ["protocols/frequency/FrequencyCounter.cc","learner/LearnerEngine.cc","names/DomainNameManager.cc"]
 src_files += ["System.cc","StackMobile.cc","StackLan.cc","StackLanIPv6.cc","StackVirtual.cc","StackOpenFlow.cc"]

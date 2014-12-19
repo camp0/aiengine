@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#ifndef _test_ssl_H_
-#define _test_ssl_H_
+#ifndef _test_dhcp_H_
+#define _test_dhcp_H_
 
 #include <string>
 #include "../test/tests_packets.h"
@@ -30,51 +30,52 @@
 #include "Multiplexer.h"
 #include "../ethernet/EthernetProtocol.h"
 #include "../ip/IPProtocol.h"
-#include "../tcp/TCPProtocol.h"
-#include "SSLProtocol.h"
+#include "../icmp/ICMPProtocol.h"
+#include "../udp/UDPProtocol.h"
+#include "DHCPProtocol.h"
+#include <cstring>
 
 using namespace aiengine;
 
-struct StackSSLtest
+struct StackDHCPtest
 {
         //Protocols
         EthernetProtocolPtr eth;
         IPProtocolPtr ip;
-        TCPProtocolPtr tcp;
-        SSLProtocolPtr ssl;
+        UDPProtocolPtr udp;
+        DHCPProtocolPtr dhcp;
 
         // Multiplexers
         MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
-        MultiplexerPtr mux_tcp;
+        MultiplexerPtr mux_udp;
 
         // FlowManager and FlowCache
         FlowManagerPtr flow_mng;
         FlowCachePtr flow_cache;
 
         // FlowForwarders
-        FlowForwarderPtr ff_tcp;
-        FlowForwarderPtr ff_ssl;
+        FlowForwarderPtr ff_udp,ff_dhcp;
 
-        StackSSLtest()
+        StackDHCPtest()
         {
                 // Allocate all the Protocol objects
-                tcp = TCPProtocolPtr(new TCPProtocol());
+                udp = UDPProtocolPtr(new UDPProtocol());
                 ip = IPProtocolPtr(new IPProtocol());
                 eth = EthernetProtocolPtr(new EthernetProtocol());
-                ssl = SSLProtocolPtr(new SSLProtocol());
+                dhcp = DHCPProtocolPtr(new DHCPProtocol());
 
                 // Allocate the Multiplexers
                 mux_eth = MultiplexerPtr(new Multiplexer());
                 mux_ip = MultiplexerPtr(new Multiplexer());
-                mux_tcp = MultiplexerPtr(new Multiplexer());
+                mux_udp = MultiplexerPtr(new Multiplexer());
 
                 // Allocate the flow caches and tables
                 flow_mng = FlowManagerPtr(new FlowManager());
                 flow_cache = FlowCachePtr(new FlowCache());
 
-                ff_tcp = FlowForwarderPtr(new FlowForwarder());
-                ff_ssl = FlowForwarderPtr(new FlowForwarder());
+                ff_udp = FlowForwarderPtr(new FlowForwarder());
+                ff_dhcp = FlowForwarderPtr(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);
@@ -91,49 +92,56 @@ struct StackSSLtest
                 mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip,std::placeholders::_1));
                 mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip,std::placeholders::_1));
 
-                //configure the tcp
-                tcp->setMultiplexer(mux_tcp);
-                mux_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
-                ff_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
-                mux_tcp->setProtocolIdentifier(IPPROTO_TCP);
-                mux_tcp->setHeaderSize(tcp->getHeaderSize());
-                mux_tcp->addChecker(std::bind(&TCPProtocol::tcpChecker,tcp,std::placeholders::_1));
-                mux_tcp->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp,std::placeholders::_1));
+                //configure the udp
+                udp->setMultiplexer(mux_udp);
+                mux_udp->setProtocol(static_cast<ProtocolPtr>(udp));
+                ff_udp->setProtocol(static_cast<ProtocolPtr>(udp));
+                mux_udp->setProtocolIdentifier(IPPROTO_UDP);
+                mux_udp->setHeaderSize(udp->getHeaderSize());
+                mux_udp->addChecker(std::bind(&UDPProtocol::udpChecker,udp,std::placeholders::_1));
+                mux_udp->addPacketFunction(std::bind(&UDPProtocol::processPacket,udp,std::placeholders::_1));
 
-                // configure the ssl
-                ssl->setFlowForwarder(ff_ssl);
-                ff_ssl->setProtocol(static_cast<ProtocolPtr>(ssl));
-                ff_ssl->addChecker(std::bind(&SSLProtocol::sslChecker,ssl,std::placeholders::_1));
-                ff_ssl->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl,
+                // configure the dhcp
+                dhcp->setFlowForwarder(ff_dhcp);
+                ff_dhcp->setProtocol(static_cast<ProtocolPtr>(dhcp));
+                ff_dhcp->addChecker(std::bind(&DHCPProtocol::dhcpChecker,dhcp,std::placeholders::_1));
+                ff_dhcp->addFlowFunction(std::bind(&DHCPProtocol::processFlow,dhcp,
 			std::placeholders::_1,std::placeholders::_2));
 
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
                 mux_ip->addDownMultiplexer(mux_eth);
-                mux_ip->addUpMultiplexer(mux_tcp,IPPROTO_TCP);
-                mux_tcp->addDownMultiplexer(mux_ip);
+                mux_ip->addUpMultiplexer(mux_udp,IPPROTO_UDP);
+                mux_udp->addDownMultiplexer(mux_ip);
 
                 // Connect the FlowManager and FlowCache
-                flow_cache->createFlows(2);
-		tcp->createTCPInfo(2);
+                flow_cache->createFlows(1);
 
-                tcp->setFlowCache(flow_cache);
-                tcp->setFlowManager(flow_mng);
-                ssl->setFlowManager(flow_mng);
+		// dns->setFlowManager(flow_mng);
+		// dns->createDNSDomains(2);
+
+                udp->setFlowCache(flow_cache);
+                udp->setFlowManager(flow_mng);
 
                 // Configure the FlowForwarders
-                tcp->setFlowForwarder(ff_tcp);
-
-                ff_tcp->addUpFlowForwarder(ff_ssl);
-
+                udp->setFlowForwarder(ff_udp);
+		ff_udp->addUpFlowForwarder(ff_dhcp);
         }
 
 	void show() {
-		ssl->setStatisticsLevel(5);
-		ssl->statistics();
+		udp->setStatisticsLevel(5);
+		udp->statistics();
+		dhcp->setStatisticsLevel(5);
+		dhcp->statistics();
 	}
 
-        ~StackSSLtest()
+	void showFlows() {
+
+		flow_mng->showFlows();
+
+	}
+
+        ~StackDHCPtest()
         {
         }
 };

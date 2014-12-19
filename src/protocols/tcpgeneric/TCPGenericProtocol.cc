@@ -30,7 +30,7 @@ namespace aiengine {
 log4cxx::LoggerPtr TCPGenericProtocol::logger(log4cxx::Logger::getLogger("aiengine.tcpgeneric"));
 #endif
 
-void TCPGenericProtocol::processFlow(Flow *flow) {
+void TCPGenericProtocol::processFlow(Flow *flow, bool close) {
 
 	RegexManagerPtr sig = sigs_.lock();
 	++total_packets_;
