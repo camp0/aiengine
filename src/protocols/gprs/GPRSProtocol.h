@@ -29,7 +29,7 @@
 #endif
 
 #include "Protocol.h"
-#include "Cache.h"
+#include "CacheManager.h"
 #include "GPRSInfo.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -103,7 +103,10 @@ public:
         	total_update_pdp_ctx_responses_(0),
         	total_delete_pdp_ctx_requests_(0),
         	total_delete_pdp_ctx_responses_(0),
-        	total_tpdus_(0) {}
+        	total_tpdus_(0) {
+
+		CacheManager::getInstance()->setCache(gprs_info_cache_);
+	}
 
     	virtual ~GPRSProtocol() {}
 

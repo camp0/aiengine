@@ -7,7 +7,7 @@ check_PROGRAMS = test_sip
 noinst_HEADERS = 	SIPProtocol.h SIPInfo.h test_sip.h
 
 test_sip_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
-			../../FlowForwarder.cc \
+			../../FlowForwarder.cc ../../CacheManager.cc \
 			../ethernet/EthernetProtocol.cc \
 			../ip/IPProtocol.cc \
 			../../ipset/IPSetManager.cc \

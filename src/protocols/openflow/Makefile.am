@@ -8,7 +8,7 @@ check_PROGRAMS = test_openflow
 
 test_openflow_SOURCES =	../../Multiplexer.cc ../../Protocol.cc \
 			../ethernet/EthernetProtocol.cc \
-			../../Flow.cc \
+			../../Flow.cc ../../CacheManager.cc \
 			../../FlowForwarder.cc \
 			../../flow/FlowManager.cc \
 			../ip/IPProtocol.cc \

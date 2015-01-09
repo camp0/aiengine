@@ -38,7 +38,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
-#include "Cache.h"
+#include "CacheManager.h"
 #include <unordered_map>
 #include "names/DomainNameManager.h"
 #include "regex/Regex.h"
@@ -68,7 +68,10 @@ public:
 		from_cache_(new Cache<StringCache>("From cache")),
 		to_cache_(new Cache<StringCache>("To cache")),
 		uri_map_(),via_map_(),from_map_(),to_map_(),
-		flow_mng_() {}	
+		flow_mng_() {
+
+		CacheManager::getInstance()->setCache(info_cache_);
+	}	
 
     	virtual ~SIPProtocol() {}
 

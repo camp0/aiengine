@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2014  Luis Campo Giralte
+ * Copyright (C) 2013-2015  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -120,11 +120,10 @@ void FlowManager::updateTimers(std::time_t current_time) {
 				}
 			}
 #endif
-			if (tcp_info_cache_) {
-				SharedPointer<TCPInfo> tcp_info = flow->tcp_info.lock();
-				if(tcp_info)
-					tcp_info_cache_->release(tcp_info);	
-			}
+
+			// Release to their corresponding caches the attached objects
+			CacheManager::getInstance()->releaseFlow(flow.get());
+
 			if (flow_cache_) 
 				flow_cache_->releaseFlow(flow);
 			

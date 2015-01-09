@@ -7,7 +7,7 @@ TEST = test_vxlan
 check_PROGRAMS = test_vxlan
 
 test_vxlan_SOURCES = 	../../Multiplexer.cc \
-			../../Protocol.cc \
+			../../Protocol.cc ../../CacheManager.cc \
 			../ethernet/EthernetProtocol.cc \
 			../../Flow.cc \
 			../../FlowForwarder.cc \

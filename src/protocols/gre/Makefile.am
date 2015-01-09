@@ -8,7 +8,7 @@ check_PROGRAMS = test_gre
 
 test_gre_SOURCES = 	../../Multiplexer.cc \
 			../ethernet/EthernetProtocol.cc \
-			../../Flow.cc \
+			../../Flow.cc ../../CacheManager.cc \
 			../../FlowForwarder.cc \
 			../../flow/FlowManager.cc \
 			../ip/IPProtocol.cc \

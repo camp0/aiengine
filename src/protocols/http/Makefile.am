@@ -7,7 +7,7 @@ check_PROGRAMS = test_http
 noinst_HEADERS = 	HTTPProtocol.h HTTPInfo.h test_http.h
 
 test_http_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
-			../../FlowForwarder.cc \
+			../../FlowForwarder.cc ../../CacheManager.cc \
 			../ethernet/EthernetProtocol.cc \
 			../ip/IPProtocol.cc \
 			../../ipset/IPSetManager.cc \

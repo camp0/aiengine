@@ -7,7 +7,7 @@ TEST = test_udpgeneric
 check_PROGRAMS = test_udpgeneric
 
 test_udpgeneric_SOURCES = 	../../Multiplexer.cc \
-				../../FlowForwarder.cc \
+				../../FlowForwarder.cc ../../CacheManager.cc \
 				../ethernet/EthernetProtocol.cc \
 				../ip/IPProtocol.cc \
 				../../ipset/IPSetManager.cc \

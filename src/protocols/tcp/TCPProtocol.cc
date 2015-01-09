@@ -181,7 +181,8 @@ void TCPProtocol::processPacket(Packet &packet) {
 #ifdef DEBUG
 					std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << ":retrieving to flow cache" << std::endl; 
 #endif
-					tcp_info_cache_->release(tcp_info);
+					CacheManager::getInstance()->releaseFlow(flow.get());	
+				
 					flow_table_->removeFlow(flow);
 					flow_cache_->releaseFlow(flow);
 
@@ -200,7 +201,7 @@ void TCPProtocol::processPacket(Packet &packet) {
 						SharedPointer<IPAbstractSet> ipset = ipset_mng_->getMatchedIPSet();
                                         	flow->ipset = ipset;
 #ifdef DEBUG
-						std::cout << __FILE__ << ":" __func__ << ":flow:" << flow << ":Lookup positive on IPSet:" << ipset->getName() << std::endl;
+						std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << ":Lookup positive on IPSet:" << ipset->getName() << std::endl;
 #endif
 #ifdef PYTHON_BINDING
                                         	if (ipset->haveCallback()) {
@@ -334,7 +335,7 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 #ifdef DEBUG
 		const char *prev_state = ((tcp_states[tcp_info->state_prev]).state)->name;
 		const char *curr_state = ((tcp_states[tcp_info->state_curr]).state)->name;
-		std::cout << __FILE__ << ":" __func__ << ":flow:" << flow << " curr:" << curr_state << " flg:" << str_flag << " " << str_num;
+		std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << " curr:" << curr_state << " flg:" << str_flag << " " << str_num;
 		std::cout << " seq(" << seq_num << ")ack(" << ack_num << ") dir:" << flowdir << " bytes:" << bytes;
 		std::cout << " nseq(" << next_seq_num << ")nack(" << next_ack_num << ")" << std::endl;
 #endif

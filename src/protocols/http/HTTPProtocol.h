@@ -38,8 +38,8 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include "StringCache.h"
-#include "HTTPInfo.h"
-#include "Cache.h"
+//#include "HTTPInfo.h"
+#include "CacheManager.h"
 #include <unordered_map>
 #include "names/DomainNameManager.h"
 #include "regex/Regex.h"
@@ -78,6 +78,8 @@ public:
 			std::bind(&HTTPProtocol::process_ua_parameter,this,std::placeholders::_1,std::placeholders::_2)));
 		parameters_.insert(std::make_pair<std::string,HttpParameterHandler>("Content-Length",
 			std::bind(&HTTPProtocol::process_content_length_parameter,this,std::placeholders::_1,std::placeholders::_2)));
+
+		CacheManager::getInstance()->setCache(info_cache_);
 	}	
 
     	virtual ~HTTPProtocol() {}
@@ -111,7 +113,7 @@ public:
         bool httpChecker(Packet& packet) {
         
 		const char * header = reinterpret_cast<const char*>(packet.getPayload());
-
+	
 		if (http_regex_->evaluate(header)) {
 
 			setHeader(packet.getPayload());

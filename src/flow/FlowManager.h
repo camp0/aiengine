@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2014  Luis Campo Giralte
+ * Copyright (C) 2013-2015  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -36,9 +36,7 @@
 #include "Flow.h"
 #include "Protocol.h"
 #include "FlowCache.h"
-#include "Cache.h"
-#include "../protocols/tcp/TCPInfo.h"
-#include "../protocols/sip/SIPInfo.h"
+#include "CacheManager.h"
 
 namespace aiengine {
 
@@ -69,6 +67,7 @@ public:
     	explicit FlowManager(std::string name):name_(name),total_process_flows_(0),
 		total_timeout_flows_(0),timeout_(180),flowTable_(),flow_it_(),flow_cache_(),
 		tcp_info_cache_(),protocol_() {}
+
     	explicit FlowManager(): FlowManager("FlowManager") {}
 
     	virtual ~FlowManager();
