@@ -36,22 +36,22 @@ namespace aiengine {
 // ftp://ftp.isc.org/isc/dhcp/4.3.1rc1/
 
 struct dhcp_hdr {
-	uint8_t op;
-	uint8_t htype;
-	uint8_t hlen;
-	uint8_t hops;
-    	uint32_t xid;
-    	uint16_t secs;
-    	uint16_t flags;
-    	uint32_t ciaddr;
-    	uint32_t yiaddr;
-    	uint32_t siaddr;
-    	uint32_t giaddr;
-    	char chaddr[16];
-    	char sname[64];
-    	char file[128];
-    	char magic[4];
-    	char opt[3];
+	uint8_t 	op;		/* packet opcode type */
+	uint8_t 	htype;		/* hardware addr type */
+	uint8_t 	hlen;		/* hardware addr length */
+	uint8_t 	hops;		/* gateway hops */
+    	uint32_t 	xid;		/* transaction ID */
+    	uint16_t 	secs;		/* seconds since boot began */
+    	uint16_t 	flags;		/* flags */
+    	uint32_t 	ciaddr;		/* client IP address */
+    	uint32_t 	yiaddr;		/* 'your' IP address */
+    	uint32_t 	siaddr;		/* server IP address */
+    	uint32_t 	giaddr;		/* gateway IP address */
+    	u_char 		chaddr[16];	/* client hardware address */
+    	u_char 		sname[64];
+    	u_char 		file[128];
+    	u_char 		magic[4];
+    	u_char 		opt[3];
 } __attribute__((packed));
 
 enum dhcp_type_code {
@@ -64,7 +64,6 @@ enum dhcp_type_code {
 	DHCPRELEASE,
 	DHCPINFORM
 };
-
 
 class DHCPProtocol: public Protocol 
 {

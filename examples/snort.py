@@ -1,30 +1,10 @@
 #!/usr/bin/env python
-#
-# AIEngine.
-#
-# Copyright (C) 2013-2014  Luis Campo Giralte
-#
-# This library is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Library General Public
-# License as published by the Free Software Foundation; either
-# version 2 of the License, or (at your option) any later version.
-#
-# This library is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# Library General Public License for more details.
-#
-# You should have received a copy of the GNU Library General Public
-# License along with this library; if not, write to the
-# Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
-# Boston, MA  02110-1301, USA.
-#
-# Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
-#
+
 """ Example using snort rules and activating the shell for 
     interact with the engine on real time """
+
 __author__ = "Luis Campo Giralte"
-__copyright__ = "Copyright (C) 2013-2014 by Luis Campo Giralte"
+__copyright__ = "Copyright (C) 2013-2015 by Luis Campo Giralte"
 __revision__ = "$Id$"
 __version__ = "0.1"
 import sys
