@@ -22,6 +22,7 @@
  *
  */
 #include "Flow.h"
+#include "Protocol.h"
 
 namespace aiengine {
 
@@ -208,6 +209,22 @@ void Flow::showFlowInfo(std::ostream& out) {
 
 	return;
 }
+
+#ifdef PYTHON_BINDING
+
+const char* Flow::getL7ProtocolName() const {
+
+	const char *proto_name = "None";
+
+        if (forwarder.lock()) {
+        	ProtocolPtr proto = forwarder.lock()->getProtocol();
+                if (proto) proto_name = proto->getName();
+	}
+        return proto_name;
+}
+
+#endif
+
 
 } // namespace aiengine 
 

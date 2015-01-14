@@ -34,6 +34,7 @@ NetworkStack::NetworkStack() {
         dns = DNSProtocolPtr(new DNSProtocol());
         sip = SIPProtocolPtr(new SIPProtocol());
         dhcp = DHCPProtocolPtr(new DHCPProtocol());
+        ntp = NTPProtocolPtr(new NTPProtocol());
         tcp_generic = TCPGenericProtocolPtr(new TCPGenericProtocol());
         udp_generic = UDPGenericProtocolPtr(new UDPGenericProtocol());
         freqs_tcp = FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol"));
@@ -44,6 +45,7 @@ NetworkStack::NetworkStack() {
         ff_dns = FlowForwarderPtr(new FlowForwarder());
         ff_sip = FlowForwarderPtr(new FlowForwarder());
         ff_dhcp = FlowForwarderPtr(new FlowForwarder());
+        ff_ntp = FlowForwarderPtr(new FlowForwarder());
         ff_tcp_generic = FlowForwarderPtr(new FlowForwarder());
         ff_udp_generic = FlowForwarderPtr(new FlowForwarder());
         ff_tcp_freqs = FlowForwarderPtr(new FlowForwarder());
@@ -83,6 +85,13 @@ NetworkStack::NetworkStack() {
         ff_dhcp->addChecker(std::bind(&DHCPProtocol::dhcpChecker,dhcp,std::placeholders::_1));
         ff_dhcp->addFlowFunction(std::bind(&DHCPProtocol::processFlow,dhcp,
 		std::placeholders::_1, std::placeholders::_2));
+
+        // configure the ntp
+        ntp->setFlowForwarder(ff_ntp);
+        ff_ntp->setProtocol(static_cast<ProtocolPtr>(ntp));
+        ff_ntp->addChecker(std::bind(&NTPProtocol::ntpChecker,ntp,std::placeholders::_1));
+        ff_ntp->addFlowFunction(std::bind(&NTPProtocol::processFlow,ntp,
+        	std::placeholders::_1,std::placeholders::_2));
 
         // configure the TCP generic Layer
         tcp_generic->setFlowForwarder(ff_tcp_generic);

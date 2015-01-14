@@ -154,7 +154,7 @@ public:
 	StringCache& getSSLHost() const { return *ssl_host.lock().get();}
 	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
 	std::string getFlowAnomaly() const { return PacketAnomalyToString.at(static_cast<std::int8_t>(pa_)); }
-
+	const char* getL7ProtocolName() const;
 #endif
 
 private:

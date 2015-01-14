@@ -247,6 +247,7 @@ class StackLanTests(unittest.TestCase):
         def domain_callback(flow):
             self.called_callback += 1 
             self.assertEqual(str(flow.getSSLHost()),"0.drive.google.com")
+            self.assertEqual(flow.getL7ProtocolName(),"SSLProtocol")
 
         d = pyaiengine.DomainName("Google All",".google.com")
 
@@ -352,6 +353,7 @@ class StackLanTests(unittest.TestCase):
 
             self.assertEqual(sw,True)
             self.assertEqual(str(flow.getHTTPInfo().getHost()),"www.wired.com")
+            self.assertEqual(flow.getL7ProtocolName(),"HTTPProtocol")
 
         d = pyaiengine.DomainName("Wired domain",".wired.com")
 

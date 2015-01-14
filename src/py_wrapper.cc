@@ -531,6 +531,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Returns the IPset attached to the flow if they IPs matchs.")
 		.def("getAnomaly",&Flow::getFlowAnomaly,return_value_policy<return_by_value>(),
 			"Returns the attached anomaly of the flow.")
+		.def("getL7ProtocolName",&Flow::getL7ProtocolName,return_value_policy<return_by_value>(),
+			"Returns the name of the Protocol of L7 of the flow.")
 		.def(self_ns::str(self_ns::self))
 	;
 

@@ -52,6 +52,7 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			protocols/dns/DNSProtocol.h \
 			protocols/sip/SIPProtocol.h \
 			protocols/dhcp/DHCPProtocol.h \
+			protocols/ntp/NTPProtocol.h \
 			protocols/frequency/Frequencies.h \
 			protocols/frequency/PacketFrequencies.h \
 			protocols/frequency/FrequencyProtocol.h \
@@ -92,6 +93,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/dns/DNSProtocol.cc \
 			protocols/sip/SIPProtocol.cc \
 			protocols/dhcp/DHCPProtocol.cc \
+			protocols/ntp/NTPProtocol.cc \
 			regex/Regex.cc \
 			regex/RegexManager.cc \
 			protocols/frequency/FrequencyProtocol.cc \
@@ -152,6 +154,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		protocols/ssl/test_ssl.cc \
 		protocols/sip/test_sip.cc \
 		protocols/dhcp/test_dhcp.cc \
+		protocols/ntp/test_ntp.cc \
 		regex/test_regex.cc \
 		user/test_users.cc \
 		learner/test_learner.cc \

@@ -56,6 +56,7 @@ StackLanIPv6::StackLanIPv6() {
         addProtocol(freqs_tcp);
         addProtocol(dns);
         addProtocol(sip);
+        addProtocol(ntp);
         addProtocol(udp_generic);
         addProtocol(freqs_udp);
  
@@ -172,6 +173,7 @@ StackLanIPv6::StackLanIPv6() {
 	ff_tcp_->addUpFlowForwarder(ff_tcp_generic);
 	ff_udp_->addUpFlowForwarder(ff_dns);
 	ff_udp_->addUpFlowForwarder(ff_sip);
+	ff_udp_->addUpFlowForwarder(ff_ntp);
 	ff_udp_->addUpFlowForwarder(ff_udp_generic);
 
 #ifdef HAVE_LIBLOG4CXX
@@ -249,6 +251,7 @@ void StackLanIPv6::enableNIDSEngine(bool enable) {
 		ff_tcp_->removeUpFlowForwarder(ff_ssl);
 		ff_udp_->removeUpFlowForwarder(ff_dns);
 		ff_udp_->removeUpFlowForwarder(ff_sip);
+		ff_udp_->removeUpFlowForwarder(ff_ntp);
 #ifdef HAVE_LIBLOG4CXX
 		LOG4CXX_INFO (logger, "Enable NIDSEngine on " << name_ );
 #else
@@ -272,6 +275,7 @@ void StackLanIPv6::enableNIDSEngine(bool enable) {
         	ff_tcp_->addUpFlowForwarder(ff_tcp_generic);
         	ff_udp_->addUpFlowForwarder(ff_dns);
         	ff_udp_->addUpFlowForwarder(ff_sip);
+        	ff_udp_->addUpFlowForwarder(ff_ntp);
         	ff_udp_->addUpFlowForwarder(ff_udp_generic);
 	}
 }

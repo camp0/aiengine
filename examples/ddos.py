@@ -13,17 +13,32 @@ import pyaiengine
 
 st = None
 
-def scheduler_handler():
+def scheduler_handler_tcp():
 
-    print("DDoS Checker")
+    print("TCP DoS Checker")
     c = st.getCounters("TCPProtocol")
     # Code the intelligence for detect DDoS based on 
     # combination flags, bytes, packets and so on. 
     syns = int(c["syns"])
     synacks = int(c["synacks"])
     if ((syns * 10) > synacks):
-        print("System under a SYN DDoS attack")
+        print("System under a SYN DoS attack")
 
+def scheduler_handler_ntp():
+
+    total_ips = dict()
+    print("NTP DDoS Checker")
+    c = st.getCounters("NTPProtocol")
+
+    # Count the number different ips of the NTP flows
+    fu = st.getUDPFlowManager()    
+    for flow in fu:
+        if (flow.getL7ProtocolName() == "NTPProtocol"):
+            total_ips[flow.getSourceAddress()] = 1
+
+    if (total_ips.len() == len(fu)):
+        print("System under a NTP DDoS attack")
+ 
 if __name__ == '__main__':
 
     # Load an instance of a Network Stack 
@@ -40,7 +55,7 @@ if __name__ == '__main__':
 
     # Sets a handler method that will be call
     # every 5 seconds for check the values
-    pdis.setScheduler(scheduler_handler,5)
+    pdis.setScheduler(scheduler_handler_tcp,5)
 
     pdis.open("ens7")
 

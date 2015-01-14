@@ -65,6 +65,8 @@ StackOpenFlow::StackOpenFlow() {
         addProtocol(freqs_tcp);
         addProtocol(dns);
         addProtocol(sip);
+        addProtocol(dhcp);
+        addProtocol(ntp);
         addProtocol(udp_generic);
         addProtocol(freqs_udp);
 
@@ -250,6 +252,8 @@ StackOpenFlow::StackOpenFlow() {
         ff_tcp_vir_->addUpFlowForwarder(ff_tcp_generic);
         ff_udp_vir_->addUpFlowForwarder(ff_dns);
         ff_udp_vir_->addUpFlowForwarder(ff_sip);
+        ff_udp_vir_->addUpFlowForwarder(ff_dhcp);
+        ff_udp_vir_->addUpFlowForwarder(ff_ntp);
         ff_udp_vir_->addUpFlowForwarder(ff_udp_generic);
 
 #ifdef HAVE_LIBLOG4CXX
@@ -352,6 +356,8 @@ void StackOpenFlow::enableNIDSEngine(bool enable) {
                 ff_tcp_vir_->removeUpFlowForwarder(ff_ssl);
                 ff_udp_vir_->removeUpFlowForwarder(ff_dns);
                 ff_udp_vir_->removeUpFlowForwarder(ff_sip);
+                ff_udp_vir_->removeUpFlowForwarder(ff_dhcp);
+                ff_udp_vir_->removeUpFlowForwarder(ff_ntp);
 #ifdef HAVE_LIBLOG4CXX
                 LOG4CXX_INFO (logger, "Enable NIDSEngine on " << name_ );
 #else
@@ -375,6 +381,8 @@ void StackOpenFlow::enableNIDSEngine(bool enable) {
                 ff_tcp_vir_->addUpFlowForwarder(ff_tcp_generic);
                 ff_udp_vir_->addUpFlowForwarder(ff_dns);
                 ff_udp_vir_->addUpFlowForwarder(ff_sip);
+                ff_udp_vir_->addUpFlowForwarder(ff_dhcp);
+                ff_udp_vir_->addUpFlowForwarder(ff_ntp);
                 ff_udp_vir_->addUpFlowForwarder(ff_udp_generic);
         }
 }
