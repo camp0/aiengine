@@ -24,6 +24,7 @@ AC_CANONICAL_HOST
 AM_CONDITIONAL([__OPENBSD__],false)
 AM_CONDITIONAL([__FREEBSD__],false)
 AM_CONDITIONAL([__LINUX__],false)
+AM_CONDITIONAL([__DARWIN__],false)
 case $host in
     *free*)    
     	AC_DEFINE([__FREEBSD__],[1],[FreeBSD Host])
@@ -40,6 +41,10 @@ case $host in
     *linux*)
 	AC_DEFINE([__LINUX__],[1],[Linux Host])
     	AM_CONDITIONAL([__LINUX__],true)
+    ;;
+    *darwin*)
+	AC_DEFINE([__DARWIN__],[1],[Mac OS Darwin Host])
+    	AM_CONDITIONAL([__DARWIN__],true)
     ;;
 esac
 

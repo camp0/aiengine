@@ -311,6 +311,131 @@ BOOST_AUTO_TEST_CASE (test2_flowcache_flowmanager)
 	BOOST_CHECK(fc->getTotalReleases() == 64);
 }
 
+BOOST_AUTO_TEST_CASE (test3_flowcache_flowmanager)
+{
+        FlowCachePtr fc = FlowCachePtr(new FlowCache());
+        FlowManagerPtr fm = FlowManagerPtr(new FlowManager());
+        std::vector<SharedPointer<Flow>> v;
+
+        fc->createFlows(254);
+
+        for (int i = 0;i< 254; ++i) {
+                SharedPointer<Flow> f1 = fc->acquireFlow().lock();
+
+                if(f1) {
+			uint32_t ipsrc = 1;
+			uint32_t ipdst = 2;
+			uint16_t portsrc = 800 + i;
+			uint16_t portdst = 80;
+			uint16_t proto = 6;
+
+                        unsigned long h1 = ipsrc^portsrc^proto^ipdst^portdst;
+                        unsigned long h2 = ipdst^portdst^proto^ipsrc^portsrc;
+
+                        f1->setId(h1);
+			f1->setFiveTuple(ipsrc,portsrc,proto,ipdst,portdst);
+
+                        fm->addFlow(f1);
+			f1->total_packets = 1;
+                        BOOST_CHECK(fm->getTotalFlows() == i+1);
+                }
+        }
+
+        BOOST_CHECK(fm->getTotalFlows() == 254);
+        BOOST_CHECK(fc->getTotalFlows() == 254);
+        BOOST_CHECK(fc->getTotalAcquires() == 254);
+        BOOST_CHECK(fc->getTotalReleases() == 0);
+        BOOST_CHECK(fc->getTotalFails() == 0);
+
+	// Now the second packet of the flow arrives
+        for (int i = 0;i< 254; ++i) {
+		uint32_t ipsrc = 2;
+                uint32_t ipdst = 1;
+                uint16_t portsrc = 80;
+                uint16_t portdst = 800 + i;
+                uint16_t proto = 6;
+                        
+		unsigned long h1 = ipsrc^portsrc^proto^ipdst^portdst;
+                unsigned long h2 = ipdst^portdst^proto^ipsrc^portsrc;
+
+		SharedPointer<Flow> f1 = fm->findFlow(h1,h2);	
+		
+                if(f1) {
+			// The flow only have one packet
+			BOOST_CHECK(f1->total_packets == 1);
+			++f1->total_packets;
+                } else {
+			BOOST_CHECK(1 == 2); // fail
+		}
+        }
+        BOOST_CHECK(fm->getTotalFlows() == 254);
+        BOOST_CHECK(fc->getTotalFlows() == 254);
+        BOOST_CHECK(fc->getTotalAcquires() == 254);
+        BOOST_CHECK(fc->getTotalReleases() == 0);
+        BOOST_CHECK(fc->getTotalFails() == 0);
+}
+
+BOOST_AUTO_TEST_CASE (test4_flowcache_flowmanager)
+{
+        FlowCachePtr fc = FlowCachePtr(new FlowCache());
+        FlowManagerPtr fm = FlowManagerPtr(new FlowManager());
+        std::vector<SharedPointer<Flow>> v;
+
+        fc->createFlows(254);
+
+        for (int i = 0;i< 254; ++i) {
+                SharedPointer<Flow> f1 = fc->acquireFlow().lock();
+
+                if(f1) {
+			std::ostringstream os;
+	
+			os << "10.253." << i << "1";	
+			std::string ipsrc_str = "192.168.1.1";	
+			uint32_t ipsrc = inet_addr(ipsrc_str.c_str());
+                        uint32_t ipdst = inet_addr(os.str().c_str());
+                        uint16_t portsrc = 1200 + i;
+                        uint16_t portdst = 8080;
+                        uint16_t proto = 6;
+
+                        unsigned long h1 = ipsrc^portsrc^proto^ipdst^portdst;
+                        unsigned long h2 = ipdst^portdst^proto^ipsrc^portsrc;
+
+                        f1->setId(h1);
+                        f1->setFiveTuple(ipsrc,portsrc,proto,ipdst,portdst);
+
+                        fm->addFlow(f1);
+                        f1->total_packets = 1;
+                        BOOST_CHECK(fm->getTotalFlows() == i+1);
+                }
+        }
+        // Now the second packet of the flow arrives
+        for (int i = 0;i< 254; ++i) {
+		std::ostringstream os;
+
+                os << "10.253." << i << "1";
+                std::string ipsrc_str = "192.168.1.1";
+                uint32_t ipdst = inet_addr(ipsrc_str.c_str());
+                uint32_t ipsrc = inet_addr(os.str().c_str());
+                uint16_t portdst = 1200 + i;
+                uint16_t portsrc = 8080;
+                uint16_t proto = 6;
+
+                unsigned long h1 = ipsrc^portsrc^proto^ipdst^portdst;
+                unsigned long h2 = ipdst^portdst^proto^ipsrc^portsrc;
+
+                SharedPointer<Flow> f1 = fm->findFlow(h1,h2);
+
+                if(f1) {
+                        // The flow only have one packet
+                        BOOST_CHECK(f1->total_packets == 1);
+                        ++f1->total_packets;
+                } else {
+                        BOOST_CHECK(1 == 2); // fail
+                }
+        }
+}
+
+
 BOOST_AUTO_TEST_SUITE_END( )
 
 BOOST_AUTO_TEST_SUITE (flowmanager_time) // test for manage the time 
