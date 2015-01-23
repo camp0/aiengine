@@ -29,6 +29,7 @@ SUBDIRS = 	src \
 		src/protocols/tcp \
 		src/protocols/http \
 		src/protocols/ssl \
+		src/protocols/smtp \
 		src/protocols/dns \
 		src/protocols/sip \
 		src/protocols/dhcp \

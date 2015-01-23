@@ -890,6 +890,39 @@ BOOST_FIXTURE_TEST_CASE(test_case_21,StackLanTest)
         BOOST_CHECK(r4->getTotalEvaluates() == 1);
 }
 
+BOOST_FIXTURE_TEST_CASE(test_case_22,StackLanTest) // Tests for release the caches and SMTP
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+        smtp->createSMTPInfos(1);
+
+        pd->open("../pcapfiles/smtp.pcap");
+        pd->run();
+        pd->close();
+
+        BOOST_CHECK(flow_table_tcp->getTotalProcessFlows() == 1);
+        BOOST_CHECK(flow_table_tcp->getTotalFlows() == 1);
+        BOOST_CHECK(flow_table_tcp->getTotalTimeoutFlows() == 0);
+      
+	// there is only one flow	
+	SharedPointer<Flow> f = *flow_table_tcp->getFlowTable().begin();
+ 
+        BOOST_CHECK(f->smtp_info.lock() != nullptr);
+       	SharedPointer<SMTPInfo> info = f->smtp_info.lock();
+	BOOST_CHECK(info != nullptr); 
+        BOOST_CHECK(f->http_info.lock() == nullptr);
+        BOOST_CHECK(f->ssl_host.lock() == nullptr);
+
+        releaseCaches();
+
+        BOOST_CHECK(f->smtp_info.lock() == nullptr);
+        BOOST_CHECK(f->http_info.lock() == nullptr);
+        BOOST_CHECK(f->ssl_host.lock() == nullptr);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

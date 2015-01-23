@@ -61,6 +61,7 @@ StackOpenFlow::StackOpenFlow() {
 
         addProtocol(http);
         addProtocol(ssl);
+        addProtocol(smtp);
         addProtocol(tcp_generic);
         addProtocol(freqs_tcp);
         addProtocol(dns);
@@ -233,6 +234,7 @@ StackOpenFlow::StackOpenFlow() {
         // Connect to upper layers the FlowManager
         http->setFlowManager(flow_table_tcp_vir_);
         ssl->setFlowManager(flow_table_tcp_vir_);
+        smtp->setFlowManager(flow_table_tcp_vir_);
         dns->setFlowManager(flow_table_udp_vir_);
         sip->setFlowManager(flow_table_udp_vir_);
 
@@ -283,10 +285,10 @@ void StackOpenFlow::showFlows(std::basic_ostream<char>& out) {
 void StackOpenFlow::setTotalTCPFlows(int value) {
 
 	flow_cache_tcp_->createFlows(value/8);
-	tcp_->createTCPInfo(value/8);
+	tcp_->createTCPInfos(value/8);
 
         flow_cache_tcp_vir_->createFlows(value);
-	tcp_vir_->createTCPInfo(value);
+	tcp_vir_->createTCPInfos(value);
         
 	// The vast majority of the traffic of internet is HTTP
         // so create 75% of the value received for the http caches
@@ -294,6 +296,9 @@ void StackOpenFlow::setTotalTCPFlows(int value) {
 
         // The 40% of the traffic is SSL
         ssl->createSSLHosts(value * 0.4);
+
+        // 5% of the traffic could be SMTP, im really positive :D
+        smtp->createSMTPInfos(value * 0.05);
 }
 
 void StackOpenFlow::setTotalUDPFlows(int value) {

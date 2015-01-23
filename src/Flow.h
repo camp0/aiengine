@@ -43,6 +43,7 @@
 #include "protocols/tcp/TCPInfo.h"
 #include "protocols/gprs/GPRSInfo.h"
 #include "protocols/http/HTTPInfo.h"
+#include "protocols/smtp/SMTPInfo.h"
 #include "protocols/sip/SIPInfo.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -109,6 +110,7 @@ public:
 	WeakPointer<HTTPInfo> http_info;
 	WeakPointer<StringCache> ssl_host;
 	WeakPointer<SIPInfo> sip_info;
+	WeakPointer<SMTPInfo> smtp_info;
 	WeakPointer<Frequencies> frequencies;
 	WeakPointer<PacketFrequencies> packet_frequencies;
 	FlowForwarderPtrWeak forwarder;
@@ -152,6 +154,7 @@ public:
 	Regex& getRegex() const { return *regex.lock().get();}
 	DNSDomain& getDNSDomain() const { return *dns_domain.lock().get();}
 	StringCache& getSSLHost() const { return *ssl_host.lock().get();}
+	SMTPInfo& getSMTPInfo() const { return *smtp_info.lock().get();}
 	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
 	std::string getFlowAnomaly() const { return PacketAnomalyToString.at(static_cast<std::int8_t>(pa_)); }
 	const char* getL7ProtocolName() const;

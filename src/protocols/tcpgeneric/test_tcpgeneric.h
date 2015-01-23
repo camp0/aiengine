@@ -154,8 +154,8 @@ struct StackTCPGenericTest {
 
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(1);
-		tcp->createTCPInfo(1);
-		tcp6->createTCPInfo(1);
+		tcp->createTCPInfos(1);
+		tcp6->createTCPInfos(1);
 
                 tcp->setFlowCache(flow_cache);
                 tcp->setFlowManager(flow_mng);

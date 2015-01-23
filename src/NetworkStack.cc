@@ -35,6 +35,7 @@ NetworkStack::NetworkStack() {
         sip = SIPProtocolPtr(new SIPProtocol());
         dhcp = DHCPProtocolPtr(new DHCPProtocol());
         ntp = NTPProtocolPtr(new NTPProtocol());
+        smtp = SMTPProtocolPtr(new SMTPProtocol());
         tcp_generic = TCPGenericProtocolPtr(new TCPGenericProtocol());
         udp_generic = UDPGenericProtocolPtr(new UDPGenericProtocol());
         freqs_tcp = FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol"));
@@ -46,6 +47,7 @@ NetworkStack::NetworkStack() {
         ff_sip = FlowForwarderPtr(new FlowForwarder());
         ff_dhcp = FlowForwarderPtr(new FlowForwarder());
         ff_ntp = FlowForwarderPtr(new FlowForwarder());
+        ff_smtp = FlowForwarderPtr(new FlowForwarder());
         ff_tcp_generic = FlowForwarderPtr(new FlowForwarder());
         ff_udp_generic = FlowForwarderPtr(new FlowForwarder());
         ff_tcp_freqs = FlowForwarderPtr(new FlowForwarder());
@@ -79,19 +81,25 @@ NetworkStack::NetworkStack() {
         ff_sip->addFlowFunction(std::bind(&SIPProtocol::processFlow,sip,
 		std::placeholders::_1, std::placeholders::_2));
 
-        // configure the dhcp
+        // Configure the DHCP 
         dhcp->setFlowForwarder(ff_dhcp);
         ff_dhcp->setProtocol(static_cast<ProtocolPtr>(dhcp));
         ff_dhcp->addChecker(std::bind(&DHCPProtocol::dhcpChecker,dhcp,std::placeholders::_1));
         ff_dhcp->addFlowFunction(std::bind(&DHCPProtocol::processFlow,dhcp,
 		std::placeholders::_1, std::placeholders::_2));
 
-        // configure the ntp
+        // Configure the NTP 
         ntp->setFlowForwarder(ff_ntp);
         ff_ntp->setProtocol(static_cast<ProtocolPtr>(ntp));
         ff_ntp->addChecker(std::bind(&NTPProtocol::ntpChecker,ntp,std::placeholders::_1));
         ff_ntp->addFlowFunction(std::bind(&NTPProtocol::processFlow,ntp,
         	std::placeholders::_1,std::placeholders::_2));
+
+        // Configure the SMTP 
+        smtp->setFlowForwarder(ff_smtp);
+        ff_smtp->setProtocol(static_cast<ProtocolPtr>(smtp));
+        ff_smtp->addChecker(std::bind(&SMTPProtocol::smtpChecker,smtp,std::placeholders::_1));
+        ff_smtp->addFlowFunction(std::bind(&SMTPProtocol::processFlow,smtp,std::placeholders::_1,std::placeholders::_2));
 
         // configure the TCP generic Layer
         tcp_generic->setFlowForwarder(ff_tcp_generic);

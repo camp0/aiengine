@@ -63,6 +63,7 @@ StackVirtual::StackVirtual() {
 
         addProtocol(http);
         addProtocol(ssl);
+        addProtocol(smtp);
         addProtocol(tcp_generic);
         addProtocol(freqs_tcp);
         addProtocol(dns);
@@ -252,6 +253,7 @@ StackVirtual::StackVirtual() {
         // Connect to upper layers the FlowManager
         http->setFlowManager(flow_table_tcp_vir_);
         ssl->setFlowManager(flow_table_tcp_vir_);
+        smtp->setFlowManager(flow_table_tcp_vir_);
         dns->setFlowManager(flow_table_udp_vir_);
         sip->setFlowManager(flow_table_udp_vir_);
 
@@ -266,6 +268,7 @@ StackVirtual::StackVirtual() {
 	// Layer 7 plugins	
 	ff_tcp_vir_->addUpFlowForwarder(ff_http);
 	ff_tcp_vir_->addUpFlowForwarder(ff_ssl);
+	ff_tcp_vir_->addUpFlowForwarder(ff_smtp);
 	ff_tcp_vir_->addUpFlowForwarder(ff_tcp_generic);
 	ff_udp_vir_->addUpFlowForwarder(ff_dns);
 	ff_udp_vir_->addUpFlowForwarder(ff_sip);
@@ -347,6 +350,7 @@ void StackVirtual::enableNIDSEngine(bool enable) {
 	if (enable) {
 		ff_tcp_vir_->removeUpFlowForwarder(ff_http);
 		ff_tcp_vir_->removeUpFlowForwarder(ff_ssl);
+		ff_tcp_vir_->removeUpFlowForwarder(ff_smtp);
 		ff_udp_vir_->removeUpFlowForwarder(ff_dns);
 		ff_udp_vir_->removeUpFlowForwarder(ff_sip);
 		ff_udp_vir_->removeUpFlowForwarder(ff_dhcp);
@@ -371,6 +375,7 @@ void StackVirtual::enableNIDSEngine(bool enable) {
 
        		ff_tcp_vir_->addUpFlowForwarder(ff_http);
         	ff_tcp_vir_->addUpFlowForwarder(ff_ssl);
+        	ff_tcp_vir_->addUpFlowForwarder(ff_smtp);
         	ff_tcp_vir_->addUpFlowForwarder(ff_tcp_generic);
         	ff_udp_vir_->addUpFlowForwarder(ff_dns);
         	ff_udp_vir_->addUpFlowForwarder(ff_sip);
@@ -383,7 +388,7 @@ void StackVirtual::enableNIDSEngine(bool enable) {
 void StackVirtual::setTotalTCPFlows(int value) {
 
 	flow_cache_tcp_vir_->createFlows(value);
-	tcp_vir_->createTCPInfo(value);
+	tcp_vir_->createTCPInfos(value);
 
 	// The vast majority of the traffic of internet is HTTP
 	// so create 75% of the value received for the http caches
@@ -391,6 +396,9 @@ void StackVirtual::setTotalTCPFlows(int value) {
 
 	// The 40% of the traffic is SSL
 	ssl->createSSLHosts(value * 0.4);
+
+        // 5% of the traffic could be SMTP, im really positive :D
+        smtp->createSMTPInfos(value * 0.05);
 }
 
 void StackVirtual::setTotalUDPFlows(int value) {

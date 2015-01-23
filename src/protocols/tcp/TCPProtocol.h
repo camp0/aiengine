@@ -145,8 +145,8 @@ public:
         void setFlowCache(FlowCachePtr flow_cache) { flow_cache_ = flow_cache; } 
         FlowCachePtr getFlowCache() { return flow_cache_;}
 
-        void createTCPInfo(int number) { tcp_info_cache_->create(number);}
-        void destroyTCPInfo(int number) { tcp_info_cache_->destroy(number);}
+        void createTCPInfos(int number) { tcp_info_cache_->create(number);}
+        void destroyTCPInfos(int number) { tcp_info_cache_->destroy(number);}
 
 	Flow *getCurrentFlow() { return current_flow_;} // used just for testing pourposes
 

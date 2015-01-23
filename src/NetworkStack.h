@@ -42,6 +42,7 @@
 #include "./protocols/ntp/NTPProtocol.h"
 #include "./protocols/ssl/SSLProtocol.h"
 #include "./protocols/http/HTTPProtocol.h"
+#include "./protocols/smtp/SMTPProtocol.h"
 #include "protocols/frequency/FrequencyProtocol.h"
 
 namespace aiengine {
@@ -134,6 +135,7 @@ public:
         SIPProtocolPtr sip;
         DHCPProtocolPtr dhcp;
         NTPProtocolPtr ntp;
+        SMTPProtocolPtr smtp;
         TCPGenericProtocolPtr tcp_generic;
         UDPGenericProtocolPtr udp_generic;
         FrequencyProtocolPtr freqs_tcp;
@@ -145,6 +147,7 @@ public:
         FlowForwarderPtr ff_sip;
         FlowForwarderPtr ff_dhcp;
         FlowForwarderPtr ff_ntp;
+        FlowForwarderPtr ff_smtp;
         FlowForwarderPtr ff_tcp_generic;
         FlowForwarderPtr ff_udp_generic;
         FlowForwarderPtr ff_tcp_freqs;

@@ -26,6 +26,7 @@ src_files += ["protocols/gre/GREProtocol.cc","protocols/vxlan/VxLanProtocol.cc",
 src_files += ["protocols/gprs/GPRSProtocol.cc"]
 src_files += ["protocols/http/HTTPProtocol.cc"]
 src_files += ["protocols/ssl/SSLProtocol.cc"]
+src_files += ["protocols/smtp/SMTPProtocol.cc"]
 src_files += ["protocols/dns/DNSProtocol.cc"]
 src_files += ["protocols/sip/SIPProtocol.cc"]
 src_files += ["protocols/dhcp/DHCPProtocol.cc"]

@@ -62,6 +62,7 @@ void Flow::reset() {
 	http_info.reset();
 	ssl_host.reset();
 	sip_info.reset();
+	smtp_info.reset();
 	regex.reset();
 	dns_domain.reset();
 	tcp_info.reset();
@@ -184,6 +185,12 @@ void Flow::showFlowInfo(std::ostream& out) {
         	}
 
         	if (ssl_host.lock()) out << " Host:" << ssl_host.lock()->getName();
+
+		SharedPointer<SMTPInfo> sinfo = smtp_info.lock();
+		if (sinfo) {
+			if (sinfo->from.lock())	out << " From:" << sinfo->from.lock()->getName();
+			if (sinfo->to.lock())	out << " To:" << sinfo->to.lock()->getName();
+		}
 
 	} else {
 		if (gprs_info.lock()) out << " GPRS:" << *gprs_info.lock();

@@ -143,7 +143,9 @@ void HTTPProtocol::releaseCache() {
 				total_bytes_released_by_flows += sizeof(info);
 				info.reset();
 				flow->http_info.reset();
-				++ release_flows;	
+				++ release_flows;
+
+				info_cache_->release(info);	
                         }
                 } 
                 host_map_.clear();

@@ -21,27 +21,27 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#ifndef _test_ssl_H_
-#define _test_ssl_H_
+#ifndef _test_smtp_H_
+#define _test_smtp_H_
 
 #include <string>
-#include "../test/tests_packets.h"
+#include "../test/smtp_test_packets.h"
 #include "Protocol.h"
 #include "Multiplexer.h"
 #include "../ethernet/EthernetProtocol.h"
 #include "../ip/IPProtocol.h"
 #include "../tcp/TCPProtocol.h"
-#include "SSLProtocol.h"
+#include "SMTPProtocol.h"
 
 using namespace aiengine;
 
-struct StackSSLtest
+struct StackSMTPtest
 {
         //Protocols
         EthernetProtocolPtr eth;
         IPProtocolPtr ip;
         TCPProtocolPtr tcp;
-        SSLProtocolPtr ssl;
+        SMTPProtocolPtr smtp;
 
         // Multiplexers
         MultiplexerPtr mux_eth;
@@ -54,15 +54,15 @@ struct StackSSLtest
 
         // FlowForwarders
         FlowForwarderPtr ff_tcp;
-        FlowForwarderPtr ff_ssl;
+        FlowForwarderPtr ff_smtp;
 
-        StackSSLtest()
+        StackSMTPtest()
         {
                 // Allocate all the Protocol objects
                 tcp = TCPProtocolPtr(new TCPProtocol());
                 ip = IPProtocolPtr(new IPProtocol());
                 eth = EthernetProtocolPtr(new EthernetProtocol());
-                ssl = SSLProtocolPtr(new SSLProtocol());
+                smtp = SMTPProtocolPtr(new SMTPProtocol());
 
                 // Allocate the Multiplexers
                 mux_eth = MultiplexerPtr(new Multiplexer());
@@ -74,7 +74,7 @@ struct StackSSLtest
                 flow_cache = FlowCachePtr(new FlowCache());
 
                 ff_tcp = FlowForwarderPtr(new FlowForwarder());
-                ff_ssl = FlowForwarderPtr(new FlowForwarder());
+                ff_smtp = FlowForwarderPtr(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);
@@ -100,12 +100,11 @@ struct StackSSLtest
                 mux_tcp->addChecker(std::bind(&TCPProtocol::tcpChecker,tcp,std::placeholders::_1));
                 mux_tcp->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp,std::placeholders::_1));
 
-                // configure the ssl
-                ssl->setFlowForwarder(ff_ssl);
-                ff_ssl->setProtocol(static_cast<ProtocolPtr>(ssl));
-                ff_ssl->addChecker(std::bind(&SSLProtocol::sslChecker,ssl,std::placeholders::_1));
-                ff_ssl->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl,
-			std::placeholders::_1,std::placeholders::_2));
+                // configure the smtp 
+                smtp->setFlowForwarder(ff_smtp);
+                ff_smtp->setProtocol(static_cast<ProtocolPtr>(smtp));
+                ff_smtp->addChecker(std::bind(&SMTPProtocol::smtpChecker,smtp,std::placeholders::_1));
+                ff_smtp->addFlowFunction(std::bind(&SMTPProtocol::processFlow,smtp,std::placeholders::_1,std::placeholders::_2));
 
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
@@ -115,25 +114,33 @@ struct StackSSLtest
 
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(2);
+		smtp->createSMTPInfos(2);
 		tcp->createTCPInfos(2);
 
                 tcp->setFlowCache(flow_cache);
                 tcp->setFlowManager(flow_mng);
-                ssl->setFlowManager(flow_mng);
 
                 // Configure the FlowForwarders
                 tcp->setFlowForwarder(ff_tcp);
 
-                ff_tcp->addUpFlowForwarder(ff_ssl);
+                ff_tcp->addUpFlowForwarder(ff_smtp);
 
         }
 
 	void show() {
-		ssl->setStatisticsLevel(5);
-		ssl->statistics();
+		tcp->setStatisticsLevel(5);
+		tcp->statistics();
+		smtp->setStatisticsLevel(5);
+		smtp->statistics();
 	}
 
-        ~StackSSLtest()
+	void showFlows() {
+
+		flow_mng->showFlows();
+
+	}
+
+        ~StackSMTPtest()
         {
         }
 };

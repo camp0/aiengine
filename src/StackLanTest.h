@@ -39,6 +39,7 @@
 #include "protocols/icmp/ICMPProtocol.h"
 #include "protocols/http/HTTPProtocol.h"
 #include "protocols/ssl/SSLProtocol.h"
+#include "protocols/smtp/SMTPProtocol.h"
 #include "flow/FlowManager.h"
 #include "flow/FlowCache.h"
 
@@ -61,6 +62,7 @@ struct StackLanTest
         ICMPProtocolPtr icmp;
 	HTTPProtocolPtr http;
 	SSLProtocolPtr ssl;
+	SMTPProtocolPtr smtp;
 
 	// Multiplexers
         MultiplexerPtr mux_eth;
@@ -88,6 +90,7 @@ struct StackLanTest
 	FlowForwarderPtr ff_udp_generic;
 	FlowForwarderPtr ff_http;
 	FlowForwarderPtr ff_ssl;
+	FlowForwarderPtr ff_smtp;
 
         StackLanTest()
         {
@@ -106,6 +109,7 @@ struct StackLanTest
 		icmp = ICMPProtocolPtr(new ICMPProtocol());
 		http = HTTPProtocolPtr(new HTTPProtocol());
 		ssl = SSLProtocolPtr(new SSLProtocol());
+		smtp = SMTPProtocolPtr(new SMTPProtocol());
 
 		// Allocate the Multiplexers
                 mux_eth = MultiplexerPtr(new Multiplexer());
@@ -132,6 +136,7 @@ struct StackLanTest
 		ff_udp = FlowForwarderPtr(new FlowForwarder());
 		ff_http = FlowForwarderPtr(new FlowForwarder());
 		ff_ssl = FlowForwarderPtr(new FlowForwarder());
+		ff_smtp = FlowForwarderPtr(new FlowForwarder());
 		ff_tcp_generic = FlowForwarderPtr(new FlowForwarder());
 		ff_tcp_generic6 = FlowForwarderPtr(new FlowForwarder());
 		ff_udp_generic = FlowForwarderPtr(new FlowForwarder());
@@ -225,6 +230,12 @@ struct StackLanTest
         	ff_ssl->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl,
 			std::placeholders::_1,std::placeholders::_2));
 
+                smtp->setFlowForwarder(ff_smtp);
+                ff_smtp->setProtocol(static_cast<ProtocolPtr>(smtp));
+                ff_smtp->addChecker(std::bind(&SMTPProtocol::smtpChecker,smtp,std::placeholders::_1));
+                ff_smtp->addFlowFunction(std::bind(&SMTPProtocol::processFlow,smtp,
+                        std::placeholders::_1,std::placeholders::_2));
+
                 // configure the generic udp 
                 udp_generic->setFlowForwarder(ff_udp_generic);
                 ff_udp_generic->setProtocol(static_cast<ProtocolPtr>(udp_generic));
@@ -275,9 +286,10 @@ struct StackLanTest
 
 		http->setFlowManager(flow_table_tcp);	
 		ssl->setFlowManager(flow_table_tcp);	
-	
-		tcp->createTCPInfo(1024);
-		tcp6->createTCPInfo(1024);
+		smtp->setFlowManager(flow_table_tcp);	
+
+		tcp->createTCPInfos(1024);
+		tcp6->createTCPInfos(1024);
 		
 		udp->setFlowCache(flow_cache_udp);
 		udp->setFlowManager(flow_table_udp);
@@ -288,6 +300,7 @@ struct StackLanTest
 	
 		ff_tcp->addUpFlowForwarder(ff_http);
 		ff_tcp->addUpFlowForwarder(ff_ssl);
+		ff_tcp->addUpFlowForwarder(ff_smtp);
 		ff_tcp->addUpFlowForwarder(ff_tcp_generic);
 		ff_tcp6->addUpFlowForwarder(ff_tcp_generic6);
 
@@ -298,7 +311,7 @@ struct StackLanTest
 
 		http->releaseCache();
 		ssl->releaseCache();
-
+		smtp->releaseCache();
 	}
 
 	void statistics() {

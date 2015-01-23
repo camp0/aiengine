@@ -106,7 +106,7 @@ struct StackTCPIPSetTest
 
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(2);
-                tcp->createTCPInfo(2);
+                tcp->createTCPInfos(2);
 
                 tcp->setFlowCache(flow_cache);
                 tcp->setFlowManager(flow_mng);

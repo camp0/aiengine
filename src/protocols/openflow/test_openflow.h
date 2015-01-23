@@ -213,8 +213,8 @@ struct StackTestOpenFlow
                 udp_vir->setFlowManager(flow_mng);
                 tcp_vir->setFlowCache(flow_cache);
                 tcp_vir->setFlowManager(flow_mng);
-		tcp_vir->createTCPInfo(2);
-		tcp->createTCPInfo(2);
+		tcp_vir->createTCPInfos(2);
+		tcp->createTCPInfos(2);
 
                 // Configure the FlowForwarders
                 tcp->setFlowForwarder(ff_tcp);

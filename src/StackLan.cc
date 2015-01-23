@@ -52,6 +52,7 @@ StackLan::StackLan() {
 	// Add the layer7 protocols in order to show pretty output
         addProtocol(http);
         addProtocol(ssl);
+        addProtocol(smtp);
         addProtocol(tcp_generic);
         addProtocol(freqs_tcp);
         addProtocol(dns);
@@ -162,6 +163,7 @@ StackLan::StackLan() {
 	// Connect to upper layers the FlowManager
 	http->setFlowManager(flow_table_tcp_);
 	ssl->setFlowManager(flow_table_tcp_);
+	smtp->setFlowManager(flow_table_tcp_);
 	dns->setFlowManager(flow_table_udp_);
 	sip->setFlowManager(flow_table_udp_);
 	
@@ -171,6 +173,7 @@ StackLan::StackLan() {
 	
 	ff_tcp_->addUpFlowForwarder(ff_http);
 	ff_tcp_->addUpFlowForwarder(ff_ssl);
+	ff_tcp_->addUpFlowForwarder(ff_smtp);
 	ff_tcp_->addUpFlowForwarder(ff_tcp_generic);
 	ff_udp_->addUpFlowForwarder(ff_dns);
 	ff_udp_->addUpFlowForwarder(ff_sip);
@@ -251,6 +254,7 @@ void StackLan::enableNIDSEngine(bool enable) {
 	if (enable) {
 		ff_tcp_->removeUpFlowForwarder(ff_http);
 		ff_tcp_->removeUpFlowForwarder(ff_ssl);
+		ff_tcp_->removeUpFlowForwarder(ff_smtp);
 		ff_udp_->removeUpFlowForwarder(ff_dns);
 		ff_udp_->removeUpFlowForwarder(ff_sip);
 		ff_udp_->removeUpFlowForwarder(ff_dhcp);
@@ -275,6 +279,7 @@ void StackLan::enableNIDSEngine(bool enable) {
 
        		ff_tcp_->addUpFlowForwarder(ff_http);
         	ff_tcp_->addUpFlowForwarder(ff_ssl);
+        	ff_tcp_->addUpFlowForwarder(ff_smtp);
         	ff_tcp_->addUpFlowForwarder(ff_tcp_generic);
         	ff_udp_->addUpFlowForwarder(ff_dns);
         	ff_udp_->addUpFlowForwarder(ff_sip);
@@ -287,7 +292,7 @@ void StackLan::enableNIDSEngine(bool enable) {
 void StackLan::setTotalTCPFlows(int value) {
 
 	flow_cache_tcp_->createFlows(value);
-	tcp_->createTCPInfo(value);
+	tcp_->createTCPInfos(value);
 
 	// The vast majority of the traffic of internet is HTTP
 	// so create 75% of the value received for the http caches
@@ -295,6 +300,9 @@ void StackLan::setTotalTCPFlows(int value) {
 
 	// The 40% of the traffic is SSL
 	ssl->createSSLHosts(value * 0.4);
+
+        // 5% of the traffic could be SMTP, im really positive :D
+        smtp->createSMTPInfos(value * 0.05);
 }
 
 void StackLan::setTotalUDPFlows(int value) {

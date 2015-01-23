@@ -515,6 +515,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Returns the HTTP Info of the flow if the flow is HTTP.")
 		.def("getSIPInfo",&Flow::getSIPInfo,return_internal_reference<>(),
 			"Returns the SIP Info of the flow if the flow is SIP.")
+		.def("getSMTPInfo",&Flow::getSMTPInfo,return_internal_reference<>(),
+			"Returns the SMTP Info of the flow if the flow is SMTP.")
 		.def("getFrequencies",&Flow::getFrequencies,return_internal_reference<>(),
 			"Returns a map of frequencies of the payload of the flow.")
 		.def("getPacketFrequencies",&Flow::getPacketFrequencies,return_internal_reference<>(),
@@ -564,6 +566,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("getVia",&SIPInfo::getVia,return_internal_reference<>(),
                         "Returns the SIP Via of the flow if the flow is SIP.")
         ;
+
+        boost::python::class_<SMTPInfo, SharedPointer<SMTPInfo>, boost::noncopyable>("SMTPInfo")
+                .def("getFrom",&SMTPInfo::getFrom,return_internal_reference<>(),
+                        "Returns the Mail From of the flow if the flow is SMTP.")
+                .def("getTo",&SMTPInfo::getTo,return_internal_reference<>(),
+                        "Returns the Rcpt To of the flow if the flow is SMTP.")
+        ;
+
 
 	boost::python::class_<StringCache, SharedPointer<StringCache>,boost::noncopyable>("StringCache")
 		.def(self_ns::str(self_ns::self))

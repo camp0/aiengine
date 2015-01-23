@@ -295,6 +295,7 @@ src/protocols/udp/Makefile
 src/protocols/tcp/Makefile
 src/protocols/http/Makefile
 src/protocols/ssl/Makefile
+src/protocols/smtp/Makefile
 src/protocols/dns/Makefile
 src/protocols/sip/Makefile
 src/protocols/dhcp/Makefile

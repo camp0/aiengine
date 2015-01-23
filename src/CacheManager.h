@@ -67,12 +67,14 @@ public:
 
 	explicit CacheManager():http_info_cache_(),sip_info_cache_(),
 		gprs_info_cache_(),
-		tcp_info_cache_() {}
+		tcp_info_cache_(),
+		smtp_info_cache_() {}
 
 	void setCache(Cache<HTTPInfo>::CachePtr cache) { http_info_cache_ = cache; }
 	void setCache(Cache<SIPInfo>::CachePtr cache) { sip_info_cache_ = cache; }
 	void setCache(Cache<GPRSInfo>::CachePtr cache) { gprs_info_cache_ = cache; }
 	void setCache(Cache<TCPInfo>::CachePtr cache) { tcp_info_cache_ = cache; }
+	void setCache(Cache<SMTPInfo>::CachePtr cache) { smtp_info_cache_ = cache; }
 
 	void releaseFlow(Flow *flow);
         
@@ -84,6 +86,7 @@ private:
 	Cache<SIPInfo>::CachePtr sip_info_cache_;
 	Cache<GPRSInfo>::CachePtr gprs_info_cache_;
 	Cache<TCPInfo>::CachePtr tcp_info_cache_;
+	Cache<SMTPInfo>::CachePtr smtp_info_cache_;
 };
 
 
