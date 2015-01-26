@@ -99,6 +99,8 @@ public:
 	void setHTTPHostNameManager(DomainNameManager& dnm, bool allow);
 	void setSSLHostNameManager(DomainNameManager& dnm);
 	void setSSLHostNameManager(DomainNameManager& dnm, bool allow);
+	void setSMTPHostNameManager(DomainNameManager& dnm);
+	void setSMTPHostNameManager(DomainNameManager& dnm, bool allow);
 	
 	void setTCPDatabaseAdaptor(boost::python::object &dbptr);
 	void setTCPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling);

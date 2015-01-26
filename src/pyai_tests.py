@@ -385,7 +385,7 @@ class StackLanTests(unittest.TestCase):
         for flow in ft:
             self.assertNotEqual(flow.getSSLHost(),None)
         
-	self.dis.open("../pcapfiles/accessgoogle.pcap")
+        self.dis.open("../pcapfiles/accessgoogle.pcap")
         self.dis.run()
         self.dis.close()
 
@@ -513,16 +513,16 @@ class StackLanTests(unittest.TestCase):
 
         c = self.s.getCounters("TCPProtocol")
 
-	self.assertEqual(c["bytes"], 888524)
-	self.assertEqual(c["packets"], 886)
-	self.assertEqual(c["syns"], 2)
-	self.assertEqual(c["synacks"], 2)
-	self.assertEqual(c["acks"], 882)
-	self.assertEqual(c["rsts"], 0)
-	self.assertEqual(c["fins"], 0)
+        self.assertEqual(c["bytes"], 888524)
+        self.assertEqual(c["packets"], 886)
+        self.assertEqual(c["syns"], 2)
+        self.assertEqual(c["synacks"], 2)
+        self.assertEqual(c["acks"], 882)
+        self.assertEqual(c["rsts"], 0)
+        self.assertEqual(c["fins"], 0)
 
-	c = self.s.getCounters("UnknownProtocol")
-	self.assertEqual(len(c), 0)
+        c = self.s.getCounters("UnknownProtocol")
+        self.assertEqual(len(c), 0)
 
  
 class StackLanIPv6Tests(unittest.TestCase):

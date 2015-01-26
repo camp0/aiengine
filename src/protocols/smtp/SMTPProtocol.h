@@ -70,6 +70,7 @@ public:
 		smtp_header_(nullptr),total_bytes_(0),
 		total_smtp_client_commands_(0),
 		total_smtp_server_responses_(0),
+		domain_mng_(),ban_domain_mng_(),
 		info_cache_(new Cache<SMTPInfo>("Info cache")),
                 from_cache_(new Cache<StringCache>("From cache")),
                 to_cache_(new Cache<StringCache>("To cache")),
@@ -127,6 +128,9 @@ public:
         void createSMTPInfos(int number); 
         void destroySMTPInfos(int number); 
 
+        void setDomainNameManager(DomainNameManagerPtrWeak dnm) { domain_mng_ = dnm;}
+        void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) { ban_domain_mng_ = dnm;}
+
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 
 #ifdef PYTHON_BINDING
@@ -149,6 +153,9 @@ private:
 	
 	int32_t total_smtp_client_commands_;
 	int32_t total_smtp_server_responses_;
+
+        DomainNameManagerPtrWeak domain_mng_;
+        DomainNameManagerPtrWeak ban_domain_mng_;
 
         Cache<SMTPInfo>::CachePtr info_cache_;
         Cache<StringCache>::CachePtr from_cache_;

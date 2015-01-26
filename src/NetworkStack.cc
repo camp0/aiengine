@@ -261,11 +261,15 @@ void NetworkStack::setSSLHostNameManager(DomainNameManager& dnm, bool allow ) {
 	set_domain_name_manager<SSLProtocol>(dnm,allow);
 }
 
+void NetworkStack::setSMTPHostNameManager(DomainNameManager& dnm, bool allow ) {
+
+	set_domain_name_manager<SMTPProtocol>(dnm,allow);
+}
+
 void NetworkStack::setDNSDomainNameManager(DomainNameManager& dnm) {
 
         setDNSDomainNameManager(dnm,true);
 }
-
 
 void NetworkStack::setHTTPHostNameManager(DomainNameManager& dnm) {
 
@@ -275,6 +279,11 @@ void NetworkStack::setHTTPHostNameManager(DomainNameManager& dnm) {
 void NetworkStack::setSSLHostNameManager(DomainNameManager& dnm) {
 
         setSSLHostNameManager(dnm,true);
+}
+
+void NetworkStack::setSMTPHostNameManager(DomainNameManager& dnm) {
+
+        setSMTPHostNameManager(dnm,true);
 }
 
 void NetworkStack::setUDPDatabaseAdaptor(boost::python::object &dbptr) {
