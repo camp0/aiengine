@@ -72,7 +72,7 @@ public:
 
         void setHeader(unsigned char *raw_packet) { 
        
-#if defined(__FREEBSD__) || defined(__OPENBSD__) 
+#if defined(__FREEBSD__) || defined(__OPENBSD__) || defined(__DARWIN__)
                 icmp_header_ = reinterpret_cast <struct icmp*> (raw_packet);
 #else
                 icmp_header_ = reinterpret_cast <struct icmphdr*> (raw_packet);
@@ -95,7 +95,7 @@ public:
 		}
 	}
 
-#if defined(__FREEBSD__) || defined(__OPENBSD__) 
+#if defined(__FREEBSD__) || defined(__OPENBSD__) || defined(__DARWIN__)
         uint8_t getType() const { return icmp_header_->icmp_type; }
         uint8_t getCode() const { return icmp_header_->icmp_code; }
         uint16_t getId() const { return ntohs(icmp_header_->icmp_id); }
@@ -114,7 +114,7 @@ public:
 
 private:
 	int stats_level_;
-#if defined(__FREEBSD__) || defined(__OPENBSD__) 
+#if defined(__FREEBSD__) || defined(__OPENBSD__) || defined(__DARWIN__)
 	struct icmp *icmp_header_;
 #else
 	struct icmphdr *icmp_header_;

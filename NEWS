@@ -93,8 +93,9 @@ Features/Changes of 1.0
 - Support for DDoS attacks by ussing getCounters functionatliy and the setScheduler method (check examples)
 
 Features/Changes of 1.1
-- Port to Mac/Windows (TODO)
+- Port to Mac (TODO)
 - HTTPProtocol improvements (minor).
 - Update on real time the setScheduler functionality (TODO multiple setScheduler, for having more functions).
 - DHCPProtocol support.
 - NTPProtocol support.
+- SMTPProtocol support.

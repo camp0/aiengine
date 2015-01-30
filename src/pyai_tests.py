@@ -499,7 +499,7 @@ class StackLanTests(unittest.TestCase):
             self.assertEqual(inf.getHost(), None)
             break
 
-    def test16(self):
+    def test17(self):
         """ Verify the getCounters functionatly """
 
         self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
@@ -523,6 +523,27 @@ class StackLanTests(unittest.TestCase):
 
         c = self.s.getCounters("UnknownProtocol")
         self.assertEqual(len(c), 0)
+
+    def test18(self):
+        """ Verify SMTP traffic with domain callback """
+
+        def domain_callback(flow):
+            self.called_callback += 1
+
+        d = pyaiengine.DomainName("Some domain",".patriots.in")
+        d.setCallback(domain_callback)
+
+        dm = pyaiengine.DomainNameManager()
+        dm.addDomainName(d)
+
+        self.s.setSMTPHostNameManager(dm)
+
+        self.dis.open("../pcapfiles/smtp.pcap");
+        self.dis.run();
+        self.dis.close();
+
+        self.assertEqual(d.getMatchs() , 1)
+        self.assertEqual(self.called_callback,1)
 
  
 class StackLanIPv6Tests(unittest.TestCase):

@@ -94,6 +94,8 @@ void Flow::serialize(std::ostream& stream) {
 	if(pa_ != PacketAnomaly::NONE)
 		stream << ",\"a\":\"" << PacketAnomalyToString.at(static_cast<std::int8_t>(pa_)) << "\"";
 
+	stream << ",\"p\":\"" << getL7ProtocolName() << "\"";
+
         if (protocol_ == IPPROTO_TCP) {
                 if(tcp_info.lock())
                         stream << ",\"t\":\"" << *tcp_info.lock() << "\"";
@@ -134,6 +136,8 @@ void Flow::serialize(std::ostream& stream) {
 
 	if(pa_ != PacketAnomaly::NONE)
 		stream << ",\"anomaly\":\"" << PacketAnomalyToString.at(static_cast<std::int8_t>(pa_)) << "\"";
+
+	stream << ",\"layer7\":\"" << getL7ProtocolName() << "\"";
 
 	if (protocol_ == IPPROTO_TCP) {
 		if(tcp_info.lock())	
@@ -217,8 +221,6 @@ void Flow::showFlowInfo(std::ostream& out) {
 	return;
 }
 
-#ifdef PYTHON_BINDING
-
 const char* Flow::getL7ProtocolName() const {
 
 	const char *proto_name = "None";
@@ -229,9 +231,6 @@ const char* Flow::getL7ProtocolName() const {
 	}
         return proto_name;
 }
-
-#endif
-
 
 } // namespace aiengine 
 

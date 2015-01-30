@@ -16,9 +16,9 @@ The main functionalities of AIEngine are:
 - Support Sets and Bloom filters for IP searches.
 - Support Linux and FreeBSD operating systems.
 - Support for HTTP,DNS and SSL Domains matching.
-- Support for banned domains and hosts for HTTP, DNS and SSL.
+- Support for banned domains and hosts for HTTP, DNS, SMTP and SSL.
 - Frequency analysis for unknown traffic and auto-regex generation.
-- Easy integration with databases (MySQL, Redis, etc...) for data correlation.
+- Easy integration with databases (MySQL, Redis, Cassandra, etc...) for data correlation.
 - Easy integration with other packet engines (Netfilter).
 - Support memory clean caches for refresh stored memory information.
 - Support for detect DDoS at network/application layer.
@@ -115,6 +115,7 @@ The main objects that the python module provide are the following ones.
         Regex
         RegexManager
         SIPInfo
+        SMTPInfo
         StringCache
 
 For a complete description of the class methods 

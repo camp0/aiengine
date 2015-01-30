@@ -68,6 +68,7 @@ class SMTPProtocol: public Protocol
 public:
     	explicit SMTPProtocol():Protocol(SMTPProtocol::default_name),stats_level_(0),
 		smtp_header_(nullptr),total_bytes_(0),
+		total_allow_domains_(0),total_ban_domains_(0),
 		total_smtp_client_commands_(0),
 		total_smtp_server_responses_(0),
 		domain_mng_(),ban_domain_mng_(),
@@ -142,15 +143,18 @@ private:
 	void release_smtp_info_cache(SMTPInfo *info);
 	int32_t release_smtp_info(SMTPInfo *info);
 
-	void handle_cmd_mail(SMTPInfo *info, const char *header);
+	void handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header);
 	void handle_cmd_rcpt(SMTPInfo *info, const char *header);
-	
+	void attach_from(SMTPInfo *info, std::string &from);	
+
 	int stats_level_;
 	unsigned char *smtp_header_;
         int64_t total_bytes_;
 
 	static std::vector<SmtpCommandType> commands_;
 	
+	int32_t total_allow_domains_;	
+	int32_t total_ban_domains_;	
 	int32_t total_smtp_client_commands_;
 	int32_t total_smtp_server_responses_;
 

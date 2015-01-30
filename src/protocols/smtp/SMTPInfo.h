@@ -42,11 +42,15 @@ public:
 
 	void reset() { 
 		resetStrings();
-		command_ = 0; 
+		command_ = 0;
+		is_banned_ = false; 
 	}
 
 	void setCommand(int8_t command) { command_ = command; }
 	void resetStrings() { from.reset(); to.reset(); }
+
+        void setIsBanned(bool value) { is_banned_ = value; }
+        bool getIsBanned() const { return is_banned_; }
 
         WeakPointer<StringCache> from;
         WeakPointer<StringCache> to;
@@ -65,6 +69,7 @@ public:
 
 private:
 	int8_t command_;	
+	bool is_banned_;
 };
 
 } // namespace aiengine

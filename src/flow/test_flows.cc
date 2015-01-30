@@ -159,9 +159,9 @@ BOOST_AUTO_TEST_CASE (test5_flow_serialize)
 
 	std::ostringstream os;
 #ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION
-	std::string output("{\"5tuple\":\"192.168.1.1:2345:6:54.12.5.1:80\",\"b\":0}");
+	std::string output("{\"5tuple\":\"192.168.1.1:2345:6:54.12.5.1:80\",\"b\":0,\"p\":\"None\"}");
 #else
-	std::string output("{\"ipsrc\":\"192.168.1.1\",\"portsrc\":2345,\"proto\":6,\"ipdst\":\"54.12.5.1\",\"portdst\":80,\"bytes\":0}");
+	std::string output("{\"ipsrc\":\"192.168.1.1\",\"portsrc\":2345,\"proto\":6,\"ipdst\":\"54.12.5.1\",\"portdst\":80,\"bytes\":0,\"layer7\":\"None\"}");
 #endif
 	f1->serialize(os);
 

@@ -28,7 +28,7 @@
 #include <config.h>
 #endif
 
-#if defined(__FREEBSD__) || defined(__OPENBSD__)
+#if defined(__FREEBSD__) || defined(__OPENBSD__) || defined(__DARWIN__)
 #include <sys/socket.h>
 #define s6_addr32 __u6_addr.__u6_addr32
 #else

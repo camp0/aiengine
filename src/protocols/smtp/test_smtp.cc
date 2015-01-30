@@ -101,6 +101,7 @@ BOOST_AUTO_TEST_CASE (test3_smtp)
 	SharedPointer<StringCache> from = info->from.lock();
 	SharedPointer<StringCache> to = info->to.lock();
 
+	BOOST_CHECK( info != nullptr);
 	BOOST_CHECK(from != nullptr);
 	BOOST_CHECK(to == nullptr);
 	
@@ -139,6 +140,78 @@ BOOST_AUTO_TEST_CASE (test4_smtp)
 
         h << to->getName();
         BOOST_CHECK(cad.compare(h.str()) == 0);
+}
+
+BOOST_AUTO_TEST_CASE (test5_smtp)
+{
+        char *header =  "MAIL FROM: <billy_the_kid@yahoo.com>\r\n";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+        Packet packet(pkt,length);
+
+        SharedPointer<DomainNameManager> domain_ban_mng = SharedPointer<DomainNameManager>(new DomainNameManager());
+        SharedPointer<DomainName> domain_name = SharedPointer<DomainName>(new DomainName("unwanted domain","yahoo.com"));
+        WeakPointer<DomainNameManager> domain_ban_weak = domain_ban_mng;
+
+        smtp->setDomainNameBanManager(domain_ban_weak);
+        domain_ban_mng->addDomainName(domain_name);
+
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        flow->packet = const_cast<Packet*>(&packet);
+        smtp->processFlow(flow.get(),false);
+
+        BOOST_CHECK(flow->smtp_info.lock() != nullptr);
+
+        SharedPointer<SMTPInfo> info = flow->smtp_info.lock();
+        SharedPointer<StringCache> from = info->from.lock();
+        SharedPointer<StringCache> to = info->to.lock();
+
+	BOOST_CHECK(domain_name->getMatchs() == 1);
+        BOOST_CHECK( info != nullptr);
+        BOOST_CHECK(from == nullptr);
+        BOOST_CHECK(to == nullptr);
+	BOOST_CHECK( info->getIsBanned() == true);
+}
+
+BOOST_AUTO_TEST_CASE (test6_smtp)
+{
+        char *header =  "MAIL FROM: <billy_the_kid@yahoo.com>\r\n";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+        Packet packet(pkt,length);
+
+        SharedPointer<DomainNameManager> domain_ban_mng = SharedPointer<DomainNameManager>(new DomainNameManager());
+        SharedPointer<DomainNameManager> domain_mng = SharedPointer<DomainNameManager>(new DomainNameManager());
+        SharedPointer<DomainName> domain_name_ban = SharedPointer<DomainName>(new DomainName("unwanted domain","google.com"));
+        SharedPointer<DomainName> domain_name = SharedPointer<DomainName>(new DomainName("unwanted domain","yahoo.com"));
+        WeakPointer<DomainNameManager> domain_ban_weak = domain_ban_mng;
+        WeakPointer<DomainNameManager> domain_weak = domain_mng;
+
+        smtp->setDomainNameBanManager(domain_ban_weak);
+        smtp->setDomainNameManager(domain_weak);
+        domain_ban_mng->addDomainName(domain_name_ban);
+        domain_mng->addDomainName(domain_name);
+
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        flow->packet = const_cast<Packet*>(&packet);
+        smtp->processFlow(flow.get(),false);
+
+        BOOST_CHECK(flow->smtp_info.lock() != nullptr);
+
+        SharedPointer<SMTPInfo> info = flow->smtp_info.lock();
+        SharedPointer<StringCache> from = info->from.lock();
+        SharedPointer<StringCache> to = info->to.lock();
+
+        BOOST_CHECK(domain_name_ban->getMatchs() == 0);
+        BOOST_CHECK(domain_name->getMatchs() == 1);
+        BOOST_CHECK( info != nullptr);
+        BOOST_CHECK(from != nullptr);
+        BOOST_CHECK(to == nullptr);
+        BOOST_CHECK( info->getIsBanned() == false);
 }
 
 

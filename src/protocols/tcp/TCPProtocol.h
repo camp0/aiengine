@@ -111,7 +111,7 @@ public:
 	}
 
 
-#if defined(__FREEBSD__) || (__OPENBSD__)
+#if defined(__FREEBSD__) || (__OPENBSD__) || defined(__DARWIN__)
     	uint16_t getSrcPort() const { return ntohs(tcp_header_->th_sport); }
     	uint16_t getDstPort() const { return ntohs(tcp_header_->th_dport); }
     	uint32_t getSequence() const  { return ntohl(tcp_header_->th_seq); }

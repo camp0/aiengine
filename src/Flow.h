@@ -91,6 +91,8 @@ public:
         char* getSrcAddrDotNotation() const { return address_.getSrcAddrDotNotation();}
         char* getDstAddrDotNotation() const { return address_.getDstAddrDotNotation();}
 
+	const char* getL7ProtocolName() const;
+
 	// Methods for flow time management
 	void setArriveTime(time_t t) { arrive_time_ = t; }
 	void setLastPacketTime(time_t t) { current_time_ = t; }
@@ -157,7 +159,6 @@ public:
 	SMTPInfo& getSMTPInfo() const { return *smtp_info.lock().get();}
 	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
 	std::string getFlowAnomaly() const { return PacketAnomalyToString.at(static_cast<std::int8_t>(pa_)); }
-	const char* getL7ProtocolName() const;
 #endif
 
 private:

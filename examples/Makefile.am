@@ -6,6 +6,7 @@ EXTRA_DIST = 	bitcoinminer.py \
 		nids_firewall.py \
 		troyan.py \
 		redis_adaptor.py \
+		cassandra_adaptor.py \
 		heartbeat.py \
 		unknown.py \
 		tor.py \

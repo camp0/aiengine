@@ -29,16 +29,16 @@ namespace aiengine {
 // List of support commands 
 std::vector<SmtpCommandType> SMTPProtocol::commands_ {
         std::make_tuple("EHLO"      	,4,     "hellos"     	,0,	static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_EHLO)),
-        std::make_tuple("AUTH LOGIN"  	,10,    "auth logins"  	,0,	0),
+        std::make_tuple("AUTH LOGIN"  	,10,    "auth logins"  	,0,	static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_AUTH)),
         std::make_tuple("MAIL FROM:"    ,10,    "mail froms"	,0,	static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_MAIL)),
         std::make_tuple("RCPT TO:"      ,8,     "rcpt tos"      ,0,	static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_RCPT)),
         std::make_tuple("DATA"       	,4,     "datas"       	,0,	static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_DATA)),
-        std::make_tuple("EXPN"         	,4,     "expandss"     	,0,	0),
-        std::make_tuple("VRFY"        	,4,     "verifys"       ,0,	0),
-        std::make_tuple("RSET"         	,4,     "resets"        ,0,	0),
-        std::make_tuple("HELP"         	,4,     "helps"        	,0,	0),
-        std::make_tuple("NOOP"         	,4,     "noops"        	,0,	0),
-        std::make_tuple("QUIT"         	,4,     "quits"        	,0,	0)
+        std::make_tuple("EXPN"         	,4,     "expandss"     	,0,	static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_EXPN)),
+        std::make_tuple("VRFY"        	,4,     "verifys"       ,0,	static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_VRFY)),
+        std::make_tuple("RSET"         	,4,     "resets"        ,0,	static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_RSET)),
+        std::make_tuple("HELP"         	,4,     "helps"        	,0,	static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_HELP)),
+        std::make_tuple("NOOP"         	,4,     "noops"        	,0,	static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_NOOP)),	
+        std::make_tuple("QUIT"         	,4,     "quits"        	,0,	static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_QUIT))	
 };
 
 #ifdef HAVE_LIBLOG4CXX
@@ -156,18 +156,12 @@ void SMTPProtocol::releaseCache() {
 	}
 }
 
-void SMTPProtocol::handle_cmd_mail(SMTPInfo *info, const char *header) {
 
-	SharedPointer<StringCache> from_ptr = info->from.lock();
+void SMTPProtocol::attach_from(SMTPInfo *info, std::string &from) {
 
-	std::string h(header);
+        SharedPointer<StringCache> from_ptr = info->from.lock();
 
-	size_t start = h.find("<");
-	size_t end = h.find(">",start);
-
-	std::string from(h,start + 1,end - start - 1);
-
-        if (!from_ptr) { // There is no from attached 
+        if (!from_ptr) { // There is no from attached
                 FromMapType::iterator it = from_map_.find(from);
                 if (it == from_map_.end()) {
                         from_ptr = from_cache_->acquire().lock();
@@ -182,6 +176,52 @@ void SMTPProtocol::handle_cmd_mail(SMTPInfo *info, const char *header) {
                         info->from = std::get<0>(it->second);
                 }
         }
+}
+
+void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header) {
+
+	SharedPointer<StringCache> from_ptr = info->from.lock();
+
+	std::string h(header);
+
+	size_t start = h.find("<");
+	size_t end = h.find(">",start);
+
+	std::string from(h,start + 1,end - start - 1);
+	size_t token = from.find("@");
+	std::string domain(from,token + 1);
+
+        DomainNameManagerPtr ban_hosts = ban_domain_mng_.lock();
+        if (ban_hosts) {
+                SharedPointer<DomainName> dom_candidate = ban_hosts->getDomainName(domain);
+                if (dom_candidate) {
+#ifdef HAVE_LIBLOG4CXX
+                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with ban host " << dom_candidate->getName());
+#endif
+                        ++total_ban_domains_;
+			info->setIsBanned(true);
+                        return;
+                }
+        }
+        ++total_allow_domains_;
+
+	attach_from(info,from);
+
+        DomainNameManagerPtr dom_mng = domain_mng_.lock();
+       	if (dom_mng) {
+
+        	SharedPointer<DomainName> dom_candidate = dom_mng->getDomainName(domain);
+                if (dom_candidate) {
+#ifdef PYTHON_BINDING
+#ifdef HAVE_LIBLOG4CXX
+			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << dom_candidate->getName());
+#endif
+                        if(dom_candidate->haveCallback()) {
+                       		dom_candidate->executeCallback(flow);
+                        }
+#endif
+                }
+	}
 }
 
 void SMTPProtocol::handle_cmd_rcpt(SMTPInfo *info, const char *header) {
@@ -230,6 +270,11 @@ void SMTPProtocol::processFlow(Flow *flow, bool close) {
         	flow->smtp_info = sinfo;
 	}
 
+        if (sinfo->getIsBanned() == true) {
+		// No need to process the SMTP pdu.
+                return;
+        }
+
 	if (flow->getFlowDirection() == FlowDirection::FORWARD) {
 		
 		// Commands send by the client
@@ -247,7 +292,7 @@ void SMTPProtocol::processFlow(Flow *flow, bool close) {
 				// Check if the commands are MAIL or RCPT
 				if ( cmd == static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_MAIL)) {
 					const char *header = reinterpret_cast<const char*>(smtp_header_);
-					handle_cmd_mail(sinfo.get(),header);
+					handle_cmd_mail(flow,sinfo.get(),header);
 				} else if ( cmd == static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_RCPT)) {
 					const char *header = reinterpret_cast<const char*>(smtp_header_);
 					handle_cmd_rcpt(sinfo.get(),header);
@@ -289,6 +334,8 @@ void SMTPProtocol::statistics(std::basic_ostream<char>& out)
 			out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
                         if(stats_level_ > 3) {
 
+                                out << "\t" << "Total allow domains:    " << std::setw(10) << total_allow_domains_ <<std::endl;
+                                out << "\t" << "Total banned domains:   " << std::setw(10) << total_ban_domains_ <<std::endl;
                                 out << "\t" << "Total client commands:  " << std::setw(10) << total_smtp_client_commands_ <<std::endl;
                                 out << "\t" << "Total server responses: " << std::setw(10) << total_smtp_server_responses_ <<std::endl;
 
