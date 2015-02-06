@@ -40,6 +40,7 @@
 #include <fstream>
 #include <chrono>
 #include <iomanip>
+#include <boost/utility/string_ref.hpp>
 #include "Pointer.h"
 #include "FlowForwarder.h"
 #include "Multiplexer.h"
@@ -51,7 +52,7 @@ namespace aiengine {
 class Flow;
 
 typedef std::pair<SharedPointer<StringCache>,int32_t> StringCacheHits;
-typedef std::map<std::string,StringCacheHits> GenericMapType;
+typedef std::map<boost::string_ref,StringCacheHits> GenericMapType;
 
 class Protocol 
 {

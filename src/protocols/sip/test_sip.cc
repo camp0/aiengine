@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE (test2_sip)
         BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
         BOOST_CHECK(from.compare(info->from.lock()->getName()) == 0);
         BOOST_CHECK(to.compare(info->to.lock()->getName()) == 0);
-        BOOST_CHECK(via.compare(info->via.lock()->getName()) == 0);
+	BOOST_CHECK(via.compare(info->via.lock()->getName()) == 0);
 
 }
 

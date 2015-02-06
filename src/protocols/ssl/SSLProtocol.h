@@ -40,6 +40,7 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include <cstring>
+#include <boost/utility/string_ref.hpp> 
 #include "names/DomainNameManager.h"
 #include "flow/FlowManager.h"
 
@@ -184,7 +185,7 @@ private:
 
 	Cache<StringCache>::CachePtr host_cache_;
 
-        typedef std::map<std::string,StringCacheHits> HostMapType;
+        typedef std::map<boost::string_ref,StringCacheHits> HostMapType;
         HostMapType host_map_;
 
         DomainNameManagerPtrWeak host_mng_;
@@ -195,7 +196,7 @@ private:
 	void handle_server_hello(Flow *flow,int offset, unsigned char *data);
 	void handle_certificate(Flow *flow,int offset, unsigned char *data);
 
-	void attach_host_to_flow(Flow *flow, std::string &servername); 
+	void attach_host_to_flow(Flow *flow, boost::string_ref &servername); 
 
 #ifdef HAVE_LIBLOG4CXX
         static log4cxx::LoggerPtr logger;

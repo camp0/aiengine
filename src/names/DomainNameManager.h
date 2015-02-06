@@ -32,19 +32,25 @@
 #include "DomainName.h"
 #include "DomainNode.h"
 #include <boost/algorithm/string.hpp>
+#include <boost/utility/string_ref.hpp>
 
 namespace aiengine {
 
 class DomainNameManager 
 {
 public:
-    	explicit DomainNameManager():root_(SharedPointer<DomainNode>(new DomainNode("root"))),total_domains_(0) {}
+    	explicit DomainNameManager():root_(SharedPointer<DomainNode>(new DomainNode("root"))),
+		total_domains_(0),
+		tokens_() {}
+
     	virtual ~DomainNameManager() {}
 
 	void addDomainName(SharedPointer<DomainName> domain); 
 	void addDomainName(const std::string name,const std::string expression);
 
 	SharedPointer<DomainName> getDomainName(std::string& name);
+	SharedPointer<DomainName> getDomainName(const char *name);
+	SharedPointer<DomainName> getDomainName(boost::string_ref &name);
 
 	int32_t getTotalDomains() const { return total_domains_; }
 
@@ -53,6 +59,7 @@ public:
 private:
 	SharedPointer<DomainNode> root_;
 	int32_t total_domains_;
+	std::vector<std::string> tokens_;
 };
 
 typedef std::shared_ptr<DomainNameManager> DomainNameManagerPtr;

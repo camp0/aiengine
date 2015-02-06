@@ -59,13 +59,12 @@ void DomainNameManager::addDomainName(SharedPointer<DomainName> domain) {
 
 SharedPointer<DomainName> DomainNameManager::getDomainName(std::string& name) {
 
-	std::vector<std::string> tokens;
 	SharedPointer<DomainName> domain_candidate;
-	boost::split(tokens,name,boost::is_any_of("."));
+	boost::split(tokens_,name,boost::is_any_of("."));
 
 	SharedPointer<DomainNode> curr_node = root_;
 
-	for (auto it = tokens.rbegin(); it != tokens.rend(); ++it) {
+	for (auto it = tokens_.rbegin(); it != tokens_.rend(); ++it) {
 		SharedPointer<DomainNode> node = curr_node->haveKey(*it);
 		if (node) {
 			curr_node = node;
@@ -81,6 +80,20 @@ SharedPointer<DomainName> DomainNameManager::getDomainName(std::string& name) {
 	if (domain_candidate) 
 		domain_candidate->incrementMatchs();
 	return domain_candidate;
+}
+
+SharedPointer<DomainName> DomainNameManager::getDomainName(const char *name) {
+
+	std::string domain(name);
+
+	return getDomainName(domain);
+}
+
+SharedPointer<DomainName> DomainNameManager::getDomainName(boost::string_ref &name) {
+
+	std::string domain(name);
+
+	return getDomainName(domain);
 }
 
 void printDomainNode(std::ostream& out, SharedPointer<DomainNode> node) {

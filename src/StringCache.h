@@ -29,19 +29,22 @@
 #endif
 
 #include <iostream>
+#include <algorithm>
 
 namespace aiengine {
 
 class StringCache 
 {
 public:
-    	explicit StringCache(const std::string &value):value_(value) {}
+    	explicit StringCache(const char *value):value_(value) {}
     	explicit StringCache() { reset(); }
     	virtual ~StringCache() { value_.clear();}
 
 	void reset() { value_ = ""; }
-	std::string &getName() { return value_; }
-	void setName(const std::string& name) { value_ = name;}
+	const char *getName() const { return value_.c_str(); }
+	void setName(const char *name, int length) { value_.assign(name,length); }
+	void setName(const char *name) { value_.assign(name); }
+	size_t getNameSize() const { return value_.size(); }
 
 #ifdef PYTHON_BINDING
 	friend std::ostream& operator<< (std::ostream& out, const StringCache& sc) {

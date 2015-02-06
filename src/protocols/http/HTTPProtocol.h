@@ -37,8 +37,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
+#include <boost/utility/string_ref.hpp>
 #include "StringCache.h"
-//#include "HTTPInfo.h"
 #include "CacheManager.h"
 #include <unordered_map>
 #include "names/DomainNameManager.h"
@@ -69,7 +69,8 @@ public:
 		ua_cache_(new Cache<StringCache>("UserAgent cache")),
 		ua_map_(),host_map_(),uri_map_(),
 		host_mng_(),ban_host_mng_(),
-		flow_mng_() {
+		flow_mng_(),
+		http_ref_header_() {
 
 		// Add the parameters that wants to be process by the HTTPProtocol		
 		parameters_.insert(std::make_pair<std::string,HttpParameterHandler>("Host",
@@ -147,15 +148,15 @@ public:
 
 private:
 
-	void attach_uri(HTTPInfo *info, std::string &host);
-	void attach_host(HTTPInfo *info, std::string &host);
-	void attach_useragent(HTTPInfo *info, std::string &ua);
+	void attach_uri(HTTPInfo *info, boost::string_ref &uri);
+	void attach_host(HTTPInfo *info, const char *host);
+	void attach_useragent(HTTPInfo *info, const char *ua);
 
 	int extract_uri(HTTPInfo *info, const char *header);
 
 	void parse_header(HTTPInfo *info, const char *parameters);
-	bool process_host_parameter(HTTPInfo *info,const char *parameter);
-	bool process_ua_parameter(HTTPInfo *info,const char *parameter);
+	bool process_host_parameter(HTTPInfo *info,const char *host);
+	bool process_ua_parameter(HTTPInfo *info,const char *ua);
 	bool process_content_length_parameter(HTTPInfo *info,const char *parameter);
 
 	int32_t release_http_info(HTTPInfo *info);
@@ -181,9 +182,9 @@ private:
 	Cache<StringCache>::CachePtr host_cache_;
 	Cache<StringCache>::CachePtr ua_cache_;
 
-	typedef std::map<std::string,StringCacheHits> UriMapType;
-	typedef std::map<std::string,StringCacheHits> HostMapType;
-	typedef std::map<std::string,StringCacheHits> UAMapType;
+	typedef std::map<boost::string_ref,StringCacheHits> UriMapType;
+	typedef std::map<boost::string_ref,StringCacheHits> HostMapType;
+	typedef std::map<boost::string_ref,StringCacheHits> UAMapType;
 	UAMapType ua_map_;	
 	HostMapType host_map_;	
 	UriMapType uri_map_;	
@@ -195,6 +196,7 @@ private:
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
 #endif
+	boost::string_ref http_ref_header_;
 };
 
 typedef std::shared_ptr<HTTPProtocol> HTTPProtocolPtr;

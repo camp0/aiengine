@@ -145,7 +145,7 @@ private:
 
 	void handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header);
 	void handle_cmd_rcpt(SMTPInfo *info, const char *header);
-	void attach_from(SMTPInfo *info, std::string &from);	
+	void attach_from(SMTPInfo *info, boost::string_ref &from);	
 
 	int stats_level_;
 	unsigned char *smtp_header_;
@@ -165,8 +165,8 @@ private:
         Cache<StringCache>::CachePtr from_cache_;
         Cache<StringCache>::CachePtr to_cache_;
 
-        typedef std::map<std::string,StringCacheHits> FromMapType;
-        typedef std::map<std::string,StringCacheHits> ToMapType;
+        typedef std::map<boost::string_ref,StringCacheHits> FromMapType;
+        typedef std::map<boost::string_ref,StringCacheHits> ToMapType;
 
         FromMapType from_map_;
         ToMapType to_map_;

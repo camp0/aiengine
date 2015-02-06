@@ -128,10 +128,10 @@ public:
 
 private:
 
-	void attach_uri_to_flow(SIPInfo *info, std::string &host);
-	void attach_from_to_flow(SIPInfo *info, std::string &host);
-	void attach_to_to_flow(SIPInfo *info, std::string &ua);
-	void attach_via_to_flow(SIPInfo *info, std::string &via);
+	void attach_uri_to_flow(SIPInfo *info, boost::string_ref &uri);
+	void attach_from_to_flow(SIPInfo *info, boost::string_ref &from);
+	void attach_to_to_flow(SIPInfo *info, boost::string_ref &to);
+	void attach_via_to_flow(SIPInfo *info, boost::string_ref &via);
 	void extract_uri_value(SIPInfo *info, const char *header);
 	void extract_from_value(SIPInfo *info, const char *header);
 	void extract_to_value(SIPInfo *info, const char *header);
@@ -156,10 +156,10 @@ private:
 	Cache<StringCache>::CachePtr from_cache_;
 	Cache<StringCache>::CachePtr to_cache_;
 
-	typedef std::map<std::string,StringCacheHits> UriMapType;
-	typedef std::map<std::string,StringCacheHits> FromMapType;
-	typedef std::map<std::string,StringCacheHits> ToMapType;
-	typedef std::map<std::string,StringCacheHits> ViaMapType;
+	typedef std::map<boost::string_ref,StringCacheHits> UriMapType;
+	typedef std::map<boost::string_ref,StringCacheHits> FromMapType;
+	typedef std::map<boost::string_ref,StringCacheHits> ToMapType;
+	typedef std::map<boost::string_ref,StringCacheHits> ViaMapType;
 	UriMapType uri_map_;	
 	ViaMapType via_map_;
 	FromMapType from_map_;	

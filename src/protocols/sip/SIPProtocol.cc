@@ -68,16 +68,16 @@ void SIPProtocol::releaseCache() {
                 int32_t release_via = via_map_.size();
 
                 // Compute the size of the strings used as keys on the map
-                std::for_each (from_map_.begin(), from_map_.end(), [&total_bytes_released] (std::pair<std::string,StringCacheHits> const &f) {
+                std::for_each (from_map_.begin(), from_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &f) {
                         total_bytes_released += f.first.size();
                 });
-                std::for_each (uri_map_.begin(), uri_map_.end(), [&total_bytes_released] (std::pair<std::string,StringCacheHits> const &u) {
+                std::for_each (uri_map_.begin(), uri_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &u) {
                         total_bytes_released += u.first.size();
                 });
-                std::for_each (to_map_.begin(), to_map_.end(), [&total_bytes_released] (std::pair<std::string,StringCacheHits> const &t) {
+                std::for_each (to_map_.begin(), to_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &t) {
                         total_bytes_released += t.first.size();
                 });
-                std::for_each (via_map_.begin(), via_map_.end(), [&total_bytes_released] (std::pair<std::string,StringCacheHits> const &t) {
+                std::for_each (via_map_.begin(), via_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &t) {
                         total_bytes_released += t.first.size();
                 });
 
@@ -88,27 +88,27 @@ void SIPProtocol::releaseCache() {
                         	SharedPointer<StringCache> sc = sinfo->uri.lock();
 				if (sc) {
 					sinfo->uri.reset();
-					total_bytes_released_by_flows += sc->getName().size();
+					total_bytes_released_by_flows += sc->getNameSize();
 					uri_cache_->release(sc);
 				}
 
                         	sc = sinfo->from.lock();
                         	if (sc) {
                                 	sinfo->from.reset();
-                                	total_bytes_released_by_flows += sc->getName().size();
+                                	total_bytes_released_by_flows += sc->getNameSize();
                                 	from_cache_->release(sc);
                         	}
 
                         	sc = sinfo->to.lock();
                         	if (sc) {
                                 	sinfo->to.reset();
-                                	total_bytes_released_by_flows += sc->getName().size();
+                                	total_bytes_released_by_flows += sc->getNameSize();
                                 	to_cache_->release(sc);
                         	}
                         	sc = sinfo->via.lock();
                         	if (sc) {
                                 	sinfo->via.reset();
-                                	total_bytes_released_by_flows += sc->getName().size();
+                                	total_bytes_released_by_flows += sc->getNameSize();
                                 	to_cache_->release(sc);
                         	}
                         	++release_flows;
@@ -140,9 +140,9 @@ void SIPProtocol::extract_via_value(SIPInfo *info, const char *header) {
 
         if (sip_via_->matchAndExtract(header)) {
 
-                std::string via_raw(sip_via_->getExtract());
-                std::string via(via_raw,5,via_raw.length() - 7); // remove also the \r\n
-
+		boost::string_ref via_raw(sip_via_->getExtract());
+		boost::string_ref via(via_raw.substr(5,via_raw.size()-7)); // remove also the \r\n
+                
                 attach_via_to_flow(info,via);
         }
 }
@@ -151,26 +151,29 @@ void SIPProtocol::extract_from_value(SIPInfo *info, const char *header) {
 
 	if (sip_from_->matchAndExtract(header)) {
 
-        	std::string from_raw(sip_from_->getExtract());
-                std::string from(from_raw,6,from_raw.length()-8); // remove also the \r\n
-
+		boost::string_ref from_raw(sip_from_->getExtract());
+		boost::string_ref from(from_raw.substr(6,from_raw.size()-8)); // remove also the \r\n
+ 
 		attach_from_to_flow(info,from);
 	}
 }
 
 
-void SIPProtocol::attach_from_to_flow(SIPInfo *info, std::string &from) {
+void SIPProtocol::attach_from_to_flow(SIPInfo *info, boost::string_ref &from) {
 
 	SharedPointer<StringCache> from_ptr = info->from.lock();
 
+	std::string from_str(from);
+
 	if (!from_ptr) { 
-		FromMapType::iterator it = from_map_.find(from);
+		FromMapType::iterator it = from_map_.find(from_str.c_str());
 		if (it == from_map_.end()) {
 			from_ptr = from_cache_->acquire().lock();
 			if (from_ptr) {
-				from_ptr->setName(from);
+				from_ptr->setName(from_str.c_str());
 				info->from = from_ptr;
-				from_map_.insert(std::make_pair(from,std::make_pair(from_ptr,1)));
+				from_map_.insert(std::make_pair(boost::string_ref(from_ptr->getName()),
+					std::make_pair(from_ptr,1)));
 			}
 		} else {
 			int *counter = &std::get<1>(it->second);
@@ -184,25 +187,28 @@ void SIPProtocol::extract_to_value(SIPInfo *info, const char *header) {
 
 	if (sip_to_->matchAndExtract(header)) {
 
-		std::string to_raw(sip_to_->getExtract());
-		std::string to(to_raw,4,to_raw.length() - 6); // remove also the \r\n
+		boost::string_ref to_raw(sip_to_->getExtract());
+		boost::string_ref to(to_raw.substr(4,to_raw.size()-6)); // remove also the \r\n
 
 		attach_to_to_flow(info,to);
 	}
 }
 
-void SIPProtocol::attach_to_to_flow(SIPInfo *info, std::string &to) {
+void SIPProtocol::attach_to_to_flow(SIPInfo *info, boost::string_ref &to) {
 
 	SharedPointer<StringCache> to_ptr = info->to.lock();
 
+	std::string to_str(to);
+
 	if (!to_ptr) { 
-		ToMapType::iterator it = to_map_.find(to);
+		ToMapType::iterator it = to_map_.find(to_str.c_str());
 		if (it == to_map_.end()) {
 			to_ptr = to_cache_->acquire().lock();
 			if (to_ptr) {
-				to_ptr->setName(to);
+				to_ptr->setName(to_str.c_str());
 				info->to = to_ptr;
-				to_map_.insert(std::make_pair(to,std::make_pair(to_ptr,1)));
+				to_map_.insert(std::make_pair(boost::string_ref(to_ptr->getName()),
+					std::make_pair(to_ptr,1)));
 			}	
 		} else {
 			int *counter = &std::get<1>(it->second);
@@ -213,18 +219,21 @@ void SIPProtocol::attach_to_to_flow(SIPInfo *info, std::string &to) {
 
 }
 
-void SIPProtocol::attach_via_to_flow(SIPInfo *info, std::string &via) {
+void SIPProtocol::attach_via_to_flow(SIPInfo *info, boost::string_ref &via) {
 
         SharedPointer<StringCache> via_ptr = info->via.lock();
 
+	std::string via_str(via);
+
         if (!via_ptr) {
-                ViaMapType::iterator it = via_map_.find(via);
+                ViaMapType::iterator it = via_map_.find(via_str.c_str());
                 if (it == via_map_.end()) {
                         via_ptr = via_cache_->acquire().lock();
                         if (via_ptr) {
-                                via_ptr->setName(via);
+                                via_ptr->setName(via_str.c_str());
                                 info->via = via_ptr;
-                                via_map_.insert(std::make_pair(via,std::make_pair(via_ptr,1)));
+                                via_map_.insert(std::make_pair(boost::string_ref(via_ptr->getName()),
+					std::make_pair(via_ptr,1)));
                         }
                 } else {
                         int *counter = &std::get<1>(it->second);
@@ -235,15 +244,18 @@ void SIPProtocol::attach_via_to_flow(SIPInfo *info, std::string &via) {
 }
 
 
-void SIPProtocol::attach_uri_to_flow(SIPInfo *info, std::string &uri) {
+void SIPProtocol::attach_uri_to_flow(SIPInfo *info, boost::string_ref &uri) {
 
-	UriMapType::iterator it = uri_map_.find(uri);
+	std::string uri_str(uri);
+
+	UriMapType::iterator it = uri_map_.find(uri_str.c_str());
         if (it == uri_map_.end()) {
         	SharedPointer<StringCache> uri_ptr = uri_cache_->acquire().lock();
                 if (uri_ptr) {
-                	uri_ptr->setName(uri);
+                	uri_ptr->setName(uri_str.c_str());
                         info->uri = uri_ptr;
-                        uri_map_.insert(std::make_pair(uri,std::make_pair(uri_ptr,1)));
+                        uri_map_.insert(std::make_pair(boost::string_ref(uri_ptr->getName()),
+				std::make_pair(uri_ptr,1)));
                 } 
         } else {
 		// Update the URI of the flow
@@ -258,7 +270,7 @@ void SIPProtocol::extract_uri_value(SIPInfo *info, const char *header) {
 
 	int offset = 0;
 	bool found = false;
-	std::string sip_header(header);
+	boost::string_ref sip_header(header);
 
 	// Check if is a response 
         if (std::memcmp("SIP/2.",&header[0],6) == 0) {
@@ -285,7 +297,7 @@ void SIPProtocol::extract_uri_value(SIPInfo *info, const char *header) {
 	if ((found)and(offset > 0)) {
 		int end = sip_header.find("SIP/2.");
 		if (end > 0) {
-			std::string uri(sip_header,offset,(end-offset) -1);
+			boost::string_ref uri(sip_header.substr(offset,(end-offset)-1));
 	
 			++total_requests_;	
 			attach_uri_to_flow(info,uri);	

@@ -16,6 +16,7 @@ recursive-include flow *.h
 recursive-include learner *.h 
 recursive-include http *.h 
 recursive-include ssl *.h 
+recursive-include smtp *.h 
 recursive-include dns *.h 
 recursive-include regex *.h 
 recursive-include frequency *.h 

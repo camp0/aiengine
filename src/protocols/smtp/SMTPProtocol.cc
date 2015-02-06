@@ -86,13 +86,13 @@ int32_t SMTPProtocol::release_smtp_info(SMTPInfo *info) {
         SharedPointer<StringCache> from = info->from.lock();
 
         if (from) { // The flow have a from attached
-                bytes_released += from->getName().size();
+                bytes_released += from->getNameSize();
                 from_cache_->release(from);
         }
 
         SharedPointer<StringCache> to = info->to.lock();
         if (to) {
-                bytes_released += to->getName().size();
+                bytes_released += to->getNameSize();
                 to_cache_->release(to);
         }
 
@@ -120,10 +120,10 @@ void SMTPProtocol::releaseCache() {
 		int32_t release_tos = to_map_.size();
 
                 // Compute the size of the strings used as keys on the map
-                std::for_each (from_map_.begin(), from_map_.end(), [&total_bytes_released] (std::pair<std::string,StringCacheHits> const &f) {
+                std::for_each (from_map_.begin(), from_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &f) {
                         total_bytes_released += f.first.size();
                 });
-                std::for_each (to_map_.begin(), to_map_.end(), [&total_bytes_released] (std::pair<std::string,StringCacheHits> const &t) {
+                std::for_each (to_map_.begin(), to_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &t) {
                         total_bytes_released += t.first.size();
                 });
 
@@ -157,18 +157,21 @@ void SMTPProtocol::releaseCache() {
 }
 
 
-void SMTPProtocol::attach_from(SMTPInfo *info, std::string &from) {
+void SMTPProtocol::attach_from(SMTPInfo *info, boost::string_ref &from) {
 
         SharedPointer<StringCache> from_ptr = info->from.lock();
 
         if (!from_ptr) { // There is no from attached
-                FromMapType::iterator it = from_map_.find(from);
+		std::string from_str(from);
+
+                FromMapType::iterator it = from_map_.find(from_str.c_str());
                 if (it == from_map_.end()) {
                         from_ptr = from_cache_->acquire().lock();
                         if (from_ptr) {
-                                from_ptr->setName(from);
+                                from_ptr->setName(from_str.c_str());
                                 info->from = from_ptr;
-                                from_map_.insert(std::make_pair(from,std::make_pair(from_ptr,1)));
+                                from_map_.insert(std::make_pair(boost::string_ref(from_ptr->getName()),
+					std::make_pair(from_ptr,1)));
                         }
                 } else {
                         int *counter = &std::get<1>(it->second);
@@ -182,14 +185,14 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header
 
 	SharedPointer<StringCache> from_ptr = info->from.lock();
 
-	std::string h(header);
+	boost::string_ref h(header);
 
 	size_t start = h.find("<");
-	size_t end = h.find(">",start);
+	size_t end = h.rfind(">");
 
-	std::string from(h,start + 1,end - start - 1);
+	boost::string_ref from(h.substr(start + 1, end - start - 1));
 	size_t token = from.find("@");
-	std::string domain(from,token + 1);
+	std::string domain(from.substr(token + 1,from.size()));
 
         DomainNameManagerPtr ban_hosts = ban_domain_mng_.lock();
         if (ban_hosts) {
@@ -228,21 +231,22 @@ void SMTPProtocol::handle_cmd_rcpt(SMTPInfo *info, const char *header) {
 
         SharedPointer<StringCache> to_ptr = info->to.lock();
 
-        std::string h(header);
+        boost::string_ref h(header);
 
         size_t start = h.find("<");
-        size_t end = h.find(">",start);
-
-        std::string to(h,start + 1,end - start - 1);
+        size_t end = h.rfind(">");
 
         if (!to_ptr) { // There is no from attached
-                ToMapType::iterator it = to_map_.find(to);
+        
+		std::string to(h.substr(start + 1,end - start - 1));
+                ToMapType::iterator it = to_map_.find(to.c_str());
                 if (it == to_map_.end()) {
                         to_ptr = to_cache_->acquire().lock();
                         if (to_ptr) {
-                                to_ptr->setName(to);
+                                to_ptr->setName(to.c_str());
                                 info->to = to_ptr;
-                                to_map_.insert(std::make_pair(to,std::make_pair(to_ptr,1)));
+                                to_map_.insert(std::make_pair(boost::string_ref(to_ptr->getName()),
+					std::make_pair(to_ptr,1)));
                         }
                 } else {
                         int *counter = &std::get<1>(it->second);

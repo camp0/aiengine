@@ -84,19 +84,19 @@ int32_t HTTPProtocol::release_http_info(HTTPInfo *info) {
 	SharedPointer<StringCache> host = info->host.lock();
 
         if (host) { // The flow have a host attatched and uri and uas
-        	bytes_released += host->getName().size();
+        	bytes_released += host->getNameSize();
                 host_cache_->release(host);
 	}
 
         SharedPointer<StringCache> ua = info->ua.lock();
         if (ua) {
-		bytes_released += ua->getName().size();
+		bytes_released += ua->getNameSize();
                 ua_cache_->release(ua);
 	}
 
         SharedPointer<StringCache> uri = info->uri.lock();
         if (uri) {
-        	bytes_released += uri->getName().size();
+        	bytes_released += uri->getNameSize();
                 uri_cache_->release(uri);
         }
         info->resetStrings();
@@ -125,13 +125,13 @@ void HTTPProtocol::releaseCache() {
                 int32_t release_uas = ua_map_.size();
 
                 // Compute the size of the strings used as keys on the map
-                std::for_each (host_map_.begin(), host_map_.end(), [&total_bytes_released] (std::pair<std::string,StringCacheHits> const &ht) {
+                std::for_each (host_map_.begin(), host_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &ht) {
                         total_bytes_released += ht.first.size();
                 });
-                std::for_each (ua_map_.begin(), ua_map_.end(), [&total_bytes_released] (std::pair<std::string,StringCacheHits> const &ht) {
+                std::for_each (ua_map_.begin(), ua_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &ht) {
                         total_bytes_released += ht.first.size();
                 });
-                std::for_each (uri_map_.begin(), uri_map_.end(), [&total_bytes_released] (std::pair<std::string,StringCacheHits> const &ht) {
+                std::for_each (uri_map_.begin(), uri_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &ht) {
                         total_bytes_released += ht.first.size();
                 });
 
@@ -167,7 +167,7 @@ void HTTPProtocol::releaseCache() {
 }
 
 
-void HTTPProtocol::attach_host(HTTPInfo *info, std::string &host) {
+void HTTPProtocol::attach_host(HTTPInfo *info, const char *host) {
 
 	SharedPointer<StringCache> host_ptr = info->host.lock();
 
@@ -178,7 +178,8 @@ void HTTPProtocol::attach_host(HTTPInfo *info, std::string &host) {
 			if (host_ptr) {
 				host_ptr->setName(host);
 				info->host = host_ptr;
-				host_map_.insert(std::make_pair(host,std::make_pair(host_ptr,1)));
+				host_map_.insert(std::make_pair(boost::string_ref(host_ptr->getName()),
+					std::make_pair(host_ptr,1)));
 			}
 		} else {
 			int *counter = &std::get<1>(it->second);
@@ -188,9 +189,7 @@ void HTTPProtocol::attach_host(HTTPInfo *info, std::string &host) {
 	}
 }
 
-bool HTTPProtocol::process_host_parameter(HTTPInfo *info,const char *parameter) {
-
-	std::string host(parameter);
+bool HTTPProtocol::process_host_parameter(HTTPInfo *info,const char *host) {
 
 	DomainNameManagerPtr ban_hosts = ban_host_mng_.lock();
         if (ban_hosts) {
@@ -208,9 +207,7 @@ bool HTTPProtocol::process_host_parameter(HTTPInfo *info,const char *parameter) 
 	return true;
 }
 
-bool HTTPProtocol::process_ua_parameter(HTTPInfo *info, const char *parameter) {
-
-	std::string ua(parameter);
+bool HTTPProtocol::process_ua_parameter(HTTPInfo *info, const char *ua) {
 
 	attach_useragent(info,ua);
 	return true;
@@ -218,11 +215,10 @@ bool HTTPProtocol::process_ua_parameter(HTTPInfo *info, const char *parameter) {
 
 bool HTTPProtocol::process_content_length_parameter(HTTPInfo *info, const char *parameter) {
 
-	std::string value(parameter);
 	int32_t length = 0;
 
 	try {
-		length = std::stoi(value);
+		length = std::stoi(parameter);
 		info->setContentLength(length);
 		info->setDataChunkLength(length);
 		info->setHaveData(true);
@@ -235,7 +231,7 @@ bool HTTPProtocol::process_content_length_parameter(HTTPInfo *info, const char *
 	return true;
 }
 
-void HTTPProtocol::attach_useragent(HTTPInfo *info, std::string &ua) {
+void HTTPProtocol::attach_useragent(HTTPInfo *info, const char *ua) {
 
 	SharedPointer<StringCache> ua_ptr = info->ua.lock();
 
@@ -246,7 +242,8 @@ void HTTPProtocol::attach_useragent(HTTPInfo *info, std::string &ua) {
 			if (ua_ptr) {
 				ua_ptr->setName(ua);
 				info->ua = ua_ptr;
-				ua_map_.insert(std::make_pair(ua,std::make_pair(ua_ptr,1)));
+				ua_map_.insert(std::make_pair(boost::string_ref(ua_ptr->getName()),
+					std::make_pair(ua_ptr,1)));
 			}	
 		} else {
 			int *counter = &std::get<1>(it->second);
@@ -257,15 +254,19 @@ void HTTPProtocol::attach_useragent(HTTPInfo *info, std::string &ua) {
 }
 
 // The URI should be updated on every request
-void HTTPProtocol::attach_uri(HTTPInfo *info, std::string &uri) {
+void HTTPProtocol::attach_uri(HTTPInfo *info, boost::string_ref &uri) {
 
-	UriMapType::iterator it = uri_map_.find(uri);
+	// TOOD: remove the string
+	std::string uri_str(uri);
+
+	UriMapType::iterator it = uri_map_.find(uri_str.c_str());
         if (it == uri_map_.end()) {
         	SharedPointer<StringCache> uri_ptr = uri_cache_->acquire().lock();
                 if (uri_ptr) {
-                	uri_ptr->setName(uri);
+                	uri_ptr->setName(uri_str.c_str());
                         info->uri = uri_ptr;
-                        uri_map_.insert(std::make_pair(uri,std::make_pair(uri_ptr,1)));
+                        uri_map_.insert(std::make_pair(boost::string_ref(uri_ptr->getName()),
+				std::make_pair(uri_ptr,1)));
 			++total_requests_;
                 } 
         } else {
@@ -280,7 +281,7 @@ int HTTPProtocol::extract_uri(HTTPInfo *info, const char *header) {
 
         int offset = 0;
         bool found = false;
-        std::string http_header(header);
+        boost::string_ref http_header(header);
 	int method_size = 0;
 
         // Check if is a response
@@ -314,8 +315,8 @@ int HTTPProtocol::extract_uri(HTTPInfo *info, const char *header) {
         if ((found)and(offset > 0)) {
                 int end = http_header.find("HTTP/1.");
                 if (end > 0) {
-                        std::string uri(http_header,offset,(end-offset) -1);
-
+                        boost::string_ref uri(http_header.substr(offset,(end-offset)-1));
+			
 			info->incTotalRequests();
                         ++total_requests_;
                         attach_uri(info,uri);
@@ -329,7 +330,8 @@ int HTTPProtocol::extract_uri(HTTPInfo *info, const char *header) {
 
 void HTTPProtocol::parse_header(HTTPInfo *info, const char *parameters) {
 
-	std::string http_header(parameters);
+	//std::string http_header(parameters);
+	boost::string_ref http_header(parameters);
         std::string token, parameter, auxtoken;
         bool have_token = false;
         int i = 0;

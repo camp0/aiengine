@@ -41,6 +41,7 @@ public:
 
 	void reset() { host_name_ = ""; }	
 	std::string &getName() { return host_name_; }
+	const char *getName() const { return host_name_.c_str(); }
 	void setName(const std::string& name) { host_name_ = name;}
 
 #ifdef PYTHON_BINDING

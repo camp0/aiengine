@@ -35,7 +35,11 @@
 #include <iostream>
 
 #ifndef ETHERTYPE_MPLS
-#define ETHERTYPE_MPLS ETH_P_MPLS_UC 
+#  ifndef ETH_P_MPLS_UC
+#    define ETHERTYPE_MPLS 0x8847
+#  else
+#    define ETHERTYPE_MPLS ETH_P_MPLS_UC 
+#  endif
 #endif
 
 namespace aiengine {

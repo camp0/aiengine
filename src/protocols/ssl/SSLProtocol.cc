@@ -48,7 +48,7 @@ void SSLProtocol::releaseCache() {
                 int32_t release_hosts = host_map_.size();
 
                 // Compute the size of the strings used as keys on the map
-                std::for_each (host_map_.begin(), host_map_.end(), [&total_bytes_released] (std::pair<std::string,StringCacheHits> const &ht) {
+                std::for_each (host_map_.begin(), host_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &ht) {
                         total_bytes_released += ht.first.size();
                 });
 
@@ -57,7 +57,7 @@ void SSLProtocol::releaseCache() {
 
                         if (host) { // The flow have a host attatched
                                 flow->ssl_host.reset();
-				total_bytes_released_by_flows += host->getName().size();
+				total_bytes_released_by_flows += host->getNameSize();
                                 host_cache_->release(host);
 				++release_flows;
                         }
@@ -78,18 +78,21 @@ void SSLProtocol::releaseCache() {
 }
 
 
-void SSLProtocol::attach_host_to_flow(Flow *flow, std::string &servername) {
+void SSLProtocol::attach_host_to_flow(Flow *flow, boost::string_ref &servername) {
 
 	SharedPointer<StringCache> host_ptr = flow->ssl_host.lock();
 
 	if (!host_ptr) { // There is no Host object attached to the flow
-		HostMapType::iterator it = host_map_.find(servername);
+		// std::string ssl_name(servername);
+		
+		HostMapType::iterator it = host_map_.find(servername.data());
 		if (it == host_map_.end()) {
 			host_ptr = host_cache_->acquire().lock();
 			if (host_ptr) {
-				host_ptr->setName(servername);
+				host_ptr->setName(servername.data(),servername.size());
 				flow->ssl_host = host_ptr;
-				host_map_.insert(std::make_pair(servername,std::make_pair(host_ptr,1)));
+				host_map_.insert(std::make_pair(boost::string_ref(host_ptr->getName()),
+					std::make_pair(host_ptr,1)));
 			}
 		} else {
 			int *counter = &std::get<1>(it->second);
@@ -141,7 +144,8 @@ void SSLProtocol::handle_client_hello(Flow *flow,int offset, u_char *data) {
 						ssl_server_name *server = reinterpret_cast<ssl_server_name*>(&extensions[3]);
 						int server_length = ntohs(server->length);
 						if ((block_offset + server_length < payload_length )and(server_length > 0)) {
-							std::string servername((char*)server->data,0,server_length);
+							boost::string_ref servername((char*)server->data,server_length);
+							// std::string servername((char*)server->data,0,server_length);
 							DomainNameManagerPtr ban_dnm = ban_host_mng_.lock();
 
 							ban_dnm = ban_host_mng_.lock();

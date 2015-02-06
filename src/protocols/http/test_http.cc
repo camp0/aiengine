@@ -352,6 +352,9 @@ BOOST_AUTO_TEST_CASE (test8_http)
         BOOST_CHECK(info2->getTotalResponses()  == 0);
 
 	BOOST_CHECK(info1->ua.lock() == info2->ua.lock());
+
+	// http->setStatisticsLevel(5);
+	// http->statistics();
 }
 
 BOOST_AUTO_TEST_CASE (test9_http)
