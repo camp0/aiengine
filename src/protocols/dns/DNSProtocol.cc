@@ -48,7 +48,7 @@ void DNSProtocol::releaseCache() {
 		int32_t release_doms = domain_map_.size();
 
 		// Compute the size of the strings used as keys on the map
-		std::for_each (domain_map_.begin(), domain_map_.end(), [&total_bytes_released] (std::pair<std::string,DomainHits> const &dt) {
+		std::for_each (domain_map_.begin(), domain_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,DomainHits> const &dt) {
 			total_bytes_released += dt.first.size();
 		});
 
@@ -91,7 +91,8 @@ void DNSProtocol::attach_dns_to_flow(Flow *flow, std::string &domain, uint16_t q
 				dom_ptr->setQueryType(qtype);
 				
                                 flow->dns_domain = dom_ptr;
-                                domain_map_.insert(std::make_pair(domain,std::make_pair(dom_ptr,1)));
+                                domain_map_.insert(std::make_pair(boost::string_ref(dom_ptr->getName()),
+					std::make_pair(dom_ptr,1)));
                         }
 		} else {
 			int *counter = &std::get<1>(it->second);
@@ -134,7 +135,7 @@ void DNSProtocol::handle_standard_query(Flow *flow,int length) {
 		
 	// Probably i will need to do it better :(	
 	while (dns_header_->data[i] != '\x00') {
-		if(dns_header_->data[i] < '\x17' )
+		if(dns_header_->data[i] < '\x20' )
 			domain += ".";
 		else
 			domain += dns_header_->data[i];
@@ -318,13 +319,13 @@ void DNSProtocol::statistics(std::basic_ostream<char>& out)
                                                
                                                 out << "\tDNS Domains usage" << std::endl;
                                                 
-						std::vector<std::pair<std::string,DomainHits>> d_list(domain_map_.begin(),domain_map_.end());
+						std::vector<std::pair<boost::string_ref,DomainHits>> d_list(domain_map_.begin(),domain_map_.end());
                                                 // Sort The domain_map by using lambdas
                                                 std::sort(
                                                         d_list.begin(),
                                                         d_list.end(),
-                                                        [](std::pair<std::string,DomainHits> const &a,
-                                                        std::pair<std::string,DomainHits> const &b)
+                                                        [](std::pair<boost::string_ref,DomainHits> const &a,
+                                                        std::pair<boost::string_ref,DomainHits> const &b)
                                                 {
                                                         int v1 = std::get<1>(a.second);
                                                         int v2 = std::get<1>(b.second);

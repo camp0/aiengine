@@ -124,7 +124,7 @@ void SIPProtocol::releaseCache() {
 
                 double cache_compression_rate = 0;
 
-                if (total_bytes_released > 0 ) {
+                if (total_bytes_released_by_flows > 0 ) {
                         cache_compression_rate = 100 - ((total_bytes_released*100)/total_bytes_released_by_flows);
                 }
         

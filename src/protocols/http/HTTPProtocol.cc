@@ -167,7 +167,7 @@ void HTTPProtocol::releaseCache() {
 }
 
 
-void HTTPProtocol::attach_host(HTTPInfo *info, const char *host) {
+void HTTPProtocol::attach_host(HTTPInfo *info, boost::string_ref &host) {
 
 	SharedPointer<StringCache> host_ptr = info->host.lock();
 
@@ -176,7 +176,7 @@ void HTTPProtocol::attach_host(HTTPInfo *info, const char *host) {
 		if (it == host_map_.end()) {
 			host_ptr = host_cache_->acquire().lock();
 			if (host_ptr) {
-				host_ptr->setName(host);
+				host_ptr->setName(host.data(),host.size());
 				info->host = host_ptr;
 				host_map_.insert(std::make_pair(boost::string_ref(host_ptr->getName()),
 					std::make_pair(host_ptr,1)));
@@ -189,7 +189,7 @@ void HTTPProtocol::attach_host(HTTPInfo *info, const char *host) {
 	}
 }
 
-bool HTTPProtocol::process_host_parameter(HTTPInfo *info,const char *host) {
+bool HTTPProtocol::process_host_parameter(HTTPInfo *info,boost::string_ref &host) {
 
 	DomainNameManagerPtr ban_hosts = ban_host_mng_.lock();
         if (ban_hosts) {
@@ -207,18 +207,18 @@ bool HTTPProtocol::process_host_parameter(HTTPInfo *info,const char *host) {
 	return true;
 }
 
-bool HTTPProtocol::process_ua_parameter(HTTPInfo *info, const char *ua) {
+bool HTTPProtocol::process_ua_parameter(HTTPInfo *info, boost::string_ref &ua) {
 
 	attach_useragent(info,ua);
 	return true;
 }
 
-bool HTTPProtocol::process_content_length_parameter(HTTPInfo *info, const char *parameter) {
+bool HTTPProtocol::process_content_length_parameter(HTTPInfo *info, boost::string_ref &parameter) {
 
 	int32_t length = 0;
 
 	try {
-		length = std::stoi(parameter);
+		length = std::stoi(std::string(parameter));
 		info->setContentLength(length);
 		info->setDataChunkLength(length);
 		info->setHaveData(true);
@@ -231,7 +231,7 @@ bool HTTPProtocol::process_content_length_parameter(HTTPInfo *info, const char *
 	return true;
 }
 
-void HTTPProtocol::attach_useragent(HTTPInfo *info, const char *ua) {
+void HTTPProtocol::attach_useragent(HTTPInfo *info, boost::string_ref &ua) {
 
 	SharedPointer<StringCache> ua_ptr = info->ua.lock();
 
@@ -240,7 +240,7 @@ void HTTPProtocol::attach_useragent(HTTPInfo *info, const char *ua) {
 		if (it == ua_map_.end()) {
 			ua_ptr = ua_cache_->acquire().lock();
 			if (ua_ptr) {
-				ua_ptr->setName(ua);
+				ua_ptr->setName(ua.data(),ua.length());
 				info->ua = ua_ptr;
 				ua_map_.insert(std::make_pair(boost::string_ref(ua_ptr->getName()),
 					std::make_pair(ua_ptr,1)));
@@ -256,14 +256,11 @@ void HTTPProtocol::attach_useragent(HTTPInfo *info, const char *ua) {
 // The URI should be updated on every request
 void HTTPProtocol::attach_uri(HTTPInfo *info, boost::string_ref &uri) {
 
-	// TOOD: remove the string
-	std::string uri_str(uri);
-
-	UriMapType::iterator it = uri_map_.find(uri_str.c_str());
+	UriMapType::iterator it = uri_map_.find(uri);
         if (it == uri_map_.end()) {
         	SharedPointer<StringCache> uri_ptr = uri_cache_->acquire().lock();
                 if (uri_ptr) {
-                	uri_ptr->setName(uri_str.c_str());
+                	uri_ptr->setName(uri.data(),uri.length());
                         info->uri = uri_ptr;
                         uri_map_.insert(std::make_pair(boost::string_ref(uri_ptr->getName()),
 				std::make_pair(uri_ptr,1)));
@@ -328,27 +325,36 @@ int HTTPProtocol::extract_uri(HTTPInfo *info, const char *header) {
 	return method_size;
 }
 
+// TODO: Remove the std::string in order to avoid mallocs and frees
+// 
 void HTTPProtocol::parse_header(HTTPInfo *info, const char *parameters) {
 
-	//std::string http_header(parameters);
 	boost::string_ref http_header(parameters);
-        std::string token, parameter, auxtoken;
         bool have_token = false;
         int i = 0;
         
 	// Process the HTTP header
         const char *ptr = parameters;
+	int field_index = 0;
+	int parameter_index = 0;
+
+	// TODO: remove the references to strings	
+	header_field_.clear();
+	header_field_tmp_.clear();
+	header_parameter_.clear();
 
 	for (i = 0; i< http_header.length(); ++i) {
        		// Check if is end off line
                 if (std::memcmp(&ptr[i],"\r\n",2) == 0 ) {
 
-                	if(token.length()) {
-                        	auto it = parameters_.find(token);
+                	if(header_field_.length()) {
+                        	auto it = parameters_.find(header_field_);
                                 if (it != parameters_.end()) {
                                 	auto callback = (*it).second;
+					
+					header_parameter_ = http_header.substr(parameter_index, i - parameter_index);
 
-                                        bool sw = callback(info,parameter.c_str());
+                                        bool sw = callback(info,header_parameter_);
 					if (!sw) { // The flow have been marked as banned
                                                 info->setIsBanned(true);
 						release_http_info_cache(info); 
@@ -356,9 +362,10 @@ void HTTPProtocol::parse_header(HTTPInfo *info, const char *parameters) {
 					}
                                 }
                                 // std::cout <<"FULL:(" << token << "):(" << parameter << ")" << std::endl;
-                                token.clear();
-                                parameter.clear();
-                                auxtoken.clear();
+                                header_field_.clear();
+                                header_parameter_.clear();
+                                header_field_tmp_.clear();
+				field_index = i + 2;
 			}
 
 			if(std::memcmp(&ptr[i+2],"\r\n",2) == 0) {
@@ -370,14 +377,14 @@ void HTTPProtocol::parse_header(HTTPInfo *info, const char *parameters) {
                        	++i;
 		} else {
 			if ((ptr[i] == ':')and(have_token == false)) {
-                        	parameter.clear();
-                                token = auxtoken;
-                                auxtoken.clear();
+				header_parameter_.clear();
+                                header_field_ = header_field_tmp_;
+                                header_field_tmp_.clear();
+				parameter_index = i + 2;
                                 have_token = true;
                                 ++i;
 			} else {
-                                auxtoken += ptr[i];
-                                parameter += ptr[i];
+                                header_field_tmp_ += ptr[i];
 			}
 		}
 	}

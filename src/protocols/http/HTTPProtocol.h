@@ -37,7 +37,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
-#include <boost/utility/string_ref.hpp>
 #include "StringCache.h"
 #include "CacheManager.h"
 #include <unordered_map>
@@ -49,7 +48,15 @@ namespace aiengine {
 
 // Methods and response with statistics
 typedef std::tuple<const char*,int,const char*,int32_t> HttpMethodType;
-typedef std::function <bool (HTTPInfo*,const char *parameter)> HttpParameterHandler;
+typedef std::function <bool (HTTPInfo*,boost::string_ref &parameter)> HttpParameterHandler;
+
+struct string_hasher
+{
+	size_t operator()(boost::string_ref const& s) const
+    	{
+        	return boost::hash_range(s.begin(), s.end());
+    	}
+};
 
 class HTTPProtocol: public Protocol 
 {
@@ -73,11 +80,11 @@ public:
 		http_ref_header_() {
 
 		// Add the parameters that wants to be process by the HTTPProtocol		
-		parameters_.insert(std::make_pair<std::string,HttpParameterHandler>("Host",
+		parameters_.insert(std::make_pair<boost::string_ref,HttpParameterHandler>(boost::string_ref("Host"),
 			std::bind(&HTTPProtocol::process_host_parameter,this,std::placeholders::_1,std::placeholders::_2)));
-		parameters_.insert(std::make_pair<std::string,HttpParameterHandler>("User-Agent",
+		parameters_.insert(std::make_pair<boost::string_ref,HttpParameterHandler>(boost::string_ref("User-Agent"),
 			std::bind(&HTTPProtocol::process_ua_parameter,this,std::placeholders::_1,std::placeholders::_2)));
-		parameters_.insert(std::make_pair<std::string,HttpParameterHandler>("Content-Length",
+		parameters_.insert(std::make_pair<boost::string_ref,HttpParameterHandler>(boost::string_ref("Content-Length"),
 			std::bind(&HTTPProtocol::process_content_length_parameter,this,std::placeholders::_1,std::placeholders::_2)));
 
 		CacheManager::getInstance()->setCache(info_cache_);
@@ -114,16 +121,21 @@ public:
         bool httpChecker(Packet& packet) {
         
 		const char * header = reinterpret_cast<const char*>(packet.getPayload());
-	
-		if (http_regex_->evaluate(header)) {
 
-			setHeader(packet.getPayload());
-                        ++total_validated_packets_;
-                        return true;
-                } else {
-                        ++total_malformed_packets_;
-                        return false;
-                }
+		// Just check the method of the header, the rest of the header should be
+		// verified once the flow is accepted by the Protocol
+        	for (auto &method: methods_) {
+                	const char *m = std::get<0>(method);
+                	int offset = std::get<1>(method);
+
+                	if (std::memcmp(m,&header[0],offset) == 0) {
+                      		setHeader(packet.getPayload()); 
+                        	++total_validated_packets_;
+                        	return true;
+			}
+                } 
+                ++total_malformed_packets_;
+                return false;
         }
 
 	unsigned char *getPayload() { return http_header_; }
@@ -149,21 +161,21 @@ public:
 private:
 
 	void attach_uri(HTTPInfo *info, boost::string_ref &uri);
-	void attach_host(HTTPInfo *info, const char *host);
-	void attach_useragent(HTTPInfo *info, const char *ua);
+	void attach_host(HTTPInfo *info, boost::string_ref &host);
+	void attach_useragent(HTTPInfo *info, boost::string_ref &ua);
 
 	int extract_uri(HTTPInfo *info, const char *header);
 
 	void parse_header(HTTPInfo *info, const char *parameters);
-	bool process_host_parameter(HTTPInfo *info,const char *host);
-	bool process_ua_parameter(HTTPInfo *info,const char *ua);
-	bool process_content_length_parameter(HTTPInfo *info,const char *parameter);
+	bool process_host_parameter(HTTPInfo *info,boost::string_ref &host);
+	bool process_ua_parameter(HTTPInfo *info,boost::string_ref &ua);
+	bool process_content_length_parameter(HTTPInfo *info,boost::string_ref &parameter);
 
 	int32_t release_http_info(HTTPInfo *info);
 	void release_http_info_cache(HTTPInfo *info);
 
 	static std::vector<HttpMethodType> methods_;
-	std::unordered_map<std::string,HttpParameterHandler> parameters_;
+	std::unordered_map<boost::string_ref,HttpParameterHandler,string_hasher> parameters_;
 
 	int stats_level_;
 	SharedPointer<Regex> http_regex_,http_host_,http_ua_;
@@ -197,6 +209,9 @@ private:
 	static log4cxx::LoggerPtr logger;
 #endif
 	boost::string_ref http_ref_header_;
+	std::string header_field_;
+	boost::string_ref header_parameter_;
+	std::string header_field_tmp_;
 };
 
 typedef std::shared_ptr<HTTPProtocol> HTTPProtocolPtr;

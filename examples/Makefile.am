@@ -7,6 +7,7 @@ EXTRA_DIST = 	bitcoinminer.py \
 		troyan.py \
 		redis_adaptor.py \
 		cassandra_adaptor.py \
+		hadoop_adaptor.py \
 		heartbeat.py \
 		unknown.py \
 		tor.py \

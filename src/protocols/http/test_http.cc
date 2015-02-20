@@ -1211,10 +1211,10 @@ BOOST_AUTO_TEST_CASE (test3_http)
 
 	// The http request contains a non valid minimum http header
 	// GET bad.html
-	//
-        BOOST_CHECK(http->getTotalMalformedPackets() == 1);
-        BOOST_CHECK(http->getTotalValidatedPackets() == 0);
-        BOOST_CHECK(http->getTotalBytes() == 0);
+	// For performance issues this header is determined as valid
+        BOOST_CHECK(http->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(http->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(http->getTotalBytes() == 15);
 
 }
 

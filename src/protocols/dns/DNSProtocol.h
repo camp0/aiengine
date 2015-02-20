@@ -179,7 +179,7 @@ private:
 	Cache<DNSDomain>::CachePtr domain_cache_;
 
 	typedef std::pair<SharedPointer<DNSDomain>,int32_t> DomainHits;
-	typedef std::map<std::string,DomainHits> DomainMapType;
+	typedef std::map<boost::string_ref,DomainHits> DomainMapType;
 	DomainMapType domain_map_;
 	FlowManagerPtrWeak flow_mng_;	
 #ifdef HAVE_LIBLOG4CXX

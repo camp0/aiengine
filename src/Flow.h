@@ -94,6 +94,8 @@ public:
 	const char* getL7ProtocolName() const;
 
 	// Methods for flow time management
+	// TODO: Verify that the current_time_ is allways > than the arrive_time, in some cases
+	// conversations could be on different pcap files on reverse time order.
 	void setArriveTime(time_t t) { arrive_time_ = t; }
 	void setLastPacketTime(time_t t) { current_time_ = t; }
 	int getLastPacketTime() const { return (int)current_time_; } 

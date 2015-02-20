@@ -1418,6 +1418,8 @@ BOOST_AUTO_TEST_CASE (test_case_14) // Test the TCP regex with IPv6 extension he
 
         stack->setTotalTCPFlows(1);
 
+	stack->enableNIDSEngine(true);
+
         rmng->addRegex(r_generic);
         stack->setTCPRegexManager(rmng);
 

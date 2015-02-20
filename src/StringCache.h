@@ -44,6 +44,7 @@ public:
 	const char *getName() const { return value_.c_str(); }
 	void setName(const char *name, int length) { value_.assign(name,length); }
 	void setName(const char *name) { value_.assign(name); }
+
 	size_t getNameSize() const { return value_.size(); }
 
 #ifdef PYTHON_BINDING

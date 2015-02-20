@@ -18,7 +18,7 @@ The main functionalities of AIEngine are:
 - Support for HTTP,DNS and SSL Domains matching.
 - Support for banned domains and hosts for HTTP, DNS, SMTP and SSL.
 - Frequency analysis for unknown traffic and auto-regex generation.
-- Easy integration with databases (MySQL, Redis, Cassandra, etc...) for data correlation.
+- Easy integration with databases (MySQL, Redis, Cassandra, Hadoop, etc...) for data correlation.
 - Easy integration with other packet engines (Netfilter).
 - Support memory clean caches for refresh stored memory information.
 - Support for detect DDoS at network/application layer.
