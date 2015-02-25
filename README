@@ -9,12 +9,12 @@ signatures for use them on NIDS, Firewalls, Traffic classifiers and so on.
 
 The main functionalities of AIEngine are:
 
-- Support for interact with the user while the engine is running.
+- Support for interacting/programing with the user while the engine is running.
 - Support for PCRE JIT for regex matching.
 - Support for regex graphs.
 - Support five types of NetworkStacks (lan,mobile,ipv6,virtual and oflow).
 - Support Sets and Bloom filters for IP searches.
-- Support Linux and FreeBSD operating systems.
+- Support Linux, FreeBSD and MacOS operating systems.
 - Support for HTTP,DNS and SSL Domains matching.
 - Support for banned domains and hosts for HTTP, DNS, SMTP and SSL.
 - Frequency analysis for unknown traffic and auto-regex generation.
@@ -26,7 +26,7 @@ The main functionalities of AIEngine are:
 Using AIEngine 
 ---------------
 
-To use AIEngine just execute the binary aiengine or use the python binding.
+To use AIEngine(reduce version) just execute the binary aiengine or use the python binding.
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
 	aiengine 1.0
@@ -62,11 +62,11 @@ To use AIEngine just execute the binary aiengine or use the python binding.
 				       oflow).
 	  -d [ --dumpflows ]           Dump the flows to stdout.
 	  -s [ --statistics ] arg (=0) Show statistics of the network stack (5 levels).
-          -T [ --timeout ] arg (=180)  Sets the flows timeout.
-          -P [ --protocol ] arg        Show statistics of a specific protocol of the 
+	  -T [ --timeout ] arg (=180)  Sets the flows timeout.
+	  -P [ --protocol ] arg        Show statistics of a specific protocol of the 
                                        network stack.
-          -e [ --release ]             Release the caches.
-          -l [ --release-cache ] arg   Release a specific cache.
+	  -e [ --release ]             Release the caches.
+	  -l [ --release-cache ] arg   Release a specific cache.
 	  -p [ --pstatistics ]         Show statistics of the process.
 	  -h [ --help ]                Show help.
 	  -v [ --version ]             Show version string.
@@ -88,10 +88,10 @@ AIEngine supports five types of Network stacks depending on the network topology
 Integrating AIEngine with other systems 
 ---------------------------------------
 
-AIEngine have a python module in order to be more flexible in terms of integration with other systems and functionalities.
+AIEngine is a python module also that allows to be more flexible in terms of integration with other systems and functionalities.
 The main objects that the python module provide are the following ones.
 
-        DNSDomain
+        DNSInfo
         DatabaseAdaptor (Abstract class)
         DomainName
         DomainNameManager
@@ -142,10 +142,6 @@ AIEngine is under the terms of GPLv2 and is under develop.
 Check out the AIEngine source with 
 
     $ git clone https://bitbucket.com/camp0/aiengine
-
-For make donations use the following bitcoin address
-
-    1MieEN8eX8PcPvwgwQnVjzxJ1U8DTogZzb
 
 Develop new functionality
 -------------------------

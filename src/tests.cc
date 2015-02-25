@@ -1508,7 +1508,7 @@ BOOST_AUTO_TEST_CASE ( test_case_17 )
 
         BOOST_CHECK(flows_udp->getTotalFlows() == 1);
         for (auto &flow: flows_udp->getFlowTable()) {
-                BOOST_CHECK(flow->dns_domain.lock() != nullptr);
+                BOOST_CHECK(flow->dns_info.lock() != nullptr);
         }
 
 	stack->releaseCaches();
@@ -1520,7 +1520,7 @@ BOOST_AUTO_TEST_CASE ( test_case_17 )
 
         BOOST_CHECK(flows_udp->getTotalFlows() == 1);
         for (auto &flow: flows_udp->getFlowTable()) {
-                BOOST_CHECK(flow->dns_domain.lock() == nullptr);
+                BOOST_CHECK(flow->dns_info.lock() == nullptr);
         }
 }
 

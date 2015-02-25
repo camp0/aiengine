@@ -33,7 +33,7 @@
 #include "log4cxx/logger.h"
 #endif
 #include "Protocol.h"
-#include "DNSDomain.h"
+#include "DNSInfo.h"
 #include "DNSQueryTypes.h"
 #include <netinet/ip.h>
 #include <netinet/in.h>
@@ -86,7 +86,8 @@ public:
         	total_dns_type_dnskey_(0),
 		total_dns_type_others_(0),
 		domain_mng_(),ban_domain_mng_(),
-		domain_cache_(new Cache<DNSDomain>("Domain cache")),
+		info_cache_(new Cache<DNSInfo>("Info cache")),
+		name_cache_(new Cache<StringCache>("Name cache")),
 		domain_map_(),
 		flow_mng_() {}
 
@@ -95,6 +96,7 @@ public:
 	static constexpr char *default_name = "DNSProtocol";	
 	static const uint16_t id = 0;
 	static const int header_size = sizeof(struct dns_header);
+	static const int MAX_DNS_BUFFER_NAME = 128;
 	int getHeaderSize() const { return header_size;}
 
 	int64_t getTotalBytes() const { return total_bytes_; }
@@ -130,8 +132,8 @@ public:
 		}
 	}
 
-        void createDNSDomains(int number) { domain_cache_->create(number);}
-        void destroyDNSDomains(int number) { domain_cache_->destroy(number);}
+        void createDNSDomains(int number);
+        void destroyDNSDomains(int number);
 
 	void setDomainNameManager(DomainNameManagerPtrWeak dnm) { domain_mng_ = dnm;}
 	void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) { ban_domain_mng_ = dnm;}
@@ -147,9 +149,9 @@ public:
 #endif
 
 private:
-	void attach_dns_to_flow(Flow *flow, std::string &domain, uint16_t qtype);
+	void attach_dns_to_flow(DNSInfo *info, boost::string_ref &domain, uint16_t qtype);
 	void update_query_types(uint16_t type);
-	void handle_standard_query(Flow *flow,int length);
+	void handle_standard_query(Flow *flow, DNSInfo *info,int length);
 	void handle_standard_response(Flow *flow,int length);
 
 	int stats_level_;
@@ -176,12 +178,13 @@ private:
 	DomainNameManagerPtrWeak domain_mng_;
 	DomainNameManagerPtrWeak ban_domain_mng_;
 
-	Cache<DNSDomain>::CachePtr domain_cache_;
+	Cache<DNSInfo>::CachePtr info_cache_;
+	Cache<StringCache>::CachePtr name_cache_;
 
-	typedef std::pair<SharedPointer<DNSDomain>,int32_t> DomainHits;
-	typedef std::map<boost::string_ref,DomainHits> DomainMapType;
+	typedef std::map<boost::string_ref,StringCacheHits> DomainMapType;
 	DomainMapType domain_map_;
 	FlowManagerPtrWeak flow_mng_;	
+	char dns_buffer_name_[MAX_DNS_BUFFER_NAME];
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
 #endif

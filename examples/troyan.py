@@ -20,18 +20,21 @@ def callback_domain(flow):
 
     ip = str(flow).split(":")[0]
 
-    print("Suspicious Domain (%s) from %s" % (flow.getDNSDomain(),ip))
-    print("Add specific regex for OSX_DocksterTrojan")
+    domain = flow.getDNSInfo()
 
-    reg = pyaiengine.Regex("OSX_DocksterTrojan regex activity",
-        "^\xff\xff\xff\xff\xc2\x1f\x96\x9b\x5f\x03\xd3\x3d\x43\xe0\x4f\x8f")
+    if (domain):
+        print("Suspicious Domain (%s) from %s" % (domain.getName(),ip))
+        print("Add specific regex for OSX_DocksterTrojan")
 
-    reg.setCallback(callback_troyan_activity)
-    r_mng.addRegex(reg)
+        reg = pyaiengine.Regex("OSX_DocksterTrojan regex activity",
+            "^\xff\xff\xff\xff\xc2\x1f\x96\x9b\x5f\x03\xd3\x3d\x43\xe0\x4f\x8f")
 
-    # Something of the references of python are wrong
-    # do not remove this call, fix on future.
-    st.setTCPRegexManager(r_mng)
+        reg.setCallback(callback_troyan_activity)
+        r_mng.addRegex(reg)
+
+        # Something of the references of python are wrong
+        # do not remove this call, fix on future.
+        st.setTCPRegexManager(r_mng)
 
 
 if __name__ == '__main__':

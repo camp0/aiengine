@@ -39,7 +39,7 @@
 #include "StringCache.h"
 #include "protocols/frequency/Frequencies.h"
 #include "protocols/frequency/PacketFrequencies.h"
-#include "protocols/dns/DNSDomain.h"
+#include "protocols/dns/DNSInfo.h"
 #include "protocols/tcp/TCPInfo.h"
 #include "protocols/gprs/GPRSInfo.h"
 #include "protocols/http/HTTPInfo.h"
@@ -97,7 +97,8 @@ public:
 	// TODO: Verify that the current_time_ is allways > than the arrive_time, in some cases
 	// conversations could be on different pcap files on reverse time order.
 	void setArriveTime(time_t t) { arrive_time_ = t; }
-	void setLastPacketTime(time_t t) { current_time_ = t; }
+	void setLastPacketTime(time_t t) { current_time_ = t; } 
+
 	int getLastPacketTime() const { return (int)current_time_; } 
 	int getDuration() const { return (int)(current_time_ - arrive_time_); }
 
@@ -109,7 +110,7 @@ public:
 	WeakPointer<IPAbstractSet> ipset;
 	WeakPointer<TCPInfo> tcp_info;
 	WeakPointer<GPRSInfo> gprs_info;
-	WeakPointer<DNSDomain> dns_domain;
+	WeakPointer<DNSInfo> dns_info;
 	WeakPointer<Regex> regex;
 	WeakPointer<HTTPInfo> http_info;
 	WeakPointer<StringCache> ssl_host;
@@ -156,7 +157,7 @@ public:
 	Frequencies& getFrequencies() const { return *frequencies.lock().get();}
 	PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.lock().get();}
 	Regex& getRegex() const { return *regex.lock().get();}
-	DNSDomain& getDNSDomain() const { return *dns_domain.lock().get();}
+	DNSInfo& getDNSInfo() const { return *dns_info.lock().get();}
 	StringCache& getSSLHost() const { return *ssl_host.lock().get();}
 	SMTPInfo& getSMTPInfo() const { return *smtp_info.lock().get();}
 	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}

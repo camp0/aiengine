@@ -41,7 +41,8 @@ public:
     	virtual ~SIPInfo() {}
 
 	void reset() { 
-		resetStrings(); 
+		resetStrings();
+		state_ = 0; 
 	}
 
 	void resetStrings() { uri.reset(); from.reset(); to.reset(); via.reset(); }

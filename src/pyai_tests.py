@@ -129,7 +129,7 @@ class StackLanTests(unittest.TestCase):
     	    udp_flow = flow
     	    break
 
-        self.assertEqual(str(udp_flow.getDNSDomain()),"www.google.com")	
+        self.assertEqual(str(udp_flow.getDNSInfo().getName()),"www.google.com")	
 
         for flow in ft:
     	    http_flow = flow
@@ -394,7 +394,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(len(fu), 1)
 
         for flow in fu:
-            self.assertNotEqual(flow.getDNSDomain(),None)
+            self.assertNotEqual(flow.getDNSInfo(),None)
 
         # release some of the caches
         self.s.releaseCache("SSLProtocol")
@@ -410,7 +410,7 @@ class StackLanTests(unittest.TestCase):
             self.assertEqual(flow.getHTTPInfo(),None)
 
         for flow in fu:
-            self.assertEqual(flow.getDNSDomain(),None)
+            self.assertEqual(flow.getDNSInfo(),None)
 
     def test14(self):
         """ Attach a database to the engine and test timeouts on udp flows """
@@ -697,7 +697,7 @@ class StackLanIPv6Tests(unittest.TestCase):
     def test_7(self):
         """ Extract IPv6 address from a DomainName matched """
         def dns_callback(flow):
-            for ip in flow.getDNSDomain():
+            for ip in flow.getDNSInfo():
                 if (ip == "2607:f8b0:4001:c05::6a"):
                     self.called_callback += 1
 
@@ -942,7 +942,6 @@ class StackOpenFlowTests(unittest.TestCase):
         self.dis.close()
 
         self.assertEqual(r.getMatchs(), 1)
-
 
 if __name__ == '__main__':
 

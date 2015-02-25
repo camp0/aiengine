@@ -83,9 +83,7 @@ void SSLProtocol::attach_host_to_flow(Flow *flow, boost::string_ref &servername)
 	SharedPointer<StringCache> host_ptr = flow->ssl_host.lock();
 
 	if (!host_ptr) { // There is no Host object attached to the flow
-		// std::string ssl_name(servername);
-		
-		HostMapType::iterator it = host_map_.find(servername.data());
+		HostMapType::iterator it = host_map_.find(servername);
 		if (it == host_map_.end()) {
 			host_ptr = host_cache_->acquire().lock();
 			if (host_ptr) {
@@ -145,7 +143,7 @@ void SSLProtocol::handle_client_hello(Flow *flow,int offset, u_char *data) {
 						int server_length = ntohs(server->length);
 						if ((block_offset + server_length < payload_length )and(server_length > 0)) {
 							boost::string_ref servername((char*)server->data,server_length);
-							// std::string servername((char*)server->data,0,server_length);
+							
 							DomainNameManagerPtr ban_dnm = ban_host_mng_.lock();
 
 							ban_dnm = ban_host_mng_.lock();

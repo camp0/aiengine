@@ -30,6 +30,7 @@
 
 #include "../Signature.h"
 #include "../Pointer.h"
+#include <boost/utility/string_ref.hpp>
 
 #if defined(HAVE_LIBPCRE)
 #include <pcre.h>
@@ -98,6 +99,7 @@ public:
 	}
  
 	bool evaluate(const std::string& data);
+	bool evaluate(boost::string_ref &data);
 
 	friend std::ostream& operator<< (std::ostream& out, const Regex& sig);
 

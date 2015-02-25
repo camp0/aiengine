@@ -325,8 +325,6 @@ int HTTPProtocol::extract_uri(HTTPInfo *info, const char *header) {
 	return method_size;
 }
 
-// TODO: Remove the std::string in order to avoid mallocs and frees
-// 
 void HTTPProtocol::parse_header(HTTPInfo *info, const char *parameters) {
 
 	boost::string_ref http_header(parameters);
@@ -338,10 +336,8 @@ void HTTPProtocol::parse_header(HTTPInfo *info, const char *parameters) {
 	int field_index = 0;
 	int parameter_index = 0;
 
-	// TODO: remove the references to strings	
 	header_field_.clear();
-	header_field_tmp_.clear();
-	header_parameter_.clear();
+	header_parameter_.clear(); 
 
 	for (i = 0; i< http_header.length(); ++i) {
        		// Check if is end off line
@@ -361,10 +357,8 @@ void HTTPProtocol::parse_header(HTTPInfo *info, const char *parameters) {
 						break;
 					}
                                 }
-                                // std::cout <<"FULL:(" << token << "):(" << parameter << ")" << std::endl;
                                 header_field_.clear();
                                 header_parameter_.clear();
-                                header_field_tmp_.clear();
 				field_index = i + 2;
 			}
 
@@ -377,14 +371,11 @@ void HTTPProtocol::parse_header(HTTPInfo *info, const char *parameters) {
                        	++i;
 		} else {
 			if ((ptr[i] == ':')and(have_token == false)) {
-				header_parameter_.clear();
-                                header_field_ = header_field_tmp_;
-                                header_field_tmp_.clear();
+				header_field_ = http_header.substr(field_index, i - field_index);
 				parameter_index = i + 2;
+				field_index = i + 1;
                                 have_token = true;
                                 ++i;
-			} else {
-                                header_field_tmp_ += ptr[i];
 			}
 		}
 	}

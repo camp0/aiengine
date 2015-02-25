@@ -162,13 +162,11 @@ void SMTPProtocol::attach_from(SMTPInfo *info, boost::string_ref &from) {
         SharedPointer<StringCache> from_ptr = info->from.lock();
 
         if (!from_ptr) { // There is no from attached
-		std::string from_str(from);
-
-                FromMapType::iterator it = from_map_.find(from_str.c_str());
+                FromMapType::iterator it = from_map_.find(from);
                 if (it == from_map_.end()) {
                         from_ptr = from_cache_->acquire().lock();
                         if (from_ptr) {
-                                from_ptr->setName(from_str.c_str());
+                                from_ptr->setName(from.data(),from.length());
                                 info->from = from_ptr;
                                 from_map_.insert(std::make_pair(boost::string_ref(from_ptr->getName()),
 					std::make_pair(from_ptr,1)));
@@ -237,13 +235,12 @@ void SMTPProtocol::handle_cmd_rcpt(SMTPInfo *info, const char *header) {
         size_t end = h.rfind(">");
 
         if (!to_ptr) { // There is no from attached
-        
-		std::string to(h.substr(start + 1,end - start - 1));
-                ToMapType::iterator it = to_map_.find(to.c_str());
+		boost::string_ref to(h.substr(start + 1,end - start - 1));
+                ToMapType::iterator it = to_map_.find(to);
                 if (it == to_map_.end()) {
                         to_ptr = to_cache_->acquire().lock();
                         if (to_ptr) {
-                                to_ptr->setName(to.c_str());
+                                to_ptr->setName(to.data(),to.length());
                                 info->to = to_ptr;
                                 to_map_.insert(std::make_pair(boost::string_ref(to_ptr->getName()),
 					std::make_pair(to_ptr,1)));

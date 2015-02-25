@@ -546,8 +546,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Returns a map of frequencies of the payload of the flow.")
 		.def("getPacketFrequencies",&Flow::getPacketFrequencies,return_internal_reference<>(),
 			"Returns the packet frequencies of the flow.")
-		.def("getDNSDomain",&Flow::getDNSDomain,return_internal_reference<>(),
-			"Returns the DNS domain name if the flow is a DNS.")
+		.def("getDNSInfo",&Flow::getDNSInfo,return_internal_reference<>(),
+			"Returns the DNS info name if the flow is a DNS.")
 		.def("getSSLHost",&Flow::getSSLHost,return_internal_reference<>(),
 			"Returns the CA domain name if the flow is SSL.")
 		.def("getRegex",&Flow::getRegex,return_internal_reference<>(),
@@ -563,9 +563,9 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def(self_ns::str(self_ns::self))
 	;
 
-	boost::python::class_<DNSDomain, SharedPointer<DNSDomain>,boost::noncopyable>("DNSDomain")
-		.def("__iter__",boost::python::range(&DNSDomain::begin,&DNSDomain::end))
-                .def("getName",&DNSDomain::getName,return_value_policy<return_by_value>(),
+	boost::python::class_<DNSInfo, SharedPointer<DNSInfo>,boost::noncopyable>("DNSInfo")
+		.def("__iter__",boost::python::range(&DNSInfo::begin,&DNSInfo::end))
+                .def("getName",&DNSInfo::getName,return_internal_reference<>(),
 			"Returns the DNS domain name.")
 		.def(self_ns::str(self_ns::self))
 	;

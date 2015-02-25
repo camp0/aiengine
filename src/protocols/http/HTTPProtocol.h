@@ -62,7 +62,6 @@ class HTTPProtocol: public Protocol
 {
 public:
     	explicit HTTPProtocol():Protocol(HTTPProtocol::default_name),stats_level_(0),
-                http_regex_(new Regex("Main HTTP expression","^(GET|POST|HEAD|PUT|TRACE).*HTTP/1.")),
                 http_host_(new Regex("Host expression","Host: .*?\r\n")),
                 http_ua_(new Regex("User Agent expression","User-Agent: .*?\r\n")),
 		http_header_(nullptr),
@@ -77,7 +76,7 @@ public:
 		ua_map_(),host_map_(),uri_map_(),
 		host_mng_(),ban_host_mng_(),
 		flow_mng_(),
-		http_ref_header_() {
+		http_ref_header_(),header_field_(),header_parameter_() {
 
 		// Add the parameters that wants to be process by the HTTPProtocol		
 		parameters_.insert(std::make_pair<boost::string_ref,HttpParameterHandler>(boost::string_ref("Host"),
@@ -178,7 +177,7 @@ private:
 	std::unordered_map<boost::string_ref,HttpParameterHandler,string_hasher> parameters_;
 
 	int stats_level_;
-	SharedPointer<Regex> http_regex_,http_host_,http_ua_;
+	SharedPointer<Regex> http_host_,http_ua_;
 	unsigned char *http_header_;
 	int16_t http_header_size_;	
 	int64_t total_bytes_;
@@ -209,9 +208,8 @@ private:
 	static log4cxx::LoggerPtr logger;
 #endif
 	boost::string_ref http_ref_header_;
-	std::string header_field_;
+	boost::string_ref header_field_;
 	boost::string_ref header_parameter_;
-	std::string header_field_tmp_;
 };
 
 typedef std::shared_ptr<HTTPProtocol> HTTPProtocolPtr;

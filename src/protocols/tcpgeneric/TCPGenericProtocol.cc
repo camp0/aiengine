@@ -41,7 +41,7 @@ void TCPGenericProtocol::processFlow(Flow *flow, bool close) {
 	if (sig) { // There is a RegexManager attached on the protocol 
 		SharedPointer<Regex> regex = flow->regex.lock();
 		const unsigned char *payload = flow->packet->getPayload();
-		std::string data(reinterpret_cast<const char*>(payload),flow->packet->getLength());
+		boost::string_ref data(reinterpret_cast<const char*>(payload),flow->packet->getLength());
 		bool result = false;
 
 		if (regex) { // The flow have been matched with some regex

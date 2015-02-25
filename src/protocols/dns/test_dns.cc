@@ -63,14 +63,14 @@ BOOST_AUTO_TEST_CASE (test1_dns)
 	Flow *flow = udp->getCurrentFlow();
 
 	BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK(flow->dns_domain.lock() != nullptr);
-        SharedPointer<DNSDomain> dom = flow->dns_domain.lock();
+        BOOST_CHECK(flow->dns_info.lock() != nullptr);
+        SharedPointer<DNSInfo> dom = flow->dns_info.lock();
 
 	BOOST_CHECK( dom->getQueryType() == static_cast<uint16_t>(DNSQueryTypes::DNS_TYPE_A));	
 
 	std::string domain("www.as.com");
 
-	BOOST_CHECK(domain.compare(dom->getName()) == 0);
+	BOOST_CHECK(domain.compare(dom->name.lock()->getName()) == 0);
 }
 
 // Test the ban functionality for avoid unwanted domains
@@ -110,7 +110,9 @@ BOOST_AUTO_TEST_CASE (test2_dns)
 	Flow *flow = udp->getCurrentFlow();
 
 	BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK(flow->dns_domain.lock() == nullptr);
+        BOOST_CHECK(flow->dns_info.lock() != nullptr);
+	SharedPointer<DNSInfo> info = flow->dns_info.lock();
+        BOOST_CHECK(info->name.lock() == nullptr);
 }
 
 BOOST_AUTO_TEST_CASE (test3_dns)
@@ -129,8 +131,8 @@ BOOST_AUTO_TEST_CASE (test3_dns)
         Flow *flow = udp->getCurrentFlow();
 
         BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK(flow->dns_domain.lock() != nullptr);
-        SharedPointer<DNSDomain> dom = flow->dns_domain.lock();
+        BOOST_CHECK(flow->dns_info.lock() != nullptr);
+        SharedPointer<DNSInfo> dom = flow->dns_info.lock();
         BOOST_CHECK( dom->getQueryType() == static_cast<uint16_t>(DNSQueryTypes::DNS_TYPE_SRV));
 }
 
@@ -150,8 +152,8 @@ BOOST_AUTO_TEST_CASE (test4_dns)
         Flow *flow = udp->getCurrentFlow();
 
         BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK(flow->dns_domain.lock() != nullptr);
-        SharedPointer<DNSDomain> dom = flow->dns_domain.lock();
+        BOOST_CHECK(flow->dns_info.lock() != nullptr);
+        SharedPointer<DNSInfo> dom = flow->dns_info.lock();
         BOOST_CHECK( dom->getQueryType() == static_cast<uint16_t>(DNSQueryTypes::DNS_TYPE_SOA));
 }
 
@@ -171,12 +173,12 @@ BOOST_AUTO_TEST_CASE (test5_dns)
         Flow *flow = udp->getCurrentFlow();
 
         BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK(flow->dns_domain.lock() != nullptr);
-        SharedPointer<DNSDomain> dom = flow->dns_domain.lock();
+        BOOST_CHECK(flow->dns_info.lock() != nullptr);
+        SharedPointer<DNSInfo> dom = flow->dns_info.lock();
         BOOST_CHECK( dom->getQueryType() == static_cast<uint16_t>(DNSQueryTypes::DNS_TYPE_SOA));
 
 	std::string domain("bgskrot.ex");
-	BOOST_CHECK(domain.compare(dom->getName()) == 0);
+	BOOST_CHECK(domain.compare(dom->name.lock()->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test6_dns)
@@ -195,12 +197,12 @@ BOOST_AUTO_TEST_CASE (test6_dns)
         Flow *flow = udp->getCurrentFlow();
 
         BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK(flow->dns_domain.lock() != nullptr);
-        SharedPointer<DNSDomain> dom = flow->dns_domain.lock();
+        BOOST_CHECK(flow->dns_info.lock() != nullptr);
+        SharedPointer<DNSInfo> dom = flow->dns_info.lock();
         BOOST_CHECK( dom->getQueryType() == static_cast<uint16_t>(DNSQueryTypes::DNS_TYPE_AAAA));
 
         std::string domain("ssl.google-analytics.com");
-        BOOST_CHECK(domain.compare(dom->getName()) == 0);
+        BOOST_CHECK(domain.compare(dom->name.lock()->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test7_dns)
@@ -219,12 +221,12 @@ BOOST_AUTO_TEST_CASE (test7_dns)
         Flow *flow = udp->getCurrentFlow();
 
 	BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK(flow->dns_domain.lock() != nullptr);
-        SharedPointer<DNSDomain> dom = flow->dns_domain.lock();
+        BOOST_CHECK(flow->dns_info.lock() != nullptr);
+        SharedPointer<DNSInfo> dom = flow->dns_info.lock();
         BOOST_CHECK( dom->getQueryType() == static_cast<uint16_t>(DNSQueryTypes::DNS_TYPE_DNSKEY));
 
         std::string domain("<Root>");
-        BOOST_CHECK(domain.compare(dom->getName()) == 0);
+        BOOST_CHECK(domain.compare(dom->name.lock()->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test8_dns)
@@ -243,12 +245,12 @@ BOOST_AUTO_TEST_CASE (test8_dns)
         Flow *flow = udp->getCurrentFlow();
 
         BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK(flow->dns_domain.lock() != nullptr);
-        SharedPointer<DNSDomain> dom = flow->dns_domain.lock();
+        BOOST_CHECK(flow->dns_info.lock() != nullptr);
+        SharedPointer<DNSInfo> dom = flow->dns_info.lock();
         BOOST_CHECK( dom->getQueryType() == static_cast<uint16_t>(DNSQueryTypes::DNS_TYPE_DNSKEY));
 
         std::string domain("ietf.org");
-        BOOST_CHECK(domain.compare(dom->getName()) == 0);
+        BOOST_CHECK(domain.compare(dom->name.lock()->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test9_dns)
@@ -266,11 +268,11 @@ BOOST_AUTO_TEST_CASE (test9_dns)
         Flow *flow = udp->getCurrentFlow();
 
         BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK( flow->dns_domain.lock() != nullptr);
+        BOOST_CHECK( flow->dns_info.lock() != nullptr);
 
 	dns->releaseCache();
 
-        BOOST_CHECK( flow->dns_domain.lock() == nullptr);
+        BOOST_CHECK( flow->dns_info.lock() == nullptr);
 }
 
 // Process query and response
@@ -298,8 +300,8 @@ BOOST_AUTO_TEST_CASE (test10_dns)
         Flow *flow = udp->getCurrentFlow();
 	//show();
         BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK( flow->dns_domain.lock() != nullptr);
-        SharedPointer<DNSDomain> dom = flow->dns_domain.lock();
+        BOOST_CHECK( flow->dns_info.lock() != nullptr);
+        SharedPointer<DNSInfo> dom = flow->dns_info.lock();
 	int i = 0;
 	for (auto &ip: *dom) {
 		++i;
@@ -338,8 +340,8 @@ BOOST_AUTO_TEST_CASE (test11_dns)
         Flow *flow = udp->getCurrentFlow();
         //show();
         BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK( flow->dns_domain.lock() != nullptr);
-        SharedPointer<DNSDomain> dom = flow->dns_domain.lock();
+        BOOST_CHECK( flow->dns_info.lock() != nullptr);
+        SharedPointer<DNSInfo> dom = flow->dns_info.lock();
 
 	std::set<std::string> ips {
 		{ "74.125.24.139" },	

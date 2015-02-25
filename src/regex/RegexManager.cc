@@ -61,6 +61,23 @@ void RegexManager::evaluate(const std::string& data, bool *result) {
 	return;
 }
 
+void RegexManager::evaluate(boost::string_ref &data, bool *result) {
+
+	current_signature_.reset();
+
+        for (auto &sig: signatures_) {
+
+                if (sig->evaluate(data)) {
+                        ++total_matched_signatures_;
+                        current_signature_ = sig;
+                        (*result) = true;
+                        break;
+                }
+        }
+        return;
+}
+
+
 std::ostream& operator<< (std::ostream& out, const RegexManager& sig) {
 
 	out << "RegexManager(" << &sig << ") statistics" << std::dec <<  std::endl;	

@@ -163,14 +163,12 @@ void SIPProtocol::attach_from_to_flow(SIPInfo *info, boost::string_ref &from) {
 
 	SharedPointer<StringCache> from_ptr = info->from.lock();
 
-	std::string from_str(from);
-
 	if (!from_ptr) { 
-		FromMapType::iterator it = from_map_.find(from_str.c_str());
+		FromMapType::iterator it = from_map_.find(from);
 		if (it == from_map_.end()) {
 			from_ptr = from_cache_->acquire().lock();
 			if (from_ptr) {
-				from_ptr->setName(from_str.c_str());
+				from_ptr->setName(from.data(),from.length());
 				info->from = from_ptr;
 				from_map_.insert(std::make_pair(boost::string_ref(from_ptr->getName()),
 					std::make_pair(from_ptr,1)));
@@ -198,14 +196,12 @@ void SIPProtocol::attach_to_to_flow(SIPInfo *info, boost::string_ref &to) {
 
 	SharedPointer<StringCache> to_ptr = info->to.lock();
 
-	std::string to_str(to);
-
 	if (!to_ptr) { 
-		ToMapType::iterator it = to_map_.find(to_str.c_str());
+		ToMapType::iterator it = to_map_.find(to);
 		if (it == to_map_.end()) {
 			to_ptr = to_cache_->acquire().lock();
 			if (to_ptr) {
-				to_ptr->setName(to_str.c_str());
+				to_ptr->setName(to.data(),to.length());
 				info->to = to_ptr;
 				to_map_.insert(std::make_pair(boost::string_ref(to_ptr->getName()),
 					std::make_pair(to_ptr,1)));
@@ -223,14 +219,12 @@ void SIPProtocol::attach_via_to_flow(SIPInfo *info, boost::string_ref &via) {
 
         SharedPointer<StringCache> via_ptr = info->via.lock();
 
-	std::string via_str(via);
-
         if (!via_ptr) {
-                ViaMapType::iterator it = via_map_.find(via_str.c_str());
+                ViaMapType::iterator it = via_map_.find(via);
                 if (it == via_map_.end()) {
                         via_ptr = via_cache_->acquire().lock();
                         if (via_ptr) {
-                                via_ptr->setName(via_str.c_str());
+                                via_ptr->setName(via.data(),via.length());
                                 info->via = via_ptr;
                                 via_map_.insert(std::make_pair(boost::string_ref(via_ptr->getName()),
 					std::make_pair(via_ptr,1)));
@@ -246,13 +240,11 @@ void SIPProtocol::attach_via_to_flow(SIPInfo *info, boost::string_ref &via) {
 
 void SIPProtocol::attach_uri_to_flow(SIPInfo *info, boost::string_ref &uri) {
 
-	std::string uri_str(uri);
-
-	UriMapType::iterator it = uri_map_.find(uri_str.c_str());
+	UriMapType::iterator it = uri_map_.find(uri);
         if (it == uri_map_.end()) {
         	SharedPointer<StringCache> uri_ptr = uri_cache_->acquire().lock();
                 if (uri_ptr) {
-                	uri_ptr->setName(uri_str.c_str());
+                	uri_ptr->setName(uri.data(),uri.length());
                         info->uri = uri_ptr;
                         uri_map_.insert(std::make_pair(boost::string_ref(uri_ptr->getName()),
 				std::make_pair(uri_ptr,1)));

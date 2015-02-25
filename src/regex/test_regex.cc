@@ -212,5 +212,49 @@ BOOST_AUTO_TEST_CASE (test7_regex)
 	BOOST_CHECK( text.compare(re->getExtract()) == 0);
 }
 
+BOOST_AUTO_TEST_CASE (test8_regex)
+{
+        boost::string_ref text("GET some/data/i/want/to/retrieve HTTP");
+        RegexManagerPtr sigmng = RegexManagerPtr( new RegexManager());
+        SharedPointer<Regex> re = SharedPointer<Regex>(new Regex("r1","^GET .* HTTP$"));
+	bool result = false;
+
+	sigmng->addRegex(re);
+
+	sigmng->evaluate(text,&result);
+
+        BOOST_CHECK( result == true);
+}
+
+BOOST_AUTO_TEST_CASE (test9_regex)
+{
+        unsigned char buffer_text[] =
+                "\x69\x74\x73\x20\x70\x65\x61\x6e\x75\x74\x20\x62\x75\x74\x74\x65"
+                "\x72\x20\x26\x20\x73\x65\x6d\x65\x6d\x20\x74\x69\x6d\x65\x0a";
+        RegexManagerPtr sigmng = RegexManagerPtr( new RegexManager());
+        SharedPointer<Regex> re1 = SharedPointer<Regex>(new Regex("r1","^(its peanut).*$"));
+        SharedPointer<Regex> re2 = SharedPointer<Regex>(new Regex("r2","^.*(its peanut).*$"));
+
+        sigmng->addRegex(re1);
+
+        bool value = false;
+        boost::string_ref data1(reinterpret_cast<const char*>(raw_ethernet_ipv6_tcp_text_message),raw_ethernet_ipv6_tcp_text_message_length);
+        boost::string_ref data2(reinterpret_cast<const char*>(buffer_text),31);
+
+        sigmng->evaluate(data1,&value);
+        BOOST_CHECK(value == false);
+        BOOST_CHECK(sigmng->getMatchedRegex() == nullptr);
+
+        sigmng->evaluate(data2,&value);
+        BOOST_CHECK(value == true);
+        BOOST_CHECK(sigmng->getMatchedRegex() == re1);
+
+        sigmng->addRegex(re2);
+
+        sigmng->evaluate(data1,&value);
+        BOOST_CHECK(value == true);
+        BOOST_CHECK(sigmng->getMatchedRegex() == re2);
+}
+
 BOOST_AUTO_TEST_SUITE_END( )
 

@@ -60,6 +60,9 @@ def setup_compiler():
     elif (sys.platform == 'openbsd5'):
         macros.append(('__OPENBSD__','1'))
         os.environ["CC"] = "eg++"
+    elif (sys.platform == 'darwin'):
+        macros.append(('__DARWIN__','1'))
+        os.environ["CC"] = "g++"
     else:
         os.environ["CC"] = "g++"
 
@@ -70,7 +73,7 @@ aiengine_module = Extension("pyaiengine",
     libraries = ["boost_system","boost_python","pcap","pcre"],
 #    define_macros = [('__OPENBSD__','1'),('PYTHON_BINDING','1'),('HAVE_LIBPCRE','1')],
     # define_macros = [('PYTHON_BINDING','1'),('HAVE_LIBPCRE','1')],
-    extra_compile_args = ["-ggdb","-Wreorder","-std=c++11","-lpthread","-lstdc++"],
+    extra_compile_args = ["-Wreorder","-std=c++11","-lpthread","-lstdc++"],
     )
 
 if __name__ == "__main__":

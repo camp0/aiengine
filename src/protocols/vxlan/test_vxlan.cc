@@ -161,12 +161,13 @@ BOOST_AUTO_TEST_CASE (test4_vxlan)
 	BOOST_CHECK(flow_vir->getSourcePort() == 47864);
 	BOOST_CHECK(flow_vir->getDestinationPort() == 53);
 
-	BOOST_CHECK(flow_vir->dns_domain.lock() != nullptr);
-        SharedPointer<DNSDomain> dns_info = flow_vir->dns_domain.lock();
+	BOOST_CHECK(flow_vir->dns_info.lock() != nullptr);
+        SharedPointer<DNSInfo> dns_info = flow_vir->dns_info.lock();
 
 	std::string domain("github.com");
 
-	BOOST_CHECK(domain.compare(dns_info->getName()) == 0);
+	BOOST_CHECK(dns_info->name.lock() != nullptr);
+	BOOST_CHECK(domain.compare(dns_info->name.lock()->getName()) == 0);
 }
 
 // Test the Tag functionatliy with two identical udp flows but in different vni networks
@@ -209,18 +210,20 @@ BOOST_AUTO_TEST_CASE (test5_vxlan)
 	
 	Flow *flow_udp2 = udp_vir->getCurrentFlow();
 
-	BOOST_CHECK(flow_udp1->dns_domain.lock() != nullptr);
-        SharedPointer<DNSDomain> dns_info = flow_udp1->dns_domain.lock();
+	BOOST_CHECK(flow_udp1->dns_info.lock() != nullptr);
+        SharedPointer<DNSInfo> dns_info = flow_udp1->dns_info.lock();
 
 	std::string domain("github.com");
 
-	BOOST_CHECK(domain.compare(dns_info->getName()) == 0);
+	BOOST_CHECK(dns_info->name.lock() != nullptr);
+	BOOST_CHECK(domain.compare(dns_info->name.lock()->getName()) == 0);
 	
-	BOOST_CHECK(flow_udp2->dns_domain.lock() != nullptr);
-        dns_info = flow_udp2->dns_domain.lock();
+	BOOST_CHECK(flow_udp2->dns_info.lock() != nullptr);
+        dns_info = flow_udp2->dns_info.lock();
 
 	domain = "gitgit.com";
-	BOOST_CHECK(domain.compare(dns_info->getName()) == 0);
+	BOOST_CHECK(dns_info->name.lock() != nullptr);
+	BOOST_CHECK(domain.compare(dns_info->name.lock()->getName()) == 0);
 
 	BOOST_CHECK(flow_udp1 != flow_udp2);
 

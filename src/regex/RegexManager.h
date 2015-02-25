@@ -46,7 +46,8 @@ public:
 	int32_t getTotalRegexs() { return signatures_.size();}
 	int32_t getTotalMatchingRegexs() { return total_matched_signatures_;}
 
-	void evaluate(const std::string& data,bool *result); 
+	void evaluate(const std::string& data,bool *result); // Remove in future versions  
+	void evaluate(boost::string_ref& data,bool *result); 
 
 	void addRegex(const std::string name,const std::string expression);
 	void addRegex(SharedPointer<Regex> sig);

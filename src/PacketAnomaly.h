@@ -40,7 +40,8 @@ enum class PacketAnomaly : std::int8_t {
 	TCP_BAD_FLAGS = 4,
 	TCP_BOGUS_HEADER = 5, 
 	UDP_BOGUS_HEADER = 6, 
-	DNS_BOGUS_HEADER = 7 
+	DNS_BOGUS_HEADER = 7, 
+	DNS_LONG_NAME = 8 
 };
 
 const std::unordered_map<std::int8_t,std::string> PacketAnomalyToString {
@@ -51,7 +52,8 @@ const std::unordered_map<std::int8_t,std::string> PacketAnomalyToString {
 	{ static_cast<std::int8_t>(PacketAnomaly::TCP_BAD_FLAGS), "TCP bad flags" },
 	{ static_cast<std::int8_t>(PacketAnomaly::TCP_BOGUS_HEADER), "TCP bogus header" },
 	{ static_cast<std::int8_t>(PacketAnomaly::UDP_BOGUS_HEADER), "UDP bogus header" },
-	{ static_cast<std::int8_t>(PacketAnomaly::DNS_BOGUS_HEADER), "DNS bogus header" }
+	{ static_cast<std::int8_t>(PacketAnomaly::DNS_BOGUS_HEADER), "DNS bogus header" },
+	{ static_cast<std::int8_t>(PacketAnomaly::DNS_LONG_NAME), "DNS long domain name" }
 };
 
 } // namespace aiengine 

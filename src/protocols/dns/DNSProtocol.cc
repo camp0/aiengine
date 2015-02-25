@@ -48,18 +48,25 @@ void DNSProtocol::releaseCache() {
 		int32_t release_doms = domain_map_.size();
 
 		// Compute the size of the strings used as keys on the map
-		std::for_each (domain_map_.begin(), domain_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,DomainHits> const &dt) {
+		std::for_each (domain_map_.begin(), domain_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &dt) {
 			total_bytes_released += dt.first.size();
 		});
 
 		for (auto &flow: ft) {
-			SharedPointer<DNSDomain> domain = flow->dns_domain.lock();
+			SharedPointer<DNSInfo> info = flow->dns_info.lock();
 
-			if (domain) { // The flow have a domain attatched
-				flow->dns_domain.reset();
-				total_bytes_released_by_flows += domain->getName().size();
-				domain_cache_->release(domain);
+			if (info) { // The flow have a domain attatched
+				SharedPointer<StringCache> name = info->name.lock();		
+
+				if (name) {
+					info->name.reset();
+					total_bytes_released_by_flows += name->getNameSize();
+					name_cache_->release(name);
+				}
 				++release_flows;
+				info.reset();
+				flow->dns_info.reset();
+				info_cache_->release(info);
 			}
 		} 
 		domain_map_.clear();
@@ -78,26 +85,26 @@ void DNSProtocol::releaseCache() {
 	}
 }
 
-void DNSProtocol::attach_dns_to_flow(Flow *flow, std::string &domain, uint16_t qtype) {
+void DNSProtocol::attach_dns_to_flow(DNSInfo *info, boost::string_ref &domain, uint16_t qtype) {
 
-	SharedPointer<DNSDomain> dom_ptr = flow->dns_domain.lock();
+	SharedPointer<StringCache> name = info->name.lock();
 
-        if (!dom_ptr) { // There is no DNS attached
+        if (!name) { // There is no DNS attached
 		DomainMapType::iterator it = domain_map_.find(domain);
                 if (it == domain_map_.end()) {
-                	dom_ptr = domain_cache_->acquire().lock();
-                        if (dom_ptr) {
-                        	dom_ptr->setName(domain);
-				dom_ptr->setQueryType(qtype);
+                	name = name_cache_->acquire().lock();
+                        if (name) {
+                        	name->setName(domain.data(),domain.length());
+				info->setQueryType(qtype);
 				
-                                flow->dns_domain = dom_ptr;
-                                domain_map_.insert(std::make_pair(boost::string_ref(dom_ptr->getName()),
-					std::make_pair(dom_ptr,1)));
+                                info->name = name;
+                                domain_map_.insert(std::make_pair(boost::string_ref(name->getName()),
+					std::make_pair(name,1)));
                         }
 		} else {
 			int *counter = &std::get<1>(it->second);
                         ++(*counter);
-			flow->dns_domain = std::get<0>(it->second);
+			info->name = std::get<0>(it->second);
 		}
 	}
 }
@@ -112,9 +119,19 @@ void DNSProtocol::processFlow(Flow *flow, bool close) {
 		setHeader(flow->packet->getPayload());
 		uint16_t flags = ntohs(dns_header_->flags);
 
+        	SharedPointer<DNSInfo> info = flow->dns_info.lock();
+
+        	if(!info) {
+                	info = info_cache_->acquire().lock();
+                	if (!info) {
+                        	return;
+                	}
+                	flow->dns_info = info;
+        	}
+
 		if ((flags == DNS_STANDARD_QUERY)or(flags == DNS_DYNAMIC_UPDATE)) {
 			if (ntohs(dns_header_->questions) > 0) {  
-				handle_standard_query(flow,length);
+				handle_standard_query(flow,info.get(),length);
 			}
 		} else if (flags == DNS_STANDARD_RESPONSE) {
 			if (ntohs(dns_header_->answers) > 0) {
@@ -129,36 +146,44 @@ void DNSProtocol::processFlow(Flow *flow, bool close) {
 	return;
 } 
 
-void DNSProtocol::handle_standard_query(Flow *flow,int length) {
-	std::string domain;
-	int i = 1; 
+void DNSProtocol::handle_standard_query(Flow *flow, DNSInfo *info, int length) {
+	boost::string_ref domain;
+	int offset = 1; 
 		
-	// Probably i will need to do it better :(	
-	while (dns_header_->data[i] != '\x00') {
-		if(dns_header_->data[i] < '\x20' )
-			domain += ".";
-		else
-			domain += dns_header_->data[i];
-		++i;
+	// Probably i will need to do it better :( http://www.tcpipguide.com/free/t_DNSNameNotationandMessageCompressionTechnique.htm	
+	while (dns_header_->data[offset] != '\x00') {
+		if(dns_header_->data[offset] < '\x20' ) {
+			dns_buffer_name_[offset-1] = '.';
+		} else {
+			dns_buffer_name_[offset-1] = dns_header_->data[offset];
+		} 
+		++offset;
 		// TODO: extra check for bogus packets check length
+		if (offset >= MAX_DNS_BUFFER_NAME) {
+               		if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
+               			flow->setPacketAnomaly(PacketAnomaly::DNS_LONG_NAME);
+			}
+			break;
+		}
 	}
 
-	if (i == 1) { // There is no name, a root record
-		i = 0;
+	boost::string_ref dns_name(dns_buffer_name_,offset);
+
+	if (offset == 1) { // There is no name, a root record
+		offset = 0;
 		domain = "<Root>";
+	} else {
+		domain = dns_name.substr(0,offset-1);
 	}
 
 	// Check if the payload is malformed
-	if (header_size + i > length) {
+	if (header_size + offset > length) {
                	if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
                		flow->setPacketAnomaly(PacketAnomaly::DNS_BOGUS_HEADER);
 		}
-		std::cout << "Bad packet on " << *flow << std::endl;
 	}
 
-	//std::cout << "DNSProtocol::handle_standard_query:length:" << length << " i:" << i ;
-	//std::cout << " header size:" << header_size << std::endl;
-	uint16_t qtype = ntohs((dns_header_->data[i+2] << 8) + dns_header_->data[i+1]);
+	uint16_t qtype = ntohs((dns_header_->data[offset+2] << 8) + dns_header_->data[offset+1]);
 
 	update_query_types(qtype);
 
@@ -178,20 +203,25 @@ void DNSProtocol::handle_standard_query(Flow *flow,int length) {
 
 		++total_allow_queries_;
 		
-		attach_dns_to_flow(flow,domain,qtype);	
+		attach_dns_to_flow(info,domain,qtype);	
 	}
 }
 
-void DNSProtocol::handle_standard_response(Flow *flow,int length) {
+void DNSProtocol::handle_standard_response(Flow *flow, int length) {
 
-	SharedPointer<DNSDomain> dom_ptr = flow->dns_domain.lock();
+	SharedPointer<DNSInfo> info = flow->dns_info.lock();
 
-        if (dom_ptr) { // There is a domain name attached to the flow
+	if (!info)
+		return;
+
+	SharedPointer<StringCache> name = info->name.lock();
+
+        if (name) { // There is a domain name attached to the flow
 
 		// Check if the DNSProtocol have a DomainNameManager attached for match domains
                 DomainNameManagerPtr dnm = domain_mng_.lock();
                 if (dnm) {
-                        SharedPointer<DomainName> domain_candidate = dnm->getDomainName(dom_ptr->getName());
+                        SharedPointer<DomainName> domain_candidate = dnm->getDomainName(name->getName());
                         if (domain_candidate) {
                 		int offset = 1;
 
@@ -223,14 +253,14 @@ void DNSProtocol::handle_standard_response(Flow *flow,int length) {
 							in_addr a;
 
 							a.s_addr = ipv4addr;
-							dom_ptr->addIPAddress(inet_ntoa(a));
+							info->addIPAddress(inet_ntoa(a));
 						} else if ((type == 0x001c)and(block_length == 16)) { // IPv6
 							char ipv6addr[INET6_ADDRSTRLEN];
 							in6_addr *in6addr = (in6_addr*)&(addr->data[0]);
 
 							inet_ntop(AF_INET6,in6addr,ipv6addr,INET6_ADDRSTRLEN);
 
-							dom_ptr->addIPAddress(ipv6addr);
+							info->addIPAddress(ipv6addr);
 						}
 					}	
 					
@@ -313,39 +343,31 @@ void DNSProtocol::statistics(std::basic_ostream<char>& out)
 				if (flow_forwarder_.lock())
 					flow_forwarder_.lock()->statistics(out);
                                 if (stats_level_ > 3) {
-                                
-                                        domain_cache_->statistics(out);
+                               
+					info_cache_->statistics(out); 
+                                        name_cache_->statistics(out);
                                         if (stats_level_ > 4) {
-                                               
-                                                out << "\tDNS Domains usage" << std::endl;
-                                                
-						std::vector<std::pair<boost::string_ref,DomainHits>> d_list(domain_map_.begin(),domain_map_.end());
-                                                // Sort The domain_map by using lambdas
-                                                std::sort(
-                                                        d_list.begin(),
-                                                        d_list.end(),
-                                                        [](std::pair<boost::string_ref,DomainHits> const &a,
-                                                        std::pair<boost::string_ref,DomainHits> const &b)
-                                                {
-                                                        int v1 = std::get<1>(a.second);
-                                                        int v2 = std::get<1>(b.second);
-
-                                                        return v1 > v2;
-                                                });
-
-                                                for (auto it = d_list.begin(); it!=d_list.end(); ++it) {
-                                                
-                                                        SharedPointer<DNSDomain> domain = std::get<0>((*it).second);
-                                                        int count = std::get<1>((*it).second);
-                                                        if (domain)
-                                                        	out << "\t\tDomain:" << domain->getName() <<":" << count << std::endl;
-                                                }
+                                              	showCacheMap(out,domain_map_,"DNS Name","Domain"); 
                                         }
                                 }
 			}
 		}
 	}
 }
+
+
+void DNSProtocol::createDNSDomains(int number) { 
+
+	info_cache_->create(number);
+	name_cache_->create(number);
+}
+
+void DNSProtocol::destroyDNSDomains(int number) { 
+
+	info_cache_->destroy(number);
+	name_cache_->destroy(number);
+}
+
 
 #ifdef PYTHON_BINDING
 

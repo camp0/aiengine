@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#ifndef SRC_PROTOCOLS_DNS_DNSDOMAIN_H_
-#define SRC_PROTOCOLS_DNS_DNSDOMAIN_H_
+#ifndef SRC_PROTOCOLS_DNS_DNSINFO_H_
+#define SRC_PROTOCOLS_DNS_DNSINFO_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -30,29 +30,32 @@
 
 #include <iostream>
 #include <vector> 
+#include "StringCache.h"
 
 namespace aiengine {
 
-class DNSDomain 
+class DNSInfo 
 {
 public:
-    	explicit DNSDomain(const std::string& name):domain_name_(name) {}
-    	explicit DNSDomain() { reset(); }
-    	virtual ~DNSDomain() {}
+    	explicit DNSInfo() { reset(); }
+    	virtual ~DNSInfo() {}
 
-	void reset() { domain_name_ = ""; qtype_ = 0; ips_.clear(); }
-	std::string &getName() { return domain_name_; }
-	void setName(const std::string& name) { domain_name_ = name;}
+	void reset() { name.reset() ; qtype_ = 0; ips_.clear(); }
 
 	uint16_t getQueryType() const { return qtype_; }
 	void setQueryType(uint16_t qtype) { qtype_ = qtype; }
 
+	WeakPointer<StringCache> name;
+
 #ifdef PYTHON_BINDING
-	friend std::ostream& operator<< (std::ostream& out, const DNSDomain& domain) {
+	friend std::ostream& operator<< (std::ostream& out, const DNSInfo& domain) {
 	
-		out << domain.domain_name_;
+		out << domain.name.lock()->getName();
         	return out;
 	}
+
+	StringCache& getName() const { return *name.lock().get();}
+
 #endif
 	void addIPAddress(const char* ipstr) { ips_.push_back(ipstr); }
 
@@ -60,11 +63,10 @@ public:
 	std::vector<std::string>::const_iterator end() { return ips_.end(); }
 
 private:
-	std::string domain_name_;
 	uint16_t qtype_;
 	std::vector<std::string> ips_;
 };
 
 } // namespace aiengine
 
-#endif  // SRC_PROTOCOLS_DNS_DNSDOMAIN_H_
+#endif  // SRC_PROTOCOLS_DNS_DNSINFO_H_

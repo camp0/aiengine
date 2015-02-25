@@ -48,6 +48,21 @@ bool Regex::evaluate(const std::string& data) {
 	return result; 
 }
 
+bool Regex::evaluate(boost::string_ref &data) {
+
+	bool result = false;
+
+        int ret = pcre_exec(exp_,NULL,data.data(),data.length(),0,0,NULL,0);
+        if (ret == 0)
+                result = true;
+
+        if (result) total_matchs_++;
+        total_evaluates_++;
+        return result;
+}
+
+
+
 bool Regex::matchAndExtract(const std::string &data) {
 
         std::string::const_iterator start = data.begin();

@@ -64,7 +64,7 @@ void Flow::reset() {
 	sip_info.reset();
 	smtp_info.reset();
 	regex.reset();
-	dns_domain.reset();
+	dns_info.reset();
 	tcp_info.reset();
 	gprs_info.reset();
 	packet = nullptr;
@@ -110,8 +110,10 @@ void Flow::serialize(std::ostream& stream) {
                         stream << ",\"s\":\"" << ssl_host.lock()->getName() << "\"";
 
         } else { // UDP
-                if(dns_domain.lock())
-                        stream << ",\"d\":\"" << dns_domain.lock()->getName() << "\"";
+                if(dns_info.lock()) {
+			SharedPointer<DNSInfo> info = dns_info.lock();
+			if (info->name.lock())
+                        	stream << ",\"d\":\"" << info->name.lock()->getName() << "\"";
                 if(gprs_info.lock())
                         stream << ",\"g\":\"" << gprs_info.lock()->getIMSIString() << "\"";
         }
@@ -153,8 +155,11 @@ void Flow::serialize(std::ostream& stream) {
 			stream << ",\"sslhost\":\"" << ssl_host.lock()->getName() << "\"";
 
 	} else { // UDP
-		if(dns_domain.lock())	
-			stream << ",\"dnsdomain\":\"" << dns_domain.lock()->getName() << "\"";
+		if(dns_info.lock()) {
+			SharedPointer<DNSInfo> info = dns_info.lock();
+			if (info->name.lock()) 	
+				stream << ",\"dnsdomain\":\"" << info->name.lock()->getName() << "\"";
+		}
 		if(gprs_info.lock())	
 			stream << ",\"imsi\":\"" << gprs_info.lock()->getIMSIString() << "\"";
 	}
@@ -199,7 +204,11 @@ void Flow::showFlowInfo(std::ostream& out) {
 	} else {
 		if (gprs_info.lock()) out << " GPRS:" << *gprs_info.lock();
 
-        	if (dns_domain.lock()) out << " Domain:" << dns_domain.lock()->getName();
+		SharedPointer<DNSInfo> dinfo = dns_info.lock();
+
+        	if (dinfo) {
+			if (dinfo->name.lock()) out << " Domain:" << dinfo->name.lock()->getName();	
+		}
 
         	SharedPointer<SIPInfo> sinfo = sip_info.lock();
 
