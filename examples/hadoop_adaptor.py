@@ -133,7 +133,7 @@ if __name__ == '__main__':
 
     pdis.open("eth0")
     try:
-        pdis.open(f)
+        pdis.run()
     except:
         e = sys.exc_info()[0]
         print("Interrupt during capturing packets:",e)
