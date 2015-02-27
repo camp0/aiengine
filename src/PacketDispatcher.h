@@ -95,13 +95,13 @@ public:
 			int64_t prev_total_packets_per_interval;	
 	};
 
-    	explicit PacketDispatcher():status_(PacketDispatcherStatus::STOP),
+    	explicit PacketDispatcher(const std::string &source):status_(PacketDispatcherStatus::STOP),
 		stream_(),pcap_file_ready_(false),read_in_progress_(false),
 		device_is_ready_(false),total_packets_(0),total_bytes_(0),pcap_(nullptr),
 		io_service_(),
 		signals_(io_service_, SIGINT, SIGTERM),
 		stats_(),header_(nullptr),pkt_data_(nullptr),
-		eth_(),current_packet_(),defMux_(),stack_name_(),input_name_()
+		eth_(),current_packet_(),defMux_(),stack_name_(),input_name_(source)
 #ifdef PYTHON_BINDING
 		,timer_(SharedPointer<boost::asio::deadline_timer>(new boost::asio::deadline_timer(io_service_))),
 		user_shell_(SharedPointer<Interpreter>(new Interpreter(io_service_))),
@@ -115,6 +115,8 @@ public:
     			boost::bind(&boost::asio::io_service::stop, &io_service_));
 	}
 
+	explicit PacketDispatcher():PacketDispatcher("") {}
+
     	virtual ~PacketDispatcher() { io_service_.stop(); }
 
 	void open(const std::string &source);
@@ -125,6 +127,11 @@ public:
 	void status(void);
 
 #ifdef PYTHON_BINDING
+
+	// For implemente the 'with' statement in python needs the methods __enter__ and __exit__
+	PacketDispatcher& __enter__(); 
+	bool __exit__(boost::python::object type, boost::python::object val, boost::python::object traceback);
+
 	void forwardPacket(const std::string &packet, int length);
 	void enableShell(bool enable);
 	void unsetStack();

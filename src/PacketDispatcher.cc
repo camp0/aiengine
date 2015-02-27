@@ -277,6 +277,18 @@ void PacketDispatcher::setPcapFilter(const std::string &filter) {
 
 #ifdef PYTHON_BINDING
 
+PacketDispatcher& PacketDispatcher::__enter__() {
+
+	open(input_name_);
+        return *this;
+}
+
+bool PacketDispatcher::__exit__(boost::python::object type, boost::python::object val, boost::python::object traceback) {
+
+	close();
+        return type.ptr() == Py_None;
+}
+
 void PacketDispatcher::scheduler_handler(boost::system::error_code error) {
 
 	// Check if the timer have been cancel
@@ -300,8 +312,6 @@ void PacketDispatcher::scheduler_handler(boost::system::error_code error) {
 
 	return;
 }
-
-
 
 void PacketDispatcher::forwardPacket(const std::string &packet, int length) {
 

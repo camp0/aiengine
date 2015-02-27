@@ -27,12 +27,6 @@ if __name__ == '__main__':
     # Load an instance of a Network Stack on Lan network
     st = pyaiengine.StackLan()
 
-    # Create a instace of a PacketDispatcher
-    pdis = pyaiengine.PacketDispatcher()
-
-    # Plug the stack on the PacketDispatcher
-    pdis.setStack(st)
-
     dm = pyaiengine.DomainNameManager()
 
     dom = pyaiengine.DomainName("Service to analyze",
@@ -45,15 +39,10 @@ if __name__ == '__main__':
     st.setTotalTCPFlows(327680)
     st.setTotalUDPFlows(163840)
 
-    pdis.open("eth0")
-
-    try:
-        pdis.run()
-    except:
-        e = sys.exc_info()[0]
-        print("Interrupt during capturing packets:",e)
-
-    pdis.close()
+    with pyaiengine.PacketDispatcher("eth0") as pd:
+        # Plug the stack on the PacketDispatcher
+        pd.setStack(st)
+        pd.run()
 
     # Dump on file the statistics of the stack
     st.setStatisticsLevel(5)

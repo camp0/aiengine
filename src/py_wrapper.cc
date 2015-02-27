@@ -466,8 +466,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (PacketDispatcher::*setStackVirtual)(StackVirtual&) = 	&PacketDispatcher::setStack;
 	void (PacketDispatcher::*setStackOpenFlow)(StackOpenFlow&) = 	&PacketDispatcher::setStack;
 
-	boost::python::class_<PacketDispatcher,boost::noncopyable>("PacketDispatcher",
+	boost::python::class_<PacketDispatcher, boost::noncopyable>("PacketDispatcher",
 		"Class that manage the packets and forwards to the associated network stack")
+		.def(init<>())	// Default constructor
+                .def(init<const std::string&>()) // Constructor for using with the 'with' statement
 		.def("open",&PacketDispatcher::open,
 			"Opens a network device or a pcap file")
 		.def("close",&PacketDispatcher::close,
@@ -491,6 +493,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setScheduler",&PacketDispatcher::setScheduler,
 			"Sets the scheduler for make periodically task.")
 		.def(self_ns::str(self_ns::self))
+		.def("__enter__", &PacketDispatcher::__enter__,return_value_policy<reference_existing_object>())
+		.def("__exit__",&PacketDispatcher::__exit__)
 	;
 
 

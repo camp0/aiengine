@@ -104,12 +104,6 @@ if __name__ == '__main__':
     # Load an instance of a Network Stack on Lan Network
     st = pyaiengine.StackLan()
 
-    # Create a instace of a PacketDispatcher
-    pdis = pyaiengine.PacketDispatcher()
-
-    # Plug the stack on the PacketDispatcher
-    pdis.setStack(st)
-
     st.setTotalTCPFlows(327680)
     st.setTotalUDPFlows(163840)
  
@@ -131,13 +125,10 @@ if __name__ == '__main__':
     st.setUDPDatabaseAdaptor(db,16)
     st.setTCPDatabaseAdaptor(db,16)
 
-    pdis.open("eth0")
-    try:
-        pdis.run()
-    except:
-        e = sys.exc_info()[0]
-        print("Interrupt during capturing packets:",e)
+    # Create a PacketDispathcer context and plug the stack and run
+    with pyaiengine.PacketDispatcher("eth0") as pd:
+        pd.setStack(st)
+        pd.run()
 
-    pdis.close()
     sys.exit(0)
 

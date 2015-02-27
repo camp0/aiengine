@@ -538,9 +538,9 @@ class StackLanTests(unittest.TestCase):
 
         self.s.setSMTPHostNameManager(dm)
 
-        self.dis.open("../pcapfiles/smtp.pcap");
-        self.dis.run();
-        self.dis.close();
+        with pyaiengine.PacketDispatcher("../pcapfiles/smtp.pcap") as pd:
+            pd.setStack(self.s)
+            pd.run();
 
         self.assertEqual(d.getMatchs() , 1)
         self.assertEqual(self.called_callback,1)
@@ -940,6 +940,20 @@ class StackOpenFlowTests(unittest.TestCase):
         self.dis.open("../pcapfiles/openflow.pcap")
         self.dis.run()
         self.dis.close()
+
+        self.assertEqual(r.getMatchs(), 1)
+
+    def test2(self):
+        """ Test the with statement of the PacketDispatcher """
+
+        rm = pyaiengine.RegexManager()
+        r = pyaiengine.Regex("Bin directory",b"^\x26\x01")
+        rm.addRegex(r)
+        self.s.setTCPRegexManager(rm)
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/openflow.pcap") as pd:
+            pd.setStack(self.s)
+            pd.run()
 
         self.assertEqual(r.getMatchs(), 1)
 

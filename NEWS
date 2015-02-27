@@ -99,3 +99,4 @@ Features/Changes of 1.1
 - DHCPProtocol support.
 - NTPProtocol support.
 - SMTPProtocol support.
+- PacketDispatcher now implements PEP 343 the 'with' statement (https://www.python.org/dev/peps/pep-0343/).
