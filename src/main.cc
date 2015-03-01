@@ -78,7 +78,7 @@ std::string option_interface;
 std::string option_freqs_group_value;
 std::string option_freqs_type_flows;
 std::string option_regex_type_flows;
-std::string option_regex;
+std::vector<std::string> vector_regex;
 std::string option_selected_protocol;
 std::string option_release_cache_protocol;
 bool option_show_flows = false;
@@ -305,8 +305,8 @@ int main(int argc, char* argv[]) {
 	po::options_description optional_ops_sigs("Regex optional arguments");
 	optional_ops_sigs.add_options()
                 ("enable-regex,R", 	"Enables the Regex engine.") 
-		("regex,r",    		po::value<std::string>(&option_regex)->default_value(".*"),
-		  			"Sets the regex for evaluate agains the flows.")
+		("regex,r",    		po::value<std::vector<std::string>>()->multitoken(),
+		  			"Sets the regexs for evaluate agains the flows.")
                 ("flow-class,c",  	po::value<std::string>(&option_regex_type_flows)->default_value("all"),
 					"Uses tcp, udp or all for matches the signature on the flows.") 
 		;
@@ -428,7 +428,25 @@ int main(int argc, char* argv[]) {
 	// Check if AIEngine is gonna work as signature extractor or as a regular packet inspector
 	if (var_map.count("enable-regex") == 1) {
         	sm = RegexManagerPtr(new RegexManager());
-        	sm->addRegex("experimental",option_regex);
+		
+		if (!var_map["regex"].empty()) {
+			// Generate a list of regex
+			vector_regex = var_map["regex"].as<std::vector<std::string>>();
+			SharedPointer<Regex> topr = SharedPointer<Regex>(new Regex("experimental0",vector_regex[0]));
+			SharedPointer<Regex> prevr = topr;	
+	
+			for (int i = 1; i< vector_regex.size(); ++i ) {
+				std::ostringstream name;
+				
+				name << "experimental" << i;
+				SharedPointer<Regex> r = SharedPointer<Regex>(new Regex(name.str(),vector_regex[i]));
+
+				prevr->setNextRegex(r);
+				prevr = r;
+			}	
+			sm->addRegex(topr);	
+        	}
+
 		if (option_regex_type_flows.compare("all") == 0) {
 			stack->setUDPRegexManager(sm);
 			stack->setTCPRegexManager(sm);

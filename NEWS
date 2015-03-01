@@ -100,3 +100,4 @@ Features/Changes of 1.1
 - NTPProtocol support.
 - SMTPProtocol support.
 - PacketDispatcher now implements PEP 343 the 'with' statement (https://www.python.org/dev/peps/pep-0343/).
+- binary accepts chains of regex by command line.
