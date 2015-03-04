@@ -352,4 +352,17 @@ void StackLan::setFlowsTimeout(int timeout) {
         flow_table_tcp_->setTimeout(timeout);
 }
 
+
+void StackLan::setTCPRegexManager(SharedPointer<RegexManager> sig) {
+
+	tcp_->setRegexManager(sig);
+	tcp_generic->setRegexManager(sig);
+}
+
+void StackLan::setUDPRegexManager(SharedPointer<RegexManager> sig) {
+
+	udp_->setRegexManager(sig);
+	udp_generic->setRegexManager(sig);
+}
+
 } // namespace aiengine

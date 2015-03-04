@@ -35,7 +35,7 @@
 #include "Serializable.h"
 #include "IPAddress.h"
 #include "ipset/IPAbstractSet.h"
-#include "regex/Regex.h"
+#include "regex/RegexManager.h"
 #include "StringCache.h"
 #include "protocols/frequency/Frequencies.h"
 #include "protocols/frequency/PacketFrequencies.h"
@@ -119,6 +119,7 @@ public:
 	WeakPointer<Frequencies> frequencies;
 	WeakPointer<PacketFrequencies> packet_frequencies;
 	FlowForwarderPtrWeak forwarder;
+	WeakPointer<RegexManager> regex_mng;
 	Packet *packet;
 
 	// specific values for a specific Engine

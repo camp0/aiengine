@@ -86,6 +86,7 @@ BOOST_AUTO_TEST_CASE (test3_tcp)
 
 	BOOST_CHECK(flow != nullptr);
         BOOST_CHECK(flow->tcp_info.lock() != nullptr);
+	BOOST_CHECK(flow->regex_mng.lock() == nullptr);
 	SharedPointer<TCPInfo> info = flow->tcp_info.lock();
 
 	BOOST_CHECK(info->syn == 0);

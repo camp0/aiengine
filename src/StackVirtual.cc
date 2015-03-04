@@ -449,4 +449,16 @@ void StackVirtual::setFlowsTimeout(int timeout) {
         flow_table_tcp_vir_->setTimeout(timeout);
 }
 
+void StackVirtual::setTCPRegexManager(SharedPointer<RegexManager> sig) {
+
+	tcp_vir_->setRegexManager(sig);
+	tcp_generic->setRegexManager(sig);
+}
+
+void StackVirtual::setUDPRegexManager(SharedPointer<RegexManager> sig) {
+
+	udp_vir_->setRegexManager(sig);
+	udp_generic->setRegexManager(sig);
+}
+
 } // namespace aiengine

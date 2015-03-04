@@ -90,9 +90,15 @@ std::ostream& operator<< (std::ostream& out, const RegexManager& sig) {
 		while (no_more_regex == false) {
 			tabs << "\t";
 			out << tabs.str() << "Regex:" << ssig->getName() << " matches:" << ssig->getMatchs() << std::endl;
-			if (ssig->isTerminal() == false) { 
+			if (ssig->isTerminal() == false) {
+
+				if (ssig->getNextRegexManager()) 
+					break;
+ 
 				no_more_regex = false;
-				ssig = ssig->getNextRegex();
+				SharedPointer<Regex> raux = ssig->getNextRegex();
+				if (raux)
+					ssig = raux;
 			} else {
 				no_more_regex = true;
 			}

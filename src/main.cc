@@ -265,6 +265,10 @@ void aiengineExit() {
 			}
 		}
 
+        	if (option_enable_regex) {
+                	std::cout << *sm.get() << std::endl;
+        	}
+
 		if (option_show_pstatistics)	
 			if (system_stats)	
 				system_stats->statistics();
@@ -508,6 +512,7 @@ int main(int argc, char* argv[]) {
 		}
 		pktdis->close();
 	}
+
 	return 0;
 }
 

@@ -430,4 +430,16 @@ void StackOpenFlow::setFlowsTimeout(int timeout) {
         flow_table_udp_vir_->setTimeout(timeout);
 }
 
+void StackOpenFlow::setTCPRegexManager(SharedPointer<RegexManager> sig) {
+
+	tcp_vir_->setRegexManager(sig);
+	tcp_generic->setRegexManager(sig);
+}
+
+void StackOpenFlow::setUDPRegexManager(SharedPointer<RegexManager> sig) {
+
+	udp_vir_->setRegexManager(sig);
+	udp_generic->setRegexManager(sig);
+}
+
 } // namespace aiengine

@@ -45,6 +45,7 @@ class UDPProtocol: public Protocol
 {
 public:
     	explicit UDPProtocol(std::string name):Protocol(name),stats_level_(0),
+		flow_table_(),flow_cache_(),sigs_(),
 		udp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
 		last_timeout_(0),packet_time_(0) {}
     	
@@ -110,6 +111,8 @@ public:
 	void setFlowCache(FlowCachePtr flow_cache) { flow_cache_ = flow_cache;}
 	FlowCachePtr getFlowCache() { return flow_cache_;}
 
+	void setRegexManager(SharedPointer<RegexManager> sig) { sigs_ = sig;}
+
 	Flow *getCurrentFlow() { return current_flow_;} // used just for testing pourposes
 
 #ifdef PYTHON_BINDING
@@ -123,6 +126,7 @@ private:
 	int stats_level_;	
 	FlowManagerPtr flow_table_;
 	FlowCachePtr flow_cache_;
+	SharedPointer<RegexManager> sigs_;
 	struct udphdr *udp_header_;
 	Flow *current_flow_;
 	int64_t total_bytes_;

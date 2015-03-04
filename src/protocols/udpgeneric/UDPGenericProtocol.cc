@@ -32,7 +32,7 @@ log4cxx::LoggerPtr UDPGenericProtocol::logger(log4cxx::Logger::getLogger("aiengi
 
 void UDPGenericProtocol::processFlow(Flow *flow, bool close) {
 
-        RegexManagerPtr sig = sigs_.lock();
+        SharedPointer<RegexManager> sig = flow->regex_mng.lock();
         ++total_packets_;
         total_bytes_ += flow->packet->getLength();
 
@@ -61,6 +61,11 @@ void UDPGenericProtocol::processFlow(Flow *flow, bool close) {
                         LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << regex->getName());
 #endif
                         flow->regex = regex;
+			SharedPointer<RegexManager> rmng = regex->getNextRegexManager();
+			if (rmng) {
+				flow->regex_mng = rmng;
+				flow->regex.reset();
+			}
 #ifdef PYTHON_BINDING
                         if(regex->haveCallback()) {
 				regex->executeCallback(flow); 
@@ -83,8 +88,8 @@ void UDPGenericProtocol::statistics(std::basic_ostream<char>& out) {
                                 if(flow_forwarder_.lock())
                                         flow_forwarder_.lock()->statistics(out);
                                 if(stats_level_ > 3) {
-                                        if(sigs_.lock())
-                                                out << *sigs_.lock();
+                                        if(sigs_)
+                                                out << *sigs_.get();
                                 }
                         }
                 }

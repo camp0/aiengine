@@ -38,9 +38,11 @@ BOOST_AUTO_TEST_CASE (test1_tcpgeneric)
         Packet packet(pkt,length,0);
 
         RegexManagerPtr sig = RegexManagerPtr(new RegexManager());
+	SharedPointer<Regex> r = SharedPointer<Regex>(new Regex("bittorrent tcp","^(\x13)BitTorrent.*$"));
 
-        sig->addRegex("bittorrent tcp","^(\x13)BitTorrent.*$");
+        sig->addRegex(r);
         gtcp->setRegexManager(sig);
+        tcp->setRegexManager(sig);
 
         // executing the packet
         // forward the packet through the multiplexers
@@ -53,6 +55,10 @@ BOOST_AUTO_TEST_CASE (test1_tcpgeneric)
         BOOST_CHECK(sig->getTotalMatchingRegexs() == 1);
         BOOST_CHECK(sig->getMatchedRegex() != nullptr);
 
+	Flow *flow = tcp->getCurrentFlow();
+
+	BOOST_CHECK(flow != nullptr);
+	BOOST_CHECK(flow->regex_mng.lock() == sig);
 }
 
 // Test case integrated with IPv6
@@ -102,6 +108,7 @@ BOOST_AUTO_TEST_CASE (test3_tcpgeneric)
 	r1->setNextRegex(r2);
         sig->addRegex(r1);
         gtcp->setRegexManager(sig);
+        tcp->setRegexManager(sig);
 
         // executing the packet
         // forward the packet through the multiplexers
@@ -146,6 +153,7 @@ BOOST_AUTO_TEST_CASE (test4_tcpgeneric)
         r1->setNextRegex(r2);
         sig->addRegex(r1);
         gtcp->setRegexManager(sig);
+        tcp->setRegexManager(sig);
 
         // executing the packet
         // forward the packet through the multiplexers
@@ -193,6 +201,8 @@ BOOST_AUTO_TEST_CASE (test5_tcpgeneric)
         sig->addRegex(r1);
         sig->addRegex(r2);
         gtcp->setRegexManager(sig);
+        tcp6->setRegexManager(sig);
+        tcp->setRegexManager(sig);
 
 	flow_cache->createFlows(2);
 
@@ -263,6 +273,7 @@ BOOST_AUTO_TEST_CASE (test6_tcpgeneric)
 
         sig->addRegex(r1);
         gtcp->setRegexManager(sig);
+        tcp->setRegexManager(sig);
 
         // executing the packet
         // forward the packet through the multiplexers
@@ -298,6 +309,7 @@ BOOST_AUTO_TEST_CASE (test7_tcpgeneric)
         sig->addRegex(r2);
         sig->addRegex(r3);
         gtcp->setRegexManager(sig);
+        tcp->setRegexManager(sig);
 
         // executing the packet
         // forward the packet through the multiplexers
@@ -346,6 +358,8 @@ BOOST_AUTO_TEST_CASE (test8_tcpgeneric)
 
         sig->addRegex(r1);
         gtcp->setRegexManager(sig);
+        tcp6->setRegexManager(sig);
+        tcp->setRegexManager(sig);
 
         // executing the packet
         // forward the packet through the multiplexers
@@ -419,6 +433,7 @@ BOOST_AUTO_TEST_CASE (test9_tcpgeneric) // IPv6 with auth header
 
         sig->addRegex(r);
         gtcp6->setRegexManager(sig);
+        tcp6->setRegexManager(sig);
 
         // executing the packet
         // forward the packet through the multiplexers
@@ -443,14 +458,11 @@ BOOST_AUTO_TEST_CASE (test9_tcpgeneric) // IPv6 with auth header
         BOOST_CHECK(r->getMatchs() == 1);
         BOOST_CHECK(r->getTotalEvaluates() == 1);
 
-//	char *msg = reinterpret_cast <char*> (tcp6->getPayload());
-
         BOOST_CHECK(gtcp6->getTotalPackets() == 1);
         BOOST_CHECK(gtcp6->getTotalBytes() == 15);
         BOOST_CHECK(gtcp6->getTotalValidatedPackets() == 1);
 
 }
-
 
 BOOST_AUTO_TEST_SUITE_END( )
 

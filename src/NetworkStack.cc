@@ -185,45 +185,6 @@ std::ostream& operator<< (std::ostream& out, const NetworkStack& ns) {
         return out;
 }
 
-void NetworkStack::setTCPRegexManager(RegexManagerPtrWeak sig) {
-
-        if(sig.lock()) {
-		ProtocolPtr proto = get_protocol(TCPGenericProtocol::default_name);
-		if (proto) {
-			TCPGenericProtocolPtr prototcp = std::static_pointer_cast<TCPGenericProtocol>(proto);
-			if (prototcp) {
-                		prototcp->setRegexManager(sig.lock());
-			}
-		}
-        }
-}
-
-void NetworkStack::setUDPRegexManager(RegexManagerPtrWeak sig) {
-
-        if(sig.lock()) {
-		ProtocolPtr proto = get_protocol(UDPGenericProtocol::default_name);
-		if (proto) {
-			UDPGenericProtocolPtr protoudp = std::static_pointer_cast<UDPGenericProtocol>(proto);
-			if (protoudp) {
-                		protoudp->setRegexManager(sig.lock());
-			}
-		}
-        }
-}
-
-void NetworkStack::setTCPRegexManager(RegexManager& sig) {
-
-        sigs_tcp = std::make_shared<RegexManager>(sig);
-        setTCPRegexManager(sigs_tcp);
-}
-
-void NetworkStack::setUDPRegexManager(RegexManager& sig) {
-
-        sigs_udp = std::make_shared<RegexManager>(sig);
-        setUDPRegexManager(sigs_udp);
-}
-
-
 #ifdef PYTHON_BINDING
 
 template <class T> 

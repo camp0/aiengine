@@ -65,6 +65,7 @@ BOOST_AUTO_TEST_CASE (test2_udpgeneric) // Same case as test1_genericudp but wit
 	RegexManagerPtr sig = RegexManagerPtr(new RegexManager());
 
         sig->addRegex("a signature","^hello");
+	udp->setRegexManager(sig);
 	gudp->setRegexManager(sig);
 
         // executing the packet
@@ -86,6 +87,10 @@ BOOST_AUTO_TEST_CASE (test2_udpgeneric) // Same case as test1_genericudp but wit
         BOOST_CHECK(sig->getTotalMatchingRegexs() == 1);
         BOOST_CHECK(sig->getMatchedRegex() != nullptr);
 
+	Flow *flow = udp->getCurrentFlow();
+
+	BOOST_CHECK(flow != nullptr);
+	BOOST_CHECK(flow->regex_mng.lock() == sig);
 	//std::cout << *sig;
 }
 

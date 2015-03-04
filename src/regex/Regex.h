@@ -44,6 +44,8 @@
 
 namespace aiengine {
 
+class RegexManager;
+
 class Regex: public Signature
 {
 public:
@@ -60,7 +62,8 @@ public:
 #endif
 		,extract_buffer_()
 #endif
-		,next_regex_(),is_terminal_(true),have_jit_(false)
+		,next_regex_(),is_terminal_(true),have_jit_(false),
+		regex_mng_()
 	{
 #if defined(HAVE_LIBPCRE)
 		study_exp_ = NULL;
@@ -107,6 +110,10 @@ public:
 	void setNextRegex(SharedPointer<Regex> reg) { next_regex_ = reg;is_terminal_ = false;}
 	SharedPointer<Regex> getNextRegex() { return next_regex_;}
 
+	// Reference to the next RegexManager for use on the flow
+	void setNextRegexManager(const SharedPointer<RegexManager> regex_mng) { regex_mng_ = regex_mng; is_terminal_ = false; }
+	SharedPointer<RegexManager> getNextRegexManager() const { return regex_mng_; }
+
 	bool matchAndExtract(const std::string& data);
 #if defined(HAVE_LIBPCRE)
 	const char *getExtract() const { return extract_buffer_;} 
@@ -133,6 +140,7 @@ private:
 	SharedPointer<Regex> next_regex_;
 	bool is_terminal_;
 	bool have_jit_;
+	SharedPointer<RegexManager> regex_mng_;
 };
 
 } // namespace aiengine

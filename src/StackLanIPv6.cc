@@ -26,7 +26,7 @@
 namespace aiengine {
 
 #ifdef HAVE_LIBLOG4CXX
-log4cxx::LoggerPtr StackLanIPv6::logger(log4cxx::Logger::getLogger("aiengine.stacklan"));
+log4cxx::LoggerPtr StackLanIPv6::logger(log4cxx::Logger::getLogger("aiengine.stacklan6"));
 #endif
 
 StackLanIPv6::StackLanIPv6() {
@@ -346,6 +346,18 @@ void StackLanIPv6::setFlowsTimeout(int timeout) {
 
         flow_table_udp_->setTimeout(timeout);
         flow_table_tcp_->setTimeout(timeout);
+}
+
+void StackLanIPv6::setTCPRegexManager(SharedPointer<RegexManager> sig) {
+
+        tcp_->setRegexManager(sig);
+        tcp_generic->setRegexManager(sig);
+}
+
+void StackLanIPv6::setUDPRegexManager(SharedPointer<RegexManager> sig) {
+
+        udp_->setRegexManager(sig);
+        udp_generic->setRegexManager(sig);
 }
 
 } // namespace aiengine

@@ -67,6 +67,7 @@ void Flow::reset() {
 	dns_info.reset();
 	tcp_info.reset();
 	gprs_info.reset();
+	regex_mng.reset();
 	packet = nullptr;
 	frequency_engine_inspected = false;
 	prev_direction_ = direction_ = FlowDirection::FORWARD;

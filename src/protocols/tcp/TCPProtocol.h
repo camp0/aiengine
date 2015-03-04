@@ -46,7 +46,7 @@ class TCPProtocol: public Protocol
 {
 public:
     	explicit TCPProtocol(std::string name):Protocol(name),stats_level_(0),
-                flow_table_(),flow_cache_(),
+                flow_table_(),flow_cache_(),sigs_(),
                 tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")), 
                 tcp_header_(nullptr),current_flow_(nullptr),
 		total_bytes_(0),
@@ -145,6 +145,8 @@ public:
         void setFlowCache(FlowCachePtr flow_cache) { flow_cache_ = flow_cache; } 
         FlowCachePtr getFlowCache() { return flow_cache_;}
 
+	void setRegexManager(SharedPointer<RegexManager> sig) { sigs_ = sig;}
+
         void createTCPInfos(int number) { tcp_info_cache_->create(number);}
         void destroyTCPInfos(int number) { tcp_info_cache_->destroy(number);}
 
@@ -161,6 +163,7 @@ private:
 	int stats_level_;
 	FlowManagerPtr flow_table_;
 	FlowCachePtr flow_cache_;
+	SharedPointer<RegexManager> sigs_;
 	Cache<TCPInfo>::CachePtr tcp_info_cache_;
 	struct tcphdr *tcp_header_;
 	Flow *current_flow_;

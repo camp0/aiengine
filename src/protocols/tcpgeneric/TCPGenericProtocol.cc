@@ -32,13 +32,13 @@ log4cxx::LoggerPtr TCPGenericProtocol::logger(log4cxx::Logger::getLogger("aiengi
 
 void TCPGenericProtocol::processFlow(Flow *flow, bool close) {
 
-	RegexManagerPtr sig = sigs_.lock();
+	SharedPointer<RegexManager> sig = flow->regex_mng.lock();
 	++total_packets_;
 	total_bytes_ += flow->packet->getLength();
 
 	++flow->total_packets_l7;
 
-	if (sig) { // There is a RegexManager attached on the protocol 
+	if (sig) { // There is a RegexManager attached on the flow 
 		SharedPointer<Regex> regex = flow->regex.lock();
 		const unsigned char *payload = flow->packet->getPayload();
 		boost::string_ref data(reinterpret_cast<const char*>(payload),flow->packet->getLength());
@@ -59,7 +59,13 @@ void TCPGenericProtocol::processFlow(Flow *flow, bool close) {
 #ifdef HAVE_LIBLOG4CXX
 			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << regex->getName());
 #endif
-			flow->regex = regex; 
+			flow->regex = regex;
+			SharedPointer<RegexManager> rmng = regex->getNextRegexManager();
+			if (rmng) {
+				// Now the flow should evaluate a different RegexManager
+				flow->regex_mng = rmng;
+				flow->regex.reset();
+			} 
 #ifdef PYTHON_BINDING
                         if(regex->haveCallback()) {
 				regex->executeCallback(flow);
@@ -82,8 +88,8 @@ void TCPGenericProtocol::statistics(std::basic_ostream<char>& out) {
 				if(flow_forwarder_.lock())
 					flow_forwarder_.lock()->statistics(out);
 				if(stats_level_ > 3) {
-					if(sigs_.lock())
-						out << *sigs_.lock();
+					if(sigs_)
+						out << *sigs_.get();
 				}
 			}
 		}

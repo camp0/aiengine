@@ -86,7 +86,7 @@ public:
 		return true;
 	}
 
-	void setRegexManager(RegexManagerPtrWeak sig) { sigs_ = sig;} 
+	void setRegexManager(SharedPointer<RegexManager> sig) { sigs_ = sig;} 
 	unsigned char *getPayload() const { return tcp_generic_header_;}
 
 #ifdef PYTHON_BINDING
@@ -101,7 +101,7 @@ private:
 	int stats_level_;
 	unsigned char *tcp_generic_header_;
         int64_t total_bytes_;
-	RegexManagerPtrWeak sigs_;
+	SharedPointer<RegexManager> sigs_;
 };
 
 typedef std::shared_ptr<TCPGenericProtocol> TCPGenericProtocolPtr;

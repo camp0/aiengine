@@ -122,6 +122,7 @@ BOOST_AUTO_TEST_CASE (test3_openflow)
 
         re->addRegex("a signature","^.{2}\x77\x59\x44\xa6.*\x6c\x6f\x63$");
 	udpg_vir->setRegexManager(re);
+	udp_vir->setRegexManager(re);
 
         // executing the packet
         // forward the packet through the multiplexers
@@ -173,6 +174,7 @@ BOOST_AUTO_TEST_CASE (test4_openflow)
 
         re->addRegex(r);
         tcpg_vir->setRegexManager(re);
+        tcp_vir->setRegexManager(re);
 
         // executing the first packet
         mux_eth->setPacket(&packet1);

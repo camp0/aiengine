@@ -87,8 +87,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
         // for overload the methods with the class
       	void (NetworkStack::*showFlowsNetworkStack)() = 				&NetworkStack::showFlows;
-	void (NetworkStack::*setUDPRegexManager)(RegexManager&) = 			&NetworkStack::setUDPRegexManager;
-	void (NetworkStack::*setTCPRegexManager)(RegexManager&) = 			&NetworkStack::setTCPRegexManager;
 	void (NetworkStack::*setDNSDomainNameManager1)(DomainNameManager&) = 		&NetworkStack::setDNSDomainNameManager;
 	void (NetworkStack::*setDNSDomainNameManager2)(DomainNameManager&, bool) = 	&NetworkStack::setDNSDomainNameManager;
 	void (NetworkStack::*setHTTPHostNameManager1)(DomainNameManager&) = 		&NetworkStack::setHTTPHostNameManager;
@@ -107,9 +105,9 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	boost::python::dict (NetworkStack::*getCounters)(const std::string& name) =	&NetworkStack::getCounters;
 
         boost::python::class_<NetworkStack, boost::noncopyable>("NetworkStack",no_init)
-                .def("setUDPRegexManager",pure_virtual(setUDPRegexManager),
+                .def("setUDPRegexManager",pure_virtual(&NetworkStack::setUDPRegexManager),
 			"Sets a RegexManager for the UDP traffic.")
-                .def("setTCPRegexManager",pure_virtual(setTCPRegexManager),
+                .def("setTCPRegexManager",pure_virtual(&NetworkStack::setTCPRegexManager),
 			"Sets a RegexManager for the TCP traffic.")
                 .def("setDNSDomainNameManager",pure_virtual(setDNSDomainNameManager1),
 			"Sets a DomainNameManager for the DNS traffic.")
@@ -161,8 +159,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	// Definitions for the StackLan class
 	void (StackLan::*showFlowsLan)() = 						&StackLan::showFlows;
-	void (StackLan::*setUDPRegexManagerLan)(RegexManager&) = 			&StackLan::setUDPRegexManager;
-	void (StackLan::*setTCPRegexManagerLan)(RegexManager&) = 			&StackLan::setTCPRegexManager;
         void (StackLan::*setDNSDomainNameManagerLan1)(DomainNameManager&) = 		&StackLan::setDNSDomainNameManager;
         void (StackLan::*setDNSDomainNameManagerLan2)(DomainNameManager&, bool) = 	&StackLan::setDNSDomainNameManager;
         void (StackLan::*setHTTPHostNameManagerLan1)(DomainNameManager&) = 		&StackLan::setHTTPHostNameManager;
@@ -183,8 +179,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	boost::python::class_<StackLan, bases<NetworkStack> >("StackLan",
 		"Class that implements a network stack for lan enviroments")
 		.def("getName",&StackLan::getName)
-		.def("setUDPRegexManager",setUDPRegexManagerLan)	
-		.def("setTCPRegexManager",setTCPRegexManagerLan)	
+		.def("setUDPRegexManager",&StackLan::setUDPRegexManager)	
+		.def("setTCPRegexManager",&StackLan::setTCPRegexManager)	
                 .def("setDNSDomainNameManager",setDNSDomainNameManagerLan1)
                 .def("setDNSDomainNameManager",setDNSDomainNameManagerLan2)
                 .def("setHTTPHostNameManager",setHTTPHostNameManagerLan1)
@@ -218,8 +214,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	// Definitions for the StackMobile class
        	void (StackMobile::*showFlowsMobile)() = 						&StackMobile::showFlows;
-	void (StackMobile::*setUDPRegexManagerMobile)(RegexManager&) = 				&StackMobile::setUDPRegexManager;
-	void (StackMobile::*setTCPRegexManagerMobile)(RegexManager&) = 				&StackMobile::setTCPRegexManager;
         void (StackMobile::*setDNSDomainNameManagerMobile1)(DomainNameManager&) = 		&StackMobile::setDNSDomainNameManager;
         void (StackMobile::*setDNSDomainNameManagerMobile2)(DomainNameManager&, bool) = 	&StackMobile::setDNSDomainNameManager;
         void (StackMobile::*setHTTPHostNameManagerMobile1)(DomainNameManager&) = 		&StackMobile::setHTTPHostNameManager;
@@ -240,8 +234,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         boost::python::class_<StackMobile, bases<NetworkStack> >("StackMobile",
 		"Class that implements a network stack for mobile enviroments")
 		.def("getName",&StackMobile::getName)
-		.def("setUDPRegexManager",setUDPRegexManagerMobile)	
-		.def("setTCPRegexManager",setTCPRegexManagerMobile)	
+		.def("setUDPRegexManager",&StackMobile::setUDPRegexManager)	
+		.def("setTCPRegexManager",&StackMobile::setTCPRegexManager)	
                 .def("setDNSDomainNameManager",setDNSDomainNameManagerMobile1)
                 .def("setDNSDomainNameManager",setDNSDomainNameManagerMobile2)
                 .def("setHTTPHostNameManager",setHTTPHostNameManagerMobile1)
@@ -276,8 +270,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	// Definitions for the StackLanIPv6 class
       	void (StackLanIPv6::*showFlowsLanIPv6)() = 						&StackLanIPv6::showFlows;
-        void (StackLanIPv6::*setUDPRegexManagerLanIPv6)(RegexManager&) = 			&StackLanIPv6::setUDPRegexManager;
-        void (StackLanIPv6::*setTCPRegexManagerLanIPv6)(RegexManager&) = 			&StackLanIPv6::setTCPRegexManager;
         void (StackLanIPv6::*setDNSDomainNameManagerLanIPv61)(DomainNameManager&) = 		&StackLanIPv6::setDNSDomainNameManager;
         void (StackLanIPv6::*setDNSDomainNameManagerLanIPv62)(DomainNameManager&, bool) = 	&StackLanIPv6::setDNSDomainNameManager;
         void (StackLanIPv6::*setHTTPHostNameManagerLanIPv61)(DomainNameManager&) = 		&StackLanIPv6::setHTTPHostNameManager;
@@ -298,8 +290,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         boost::python::class_<StackLanIPv6, bases<NetworkStack> >("StackLanIPv6",
 		"Class that implements a network stack for lan environments with IPv6")
 		.def("getName",&StackLanIPv6::getName)
-                .def("setUDPRegexManager",setUDPRegexManagerLanIPv6)
-                .def("setTCPRegexManager",setTCPRegexManagerLanIPv6)
+                .def("setUDPRegexManager",&StackLanIPv6::setUDPRegexManager)
+                .def("setTCPRegexManager",&StackLanIPv6::setTCPRegexManager)
                 .def("setDNSDomainNameManager",setDNSDomainNameManagerLanIPv61)
                 .def("setDNSDomainNameManager",setDNSDomainNameManagerLanIPv62)
                 .def("setHTTPHostNameManager",setHTTPHostNameManagerLanIPv61)
@@ -333,8 +325,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
         // Definitions for the StackVirtual class
         void (StackVirtual::*showFlowsVirtual)() =                                             	&StackVirtual::showFlows;
-        void (StackVirtual::*setUDPRegexManagerVirtual)(RegexManager&) =                        &StackVirtual::setUDPRegexManager;
-        void (StackVirtual::*setTCPRegexManagerVirtual)(RegexManager&) =                        &StackVirtual::setTCPRegexManager;
         void (StackVirtual::*setDNSDomainNameManagerVirt1)(DomainNameManager&) =              	&StackVirtual::setDNSDomainNameManager;
         void (StackVirtual::*setDNSDomainNameManagerVirt2)(DomainNameManager&, bool) =         	&StackVirtual::setDNSDomainNameManager;
         void (StackVirtual::*setHTTPHostNameManagerVirt1)(DomainNameManager&) =               	&StackVirtual::setHTTPHostNameManager;
@@ -355,8 +345,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         boost::python::class_<StackVirtual, bases<NetworkStack> >("StackVirtual",
                 "Class that implements a network stack for cloud/virtual environments")
                 .def("getName",&StackVirtual::getName)
-                .def("setUDPRegexManager",setUDPRegexManagerVirtual)
-                .def("setTCPRegexManager",setTCPRegexManagerVirtual)
+                .def("setUDPRegexManager",&StackVirtual::setUDPRegexManager)
+                .def("setTCPRegexManager",&StackVirtual::setTCPRegexManager)
                 .def("setDNSDomainNameManager",setDNSDomainNameManagerVirt1)
                 .def("setDNSDomainNameManager",setDNSDomainNameManagerVirt2)
                 .def("setHTTPHostNameManager",setHTTPHostNameManagerVirt1)
@@ -390,8 +380,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
         // Definitions for the StackOpenFlow class
         void (StackOpenFlow::*showFlowsOpenFlow)() =                                            &StackOpenFlow::showFlows;
-        void (StackOpenFlow::*setUDPRegexManagerOpenFlow)(RegexManager&) =                      &StackOpenFlow::setUDPRegexManager;
-        void (StackOpenFlow::*setTCPRegexManagerOpenFlow)(RegexManager&) =                      &StackOpenFlow::setTCPRegexManager;
         void (StackOpenFlow::*setDNSDomainNameManagerOF1)(DomainNameManager&) =                	&StackOpenFlow::setDNSDomainNameManager;
         void (StackOpenFlow::*setDNSDomainNameManagerOF2)(DomainNameManager&, bool) =          	&StackOpenFlow::setDNSDomainNameManager;
         void (StackOpenFlow::*setHTTPHostNameManagerOF1)(DomainNameManager&) =                 	&StackOpenFlow::setHTTPHostNameManager;
@@ -412,8 +400,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         boost::python::class_<StackOpenFlow, bases<NetworkStack> >("StackOpenFlow",
                 "Class that implements a network stack for openflow environments")
                 .def("getName",&StackOpenFlow::getName)
-                .def("setUDPRegexManager",setUDPRegexManagerOpenFlow)
-                .def("setTCPRegexManager",setTCPRegexManagerOpenFlow)
+                .def("setUDPRegexManager",&StackOpenFlow::setUDPRegexManager)
+                .def("setTCPRegexManager",&StackOpenFlow::setTCPRegexManager)
                 .def("setDNSDomainNameManager",setDNSDomainNameManagerOF1)
                 .def("setDNSDomainNameManager",setDNSDomainNameManagerOF2)
                 .def("setHTTPHostNameManager",setHTTPHostNameManagerOF1)
@@ -457,6 +445,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Sets the callback function for the regular expression")
 		.def("setNextRegex",&Regex::setNextRegex,
 			"Sets the next regular expression that should match")
+		.def("setNextRegexManager",&Regex::setNextRegexManager,
+			"Sets the next RegexManager for assign to the flow when a match occurs.")
 	;
 
 	// for overload the methods within the class
@@ -496,7 +486,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("__enter__", &PacketDispatcher::__enter__,return_value_policy<reference_existing_object>())
 		.def("__exit__",&PacketDispatcher::__exit__)
 	;
-
 
 	void (RegexManager::*addRegex1)(const std::string,const std::string) = &RegexManager::addRegex;
 	void (RegexManager::*addRegex2)(const SharedPointer<Regex>) = &RegexManager::addRegex;

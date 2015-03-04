@@ -118,6 +118,9 @@ public:
         FlowManagerPtrWeak getUDPFlowManager() { return flow_table_udp_;}
 #endif
 
+        void setTCPRegexManager(SharedPointer<RegexManager> sig); 
+        void setUDPRegexManager(SharedPointer<RegexManager> sig);
+
 private:
 	std::string name_;
 #ifdef HAVE_LIBLOG4CXX

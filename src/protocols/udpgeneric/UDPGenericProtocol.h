@@ -86,7 +86,7 @@ public:
 		return true;
 	}
 
-	void setRegexManager(RegexManagerPtrWeak sig) { sigs_ = sig;}
+	void setRegexManager(SharedPointer<RegexManager> sig) { sigs_ = sig;}
 
 #ifdef PYTHON_BINDING
 
@@ -100,7 +100,7 @@ private:
 	int stats_level_;
 	unsigned char *udp_generic_header_;
         int64_t total_bytes_;
-	RegexManagerPtrWeak sigs_;
+	SharedPointer<RegexManager> sigs_;
 };
 
 typedef std::shared_ptr<UDPGenericProtocol> UDPGenericProtocolPtr;

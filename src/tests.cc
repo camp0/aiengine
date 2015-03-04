@@ -557,6 +557,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_13,StackLanTest)
         rmng->addRegex(r_head);
 
         tcp_generic6->setRegexManager(rmng);
+        tcp6->setRegexManager(rmng);
 
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
@@ -583,6 +584,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_14,StackLanTest)
         rmng->addRegex(r_generic);
 
         tcp_generic6->setRegexManager(rmng);
+        tcp6->setRegexManager(rmng);
 
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
@@ -621,6 +623,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_15,StackLanTest)
         rmng->addRegex(r_generic);
 
         tcp_generic->setRegexManager(rmng);
+        tcp->setRegexManager(rmng);
 
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
@@ -658,6 +661,8 @@ BOOST_FIXTURE_TEST_CASE(test_case_16,StackLanTest)
 
         rmng->addRegex(r_generic);
         tcp_generic->setRegexManager(rmng);
+        tcp->setRegexManager(rmng);
+        tcp6->setRegexManager(rmng);
 
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
@@ -868,6 +873,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_21,StackLanTest)
         rmng->addRegex(r1);
 
         tcp_generic6->setRegexManager(rmng);
+        tcp6->setRegexManager(rmng);
 
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
@@ -1568,6 +1574,80 @@ BOOST_AUTO_TEST_CASE ( test_case_18 )
                 BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomaly::UDP_BOGUS_HEADER);
         }
 }
+
+// Test the chain of regex with the RegexManager
+// To understand the values of the test, open the smtp.pcap file
+BOOST_AUTO_TEST_CASE ( test_case_19 )
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        StackLanPtr stack = StackLanPtr(new StackLan());
+        RegexManagerPtr rmbase = RegexManagerPtr(new RegexManager());
+        SharedPointer<RegexManager> rm1 = SharedPointer<RegexManager>(new RegexManager());
+        SharedPointer<RegexManager> rm2 = SharedPointer<RegexManager>(new RegexManager());
+
+        SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("r1","^\x26\x01"));
+        SharedPointer<Regex> r2 = SharedPointer<Regex>(new Regex("r2","^\x26\x01"));
+        SharedPointer<Regex> r3 = SharedPointer<Regex>(new Regex("r3","^AUTH"));
+
+	r3->setNextRegexManager(rm1);
+        rmbase->addRegex(r1);
+        rmbase->addRegex(r2);
+        rmbase->addRegex(r3);
+
+        SharedPointer<Regex> r4 = SharedPointer<Regex>(new Regex("r4","^\x26\x01"));
+        SharedPointer<Regex> r5 = SharedPointer<Regex>(new Regex("r5","^MAIL FROM"));
+
+	rm1->addRegex(r4);
+	rm1->addRegex(r5);
+
+	r5->setNextRegexManager(rm2);
+
+        SharedPointer<Regex> r6 = SharedPointer<Regex>(new Regex("r6","^250 OK"));
+        SharedPointer<Regex> r7 = SharedPointer<Regex>(new Regex("r7","^QUIT"));
+
+	r6->setNextRegex(r7);
+
+	rm2->addRegex(r6);	
+	
+        stack->setTCPRegexManager(rmbase);
+
+        stack->setTotalTCPFlows(8);
+        stack->setTotalUDPFlows(8);
+        pd->setStack(stack);
+
+	stack->enableNIDSEngine(true);
+
+        pd->open("../pcapfiles/smtp.pcap");
+        pd->run();
+        pd->close();
+
+	BOOST_CHECK(r1->getMatchs() == 0);
+	BOOST_CHECK(r1->getTotalEvaluates() == 5);
+	BOOST_CHECK(r2->getMatchs() == 0);
+	BOOST_CHECK(r2->getTotalEvaluates() == 5);
+	BOOST_CHECK(r3->getMatchs() == 1);
+	BOOST_CHECK(r3->getTotalEvaluates() == 5);
+
+	BOOST_CHECK(r4->getMatchs() == 0);
+	BOOST_CHECK(r4->getTotalEvaluates() == 6);
+	BOOST_CHECK(r5->getMatchs() == 1);
+	BOOST_CHECK(r5->getTotalEvaluates() == 6);
+
+	BOOST_CHECK(r6->getMatchs() == 1);
+	BOOST_CHECK(r6->getTotalEvaluates() == 1);
+	BOOST_CHECK(r7->getMatchs() == 1);
+	BOOST_CHECK(r7->getTotalEvaluates() == 32);
+	
+        FlowManagerPtr flows_tcp = stack->getTCPFlowManager().lock();
+
+        BOOST_CHECK(flows_tcp->getTotalFlows() == 1);
+        for (auto &flow: flows_tcp->getFlowTable()) {
+                BOOST_CHECK(flow->regex.lock() == r7);
+                BOOST_CHECK(flow->regex_mng.lock() == rm2);
+        }
+}
+
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

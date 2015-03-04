@@ -545,7 +545,56 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(d.getMatchs() , 1)
         self.assertEqual(self.called_callback,1)
 
- 
+    def test19(self):
+        """ Test the chains of regex with RegexManagers """
+
+        rlist = [ pyaiengine.Regex("expression %d" % x, "some regex %d" % x) for x in xrange(0,5) ]
+
+        rmbase = pyaiengine.RegexManager()
+        rm1 = pyaiengine.RegexManager()
+        rm2 = pyaiengine.RegexManager()
+        rm3 = pyaiengine.RegexManager()
+
+        [rmbase.addRegex(r) for r in rlist]
+
+	r1 = pyaiengine.Regex("smtp1" , "^AUTH LOGIN")
+	r1.setNextRegexManager(rm1)
+	rmbase.addRegex(r1)
+
+	r2 = pyaiengine.Regex("smtp2" , "^NO MATCHS")
+	r3 = pyaiengine.Regex("smtp3" , "^MAIL FROM")
+
+	rm1.addRegex(r2)
+	rm1.addRegex(r3)
+	r3.setNextRegexManager(rm2)	
+
+	r4 = pyaiengine.Regex("smtp4" , "^NO MATCHS")
+	r5 = pyaiengine.Regex("smtp5" , "^DATA")
+	
+	rm2.addRegex(r4)
+	rm2.addRegex(r5)
+	r5.setNextRegexManager(rm3)
+
+	r6 = pyaiengine.Regex("smtp6" , "^QUIT")
+	rm3.addRegex(r6)
+
+        self.s.setTCPRegexManager(rmbase)
+        self.s.enableNIDSEngine(True)
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/smtp.pcap") as pd:
+            pd.setStack(self.s)
+            pd.run();
+
+	for r in rlist:
+        	self.assertEqual(r.getMatchs() , 0)
+
+	self.assertEqual(r1.getMatchs(), 1)
+	self.assertEqual(r2.getMatchs(), 0)
+	self.assertEqual(r3.getMatchs(), 1)
+	self.assertEqual(r4.getMatchs(), 0)
+	self.assertEqual(r5.getMatchs(), 1)
+	self.assertEqual(r6.getMatchs(), 1)
+
 class StackLanIPv6Tests(unittest.TestCase):
 
     def setUp(self):
@@ -647,7 +696,7 @@ class StackLanIPv6Tests(unittest.TestCase):
         self.assertEqual(db.getUpdates(), 5)
         self.assertEqual(db.getRemoves(), 1)
 
-    def test_5(self):
+    def test5(self):
         """ Attach a database to the engine for UDP traffic """
 
         db_udp = databaseTestAdaptor()
@@ -668,7 +717,7 @@ class StackLanIPv6Tests(unittest.TestCase):
         self.assertEqual(db_tcp.getUpdates(), 0)
         self.assertEqual(db_tcp.getRemoves(), 0)
 
-    def test_6(self):
+    def test6(self):
         """ Several IPSets with no matching"""
         def ipset_callback(flow):
             self.called_callback += 1
@@ -694,7 +743,7 @@ class StackLanIPv6Tests(unittest.TestCase):
         self.assertEqual(len(im), 3)
         self.assertEqual(self.called_callback , 0)
 
-    def test_7(self):
+    def test7(self):
         """ Extract IPv6 address from a DomainName matched """
         def dns_callback(flow):
             for ip in flow.getDNSInfo():
@@ -715,6 +764,68 @@ class StackLanIPv6Tests(unittest.TestCase):
 
         self.assertEqual(self.called_callback , 1)
 
+    def test8(self):
+        """ Test the functionality of make graphs of regex, for complex detecctions """ 
+
+        rmbase = pyaiengine.RegexManager()
+        rm2 = pyaiengine.RegexManager()
+        r1 = pyaiengine.Regex("r1",b"^(No hacker should visit Las Vegas).*$")
+      
+        rmbase.addRegex(r1)
+
+        r1.setNextRegexManager(rm2) 
+
+        r2 = pyaiengine.Regex("r2",b"(this can not match)")
+        r3 = pyaiengine.Regex("r3",b"^\x90\x90\x90\x90.*$")
+        rm2.addRegex(r2)
+        rm2.addRegex(r3)
+
+        self.s.setTCPRegexManager(rmbase)
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/generic_exploit_ipv6_defcon20.pcap") as pd:
+            pd.setStack(self.s)
+            pd.run()
+
+        self.assertEqual(r1.getMatchs(), 1)
+        self.assertEqual(r2.getMatchs(), 0)
+        self.assertEqual(r3.getMatchs(), 1)
+
+    def test9(self):
+        """ Another test for the functionality of make graphs of regex, for complex detecctions """
+
+        rm1 = pyaiengine.RegexManager()
+        rm2 = pyaiengine.RegexManager()
+        rm3 = pyaiengine.RegexManager()
+        r1 = pyaiengine.Regex("r1",b"^(No hacker should visit Las Vegas).*$")
+
+        r1.setNextRegexManager(rm2)
+        rm1.addRegex(r1)
+
+        r2 = pyaiengine.Regex("r2",b"(this can not match)")
+        r3 = pyaiengine.Regex("r3",b"^\x90\x90\x90\x90.*$")
+        rm2.addRegex(r2)
+        rm2.addRegex(r3)
+
+	r3.setNextRegexManager(rm3)
+
+	r4 = pyaiengine.Regex("r4",b"^Upgrade.*$")
+	r5 = pyaiengine.Regex("r5",b"(this can not match)")
+
+	rm3.addRegex(r4)
+	rm3.addRegex(r5)
+
+        self.s.setTCPRegexManager(rm1)
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/generic_exploit_ipv6_defcon20.pcap") as pd:
+            pd.setStack(self.s)
+            pd.run()
+
+        self.assertEqual(r1.getMatchs(), 1)
+        self.assertEqual(r2.getMatchs(), 0)
+        self.assertEqual(r3.getMatchs(), 1)
+        self.assertEqual(r4.getMatchs(), 1)
+
+        # ft = self.s.getTCPFlowManager()
 
 class StackLanLearningTests(unittest.TestCase):
 
@@ -731,7 +842,7 @@ class StackLanLearningTests(unittest.TestCase):
         del self.dis
         del self.f
 
-    def test_1(self):
+    def test1(self):
 
         self.f.reset()
         self.s.enableFrequencyEngine(True)
@@ -751,7 +862,7 @@ class StackLanLearningTests(unittest.TestCase):
         self.assertEqual(self.f.getTotalProcessFlows(), 2)
         self.assertEqual(self.f.getTotalComputedFrequencies(), 1)
 
-    def test_2(self):
+    def test2(self):
         
         self.f.reset()
         self.s.enableFrequencyEngine(True)
@@ -774,7 +885,7 @@ class StackLanLearningTests(unittest.TestCase):
         self.assertEqual(self.f.getTotalProcessFlows(), 4)
         self.assertEqual(self.f.getTotalComputedFrequencies(), 1)
 
-    def test_3(self):
+    def test3(self):
         """ Integrate with the learner to generate a regex """
         learn = pyaiengine.LearnerEngine()
 

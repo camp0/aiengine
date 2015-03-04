@@ -73,10 +73,8 @@ public:
 	virtual void setTotalTCPFlows(int value) = 0;
 	virtual void setTotalUDPFlows(int value) = 0;
 
-	void setTCPRegexManager(RegexManagerPtrWeak sig);	
-	void setUDPRegexManager(RegexManagerPtrWeak sig);	
-	void setTCPRegexManager(RegexManager& sig);	
-	void setUDPRegexManager(RegexManager& sig);	
+	virtual void setTCPRegexManager(SharedPointer<RegexManager> sig) = 0;	
+	virtual void setUDPRegexManager(SharedPointer<RegexManager> sig) = 0;	
 
 	virtual void enableFrequencyEngine(bool enable) = 0;
 	virtual void enableNIDSEngine(bool enable) = 0;
@@ -125,10 +123,6 @@ public:
 	int getStatisticsLevel() const { return stats_level_; }
 
 	friend std::ostream& operator<< (std::ostream& out, const NetworkStack& ns);
-
-        // References to the RegexsManagers
-        RegexManagerPtr sigs_tcp;
-        RegexManagerPtr sigs_udp;
 
 	// Protocols shared with all the stacks, layer 7
         HTTPProtocolPtr http;

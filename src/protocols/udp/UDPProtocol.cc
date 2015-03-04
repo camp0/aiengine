@@ -73,6 +73,7 @@ SharedPointer<Flow> UDPProtocol::getFlow(const Packet& packet) {
 				flow = flow_cache_->acquireFlow().lock();
 				if (flow) {
 					flow->setId(h1);
+					flow->regex_mng = sigs_;
 					if (packet.haveTag() == true) { 
 						flow->setTag(packet.getTag());
 					}

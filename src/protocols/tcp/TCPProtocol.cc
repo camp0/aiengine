@@ -83,6 +83,7 @@ SharedPointer<Flow> TCPProtocol::getFlow(const Packet& packet) {
                                 flow = flow_cache_->acquireFlow().lock();
                                 if (flow) {
                                         flow->setId(h1);
+					flow->regex_mng = sigs_; // Sets the default regex set
 					if (packet.haveTag() == true) {
 						flow->setTag(packet.getTag());
 					}
