@@ -121,6 +121,7 @@ public:
 	const char *getExtract() const { return extract_buffer_.c_str();} 
 #endif
 
+
 private:
 #if defined(HAVE_LIBPCRE)
 	pcre *exp_;

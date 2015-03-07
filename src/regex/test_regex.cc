@@ -82,7 +82,9 @@ BOOST_AUTO_TEST_CASE (test3_regex)
         BOOST_CHECK(sigmng->getMatchedRegex().get() != nullptr);
         BOOST_CHECK(sigmng->getTotalMatchingRegexs() == 1);
 
-	BOOST_CHECK(sig->getExpression().compare(sigmng->getMatchedRegex()->getExpression())== 0);
+	std::string exp_mng(sigmng->getMatchedRegex()->getExpression());
+	std::string exp_sig(sig->getExpression());
+	BOOST_CHECK(exp_sig.compare(exp_mng)== 0);
 
 }
 

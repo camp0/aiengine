@@ -217,8 +217,8 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header
 #ifdef HAVE_LIBLOG4CXX
 			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << dom_candidate->getName());
 #endif
-                        if(dom_candidate->haveCallback()) {
-                       		dom_candidate->executeCallback(flow);
+                        if(dom_candidate->pycall.haveCallback()) {
+                       		dom_candidate->pycall.executeCallback(flow);
                         }
 #endif
                 }

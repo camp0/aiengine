@@ -454,8 +454,8 @@ void HTTPProtocol::processFlow(Flow *flow, bool close) {
 #ifdef HAVE_LIBLOG4CXX
 					LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
 #endif	
-					if(host_candidate->haveCallback()) {
-						host_candidate->executeCallback(flow);
+					if(host_candidate->pycall.haveCallback()) {
+						host_candidate->pycall.executeCallback(flow);
                                 	}
 #endif
                         	}

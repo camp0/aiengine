@@ -34,8 +34,9 @@ void DomainNameManager::addDomainName(const std::string name,const std::string e
 
 void DomainNameManager::addDomainName(SharedPointer<DomainName> domain) {
 
+	std::string exp(domain->getExpression());
 	std::vector<std::string> tokens;
-	boost::split(tokens,domain->getExpression(),boost::is_any_of("."));
+	boost::split(tokens,exp,boost::is_any_of("."));
 	SharedPointer<DomainNode> curr_node = root_;
 
 	for(auto it = tokens.rbegin(); it != tokens.rend(); ++it) {

@@ -67,8 +67,8 @@ void TCPGenericProtocol::processFlow(Flow *flow, bool close) {
 				flow->regex.reset();
 			} 
 #ifdef PYTHON_BINDING
-                        if(regex->haveCallback()) {
-				regex->executeCallback(flow);
+                        if(regex->pycall.haveCallback()) {
+				regex->pycall.executeCallback(flow);
                         }
 #endif
 		}	

@@ -43,7 +43,7 @@ public:
 
 	friend std::ostream& operator<< (std::ostream& out, const DomainName& dom) {
        
-		out << "\t" <<  boost::format("Name:%-25s Domain:%-30s matchs:%-10d") % dom.name_ % dom.expression_ % dom.total_matchs_;
+		out << "\t" <<  boost::format("Name:%-25s Domain:%-30s matchs:%-10d") % dom.getName() % dom.getExpression() % dom.total_matchs_;
 		out << std::endl; 
         	return out;
 	}

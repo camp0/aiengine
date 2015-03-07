@@ -20,12 +20,6 @@ if __name__ == '__main__':
     # Load an instance of a Network Stack on a Lan network
     st1 = pyaiengine.StackLan()
 
-    # Create a instace of a PacketDispatcher
-    pdis = pyaiengine.PacketDispatcher()
-
-    # Plug the stack on the PacketDispatcher
-    pdis.setStack(st1)
-
     st1.setTotalUDPFlows(16384)
     st1.setTotalTCPFlows(16384)
 
@@ -37,9 +31,9 @@ if __name__ == '__main__':
     st1.enableFrequencyEngine(True)
        
     """ Open the pcapfile and process """ 
-    pdis.open("unknown_traffic.pcap")
-    pdis.run()
-    pdis.close()
+    with pyaiengine.PacketDispatcher("unknown_traffic.pcap") as pd:
+        pd.setStack(st1)
+        pd.run()
 
     """ Asuming that the unknown traffic is TCP """
     ft = st1.getTCPFlowManager()
@@ -70,17 +64,9 @@ if __name__ == '__main__':
     st2.setTotalUDPFlows(16384)
     st2.setTotalTCPFlows(16384)
   
-    """ Plug a new stack """ 
-    pdis.setStack(st2)
- 
-    pdis.open("eth0")
-
-    try:
-        pdis.run()
-    except:
-        e = sys.exc_info()[0]
-        print("Interrupt during capturing packets:",e)
-     
-    pdis.close()
+    with pyaiengine.PacketDispatcher("eth0") as pd:
+        """ Plug a new stack """ 
+        pd.setStack(st2)
+        pd.run()
  
     sys.exit(0)

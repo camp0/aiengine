@@ -21,31 +21,45 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#include "IPAbstractSet.h"
-#include "../Flow.h"
+#include "Callback.h"
+#include "Flow.h"
 
 namespace aiengine {
 
 #ifdef PYTHON_BINDING
 
-void IPAbstractSet::setCallback(PyObject *callback) {
+void Callback::setCallback(PyObject *callback) {
 	
 	// TODO: Verify that the callback have at least one parameter
 	if (!PyCallable_Check(callback)) {
-      		std::cerr << "Object is not callable." << std::endl;
+		throw std::runtime_error("Object is not callable.\n");
    	} else {
-      		if ( callback_ ) Py_XDECREF(callback_);
-      		callback_ = callback;
-      		Py_XINCREF(callback_);
-		callback_set_ = true;
+		int args = 0;
+		PyObject *fc = PyObject_GetAttrString(callback, "func_code");
+		if (fc) {
+			PyObject* ac = PyObject_GetAttrString(fc, "co_argcount");
+                	if(ac) {
+				args = PyInt_AsLong(ac);
+			}
+			Py_DECREF(ac);
+		}
+		Py_DECREF(fc);
+
+		if (args != 1) {
+			throw std::runtime_error("Object should have one parameter.\n");
+		} else {
+      			if ( callback_ ) Py_XDECREF(callback_);
+      			callback_ = callback;
+      			Py_XINCREF(callback_);
+			callback_set_ = true;
+		}
    	}
 }
 
-void IPAbstractSet::executeCallback(Flow *flow) {
+void Callback::executeCallback(Flow *flow) {
 
 	PyGILState_STATE state(PyGILState_Ensure());
         try {
-		// TODO: Fix
         	boost::python::call<void>(callback_,boost::python::ptr(flow));
         } catch (std::exception &e) {
         	std::cout << "ERROR:" << e.what() << std::endl;

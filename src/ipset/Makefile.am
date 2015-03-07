@@ -14,7 +14,6 @@ test_ipset_SOURCES = 	../Multiplexer.cc  \
 			../protocols/vlan/VLanProtocol.cc \
 			../protocols/ip/IPProtocol.cc \
 			../protocols/tcp/TCPProtocol.cc \
-			IPAbstractSet.cc \
 			IPSet.cc \
 			IPBloomSet.cc \
 			IPSetManager.cc test_ipset.cc 

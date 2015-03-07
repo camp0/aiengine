@@ -26,12 +26,6 @@ if __name__ == '__main__':
     # Load an instance of a Network Stack
     st = pyaiengine.StackLan()
 
-    # Create a instace of a PacketDispatcher
-    pdis = pyaiengine.PacketDispatcher()
-
-    # Plug the stack on the PacketDispatcher
-    pdis.setStack(st)
-
     sm = pyaiengine.RegexManager()
 
     """ 
@@ -44,7 +38,7 @@ if __name__ == '__main__':
     """ 
     ssl_sig = pyaiengine.Regex("SSL Basic regex","^\x16\x03")
 
-    sig = pyaiengine.Regex("SSL Heartbeat","^\x18\x03(\x01|\x02|\x03)\x00\x03\x01")
+    sig = pyaiengine.Regex("SSL Heartbeat","^.*\x18\x03(\x01|\x02|\x03).*$")
     sig.setCallback(callback_heartbeat)
 
     ssl_sig.setNextRegex(sig)
@@ -58,15 +52,9 @@ if __name__ == '__main__':
 
     st.enableNIDSEngine(True)
 
-    pdis.open("eth0")
-
-    try:
-        pdis.run()
-    except:
-        e = sys.exc_info()[0]
-        print("Error: capturing packets:",e)
-
-    pdis.close()
+    with pyaiengine.PacketDispatcher("eth0") as pd:
+        pd.setStack(st)
+        pd.run()
 
     sys.exit(0)
 

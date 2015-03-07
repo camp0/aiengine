@@ -268,8 +268,8 @@ void DNSProtocol::handle_standard_response(Flow *flow, int length) {
 					ptr = &(addr->data[block_length]);	
 				}	
 #ifdef PYTHON_BINDING
-                                if(domain_candidate->haveCallback()) {
-                                        domain_candidate->executeCallback(flow);
+                                if(domain_candidate->pycall.haveCallback()) {
+                                        domain_candidate->pycall.executeCallback(flow);
                                 }
 #endif
                         }

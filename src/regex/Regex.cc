@@ -91,7 +91,7 @@ bool Regex::matchAndExtract(const std::string &data) {
 
 std::ostream& operator<< (std::ostream& out, const Regex& sig) {
 
-	out << "\t" << "Regex:" << sig.name_ << " matches:" << sig.total_matchs_;	
+	out << "\t" << "Regex:" << sig.getName() << " matches:" << sig.total_matchs_;	
 	out << " evaluates:" << sig.total_evaluates_ << std::endl;	
 	return out;
 }

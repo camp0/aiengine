@@ -609,10 +609,11 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def(self_ns::str(self_ns::self))
 	;
 
+
         boost::python::class_<DomainName, SharedPointer<DomainName>, boost::noncopyable>("DomainName",init<const std::string&,const std::string&>())
-                .def("getExpression",&DomainName::getExpression,return_internal_reference<>(),
+                .def("getExpression",&DomainName::getExpression,return_value_policy<return_by_value>(),
 			"Returns the domain expression.")
-                .def("getName",&DomainName::getName,return_internal_reference<>(),
+                .def("getName",&DomainName::getName,return_value_policy<return_by_value>(),
 			"Returns the name of the domain.")
                 .def("getMatchs",&DomainName::getMatchs,
 			"Returns the total number of matches of the domain.")

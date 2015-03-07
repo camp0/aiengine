@@ -595,6 +595,38 @@ class StackLanTests(unittest.TestCase):
 	self.assertEqual(r5.getMatchs(), 1)
 	self.assertEqual(r6.getMatchs(), 1)
 
+    def test2(self):
+        """ Tests the parameters of the callbacks """
+        def callback1(flow):
+            pass
+
+        def callback2(flow,other):
+            pass
+
+        def callback3():
+            pass
+
+        r = pyaiengine.Regex("netbios","CACACACA")
+
+        try: 
+            r.setCallback(None)
+            self.assertTrue(False)
+        except:
+            self.assertTrue(True)
+
+        try:
+            r.setCallback(callback2)
+            self.assertTrue(False)
+        except:
+            self.assertTrue(True)
+
+        try:
+            r.setCallback(callback1)
+            self.assertTrue(True)
+        except:
+            self.assertTrue(False)
+
+
 class StackLanIPv6Tests(unittest.TestCase):
 
     def setUp(self):

@@ -205,8 +205,8 @@ void TCPProtocol::processPacket(Packet &packet) {
 						std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << ":Lookup positive on IPSet:" << ipset->getName() << std::endl;
 #endif
 #ifdef PYTHON_BINDING
-                                        	if (ipset->haveCallback()) {
-							ipset->executeCallback(flow.get());
+                                        	if (ipset->pycall.haveCallback()) {
+							ipset->pycall.executeCallback(flow.get());
                         			}
 #endif
                                 	}

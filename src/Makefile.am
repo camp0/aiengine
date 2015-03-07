@@ -67,14 +67,13 @@ aiengine_core_sources =	Multiplexer.cc \
 			PacketDispatcher.cc \
 			Flow.cc CacheManager.cc \
 			Protocol.cc \
-			Signature.cc \
+			Callback.cc \
 			Interpreter.cc \
 			flow/FlowManager.cc \
 			protocols/ethernet/EthernetProtocol.cc \
 			protocols/vlan/VLanProtocol.cc \
 			protocols/mpls/MPLSProtocol.cc \
 			protocols/ip/IPProtocol.cc \
-			ipset/IPAbstractSet.cc \
 			ipset/IPSet.cc \
 			ipset/IPBloomSet.cc \
 			ipset/IPSetManager.cc \

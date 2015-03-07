@@ -35,6 +35,7 @@
 #ifdef PYTHON_BINDING
 #include <boost/python.hpp>
 #include <boost/function.hpp>
+#include "Callback.h"
 #endif
 
 namespace aiengine {
@@ -45,47 +46,37 @@ class Signature
 {
 public:
 	Signature(const std::string &name, const std::string& exp):
-		name_(name),
-		expression_(exp),
 		total_matchs_(0),
-		total_evaluates_(0) {
+		total_evaluates_(0), 
 #ifdef PYTHON_BINDING
-		callback_set_ = false;
-		callback_ = nullptr;	
+	 	pycall(),	
 #endif
-	}
+		name_(name),
+		expression_(exp)
+	{}	
 
 	Signature():Signature("","") {}
 
 	virtual ~Signature() {}
 
-      	std::string &getName() { return name_; }
-        std::string &getExpression() { return expression_; }
+      	const char *getName() const { return name_.c_str(); }
+        const char *getExpression() const { return expression_.c_str(); }
         void incrementMatchs() { ++total_matchs_; }
         int32_t getMatchs() const { return total_matchs_; }
 	int32_t getTotalEvaluates() const { return total_evaluates_;}
 
 #ifdef PYTHON_BINDING
-
-	bool haveCallback() const { return callback_set_;}
-
-	void setCallback(PyObject *callback); 
-	void executeCallback(Flow *flow);
-	
-	PyObject *getCallback() { return callback_;}
-	
+	void setCallback(PyObject *callback) { pycall.setCallback(callback); }
 #endif
 
-	std::string name_;	
-	std::string expression_;	
 	int32_t total_matchs_;
 	int32_t total_evaluates_;
-
-private:
 #ifdef PYTHON_BINDING
-	bool callback_set_;
-	PyObject *callback_;
+	Callback pycall;	
 #endif
+private:
+	std::string name_;	
+	std::string expression_;	
 };
 
 } // namespace aiengine

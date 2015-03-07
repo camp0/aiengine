@@ -33,8 +33,7 @@
 #include <iostream>
 
 #ifdef PYTHON_BINDING
-#include <boost/python.hpp>
-#include <boost/function.hpp>
+#include "Callback.h"
 #endif
 
 namespace aiengine {
@@ -44,49 +43,41 @@ class Flow;
 class IPAbstractSet 
 {
 public:
-    	explicit IPAbstractSet(const std::string &name):name_(name),total_ips_(0),
-		total_ips_not_on_set_(0),total_ips_on_set_(0)
-		{
+    	explicit IPAbstractSet(const std::string &name):total_ips_(0),
+		total_ips_not_on_set_(0),total_ips_on_set_(0),
 #ifdef PYTHON_BINDING
-			callback_set_ = false;
-			callback_ = nullptr;
+		pycall(),
 #endif
-		}
+		name_(name) 
+	{}
     	
     	explicit IPAbstractSet():IPAbstractSet("Generic IPAbstractSet") {}
 
 	virtual ~IPAbstractSet() {}
 
-	const char *getName() { return name_.c_str();}
+	const char *getName() const { return name_.c_str();}
 
 	virtual void addIPAddress(const std::string &ip) = 0;
 	virtual bool lookupIPAddress(const std::string &ip) = 0; 
 	virtual int getFalsePositiveRate() = 0;
-
-#ifdef PYTHON_BINDING
-
-        bool haveCallback() const { return callback_set_;}
-
-        void setCallback(PyObject *callback); 
-	void executeCallback(Flow *flow); 
-        PyObject *getCallback() { return callback_;}
-
-#endif
 
 	int32_t getTotalIPs() const { return total_ips_; }
 	int32_t getTotalLookups() const { return (total_ips_on_set_ + total_ips_not_on_set_); }
 	int32_t getTotalLookupsIn() const { return total_ips_on_set_; }
 	int32_t getTotalLookupsOut() const { return total_ips_not_on_set_; }
 
-	std::string name_;	
+#ifdef PYTHON_BINDING
+	void setCallback(PyObject *callback) { pycall.setCallback(callback); }
+#endif
+
 	int32_t total_ips_;
 	int32_t total_ips_not_on_set_;
 	int32_t total_ips_on_set_;
-private:
 #ifdef PYTHON_BINDING
-	bool callback_set_;
-	PyObject *callback_;
+	Callback pycall;	
 #endif
+private:
+	std::string name_;
 };
 
 typedef std::shared_ptr<IPAbstractSet> IPAbstractSetPtr;

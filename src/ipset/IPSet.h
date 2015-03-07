@@ -58,6 +58,10 @@ public:
 
 	friend std::ostream& operator<< (std::ostream& out, const IPSet& is);
 
+#ifdef PYTHON_BINDING
+        void setCallback(PyObject *callback) { pycall.setCallback(callback); }
+#endif
+
 private:
 	std::unordered_set<std::string> map_;
 };

@@ -57,12 +57,6 @@ if __name__ == '__main__':
     # Load an instance of a Network Stack on Lan Network
     st = pyaiengine.StackMobile()
 
-    # Create a instace of a PacketDispatcher
-    pdis = pyaiengine.PacketDispatcher()
-
-    # Plug the stack on the PacketDispatcher
-    pdis.setStack(st)
-
     st.setTotalTCPFlows(327680)
     st.setTotalUDPFlows(163840)
  
@@ -84,17 +78,10 @@ if __name__ == '__main__':
     st.setUDPDatabaseAdaptor(db,16)
     st.setTCPDatabaseAdaptor(db,16)
 
-    filename = "/home/luis/traffic.pcap"
-    
-    pdis.open(filename)
-
-    try:
-        pdis.run()
-    except:
-        e = sys.exc_info()[0]
-        print("Interrupt during capturing packets:",e)
-
-    pdis.close()
+    with pyaiengine.PacketDispatcher("eth0") as pd:
+        """ Plug the stack on the PacketDispatcher """
+        pd.setStack(st)
+        pd.run()
 
     sys.exit(0)
 

@@ -21,40 +21,46 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#include "Signature.h"
-#include "Flow.h"
+#pragma once
+#ifndef SRC_CALLBACK_H_
+#define SRC_CALLBACK_H_
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <iostream>
+
+#ifdef PYTHON_BINDING
+#include <boost/python.hpp>
+#include <boost/function.hpp>
+#endif
 
 namespace aiengine {
 
+class Flow;
+
+class Callback 
+{
 #ifdef PYTHON_BINDING
+public:
+	Callback():callback_set_(false),callback_(nullptr) {}
+	virtual ~Callback() {}
 
-void Signature::setCallback(PyObject *callback) {
+	bool haveCallback() const { return callback_set_;}
+
+	void setCallback(PyObject *callback); 
+	void executeCallback(Flow *flow);
 	
-	// TODO: Verify that the callback have at least one parameter
-	if (!PyCallable_Check(callback)) {
-      		std::cerr << "Object is not callable." << std::endl;
-   	} else {
-      		if ( callback_ ) Py_XDECREF(callback_);
-      		callback_ = callback;
-      		Py_XINCREF(callback_);
-		callback_set_ = true;
-   	}
-}
-
-void Signature::executeCallback(Flow *flow) {
-
-	PyGILState_STATE state(PyGILState_Ensure());
-        try {
-		// TODO: Fix
-        	boost::python::call<void>(callback_,boost::python::ptr(flow));
-        } catch (std::exception &e) {
-        	std::cout << "ERROR:" << e.what() << std::endl;
-        }
-        PyGILState_Release(state);
-}
-
-#endif
+	PyObject *getCallback() { return callback_;}
+	
+private:
+	bool callback_set_;
+	PyObject *callback_;
+#endif // PYTHON_BINDING
+};
 
 } // namespace aiengine
 
+#endif  // SRC_CALLBACK_H_
 

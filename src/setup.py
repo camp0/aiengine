@@ -10,13 +10,13 @@ from distutils.extension import Extension
 
 """ List of the files of the lib """
 src_files =  ["Multiplexer.cc","FlowForwarder.cc","PacketDispatcher.cc","Flow.cc","Protocol.cc"]
-src_files += ["Signature.cc","Interpreter.cc","NetworkStack.cc","CacheManager.cc"]
+src_files += ["Callback.cc","Interpreter.cc","NetworkStack.cc","CacheManager.cc"]
 src_files += ["flow/FlowManager.cc"] 
 src_files += ["protocols/ethernet/EthernetProtocol.cc"]
 src_files += ["protocols/vlan/VLanProtocol.cc"]
 src_files += ["protocols/mpls/MPLSProtocol.cc"]
 src_files += ["protocols/ip/IPProtocol.cc"]
-src_files += ["ipset/IPAbstractSet.cc","ipset/IPSet.cc","ipset/IPBloomSet.cc","ipset/IPSetManager.cc"]
+src_files += ["ipset/IPSet.cc","ipset/IPBloomSet.cc","ipset/IPSetManager.cc"]
 src_files += ["protocols/ip6/IPv6Protocol.cc"]
 src_files += ["protocols/icmp6/ICMPv6Protocol.cc"]
 src_files += ["protocols/icmp/ICMPProtocol.cc"]
