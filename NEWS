@@ -95,9 +95,11 @@ Features/Changes of 1.0
 Features/Changes of 1.1
 - MacOS support.
 - HTTPProtocol, DNSProtocol and SIPProtocol performance improvements (boost::string_ref, 32% performance).
-- Update on real time the setScheduler functionality (TODO multiple setScheduler, for having more functions).
 - DHCPProtocol support.
 - NTPProtocol support.
 - SMTPProtocol support.
 - PacketDispatcher now implements PEP 343 the 'with' statement (https://www.python.org/dev/peps/pep-0343/).
 - binary accepts chains of regex by command line.
+
+Features/Changes of 1.2
+- Update on real time the setScheduler functionality (TODO multiple setScheduler, for having more functions).
