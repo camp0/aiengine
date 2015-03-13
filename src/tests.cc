@@ -1622,11 +1622,11 @@ BOOST_AUTO_TEST_CASE ( test_case_19 )
         pd->close();
 
 	BOOST_CHECK(r1->getMatchs() == 0);
-	BOOST_CHECK(r1->getTotalEvaluates() == 5);
+	BOOST_CHECK(r1->getTotalEvaluates() == 4);
 	BOOST_CHECK(r2->getMatchs() == 0);
-	BOOST_CHECK(r2->getTotalEvaluates() == 5);
+	BOOST_CHECK(r2->getTotalEvaluates() == 4);
 	BOOST_CHECK(r3->getMatchs() == 1);
-	BOOST_CHECK(r3->getTotalEvaluates() == 5);
+	BOOST_CHECK(r3->getTotalEvaluates() == 4);
 
 	BOOST_CHECK(r4->getMatchs() == 0);
 	BOOST_CHECK(r4->getTotalEvaluates() == 6);
@@ -1636,7 +1636,7 @@ BOOST_AUTO_TEST_CASE ( test_case_19 )
 	BOOST_CHECK(r6->getMatchs() == 1);
 	BOOST_CHECK(r6->getTotalEvaluates() == 1);
 	BOOST_CHECK(r7->getMatchs() == 1);
-	BOOST_CHECK(r7->getTotalEvaluates() == 32);
+	BOOST_CHECK(r7->getTotalEvaluates() == 21);
 	
         FlowManagerPtr flows_tcp = stack->getTCPFlowManager().lock();
 

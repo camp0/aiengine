@@ -10,7 +10,7 @@ test_regex_SOURCES =		Regex.cc RegexManager.cc \
 				test_regex.cc
 
 test_regex_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
-test_regex_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework -lboost_regex $(PCRE_LIB) 
+test_regex_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework $(PCRE_LIB) 
 
 CLEANFILES = *.o *.lo *.so
 

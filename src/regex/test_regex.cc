@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE (test2_regex)
         BOOST_CHECK(sigmng->getTotalMatchingRegexs() == 0);
         BOOST_CHECK(sigmng->getMatchedRegex() == nullptr);
 
-	std::string buffer("hello world");
+	boost::string_ref buffer("hello world");
 	bool value = false;
 
 	sigmng->evaluate(buffer,&value);
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE (test3_regex)
         BOOST_CHECK(sigmng->getTotalMatchingRegexs() == 0);
         BOOST_CHECK(sigmng->getMatchedRegex() == nullptr);
 
-        std::string buffer("hello world im not a hex, but some hex yes");
+        boost::string_ref buffer("hello world im not a hex, but some hex yes");
         bool value = false;
 
         sigmng->evaluate(buffer,&value);
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE (test5_regex)
         sigmng->addRegex(re2);
 
         value = false;
-	std::string data1(reinterpret_cast<const char*>(buffer1),6);
+	boost::string_ref data1(reinterpret_cast<const char*>(buffer1),6);
         sigmng->evaluate(data1,&value);
         BOOST_CHECK(value == false);
         BOOST_CHECK(sigmng->getMatchedRegex() == nullptr);
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE (test5_regex)
 	BOOST_CHECK(re2->getTotalEvaluates() == 1);
 
 	value = false;
-	std::string data2(reinterpret_cast<const char*>(buffer2),9);
+	boost::string_ref data2(reinterpret_cast<const char*>(buffer2),9);
         sigmng->evaluate(data2,&value);
         BOOST_CHECK(value == false);
         BOOST_CHECK(sigmng->getMatchedRegex() == nullptr);
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE (test5_regex)
 	BOOST_CHECK(re2->getTotalEvaluates() == 2);
 
 	value = false;
-	std::string data3(reinterpret_cast<const char*>(buffer3),17);
+	boost::string_ref data3(reinterpret_cast<const char*>(buffer3),17);
         sigmng->evaluate(data3,&value);
         BOOST_CHECK(value == false);
         BOOST_CHECK(sigmng->getMatchedRegex() == nullptr);
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE (test5_regex)
 	BOOST_CHECK(re2->getTotalEvaluates() == 3);
 
 	value = false;
-	std::string data4(reinterpret_cast<const char*>(buffer4),18);
+	boost::string_ref data4(reinterpret_cast<const char*>(buffer4),18);
         sigmng->evaluate(data4,&value);
         BOOST_CHECK(value == true);
         BOOST_CHECK(sigmng->getMatchedRegex() == re2);
@@ -184,8 +184,8 @@ BOOST_AUTO_TEST_CASE (test6_regex)
         sigmng->addRegex(re1);
 
         bool value = false;
-        std::string data1(reinterpret_cast<const char*>(raw_ethernet_ipv6_tcp_text_message),raw_ethernet_ipv6_tcp_text_message_length);
-        std::string data2(reinterpret_cast<const char*>(buffer_text),31);
+        boost::string_ref data1(reinterpret_cast<const char*>(raw_ethernet_ipv6_tcp_text_message),raw_ethernet_ipv6_tcp_text_message_length);
+        boost::string_ref data2(reinterpret_cast<const char*>(buffer_text),31);
 
         sigmng->evaluate(data1,&value);
         BOOST_CHECK(value == false);

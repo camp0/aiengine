@@ -133,9 +133,9 @@ void DNSProtocol::processFlow(Flow *flow, bool close) {
 			if (ntohs(dns_header_->questions) > 0) {  
 				handle_standard_query(flow,info.get(),length);
 			}
-		} else if (flags == DNS_STANDARD_RESPONSE) {
+		} else if ((flags & DNS_STANDARD_RESPONSE) == DNS_STANDARD_RESPONSE) {
 			if (ntohs(dns_header_->answers) > 0) {
-				handle_standard_response(flow,length);
+				handle_standard_response(flow,info.get(),length);
 			}
 		}
 	} else {
@@ -146,27 +146,35 @@ void DNSProtocol::processFlow(Flow *flow, bool close) {
 	return;
 } 
 
+int DNSProtocol::extract_domain_name(Flow *flow) {
+        int offset = 1;
+
+        // Probably i will need to do it better :( http://www.tcpipguide.com/free/t_DNSNameNotationandMessageCompressionTechnique.htm
+        while (dns_header_->data[offset] != '\x00') {
+                if(dns_header_->data[offset] < '\x20' ) {
+                        dns_buffer_name_[offset-1] = '.';
+                } else {
+                        dns_buffer_name_[offset-1] = dns_header_->data[offset];
+                }
+                ++offset;
+                // TODO: extra check for bogus packets check length
+                if (offset >= MAX_DNS_BUFFER_NAME) {
+                        if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
+                                flow->setPacketAnomaly(PacketAnomaly::DNS_LONG_NAME);
+                        }
+                        break;
+                }
+        }
+	return offset;
+}
+
+
 void DNSProtocol::handle_standard_query(Flow *flow, DNSInfo *info, int length) {
 	boost::string_ref domain;
-	int offset = 1; 
-		
-	// Probably i will need to do it better :( http://www.tcpipguide.com/free/t_DNSNameNotationandMessageCompressionTechnique.htm	
-	while (dns_header_->data[offset] != '\x00') {
-		if(dns_header_->data[offset] < '\x20' ) {
-			dns_buffer_name_[offset-1] = '.';
-		} else {
-			dns_buffer_name_[offset-1] = dns_header_->data[offset];
-		} 
-		++offset;
-		// TODO: extra check for bogus packets check length
-		if (offset >= MAX_DNS_BUFFER_NAME) {
-               		if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
-               			flow->setPacketAnomaly(PacketAnomaly::DNS_LONG_NAME);
-			}
-			break;
-		}
-	}
-
+	int offset = extract_domain_name(flow); 
+	
+	++total_queries_;
+	
 	boost::string_ref dns_name(dns_buffer_name_,offset);
 
 	if (offset == 1) { // There is no name, a root record
@@ -207,72 +215,88 @@ void DNSProtocol::handle_standard_query(Flow *flow, DNSInfo *info, int length) {
 	}
 }
 
-void DNSProtocol::handle_standard_response(Flow *flow, int length) {
+void DNSProtocol::handle_standard_response(Flow *flow, DNSInfo *info, int length) {
+	boost::string_ref domain;
 
-	SharedPointer<DNSInfo> info = flow->dns_info.lock();
-
-	if (!info)
-		return;
+	++total_responses_;
 
 	SharedPointer<StringCache> name = info->name.lock();
+	if (!name) {
+		// There is no name attached so lets try to extract from the response
+        	int offset = extract_domain_name(flow);
 
-        if (name) { // There is a domain name attached to the flow
+        	boost::string_ref dns_name(dns_buffer_name_,offset);
 
-		// Check if the DNSProtocol have a DomainNameManager attached for match domains
-                DomainNameManagerPtr dnm = domain_mng_.lock();
-                if (dnm) {
-                        SharedPointer<DomainName> domain_candidate = dnm->getDomainName(name->getName());
-                        if (domain_candidate) {
-                		int offset = 1;
+        	if (offset == 1) { // There is no name, a root record
+                	offset = 0;
+                	domain = "<Root>";
+        	} else {
+                	domain = dns_name.substr(0,offset-1);
+        	}
 
-                		// Pass over the query request
-                		while (dns_header_->data[offset] != '\x00') {
-                        		++offset;
-                        		// TODO: extra check for bogus packets check length
-                		}
+	        uint16_t qtype = ntohs((dns_header_->data[offset+2] << 8) + dns_header_->data[offset+1]);
 
-				// Need to increase by 4 the generate offset due to the type and class dns fields
-				offset = offset + 5;
-				uint16_t answers = ntohs(dns_header_->answers);
-				u_char *ptr = &(dns_header_->data[offset]);
+        	update_query_types(qtype);
+
+		attach_dns_to_flow(info,domain,qtype);
+	} else {
+		domain = name->getName();
+	}
+
+	// Check if the DNSProtocol have a DomainNameManager attached for match domains
+        DomainNameManagerPtr dnm = domain_mng_.lock();
+        if (dnm) {
+        	SharedPointer<DomainName> domain_candidate = dnm->getDomainName(domain);
+                if (domain_candidate) {
+                	int offset = 1;
+
+                	// Pass over the query request
+                	while (dns_header_->data[offset] != '\x00') {
+                       		++offset;
+                       		// TODO: extra check for bogus packets check length
+                	}
+
+			// Need to increase by 4 the generate offset due to the type and class dns fields
+			offset = offset + 5;
+			uint16_t answers = ntohs(dns_header_->answers);
+			u_char *ptr = &(dns_header_->data[offset]);
 
 #ifdef HAVE_LIBLOG4CXX
-                                LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << domain_candidate->getName());
+                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << domain_candidate->getName());
 #endif
 
-				// Extract the IP addresses and store on the DNSDomain just when the domain have been matched
-				for (int i = 0; i < answers; ++i) {
-					struct dns_address *addr = reinterpret_cast <struct dns_address*> (ptr);
-					uint16_t block_length = ntohs(addr->length);
-					uint16_t type = ntohs(addr->type);
-					uint16_t class_type = ntohs(addr->class_type);
+			// Extract the IP addresses and store on the DNSDomain just when the domain have been matched
+			for (int i = 0; i < answers; ++i) {
+				struct dns_address *addr = reinterpret_cast <struct dns_address*> (ptr);
+				uint16_t block_length = ntohs(addr->length);
+				uint16_t type = ntohs(addr->type);
+				uint16_t class_type = ntohs(addr->class_type);
 
-					if (class_type == 0x0001) { // class IN 
-						if((type == 0x0001)and(block_length == 4)) { // IPv4
-							uint32_t ipv4addr =  ((addr->data[3] << 24) + (addr->data[2] << 16) + (addr->data[1] << 8) + addr->data[0]);
-							in_addr a;
+				if (class_type == 0x0001) { // class IN 
+					if((type == 0x0001)and(block_length == 4)) { // IPv4
+						uint32_t ipv4addr =  ((addr->data[3] << 24) + (addr->data[2] << 16) + (addr->data[1] << 8) + addr->data[0]);
+						in_addr a;
 
-							a.s_addr = ipv4addr;
-							info->addIPAddress(inet_ntoa(a));
-						} else if ((type == 0x001c)and(block_length == 16)) { // IPv6
-							char ipv6addr[INET6_ADDRSTRLEN];
-							in6_addr *in6addr = (in6_addr*)&(addr->data[0]);
+						a.s_addr = ipv4addr;
+						info->addIPAddress(inet_ntoa(a));
+					} else if ((type == 0x001c)and(block_length == 16)) { // IPv6
+						char ipv6addr[INET6_ADDRSTRLEN];
+						in6_addr *in6addr = (in6_addr*)&(addr->data[0]);
 
-							inet_ntop(AF_INET6,in6addr,ipv6addr,INET6_ADDRSTRLEN);
+						inet_ntop(AF_INET6,in6addr,ipv6addr,INET6_ADDRSTRLEN);
 
-							info->addIPAddress(ipv6addr);
-						}
-					}	
-					
-					// TODO: Check offset size lengths and possible anomalies	
-					ptr = &(addr->data[block_length]);	
+						info->addIPAddress(ipv6addr);
+					}
 				}	
+					
+				// TODO: Check offset size lengths and possible anomalies	
+				ptr = &(addr->data[block_length]);	
+			}	
 #ifdef PYTHON_BINDING
-                                if(domain_candidate->pycall.haveCallback()) {
-                                        domain_candidate->pycall.executeCallback(flow);
-                                }
-#endif
+                        if(domain_candidate->pycall.haveCallback()) {
+                                domain_candidate->pycall.executeCallback(flow);
                         }
+#endif
                 }
 	}
 }
@@ -324,6 +348,8 @@ void DNSProtocol::statistics(std::basic_ostream<char>& out)
 			
 				out << "\t" << "Total allow queries:    " << std::setw(10) << total_allow_queries_ <<std::endl;
 				out << "\t" << "Total banned queries:   " << std::setw(10) << total_ban_queries_ <<std::endl;
+				out << "\t" << "Total queries:          " << std::setw(10) << total_queries_ <<std::endl;
+				out << "\t" << "Total responses:        " << std::setw(10) << total_responses_ <<std::endl;
 				out << "\t" << "Total type A:           " << std::setw(10) << total_dns_type_a_ <<std::endl;
 				out << "\t" << "Total type NS:          " << std::setw(10) << total_dns_type_ns_ <<std::endl;
 				out << "\t" << "Total type CNAME:       " << std::setw(10) << total_dns_type_cname_ <<std::endl;
@@ -376,6 +402,8 @@ boost::python::dict DNSProtocol::getCounters() const {
 
         counters["total allow queries"] = total_allow_queries_;
         counters["total banned queries"] = total_ban_queries_;
+        counters["total queries"] = total_queries_;
+        counters["total responses"] = total_responses_;
         counters["total type A"] = total_dns_type_a_;
         counters["total type NS"] = total_dns_type_ns_;
         counters["total type CNAME"] = total_dns_type_cname_;

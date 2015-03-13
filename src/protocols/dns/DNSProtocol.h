@@ -72,6 +72,7 @@ public:
     	explicit DNSProtocol():Protocol(DNSProtocol::default_name),stats_level_(0),
 		dns_header_(nullptr),total_bytes_(0),
 		total_allow_queries_(0),total_ban_queries_(0),
+		total_queries_(0),total_responses_(0),
 		total_dns_type_a_(0),
         	total_dns_type_ns_(0),
         	total_dns_type_cname_(0),
@@ -152,13 +153,16 @@ private:
 	void attach_dns_to_flow(DNSInfo *info, boost::string_ref &domain, uint16_t qtype);
 	void update_query_types(uint16_t type);
 	void handle_standard_query(Flow *flow, DNSInfo *info,int length);
-	void handle_standard_response(Flow *flow,int length);
+	int extract_domain_name(Flow *flow);
+	void handle_standard_response(Flow *flow, DNSInfo *info,int length);
 
 	int stats_level_;
 	struct dns_header *dns_header_;
         int64_t total_bytes_;
         int32_t total_allow_queries_;
         int32_t total_ban_queries_;
+	int32_t total_queries_;
+	int32_t total_responses_;
 
 	// Some statistics of the Dns Types
 	int32_t total_dns_type_a_;

@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE (test2_vxlan)
 
         BOOST_CHECK(ip->getTotalPackets() == 1);
         BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
-        BOOST_CHECK(ip->getTotalBytes() == 78);
+        BOOST_CHECK(ip->getTotalBytes() == 70);
 	
         BOOST_CHECK(vxlan->getTotalPackets() == 1);
         BOOST_CHECK(vxlan->getTotalValidatedPackets() == 1);

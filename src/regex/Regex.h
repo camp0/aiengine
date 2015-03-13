@@ -32,15 +32,7 @@
 #include "../Pointer.h"
 #include <boost/utility/string_ref.hpp>
 
-#if defined(HAVE_LIBPCRE)
 #include <pcre.h>
-#else
-#if defined(__LINUX__)
-#include <boost/regex.hpp>
-#else
-#include <regex>
-#endif
-#endif
 
 namespace aiengine {
 
@@ -52,20 +44,10 @@ public:
 
 	explicit Regex(const std::string &name, const std::string& exp):
 		Signature(name,exp)
-#if !defined(HAVE_LIBPCRE)
-#if defined(__LINUX__)
-		,exp_(exp,boost::regex_constants::perl|boost::regex::icase)
-		,what_()
-#else
-		,exp_(exp,std::regex_constants::icase)
-		,what_()
-#endif
 		,extract_buffer_()
-#endif
 		,next_regex_(),is_terminal_(true),have_jit_(false),
 		regex_mng_()
 	{
-#if defined(HAVE_LIBPCRE)
 		study_exp_ = NULL;
 		const char *errorstr;
 		int erroffset;
@@ -89,19 +71,15 @@ public:
 #else
 		study_exp_ = pcre_study(exp_,0,&errorstr);
 #endif
-#endif
 	}
-
+	
 	explicit Regex(): Regex("None","^.*$") {}
 
 	virtual ~Regex() {
-#if defined(HAVE_LIBPCRE)
         	pcre_free_study(study_exp_);
         	pcre_free(exp_);
-#endif
 	}
  
-	bool evaluate(const std::string& data);
 	bool evaluate(boost::string_ref &data);
 
 	friend std::ostream& operator<< (std::ostream& out, const Regex& sig);
@@ -115,29 +93,14 @@ public:
 	SharedPointer<RegexManager> getNextRegexManager() const { return regex_mng_; }
 
 	bool matchAndExtract(const std::string& data);
-#if defined(HAVE_LIBPCRE)
-	const char *getExtract() const { return extract_buffer_;} 
-#else
-	const char *getExtract() const { return extract_buffer_.c_str();} 
-#endif
 
+	const char *getExtract() const { return extract_buffer_;} 
 
 private:
-#if defined(HAVE_LIBPCRE)
 	pcre *exp_;
 	pcre_extra *study_exp_;
 	int ovecount_[32];
 	char extract_buffer_[256];
-#else
-#if defined(__LINUX__)
-	boost::regex exp_;
-	boost::match_results<std::string::const_iterator> what_;
-#else
-	std::regex exp_;
-	std::match_results<std::string::const_iterator> what_;
-#endif
-	std::string extract_buffer_;
-#endif
 	SharedPointer<Regex> next_regex_;
 	bool is_terminal_;
 	bool have_jit_;

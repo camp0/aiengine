@@ -29,13 +29,21 @@ namespace aiengine {
 void IPProtocol::processPacket(Packet& packet) {
 
         MultiplexerPtr mux = mux_.lock();
+	int bytes = 0;
 
 	++total_packets_;
 
 	mux->address.setSourceAddress(getSrcAddr());
 	mux->address.setDestinationAddress(getDstAddr());
-	mux->total_length = packet.getLength();
-	total_bytes_ += packet.getLength();
+
+	// Some packets have padding data at the end
+	if (getPacketLength() < packet.getLength())
+		bytes = getPacketLength();
+	else
+		bytes = packet.getLength();
+
+	mux->total_length = bytes;
+	total_bytes_ += bytes;
 	
 	mux->setNextProtocolIdentifier(getProtocol());
 	packet.setPrevHeaderSize(header_size);

@@ -87,6 +87,7 @@ bool option_enable_regex = false;
 bool option_enable_learner = false;
 bool option_show_pstatistics = false;
 bool option_release_caches = false;
+bool option_generate_yara = false;
 int tcp_flows_cache;
 int udp_flows_cache;
 int option_statistics_level = 0;
@@ -205,6 +206,24 @@ void showFrequencyResults() {
 	}
 }
 
+void generateYaraRule(const char *regex,const char *keys) {
+
+	boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
+	std::ostringstream out;
+
+	out << "rule generated_by_aiengine {" << std::endl;
+	out << "    meta:" << std::endl;
+	out << "       author=\"aiengine\"" << std::endl;
+	out << "       description=\"Flows generated on "<< keys << "\"" << std::endl;
+	out << "       date=\""<< now.date().day() << "/" << static_cast<int>(now.date().month()) << "/" << now.date().year() << "\"" << std::endl;
+	out << "    strings:" << std::endl;
+	out << "       $a=\"" << regex << "\"" << std::endl;
+	out << "    condition:" << std::endl;
+	out << "       $a" << std::endl; // all of them , $a and $b, etc...
+	out << "}" << std::endl;
+	std::cout << out.str();
+}
+
 void showLearnerResults() {
 
 	std::vector<WeakPointer<Flow>> flow_list;
@@ -218,6 +237,11 @@ void showLearnerResults() {
 		std::cout << "Regular expression generated with key:" << option_learner_key << std::endl;
 		std::cout << "Regex:" << learner.getRegularExpression() <<std::endl;
 		std::cout << "Ascii buffer:" << learner.getAsciiExpression() << std::endl;	
+
+		if (option_generate_yara) {
+			std::cout << "Generating yara signature" << std::endl;
+			generateYaraRule(learner.getRegularExpression().c_str(),option_learner_key.c_str());
+		}
 	}
 }
 
@@ -325,6 +349,7 @@ int main(int argc, char* argv[]) {
                 ("enable-learner,L",  	"Enables the Learner engine.") 
                 ("key-learner,k",  	po::value<std::string>(&option_learner_key)->default_value("80"),
 					"Sets the key for the Learner engine.") 
+                ("enable-yara,y",  		"Generates a yara signature.") 
                 ;
 
 	mandatory_ops.add(optional_ops_tag);
@@ -382,6 +407,7 @@ int main(int argc, char* argv[]) {
 		if (var_map.count("pstatistics")) option_show_pstatistics = true;
 		if (var_map.count("enable-learner")) option_enable_learner = true;
 		if (var_map.count("release")) option_release_caches = true;
+		if (var_map.count("enable-yara")) option_generate_yara = true; 
 
         	po::notify(var_map);
     	

@@ -38,29 +38,6 @@ void RegexManager::addRegex(SharedPointer<Regex> sig) {
 	signatures_.push_back(sig);
 }
 
-void RegexManager::evaluate(const std::string& data, bool *result) {
-
-	current_signature_.reset();
-
-//	Something strange happens on the freebsd version that the
-//	use of the std::find_if generates a sigsegv
-//        std::find_if(signatures_.begin(),
-//                signatures_.end(),  [&](SharedPointer<Regex>& sig) {
-//
-//        });
-	
-	for (auto &sig: signatures_) {
-
-		if (sig->evaluate(data)) {
-			++total_matched_signatures_;
-			current_signature_ = sig;
-			(*result) = true;
-			break;
-		}
-      	} 
-	return;
-}
-
 void RegexManager::evaluate(boost::string_ref &data, bool *result) {
 
 	current_signature_.reset();

@@ -103,3 +103,4 @@ Features/Changes of 1.1
 
 Features/Changes of 1.2
 - Update on real time the setScheduler functionality (TODO multiple setScheduler, for having more functions).
+- Generates Yara signatures (http://plusvic.github.io/yara/).
