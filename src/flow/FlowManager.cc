@@ -35,34 +35,34 @@ FlowManager::~FlowManager() {
 	flowTable_.clear();
 }
 
-void FlowManager::addFlow(SharedPointer<Flow> flow) {
+void FlowManager::addFlow(const SharedPointer<Flow>& flow) {
 
 	++total_process_flows_;
 	flowTable_.insert(flow);
 }
 
-void FlowManager::removeFlow(SharedPointer<Flow> flow) {
+void FlowManager::removeFlow(const SharedPointer<Flow>& flow) {
 
 	FlowByID::iterator it = flowTable_.get<flow_table_tag_unique>().find(flow->getId());
 	
 	flowTable_.erase(it);
-	flow.reset();
+	// flow.reset();
 }
 
-SharedPointer<Flow> FlowManager::findFlow(unsigned long hash1,unsigned long hash2) {
+SharedPointer<Flow>& FlowManager::findFlow(unsigned long hash1,unsigned long hash2) {
 
 	flow_it_ = flowTable_.get<flow_table_tag_unique>().find(hash1);
-	SharedPointer<Flow> fp;
+	lookup_flow_.reset();
 
 	if (flow_it_ == flowTable_.end()) {
 		flow_it_ = flowTable_.get<flow_table_tag_unique>().find(hash2);
 		if (flow_it_ == flowTable_.end()) { 
-			return fp;
+			return lookup_flow_;
 		}
 	}
-	fp = (*flow_it_);
 
-	return fp;
+	lookup_flow_ = (*flow_it_);
+	return lookup_flow_;
 }
 
 /*

@@ -66,15 +66,15 @@ class FlowManager
 public:
     	explicit FlowManager(std::string name):name_(name),total_process_flows_(0),
 		total_timeout_flows_(0),timeout_(180),flowTable_(),flow_it_(),flow_cache_(),
-		tcp_info_cache_(),protocol_() {}
+		tcp_info_cache_(),protocol_(),lookup_flow_() {}
 
     	explicit FlowManager(): FlowManager("FlowManager") {}
 
     	virtual ~FlowManager();
 
-	void addFlow(SharedPointer<Flow> flow);
-	void removeFlow(SharedPointer<Flow> flow);
-	SharedPointer<Flow> findFlow(unsigned long hash1,unsigned long hash2);
+	void addFlow(const SharedPointer<Flow>& flow);
+	void removeFlow(const SharedPointer<Flow>& flow);
+	SharedPointer<Flow>& findFlow(unsigned long hash1,unsigned long hash2);
 	void updateTimers(std::time_t current_time); 
 
 	void setFlowCache(FlowCachePtr cache) { flow_cache_ = cache; }
@@ -117,6 +117,7 @@ private:
 	FlowCachePtr flow_cache_;
 	Cache<TCPInfo>::CachePtr tcp_info_cache_;
 	ProtocolPtrWeak protocol_;
+	SharedPointer<Flow> lookup_flow_; // cacheable flow;
 };
 
 typedef std::shared_ptr<FlowManager> FlowManagerPtr;

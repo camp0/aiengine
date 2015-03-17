@@ -504,26 +504,31 @@ int main(int argc, char* argv[]) {
 	std::vector<std::string> inputs;
 	namespace fs = boost::filesystem;
 
-	if (fs::is_directory(option_input.c_str())) {
-		fs::recursive_directory_iterator it(option_input.c_str());
-    		fs::recursive_directory_iterator endit;
+	try {
+		if (fs::is_directory(option_input.c_str())) {
+			fs::recursive_directory_iterator it(option_input.c_str());
+    			fs::recursive_directory_iterator endit;
     
-		while (it != endit) {
-      			if (fs::is_regular_file(*it)and((it->path().extension() == ".pcap")
-				or(it->path().extension() == ".cap") 
-				or(it->path().extension() == ".pcapng"))) {
-				std::ostringstream os;
+			while (it != endit) {
+      				if (fs::is_regular_file(*it)and((it->path().extension() == ".pcap")
+					or(it->path().extension() == ".cap") 
+					or(it->path().extension() == ".pcapng"))) {
+					std::ostringstream os;
 				
-				os << option_input.c_str() << "/" << it->path().filename().c_str();
-      				inputs.push_back(os.str());
+					os << option_input.c_str() << "/" << it->path().filename().c_str();
+      					inputs.push_back(os.str());
+				}
+				++it;
 			}
-			++it;
+			sort(inputs.begin(),inputs.end());
+		} else {
+			inputs.push_back (option_input.c_str());
 		}
-		sort(inputs.begin(),inputs.end());
-	} else {
-		inputs.push_back (option_input.c_str());
+	} catch (std::exception const&  ex) {
+		std::cerr << "Can not read " << option_input.c_str() << " Reason:" << ex.what() << std::endl;
+		exit(0);
 	}
-			
+
 	if (option_enable_frequencies) // Sets the callback for learn.
 		pktdis->setIdleFunction(std::bind(learnerCallback));
 
