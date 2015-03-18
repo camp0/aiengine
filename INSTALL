@@ -18,6 +18,23 @@ Installing on BSD systems.
 make 
 make install
 
+Using the bloom filters (Experimental).
+---------------------------------------
+
+AIEngine could use the boost bloom filters, so in order to compile the library
+with the boost bloom filters you must download the project from  the following
+address https://github.com/cabrera/boost-bloom-filters. Second, copy the corresponding
+header files on the same paht of your boost library (/usr/include, /usr/local/include).
+Third, enable the configure script with --enable-bloomfilter and verify the outuput
+
+checking whether to build bloom filters... yes
+checking boost/bloom_filter/basic_bloom_filter.hpp usability... yes
+checking boost/bloom_filter/basic_bloom_filter.hpp presence... yes
+checking for boost/bloom_filter/basic_bloom_filter.hpp... yes
+
+and make
+
+
 Using a different python version (Experimental).
 ------------------------------------------------
 

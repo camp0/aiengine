@@ -43,7 +43,7 @@ public:
     	FlowCache(): fc_(new Cache<Flow>("FlowCache")) {}
     	virtual ~FlowCache() {}
 
-	void releaseFlow(SharedPointer<Flow> flow) { fc_->release(flow);}
+	void releaseFlow(const SharedPointer<Flow>& flow) { fc_->release(flow);}
 	WeakPointer<Flow> acquireFlow() { return fc_->acquire();}
 
 	void createFlows(int number) { fc_->create(number);}

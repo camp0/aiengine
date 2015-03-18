@@ -55,7 +55,7 @@ public:
     	explicit Cache():Cache("") {}
     	virtual ~Cache() { items_.clear();}
 
-	void release(A_TypePtr a) {  
+	void release(const A_TypePtr& a) {  
 	         
 		if(total_ < items_.size()) {
 		       	++total_releases_;

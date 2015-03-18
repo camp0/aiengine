@@ -115,7 +115,8 @@ void Flow::serialize(std::ostream& stream) {
 			SharedPointer<DNSInfo> info = dns_info.lock();
 			if (info->name.lock())
                         	stream << ",\"d\":\"" << info->name.lock()->getName() << "\"";
-                if(gprs_info.lock())
+              	} 
+		if(gprs_info.lock())
                         stream << ",\"g\":\"" << gprs_info.lock()->getIMSIString() << "\"";
         }
         if(regex.lock())
