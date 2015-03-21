@@ -367,7 +367,7 @@ class StackLanTests(unittest.TestCase):
         self.dis.run()
         self.dis.close()
 
-        self.assertEqual(self.called_callback, 74)
+        self.assertEqual(self.called_callback, 1)
 
     def test13(self):
         """ Verify cache release functionality """
@@ -467,8 +467,8 @@ class StackLanTests(unittest.TestCase):
             info = flow.getHTTPInfo()
             url = str(info.getUri())
 
-            # Some URI analsys could be done here
-            if (url == "/js/jquery.hoverIntent.js"):
+            # Some URI analsys on the first request could be done here
+            if (url == "/css/global.css?v=20121120a"):
                 info.setBanned(True)
 
         d = pyaiengine.DomainName("Wired domain",".wired.com")
@@ -483,8 +483,7 @@ class StackLanTests(unittest.TestCase):
         self.dis.run()
         self.dis.close()
 
-        # The callback is call only two times, the uri should match on the second request
-        self.assertEqual(self.called_callback, 2)
+        self.assertEqual(self.called_callback, 1)
 
         ft = self.s.getTCPFlowManager()
 
@@ -595,7 +594,7 @@ class StackLanTests(unittest.TestCase):
 	self.assertEqual(r5.getMatchs(), 1)
 	self.assertEqual(r6.getMatchs(), 1)
 
-    def test2(self):
+    def test20(self):
         """ Tests the parameters of the callbacks """
         def callback1(flow):
             pass
@@ -626,6 +625,81 @@ class StackLanTests(unittest.TestCase):
         except:
             self.assertTrue(False)
 
+    def test21(self):
+        """ Verify the functionatliy of the HTTPUriSets with the callbacks """
+
+        self.uset = pyaiengine.HTTPUriSet()
+        def domain_callback(flow):
+            self.called_callback += 1
+
+        def uri_callback(flow):
+            self.assertEqual(self.uset.getTotalURIs(), 1)
+            self.assertEqual(self.uset.getTotalLookups(), 2)
+            self.assertEqual(self.uset.getTotalLookupsIn(), 1)
+            self.assertEqual(self.uset.getTotalLookupsOut(), 1)
+            self.called_callback += 1
+
+        d = pyaiengine.DomainName("Wired domain",".wired.com")
+
+        dm = pyaiengine.DomainNameManager()
+        d.setCallback(domain_callback)
+        dm.addDomainName(d)
+
+        self.uset.addURI("/js/jquery.hoverIntent.js")
+        self.uset.setCallback(uri_callback)
+
+	d.setHTTPUriSet(self.uset)
+
+        self.s.setHTTPHostNameManager(dm)
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
+            pd.setStack(self.s)
+            pd.run();
+
+        self.assertEqual(self.uset.getTotalURIs(), 1)
+        self.assertEqual(self.uset.getTotalLookups(), 39)
+        self.assertEqual(self.uset.getTotalLookupsIn(), 1)
+        self.assertEqual(self.uset.getTotalLookupsOut(), 38)
+
+        self.assertEqual(self.called_callback,2)
+
+    def test22(self):
+        """ Verify the functionatliy of the HTTPUriSets with the callbacks """
+
+        self.uset = pyaiengine.HTTPUriSet()
+        def domain_callback(flow):
+            self.called_callback += 1
+
+        def uri_callback(flow):
+            self.assertEqual(self.uset.getTotalURIs(), 1)
+            self.assertEqual(self.uset.getTotalLookups(), 3)
+            self.assertEqual(self.uset.getTotalLookupsIn(), 1)
+            self.assertEqual(self.uset.getTotalLookupsOut(), 2)
+            self.called_callback += 1
+
+        d = pyaiengine.DomainName("Wired domain",".wired.com")
+
+        dm = pyaiengine.DomainNameManager()
+        d.setCallback(domain_callback)
+        dm.addDomainName(d)
+
+	# This uri is the thrid of the wired.com flow
+        self.uset.addURI("/js/ecom/ecomPlacement.js")
+        self.uset.setCallback(uri_callback)
+
+        d.setHTTPUriSet(self.uset)
+
+        self.s.setHTTPHostNameManager(dm)
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
+            pd.setStack(self.s)
+            pd.run();
+
+        self.assertEqual(self.uset.getTotalURIs(), 1)
+        self.assertEqual(self.uset.getTotalLookups(), 39)
+        self.assertEqual(self.uset.getTotalLookupsIn(), 1)
+        self.assertEqual(self.uset.getTotalLookupsOut(), 38)
+        self.assertEqual(self.called_callback,2)
 
 class StackLanIPv6Tests(unittest.TestCase):
 

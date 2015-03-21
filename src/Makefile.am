@@ -89,6 +89,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/openflow/OpenFlowProtocol.cc \
 			protocols/gre/GREProtocol.cc \
 			protocols/http/HTTPProtocol.cc \
+			protocols/http/HTTPUriSet.cc \
 			protocols/ssl/SSLProtocol.cc \
 			protocols/smtp/SMTPProtocol.cc \
 			protocols/dns/DNSProtocol.cc \

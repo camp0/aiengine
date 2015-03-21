@@ -31,6 +31,7 @@
 #include <iostream>
 #include <vector> 
 #include "StringCache.h"
+#include "names/DomainName.h"
 
 namespace aiengine {
 
@@ -50,6 +51,7 @@ public:
 #ifdef PYTHON_BINDING
 		needs_release_ = false; 
 #endif
+		matched_host.reset();
 		resetStrings(); 
 	}
 
@@ -76,6 +78,7 @@ public:
         WeakPointer<StringCache> uri;
         WeakPointer<StringCache> host;
         WeakPointer<StringCache> ua;
+	WeakPointer<DomainName> matched_host;
 
 #ifdef PYTHON_BINDING
 

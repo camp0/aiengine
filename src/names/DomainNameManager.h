@@ -45,10 +45,10 @@ public:
 
     	virtual ~DomainNameManager() {}
 
-	void addDomainName(SharedPointer<DomainName> domain); 
+	void addDomainName(const SharedPointer<DomainName>& domain); 
 	void addDomainName(const std::string name,const std::string expression);
 
-	SharedPointer<DomainName> getDomainName(std::string& name);
+	SharedPointer<DomainName> getDomainName(const std::string& name);
 	SharedPointer<DomainName> getDomainName(const char *name);
 	SharedPointer<DomainName> getDomainName(boost::string_ref &name);
 

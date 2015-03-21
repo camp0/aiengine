@@ -30,25 +30,34 @@
 
 #include <iostream>
 #include <iomanip>
+#include "../Pointer.h"
 #include "../Signature.h"
 #include <boost/format.hpp>
+#include "../protocols/http/HTTPUriSet.h"
 
 namespace aiengine {
 
 class DomainName: public Signature 
 { 
 public:
-    	explicit DomainName(const std::string &name,const std::string &expression):Signature(name,expression) {}
+    	explicit DomainName(const std::string &name,const std::string &expression):Signature(name,expression),
+		uris_() {}
     	virtual ~DomainName() {}
 
 	friend std::ostream& operator<< (std::ostream& out, const DomainName& dom) {
        
 		out << "\t" <<  boost::format("Name:%-25s Domain:%-30s matchs:%-10d") % dom.getName() % dom.getExpression() % dom.total_matchs_;
+		if (dom.uris_) out << " plug to:" << dom.uris_->getName();
 		out << std::endl; 
         	return out;
 	}
 
+        void setHTTPUriSet(const SharedPointer<HTTPUriSet>& uset) { uris_ = uset; }
+        SharedPointer<HTTPUriSet> &getHTTPUriSet() { return uris_; }
+
 	// The rest from the base class
+private:
+	SharedPointer<HTTPUriSet> uris_;
 };
 
 typedef std::shared_ptr<DomainName> DomainNamePtr;

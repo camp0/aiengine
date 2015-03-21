@@ -443,22 +443,40 @@ void HTTPProtocol::processFlow(Flow *flow, bool close) {
 			parse_header(info.get(),&header[offset]);
 		}
 
-                DomainNameManagerPtr host_mng = host_mng_.lock();
-                if (host_mng) {
-			SharedPointer<StringCache> host_name = info->host.lock();
+		// Just verify the Host on the first request
+		if (info->getTotalRequests() == 1) {
+                	DomainNameManagerPtr host_mng = host_mng_.lock();
+                	if (host_mng) {
+				SharedPointer<StringCache> host_name = info->host.lock();
 
-			if (host_name) {
-                		SharedPointer<DomainName> host_candidate = host_mng->getDomainName(host_name->getName());
-				if (host_candidate) {
+				if (host_name) {
+                			SharedPointer<DomainName> host_candidate = host_mng->getDomainName(host_name->getName());
+					if (host_candidate) {
 #ifdef PYTHON_BINDING
 #ifdef HAVE_LIBLOG4CXX
-					LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
+						LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
 #endif	
-					if(host_candidate->pycall.haveCallback()) {
-						host_candidate->pycall.executeCallback(flow);
-                                	}
+						if(host_candidate->pycall.haveCallback()) {
+							host_candidate->pycall.executeCallback(flow);
+                                		}
 #endif
-                        	}
+						info->matched_host = host_candidate;
+					}
+				}
+			}
+		}
+
+		SharedPointer<DomainName> mhost = info->matched_host.lock();
+		if (mhost) {
+			SharedPointer<HTTPUriSet> uset = mhost->getHTTPUriSet();
+			if((uset) and (offset >0)) {
+				if (uset->lookupURI(info->uri.lock()->getName())) {
+#ifdef PYTHON_BINDING
+					if (uset->pycall.haveCallback()) {
+						uset->pycall.executeCallback(flow);	
+					}
+#endif
+				}
 			}
 		}
 	} else {

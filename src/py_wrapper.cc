@@ -574,6 +574,24 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		     	"Sets the flow to banned for no more analysis on the python side and release resources.")
 	;
 
+        boost::python::class_<HTTPUriSet, SharedPointer<HTTPUriSet>, boost::noncopyable>("HTTPUriSet")
+		.def(init<>())
+		.def(init<const std::string&>())
+                .def("addURI",&HTTPUriSet::addURI,
+                        "Adds a URI to the HTTPUriSet.")
+		.def("getTotalURIs",&HTTPUriSet::getTotalURIs,
+			"Returns the total number of URIs on the set.")
+		.def("getTotalLookups",&HTTPUriSet::getTotalLookups,
+			"Returns the total number of lookups of the set.")
+		.def("getTotalLookupsIn",&HTTPUriSet::getTotalLookupsIn,
+			"Returns the total number of matched lookups of the set.")
+		.def("getTotalLookupsOut",&HTTPUriSet::getTotalLookupsOut,
+			"Returns the total number of non matched lookups of the set.")
+                .def("setCallback",&HTTPUriSet::setCallback,
+                        "Sets a callback function for the matching set.")
+		.def(self_ns::str(self_ns::self))
+        ;
+
         boost::python::class_<SIPInfo, SharedPointer<SIPInfo>, boost::noncopyable>("SIPInfo")
                 .def("getUri",&SIPInfo::getUri,return_internal_reference<>(),
                         "Returns the SIP URI of the flow if the flow is SIP.")
@@ -617,12 +635,15 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Returns the name of the domain.")
                 .def("getMatchs",&DomainName::getMatchs,
 			"Returns the total number of matches of the domain.")
+                .def("setHTTPUriSet",&DomainName::setHTTPUriSet,
+			"Sets the HTTPUriSet used on this DomainName (only works on HTTP).")
                 .def("setCallback",&DomainName::setCallback,
 			"Sets the callback of the domain.")
+		.def(self_ns::str(self_ns::self))
         ;
 
         void (DomainNameManager::*addDomainName1)(const std::string,const std::string) = &DomainNameManager::addDomainName;
-        void (DomainNameManager::*addDomainName2)(const SharedPointer<DomainName>) = &DomainNameManager::addDomainName;
+        void (DomainNameManager::*addDomainName2)(const SharedPointer<DomainName>&) = &DomainNameManager::addDomainName;
 
         boost::python::class_<DomainNameManager,SharedPointer<DomainNameManager>,boost::noncopyable >("DomainNameManager",
 		"Class that manages DomainsNames.")

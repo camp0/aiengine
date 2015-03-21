@@ -1647,7 +1647,5 @@ BOOST_AUTO_TEST_CASE ( test_case_19 )
         }
 }
 
-
-
 BOOST_AUTO_TEST_SUITE_END( )
 

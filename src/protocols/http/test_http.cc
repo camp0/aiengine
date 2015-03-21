@@ -1106,6 +1106,120 @@ BOOST_AUTO_TEST_CASE (test22_http)
 	BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2));
 }
 
+// Test the functionality of the HTTPUriSets attached to a DomainName
+BOOST_AUTO_TEST_CASE (test23_http)
+{
+        char *header1 =  "GET /someur-oonnnnn-a-/somefile.php HTTP/1.0\r\n"
+                        "Host: www.bu.com\r\n"
+                        "Connection: close\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Accept-Language: en-gb\r\n"
+                        "Accept: */*\r\n"
+                        "User-Agent: LuisAgent\r\n\r\n";
+
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header1);
+        int length1 = strlen(header1);
+        Packet packet1(pkt1,length1);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        SharedPointer<DomainNameManager> host_mng = SharedPointer<DomainNameManager>(new DomainNameManager());
+        WeakPointer<DomainNameManager> host_mng_weak = host_mng;
+        SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("One domain","bu.com"));
+	SharedPointer<HTTPUriSet> uset = SharedPointer<HTTPUriSet>(new HTTPUriSet());
+
+        http->createHTTPInfos(1);
+
+	uset->addURI("/someur-oonnnnn-a-/somefile.php");
+
+	// Attach the HTTPUriSet to the DomainName
+	host_name->setHTTPUriSet(uset);
+
+        http->setDomainNameManager(host_mng_weak);
+        host_mng->addDomainName(host_name);
+
+	// Before the execution
+	BOOST_CHECK(uset->getTotalURIs() == 1);
+	BOOST_CHECK(uset->getTotalLookups() == 0);
+	BOOST_CHECK(uset->getTotalLookupsIn() == 0);
+	BOOST_CHECK(uset->getTotalLookupsOut() == 0);
+
+        flow->packet = const_cast<Packet*>(&packet1);
+        http->processFlow(flow.get(),false);
+
+        BOOST_CHECK(flow->http_info.lock() != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+
+        BOOST_CHECK(host_name->getMatchs() == 1);
+        BOOST_CHECK(info->getIsBanned() == false);
+
+        BOOST_CHECK(info->host.lock() != nullptr);
+        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(info->ua.lock() != nullptr);
+	
+	BOOST_CHECK(uset->getTotalURIs() == 1);
+	BOOST_CHECK(uset->getTotalLookups() == 1);
+	BOOST_CHECK(uset->getTotalLookupsIn() == 1);
+	BOOST_CHECK(uset->getTotalLookupsOut() == 0);
+}
+
+// Another test for the functionality of the HTTPUriSets attached to a DomainNameManager
+BOOST_AUTO_TEST_CASE (test24_http)
+{
+        char *header1 =  "GET /someur-oonnnnn-a-/somefile.php HTTP/1.0\r\n"
+                        "Host: www.bu.com\r\n"
+                        "Connection: close\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Accept-Language: en-gb\r\n"
+                        "Accept: */*\r\n"
+                        "User-Agent: LuisAgent\r\n\r\n";
+
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header1);
+        int length1 = strlen(header1);
+        Packet packet1(pkt1,length1);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        SharedPointer<DomainNameManager> host_mng = SharedPointer<DomainNameManager>(new DomainNameManager());
+        WeakPointer<DomainNameManager> host_mng_weak = host_mng;
+        SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("One domain","bu.com"));
+        SharedPointer<HTTPUriSet> uset = SharedPointer<HTTPUriSet>(new HTTPUriSet());
+
+        http->createHTTPInfos(1);
+
+        uset->addURI("/someur-oonnnnn-a-/somefile.html");
+        uset->addURI("/index.html");
+        uset->addURI("/oonnnnn-a-/somefile.html");
+
+        // Attach the HTTPUriSet to the DomainName
+        host_name->setHTTPUriSet(uset);
+
+        http->setDomainNameManager(host_mng_weak);
+        host_mng->addDomainName(host_name);
+
+        // Before the execution
+        BOOST_CHECK(uset->getTotalURIs() == 3);
+        BOOST_CHECK(uset->getTotalLookups() == 0);
+        BOOST_CHECK(uset->getTotalLookupsIn() == 0);
+        BOOST_CHECK(uset->getTotalLookupsOut() == 0);
+
+        flow->packet = const_cast<Packet*>(&packet1);
+        http->processFlow(flow.get(),false);
+
+        BOOST_CHECK(flow->http_info.lock() != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+
+        BOOST_CHECK(host_name->getMatchs() == 1);
+        BOOST_CHECK(info->getIsBanned() == false);
+
+        BOOST_CHECK(info->host.lock() != nullptr);
+        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(info->ua.lock() != nullptr);
+
+        BOOST_CHECK(uset->getTotalURIs() == 3);
+        BOOST_CHECK(uset->getTotalLookups() == 1);
+        BOOST_CHECK(uset->getTotalLookupsIn() == 0);
+        BOOST_CHECK(uset->getTotalLookupsOut() == 1);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

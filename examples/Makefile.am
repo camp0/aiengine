@@ -16,6 +16,7 @@ EXTRA_DIST = 	bitcoinminer.py \
 		snort.py \
 		query.py \
 		uri_exploit.py \
+		zeus_malware.py \
 		ddos.py
 
 MAINTAINERCLEANFILES = Makefile.in 

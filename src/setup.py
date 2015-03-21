@@ -25,6 +25,7 @@ src_files += ["protocols/tcpgeneric/TCPGenericProtocol.cc","protocols/udpgeneric
 src_files += ["protocols/gre/GREProtocol.cc","protocols/vxlan/VxLanProtocol.cc","protocols/openflow/OpenFlowProtocol.cc"]
 src_files += ["protocols/gprs/GPRSProtocol.cc"]
 src_files += ["protocols/http/HTTPProtocol.cc"]
+src_files += ["protocols/http/HTTPUriSet.cc"]
 src_files += ["protocols/ssl/SSLProtocol.cc"]
 src_files += ["protocols/smtp/SMTPProtocol.cc"]
 src_files += ["protocols/dns/DNSProtocol.cc"]
