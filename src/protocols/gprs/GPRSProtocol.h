@@ -103,7 +103,8 @@ public:
         	total_update_pdp_ctx_responses_(0),
         	total_delete_pdp_ctx_requests_(0),
         	total_delete_pdp_ctx_responses_(0),
-        	total_tpdus_(0) {
+        	total_tpdus_(0),
+		flow_mng_() {
 
 		CacheManager::getInstance()->setCache(gprs_info_cache_);
 	}

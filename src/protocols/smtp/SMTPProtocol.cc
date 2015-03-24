@@ -190,11 +190,13 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header
 
 	boost::string_ref from(h.substr(start + 1, end - start - 1));
 	size_t token = from.find("@");
+
+	// TODO: CHANGE TO string_ref
 	std::string domain(from.substr(token + 1,from.size()));
 
         DomainNameManagerPtr ban_hosts = ban_domain_mng_.lock();
         if (ban_hosts) {
-                SharedPointer<DomainName> dom_candidate = ban_hosts->getDomainName(domain);
+                SharedPointer<DomainName> dom_candidate = ban_hosts->getDomainName(domain.c_str());
                 if (dom_candidate) {
 #ifdef HAVE_LIBLOG4CXX
                         LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with ban host " << dom_candidate->getName());
@@ -211,7 +213,7 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header
         DomainNameManagerPtr dom_mng = domain_mng_.lock();
        	if (dom_mng) {
 
-        	SharedPointer<DomainName> dom_candidate = dom_mng->getDomainName(domain);
+        	SharedPointer<DomainName> dom_candidate = dom_mng->getDomainName(domain.c_str());
                 if (dom_candidate) {
 #ifdef PYTHON_BINDING
 #ifdef HAVE_LIBLOG4CXX

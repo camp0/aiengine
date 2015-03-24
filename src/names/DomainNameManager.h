@@ -41,16 +41,15 @@ class DomainNameManager
 public:
     	explicit DomainNameManager():root_(SharedPointer<DomainNode>(new DomainNode("root"))),
 		total_domains_(0),
-		tokens_() {}
+		key_() {}
 
     	virtual ~DomainNameManager() {}
 
 	void addDomainName(const SharedPointer<DomainName>& domain); 
 	void addDomainName(const std::string name,const std::string expression);
 
-	SharedPointer<DomainName> getDomainName(const std::string& name);
-	SharedPointer<DomainName> getDomainName(const char *name);
 	SharedPointer<DomainName> getDomainName(boost::string_ref &name);
+	SharedPointer<DomainName> getDomainName(const char *name); 
 
 	int32_t getTotalDomains() const { return total_domains_; }
 
@@ -59,7 +58,7 @@ public:
 private:
 	SharedPointer<DomainNode> root_;
 	int32_t total_domains_;
-	std::vector<std::string> tokens_;
+	boost::string_ref key_;
 };
 
 typedef std::shared_ptr<DomainNameManager> DomainNameManagerPtr;

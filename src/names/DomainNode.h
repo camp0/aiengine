@@ -30,6 +30,8 @@
 
 #include "../Pointer.h"
 #include <unordered_map>
+#include <boost/utility/string_ref.hpp>
+#include <boost/functional/hash.hpp>
 #include <iostream>
 
 namespace aiengine {
@@ -37,15 +39,24 @@ namespace aiengine {
 class DomainNode 
 {
 public:
-    	explicit DomainNode(const std::string key):
+    	explicit DomainNode(const std::string& key):
+		map_(),
 		key_(key),domain_() {}
     	
 	virtual ~DomainNode() {}
 
-	typedef std::unordered_map<std::string,SharedPointer<DomainNode>> DomainMapType;
+	struct string_hasher
+	{
+        	size_t operator()(boost::string_ref const& s) const
+        	{
+                	return boost::hash_range(s.begin(), s.end());
+        	}
+	};
 
-	SharedPointer<DomainNode> haveKey(std::string key) {
-	
+	typedef std::unordered_map<boost::string_ref,SharedPointer<DomainNode>,string_hasher> DomainNodeMapType;
+
+	SharedPointer<DomainNode> haveKey(boost::string_ref key) {
+
 		auto it = map_.find(key);
 		SharedPointer<DomainNode> node;
 
@@ -54,21 +65,21 @@ public:
 		return node;
 	}
 
-	void addKey(SharedPointer<DomainNode> node) {
-	
-		map_.insert(std::pair<std::string,SharedPointer<DomainNode>>(node->getKey(),node));
+	void addKey(const SharedPointer<DomainNode>& node) {
+
+		map_.insert(std::pair<boost::string_ref,SharedPointer<DomainNode>>(boost::string_ref(node->getKey()),node));
 	}	
 
-	void setDomainName(SharedPointer<DomainName> domain) { domain_ = domain;}
+	void setDomainName(const SharedPointer<DomainName>& domain) { domain_ = domain;}
 	SharedPointer<DomainName> getDomainName() { return domain_;}
 
-	std::string &getKey() { return key_;}
+	const char *getKey() { return key_.c_str();}
 
-        DomainMapType::iterator begin() { return map_.begin(); }
-        DomainMapType::iterator end() { return map_.end(); }
+        DomainNodeMapType::iterator begin() { return map_.begin(); }
+        DomainNodeMapType::iterator end() { return map_.end(); }
 
 private:
-	DomainMapType map_;
+	DomainNodeMapType map_;
 	std::string key_;
 	SharedPointer<DomainName> domain_;
 };

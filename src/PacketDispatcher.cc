@@ -29,7 +29,7 @@ namespace aiengine {
 log4cxx::LoggerPtr PacketDispatcher::logger(log4cxx::Logger::getLogger("aiengine.packetdispatcher"));
 #endif
 
-void PacketDispatcher::info_message(std::string msg) {
+void PacketDispatcher::info_message(const std::string &msg) {
 
 #ifdef HAVE_LIBLOG4CXX
         LOG4CXX_INFO(logger, msg);
@@ -55,7 +55,7 @@ void PacketDispatcher::setDefaultMultiplexer(MultiplexerPtr mux) {
 }
 
 
-void PacketDispatcher::open_device(std::string device) {
+void PacketDispatcher::open_device(const std::string& device) {
 
 	char errorbuf[PCAP_ERRBUF_SIZE];
 #ifdef __FREEBSD__
@@ -96,7 +96,7 @@ void PacketDispatcher::close_device(void) {
 	}
 }
 
-void PacketDispatcher::open_pcap_file(std::string filename) {
+void PacketDispatcher::open_pcap_file(const std::string& filename) {
 
 	char errorbuf[PCAP_ERRBUF_SIZE];
 

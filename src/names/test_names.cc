@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE (test1_names)
 
 	dom_table->addDomainName(domain);
 
-	std::string value("com");
+	boost::string_ref value("com");
 
 	domain_candidate = dom_table->getDomainName(value);
 
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE (test2_names)
         SharedPointer<DomainName> domain_candidate;
 
         dom_table->addDomainName(domain);
-	std::string value("pepe.com");
+	boost::string_ref value("pepe.com");
 
         domain_candidate = dom_table->getDomainName(value);
 
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE (test3_names)
         SharedPointer<DomainName> domain_candidate;
 
         dom_table->addDomainName(domain);
-	std::string value("pepe.com");
+	boost::string_ref value("pepe.com");
 
         domain_candidate = dom_table->getDomainName(value);
         BOOST_CHECK(domain_candidate != domain);
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE (test4_names)
         dom_table->addDomainName(domain2);
         dom_table->addDomainName(domain3);
         dom_table->addDomainName(domain4);
-	std::string value("ppepe.com");
+	boost::string_ref value("ppepe.com");
 
         domain_candidate = dom_table->getDomainName(value);
        	BOOST_CHECK(domain_candidate == nullptr); 
@@ -119,5 +119,17 @@ BOOST_AUTO_TEST_CASE (test4_names)
 	//cout << *dom_table;
 }
 
+BOOST_AUTO_TEST_CASE (test5_names) 
+{
+	SharedPointer<DomainNameManager> dom_table = SharedPointer<DomainNameManager>(new DomainNameManager());
+        SharedPointer<DomainName> domain = SharedPointer<DomainName>(new DomainName("Wired Domain",".wired.com"));
+
+	dom_table->addDomainName(domain);
+	boost::string_ref check("www.wired.com");
+
+	SharedPointer<DomainName> candidate = dom_table->getDomainName(check);
+	BOOST_CHECK(candidate == domain);
+	BOOST_CHECK(candidate->getMatchs() == 1);
+}
 
 BOOST_AUTO_TEST_SUITE_END( )

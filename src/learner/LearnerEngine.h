@@ -59,7 +59,7 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};	
 
-	void agregatePacketFlow(SharedPointer<PacketFrequencies> pkt_freq); 
+	void agregatePacketFlow(const SharedPointer<PacketFrequencies>& pkt_freq); 
 	
 	void compute();
 
@@ -71,13 +71,13 @@ public:
 
 	void setMaxLenghtForRegularExpression(int value) { max_raw_expression_ = value;};
 
-	void setFrequencyGroup(FrequencyGroup<std::string>::Ptr fg) { freq_group_ = fg;};
+	void setFrequencyGroup(const FrequencyGroup<std::string>::Ptr& fg) { freq_group_ = fg;};
 
 #ifdef PYTHON_BINDING
 	int getTotalFlowsProcess() const { return items_;};
 	void agregateFlows(boost::python::list flows);
 #else
-	void agregateFlows(std::vector<WeakPointer<Flow>>& flows);
+	void agregateFlows(const std::vector<WeakPointer<Flow>>& flows);
 #endif
 
 private:

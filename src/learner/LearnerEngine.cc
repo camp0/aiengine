@@ -45,7 +45,7 @@ void LearnerEngine::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
-void LearnerEngine::agregatePacketFlow(SharedPointer<PacketFrequencies> pkt_freq) {
+void LearnerEngine::agregatePacketFlow(const SharedPointer<PacketFrequencies>& pkt_freq) {
 
 	++items_;
 
@@ -134,7 +134,7 @@ void LearnerEngine::agregateFlows(boost::python::list flows) {
 	
 		SharedPointer<Flow> flow = boost::python::extract<SharedPointer<Flow>>(flows[i]);
 #else
-void LearnerEngine::agregateFlows(std::vector<WeakPointer<Flow>> &flows) {
+void LearnerEngine::agregateFlows(const std::vector<WeakPointer<Flow>>& flows) {
 
 	for (auto it = flows.begin();it!=flows.end();++it) {
 	

@@ -44,7 +44,7 @@ namespace aiengine {
 class UDPProtocol: public Protocol 
 {
 public:
-    	explicit UDPProtocol(std::string name):Protocol(name),stats_level_(0),
+    	explicit UDPProtocol(const std::string& name):Protocol(name),stats_level_(0),
 		flow_table_(),flow_cache_(),sigs_(),
 		udp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
 		last_timeout_(0),packet_time_(0) {}

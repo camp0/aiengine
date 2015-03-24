@@ -45,7 +45,7 @@ namespace aiengine {
 class TCPProtocol: public Protocol 
 {
 public:
-    	explicit TCPProtocol(std::string name):Protocol(name),stats_level_(0),
+    	explicit TCPProtocol(const std::string& name):Protocol(name),stats_level_(0),
                 flow_table_(),flow_cache_(),sigs_(),
                 tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")), 
                 tcp_header_(nullptr),current_flow_(nullptr),

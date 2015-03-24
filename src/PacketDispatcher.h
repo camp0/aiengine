@@ -95,7 +95,7 @@ public:
 			int64_t prev_total_packets_per_interval;	
 	};
 
-    	explicit PacketDispatcher(const std::string &source):status_(PacketDispatcherStatus::STOP),
+    	explicit PacketDispatcher(const std::string& source):status_(PacketDispatcherStatus::STOP),
 		stream_(),pcap_file_ready_(false),read_in_progress_(false),
 		device_is_ready_(false),total_packets_(0),total_bytes_(0),pcap_(nullptr),
 		io_service_(),
@@ -119,11 +119,11 @@ public:
 
     	virtual ~PacketDispatcher() { io_service_.stop(); }
 
-	void open(const std::string &source);
+	void open(const std::string& source);
 	void run(void);
 	void close(void);
     	void stop(void) { io_service_.stop(); }
-	void setPcapFilter(const std::string &filter);
+	void setPcapFilter(const std::string& filter);
 	void status(void);
 
 #ifdef PYTHON_BINDING
@@ -161,14 +161,14 @@ private:
 	void scheduler_handler(boost::system::error_code error);
 	void default_idle_function(void) const {};
 
-        void open_device(std::string device);
+        void open_device(const std::string& device);
         void close_device(void);
-        void open_pcap_file(std::string filename);
+        void open_pcap_file(const std::string& filename);
         void close_pcap_file(void);
         void run_device(void);
         void run_pcap(void);
 
-	void info_message(std::string msg);
+	void info_message(const std::string& msg);
 
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;

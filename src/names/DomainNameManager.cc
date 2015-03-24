@@ -43,7 +43,7 @@ void DomainNameManager::addDomainName(const SharedPointer<DomainName>& domain) {
 		std::string token(*it);
 
 		if (token.length() > 0) {
-			SharedPointer<DomainNode> node = curr_node->haveKey(token);
+			SharedPointer<DomainNode> node = curr_node->haveKey(boost::string_ref(token));
 			if(!node) {
 				SharedPointer<DomainNode> new_node = SharedPointer<DomainNode>(new DomainNode(token));
 
@@ -58,43 +58,55 @@ void DomainNameManager::addDomainName(const SharedPointer<DomainName>& domain) {
 	++total_domains_;
 }
 
-SharedPointer<DomainName> DomainNameManager::getDomainName(const std::string& name) {
-
-	SharedPointer<DomainName> domain_candidate;
-	boost::split(tokens_,name,boost::is_any_of("."));
-
-	SharedPointer<DomainNode> curr_node = root_;
-
-	for (auto it = tokens_.rbegin(); it != tokens_.rend(); ++it) {
-		SharedPointer<DomainNode> node = curr_node->haveKey(*it);
-		if (node) {
-			curr_node = node;
-			domain_candidate = node->getDomainName();				
-		} else {
-			if (domain_candidate) 
-				domain_candidate->incrementMatchs();
-	
-			return domain_candidate;	
-		}
-	}
- 
-	if (domain_candidate) 
-		domain_candidate->incrementMatchs();
-	return domain_candidate;
-}
-
 SharedPointer<DomainName> DomainNameManager::getDomainName(const char *name) {
 
-	std::string domain(name);
+	boost::string_ref sname(name);
 
-	return getDomainName(domain);
+	return getDomainName(sname);
 }
 
 SharedPointer<DomainName> DomainNameManager::getDomainName(boost::string_ref &name) {
 
-	std::string domain(name);
+        int prev_idx = name.length() - 1;
+        int idx = prev_idx;
+        SharedPointer<DomainNode> curr_node = root_;
+        SharedPointer<DomainName> domain_candidate;
 
-	return getDomainName(domain);
+        for (idx = prev_idx ; idx >= 0 ; --idx) {
+                if (name.at(idx) == '.') {
+                        key_ = name.substr(idx+1,prev_idx - idx);
+                        SharedPointer<DomainNode> node = curr_node->haveKey(key_);
+                        if (node) {
+                                curr_node = node;
+                                domain_candidate = node->getDomainName();
+                        } else {
+                                if (domain_candidate)
+                                        domain_candidate->incrementMatchs();
+
+                                return domain_candidate;
+                        }
+                        prev_idx = idx - 1;
+                }
+        }
+
+        key_ = name.substr(idx+1,prev_idx+1);
+
+        if (key_.length() > 0) {
+                SharedPointer<DomainNode> node = curr_node->haveKey(key_);
+                if (node) {
+                        domain_candidate = node->getDomainName();
+                        if (domain_candidate)
+                                 domain_candidate->incrementMatchs();
+
+                        return domain_candidate;
+                } else {
+                        if (domain_candidate)
+                                 domain_candidate->incrementMatchs();
+
+                        return domain_candidate;
+		}
+        }
+        return domain_candidate;
 }
 
 void printDomainNode(std::ostream& out, SharedPointer<DomainNode> node) {
