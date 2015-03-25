@@ -148,8 +148,7 @@ struct StackTestOpenFlow
                 mux_of->setProtocolIdentifier(0);
                 mux_of->setHeaderSize(of->getHeaderSize());
                 ff_of->addChecker(std::bind(&OpenFlowProtocol::openflowChecker,of,std::placeholders::_1));
-		ff_of->addFlowFunction(std::bind(&OpenFlowProtocol::processFlow,of,
-			std::placeholders::_1,std::placeholders::_2));
+		ff_of->addFlowFunction(std::bind(&OpenFlowProtocol::processFlow,of,std::placeholders::_1));
 
                 //configure the icmp
                 icmp_vir->setMultiplexer(mux_icmp_vir);
@@ -181,22 +180,19 @@ struct StackTestOpenFlow
                 udpg_vir->setFlowForwarder(ff_udpg_vir);
                 ff_udpg_vir->setProtocol(static_cast<ProtocolPtr>(udpg_vir));
                 ff_udpg_vir->addChecker(std::bind(&UDPGenericProtocol::udpGenericChecker,udpg_vir,std::placeholders::_1));
-                ff_udpg_vir->addFlowFunction(std::bind(&UDPGenericProtocol::processFlow,udpg_vir,
-			std::placeholders::_1,std::placeholders::_2));
+                ff_udpg_vir->addFlowFunction(std::bind(&UDPGenericProtocol::processFlow,udpg_vir,std::placeholders::_1));
 
                 // configure the generic tcp 
                 tcpg_vir->setFlowForwarder(ff_tcpg_vir);
                 ff_tcpg_vir->setProtocol(static_cast<ProtocolPtr>(tcpg_vir));
                 ff_tcpg_vir->addChecker(std::bind(&TCPGenericProtocol::tcpGenericChecker,tcpg_vir,std::placeholders::_1));
-                ff_tcpg_vir->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,tcpg_vir,
-			std::placeholders::_1,std::placeholders::_2));
+                ff_tcpg_vir->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,tcpg_vir,std::placeholders::_1));
 
         	// configure the DNS Layer
         	dns_vir->setFlowForwarder(ff_dns_vir);
         	ff_dns_vir->setProtocol(static_cast<ProtocolPtr>(dns_vir));
         	ff_dns_vir->addChecker(std::bind(&DNSProtocol::dnsChecker,dns_vir,std::placeholders::_1));
-        	ff_dns_vir->addFlowFunction(std::bind(&DNSProtocol::processFlow,dns_vir,
-			std::placeholders::_1,std::placeholders::_2));
+        	ff_dns_vir->addFlowFunction(std::bind(&DNSProtocol::processFlow,dns_vir,std::placeholders::_1));
 
                 // configure the multiplexers of the first part
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);

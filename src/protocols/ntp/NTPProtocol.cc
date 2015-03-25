@@ -26,7 +26,7 @@
 
 namespace aiengine {
 
-void NTPProtocol::processFlow(Flow *flow, bool close) {
+void NTPProtocol::processFlow(Flow *flow) {
 
 	setHeader(flow->packet->getPayload());	
 	uint8_t mode = getMode();

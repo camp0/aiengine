@@ -104,8 +104,7 @@ struct StackSSLtest
                 ssl->setFlowForwarder(ff_ssl);
                 ff_ssl->setProtocol(static_cast<ProtocolPtr>(ssl));
                 ff_ssl->addChecker(std::bind(&SSLProtocol::sslChecker,ssl,std::placeholders::_1));
-                ff_ssl->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl,
-			std::placeholders::_1,std::placeholders::_2));
+                ff_ssl->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl,std::placeholders::_1));
 
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);

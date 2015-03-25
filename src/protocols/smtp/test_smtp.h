@@ -104,7 +104,7 @@ struct StackSMTPtest
                 smtp->setFlowForwarder(ff_smtp);
                 ff_smtp->setProtocol(static_cast<ProtocolPtr>(smtp));
                 ff_smtp->addChecker(std::bind(&SMTPProtocol::smtpChecker,smtp,std::placeholders::_1));
-                ff_smtp->addFlowFunction(std::bind(&SMTPProtocol::processFlow,smtp,std::placeholders::_1,std::placeholders::_2));
+                ff_smtp->addFlowFunction(std::bind(&SMTPProtocol::processFlow,smtp,std::placeholders::_1));
 
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);

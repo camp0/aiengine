@@ -30,7 +30,7 @@ namespace aiengine {
 log4cxx::LoggerPtr UDPGenericProtocol::logger(log4cxx::Logger::getLogger("aiengine.udpgeneric"));
 #endif
 
-void UDPGenericProtocol::processFlow(Flow *flow, bool close) {
+void UDPGenericProtocol::processFlow(Flow *flow) {
 
         SharedPointer<RegexManager> sig = flow->regex_mng.lock();
         ++total_packets_;

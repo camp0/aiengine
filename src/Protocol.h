@@ -67,7 +67,7 @@ public:
 #endif
 		{}
 
-    	virtual ~Protocol() { ipset_mng_.reset();}
+    	virtual ~Protocol() { ipset_mng_.reset(); }
 
 	virtual void setHeader(unsigned char *raw_packet) = 0;
 	virtual void setStatisticsLevel(int level) = 0;
@@ -75,7 +75,7 @@ public:
 	virtual void statistics() = 0;
 	const char* getName() { return name_.c_str();} 
 
-	virtual void processFlow(Flow *flow, bool close) = 0;
+	virtual void processFlow(Flow *flow) = 0;
 	virtual void processPacket(Packet &packet) = 0;
 
 	void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }

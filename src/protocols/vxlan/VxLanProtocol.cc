@@ -26,7 +26,7 @@
 
 namespace aiengine {
 
-void VxLanProtocol::processFlow(Flow *flow, bool close) {
+void VxLanProtocol::processFlow(Flow *flow) {
 
         int bytes = flow->packet->getLength();
         total_bytes_ += bytes;

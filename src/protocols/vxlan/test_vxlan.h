@@ -143,7 +143,7 @@ struct StackTestVxlan
                 mux_vxlan->setProtocolIdentifier(0);
 		ff_vxlan->setProtocol(static_cast<ProtocolPtr>(vxlan));
                 ff_vxlan->addChecker(std::bind(&VxLanProtocol::vxlanChecker,vxlan,std::placeholders::_1));
-        	ff_vxlan->addFlowFunction(std::bind(&VxLanProtocol::processFlow,vxlan,std::placeholders::_1,std::placeholders::_2));
+        	ff_vxlan->addFlowFunction(std::bind(&VxLanProtocol::processFlow,vxlan,std::placeholders::_1));
 
                 //configure the icmp
                 icmp_vir->setMultiplexer(mux_icmp_vir);
@@ -175,8 +175,7 @@ struct StackTestVxlan
         	dns_vir->setFlowForwarder(ff_dns_vir);
         	ff_dns_vir->setProtocol(static_cast<ProtocolPtr>(dns_vir));
         	ff_dns_vir->addChecker(std::bind(&DNSProtocol::dnsChecker,dns_vir,std::placeholders::_1));
-        	ff_dns_vir->addFlowFunction(std::bind(&DNSProtocol::processFlow,dns_vir,
-			std::placeholders::_1,std::placeholders::_2));
+        	ff_dns_vir->addFlowFunction(std::bind(&DNSProtocol::processFlow,dns_vir,std::placeholders::_1));
 
                 // configure the multiplexers of the first part
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);

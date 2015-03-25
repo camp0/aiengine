@@ -103,7 +103,7 @@ public:
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
 
 	void processPacket(Packet& packet) { /* Nothing to process at packet level*/ }
-	void processFlow(Flow *flow, bool close);
+	void processFlow(Flow *flow);
 
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);

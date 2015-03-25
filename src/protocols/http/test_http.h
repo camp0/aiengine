@@ -106,8 +106,7 @@ struct StackHTTPtest
                 http->setFlowForwarder(ff_http);
                 ff_http->setProtocol(static_cast<ProtocolPtr>(http));
                 ff_http->addChecker(std::bind(&HTTPProtocol::httpChecker,http,std::placeholders::_1));
-                ff_http->addFlowFunction(std::bind(&HTTPProtocol::processFlow,http,
-			std::placeholders::_1,std::placeholders::_2));
+                ff_http->addFlowFunction(std::bind(&HTTPProtocol::processFlow,http,std::placeholders::_1));
 
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
@@ -204,8 +203,7 @@ struct StackIPv6HTTPtest
                 http->setFlowForwarder(ff_http);
                 ff_http->setProtocol(static_cast<ProtocolPtr>(http));
                 ff_http->addChecker(std::bind(&HTTPProtocol::httpChecker,http,std::placeholders::_1));
-                ff_http->addFlowFunction(std::bind(&HTTPProtocol::processFlow,http,
-			std::placeholders::_1,std::placeholders::_2));
+                ff_http->addFlowFunction(std::bind(&HTTPProtocol::processFlow,http,std::placeholders::_1));
 
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IPV6);

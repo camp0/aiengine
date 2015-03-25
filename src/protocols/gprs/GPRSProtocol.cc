@@ -127,7 +127,7 @@ void GPRSProtocol::process_create_pdp_context(Flow *flow) {
 	}
 }
 
-void GPRSProtocol::processFlow(Flow *flow, bool close) {
+void GPRSProtocol::processFlow(Flow *flow) {
 
 	int bytes = flow->packet->getLength();
         total_bytes_ += bytes;

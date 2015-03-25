@@ -106,7 +106,7 @@ struct StackDHCPtest
                 ff_dhcp->setProtocol(static_cast<ProtocolPtr>(dhcp));
                 ff_dhcp->addChecker(std::bind(&DHCPProtocol::dhcpChecker,dhcp,std::placeholders::_1));
                 ff_dhcp->addFlowFunction(std::bind(&DHCPProtocol::processFlow,dhcp,
-			std::placeholders::_1,std::placeholders::_2));
+			std::placeholders::_1));
 
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);

@@ -119,9 +119,16 @@ void UDPProtocol::processPacket(Packet& packet) {
 	if(flow) {
 		int bytes = (getLength() - getHeaderLength());
 
+		// Propagate the anomaly of the packet to the flow
+		if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
+			flow->setPacketAnomaly(packet.getPacketAnomaly());
+		}
+		
 		if (bytes > packet.getLength()) { // The length of the packet is corrupted or not valid
 			bytes = packet.getLength();
-			flow->setPacketAnomaly(PacketAnomaly::UDP_BOGUS_HEADER);
+			if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
+				flow->setPacketAnomaly(PacketAnomaly::UDP_BOGUS_HEADER);
+			}
 		}
 
 		total_bytes_ += bytes;
@@ -134,10 +141,6 @@ void UDPProtocol::processPacket(Packet& packet) {
                 std::cout << " bytes:" << bytes << " pktlen:" << packet.getLength() << std::endl;
 #endif
 
-		if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
-			flow->setPacketAnomaly(packet.getPacketAnomaly());
-		}
-
 		if(flow_forwarder_.lock()&&(bytes>0)) {
 			FlowForwarderPtr ff = flow_forwarder_.lock();
 
@@ -149,7 +152,7 @@ void UDPProtocol::processPacket(Packet& packet) {
                         packet.setSourcePort(getSrcPort());
 
                         flow->packet = const_cast<Packet*>(&packet);
-                        ff->forwardFlow(flow.get(),false);
+                        ff->forwardFlow(flow.get());
 		}
 		
 		if (flow->total_packets == 1) { // Just need to check once per flow

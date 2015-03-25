@@ -383,7 +383,7 @@ void HTTPProtocol::parse_header(HTTPInfo *info, const char *parameters) {
 }
 
 
-void HTTPProtocol::processFlow(Flow *flow, bool close) {
+void HTTPProtocol::processFlow(Flow *flow) {
 
 	http_header_size_ = 0;
 	int16_t flow_bytes = flow->packet->getLength();

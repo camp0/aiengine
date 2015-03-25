@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE (test2_smtp)
 
         flow->setFlowDirection(FlowDirection::FORWARD);
         flow->packet = const_cast<Packet*>(&packet);
-        smtp->processFlow(flow.get(),false);
+        smtp->processFlow(flow.get());
 
         BOOST_CHECK(smtp->getTotalBytes() == 9);
 
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE (test3_smtp)
 
         flow->setFlowDirection(FlowDirection::FORWARD);
         flow->packet = const_cast<Packet*>(&packet);
-        smtp->processFlow(flow.get(),false);
+        smtp->processFlow(flow.get());
 
         BOOST_CHECK(smtp->getTotalBytes() == length);
 	BOOST_CHECK(flow->smtp_info.lock() != nullptr);
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE (test4_smtp)
 
         flow->setFlowDirection(FlowDirection::FORWARD);
         flow->packet = const_cast<Packet*>(&packet);
-        smtp->processFlow(flow.get(),false);
+        smtp->processFlow(flow.get());
 
         BOOST_CHECK(smtp->getTotalBytes() == length);
         BOOST_CHECK(flow->smtp_info.lock() != nullptr);
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE (test5_smtp)
 
         flow->setFlowDirection(FlowDirection::FORWARD);
         flow->packet = const_cast<Packet*>(&packet);
-        smtp->processFlow(flow.get(),false);
+        smtp->processFlow(flow.get());
 
         BOOST_CHECK(flow->smtp_info.lock() != nullptr);
 
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE (test6_smtp)
 
         flow->setFlowDirection(FlowDirection::FORWARD);
         flow->packet = const_cast<Packet*>(&packet);
-        smtp->processFlow(flow.get(),false);
+        smtp->processFlow(flow.get());
 
         BOOST_CHECK(flow->smtp_info.lock() != nullptr);
 

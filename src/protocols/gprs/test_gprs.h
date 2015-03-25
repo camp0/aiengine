@@ -120,7 +120,7 @@ struct Stack3Gtest
                 mux_gprs->setProtocolIdentifier(0);
 		ff_gprs->setProtocol(static_cast<ProtocolPtr>(gprs));
                 ff_gprs->addChecker(std::bind(&GPRSProtocol::gprsChecker,gprs,std::placeholders::_1));
-        	ff_gprs->addFlowFunction(std::bind(&GPRSProtocol::processFlow,gprs,std::placeholders::_1,std::placeholders::_2));
+        	ff_gprs->addFlowFunction(std::bind(&GPRSProtocol::processFlow,gprs,std::placeholders::_1));
 
                 //configure the icmp
                 icmp->setMultiplexer(mux_icmp_high);

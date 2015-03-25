@@ -152,8 +152,7 @@ StackOpenFlow::StackOpenFlow() {
         mux_of_->setProtocolIdentifier(0);
         mux_of_->setHeaderSize(of_->getHeaderSize());
         ff_of_->addChecker(std::bind(&OpenFlowProtocol::openflowChecker,of_,std::placeholders::_1));
-        ff_of_->addFlowFunction(std::bind(&OpenFlowProtocol::processFlow,of_,
-		std::placeholders::_1,std::placeholders::_2));
+        ff_of_->addFlowFunction(std::bind(&OpenFlowProtocol::processFlow,of_,std::placeholders::_1));
 
 	// Configure the virtual ethernet part
         eth_vir_->setMultiplexer(mux_eth_vir_);

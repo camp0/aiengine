@@ -220,42 +220,36 @@ struct StackLanTest
 		http->setFlowForwarder(ff_http);
         	ff_http->setProtocol(static_cast<ProtocolPtr>(http));
         	ff_http->addChecker(std::bind(&HTTPProtocol::httpChecker,http,std::placeholders::_1));
-        	ff_http->addFlowFunction(std::bind(&HTTPProtocol::processFlow,http,
-			std::placeholders::_1,std::placeholders::_2));
+        	ff_http->addFlowFunction(std::bind(&HTTPProtocol::processFlow,http,std::placeholders::_1));
 		
 		// configure the ssl
 		ssl->setFlowForwarder(ff_ssl);
         	ff_ssl->setProtocol(static_cast<ProtocolPtr>(ssl));
         	ff_ssl->addChecker(std::bind(&SSLProtocol::sslChecker,ssl,std::placeholders::_1));
-        	ff_ssl->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl,
-			std::placeholders::_1,std::placeholders::_2));
+        	ff_ssl->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl,std::placeholders::_1));
 
                 smtp->setFlowForwarder(ff_smtp);
                 ff_smtp->setProtocol(static_cast<ProtocolPtr>(smtp));
                 ff_smtp->addChecker(std::bind(&SMTPProtocol::smtpChecker,smtp,std::placeholders::_1));
-                ff_smtp->addFlowFunction(std::bind(&SMTPProtocol::processFlow,smtp,
-                        std::placeholders::_1,std::placeholders::_2));
+                ff_smtp->addFlowFunction(std::bind(&SMTPProtocol::processFlow,smtp,std::placeholders::_1));
 
                 // configure the generic udp 
                 udp_generic->setFlowForwarder(ff_udp_generic);
                 ff_udp_generic->setProtocol(static_cast<ProtocolPtr>(udp_generic));
                 ff_udp_generic->addChecker(std::bind(&UDPGenericProtocol::udpGenericChecker,udp_generic,std::placeholders::_1));
-                ff_udp_generic->addFlowFunction(std::bind(&UDPGenericProtocol::processFlow,udp_generic,
-			std::placeholders::_1,std::placeholders::_2));
+                ff_udp_generic->addFlowFunction(std::bind(&UDPGenericProtocol::processFlow,udp_generic,std::placeholders::_1));
 
                 // configure the generic tcp 
                 tcp_generic->setFlowForwarder(ff_tcp_generic);
                 ff_tcp_generic->setProtocol(static_cast<ProtocolPtr>(tcp_generic));
                 ff_tcp_generic->addChecker(std::bind(&TCPGenericProtocol::tcpGenericChecker,tcp_generic,std::placeholders::_1));
-                ff_tcp_generic->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,tcp_generic,
-			std::placeholders::_1,std::placeholders::_2));
+                ff_tcp_generic->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,tcp_generic,std::placeholders::_1));
 
                 // configure the generic tcp
                 tcp_generic6->setFlowForwarder(ff_tcp_generic6);
                 ff_tcp_generic6->setProtocol(static_cast<ProtocolPtr>(tcp_generic6));
                 ff_tcp_generic6->addChecker(std::bind(&TCPGenericProtocol::tcpGenericChecker,tcp_generic6,std::placeholders::_1));
-                ff_tcp_generic6->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,tcp_generic6,
-			std::placeholders::_1,std::placeholders::_2));
+                ff_tcp_generic6->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,tcp_generic6,std::placeholders::_1));
 
 
 		// configure the multiplexers

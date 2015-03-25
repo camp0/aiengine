@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE (test2_http)
 	SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
 	flow->packet = const_cast<Packet*>(&packet);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
 	BOOST_CHECK(flow->http_info.lock() == nullptr);
 }
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE (test3_http)
 
 	flow->setFlowDirection(FlowDirection::FORWARD);
         flow->packet = const_cast<Packet*>(&packet);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
 	// Verify the size of the Header
 	BOOST_CHECK(http->getHTTPHeaderSize() == 59);
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE (test4_http)
         http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
 	BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header));
         
@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE (test5_http)
         http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
 	BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header));
 	
@@ -218,7 +218,7 @@ BOOST_AUTO_TEST_CASE (test6_http)
         http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
 	 // Verify the size of the Header
 	BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header));
@@ -261,7 +261,7 @@ BOOST_AUTO_TEST_CASE (test7_http)
         http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
 	 // Verify the size of the Header
 	BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header));
@@ -302,7 +302,7 @@ BOOST_AUTO_TEST_CASE (test8_http)
         http->createHTTPInfos(2);
 
         flow1->packet = const_cast<Packet*>(&packet1);
-        http->processFlow(flow1.get(),false);
+        http->processFlow(flow1.get());
 
          // Verify the size of the Header
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header1));
@@ -337,7 +337,7 @@ BOOST_AUTO_TEST_CASE (test8_http)
         SharedPointer<Flow> flow2 = SharedPointer<Flow>(new Flow());
 
         flow2->packet = const_cast<Packet*>(&packet2);
-        http->processFlow(flow2.get(),false);
+        http->processFlow(flow2.get());
          
 	// Verify the size of the Header
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2));
@@ -380,7 +380,7 @@ BOOST_AUTO_TEST_CASE (test9_http)
         http->createHTTPInfos(2);
 
         flow1->packet = const_cast<Packet*>(&packet1);
-        http->processFlow(flow1.get(),false);
+        http->processFlow(flow1.get());
 
         // Verify the size of the Header
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header1));
@@ -418,7 +418,7 @@ BOOST_AUTO_TEST_CASE (test9_http)
         SharedPointer<Flow> flow2 = SharedPointer<Flow>(new Flow());
 
         flow2->packet = const_cast<Packet*>(&packet2);
-        http->processFlow(flow2.get(),false);
+        http->processFlow(flow2.get());
 
         // Verify the size of the Header
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2));
@@ -470,7 +470,7 @@ BOOST_AUTO_TEST_CASE (test10_http)
         http->createHTTPInfos(0);
 
         flow->packet = const_cast<Packet*>(&packet);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         // Size of the header equals 0 
         BOOST_CHECK(http->getHTTPHeaderSize() == 0);
@@ -511,7 +511,7 @@ BOOST_AUTO_TEST_CASE (test11_http)
         http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         // Verify the size of the Header
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header));
@@ -552,7 +552,7 @@ BOOST_AUTO_TEST_CASE (test12_http)
         http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         BOOST_CHECK(flow->http_info.lock() != nullptr);
 	SharedPointer<HTTPInfo> info = flow->http_info.lock();
@@ -595,7 +595,7 @@ BOOST_AUTO_TEST_CASE (test13_http)
         host_mng->addDomainName(host_name);
 
         flow->packet = const_cast<Packet*>(&packet);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
 	BOOST_CHECK( http->getTotalAllowHosts() == 0);
 	BOOST_CHECK( http->getTotalBanHosts() == 1);
@@ -643,7 +643,7 @@ BOOST_AUTO_TEST_CASE (test14_http)
         http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet1);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         // Verify the size of the Header
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header1));
@@ -659,7 +659,7 @@ BOOST_AUTO_TEST_CASE (test14_http)
 
 	// Inject the next header
         flow->packet = const_cast<Packet*>(&packet2);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         // TODO: Verify the size of the Header
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2));
@@ -670,7 +670,7 @@ BOOST_AUTO_TEST_CASE (test14_http)
 	// Now create a uri on the cache 
         http->createHTTPInfos(1);
         
-	http->processFlow(flow.get(),false);
+	http->processFlow(flow.get());
 
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2));
 	SharedPointer<HTTPInfo> info2 = flow->http_info.lock();
@@ -704,7 +704,7 @@ BOOST_AUTO_TEST_CASE (test15_http)
 	flow->setFlowDirection(FlowDirection::BACKWARD);
 
         flow->packet = const_cast<Packet*>(&packet);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         // Verify the size of the Header
 	// std::cout << "http header size:" << http->getHTTPHeaderSize() << " h:" << strlen(header) << " he:" << strlen(header_ext) << std::endl;
@@ -745,7 +745,7 @@ BOOST_AUTO_TEST_CASE (test16_http)
         http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
 
 	// Verify the size of the Header
@@ -802,10 +802,10 @@ BOOST_AUTO_TEST_CASE (test17_http)
         http->createHTTPInfos(2);
 
         flow->packet = const_cast<Packet*>(&packet1);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         flow->packet = const_cast<Packet*>(&packet2);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         BOOST_CHECK(flow->http_info.lock() != nullptr);
         SharedPointer<HTTPInfo> info = flow->http_info.lock();
@@ -838,7 +838,7 @@ BOOST_AUTO_TEST_CASE (test18_http)
         http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         // Verify the size of the Header
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header) - 1);
@@ -879,7 +879,7 @@ BOOST_AUTO_TEST_CASE (test19_http)
         http->createHTTPInfos(1);
 
         flow->packet = const_cast<Packet*>(&packet);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         // Verify the size of the Header
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header) - 17);
@@ -930,7 +930,7 @@ BOOST_AUTO_TEST_CASE (test20_http)
 
         flow->packet = const_cast<Packet*>(&packet1);
 	flow->setFlowDirection(FlowDirection::FORWARD);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
 	// Some checks
         BOOST_CHECK(flow->http_info.lock() != nullptr);
@@ -943,7 +943,7 @@ BOOST_AUTO_TEST_CASE (test20_http)
 
 	flow->setFlowDirection(FlowDirection::BACKWARD);
         flow->packet = const_cast<Packet*>(&packet2);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
         
 	BOOST_CHECK(http->getTotalL7Bytes() == 18);
 	// Verify the size of the Header
@@ -1000,7 +1000,7 @@ BOOST_AUTO_TEST_CASE (test21_http)
 	// Process First packet request
         flow->packet = const_cast<Packet*>(&packet1);
         flow->setFlowDirection(FlowDirection::FORWARD);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         SharedPointer<HTTPInfo> info = flow->http_info.lock();
 
@@ -1011,7 +1011,7 @@ BOOST_AUTO_TEST_CASE (test21_http)
 	// Process second packet response with data
         flow->setFlowDirection(FlowDirection::BACKWARD);
         flow->packet = const_cast<Packet*>(&packet2);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         BOOST_CHECK(http->getTotalL7Bytes() == 17);
         // Verify the size of the Header
@@ -1020,7 +1020,7 @@ BOOST_AUTO_TEST_CASE (test21_http)
 	// Process the last packet with data
         flow->setFlowDirection(FlowDirection::BACKWARD);
         flow->packet = const_cast<Packet*>(&packet3);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
 	// Verify the counters
 
@@ -1074,7 +1074,7 @@ BOOST_AUTO_TEST_CASE (test22_http)
 
         flow->packet = const_cast<Packet*>(&packet1);
         flow->setFlowDirection(FlowDirection::FORWARD);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         SharedPointer<HTTPInfo> info = flow->http_info.lock();
 	
@@ -1087,7 +1087,7 @@ BOOST_AUTO_TEST_CASE (test22_http)
 	// Insert the second packet that is the payload
         flow->packet = const_cast<Packet*>(&packet2);
         flow->setFlowDirection(FlowDirection::FORWARD);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         // Verify values of the  packet
         BOOST_CHECK(http->getTotalL7Bytes() == 290);
@@ -1099,7 +1099,7 @@ BOOST_AUTO_TEST_CASE (test22_http)
 	// Insert the response
         flow->packet = const_cast<Packet*>(&packet3);
         flow->setFlowDirection(FlowDirection::BACKWARD);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         BOOST_CHECK(info->getHaveData() == false);
         BOOST_CHECK(http->getTotalL7Bytes() == 290);
@@ -1144,7 +1144,7 @@ BOOST_AUTO_TEST_CASE (test23_http)
 	BOOST_CHECK(uset->getTotalLookupsOut() == 0);
 
         flow->packet = const_cast<Packet*>(&packet1);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         BOOST_CHECK(flow->http_info.lock() != nullptr);
         SharedPointer<HTTPInfo> info = flow->http_info.lock();
@@ -1202,7 +1202,7 @@ BOOST_AUTO_TEST_CASE (test24_http)
         BOOST_CHECK(uset->getTotalLookupsOut() == 0);
 
         flow->packet = const_cast<Packet*>(&packet1);
-        http->processFlow(flow.get(),false);
+        http->processFlow(flow.get());
 
         BOOST_CHECK(flow->http_info.lock() != nullptr);
         SharedPointer<HTTPInfo> info = flow->http_info.lock();

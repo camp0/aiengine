@@ -57,77 +57,67 @@ NetworkStack::NetworkStack() {
         http->setFlowForwarder(ff_http);
         ff_http->setProtocol(static_cast<ProtocolPtr>(http));
         ff_http->addChecker(std::bind(&HTTPProtocol::httpChecker,http,std::placeholders::_1));
-        ff_http->addFlowFunction(std::bind(&HTTPProtocol::processFlow,http,
-		std::placeholders::_1, std::placeholders::_2));
+        ff_http->addFlowFunction(std::bind(&HTTPProtocol::processFlow,http,std::placeholders::_1));
 
         // configure the SSL Layer
         ssl->setFlowForwarder(ff_ssl);
         ff_ssl->setProtocol(static_cast<ProtocolPtr>(ssl));
         ff_ssl->addChecker(std::bind(&SSLProtocol::sslChecker,ssl,std::placeholders::_1));
-        ff_ssl->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl,
-		std::placeholders::_1, std::placeholders::_2));
+        ff_ssl->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl,std::placeholders::_1));
 
         // configure the DNS Layer
         dns->setFlowForwarder(ff_dns);
         ff_dns->setProtocol(static_cast<ProtocolPtr>(dns));
         ff_dns->addChecker(std::bind(&DNSProtocol::dnsChecker,dns,std::placeholders::_1));
-        ff_dns->addFlowFunction(std::bind(&DNSProtocol::processFlow,dns,
-		std::placeholders::_1, std::placeholders::_2));
+        ff_dns->addFlowFunction(std::bind(&DNSProtocol::processFlow,dns,std::placeholders::_1));
 
         // configure the SIP Layer
         sip->setFlowForwarder(ff_sip);
         ff_sip->setProtocol(static_cast<ProtocolPtr>(sip));
         ff_sip->addChecker(std::bind(&SIPProtocol::sipChecker,sip,std::placeholders::_1));
-        ff_sip->addFlowFunction(std::bind(&SIPProtocol::processFlow,sip,
-		std::placeholders::_1, std::placeholders::_2));
+        ff_sip->addFlowFunction(std::bind(&SIPProtocol::processFlow,sip,std::placeholders::_1));
 
         // Configure the DHCP 
         dhcp->setFlowForwarder(ff_dhcp);
         ff_dhcp->setProtocol(static_cast<ProtocolPtr>(dhcp));
         ff_dhcp->addChecker(std::bind(&DHCPProtocol::dhcpChecker,dhcp,std::placeholders::_1));
-        ff_dhcp->addFlowFunction(std::bind(&DHCPProtocol::processFlow,dhcp,
-		std::placeholders::_1, std::placeholders::_2));
+        ff_dhcp->addFlowFunction(std::bind(&DHCPProtocol::processFlow,dhcp,std::placeholders::_1));
 
         // Configure the NTP 
         ntp->setFlowForwarder(ff_ntp);
         ff_ntp->setProtocol(static_cast<ProtocolPtr>(ntp));
         ff_ntp->addChecker(std::bind(&NTPProtocol::ntpChecker,ntp,std::placeholders::_1));
-        ff_ntp->addFlowFunction(std::bind(&NTPProtocol::processFlow,ntp,
-        	std::placeholders::_1,std::placeholders::_2));
+        ff_ntp->addFlowFunction(std::bind(&NTPProtocol::processFlow,ntp,std::placeholders::_1));
 
         // Configure the SMTP 
         smtp->setFlowForwarder(ff_smtp);
         ff_smtp->setProtocol(static_cast<ProtocolPtr>(smtp));
         ff_smtp->addChecker(std::bind(&SMTPProtocol::smtpChecker,smtp,std::placeholders::_1));
-        ff_smtp->addFlowFunction(std::bind(&SMTPProtocol::processFlow,smtp,std::placeholders::_1,std::placeholders::_2));
+        ff_smtp->addFlowFunction(std::bind(&SMTPProtocol::processFlow,smtp,std::placeholders::_1));
 
         // configure the TCP generic Layer
         tcp_generic->setFlowForwarder(ff_tcp_generic);
         ff_tcp_generic->setProtocol(static_cast<ProtocolPtr>(tcp_generic));
         ff_tcp_generic->addChecker(std::bind(&TCPGenericProtocol::tcpGenericChecker,tcp_generic,std::placeholders::_1));
-        ff_tcp_generic->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,tcp_generic,
-		std::placeholders::_1, std::placeholders::_2));
+        ff_tcp_generic->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,tcp_generic,std::placeholders::_1));
 
         // configure the UDP generic Layer
         udp_generic->setFlowForwarder(ff_udp_generic);
         ff_udp_generic->setProtocol(static_cast<ProtocolPtr>(udp_generic));
         ff_udp_generic->addChecker(std::bind(&UDPGenericProtocol::udpGenericChecker,udp_generic,std::placeholders::_1));
-        ff_udp_generic->addFlowFunction(std::bind(&UDPGenericProtocol::processFlow,udp_generic,
-		std::placeholders::_1, std::placeholders::_2));
+        ff_udp_generic->addFlowFunction(std::bind(&UDPGenericProtocol::processFlow,udp_generic,std::placeholders::_1));
 
         // configure the TCP frequencies
         freqs_tcp->setFlowForwarder(ff_tcp_freqs);
         ff_tcp_freqs->setProtocol(static_cast<ProtocolPtr>(freqs_tcp));
         ff_tcp_freqs->addChecker(std::bind(&FrequencyProtocol::freqChecker,freqs_tcp,std::placeholders::_1));
-        ff_tcp_freqs->addFlowFunction(std::bind(&FrequencyProtocol::processFlow,freqs_tcp,
-		std::placeholders::_1, std::placeholders::_2));
+        ff_tcp_freqs->addFlowFunction(std::bind(&FrequencyProtocol::processFlow,freqs_tcp,std::placeholders::_1));
 
         // configure the UDP frequencies
         freqs_udp->setFlowForwarder(ff_udp_freqs);
         ff_udp_freqs->setProtocol(static_cast<ProtocolPtr>(freqs_udp));
         ff_udp_freqs->addChecker(std::bind(&FrequencyProtocol::freqChecker,freqs_udp,std::placeholders::_1));
-        ff_udp_freqs->addFlowFunction(std::bind(&FrequencyProtocol::processFlow,freqs_udp,
-		std::placeholders::_1, std::placeholders::_2));
+        ff_udp_freqs->addFlowFunction(std::bind(&FrequencyProtocol::processFlow,freqs_udp,std::placeholders::_1));
 
 }
 

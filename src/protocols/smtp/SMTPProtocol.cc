@@ -255,7 +255,7 @@ void SMTPProtocol::handle_cmd_rcpt(SMTPInfo *info, const char *header) {
         }
 }
 
-void SMTPProtocol::processFlow(Flow *flow, bool close) {
+void SMTPProtocol::processFlow(Flow *flow) {
 
 	int length = flow->packet->getLength();
 	total_bytes_ += length;

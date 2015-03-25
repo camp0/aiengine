@@ -105,8 +105,7 @@ struct StackNTPtest
                 ntp->setFlowForwarder(ff_ntp);
                 ff_ntp->setProtocol(static_cast<ProtocolPtr>(ntp));
                 ff_ntp->addChecker(std::bind(&NTPProtocol::ntpChecker,ntp,std::placeholders::_1));
-                ff_ntp->addFlowFunction(std::bind(&NTPProtocol::processFlow,ntp,
-			std::placeholders::_1,std::placeholders::_2));
+                ff_ntp->addFlowFunction(std::bind(&NTPProtocol::processFlow,ntp,std::placeholders::_1));
 
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);

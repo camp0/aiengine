@@ -310,8 +310,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_8,StackLanTest)
 	ff_tcp_aux->addUpFlowForwarder(ff_ssl_aux);
 
 	ff_ssl_aux->addChecker(std::bind(&SSLProtocol::sslChecker,ssl_aux,std::placeholders::_1));
-        ff_ssl_aux->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl_aux,
-		std::placeholders::_1,std::placeholders::_2));
+        ff_ssl_aux->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl_aux,std::placeholders::_1));
 
         pd->open("../pcapfiles/sslflow.pcap");
         pd->run();
@@ -361,8 +360,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_9,StackLanTest)
         //connect the ssl protocol on top of tcp
         ff_tcp_aux->addUpFlowForwarder(ff_ssl_aux);
         ff_ssl_aux->addChecker(std::bind(&SSLProtocol::sslChecker,ssl_aux,std::placeholders::_1));
-        ff_ssl_aux->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl_aux,
-		std::placeholders::_1,std::placeholders::_2));
+        ff_ssl_aux->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl_aux,std::placeholders::_1));
 
         http_aux->setFlowForwarder(ff_http_aux);
         ff_http_aux->setProtocol(static_cast<ProtocolPtr>(http_aux));
@@ -370,8 +368,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_9,StackLanTest)
         //connect the http protocol on top of tcp
         ff_tcp_aux->addUpFlowForwarder(ff_http_aux);
         ff_http_aux->addChecker(std::bind(&HTTPProtocol::httpChecker,http_aux,std::placeholders::_1));
-        ff_http_aux->addFlowFunction(std::bind(&HTTPProtocol::processFlow,http_aux,
-		std::placeholders::_1,std::placeholders::_2));
+        ff_http_aux->addFlowFunction(std::bind(&HTTPProtocol::processFlow,http_aux,std::placeholders::_1));
 
         pd->open("../pcapfiles/accessgoogle.pcap");
         pd->run();

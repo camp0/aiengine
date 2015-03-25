@@ -26,7 +26,7 @@
 
 namespace aiengine {
 
-void OpenFlowProtocol::processFlow(Flow *flow, bool close) {
+void OpenFlowProtocol::processFlow(Flow *flow) {
 
         int bytes = flow->packet->getLength();
         total_bytes_ += bytes;

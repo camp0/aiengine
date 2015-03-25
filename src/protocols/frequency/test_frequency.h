@@ -107,8 +107,7 @@ struct StackFrequencytest
                 freq->setFlowForwarder(ff_freq);
                 ff_freq->setProtocol(static_cast<ProtocolPtr>(freq));
                 ff_freq->addChecker(std::bind(&FrequencyProtocol::freqChecker,freq,std::placeholders::_1));
-                ff_freq->addFlowFunction(std::bind(&FrequencyProtocol::processFlow,freq,
-			std::placeholders::_1,std::placeholders::_2));
+                ff_freq->addFlowFunction(std::bind(&FrequencyProtocol::processFlow,freq,std::placeholders::_1));
 
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);

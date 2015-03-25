@@ -165,8 +165,7 @@ StackVirtual::StackVirtual() {
         mux_vxlan_->setProtocolIdentifier(0);
         ff_vxlan_->setProtocol(static_cast<ProtocolPtr>(vxlan_));
         ff_vxlan_->addChecker(std::bind(&VxLanProtocol::vxlanChecker,vxlan_,std::placeholders::_1));
-        ff_vxlan_->addFlowFunction(std::bind(&VxLanProtocol::processFlow,vxlan_,
-		std::placeholders::_1,std::placeholders::_2));
+        ff_vxlan_->addFlowFunction(std::bind(&VxLanProtocol::processFlow,vxlan_,std::placeholders::_1));
 
 	// configure the ICMP Layer 
 	icmp_->setMultiplexer(mux_icmp_);

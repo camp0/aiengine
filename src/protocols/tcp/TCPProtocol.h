@@ -74,7 +74,7 @@ public:
 	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
 
-	void processFlow(Flow *flow, bool close) {}; // This protocol generates flows but not for destination.
+	void processFlow(Flow *flow) {}; // This protocol generates flows but not for destination.
 	void processPacket(Packet &packet);
 	void computeState(Flow *flow,int32_t bytes);
 

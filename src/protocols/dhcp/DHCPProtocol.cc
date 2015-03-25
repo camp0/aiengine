@@ -26,7 +26,7 @@
 
 namespace aiengine {
 
-void DHCPProtocol::processFlow(Flow *flow, bool close) {
+void DHCPProtocol::processFlow(Flow *flow) {
 
 	setHeader(flow->packet->getPayload());	
 	uint8_t type = getType();

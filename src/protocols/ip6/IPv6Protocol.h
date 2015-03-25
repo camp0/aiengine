@@ -54,7 +54,7 @@ public:
 	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
 
-	void processFlow(Flow *flow, bool close) {}; // This protocol dont generate any flow 
+	void processFlow(Flow *flow) {}; // This protocol dont generate any flow 
         void processPacket(Packet& packet);
 
 	void statistics(std::basic_ostream<char>& out);

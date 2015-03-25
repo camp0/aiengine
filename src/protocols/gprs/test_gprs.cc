@@ -271,7 +271,7 @@ BOOST_AUTO_TEST_CASE (test4_gprs) // with the DNSProtocol
         dns_->setFlowForwarder(ff_dns_);
         ff_dns_->setProtocol(static_cast<ProtocolPtr>(dns_));
         ff_dns_->addChecker(std::bind(&DNSProtocol::dnsChecker,dns_,std::placeholders::_1));
-        ff_dns_->addFlowFunction(std::bind(&DNSProtocol::processFlow,dns_,std::placeholders::_1,std::placeholders::_2));
+        ff_dns_->addFlowFunction(std::bind(&DNSProtocol::processFlow,dns_,std::placeholders::_1));
 
         // Configure the FlowForwarders
         udp_high->setFlowForwarder(ff_udp_high);

@@ -109,7 +109,7 @@ void DNSProtocol::attach_dns_to_flow(DNSInfo *info, boost::string_ref &domain, u
 	}
 }
 
-void DNSProtocol::processFlow(Flow *flow, bool close) {
+void DNSProtocol::processFlow(Flow *flow) {
 
 	int length = flow->packet->getLength();
 	total_bytes_ += length;
