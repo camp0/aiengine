@@ -76,7 +76,7 @@ public:
 	const char* getName() { return name_.c_str();} 
 
 	virtual void processFlow(Flow *flow) = 0;
-	virtual void processPacket(Packet &packet) = 0;
+	virtual bool processPacket(Packet &packet) = 0;
 
 	void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
 	MultiplexerPtrWeak getMultiplexer() { return mux_; } 

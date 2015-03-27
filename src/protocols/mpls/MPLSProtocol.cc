@@ -27,7 +27,7 @@
 
 namespace aiengine {
 
-void MPLSProtocol::processPacket(Packet& packet) {
+bool MPLSProtocol::processPacket(Packet& packet) {
 
         MultiplexerPtr mux = mux_.lock();
         ++total_packets_;
@@ -58,6 +58,8 @@ void MPLSProtocol::processPacket(Packet& packet) {
 		packet.setPrevHeaderSize(mpls_header_size); 
 		mux->setNextProtocolIdentifier(ETHERTYPE_IP);
         }
+
+	return true;
 }
 
 void MPLSProtocol::statistics(std::basic_ostream<char>& out) {

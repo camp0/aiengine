@@ -107,7 +107,7 @@ SharedPointer<Flow> UDPProtocol::getFlow(const Packet& packet) {
 	return flow; 
 }
 
-void UDPProtocol::processPacket(Packet& packet) {
+bool UDPProtocol::processPacket(Packet& packet) {
 
 	packet_time_ = packet.getPacketTime();
 	SharedPointer<Flow> flow = getFlow(packet);
@@ -186,7 +186,7 @@ void UDPProtocol::processPacket(Packet& packet) {
 		}
 		flow->setLastPacketTime(packet_time_);
 	}
-
+	return true;
 }
 
 

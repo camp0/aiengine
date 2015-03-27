@@ -60,6 +60,7 @@ struct StackTestVlan
 		mux_vlan->setProtocolIdentifier(ETHERTYPE_VLAN);
         	mux_vlan->setHeaderSize(vlan->getHeaderSize());
         	mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan,std::placeholders::_1));
+		mux_vlan->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan,std::placeholders::_1));
 
 		// configure the multiplexers
 		mux_eth->addUpMultiplexer(mux_vlan,ETHERTYPE_VLAN);

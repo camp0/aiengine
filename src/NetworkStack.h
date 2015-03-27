@@ -43,6 +43,7 @@
 #include "./protocols/ssl/SSLProtocol.h"
 #include "./protocols/http/HTTPProtocol.h"
 #include "./protocols/smtp/SMTPProtocol.h"
+#include "./protocols/imap/IMAPProtocol.h"
 #include "protocols/frequency/FrequencyProtocol.h"
 
 namespace aiengine {
@@ -85,6 +86,9 @@ public:
 	// Release the memory of the caches of every protocol on the stack
 	void releaseCache(const std::string &name);
 	void releaseCaches();
+
+	void enableFlowForwarders(const FlowForwarderPtr& ff, std::initializer_list<FlowForwarderPtr> fps);
+	void disableFlowForwarders(const FlowForwarderPtr& ff, std::initializer_list<FlowForwarderPtr> fps);
 
 #ifdef PYTHON_BINDING
 
@@ -132,6 +136,7 @@ public:
         DHCPProtocolPtr dhcp;
         NTPProtocolPtr ntp;
         SMTPProtocolPtr smtp;
+        IMAPProtocolPtr imap;
         TCPGenericProtocolPtr tcp_generic;
         UDPGenericProtocolPtr udp_generic;
         FrequencyProtocolPtr freqs_tcp;
@@ -144,6 +149,7 @@ public:
         FlowForwarderPtr ff_dhcp;
         FlowForwarderPtr ff_ntp;
         FlowForwarderPtr ff_smtp;
+        FlowForwarderPtr ff_imap;
         FlowForwarderPtr ff_tcp_generic;
         FlowForwarderPtr ff_udp_generic;
         FlowForwarderPtr ff_tcp_freqs;

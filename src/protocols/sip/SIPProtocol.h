@@ -85,7 +85,7 @@ public:
 	int64_t getTotalValidatedPackets() const { return total_validated_packets_;}
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
 
-	void processPacket(Packet& packet) { /* Nothing to process at packet level*/ }
+	bool processPacket(Packet& packet) { /* Nothing to process at packet level*/ return true;}
 	void processFlow(Flow *flow);
 
 	void setStatisticsLevel(int level) { stats_level_ = level;}

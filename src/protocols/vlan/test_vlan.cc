@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE (test2_vlan)
 	char *raw_packet = "\x00\x05\x47\x02\xa2\x5d\x00\x15\xc7\xee\x25\x98\x81\x00\x02\x5e\x08\x00";
 	unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet);
 	int length = 18;
-	Packet pkt(packet,length,0);
+	Packet pkt(packet,length);
 	
         // Sets the raw packet to a valid ethernet header
         eth->setHeader(packet);
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE (test3_vlan)
 {
         unsigned char *packet = reinterpret_cast <unsigned char*> (raw_packet_ethernet_vlan_ip_udp_netbios);
         int length = raw_packet_ethernet_vlan_ip_udp_netbios_length;
-        Packet pkt(packet,length,0);
+        Packet pkt(packet,length);
 
         // executing the packet
         // forward the packet through the multiplexers
@@ -76,6 +76,7 @@ BOOST_AUTO_TEST_CASE (test3_vlan)
         mux_eth->forwardPacket(pkt);
 
         BOOST_CHECK(mux_eth->getTotalForwardPackets() == 1);
+        BOOST_CHECK(mux_eth->getTotalFailPackets() == 0);
         BOOST_CHECK(mux_vlan->getTotalForwardPackets() == 0);
         BOOST_CHECK(mux_vlan->getTotalFailPackets() == 1);
 

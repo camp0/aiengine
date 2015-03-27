@@ -26,7 +26,7 @@
 
 namespace aiengine {
 
-void VLanProtocol::processPacket(Packet &packet) { 
+bool VLanProtocol::processPacket(Packet &packet) { 
 
 	++total_packets_;
 	total_bytes_ += packet.getLength();
@@ -38,6 +38,7 @@ void VLanProtocol::processPacket(Packet &packet) {
 		mux->setHeaderSize(header_size);
                 packet.setPrevHeaderSize(header_size);
         }
+	return true;
 }
 
 void VLanProtocol::statistics(std::basic_ostream<char>& out){ 

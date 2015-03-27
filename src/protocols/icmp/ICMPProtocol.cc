@@ -52,7 +52,7 @@ void ICMPProtocol::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
-void ICMPProtocol::processPacket(Packet &packet) {
+bool ICMPProtocol::processPacket(Packet &packet) {
 
 	uint16_t type = getType();
 
@@ -74,7 +74,8 @@ void ICMPProtocol::processPacket(Packet &packet) {
 		++total_ttl_exceeded_;
 
 	++total_packets_;
-	
+
+	return true;	
 }
 
 #ifdef PYTHON_BINDING

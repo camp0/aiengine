@@ -21,11 +21,9 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-// gets rid of annoying "deprecated conversion from string constant blah blah" warning
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-
-#ifndef SRC_PROTOCOLS_UDPGENERIC_UDPGENERICPROTOCOL_H_
-#define SRC_PROTOCOLS_UDPGENERIC_UDPGENERICPROTOCOL_H_
+#ifndef SRC_PROTOCOLS_IMAP_IMAPPROTOCOL_H_ 
+#define SRC_PROTOCOLS_IMAP_IMAPPROTOCOL_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -35,27 +33,34 @@
 #include "log4cxx/logger.h"
 #endif
 #include "Protocol.h"
-#include "regex/RegexManager.h"
-//#include <net/ethernet.h>
+#include "IMAPInfo.h"
 #include <netinet/ip.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
 #include <cstring>
+#include "CacheManager.h"
+#include <unordered_map>
+#include "names/DomainNameManager.h"
+#include "flow/FlowManager.h"
 
 namespace aiengine {
 
-class UDPGenericProtocol: public Protocol 
+class IMAPProtocol: public Protocol 
 {
 public:
-    	explicit UDPGenericProtocol():Protocol(UDPGenericProtocol::default_name),stats_level_(0),
-		udp_generic_header_(nullptr),total_bytes_(0) {}
+    	explicit IMAPProtocol():Protocol(IMAPProtocol::default_name),stats_level_(0),
+		imap_header_(nullptr),total_bytes_(0),
+		total_imap_client_commands_(0),
+		total_imap_server_responses_(0),
+		info_cache_(new Cache<IMAPInfo>("Info cache")),
+		flow_mng_() {}
 
-    	virtual ~UDPGenericProtocol() {}
+    	virtual ~IMAPProtocol() {}
 
-	static constexpr char *default_name = "UDPGenericProtocol";	
+	static constexpr char *default_name = "IMAPProtocol";	
 	static const uint16_t id = 0;
-	static const int header_size = 0;
+	static const int header_size = 6; // Minimum header 220 \r\n;
 	int getHeaderSize() const { return header_size;}
 
 	int64_t getTotalBytes() const { return total_bytes_; }
@@ -70,41 +75,56 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-        void releaseCache() {} // No need to free cache
+	void releaseCache(); 
 
         void setHeader(unsigned char *raw_packet) {
-        
-                udp_generic_header_ = raw_packet;
+                
+		imap_header_ = raw_packet;
         }
 
-	// Condition for say that a payload is for generic udp 
-	// Accepts all!
-	bool udpGenericChecker(Packet &packet) { 
-	
-		setHeader(packet.getPayload());
-		++total_validated_packets_; 
-		return true;
+	// Condition for say that a payload is IMAP 
+	bool imapChecker(Packet &packet) { 
+
+		if ((std::memcmp("* OK ",packet.getPayload(),5) == 0) and 
+			(packet.getSourcePort() == 143)) { 
+
+			++total_validated_packets_; 
+			return true;
+		} else {
+			++total_malformed_packets_;
+			return false;
+		}
 	}
 
-	void setRegexManager(SharedPointer<RegexManager> sig) { sigs_ = sig;}
+	unsigned char *getPayload() { return imap_header_; }
+
+        void createIMAPInfos(int number);
+        void destroyIMAPInfos(int number);
+
+	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 
 #ifdef PYTHON_BINDING
 
-        boost::python::dict getCounters() const;
+	boost::python::dict getCounters() const;
 #endif
 
 private:
+	int stats_level_;
+	unsigned char *imap_header_;
+        int64_t total_bytes_;
+	int32_t total_imap_client_commands_;
+	int32_t total_imap_server_responses_;
+
+	Cache<IMAPInfo>::CachePtr info_cache_;
+
+	FlowManagerPtrWeak flow_mng_;	
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
 #endif
-	int stats_level_;
-	unsigned char *udp_generic_header_;
-        int64_t total_bytes_;
-	SharedPointer<RegexManager> sigs_;
 };
 
-typedef std::shared_ptr<UDPGenericProtocol> UDPGenericProtocolPtr;
+typedef std::shared_ptr<IMAPProtocol> IMAPProtocolPtr;
 
 } // namespace aiengine
 
-#endif  // SRC_PROTOCOLS_UDPGENERIC_UDPGENERICPROTOCOL_H_
+#endif  // SRC_PROTOCOLS_IMAP_IMAPPROTOCOL_H_

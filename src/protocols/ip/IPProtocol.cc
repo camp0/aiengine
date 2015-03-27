@@ -26,7 +26,7 @@
 
 namespace aiengine {
 
-void IPProtocol::processPacket(Packet& packet) {
+bool IPProtocol::processPacket(Packet& packet) {
 
         MultiplexerPtr mux = mux_.lock();
 	int bytes = 0;
@@ -51,12 +51,13 @@ void IPProtocol::processPacket(Packet& packet) {
 	if (isFragment() == true) {
 		++total_frag_packets_;
 		packet.setPacketAnomaly(PacketAnomaly::IPV4_FRAGMENTATION);
+		return false;
 	}
 
 #ifdef DEBUG
 	std::cout << __FILE__ << ":" << __func__ << ": ip.src(" << getSrcAddrDotNotation() << ")ip.dst(" << getDstAddrDotNotation() << ")ip.id(" << getID() << ")" << std::endl;
 #endif
-
+	return true;
 }
 
 

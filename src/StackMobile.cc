@@ -60,6 +60,7 @@ StackMobile::StackMobile() {
 	addProtocol(http);
 	addProtocol(ssl);
 	addProtocol(smtp);
+	addProtocol(imap);
 	addProtocol(tcp_generic);
 	addProtocol(freqs_tcp);
 	addProtocol(dns);
@@ -214,6 +215,7 @@ StackMobile::StackMobile() {
         http->setFlowManager(flow_table_tcp_);
         ssl->setFlowManager(flow_table_tcp_);
         smtp->setFlowManager(flow_table_tcp_);
+        imap->setFlowManager(flow_table_tcp_);
         dns->setFlowManager(flow_table_udp_high_);
         sip->setFlowManager(flow_table_udp_high_);
         gprs_->setFlowManager(flow_table_udp_low_);
@@ -227,16 +229,10 @@ StackMobile::StackMobile() {
 
 	tcp_->setFlowForwarder(ff_tcp_);	
 	udp_high_->setFlowForwarder(ff_udp_high_);	
-	
-	ff_tcp_->addUpFlowForwarder(ff_http);
-	ff_tcp_->addUpFlowForwarder(ff_ssl);
-	ff_tcp_->addUpFlowForwarder(ff_smtp);
-	ff_tcp_->addUpFlowForwarder(ff_tcp_generic);
-	ff_udp_high_->addUpFlowForwarder(ff_dns);
-	ff_udp_high_->addUpFlowForwarder(ff_sip);
-	ff_udp_high_->addUpFlowForwarder(ff_ntp);
-	ff_udp_high_->addUpFlowForwarder(ff_udp_generic);
 
+	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_tcp_generic});
+        enableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_udp_generic});
+	
 #ifdef HAVE_LIBLOG4CXX
 	LOG4CXX_INFO (logger, name_<< " ready.");
 #else
@@ -273,8 +269,9 @@ void StackMobile::setTotalTCPFlows(int value) {
         // The 40% of the traffic is SSL
         ssl->createSSLHosts(value * 0.4);
 
-        // 5% of the traffic could be SMTP, im really positive :D
+        // 5% of the traffic could be SMTP/IMAP, im really positive :D
         smtp->createSMTPInfos(value * 0.05);
+        imap->createIMAPInfos(value * 0.05);
 }
 
 void StackMobile::setTotalUDPFlows(int value) {
@@ -335,12 +332,8 @@ void StackMobile::enableFrequencyEngine(bool enable) {
 void StackMobile::enableNIDSEngine(bool enable) {
 
         if (enable) {
-                ff_tcp_->removeUpFlowForwarder(ff_http);
-                ff_tcp_->removeUpFlowForwarder(ff_ssl);
-                ff_tcp_->removeUpFlowForwarder(ff_smtp);
-                ff_udp_high_->removeUpFlowForwarder(ff_dns);
-                ff_udp_high_->removeUpFlowForwarder(ff_sip);
-                ff_udp_high_->removeUpFlowForwarder(ff_ntp);
+		disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap});
+        	disableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp});
 #ifdef HAVE_LIBLOG4CXX
                 LOG4CXX_INFO (logger, "Enable NIDSEngine on " << name_ );
 #else
@@ -356,17 +349,11 @@ void StackMobile::enableNIDSEngine(bool enable) {
                 std::cout << "Enable NIDSEngine on " << name_ << std::endl;
 #endif
         } else {
-                ff_tcp_->removeUpFlowForwarder(ff_tcp_generic);
-                ff_udp_high_->removeUpFlowForwarder(ff_udp_generic);
+		disableFlowForwarders(ff_tcp_,{ff_tcp_generic});
+        	disableFlowForwarders(ff_udp_high_,{ff_udp_generic});
 
-                ff_tcp_->addUpFlowForwarder(ff_http);
-                ff_tcp_->addUpFlowForwarder(ff_ssl);
-                ff_tcp_->addUpFlowForwarder(ff_smtp);
-                ff_tcp_->addUpFlowForwarder(ff_tcp_generic);
-                ff_udp_high_->addUpFlowForwarder(ff_dns);
-                ff_udp_high_->addUpFlowForwarder(ff_sip);
-                ff_udp_high_->addUpFlowForwarder(ff_ntp);
-                ff_udp_high_->addUpFlowForwarder(ff_udp_generic);
+		enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_tcp_generic});
+        	enableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_udp_generic});
         }
 }
 

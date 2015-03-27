@@ -131,7 +131,7 @@ SharedPointer<Flow> TCPProtocol::getFlow(const Packet& packet) {
         return flow;
 }
 
-void TCPProtocol::processPacket(Packet &packet) {
+bool TCPProtocol::processPacket(Packet &packet) {
 
 	packet_time_ = packet.getPacketTime();
 	SharedPointer<Flow> flow = getFlow(packet);
@@ -192,7 +192,7 @@ void TCPProtocol::processPacket(Packet &packet) {
 						databaseAdaptorRemoveHandler(flow.get());
                                         }
 #endif
-					return; // I dont like but sometimes.....
+					return true; // I dont like but sometimes.....
 				}
 			}
 
@@ -228,6 +228,8 @@ void TCPProtocol::processPacket(Packet &packet) {
                		flow->setLastPacketTime(packet_time_);
 		}
 	}
+
+	return true;
 }
 
 void TCPProtocol::computeState(Flow *flow, int32_t bytes) {

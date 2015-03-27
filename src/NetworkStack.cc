@@ -25,7 +25,6 @@
 
 namespace aiengine {
 
-
 NetworkStack::NetworkStack() {
 
 	// Allocate the layer 7 protocols
@@ -36,6 +35,7 @@ NetworkStack::NetworkStack() {
         dhcp = DHCPProtocolPtr(new DHCPProtocol());
         ntp = NTPProtocolPtr(new NTPProtocol());
         smtp = SMTPProtocolPtr(new SMTPProtocol());
+        imap = IMAPProtocolPtr(new IMAPProtocol());
         tcp_generic = TCPGenericProtocolPtr(new TCPGenericProtocol());
         udp_generic = UDPGenericProtocolPtr(new UDPGenericProtocol());
         freqs_tcp = FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol"));
@@ -48,6 +48,7 @@ NetworkStack::NetworkStack() {
         ff_dhcp = FlowForwarderPtr(new FlowForwarder());
         ff_ntp = FlowForwarderPtr(new FlowForwarder());
         ff_smtp = FlowForwarderPtr(new FlowForwarder());
+        ff_imap = FlowForwarderPtr(new FlowForwarder());
         ff_tcp_generic = FlowForwarderPtr(new FlowForwarder());
         ff_udp_generic = FlowForwarderPtr(new FlowForwarder());
         ff_tcp_freqs = FlowForwarderPtr(new FlowForwarder());
@@ -94,6 +95,12 @@ NetworkStack::NetworkStack() {
         ff_smtp->setProtocol(static_cast<ProtocolPtr>(smtp));
         ff_smtp->addChecker(std::bind(&SMTPProtocol::smtpChecker,smtp,std::placeholders::_1));
         ff_smtp->addFlowFunction(std::bind(&SMTPProtocol::processFlow,smtp,std::placeholders::_1));
+
+        // Configure the IMAP 
+        imap->setFlowForwarder(ff_imap);
+        ff_imap->setProtocol(static_cast<ProtocolPtr>(imap));
+        ff_imap->addChecker(std::bind(&IMAPProtocol::imapChecker,imap,std::placeholders::_1));
+        ff_imap->addFlowFunction(std::bind(&IMAPProtocol::processFlow,imap,std::placeholders::_1));
 
         // configure the TCP generic Layer
         tcp_generic->setFlowForwarder(ff_tcp_generic);
@@ -310,6 +317,20 @@ void NetworkStack::releaseCaches() {
 
                 proto->releaseCache();
         });
+}
+
+void NetworkStack::enableFlowForwarders(const FlowForwarderPtr& ff, std::initializer_list<FlowForwarderPtr> fps) {
+
+	for (auto &f: fps) {
+		ff->addUpFlowForwarder(f);
+	}
+}
+
+void NetworkStack::disableFlowForwarders(const FlowForwarderPtr& ff, std::initializer_list<FlowForwarderPtr> fps) {
+
+	for (auto &f: fps) {
+		ff->removeUpFlowForwarder(f);
+	}
 }
 
 } // namespace aiengine

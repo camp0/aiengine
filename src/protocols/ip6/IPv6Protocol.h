@@ -55,7 +55,7 @@ public:
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
 
 	void processFlow(Flow *flow) {}; // This protocol dont generate any flow 
-        void processPacket(Packet& packet);
+        bool processPacket(Packet& packet);
 
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);};

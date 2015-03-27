@@ -43,6 +43,8 @@ public:
     	FlowCache(): fc_(new Cache<Flow>("FlowCache")) {}
     	virtual ~FlowCache() {}
 
+	static constexpr int flowSize = sizeof(Flow);
+
 	void releaseFlow(const SharedPointer<Flow>& flow) { fc_->release(flow);}
 	WeakPointer<Flow> acquireFlow() { return fc_->acquire();}
 
@@ -50,9 +52,22 @@ public:
 	void destroyFlows(int number) { fc_->destroy(number);}
 
         void statistics(std::basic_ostream<char>& out) {
+
+                std::string unit = "Bytes";
+                int alloc_memory = getTotalFlows() * flowSize;
+
+                if (alloc_memory > 1024) {
+                        alloc_memory = alloc_memory / 1024;
+                        unit = "KBytes";
+                }
+                if (alloc_memory > 1024) {
+                        alloc_memory = alloc_memory / 1024;
+                        unit = "MBytes";
+                }
 	
 		out << "FlowCache statistics" << std::endl;
 		out << "\t" << "Total flows:            " << std::setw(10) << getTotalFlows() <<std::endl;
+		out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
 		out << "\t" << "Total acquires:         " << std::setw(10) << getTotalAcquires() <<std::endl;
 		out << "\t" << "Total releases:         " << std::setw(10) << getTotalReleases() <<std::endl;
 		out << "\t" << "Total fails:            " << std::setw(10) << getTotalFails() <<std::endl;

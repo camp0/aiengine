@@ -26,7 +26,7 @@
 
 namespace aiengine {
 
-void GREProtocol::processPacket(Packet &packet) {
+bool GREProtocol::processPacket(Packet &packet) {
 
         ++total_packets_;
         total_bytes_ += packet.getLength();
@@ -38,6 +38,8 @@ void GREProtocol::processPacket(Packet &packet) {
                 mux->setHeaderSize(header_size);
                 packet.setPrevHeaderSize(header_size);
         }
+
+	return true;
 }
 
 void GREProtocol::statistics(std::basic_ostream<char>& out){ 

@@ -100,7 +100,7 @@ public:
 	void setPacket(Packet *packet);
 
 	void addChecker(std::function <bool (Packet&)> checker) { check_func_ = checker;}
-	void addPacketFunction(std::function <void (Packet&)> packet_func) { packet_func_ = packet_func;}
+	void addPacketFunction(std::function <bool (Packet&)> packet_func) { packet_func_ = packet_func;}
 
 	uint64_t getTotalForwardPackets() const { return total_forward_packets_;}
 	uint64_t getTotalFailPackets() const { return total_fail_packets_;}
@@ -115,8 +115,8 @@ public:
 	uint16_t total_length;
 private:
 	ProtocolPtr proto_;
-	bool default_check(Packet&) const { return true;};
-	void default_packet_func(Packet&) const { };
+	bool default_check(Packet&) const { return true; };
+	bool default_packet_func(Packet&) const { return true; };
 	Packet packet_;
 	uint64_t total_received_packets_;
 	uint64_t total_forward_packets_;
@@ -129,7 +129,7 @@ private:
     	typedef std::map<int,MultiplexerPtrWeak> MuxMap;
 	MuxMap muxUpMap_;
 	std::function <bool (Packet&)> check_func_;	
-	std::function <void (Packet&)> packet_func_;	
+	std::function <bool (Packet&)> packet_func_;	
 };
 
 } // namespace aiengine

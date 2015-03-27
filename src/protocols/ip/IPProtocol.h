@@ -56,7 +56,7 @@ public:
 	int64_t getTotalMalformedPackets() const { return total_malformed_packets_;}
 
        	void processFlow(Flow *flow); 
-	void processPacket(Packet& packet);
+	bool processPacket(Packet& packet);
 
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
@@ -101,7 +101,6 @@ public:
     	uint32_t getIPPayloadLength() const { return getPacketLength() - getIPHeaderLength(); }
 
 #ifdef PYTHON_BINDING
-
         boost::python::dict getCounters() const;
 #endif
 

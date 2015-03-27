@@ -55,6 +55,8 @@ public:
     	explicit Cache():Cache("") {}
     	virtual ~Cache() { items_.clear();}
 
+	static constexpr int classSize = sizeof(A_Type);
+
 	void release(const A_TypePtr& a) {  
 	         
 		if(total_ < items_.size()) {
@@ -110,9 +112,21 @@ public:
 	int32_t getTotalFails() const { return total_fails_;}
 
         void statistics(std::basic_ostream<char>& out) {
-	
+
+		std::string unit = "Bytes";
+		int alloc_memory = items_.size() * classSize;
+
+		if (alloc_memory > 1024) { 
+			alloc_memory = alloc_memory / 1024;
+			unit = "KBytes";
+		}	
+		if (alloc_memory > 1024) { 
+			alloc_memory = alloc_memory / 1024;
+			unit = "MBytes";
+		}	
 		out << name_ << " statistics" << std::endl;
 		out << "\t" << "Total items:            " << std::setw(10) << items_.size() <<std::endl;
+		out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
 		out << "\t" << "Total acquires:         " << std::setw(10) << total_acquires_ <<std::endl;
 		out << "\t" << "Total releases:         " << std::setw(10) << total_releases_ <<std::endl;
 		out << "\t" << "Total fails:            " << std::setw(10) << total_fails_ <<std::endl;

@@ -50,6 +50,7 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			protocols/http/HTTPProtocol.h \
 			protocols/ssl/SSLProtocol.h \
 			protocols/smtp/SMTPProtocol.h \
+			protocols/imap/IMAPProtocol.h \
 			protocols/dns/DNSProtocol.h \
 			protocols/sip/SIPProtocol.h \
 			protocols/dhcp/DHCPProtocol.h \
@@ -92,6 +93,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/http/HTTPUriSet.cc \
 			protocols/ssl/SSLProtocol.cc \
 			protocols/smtp/SMTPProtocol.cc \
+			protocols/imap/IMAPProtocol.cc \
 			protocols/dns/DNSProtocol.cc \
 			protocols/sip/SIPProtocol.cc \
 			protocols/dhcp/DHCPProtocol.cc \
@@ -155,6 +157,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		protocols/frequency/test_frequency.cc \
 		protocols/ssl/test_ssl.cc \
 		protocols/smtp/test_smtp.cc \
+		protocols/imap/test_imap.cc \
 		protocols/sip/test_sip.cc \
 		protocols/dhcp/test_dhcp.cc \
 		protocols/ntp/test_ntp.cc \

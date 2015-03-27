@@ -53,7 +53,7 @@ char* IPv6Protocol::getDstAddrDotNotation() const {
         return straddr_dst;
 }
 
-void IPv6Protocol::processPacket(Packet& packet) {
+bool IPv6Protocol::processPacket(Packet& packet) {
 
         MultiplexerPtr mux = mux_.lock();
 	uint8_t next_proto = getProtocol();
@@ -114,6 +114,8 @@ void IPv6Protocol::processPacket(Packet& packet) {
         mux->setHeaderSize(header_size + extension_length);
        	mux->setNextProtocolIdentifier(next_proto);
        	packet.setPrevHeaderSize(header_size + extension_length);
+
+	return true;
 }
 
 void IPv6Protocol::statistics(std::basic_ostream<char>& out) {

@@ -29,7 +29,7 @@ namespace aiengine {
 // Just used when there is ethernet on the middle part of a stack
 // Check vxlan for further details
 
-void EthernetProtocol::processPacket(Packet& packet) { 
+bool EthernetProtocol::processPacket(Packet& packet) { 
 
 	++total_packets_;
 	MultiplexerPtr mux = mux_.lock();
@@ -40,6 +40,7 @@ void EthernetProtocol::processPacket(Packet& packet) {
                 mux->setHeaderSize(header_size);
                 packet.setPrevHeaderSize(header_size);
 	}
+	return true;
 }
 	
 void EthernetProtocol::statistics(std::basic_ostream<char>& out) { 

@@ -75,9 +75,10 @@ void Multiplexer::forwardPacket(Packet &packet) {
 			pkt_candidate.setPayloadLength(packet.getLength() - header_size_);
 
 			if(mux->acceptPacket(pkt_candidate)) { // The packet is accepted by the destination mux
-    				mux->packet_func_(pkt_candidate);
-                        	++total_forward_packets_;
-                        	mux->forwardPacket(pkt_candidate);
+    				if (mux->packet_func_(pkt_candidate)) { // Forward the packet to upper layers
+                        		++total_forward_packets_;
+                        		mux->forwardPacket(pkt_candidate);
+				}
 #ifdef DEBUG
 			} else {
 				std::cout << "WARNING: PACKET NO ACCEPTED by Multiplexer(" << this <<")" << std::endl;

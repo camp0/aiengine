@@ -247,15 +247,8 @@ StackOpenFlow::StackOpenFlow() {
         tcp_vir_->setFlowForwarder(ff_tcp_vir_);
         udp_vir_->setFlowForwarder(ff_udp_vir_);
 
-        // Layer 7 plugins
-        ff_tcp_vir_->addUpFlowForwarder(ff_http);
-        ff_tcp_vir_->addUpFlowForwarder(ff_ssl);
-        ff_tcp_vir_->addUpFlowForwarder(ff_tcp_generic);
-        ff_udp_vir_->addUpFlowForwarder(ff_dns);
-        ff_udp_vir_->addUpFlowForwarder(ff_sip);
-        ff_udp_vir_->addUpFlowForwarder(ff_dhcp);
-        ff_udp_vir_->addUpFlowForwarder(ff_ntp);
-        ff_udp_vir_->addUpFlowForwarder(ff_udp_generic);
+        enableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_tcp_generic});
+        enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_udp_generic});
 
 #ifdef HAVE_LIBLOG4CXX
 	LOG4CXX_INFO (logger, name_<< " ready.");
@@ -296,8 +289,9 @@ void StackOpenFlow::setTotalTCPFlows(int value) {
         // The 40% of the traffic is SSL
         ssl->createSSLHosts(value * 0.4);
 
-        // 5% of the traffic could be SMTP, im really positive :D
+        // 5% of the traffic could be SMTP/IMAP, im really positive :D
         smtp->createSMTPInfos(value * 0.05);
+        imap->createIMAPInfos(value * 0.05);
 }
 
 void StackOpenFlow::setTotalUDPFlows(int value) {
@@ -356,12 +350,8 @@ void StackOpenFlow::enableFrequencyEngine(bool enable) {
 void StackOpenFlow::enableNIDSEngine(bool enable) {
 
         if (enable) {
-                ff_tcp_vir_->removeUpFlowForwarder(ff_http);
-                ff_tcp_vir_->removeUpFlowForwarder(ff_ssl);
-                ff_udp_vir_->removeUpFlowForwarder(ff_dns);
-                ff_udp_vir_->removeUpFlowForwarder(ff_sip);
-                ff_udp_vir_->removeUpFlowForwarder(ff_dhcp);
-                ff_udp_vir_->removeUpFlowForwarder(ff_ntp);
+        	disableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap});
+        	disableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp});
 #ifdef HAVE_LIBLOG4CXX
                 LOG4CXX_INFO (logger, "Enable NIDSEngine on " << name_ );
 #else
@@ -377,17 +367,11 @@ void StackOpenFlow::enableNIDSEngine(bool enable) {
                 std::cout << "Enable NIDSEngine on " << name_ << std::endl;
 #endif
         } else {
-                ff_tcp_vir_->removeUpFlowForwarder(ff_tcp_generic);
-                ff_udp_vir_->removeUpFlowForwarder(ff_udp_generic);
+        	disableFlowForwarders(ff_tcp_vir_,{ff_tcp_generic});
+        	disableFlowForwarders(ff_udp_vir_,{ff_udp_generic});
 
-                ff_tcp_vir_->addUpFlowForwarder(ff_http);
-                ff_tcp_vir_->addUpFlowForwarder(ff_ssl);
-                ff_tcp_vir_->addUpFlowForwarder(ff_tcp_generic);
-                ff_udp_vir_->addUpFlowForwarder(ff_dns);
-                ff_udp_vir_->addUpFlowForwarder(ff_sip);
-                ff_udp_vir_->addUpFlowForwarder(ff_dhcp);
-                ff_udp_vir_->addUpFlowForwarder(ff_ntp);
-                ff_udp_vir_->addUpFlowForwarder(ff_udp_generic);
+        	enableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_tcp_generic});
+        	enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_udp_generic});
         }
 }
 
