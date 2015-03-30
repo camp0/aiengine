@@ -115,8 +115,9 @@ public:
 
 	Flow *getCurrentFlow() { return current_flow_;} // used just for testing pourposes
 
-#ifdef PYTHON_BINDING
+	int64_t getAllocatedMemory() const;
 
+#ifdef PYTHON_BINDING
         boost::python::dict getCounters() const;
 #endif
 

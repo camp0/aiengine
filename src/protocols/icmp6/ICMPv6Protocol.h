@@ -95,8 +95,9 @@ public:
         uint16_t getId() const { return ntohs(icmp_header_->icmp6_id); }
         uint16_t getSequence() const { return ntohs(icmp_header_->icmp6_seq); }
 
-#ifdef PYTHON_BINDING
+	int64_t getAllocatedMemory() const { return sizeof(ICMPv6Protocol); }
 
+#ifdef PYTHON_BINDING
         boost::python::dict getCounters() const; 
 #endif
 

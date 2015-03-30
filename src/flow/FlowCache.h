@@ -54,7 +54,7 @@ public:
         void statistics(std::basic_ostream<char>& out) {
 
                 std::string unit = "Bytes";
-                int alloc_memory = getTotalFlows() * flowSize;
+                int alloc_memory = getAllocatedMemory();
 
                 if (alloc_memory > 1024) {
                         alloc_memory = alloc_memory / 1024;
@@ -80,7 +80,8 @@ public:
 	int32_t getTotalAcquires() const { return fc_->getTotalAcquires();}
 	int32_t getTotalReleases() const { return fc_->getTotalReleases();}
 	int32_t getTotalFails() const { return fc_->getTotalFails();}
-
+	int32_t getAllocatedMemory() const { return (getTotalFlows() * flowSize); }
+ 
 private:
 	Cache<Flow>::CachePtr fc_;
 };

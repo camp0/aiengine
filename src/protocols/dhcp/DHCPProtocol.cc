@@ -58,7 +58,13 @@ void DHCPProtocol::processFlow(Flow *flow) {
 void DHCPProtocol::statistics(std::basic_ostream<char>& out){ 
 
 	if (stats_level_ > 0) {
-		out << "DHCPProtocol(" << this << ") statistics" << std::endl;
+                int alloc_memory = getAllocatedMemory();
+                std::string unit = "Bytes";
+
+                unitConverter(alloc_memory,unit);
+
+                out << getName() << "(" << this <<") statistics" << std::dec << std::endl;
+                out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
 		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
 		out << "\t" << "Total bytes:        " << std::setw(14) << total_bytes_ <<std::endl;
 		if (stats_level_> 1) {

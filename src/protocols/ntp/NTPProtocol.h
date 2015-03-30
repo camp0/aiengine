@@ -130,6 +130,8 @@ public:
 	uint8_t getVersion() const { return ((ntp_header_->flags & NTP_VERSIONMASK) >> 3); }
 	uint8_t getMode() const { return (ntp_header_->flags & NTP_MODEMASK); }
 
+	int64_t getAllocatedMemory() const { return sizeof(NTPProtocol); }
+
 #ifdef PYTHON_BINDING
         boost::python::dict getCounters() const;
 #endif

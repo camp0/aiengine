@@ -110,6 +110,7 @@ public:
 	int32_t getTotalAcquires() const { return total_acquires_;}
 	int32_t getTotalReleases() const { return total_releases_;}
 	int32_t getTotalFails() const { return total_fails_;}
+	int32_t getAllocatedMemory() const { return (items_.size() * classSize); }
 
         void statistics(std::basic_ostream<char>& out) {
 

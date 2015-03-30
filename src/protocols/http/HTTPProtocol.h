@@ -151,9 +151,9 @@ public:
 	int32_t getTotalBanHosts() const { return total_ban_hosts_;}
 
 	int16_t getHTTPHeaderSize() const { return http_header_size_; }
+	int64_t getAllocatedMemory() const;
 
 #ifdef PYTHON_BINDING
-
         boost::python::dict getCounters() const;
 #endif
 

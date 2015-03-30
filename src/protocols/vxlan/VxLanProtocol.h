@@ -94,8 +94,9 @@ public:
 
 	uint32_t getVni() const { return ntohl(vxlan_header_->vni[2] << 24 | vxlan_header_->vni[1] << 16 | vxlan_header_->vni[0] << 8); }
 
-#ifdef PYTHON_BINDING
+	int64_t getAllocatedMemory() const { return sizeof(VxLanProtocol); }
 
+#ifdef PYTHON_BINDING
         boost::python::dict getCounters() const;
 #endif
 

@@ -89,8 +89,9 @@ public:
 
 	uint16_t getEthernetType() const { return ntohs(vlan_header_->vlan_tci);}
 
-#ifdef PYTHON_BINDING
+	int64_t getAllocatedMemory() const { return sizeof(VLanProtocol); }
 
+#ifdef PYTHON_BINDING
         boost::python::dict getCounters() const;
 #endif
 

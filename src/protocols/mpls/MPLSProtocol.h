@@ -99,10 +99,9 @@ public:
 		}
 	}
 
-	//unsigned char *getPayload() const { return mpls_header_;};
+	int64_t getAllocatedMemory() const { return sizeof(MPLSProtocol); }
 
 #ifdef PYTHON_BINDING
-
         boost::python::dict getCounters() const;
 #endif
 

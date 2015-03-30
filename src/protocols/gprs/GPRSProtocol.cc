@@ -26,6 +26,16 @@
 
 namespace aiengine {
 
+int64_t GPRSProtocol::getAllocatedMemory() const {
+
+        int64_t value = 0;
+
+        value = sizeof(GPRSProtocol);
+        value += gprs_info_cache_->getAllocatedMemory();
+
+        return value;
+}
+
 void GPRSProtocol::releaseCache() {
 
         FlowManagerPtr fm = flow_mng_.lock();
@@ -170,7 +180,13 @@ void GPRSProtocol::processFlow(Flow *flow) {
 void GPRSProtocol::statistics(std::basic_ostream<char>& out) {
 
 	if (stats_level_ > 0) {
-		out << "GPRSProtocol(" << this << ") statistics" << std::dec << std::endl;
+                int alloc_memory = getAllocatedMemory();
+                std::string unit = "Bytes";
+
+                unitConverter(alloc_memory,unit);
+
+                out << getName() << "(" << this <<") statistics" << std::dec << std::endl;
+                out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
 		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
 		out << "\t" << "Total bytes:        " << std::setw(14) << total_bytes_ <<std::endl;
 		if (stats_level_ > 1) { 

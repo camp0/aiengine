@@ -26,6 +26,17 @@
 
 namespace aiengine {
 
+int64_t FrequencyProtocol::getAllocatedMemory() const {
+
+        int64_t value = 0;
+
+        value = sizeof(FrequencyProtocol);
+        value += freqs_cache_->getAllocatedMemory();
+        value += packet_freqs_cache_->getAllocatedMemory();
+
+        return value;
+}
+
 void FrequencyProtocol::releaseCache() {
 
         FlowManagerPtr fm = flow_mng_.lock();
@@ -100,8 +111,13 @@ void FrequencyProtocol::processFlow(Flow *flow) {
 void FrequencyProtocol::statistics(std::basic_ostream<char>& out) {
 
 	if (stats_level_ > 0) {
-	
-        	out << getName() << "(" << this << ") statistics" << std::dec <<  std::endl;
+                int alloc_memory = getAllocatedMemory();
+                std::string unit = "Bytes";
+
+                unitConverter(alloc_memory,unit);
+
+                out << getName() << "(" << this <<") statistics" << std::dec << std::endl;
+                out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
 		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
 		out << "\t" << "Total bytes:        " << std::setw(14) << total_bytes_ <<std::endl;
 		if (stats_level_ > 1) {

@@ -89,8 +89,9 @@ public:
 	void setRegexManager(SharedPointer<RegexManager> sig) { sigs_ = sig;} 
 	unsigned char *getPayload() const { return tcp_generic_header_;}
 
-#ifdef PYTHON_BINDING
+	int64_t getAllocatedMemory() const { return sizeof(TCPGenericProtocol); }
 
+#ifdef PYTHON_BINDING
         boost::python::dict getCounters() const;
 #endif
 

@@ -107,8 +107,9 @@ public:
         uint16_t getSequence() const { return ntohs(icmp_header_->un.echo.sequence); }
 #endif
 
-#ifdef PYTHON_BINDING
+	int64_t getAllocatedMemory() const { return sizeof(ICMPProtocol); }
 
+#ifdef PYTHON_BINDING
         boost::python::dict getCounters() const;
 #endif
 

@@ -30,6 +30,17 @@ namespace aiengine {
 log4cxx::LoggerPtr DNSProtocol::logger(log4cxx::Logger::getLogger("aiengine.dns"));
 #endif
 
+int64_t DNSProtocol::getAllocatedMemory() const {
+
+        int64_t value = 0;
+
+        value = sizeof(DNSProtocol);
+        value += name_cache_->getAllocatedMemory();
+        value += info_cache_->getAllocatedMemory();
+
+        return value;
+}
+
 void DNSProtocol::releaseCache() {
 
 	FlowManagerPtr fm = flow_mng_.lock();
@@ -336,8 +347,13 @@ void DNSProtocol::update_query_types(uint16_t type) {
 void DNSProtocol::statistics(std::basic_ostream<char>& out)
 {
 	if (stats_level_ > 0) {
-	
-        	out << "DNSProtocol(" << this << ") statistics" << std::dec <<  std::endl;
+                int alloc_memory = getAllocatedMemory();
+                std::string unit = "Bytes";
+
+                unitConverter(alloc_memory,unit);
+
+                out << getName() << "(" << this <<") statistics" << std::dec << std::endl;
+                out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
         	out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
         	out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
 		if (stats_level_ > 1) {

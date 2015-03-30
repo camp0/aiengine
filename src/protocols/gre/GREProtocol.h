@@ -101,8 +101,9 @@ public:
 
 	uint16_t getProtocol() const { return ntohs(gre_header_->protocol); }
 
-#ifdef PYTHON_BINDING
+	int64_t getAllocatedMemory() const { return sizeof(GREProtocol); }
 
+#ifdef PYTHON_BINDING
         boost::python::dict getCounters() const;
 #endif
 

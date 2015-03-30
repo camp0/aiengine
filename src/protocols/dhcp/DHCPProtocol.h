@@ -123,6 +123,8 @@ public:
 
 	uint8_t getType() const { return dhcp_header_->op; }
 
+	int64_t getAllocatedMemory() const { return sizeof(DHCPProtocol); }
+	
 #ifdef PYTHON_BINDING
         boost::python::dict getCounters() const;
 #endif

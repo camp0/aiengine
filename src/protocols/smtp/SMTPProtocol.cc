@@ -26,6 +26,10 @@
 
 namespace aiengine {
 
+#ifdef HAVE_LIBLOG4CXX
+log4cxx::LoggerPtr SMTPProtocol::logger(log4cxx::Logger::getLogger("aiengine.smtp"));
+#endif
+
 // List of support commands 
 std::vector<SmtpCommandType> SMTPProtocol::commands_ {
         std::make_tuple("EHLO"      	,4,     "hellos"     	,0,	static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_EHLO)),
@@ -41,9 +45,17 @@ std::vector<SmtpCommandType> SMTPProtocol::commands_ {
         std::make_tuple("QUIT"         	,4,     "quits"        	,0,	static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_QUIT))	
 };
 
-#ifdef HAVE_LIBLOG4CXX
-log4cxx::LoggerPtr SMTPProtocol::logger(log4cxx::Logger::getLogger("aiengine.smtp"));
-#endif
+int64_t SMTPProtocol::getAllocatedMemory() const {
+
+        int64_t value = 0;
+
+        value = sizeof(SMTPProtocol);
+        value += info_cache_->getAllocatedMemory();
+        value += from_cache_->getAllocatedMemory();
+        value += to_cache_->getAllocatedMemory();
+
+        return value;
+}
 
 // Removes or decrements the hits of the maps.
 void SMTPProtocol::release_smtp_info_cache(SMTPInfo *info) {
@@ -327,8 +339,13 @@ void SMTPProtocol::processFlow(Flow *flow) {
 void SMTPProtocol::statistics(std::basic_ostream<char>& out)
 {
 	if (stats_level_ > 0) {
-	
-        	out << "SMTPProtocol(" << this << ") statistics" << std::dec <<  std::endl;
+                int alloc_memory = getAllocatedMemory();
+                std::string unit = "Bytes";
+
+                unitConverter(alloc_memory,unit);
+
+                out << getName() << "(" << this <<") statistics" << std::dec << std::endl;
+                out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
         	out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
         	out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
 		if (stats_level_ > 1) {

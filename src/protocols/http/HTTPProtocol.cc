@@ -42,6 +42,20 @@ std::vector<HttpMethodType> HTTPProtocol::methods_ {
         std::make_tuple("TRACE"         ,5,     "traces"        ,0)
 };
 
+int64_t HTTPProtocol::getAllocatedMemory() const {
+
+        int64_t value = 0;
+
+        value = sizeof(HTTPProtocol);
+        value += info_cache_->getAllocatedMemory();
+        value += uri_cache_->getAllocatedMemory();
+        value += host_cache_->getAllocatedMemory();
+        value += ua_cache_->getAllocatedMemory();
+
+        return value;
+}
+
+
 // Removes or decrements the hits of the maps.
 void HTTPProtocol::release_http_info_cache(HTTPInfo *info) {
 
@@ -526,7 +540,13 @@ void HTTPProtocol::destroyHTTPInfos(int number) {
 void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 
 	if (stats_level_ > 0) {
-		out << getName() << "(" << this << ") statistics" << std::dec <<  std::endl;
+                int alloc_memory = getAllocatedMemory();
+                std::string unit = "Bytes";
+
+                unitConverter(alloc_memory,unit);
+
+                out << getName() << "(" << this <<") statistics" << std::dec << std::endl;
+                out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
 		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
 		out << "\t" << "Total bytes:        " << std::setw(14) << total_bytes_ <<std::endl;
 		out << "\t" << "Total L7 bytes:     " << std::setw(14) << total_l7_bytes_ <<std::endl;

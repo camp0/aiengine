@@ -54,6 +54,12 @@ class Flow;
 typedef std::pair<SharedPointer<StringCache>,int32_t> StringCacheHits;
 typedef std::map<boost::string_ref,StringCacheHits> GenericMapType;
 
+static std::function <void(int&,std::string&)> unitConverter = [](int &bytes,std::string &unit) { 
+	if (bytes >1024) { bytes = bytes / 1024; unit = "KBytes"; } 
+	if (bytes >1024) { bytes = bytes / 1024; unit = "MBytes"; } 
+	if (bytes >1024) { bytes = bytes / 1024; unit = "GBytes"; } 
+};
+
 class Protocol 
 {
 public:
@@ -89,6 +95,9 @@ public:
 	// Clear cache resources
 	virtual void releaseCache() = 0;
 
+	// Memory comsumption of the Protocol, caches and so on
+	virtual int64_t getAllocatedMemory() const = 0;
+ 
 #ifdef PYTHON_BINDING
 
         virtual boost::python::dict getCounters() const = 0;

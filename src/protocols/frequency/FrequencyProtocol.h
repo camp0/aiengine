@@ -99,6 +99,8 @@ public:
 
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 
+	int64_t getAllocatedMemory() const; 
+
 #ifdef PYTHON_BINDING
 
         boost::python::dict getCounters() const {

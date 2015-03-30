@@ -30,6 +30,16 @@ namespace aiengine {
 log4cxx::LoggerPtr SSLProtocol::logger(log4cxx::Logger::getLogger("aiengine.ssl"));
 #endif
 
+int64_t SSLProtocol::getAllocatedMemory() const {
+
+        int64_t value = 0;
+
+        value = sizeof(SSLProtocol);
+        value += host_cache_->getAllocatedMemory();
+
+        return value;
+}
+
 void SSLProtocol::releaseCache() {
 
         FlowManagerPtr fm = flow_mng_.lock();
@@ -259,7 +269,13 @@ void SSLProtocol::processFlow(Flow *flow) {
 void SSLProtocol::statistics(std::basic_ostream<char>& out) {
 
 	if (stats_level_ > 0) {
-		out << getName() << "(" << this << ") statistics" << std::dec << std::endl;
+                int alloc_memory = getAllocatedMemory();
+                std::string unit = "Bytes";
+
+                unitConverter(alloc_memory,unit);
+
+                out << getName() << "(" << this <<") statistics" << std::dec << std::endl;
+                out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
 		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
 		out << "\t" << "Total bytes:        " << std::setw(14) << total_bytes_ <<std::endl;
 		if (stats_level_ > 1) { 

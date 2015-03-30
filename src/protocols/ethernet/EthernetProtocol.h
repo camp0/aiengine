@@ -99,8 +99,9 @@ public:
 	uint16_t getEthernetType() const { return ntohs(eth_header_->ether_type);}
 	struct ether_header *getEthernetHeader() const { return eth_header_;}
 
-#ifdef PYTHON_BINDING
+	int64_t getAllocatedMemory() const { return sizeof(EthernetProtocol); }
 
+#ifdef PYTHON_BINDING
         boost::python::dict getCounters() const ;
 #endif
 

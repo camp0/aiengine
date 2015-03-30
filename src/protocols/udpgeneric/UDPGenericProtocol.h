@@ -88,8 +88,9 @@ public:
 
 	void setRegexManager(SharedPointer<RegexManager> sig) { sigs_ = sig;}
 
-#ifdef PYTHON_BINDING
+	int64_t getAllocatedMemory() const { return sizeof(UDPGenericProtocol); }
 
+#ifdef PYTHON_BINDING
         boost::python::dict getCounters() const;
 #endif
 
