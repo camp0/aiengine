@@ -44,6 +44,7 @@
 #include "./protocols/http/HTTPProtocol.h"
 #include "./protocols/smtp/SMTPProtocol.h"
 #include "./protocols/imap/IMAPProtocol.h"
+#include "./protocols/pop/POPProtocol.h"
 #include "protocols/frequency/FrequencyProtocol.h"
 
 namespace aiengine {
@@ -137,6 +138,7 @@ public:
         NTPProtocolPtr ntp;
         SMTPProtocolPtr smtp;
         IMAPProtocolPtr imap;
+        POPProtocolPtr pop;
         TCPGenericProtocolPtr tcp_generic;
         UDPGenericProtocolPtr udp_generic;
         FrequencyProtocolPtr freqs_tcp;
@@ -150,6 +152,7 @@ public:
         FlowForwarderPtr ff_ntp;
         FlowForwarderPtr ff_smtp;
         FlowForwarderPtr ff_imap;
+        FlowForwarderPtr ff_pop;
         FlowForwarderPtr ff_tcp_generic;
         FlowForwarderPtr ff_udp_generic;
         FlowForwarderPtr ff_tcp_freqs;

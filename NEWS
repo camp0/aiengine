@@ -106,4 +106,4 @@ Features/Changes of 1.2
 - Generates Yara signatures (http://plusvic.github.io/yara/).
 - Performance improvements on the DomainNameManager getDomainName lookups.
 - Add the HTTPUriSet functionality for lookups on HTTP Uris.
-- IMAPProtocol support.
+- IMAP and POP support.

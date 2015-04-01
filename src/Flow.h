@@ -45,6 +45,7 @@
 #include "protocols/http/HTTPInfo.h"
 #include "protocols/smtp/SMTPInfo.h"
 #include "protocols/imap/IMAPInfo.h"
+#include "protocols/pop/POPInfo.h"
 #include "protocols/sip/SIPInfo.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -118,6 +119,7 @@ public:
 	WeakPointer<SIPInfo> sip_info;
 	WeakPointer<SMTPInfo> smtp_info;
 	WeakPointer<IMAPInfo> imap_info;
+	WeakPointer<POPInfo> pop_info;
 	WeakPointer<Frequencies> frequencies;
 	WeakPointer<PacketFrequencies> packet_frequencies;
 	FlowForwarderPtrWeak forwarder;

@@ -36,6 +36,7 @@ NetworkStack::NetworkStack() {
         ntp = NTPProtocolPtr(new NTPProtocol());
         smtp = SMTPProtocolPtr(new SMTPProtocol());
         imap = IMAPProtocolPtr(new IMAPProtocol());
+        pop = POPProtocolPtr(new POPProtocol());
         tcp_generic = TCPGenericProtocolPtr(new TCPGenericProtocol());
         udp_generic = UDPGenericProtocolPtr(new UDPGenericProtocol());
         freqs_tcp = FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol"));
@@ -49,6 +50,7 @@ NetworkStack::NetworkStack() {
         ff_ntp = FlowForwarderPtr(new FlowForwarder());
         ff_smtp = FlowForwarderPtr(new FlowForwarder());
         ff_imap = FlowForwarderPtr(new FlowForwarder());
+        ff_pop = FlowForwarderPtr(new FlowForwarder());
         ff_tcp_generic = FlowForwarderPtr(new FlowForwarder());
         ff_udp_generic = FlowForwarderPtr(new FlowForwarder());
         ff_tcp_freqs = FlowForwarderPtr(new FlowForwarder());
@@ -101,6 +103,12 @@ NetworkStack::NetworkStack() {
         ff_imap->setProtocol(static_cast<ProtocolPtr>(imap));
         ff_imap->addChecker(std::bind(&IMAPProtocol::imapChecker,imap,std::placeholders::_1));
         ff_imap->addFlowFunction(std::bind(&IMAPProtocol::processFlow,imap,std::placeholders::_1));
+
+        // Configure the POP 
+        pop->setFlowForwarder(ff_pop);
+        ff_pop->setProtocol(static_cast<ProtocolPtr>(pop));
+        ff_pop->addChecker(std::bind(&POPProtocol::popChecker,pop,std::placeholders::_1));
+        ff_pop->addFlowFunction(std::bind(&POPProtocol::processFlow,pop,std::placeholders::_1));
 
         // configure the TCP generic Layer
         tcp_generic->setFlowForwarder(ff_tcp_generic);

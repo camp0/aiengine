@@ -54,6 +54,7 @@ StackLanIPv6::StackLanIPv6() {
         addProtocol(ssl);
         addProtocol(smtp);
         addProtocol(imap);
+        addProtocol(pop);
         addProtocol(tcp_generic);
         addProtocol(freqs_tcp);
         addProtocol(dns);
@@ -172,7 +173,7 @@ StackLanIPv6::StackLanIPv6() {
 	tcp_->setFlowForwarder(ff_tcp_);	
 	udp_->setFlowForwarder(ff_udp_);	
 
-	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_tcp_generic});
+	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
         enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_udp_generic});
 	
 #ifdef HAVE_LIBLOG4CXX
@@ -246,7 +247,7 @@ void StackLanIPv6::enableFrequencyEngine(bool enable) {
 void StackLanIPv6::enableNIDSEngine(bool enable) {
 
 	if (enable) {
-        	disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap});
+        	disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop});
         	disableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp});
 #ifdef HAVE_LIBLOG4CXX
 		LOG4CXX_INFO (logger, "Enable NIDSEngine on " << name_ );
@@ -266,7 +267,7 @@ void StackLanIPv6::enableNIDSEngine(bool enable) {
         	disableFlowForwarders(ff_tcp_,{ff_tcp_generic});
         	disableFlowForwarders(ff_udp_,{ff_udp_generic});
 
-        	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_tcp_generic});
+        	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
         	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_udp_generic});
 	}
 }
@@ -286,6 +287,7 @@ void StackLanIPv6::setTotalTCPFlows(int value) {
 	// 5% of the traffic could be SMTP/IMAP, im really positive :D
 	smtp->createSMTPInfos(value * 0.05);
 	imap->createIMAPInfos(value * 0.05);
+	pop->createPOPInfos(value * 0.05);
 }
 
 void StackLanIPv6::setTotalUDPFlows(int value) {

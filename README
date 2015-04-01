@@ -18,6 +18,7 @@ The main functionalities of AIEngine are:
 - Support for HTTP,DNS and SSL Domains matching.
 - Support for banned domains and hosts for HTTP, DNS, SMTP and SSL.
 - Frequency analysis for unknown traffic and auto-regex generation.
+- Generation of Yara signatures.
 - Easy integration with databases (MySQL, Redis, Cassandra, Hadoop, etc...) for data correlation.
 - Easy integration with other packet engines (Netfilter).
 - Support memory clean caches for refresh stored memory information.
@@ -29,7 +30,7 @@ Using AIEngine
 To use AIEngine(reduce version) just execute the binary aiengine or use the python binding.
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
-	aiengine 1.0
+	aiengine 1.2
 	Mandatory arguments:
 	  -I [ --input ] arg                Sets the network interface ,pcap file or 
 	                                    directory with pcap files.
@@ -56,6 +57,7 @@ To use AIEngine(reduce version) just execute the binary aiengine or use the pyth
 	  -f [ --flow-type ] arg (=tcp)     Uses tcp or udp flows.
 	  -L [ --enable-learner ]           Enables the Learner engine.
 	  -k [ --key-learner ] arg (=80)    Sets the key for the Learner engine.
+	  -y [ --enable-yara ]              Generates a yara signature.
 
 	Optional arguments:
 	  -n [ --stack ] arg (=lan)    Sets the network stack (lan,mobile,lan6,virtual,

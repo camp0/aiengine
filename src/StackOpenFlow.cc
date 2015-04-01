@@ -62,6 +62,8 @@ StackOpenFlow::StackOpenFlow() {
         addProtocol(http);
         addProtocol(ssl);
         addProtocol(smtp);
+        addProtocol(imap);
+        addProtocol(pop);
         addProtocol(tcp_generic);
         addProtocol(freqs_tcp);
         addProtocol(dns);
@@ -230,7 +232,7 @@ StackOpenFlow::StackOpenFlow() {
 	flow_table_tcp_vir_->setProtocol(tcp_vir_);	
 	flow_table_udp_vir_->setProtocol(udp_vir_);
 
-        // Connect to upper layers the FlowManager
+        // TODO: not sure of this, Connect to upper layers the FlowManager
         http->setFlowManager(flow_table_tcp_vir_);
         ssl->setFlowManager(flow_table_tcp_vir_);
         smtp->setFlowManager(flow_table_tcp_vir_);
@@ -247,7 +249,7 @@ StackOpenFlow::StackOpenFlow() {
         tcp_vir_->setFlowForwarder(ff_tcp_vir_);
         udp_vir_->setFlowForwarder(ff_udp_vir_);
 
-        enableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_tcp_generic});
+        enableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
         enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_udp_generic});
 
 #ifdef HAVE_LIBLOG4CXX
@@ -292,6 +294,7 @@ void StackOpenFlow::setTotalTCPFlows(int value) {
         // 5% of the traffic could be SMTP/IMAP, im really positive :D
         smtp->createSMTPInfos(value * 0.05);
         imap->createIMAPInfos(value * 0.05);
+        pop->createPOPInfos(value * 0.05);
 }
 
 void StackOpenFlow::setTotalUDPFlows(int value) {
@@ -350,7 +353,7 @@ void StackOpenFlow::enableFrequencyEngine(bool enable) {
 void StackOpenFlow::enableNIDSEngine(bool enable) {
 
         if (enable) {
-        	disableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap});
+        	disableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop});
         	disableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp});
 #ifdef HAVE_LIBLOG4CXX
                 LOG4CXX_INFO (logger, "Enable NIDSEngine on " << name_ );
@@ -370,7 +373,7 @@ void StackOpenFlow::enableNIDSEngine(bool enable) {
         	disableFlowForwarders(ff_tcp_vir_,{ff_tcp_generic});
         	disableFlowForwarders(ff_udp_vir_,{ff_udp_generic});
 
-        	enableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_tcp_generic});
+        	enableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
         	enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_udp_generic});
         }
 }

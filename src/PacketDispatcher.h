@@ -128,7 +128,7 @@ public:
 
 #ifdef PYTHON_BINDING
 
-	// For implemente the 'with' statement in python needs the methods __enter__ and __exit__
+	// For implement the 'with' statement in python needs the methods __enter__ and __exit__
 	PacketDispatcher& __enter__(); 
 	bool __exit__(boost::python::object type, boost::python::object val, boost::python::object traceback);
 

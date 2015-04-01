@@ -51,6 +51,7 @@ noinst_HEADERS =        Packet.h Pointer.h \
 			protocols/ssl/SSLProtocol.h \
 			protocols/smtp/SMTPProtocol.h \
 			protocols/imap/IMAPProtocol.h \
+			protocols/pop/POPProtocol.h \
 			protocols/dns/DNSProtocol.h \
 			protocols/sip/SIPProtocol.h \
 			protocols/dhcp/DHCPProtocol.h \
@@ -94,6 +95,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/ssl/SSLProtocol.cc \
 			protocols/smtp/SMTPProtocol.cc \
 			protocols/imap/IMAPProtocol.cc \
+			protocols/pop/POPProtocol.cc \
 			protocols/dns/DNSProtocol.cc \
 			protocols/sip/SIPProtocol.cc \
 			protocols/dhcp/DHCPProtocol.cc \
@@ -116,8 +118,7 @@ else
   LOG4CXX_FLAGS = 
 endif
 
-BOOST_LINK_CORE = -lboost_system -lboost_regex
-# BOOST_LINK_CORE = -lboost_system -lboost_thread -lboost_regex
+BOOST_LINK_CORE = -lboost_system 
 
 aiengine_SOURCES =      $(aiengine_core_sources) main.cc
 aiengine_CPPFLAGS = 	$(EXTRA_FLAGS) $(BOOST_CPPFLAGS)
@@ -158,6 +159,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		protocols/ssl/test_ssl.cc \
 		protocols/smtp/test_smtp.cc \
 		protocols/imap/test_imap.cc \
+		protocols/pop/test_pop.cc \
 		protocols/sip/test_sip.cc \
 		protocols/dhcp/test_dhcp.cc \
 		protocols/ntp/test_ntp.cc \
@@ -180,6 +182,7 @@ BUILT_SOURCES = $(srcdir)/pyaiengine.so
 
 $(srcdir)/pyaiengine.so: py_wrapper.cc
 	@echo "Depending on your machine this compilation could take some time, please be patient."
+	@echo "You can use alternatively the setup.py script (python setup.py build_ext -i)."
 	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DPYTHON_BINDING \
 		-I. -I.. $(BOOST_CPPFLAGS) $(BOOST_CPPFLAGS)/boost/python \
 		`pkg-config --cflags python-$(PYTHON_VERSION)` \

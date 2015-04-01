@@ -54,6 +54,7 @@ StackLan::StackLan() {
         addProtocol(ssl);
         addProtocol(smtp);
         addProtocol(imap);
+        addProtocol(pop);
         addProtocol(tcp_generic);
         addProtocol(freqs_tcp);
         addProtocol(dns);
@@ -173,7 +174,7 @@ StackLan::StackLan() {
 	tcp_->setFlowForwarder(ff_tcp_);	
 	udp_->setFlowForwarder(ff_udp_);	
 
-	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_tcp_generic});
+	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
 	
 	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_udp_generic});
 	
@@ -249,7 +250,7 @@ void StackLan::enableNIDSEngine(bool enable) {
 
 	if (enable) {
 
-		disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap}); // we dont remove the ff_tcp_generic
+		disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop}); // we dont remove the ff_tcp_generic
 		disableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp}); // we dont remove the ff_udp_generic
 
 #ifdef HAVE_LIBLOG4CXX
@@ -270,7 +271,7 @@ void StackLan::enableNIDSEngine(bool enable) {
 		disableFlowForwarders(ff_tcp_,{ff_tcp_generic}); 
 		disableFlowForwarders(ff_udp_,{ff_udp_generic}); 
 	
-		enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_tcp_generic});
+		enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
         	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_udp_generic});	
 	}
 }
@@ -290,6 +291,7 @@ void StackLan::setTotalTCPFlows(int value) {
         // 5% of the traffic could be SMTP/IMAP, im really positive :D
         smtp->createSMTPInfos(value * 0.05);
         imap->createIMAPInfos(value * 0.05);
+        pop->createPOPInfos(value * 0.05);
 }
 
 void StackLan::setTotalUDPFlows(int value) {

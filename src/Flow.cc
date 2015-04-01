@@ -64,6 +64,7 @@ void Flow::reset() {
 	sip_info.reset();
 	smtp_info.reset();
 	imap_info.reset();
+	pop_info.reset();
 	regex.reset();
 	dns_info.reset();
 	tcp_info.reset();
