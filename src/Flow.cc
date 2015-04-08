@@ -189,41 +189,46 @@ void Flow::showFlowInfo(std::ostream& out) {
 		if (tcp_info.lock()) out << " TCP:" << *tcp_info.lock();
 
         	SharedPointer<HTTPInfo> hinfo = http_info.lock();
-
         	if (hinfo) {
                 	out << "REQ(" << hinfo->getTotalRequests() << ")RES(" << hinfo->getTotalResponses() << ") ";
                 	if (hinfo->getIsBanned()) out << " Banned ";
                 	if (hinfo->host.lock()) out << "Host:" << hinfo->host.lock()->getName();
                 	if (hinfo->ua.lock()) out << " UserAgent:" << hinfo->ua.lock()->getName();
-        	}
-
-        	if (ssl_host.lock()) out << " Host:" << ssl_host.lock()->getName();
-
-		SharedPointer<SMTPInfo> sinfo = smtp_info.lock();
-		if (sinfo) {
-			if (sinfo->from.lock())	out << " From:" << sinfo->from.lock()->getName();
-			if (sinfo->to.lock())	out << " To:" << sinfo->to.lock()->getName();
+        	} else {
+        		if (ssl_host.lock()) {
+				 out << " Host:" << ssl_host.lock()->getName();
+			} else {
+				SharedPointer<SMTPInfo> sinfo = smtp_info.lock();
+				if (sinfo) {
+					if (sinfo->from.lock())	out << " From:" << sinfo->from.lock()->getName();
+					if (sinfo->to.lock())	out << " To:" << sinfo->to.lock()->getName();
+				} else {
+					SharedPointer<POPInfo> pinfo = pop_info.lock();
+					if (pinfo) {
+						if (pinfo->user_name.lock())	out << " User:" << pinfo->user_name.lock()->getName();
+					} else {
+						SharedPointer<IMAPInfo> iinfo = imap_info.lock();
+						if (iinfo) {
+							if (iinfo->user_name.lock()) out << " User:" << pinfo->user_name.lock()->getName();
+						}
+					}
+				}
+			}
 		}
-
 	} else {
 		if (gprs_info.lock()) out << " GPRS:" << *gprs_info.lock();
 
 		SharedPointer<DNSInfo> dinfo = dns_info.lock();
-
         	if (dinfo) {
 			if (dinfo->name.lock()) out << " Domain:" << dinfo->name.lock()->getName();	
-		}
-
-        	SharedPointer<SIPInfo> sinfo = sip_info.lock();
-
-        	if (sinfo) {
-                	if (sinfo->uri.lock()) out << " SIPUri:" << sinfo->uri.lock()->getName();
-
-                	if (sinfo->from.lock()) out << " SIPFrom:" << sinfo->from.lock()->getName();
-
-                	if (sinfo->to.lock()) out << " SIPTo:" << sinfo->to.lock()->getName();
-
-                	if (sinfo->via.lock()) out << " SIPVia:" << sinfo->via.lock()->getName();
+		} else {
+        		SharedPointer<SIPInfo> sinfo = sip_info.lock();
+        		if (sinfo) {
+                		if (sinfo->uri.lock()) out << " SIPUri:" << sinfo->uri.lock()->getName();
+                		if (sinfo->from.lock()) out << " SIPFrom:" << sinfo->from.lock()->getName();
+                		if (sinfo->to.lock()) out << " SIPTo:" << sinfo->to.lock()->getName();
+                		if (sinfo->via.lock()) out << " SIPVia:" << sinfo->via.lock()->getName();
+			}
         	}
 	}
 

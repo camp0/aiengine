@@ -69,9 +69,13 @@ class POPProtocol: public Protocol
 public:
     	explicit POPProtocol():Protocol(POPProtocol::default_name),stats_level_(0),
 		pop_header_(nullptr),total_bytes_(0),
+		total_allow_domains_(0),total_ban_domains_(0),
 		total_pop_client_commands_(0),
 		total_pop_server_responses_(0),
+		domain_mng_(),ban_domain_mng_(),
 		info_cache_(new Cache<POPInfo>("Info cache")),
+		user_cache_(new Cache<StringCache>("Name cache")),
+		user_map_(),
 		flow_mng_() {}
 
     	virtual ~POPProtocol() {}
@@ -119,6 +123,9 @@ public:
         void createPOPInfos(int number);
         void destroyPOPInfos(int number);
 
+        void setDomainNameManager(DomainNameManagerPtrWeak dnm) { domain_mng_ = dnm;}
+        void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) { ban_domain_mng_ = dnm;}
+
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 
 	int64_t getAllocatedMemory() const;
@@ -128,14 +135,29 @@ public:
 #endif
 
 private:
+	void release_pop_info_cache(POPInfo *info);
+        int32_t release_pop_info(POPInfo *info);
+
+	void handle_cmd_user(Flow *flow,POPInfo *info, const char *header);
+	void attach_user_name(POPInfo *info, boost::string_ref &name);
+
 	int stats_level_;
 	unsigned char *pop_header_;
         int64_t total_bytes_;
+	int32_t total_allow_domains_;	
+	int32_t total_ban_domains_;
+
 	static std::vector<PopCommandType> commands_;
 	int32_t total_pop_client_commands_;
 	int32_t total_pop_server_responses_;
 
+        DomainNameManagerPtrWeak domain_mng_;
+        DomainNameManagerPtrWeak ban_domain_mng_;
+
 	Cache<POPInfo>::CachePtr info_cache_;
+	Cache<StringCache>::CachePtr user_cache_;
+
+        GenericMapType user_map_;
 
 	FlowManagerPtrWeak flow_mng_;	
 #ifdef HAVE_LIBLOG4CXX

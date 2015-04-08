@@ -29,7 +29,7 @@
 #endif
 
 #include <iostream>
-#include <vector> 
+#include "StringCache.h"
 
 namespace aiengine {
 
@@ -42,10 +42,17 @@ public:
 	void reset() { 
 		client_commands_ = 0;
 		server_commands_ = 0;
+		user_name.reset();
+		is_banned_ = false;
 	}
+
+        void setIsBanned(bool value) { is_banned_ = value; }
+        bool getIsBanned() const { return is_banned_; }
 
 	void incClientCommands() { ++client_commands_; }
 	void incServerCommands() { ++server_commands_; }
+
+	WeakPointer<StringCache> user_name;
 
 #ifdef PYTHON_BINDING
 
@@ -57,6 +64,7 @@ public:
 #endif
 
 private:
+	bool is_banned_;
 	int16_t client_commands_;	
 	int16_t server_commands_;	
 };

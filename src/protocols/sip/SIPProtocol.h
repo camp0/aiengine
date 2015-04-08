@@ -157,14 +157,10 @@ private:
 	Cache<StringCache>::CachePtr from_cache_;
 	Cache<StringCache>::CachePtr to_cache_;
 
-	typedef std::map<boost::string_ref,StringCacheHits> UriMapType;
-	typedef std::map<boost::string_ref,StringCacheHits> FromMapType;
-	typedef std::map<boost::string_ref,StringCacheHits> ToMapType;
-	typedef std::map<boost::string_ref,StringCacheHits> ViaMapType;
-	UriMapType uri_map_;	
-	ViaMapType via_map_;
-	FromMapType from_map_;	
-	ToMapType to_map_;	
+	GenericMapType uri_map_;	
+	GenericMapType via_map_;
+	GenericMapType from_map_;	
+	GenericMapType to_map_;	
 
 	FlowManagerPtrWeak flow_mng_;
 #ifdef HAVE_LIBLOG4CXX

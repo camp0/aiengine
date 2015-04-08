@@ -58,7 +58,7 @@ void SSLProtocol::releaseCache() {
                 int32_t release_hosts = host_map_.size();
 
                 // Compute the size of the strings used as keys on the map
-                std::for_each (host_map_.begin(), host_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &ht) {
+                std::for_each (host_map_.begin(), host_map_.end(), [&total_bytes_released] (PairStringCacheHits const &ht) {
                         total_bytes_released += ht.first.size();
                 });
 
@@ -93,7 +93,7 @@ void SSLProtocol::attach_host_to_flow(Flow *flow, boost::string_ref &servername)
 	SharedPointer<StringCache> host_ptr = flow->ssl_host.lock();
 
 	if (!host_ptr) { // There is no Host object attached to the flow
-		HostMapType::iterator it = host_map_.find(servername);
+		GenericMapType::iterator it = host_map_.find(servername);
 		if (it == host_map_.end()) {
 			host_ptr = host_cache_->acquire().lock();
 			if (host_ptr) {
@@ -275,6 +275,10 @@ void SSLProtocol::statistics(std::basic_ostream<char>& out) {
                 unitConverter(alloc_memory,unit);
 
                 out << getName() << "(" << this <<") statistics" << std::dec << std::endl;
+
+                if (ban_host_mng_.lock()) out << "\t" << "Plugged banned domains from:" << ban_host_mng_.lock()->getName() << std::endl;
+                if (host_mng_.lock()) out << "\t" << "Plugged domains from:" << host_mng_.lock()->getName() << std::endl;
+
                 out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
 		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
 		out << "\t" << "Total bytes:        " << std::setw(14) << total_bytes_ <<std::endl;

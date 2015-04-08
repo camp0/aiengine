@@ -30,7 +30,6 @@ namespace aiengine {
 
 void Callback::setCallback(PyObject *callback) {
 	
-	// TODO: Verify that the callback have at least one parameter
 	if (!PyCallable_Check(callback)) {
 		throw std::runtime_error("Object is not callable.\n");
    	} else {

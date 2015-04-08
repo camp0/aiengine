@@ -39,11 +39,16 @@ namespace aiengine {
 class DomainNameManager 
 {
 public:
-    	explicit DomainNameManager():root_(SharedPointer<DomainNode>(new DomainNode("root"))),
+    	explicit DomainNameManager(const std::string& name):name_(name),
+		root_(SharedPointer<DomainNode>(new DomainNode("root"))),
 		total_domains_(0),
 		key_() {}
+    	
+	explicit DomainNameManager():DomainNameManager("Generic Domain Name Manager") {}
 
     	virtual ~DomainNameManager() {}
+
+	const char *getName() const { return name_.c_str(); }
 
 	void addDomainName(const SharedPointer<DomainName>& domain); 
 	void addDomainName(const std::string name,const std::string expression);
@@ -56,6 +61,7 @@ public:
 	friend std::ostream& operator<< (std::ostream& out, const DomainNameManager& domain);
 
 private:
+	std::string name_;
 	SharedPointer<DomainNode> root_;
 	int32_t total_domains_;
 	boost::string_ref key_;

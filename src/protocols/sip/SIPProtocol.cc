@@ -82,16 +82,16 @@ void SIPProtocol::releaseCache() {
                 int32_t release_via = via_map_.size();
 
                 // Compute the size of the strings used as keys on the map
-                std::for_each (from_map_.begin(), from_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &f) {
+                std::for_each (from_map_.begin(), from_map_.end(), [&total_bytes_released] (PairStringCacheHits const &f) {
                         total_bytes_released += f.first.size();
                 });
-                std::for_each (uri_map_.begin(), uri_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &u) {
+                std::for_each (uri_map_.begin(), uri_map_.end(), [&total_bytes_released] (PairStringCacheHits const &u) {
                         total_bytes_released += u.first.size();
                 });
-                std::for_each (to_map_.begin(), to_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &t) {
+                std::for_each (to_map_.begin(), to_map_.end(), [&total_bytes_released] (PairStringCacheHits const &t) {
                         total_bytes_released += t.first.size();
                 });
-                std::for_each (via_map_.begin(), via_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &t) {
+                std::for_each (via_map_.begin(), via_map_.end(), [&total_bytes_released] (PairStringCacheHits const &t) {
                         total_bytes_released += t.first.size();
                 });
 
@@ -178,7 +178,7 @@ void SIPProtocol::attach_from_to_flow(SIPInfo *info, boost::string_ref &from) {
 	SharedPointer<StringCache> from_ptr = info->from.lock();
 
 	if (!from_ptr) { 
-		FromMapType::iterator it = from_map_.find(from);
+		GenericMapType::iterator it = from_map_.find(from);
 		if (it == from_map_.end()) {
 			from_ptr = from_cache_->acquire().lock();
 			if (from_ptr) {
@@ -211,7 +211,7 @@ void SIPProtocol::attach_to_to_flow(SIPInfo *info, boost::string_ref &to) {
 	SharedPointer<StringCache> to_ptr = info->to.lock();
 
 	if (!to_ptr) { 
-		ToMapType::iterator it = to_map_.find(to);
+		GenericMapType::iterator it = to_map_.find(to);
 		if (it == to_map_.end()) {
 			to_ptr = to_cache_->acquire().lock();
 			if (to_ptr) {
@@ -234,7 +234,7 @@ void SIPProtocol::attach_via_to_flow(SIPInfo *info, boost::string_ref &via) {
         SharedPointer<StringCache> via_ptr = info->via.lock();
 
         if (!via_ptr) {
-                ViaMapType::iterator it = via_map_.find(via);
+                GenericMapType::iterator it = via_map_.find(via);
                 if (it == via_map_.end()) {
                         via_ptr = via_cache_->acquire().lock();
                         if (via_ptr) {
@@ -254,7 +254,7 @@ void SIPProtocol::attach_via_to_flow(SIPInfo *info, boost::string_ref &via) {
 
 void SIPProtocol::attach_uri_to_flow(SIPInfo *info, boost::string_ref &uri) {
 
-	UriMapType::iterator it = uri_map_.find(uri);
+	GenericMapType::iterator it = uri_map_.find(uri);
         if (it == uri_map_.end()) {
         	SharedPointer<StringCache> uri_ptr = uri_cache_->acquire().lock();
                 if (uri_ptr) {

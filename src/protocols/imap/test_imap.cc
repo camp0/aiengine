@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE (test1_imap)
 
 BOOST_AUTO_TEST_CASE (test2_imap)
 {
-        /****** char *header =  "EHLO GP\r\n";
+        char *header =  "C00000 CAPABILITY\r\n";
         unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
         int length = strlen(header);
         Packet packet(pkt,length);
@@ -69,18 +69,53 @@ BOOST_AUTO_TEST_CASE (test2_imap)
 
         flow->setFlowDirection(FlowDirection::FORWARD);
         flow->packet = const_cast<Packet*>(&packet);
-        smtp->processFlow(flow.get());
+        imap->processFlow(flow.get());
 
-        BOOST_CHECK(smtp->getTotalBytes() == 9);
+        BOOST_CHECK(imap->getTotalBytes() == 19);
 
-        std::string cad("EHLO GP");
+        std::string cad("C00000 CAPABILITY");
         std::ostringstream h;
 
-        h << smtp->getPayload();
-
+        h << imap->getPayload();
         BOOST_CHECK(cad.compare(0,cad.length(),h.str(),0,cad.length()) == 0);
-	*/
 }
+
+BOOST_AUTO_TEST_CASE (test3_imap)
+{
+        char *header =  "00001 LOGIN pepe mypassword\r\n";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+        Packet packet(pkt,length);
+
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        flow->packet = const_cast<Packet*>(&packet);
+        imap->processFlow(flow.get());
+
+        BOOST_CHECK(imap->getTotalBytes() == length);
+
+        //BOOST_CHECK(cad.compare(0,cad.length(),h.str(),0,cad.length()) == 0);
+}
+
+BOOST_AUTO_TEST_CASE (test4_imap)
+{
+        char *header =  "00001 LOGIN pepe@meneame.net mypassword\r\n";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+        Packet packet(pkt,length);
+
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        flow->packet = const_cast<Packet*>(&packet);
+        imap->processFlow(flow.get());
+
+        BOOST_CHECK(imap->getTotalBytes() == length);
+
+        //BOOST_CHECK(cad.compare(0,cad.length(),h.str(),0,cad.length()) == 0);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
 

@@ -36,7 +36,7 @@
 
 namespace aiengine {
 
-static const int MAX_PACKET_FREQUENCIES_VALUES = 5000;
+static const int MAX_PACKET_FREQUENCIES_VALUES = 4096;
 
 class PacketFrequencies 
 {

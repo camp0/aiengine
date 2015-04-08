@@ -46,15 +46,49 @@
 
 namespace aiengine {
 
+enum class IMAPCommandTypes : std::int8_t {
+        IMAP_CMD_CAPABILITY =         0,
+        IMAP_CMD_STARTTLS,
+        IMAP_CMD_AUTHENTICATE,
+        IMAP_CMD_UID,
+        IMAP_CMD_LOGIN,
+        IMAP_CMD_SELECT,
+        IMAP_CMD_EXAMINE,
+        IMAP_CMD_CREATE,
+        IMAP_CMD_DELETE,
+        IMAP_CMD_RENAME,
+        IMAP_CMD_SUBSCRIBE,
+       	IMAP_CMD_UNSUBSCRIBE,
+       	IMAP_CMD_LIST,
+       	IMAP_CMD_LSUB,
+        IMAP_CMD_STATUS,
+        IMAP_CMD_APPEND,
+        IMAP_CMD_CHECK,
+        IMAP_CMD_CLOSE,
+        IMAP_CMD_EXPUNGE,
+        IMAP_CMD_SEARCH,
+        IMAP_CMD_FETCH,
+        IMAP_CMD_STORE,
+        IMAP_CMD_COPY,
+        IMAP_CMD_NOOP,
+        IMAP_CMD_LOGOUT
+};
+
+// Commands with statistics
+typedef std::tuple<const char*,int,const char*,int32_t, int8_t> ImapCommandType;
+
 class IMAPProtocol: public Protocol 
 {
 public:
     	explicit IMAPProtocol():Protocol(IMAPProtocol::default_name),stats_level_(0),
 		imap_header_(nullptr),total_bytes_(0),
+		total_allow_domains_(0),total_ban_domains_(0),
 		total_imap_client_commands_(0),
 		total_imap_server_responses_(0),
+		domain_mng_(),ban_domain_mng_(),
 		info_cache_(new Cache<IMAPInfo>("Info cache")),
-		flow_mng_() {}
+		user_cache_(new Cache<StringCache>("Name cache")),	
+		user_map_(),flow_mng_() {}
 
     	virtual ~IMAPProtocol() {}
 
@@ -110,13 +144,31 @@ public:
 #endif
 
 private:
+private:
+        void release_imap_info_cache(IMAPInfo *info);
+        int32_t release_imap_info(IMAPInfo *info);
+
+        void handle_cmd_login(Flow *flow,IMAPInfo *info, const char *header);
+        void attach_user_name(IMAPInfo *info, boost::string_ref &name);
+
 	int stats_level_;
 	unsigned char *imap_header_;
         int64_t total_bytes_;
+
+	static std::vector<ImapCommandType> commands_;
+
+	int32_t total_allow_domains_;	
+	int32_t total_ban_domains_;
 	int32_t total_imap_client_commands_;
 	int32_t total_imap_server_responses_;
 
+        DomainNameManagerPtrWeak domain_mng_;
+        DomainNameManagerPtrWeak ban_domain_mng_;
+
 	Cache<IMAPInfo>::CachePtr info_cache_;
+	Cache<StringCache>::CachePtr user_cache_;
+
+        GenericMapType user_map_;
 
 	FlowManagerPtrWeak flow_mng_;	
 #ifdef HAVE_LIBLOG4CXX

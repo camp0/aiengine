@@ -186,8 +186,7 @@ private:
 	Cache<DNSInfo>::CachePtr info_cache_;
 	Cache<StringCache>::CachePtr name_cache_;
 
-	typedef std::map<boost::string_ref,StringCacheHits> DomainMapType;
-	DomainMapType domain_map_;
+	GenericMapType domain_map_;
 	FlowManagerPtrWeak flow_mng_;	
 	char dns_buffer_name_[MAX_DNS_BUFFER_NAME];
 #ifdef HAVE_LIBLOG4CXX

@@ -193,12 +193,9 @@ private:
 	Cache<StringCache>::CachePtr host_cache_;
 	Cache<StringCache>::CachePtr ua_cache_;
 
-	typedef std::map<boost::string_ref,StringCacheHits> UriMapType;
-	typedef std::map<boost::string_ref,StringCacheHits> HostMapType;
-	typedef std::map<boost::string_ref,StringCacheHits> UAMapType;
-	UAMapType ua_map_;	
-	HostMapType host_map_;	
-	UriMapType uri_map_;	
+	GenericMapType ua_map_;	
+	GenericMapType host_map_;	
+	GenericMapType uri_map_;	
 
 	DomainNameManagerPtrWeak host_mng_;
 	DomainNameManagerPtrWeak ban_host_mng_;

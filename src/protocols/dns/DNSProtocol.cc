@@ -59,7 +59,7 @@ void DNSProtocol::releaseCache() {
 		int32_t release_doms = domain_map_.size();
 
 		// Compute the size of the strings used as keys on the map
-		std::for_each (domain_map_.begin(), domain_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &dt) {
+		std::for_each (domain_map_.begin(), domain_map_.end(), [&total_bytes_released] (PairStringCacheHits const &dt) {
 			total_bytes_released += dt.first.size();
 		});
 
@@ -101,7 +101,7 @@ void DNSProtocol::attach_dns_to_flow(DNSInfo *info, boost::string_ref &domain, u
 	SharedPointer<StringCache> name = info->name.lock();
 
         if (!name) { // There is no DNS attached
-		DomainMapType::iterator it = domain_map_.find(domain);
+		GenericMapType::iterator it = domain_map_.find(domain);
                 if (it == domain_map_.end()) {
                 	name = name_cache_->acquire().lock();
                         if (name) {
@@ -353,6 +353,10 @@ void DNSProtocol::statistics(std::basic_ostream<char>& out)
                 unitConverter(alloc_memory,unit);
 
                 out << getName() << "(" << this <<") statistics" << std::dec << std::endl;
+
+		if (ban_domain_mng_.lock()) out << "\t" << "Plugged banned domains from:" << ban_domain_mng_.lock()->getName() << std::endl;
+		if (domain_mng_.lock()) out << "\t" << "Plugged domains from:" << domain_mng_.lock()->getName() << std::endl;
+
                 out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
         	out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
         	out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;

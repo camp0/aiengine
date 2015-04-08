@@ -256,6 +256,7 @@ StackVirtual::StackVirtual() {
         ssl->setFlowManager(flow_table_tcp_vir_);
         smtp->setFlowManager(flow_table_tcp_vir_);
         imap->setFlowManager(flow_table_tcp_vir_);
+        pop->setFlowManager(flow_table_tcp_vir_);
         dns->setFlowManager(flow_table_udp_vir_);
         sip->setFlowManager(flow_table_udp_vir_);
 

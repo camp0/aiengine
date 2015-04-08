@@ -58,5 +58,33 @@ BOOST_AUTO_TEST_CASE (test1_pop)
         BOOST_CHECK(cad.compare(0,cad.size(),h.str(),0,cad.size()) == 0);
 }
 
+BOOST_AUTO_TEST_CASE (test2_pop)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_pop_capa_server);
+        int length1 = raw_packet_ethernet_ip_tcp_pop_capa_server_length;
+        Packet packet1(pkt1,length1);
+        
+	unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_pop_user_client);
+        int length2 = raw_packet_ethernet_ip_tcp_pop_user_client_length;
+        Packet packet2(pkt2,length2);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet1);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet1);
+
+        mux_eth->setPacket(&packet2);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet2);
+       
+	BOOST_CHECK(pop->getTotalPackets() == 2);
+        BOOST_CHECK(pop->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(pop->getTotalBytes() == 110 + 26);
+
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 

@@ -62,7 +62,7 @@ void HTTPProtocol::release_http_info_cache(HTTPInfo *info) {
         SharedPointer<StringCache> ua_ptr = info->ua.lock();
 
         if (ua_ptr) { // There is no user agent attached
-                UAMapType::iterator it = ua_map_.find(ua_ptr->getName());
+                GenericMapType::iterator it = ua_map_.find(ua_ptr->getName());
 		if (it != ua_map_.end()) {
 			int *counter = &std::get<1>(it->second);
 			--(*counter);
@@ -76,7 +76,7 @@ void HTTPProtocol::release_http_info_cache(HTTPInfo *info) {
         SharedPointer<StringCache> uri_ptr = info->uri.lock();
 
         if (uri_ptr) { // There is a Uri attached
-                UriMapType::iterator it = uri_map_.find(uri_ptr->getName());
+                GenericMapType::iterator it = uri_map_.find(uri_ptr->getName());
                 if (it != uri_map_.end()) {
                         int *counter = &std::get<1>(it->second);
                         --(*counter);
@@ -139,13 +139,13 @@ void HTTPProtocol::releaseCache() {
                 int32_t release_uas = ua_map_.size();
 
                 // Compute the size of the strings used as keys on the map
-                std::for_each (host_map_.begin(), host_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &ht) {
+                std::for_each (host_map_.begin(), host_map_.end(), [&total_bytes_released] (PairStringCacheHits const &ht) {
                         total_bytes_released += ht.first.size();
                 });
-                std::for_each (ua_map_.begin(), ua_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &ht) {
+                std::for_each (ua_map_.begin(), ua_map_.end(), [&total_bytes_released] (PairStringCacheHits const &ht) {
                         total_bytes_released += ht.first.size();
                 });
-                std::for_each (uri_map_.begin(), uri_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &ht) {
+                std::for_each (uri_map_.begin(), uri_map_.end(), [&total_bytes_released] (PairStringCacheHits const &ht) {
                         total_bytes_released += ht.first.size();
                 });
 
@@ -186,7 +186,7 @@ void HTTPProtocol::attach_host(HTTPInfo *info, boost::string_ref &host) {
 	SharedPointer<StringCache> host_ptr = info->host.lock();
 
 	if (!host_ptr) { // There is no Host object attached to the flow
-		HostMapType::iterator it = host_map_.find(host);
+		GenericMapType::iterator it = host_map_.find(host);
 		if (it == host_map_.end()) {
 			host_ptr = host_cache_->acquire().lock();
 			if (host_ptr) {
@@ -250,7 +250,7 @@ void HTTPProtocol::attach_useragent(HTTPInfo *info, boost::string_ref &ua) {
 	SharedPointer<StringCache> ua_ptr = info->ua.lock();
 
 	if (!ua_ptr) { // There is no user agent attached
-		UAMapType::iterator it = ua_map_.find(ua);
+		GenericMapType::iterator it = ua_map_.find(ua);
 		if (it == ua_map_.end()) {
 			ua_ptr = ua_cache_->acquire().lock();
 			if (ua_ptr) {
@@ -270,7 +270,7 @@ void HTTPProtocol::attach_useragent(HTTPInfo *info, boost::string_ref &ua) {
 // The URI should be updated on every request
 void HTTPProtocol::attach_uri(HTTPInfo *info, boost::string_ref &uri) {
 
-	UriMapType::iterator it = uri_map_.find(uri);
+	GenericMapType::iterator it = uri_map_.find(uri);
         if (it == uri_map_.end()) {
         	SharedPointer<StringCache> uri_ptr = uri_cache_->acquire().lock();
                 if (uri_ptr) {
@@ -343,7 +343,7 @@ void HTTPProtocol::parse_header(HTTPInfo *info, const char *parameters) {
 
 	boost::string_ref http_header(parameters);
         bool have_token = false;
-        int i = 0;
+        size_t i = 0;
         
 	// Process the HTTP header
         const char *ptr = parameters;
@@ -546,6 +546,10 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
                 unitConverter(alloc_memory,unit);
 
                 out << getName() << "(" << this <<") statistics" << std::dec << std::endl;
+
+                if (ban_host_mng_.lock()) out << "\t" << "Plugged banned domains from:" << ban_host_mng_.lock()->getName() << std::endl;
+                if (host_mng_.lock()) out << "\t" << "Plugged domains from:" << host_mng_.lock()->getName() << std::endl;
+
                 out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
 		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
 		out << "\t" << "Total bytes:        " << std::setw(14) << total_bytes_ <<std::endl;

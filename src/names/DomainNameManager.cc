@@ -126,7 +126,7 @@ void printDomainNode(std::ostream& out, SharedPointer<DomainNode> node) {
 
 std::ostream& operator<< (std::ostream& out, const DomainNameManager& domain) {
 
-        out << "DomainNameManager" << std::endl;
+        out << "DomainNameManager (" << domain.name_ <<")" << std::endl;
 	printDomainNode(out,domain.root_);
 
 	return out;

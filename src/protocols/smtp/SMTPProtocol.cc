@@ -63,7 +63,7 @@ void SMTPProtocol::release_smtp_info_cache(SMTPInfo *info) {
         SharedPointer<StringCache> from_ptr = info->from.lock();
 
         if (from_ptr) { // There is no from attached
-                FromMapType::iterator it = from_map_.find(from_ptr->getName());
+                GenericMapType::iterator it = from_map_.find(from_ptr->getName());
                 if (it != from_map_.end()) {
                         int *counter = &std::get<1>(it->second);
                         --(*counter);
@@ -77,7 +77,7 @@ void SMTPProtocol::release_smtp_info_cache(SMTPInfo *info) {
         SharedPointer<StringCache> to_ptr = info->to.lock();
 
         if (to_ptr) { // There is a to attached 
-                ToMapType::iterator it = to_map_.find(to_ptr->getName());
+                GenericMapType::iterator it = to_map_.find(to_ptr->getName());
                 if (it != to_map_.end()) {
                         int *counter = &std::get<1>(it->second);
                         --(*counter);
@@ -132,10 +132,10 @@ void SMTPProtocol::releaseCache() {
 		int32_t release_tos = to_map_.size();
 
                 // Compute the size of the strings used as keys on the map
-                std::for_each (from_map_.begin(), from_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &f) {
+                std::for_each (from_map_.begin(), from_map_.end(), [&total_bytes_released] (PairStringCacheHits const &f) {
                         total_bytes_released += f.first.size();
                 });
-                std::for_each (to_map_.begin(), to_map_.end(), [&total_bytes_released] (std::pair<boost::string_ref,StringCacheHits> const &t) {
+                std::for_each (to_map_.begin(), to_map_.end(), [&total_bytes_released] (PairStringCacheHits const &t) {
                         total_bytes_released += t.first.size();
                 });
 
@@ -174,7 +174,7 @@ void SMTPProtocol::attach_from(SMTPInfo *info, boost::string_ref &from) {
         SharedPointer<StringCache> from_ptr = info->from.lock();
 
         if (!from_ptr) { // There is no from attached
-                FromMapType::iterator it = from_map_.find(from);
+                GenericMapType::iterator it = from_map_.find(from);
                 if (it == from_map_.end()) {
                         from_ptr = from_cache_->acquire().lock();
                         if (from_ptr) {
@@ -197,18 +197,31 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header
 
 	boost::string_ref h(header);
 
+	// TODO: Check the length for bogus packets
 	size_t start = h.find("<");
 	size_t end = h.rfind(">");
+
+	if ((start > h.length())or(end > h.length())) {
+                if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
+                        flow->setPacketAnomaly(PacketAnomaly::SMTP_BOGUS_HEADER);
+                }
+		return;
+	}
 
 	boost::string_ref from(h.substr(start + 1, end - start - 1));
 	size_t token = from.find("@");
 
-	// TODO: CHANGE TO string_ref
-	std::string domain(from.substr(token + 1,from.size()));
+	if (token > from.length()) {
+                if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
+                        flow->setPacketAnomaly(PacketAnomaly::SMTP_BOGUS_HEADER);
+                }
+		return;
+	}
+	boost::string_ref domain(from.substr(token + 1,from.size()));
 
         DomainNameManagerPtr ban_hosts = ban_domain_mng_.lock();
         if (ban_hosts) {
-                SharedPointer<DomainName> dom_candidate = ban_hosts->getDomainName(domain.c_str());
+                SharedPointer<DomainName> dom_candidate = ban_hosts->getDomainName(domain);
                 if (dom_candidate) {
 #ifdef HAVE_LIBLOG4CXX
                         LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with ban host " << dom_candidate->getName());
@@ -225,7 +238,7 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header
         DomainNameManagerPtr dom_mng = domain_mng_.lock();
        	if (dom_mng) {
 
-        	SharedPointer<DomainName> dom_candidate = dom_mng->getDomainName(domain.c_str());
+        	SharedPointer<DomainName> dom_candidate = dom_mng->getDomainName(domain);
                 if (dom_candidate) {
 #ifdef PYTHON_BINDING
 #ifdef HAVE_LIBLOG4CXX
@@ -250,7 +263,7 @@ void SMTPProtocol::handle_cmd_rcpt(SMTPInfo *info, const char *header) {
 
         if (!to_ptr) { // There is no from attached
 		boost::string_ref to(h.substr(start + 1,end - start - 1));
-                ToMapType::iterator it = to_map_.find(to);
+                GenericMapType::iterator it = to_map_.find(to);
                 if (it == to_map_.end()) {
                         to_ptr = to_cache_->acquire().lock();
                         if (to_ptr) {
@@ -320,16 +333,15 @@ void SMTPProtocol::processFlow(Flow *flow) {
 	} else {
 		// Responses from the server
 
-		int code = 0;
         	try {
 			const char *header = reinterpret_cast<const char*>(smtp_header_);
 			std::string value(header,3);
 
-                	code = std::stoi(value);
+                	int code __attribute__((unused)) = std::stoi(value);
 			
 			++total_smtp_server_responses_;
         	} catch(std::invalid_argument&) { //or catch(...) to catch all exceptions
-                	code = 0;
+                	// We dont really do nothing here with code;
         	}
 	}
 	
@@ -345,6 +357,10 @@ void SMTPProtocol::statistics(std::basic_ostream<char>& out)
                 unitConverter(alloc_memory,unit);
 
                 out << getName() << "(" << this <<") statistics" << std::dec << std::endl;
+
+                if (ban_domain_mng_.lock()) out << "\t" << "Plugged banned domains from:" << ban_domain_mng_.lock()->getName() << std::endl;
+                if (domain_mng_.lock()) out << "\t" << "Plugged domains from:" << domain_mng_.lock()->getName() << std::endl;
+
                 out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
         	out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
         	out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;

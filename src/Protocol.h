@@ -53,6 +53,7 @@ class Flow;
 
 typedef std::pair<SharedPointer<StringCache>,int32_t> StringCacheHits;
 typedef std::map<boost::string_ref,StringCacheHits> GenericMapType;
+typedef std::pair<boost::string_ref,StringCacheHits> PairStringCacheHits; 
 
 static std::function <void(int&,std::string&)> unitConverter = [](int &bytes,std::string &unit) { 
 	if (bytes >1024) { bytes = bytes / 1024; unit = "KBytes"; } 

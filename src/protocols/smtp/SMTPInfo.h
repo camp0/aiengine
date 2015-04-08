@@ -58,8 +58,12 @@ public:
 #ifdef PYTHON_BINDING
 
 	friend std::ostream& operator<< (std::ostream& out, const SMTPInfo& sinfo) {
+
+		if (sinfo.from.lock())
+			out << "From:" << sinfo.getFrom() << " ";
 	
-		// out << "Uri:" << sinfo.uri.lock<< " CLength:" << sinfo.content_length_;
+		if (sinfo.to.lock())
+			out << "To:" << sinfo.getTo() << " ";
         	return out;
 	}
 

@@ -52,9 +52,48 @@ int64_t POPProtocol::getAllocatedMemory() const {
 
         value = sizeof(POPProtocol);
         value += info_cache_->getAllocatedMemory();
+        value += user_cache_->getAllocatedMemory();
 
         return value;
 }
+
+// Removes or decrements the hits of the maps.
+void POPProtocol::release_pop_info_cache(POPInfo *info) {
+
+        SharedPointer<StringCache> user_ptr = info->user_name.lock();
+
+        if (user_ptr) { // There is no from attached
+                GenericMapType::iterator it = user_map_.find(user_ptr->getName());
+                if (it != user_map_.end()) {
+                        int *counter = &std::get<1>(it->second);
+                        --(*counter);
+
+                        if ((*counter) <= 0) {
+                                user_map_.erase(it);
+                        }
+                }
+        }
+
+        release_pop_info(info);
+}
+
+
+int32_t POPProtocol::release_pop_info(POPInfo *info) {
+
+        int32_t bytes_released = 0;
+
+        SharedPointer<StringCache> user = info->user_name.lock();
+
+        if (user) { // The flow have a user attached
+                bytes_released += user->getNameSize();
+                user_cache_->release(user);
+        }
+
+        info->resetStrings();
+
+        return bytes_released;
+}
+
 
 void POPProtocol::releaseCache() {
 
@@ -71,10 +110,17 @@ void POPProtocol::releaseCache() {
 		int64_t total_bytes_released = 0;
 		int64_t total_bytes_released_by_flows = 0;
 		int32_t release_flows = 0;
+                int32_t release_user = user_map_.size();
+
+                // Compute the size of the strings used as keys on the map
+                std::for_each (user_map_.begin(), user_map_.end(), [&total_bytes_released] (PairStringCacheHits const &f) {
+                        total_bytes_released += f.first.size();
+                });
 
                 for (auto &flow: ft) {
                         SharedPointer<POPInfo> pinfo = flow->pop_info.lock();
                         if (pinfo) {
+				total_bytes_released_by_flows += release_pop_info(pinfo.get());
                                 total_bytes_released_by_flows += sizeof(pinfo);
                                 pinfo.reset();
                                 flow->pop_info.reset();
@@ -82,6 +128,7 @@ void POPProtocol::releaseCache() {
                                 info_cache_->release(pinfo);
                         }
                 }
+		user_map_.clear();
 
                 double cache_compression_rate = 0;
 
@@ -90,12 +137,85 @@ void POPProtocol::releaseCache() {
                 }
 
                 msg.str("");
-                msg << "Release " << release_flows << " flows";
+                msg << "Release " << release_user << " user names ," << release_flows << " flows";
                 msg << ", " << total_bytes_released << " bytes, compression rate " << cache_compression_rate << "%";
                 infoMessage(msg.str());
 	}
 }
 
+void POPProtocol::attach_user_name(POPInfo *info, boost::string_ref &name) {
+
+        SharedPointer<StringCache> user_ptr = info->user_name.lock();
+
+        if (!user_ptr) { // There is user name attached
+                GenericMapType::iterator it = user_map_.find(name);
+                if (it == user_map_.end()) {
+                        user_ptr = user_cache_->acquire().lock();
+                        if (user_ptr) {
+                                user_ptr->setName(name.data(),name.length());
+                                info->user_name = user_ptr;
+                                user_map_.insert(std::make_pair(boost::string_ref(user_ptr->getName()),
+					std::make_pair(user_ptr,1)));
+                        }
+                } else {
+                        int *counter = &std::get<1>(it->second);
+                        ++(*counter);
+                        info->user_name = std::get<0>(it->second);
+                }
+        }
+}
+
+
+void POPProtocol::handle_cmd_user(Flow *flow,POPInfo *info, const char *header) {
+
+        boost::string_ref h(header);
+	
+        size_t token = h.find("@");
+        size_t end = h.find("\x0d\x0a") - 5;
+
+	if ((token > h.length())or(end > h.length())) {
+                if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
+                        flow->setPacketAnomaly(PacketAnomaly::POP_BOGUS_HEADER);
+                }
+		return;
+	}
+
+	boost::string_ref user_name(h.substr(5,end));
+
+        boost::string_ref domain(h.substr(token + 1,h.size()-2));
+
+        DomainNameManagerPtr ban_hosts = ban_domain_mng_.lock();
+        if (ban_hosts) {
+                SharedPointer<DomainName> dom_candidate = ban_hosts->getDomainName(domain);
+                if (dom_candidate) {
+#ifdef HAVE_LIBLOG4CXX
+                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with ban host " << dom_candidate->getName());
+#endif
+                        ++total_ban_domains_;
+                        info->setIsBanned(true);
+                        return;
+                }
+        }
+        ++total_allow_domains_;
+
+        attach_user_name(info,user_name);
+
+        DomainNameManagerPtr dom_mng = domain_mng_.lock();
+        if (dom_mng) {
+
+                SharedPointer<DomainName> dom_candidate = dom_mng->getDomainName(domain);
+                if (dom_candidate) {
+#ifdef PYTHON_BINDING
+#ifdef HAVE_LIBLOG4CXX
+                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << dom_candidate->getName());
+#endif
+                        if(dom_candidate->pycall.haveCallback()) {
+                                dom_candidate->pycall.executeCallback(flow);
+                        }
+#endif
+                }
+        }
+}
 
 void POPProtocol::processFlow(Flow *flow) {
 
@@ -115,8 +235,13 @@ void POPProtocol::processFlow(Flow *flow) {
                 flow->pop_info = pinfo;
         }
 
+        if (pinfo->getIsBanned() == true) {
+		// No need to process the POP pdu.
+                return;
+        }
+
 	if (flow->getFlowDirection() == FlowDirection::FORWARD) {
-		// TODO : commands are splited in lines 
+		
                 // Commands send by the client
                 for (auto &command: commands_) {
                         const char *c = std::get<0>(command);
@@ -124,18 +249,23 @@ void POPProtocol::processFlow(Flow *flow) {
 
                         if (std::memcmp(c,&pop_header_[0],offset) == 0) {
                                 int32_t *hits = &std::get<3>(command);
-                                int8_t cmd = std::get<4>(command);
+                                int8_t cmd __attribute__((unused)) = std::get<4>(command);
 
                                 ++(*hits);
                                 ++total_pop_client_commands_;
 				pinfo->incClientCommands();	
-                                return;
+                
+				if ( cmd == static_cast<int8_t>(POPCommandTypes::POP_CMD_USER)) {
+					const char *header = reinterpret_cast<const char*>(pop_header_);
+					handle_cmd_user(flow,pinfo.get(),header);
+				}
+		                return;
                         }
                 }
 	} else {
+		// Responses from the server
 		++total_pop_server_responses_;
 		pinfo->incServerCommands();
-		// Responses from the server
 	}
 	
 	return;
@@ -150,6 +280,10 @@ void POPProtocol::statistics(std::basic_ostream<char>& out)
                 unitConverter(alloc_memory,unit);
 
                 out << getName() << "(" << this <<") statistics" << std::dec << std::endl;
+
+                if (ban_domain_mng_.lock()) out << "\t" << "Plugged banned domains from:" << ban_domain_mng_.lock()->getName() << std::endl;
+                if (domain_mng_.lock()) out << "\t" << "Plugged domains from:" << domain_mng_.lock()->getName() << std::endl;
+
                 out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;	
         	out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
         	out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
@@ -175,6 +309,10 @@ void POPProtocol::statistics(std::basic_ostream<char>& out)
 					flow_forwarder_.lock()->statistics(out);
 				if (stats_level_ > 3) {
                                         info_cache_->statistics(out);
+                                        user_cache_->statistics(out);
+                                        if(stats_level_ > 4) {
+                                                showCacheMap(out,user_map_,"POP users","Users");
+                                        }
 				}
 			}
 		}
@@ -184,11 +322,13 @@ void POPProtocol::statistics(std::basic_ostream<char>& out)
 void POPProtocol::createPOPInfos(int number) {
 
         info_cache_->create(number);
+        user_cache_->create(number);
 }
 
 void POPProtocol::destroyPOPInfos(int number) {
 
         info_cache_->destroy(number);
+        user_cache_->destroy(number);
 }
 
 

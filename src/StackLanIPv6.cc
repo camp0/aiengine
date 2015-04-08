@@ -166,6 +166,7 @@ StackLanIPv6::StackLanIPv6() {
         ssl->setFlowManager(flow_table_tcp_);
         smtp->setFlowManager(flow_table_tcp_);
         imap->setFlowManager(flow_table_tcp_);
+        pop->setFlowManager(flow_table_tcp_);
         dns->setFlowManager(flow_table_udp_);
         sip->setFlowManager(flow_table_udp_);
 	

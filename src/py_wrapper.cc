@@ -647,6 +647,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
         boost::python::class_<DomainNameManager,SharedPointer<DomainNameManager>,boost::noncopyable >("DomainNameManager",
 		"Class that manages DomainsNames.")
+		.def(init<>())
+		.def(init<const std::string&>())
                 .def("addDomainName",addDomainName1,
 			"Adds a DomainName to the DomainNameManager.")
                 .def("addDomainName",addDomainName2)

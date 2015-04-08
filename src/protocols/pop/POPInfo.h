@@ -29,7 +29,7 @@
 #endif
 
 #include <iostream>
-#include <vector> 
+#include "StringCache.h"
 
 namespace aiengine {
 
@@ -42,11 +42,20 @@ public:
 	void reset() { 
 		client_commands_ = 0;
 		server_commands_ = 0;
+		user_name.reset();
+		is_banned_ = false;
 	}
+
+	void resetStrings() { user_name.reset(); }
 
 	void incClientCommands() { ++client_commands_; }
 	void incServerCommands() { ++server_commands_; }
 
+        void setIsBanned(bool value) { is_banned_ = value; }
+        bool getIsBanned() const { return is_banned_; }
+
+	WeakPointer<StringCache> user_name;
+	
 #ifdef PYTHON_BINDING
 
 	friend std::ostream& operator<< (std::ostream& out, const POPInfo& iinfo) {
@@ -54,11 +63,15 @@ public:
 		out << "Client cmds:" << iinfo.client_commands_ << " Server cmds:" << iinfo.server_commands_;
         	return out;
 	}
+
+	StringCache& getUserName() const { return *user_name.lock().get();}
+
 #endif
 
 private:
 	int16_t client_commands_;	
 	int16_t server_commands_;	
+	bool is_banned_;
 };
 
 } // namespace aiengine

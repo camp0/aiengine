@@ -232,10 +232,12 @@ StackOpenFlow::StackOpenFlow() {
 	flow_table_tcp_vir_->setProtocol(tcp_vir_);	
 	flow_table_udp_vir_->setProtocol(udp_vir_);
 
-        // TODO: not sure of this, Connect to upper layers the FlowManager
+        // Connect to upper layers the FlowManager for been able to clear the caches.
         http->setFlowManager(flow_table_tcp_vir_);
         ssl->setFlowManager(flow_table_tcp_vir_);
         smtp->setFlowManager(flow_table_tcp_vir_);
+        imap->setFlowManager(flow_table_tcp_vir_);
+        pop->setFlowManager(flow_table_tcp_vir_);
         dns->setFlowManager(flow_table_udp_vir_);
         sip->setFlowManager(flow_table_udp_vir_);
 

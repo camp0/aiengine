@@ -47,7 +47,6 @@ def setup_compiler():
     macros = list()
 
     macros.append(('PYTHON_BINDING','1'))
-    macros.append(('HAVE_LIBPCRE','1'))
     macros.append(('HAVE_ADAPTOR','1'))
     includes.append(".")
     includes.append("..")
@@ -76,7 +75,7 @@ aiengine_module = Extension("pyaiengine",
     libraries = ["boost_system","boost_python","pcap","pcre"],
 #    define_macros = [('__OPENBSD__','1'),('PYTHON_BINDING','1'),('HAVE_LIBPCRE','1')],
     # define_macros = [('PYTHON_BINDING','1'),('HAVE_LIBPCRE','1')],
-    extra_compile_args = ["-Wreorder","-std=c++11","-lpthread","-lstdc++"],
+    extra_compile_args = ["-O3","-Wreorder","-std=c++11","-lpthread","-lstdc++"],
     )
 
 if __name__ == "__main__":
@@ -91,7 +90,7 @@ if __name__ == "__main__":
     aiengine_module.define_macros = macros
 
     setup(name="aiengine",
-        version = "1.0",
+        version = "1.2",
         author = "Luis Campo Giralte",
         author_email = "luis.camp0.2009 at gmail.com",
         url = "https://bitbucket.org/camp0/aiengine",

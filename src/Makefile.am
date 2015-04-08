@@ -181,8 +181,10 @@ tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lp
 BUILT_SOURCES = $(srcdir)/pyaiengine.so
 
 $(srcdir)/pyaiengine.so: py_wrapper.cc
-	@echo "Depending on your machine this compilation could take some time, please be patient."
-	@echo "You can use alternatively the setup.py script (python setup.py build_ext -i)."
+	@echo "**************************************************************************************"
+	@echo "* Depending on your machine this compilation could take some time, please be patient.*"
+	@echo "* You can use alternatively the setup.py script (python setup.py build_ext -i).      *"
+	@echo "**************************************************************************************"
 	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DPYTHON_BINDING \
 		-I. -I.. $(BOOST_CPPFLAGS) $(BOOST_CPPFLAGS)/boost/python \
 		`pkg-config --cflags python-$(PYTHON_VERSION)` \

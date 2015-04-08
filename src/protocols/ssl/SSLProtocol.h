@@ -186,8 +186,7 @@ private:
 
 	Cache<StringCache>::CachePtr host_cache_;
 
-        typedef std::map<boost::string_ref,StringCacheHits> HostMapType;
-        HostMapType host_map_;
+        GenericMapType host_map_;
 
         DomainNameManagerPtrWeak host_mng_;
         DomainNameManagerPtrWeak ban_host_mng_;

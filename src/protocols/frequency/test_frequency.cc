@@ -373,11 +373,11 @@ BOOST_AUTO_TEST_CASE ( test12_frequencies )
 	BOOST_CHECK(pfreq.getLength() == 619);
 	for (int i = 0;i< 7;++i)
 		pfreq.addPayload(data1);
-	
-	BOOST_CHECK(pfreq.getLength() == 4868);
+
+	BOOST_CHECK(pfreq.getLength() == aiengine::MAX_PACKET_FREQUENCIES_VALUES);
 
 	pfreq.addPayload(data1);
-	BOOST_CHECK(pfreq.getLength() == 5000);
+	BOOST_CHECK(pfreq.getLength() == aiengine::MAX_PACKET_FREQUENCIES_VALUES);
 }
 
 BOOST_AUTO_TEST_CASE ( test13_frequencies ) // exercise the iterator

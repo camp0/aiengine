@@ -30,15 +30,79 @@ namespace aiengine {
 log4cxx::LoggerPtr IMAPProtocol::logger(log4cxx::Logger::getLogger("aiengine.imap"));
 #endif
 
+// List of support command from the client
+std::vector<ImapCommandType> IMAPProtocol::commands_ {
+        std::make_tuple("CAPABILITY"    ,10,    "capabilities"  ,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_CAPABILITY)),
+        std::make_tuple("STARTTLS"      ,8,     "starttls"      ,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_STARTTLS)),
+        std::make_tuple("AUTHENTICATE"  ,12,    "authenticates" ,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_AUTHENTICATE)),
+        std::make_tuple("UID"           ,3,     "uids"      	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_UID)),
+        std::make_tuple("LOGIN"      	,5,     "logins"      	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_LOGIN)),
+        std::make_tuple("SELECT"      	,6,     "selects"      	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_SELECT)),
+        std::make_tuple("EXAMINE"      	,7,     "examines"      ,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_EXAMINE)),
+        std::make_tuple("CREATE"      	,6,     "createss"      ,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_CREATE)),
+        std::make_tuple("DELETE"      	,6,     "deletes"      	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_DELETE)),
+        std::make_tuple("RENAME"      	,6,     "renames"      	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_RENAME)),
+	std::make_tuple("SUBSCRIBE"    	,9,     "subscribes"   	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_SUBSCRIBE)),
+        std::make_tuple("UNSUBSCRIBE"  	,11,    "unsubscribes" 	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_UNSUBSCRIBE)),
+        std::make_tuple("LIST"      	,4,     "lists"      	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_LIST)),
+        std::make_tuple("LSUB"      	,4,     "lsub"      	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_LSUB)),
+        std::make_tuple("STATUS"      	,6,     "status"      	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_STATUS)),
+        std::make_tuple("APPEND"      	,6,     "appends"      	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_APPEND)),
+        std::make_tuple("CHECK"      	,5,     "checks"      	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_CHECK)),
+        std::make_tuple("CLOSE"      	,5,     "closes"      	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_CLOSE)),
+	std::make_tuple("EXPUNGE"      	,7,     "expunges"     	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_EXPUNGE)),
+	std::make_tuple("SEARCH"      	,6,     "searches"     	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_SEARCH)),
+	std::make_tuple("FETCH"      	,5,     "fetchs"      	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_FETCH)),
+	std::make_tuple("STORE"      	,5,     "stores"      	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_STORE)),
+	std::make_tuple("COPY"      	,4,     "copies"      	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_COPY)),
+	std::make_tuple("NOOP"      	,4,     "noops"      	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_NOOP)),
+	std::make_tuple("LOGOUT"      	,6,     "logouts"      	,0,     static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_LOGOUT))
+};
+
 int64_t IMAPProtocol::getAllocatedMemory() const {
 
         int64_t value = 0;
 
         value = sizeof(IMAPProtocol);
         value += info_cache_->getAllocatedMemory();
+        value += user_cache_->getAllocatedMemory();
 
         return value;
 }
+
+// Removes or decrements the hits of the maps.
+void IMAPProtocol::release_imap_info_cache(IMAPInfo *info) {
+
+        SharedPointer<StringCache> user_ptr = info->user_name.lock();
+
+        if (user_ptr) { // There is no from attached
+                GenericMapType::iterator it = user_map_.find(user_ptr->getName());
+                if (it != user_map_.end()) {
+                        int *counter = &std::get<1>(it->second);
+                        --(*counter);
+
+                        if ((*counter) <= 0) {
+                                user_map_.erase(it);
+                        }
+                }
+        }
+        release_imap_info(info);
+}
+
+int32_t IMAPProtocol::release_imap_info(IMAPInfo *info) {
+
+        int32_t bytes_released = 0;
+
+        SharedPointer<StringCache> user = info->user_name.lock();
+
+        if (user) { // The flow have a user name attached
+                bytes_released += user->getNameSize();
+                user_cache_->release(user);
+        }
+
+        return bytes_released;
+}
+
 
 void IMAPProtocol::releaseCache() {
 
@@ -55,11 +119,17 @@ void IMAPProtocol::releaseCache() {
 		int64_t total_bytes_released = 0;
 		int64_t total_bytes_released_by_flows = 0;
 		int32_t release_flows = 0;
+                int32_t release_user = user_map_.size();
+
+                // Compute the size of the strings used as keys on the map
+                std::for_each (user_map_.begin(), user_map_.end(), [&total_bytes_released] (PairStringCacheHits const &f) {
+                        total_bytes_released += f.first.size();
+                });
 
                 for (auto &flow: ft) {
                         SharedPointer<IMAPInfo> iinfo = flow->imap_info.lock();
                         if (iinfo) {
-
+				total_bytes_released_by_flows = release_imap_info(iinfo.get()); 
                                 total_bytes_released_by_flows += sizeof(iinfo);
                                 iinfo.reset();
                                 flow->imap_info.reset();
@@ -67,6 +137,7 @@ void IMAPProtocol::releaseCache() {
                                 info_cache_->release(iinfo);
                         }
                 }
+		user_map_.clear();
 
                 double cache_compression_rate = 0;
 
@@ -75,10 +146,90 @@ void IMAPProtocol::releaseCache() {
                 }
 
                 msg.str("");
-                msg << "Release " << release_flows << " flows";
+                msg << "Release " << release_user << " user names, " << release_flows << " flows";
                 msg << ", " << total_bytes_released << " bytes, compression rate " << cache_compression_rate << "%";
                 infoMessage(msg.str());
 	}
+}
+
+void IMAPProtocol::attach_user_name(IMAPInfo *info, boost::string_ref &name) {
+
+        SharedPointer<StringCache> user_ptr = info->user_name.lock();
+
+        if (!user_ptr) { // There is user name attached
+                GenericMapType::iterator it = user_map_.find(name);
+                if (it == user_map_.end()) {
+                        user_ptr = user_cache_->acquire().lock();
+                        if (user_ptr) {
+                                user_ptr->setName(name.data(),name.length());
+                                info->user_name = user_ptr;
+                                user_map_.insert(std::make_pair(boost::string_ref(user_ptr->getName()),
+                                        std::make_pair(user_ptr,1)));
+                        }
+                } else {
+                        int *counter = &std::get<1>(it->second);
+                        ++(*counter);
+                        info->user_name = std::get<0>(it->second);
+                }
+        }
+}
+
+void IMAPProtocol::handle_cmd_login(Flow *flow,IMAPInfo *info, const char *header) {
+
+        boost::string_ref h(header);
+	boost::string_ref domain;
+	boost::string_ref user_name;
+
+        size_t token = h.find("@");
+   	size_t end = h.find(" "); 
+
+	if (end < h.length()) {
+		domain = h.substr(0,end);
+		user_name = h.substr(0,end);
+	} else {
+	       	if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
+                        flow->setPacketAnomaly(PacketAnomaly::IMAP_BOGUS_HEADER);
+                }
+	}
+
+	if (token < h.length()) {
+		// The name have the domain
+		if (end < h.length()) {
+			domain = h.substr(token + 1,end-token);
+		}	
+	} 
+
+        DomainNameManagerPtr ban_hosts = ban_domain_mng_.lock();
+        if (ban_hosts) {
+                SharedPointer<DomainName> dom_candidate = ban_hosts->getDomainName(domain);
+                if (dom_candidate) {
+#ifdef HAVE_LIBLOG4CXX
+                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with ban host " << dom_candidate->getName());
+#endif
+                        ++total_ban_domains_;
+                        info->setIsBanned(true);
+                        return;
+                }
+        }
+        ++total_allow_domains_;
+
+        attach_user_name(info,user_name);
+
+        DomainNameManagerPtr dom_mng = domain_mng_.lock();
+        if (dom_mng) {
+
+                SharedPointer<DomainName> dom_candidate = dom_mng->getDomainName(domain);
+                if (dom_candidate) {
+#ifdef PYTHON_BINDING
+#ifdef HAVE_LIBLOG4CXX
+                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << dom_candidate->getName());
+#endif
+                        if(dom_candidate->pycall.haveCallback()) {
+                                dom_candidate->pycall.executeCallback(flow);
+                        }
+#endif
+                }
+        }
 }
 
 
@@ -100,11 +251,39 @@ void IMAPProtocol::processFlow(Flow *flow) {
                 flow->imap_info = iinfo;
         }
 
+        if (iinfo->getIsBanned() == true) {
+		// No need to process the IMAP pdu.
+                return;
+        }
+
 	if (flow->getFlowDirection() == FlowDirection::FORWARD) {
-		// TODO : commands are splited in lines 
-		++total_imap_client_commands_;
-		iinfo->incClientCommands();	
-		// Commands send by the client
+		const char *header = reinterpret_cast<const char*>(imap_header_);
+		// bypass the tag
+		boost::string_ref client_cmd(header);
+		size_t endtag = client_cmd.find(" ");
+		
+		client_cmd = client_cmd.substr(endtag + 1, length - (endtag));
+
+                // Commands send by the client
+                for (auto &command: commands_) {
+                        const char *c = std::get<0>(command);
+                        int offset = std::get<1>(command);
+
+                        if (std::memcmp(c,client_cmd.data(),offset) == 0) {
+                                int32_t *hits = &std::get<3>(command);
+                                int8_t cmd = std::get<4>(command);
+
+                                ++(*hits);
+                                ++total_imap_client_commands_;
+
+				if ( cmd == static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_LOGIN)) {
+                                        const char *header_cmd = reinterpret_cast<const char*>(&imap_header_[offset + endtag + 2]);
+                                        handle_cmd_login(flow,iinfo.get(),header_cmd);
+                                }
+				iinfo->incClientCommands();	
+                                return;
+                        }
+                }
 	} else {
 		++total_imap_server_responses_;
 		iinfo->incServerCommands();
@@ -123,6 +302,10 @@ void IMAPProtocol::statistics(std::basic_ostream<char>& out)
                 unitConverter(alloc_memory,unit);
 
                 out << getName() << "(" << this <<") statistics" << std::dec << std::endl;
+
+                if (ban_domain_mng_.lock()) out << "\t" << "Plugged banned domains from:" << ban_domain_mng_.lock()->getName() << std::endl;
+                if (domain_mng_.lock()) out << "\t" << "Plugged domains from:" << domain_mng_.lock()->getName() << std::endl;
+
                 out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;	
         	out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
         	out << "\t" << "Total bytes:            " << std::setw(10) << total_bytes_ <<std::endl;
@@ -134,14 +317,23 @@ void IMAPProtocol::statistics(std::basic_ostream<char>& out)
 
                                 out << "\t" << "Total client commands:  " << std::setw(10) << total_imap_client_commands_ <<std::endl;
                                 out << "\t" << "Total server responses: " << std::setw(10) << total_imap_server_responses_ <<std::endl;
+
+                                for (auto &command: commands_) {
+                                        const char *label = std::get<2>(command);
+                                        int32_t hits = std::get<3>(command);
+                                        out << "\t" << "Total " << label << ":" << std::right << std::setfill(' ') << std::setw(27 - strlen(label)) << hits <<std::endl;
+                                }
                         }
-	
 			if (stats_level_ > 2) {	
 			
 				if (flow_forwarder_.lock())
 					flow_forwarder_.lock()->statistics(out);
 				if (stats_level_ > 3) {
                                         info_cache_->statistics(out);
+                                        user_cache_->statistics(out);
+					if(stats_level_ > 4) {
+                                                showCacheMap(out,user_map_,"IMAP Users","User");
+                                        }
 				}
 			}
 		}
@@ -151,11 +343,13 @@ void IMAPProtocol::statistics(std::basic_ostream<char>& out)
 void IMAPProtocol::createIMAPInfos(int number) {
 
         info_cache_->create(number);
+        user_cache_->create(number);
 }
 
 void IMAPProtocol::destroyIMAPInfos(int number) {
 
         info_cache_->destroy(number);
+        user_cache_->destroy(number);
 }
 
 
@@ -168,6 +362,12 @@ boost::python::dict IMAPProtocol::getCounters() const {
         counters["bytes"] = total_bytes_;
         counters["commands"] = total_imap_client_commands_;
         counters["responses"] = total_imap_server_responses_;
+
+        for (auto &command: commands_) {
+                const char *label = std::get<2>(command);
+
+                counters[label] = std::get<3>(command);
+        }
 
 	return counters;
 }

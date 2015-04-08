@@ -107,7 +107,7 @@ bool IPv6Protocol::processPacket(Packet& packet) {
 			case IPPROTO_FRAGMENT: 
 				++total_frag_packets_;
 				packet.setPacketAnomaly(PacketAnomaly::IPV6_FRAGMENTATION);
-				break;
+				return false; // The packet can not progress through the stack
 		} 
 	} while ( iter < 2);
 

@@ -167,4 +167,35 @@ BOOST_AUTO_TEST_CASE (test4_ip6) // ethernet -> ip6 -> dsthdropts -> tcp -> http
    	BOOST_CHECK(ip6->getProtocol() == IPPROTO_DSTOPTS);
 }
 
+BOOST_AUTO_TEST_CASE (test5_ip6) // ethernet -> ip6 -> fragmented  
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_ethernet_ipv6_fragment_udp_fragmented);
+        int length = raw_ethernet_ipv6_fragment_udp_fragmented_length;
+
+        Packet packet(pkt,length);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        // Sets the raw packet to a valid ethernet header
+        BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IPV6);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        //mux_eth->setPacketInfo(0,packet,length);
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        BOOST_CHECK(ip6->isIPver6() == true);
+
+        BOOST_CHECK(ip6->getTotalPackets() == 1);
+        BOOST_CHECK(ip6->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(ip6->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(ip6->getTotalBytes() == length -14);
+
+        BOOST_CHECK(ip6->isIPver6() == true);
+        BOOST_CHECK(ip6->getProtocol() == IPPROTO_FRAGMENT);
+}
+
+
+
 BOOST_AUTO_TEST_SUITE_END( )
