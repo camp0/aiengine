@@ -44,27 +44,15 @@ if __name__ == '__main__':
     # Load an instance of a Network Stack 
     st = pyaiengine.StackLan()
 
-    # Create a instace of a PacketDispatcher
-    pdis = pyaiengine.PacketDispatcher()
-
-    # Plug the stack on the PacketDispatcher
-    pdis.setStack(st)
-
     st.setTotalUDPFlows(16384)
     st.setTotalTCPFlows(163840)
 
-    # Sets a handler method that will be call
-    # every 5 seconds for check the values
-    pdis.setScheduler(scheduler_handler_tcp,5)
-
-    pdis.open("ens7")
-
-    try:
-        pdis.run()
-    except:
-        e = sys.exc_info()[0]
-        print("Interrupt during capturing packets:",e)
-     
-    pdis.close()
+    # Create a instace of a PacketDispatcher
+    with pyaiengine.PacketDispatcher("ens7") as pd:
+        pd.setStack(st)
+        # Sets a handler method that will be call
+        # every 5 seconds for check the values
+        pd.setScheduler(scheduler_handler_tcp,5)
+        pd.run()
 
     sys.exit(0)

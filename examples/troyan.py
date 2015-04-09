@@ -51,7 +51,7 @@ if __name__ == '__main__':
 
     r_mng = pyaiengine.RegexManager()
 
-    st.setDNSDomainNameManager(dm)
+    st.setDomainNameManager(dm,"DNSProtocol")
     st.setTCPRegexManager(r_mng)
 
     st.setTotalTCPFlows(327680)

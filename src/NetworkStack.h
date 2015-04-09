@@ -95,15 +95,9 @@ public:
 
 	virtual FlowManager& getTCPFlowManager() = 0;
 	virtual FlowManager& getUDPFlowManager() = 0;
-	
-	void setDNSDomainNameManager(DomainNameManager& dnm);
-	void setDNSDomainNameManager(DomainNameManager& dnm, bool allow);
-	void setHTTPHostNameManager(DomainNameManager& dnm);
-	void setHTTPHostNameManager(DomainNameManager& dnm, bool allow);
-	void setSSLHostNameManager(DomainNameManager& dnm);
-	void setSSLHostNameManager(DomainNameManager& dnm, bool allow);
-	void setSMTPHostNameManager(DomainNameManager& dnm);
-	void setSMTPHostNameManager(DomainNameManager& dnm, bool allow);
+
+	void setDomainNameManager(DomainNameManager& dnm, const std::string& name);
+	void setDomainNameManager(DomainNameManager& dnm, const std::string& name, bool allow);
 	
 	void setTCPDatabaseAdaptor(boost::python::object &dbptr);
 	void setTCPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling);

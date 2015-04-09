@@ -205,7 +205,7 @@ void HTTPProtocol::attach_host(HTTPInfo *info, boost::string_ref &host) {
 
 bool HTTPProtocol::process_host_parameter(HTTPInfo *info,boost::string_ref &host) {
 
-	DomainNameManagerPtr ban_hosts = ban_host_mng_.lock();
+	DomainNameManagerPtr ban_hosts = ban_domain_mng_.lock();
         if (ban_hosts) {
         	SharedPointer<DomainName> host_candidate = ban_hosts->getDomainName(host);
                 if (host_candidate) {
@@ -459,7 +459,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
 
 		// Just verify the Host on the first request
 		if (info->getTotalRequests() == 1) {
-                	DomainNameManagerPtr host_mng = host_mng_.lock();
+                	DomainNameManagerPtr host_mng = domain_mng_.lock();
                 	if (host_mng) {
 				SharedPointer<StringCache> host_name = info->host.lock();
 
@@ -547,8 +547,8 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 
                 out << getName() << "(" << this <<") statistics" << std::dec << std::endl;
 
-                if (ban_host_mng_.lock()) out << "\t" << "Plugged banned domains from:" << ban_host_mng_.lock()->getName() << std::endl;
-                if (host_mng_.lock()) out << "\t" << "Plugged domains from:" << host_mng_.lock()->getName() << std::endl;
+                if (ban_domain_mng_.lock()) out << "\t" << "Plugged banned domains from:" << ban_domain_mng_.lock()->getName() << std::endl;
+                if (domain_mng_.lock()) out << "\t" << "Plugged domains from:" << domain_mng_.lock()->getName() << std::endl;
 
                 out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
 		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;

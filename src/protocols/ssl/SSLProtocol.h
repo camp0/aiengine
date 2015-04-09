@@ -41,7 +41,6 @@
 #include <iostream>
 #include <cstring>
 #include <boost/utility/string_ref.hpp> 
-#include "names/DomainNameManager.h"
 #include "flow/FlowManager.h"
 
 namespace aiengine {
@@ -110,7 +109,8 @@ public:
 		total_certificates_(0),total_records_(0),total_ban_hosts_(0),
 		total_allow_hosts_(0),
 		host_cache_(new Cache<StringCache>("Host cache")),
-		host_map_(),host_mng_(),ban_host_mng_(),
+		host_map_(),
+		domain_mng_(),ban_domain_mng_(),
 		flow_mng_() {}
 
     	virtual ~SSLProtocol() {}
@@ -162,8 +162,8 @@ public:
         void createSSLHosts(int number) { host_cache_->create(number);}
         void destroySSLHosts(int number) { host_cache_->destroy(number);}
 
-	void setDomainNameManager(DomainNameManagerPtrWeak dnm) { host_mng_ = dnm;}
-	void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) { ban_host_mng_ = dnm;}
+	void setDomainNameManager(DomainNameManagerPtrWeak dnm) override { domain_mng_ = dnm;}
+	void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) override { ban_domain_mng_ = dnm;}
 
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 
@@ -188,8 +188,8 @@ private:
 
         GenericMapType host_map_;
 
-        DomainNameManagerPtrWeak host_mng_;
-        DomainNameManagerPtrWeak ban_host_mng_;
+        DomainNameManagerPtrWeak domain_mng_;
+        DomainNameManagerPtrWeak ban_domain_mng_;
 	FlowManagerPtrWeak flow_mng_;
 
 	void handle_client_hello(Flow *flow,int offset, unsigned char *data);

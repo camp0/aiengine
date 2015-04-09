@@ -109,6 +109,9 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
+        void setDomainNameManager(DomainNameManagerPtrWeak dnm) override { domain_mng_ = dnm; }
+        void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) override { ban_domain_mng_ = dnm; }
+
 	void releaseCache(); 
 
         void setHeader(unsigned char *raw_packet) {

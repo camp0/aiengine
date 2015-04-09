@@ -64,7 +64,7 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-        void releaseCache() {} // No need to free cache
+	void releaseCache() {} // No need to free cache
 
 	void setHeader(unsigned char *raw_packet){ 
 

@@ -35,12 +35,6 @@ if __name__ == '__main__':
      # Load an instance of a Network Stack
      st = pyaiengine.StackLan()
 
-     # Create a instace of a PacketDispatcher
-     pdis = pyaiengine.PacketDispatcher()
-
-     # Plug the stack on the PacketDispatcher
-     pdis.setStack(st)
-
      # Load Signatures/Rules in order to detect the traffic
      s_tcp = loadSignaturesForTcp()
      st.setTCPRegexManager(s_tcp)
@@ -50,15 +44,9 @@ if __name__ == '__main__':
      st.setTotalTCPFlows(327680)
      st.setTotalUDPFlows(163840)
 
-     pdis.open("eth0")
-
-     try:
-         pdis.run()
-     except:
-         e = sys.exc_info()[0]
-         print("Interrupt during capturing packets:",e)
-     
-     pdis.close()
+     with pyaiengine.PacketDispatcher("eth0") as pd:
+         pd.setStack(st)
+         pd.run()
 
      # Dump on file the statistics of the stack
      st.setStatisticsLevel(5)

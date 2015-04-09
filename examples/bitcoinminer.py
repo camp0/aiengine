@@ -21,12 +21,6 @@ if __name__ == '__main__':
     # Load an instance of a Lan Stack 
     st = pyaiengine.StackLan()
 
-    # Create a instace of a PacketDispatcher
-    pdis = pyaiengine.PacketDispatcher()
-
-    # Plug the stack on the PacketDispatcher
-    pdis.setStack(st)
-
     r_mng = pyaiengine.RegexManager()
 
     reg_head = pyaiengine.Regex("First regex","mining.subscribe")
@@ -42,16 +36,9 @@ if __name__ == '__main__':
     st.setTotalTCPFlows(327680)
     st.setTotalUDPFlows(163840)
 
-    pdis.open("/home/luis/pcapfiles/bitcoinminer.pcap")
-
-    try:
-        pdis.run()
-    except:
-        e = sys.exc_info()[0]
-        print("Interrupt during capturing packets:",e)
-
-    pdis.close()
-
+    with pyaiengine.PacketDispatcher("/home/luis/pcapfiles/bitcoinminer.pcap") as pd:
+        pd.setStack(st) 
+        pd.run()
 
     st.printFlows()
     # Dump on file the statistics of the stack

@@ -87,14 +87,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
         // for overload the methods with the class
       	void (NetworkStack::*showFlowsNetworkStack)() = 				&NetworkStack::showFlows;
-	void (NetworkStack::*setDNSDomainNameManager1)(DomainNameManager&) = 		&NetworkStack::setDNSDomainNameManager;
-	void (NetworkStack::*setDNSDomainNameManager2)(DomainNameManager&, bool) = 	&NetworkStack::setDNSDomainNameManager;
-	void (NetworkStack::*setHTTPHostNameManager1)(DomainNameManager&) = 		&NetworkStack::setHTTPHostNameManager;
-	void (NetworkStack::*setHTTPHostNameManager2)(DomainNameManager&, bool) = 	&NetworkStack::setHTTPHostNameManager;
-	void (NetworkStack::*setSSLHostNameManager1)(DomainNameManager&) = 		&NetworkStack::setSSLHostNameManager;
-	void (NetworkStack::*setSSLHostNameManager2)(DomainNameManager&, bool) = 	&NetworkStack::setSSLHostNameManager;
-	void (NetworkStack::*setSMTPHostNameManager1)(DomainNameManager&) = 		&NetworkStack::setSMTPHostNameManager;
-	void (NetworkStack::*setSMTPHostNameManager2)(DomainNameManager&, bool) = 	&NetworkStack::setSMTPHostNameManager;
+	void (NetworkStack::*setDomainNameManager1)(DomainNameManager&,const std::string&) = 		&NetworkStack::setDomainNameManager;
+	void (NetworkStack::*setDomainNameManager2)(DomainNameManager&,const std::string&, bool) = 	&NetworkStack::setDomainNameManager;
 	void (NetworkStack::*setTCPDatabaseAdaptor1)(boost::python::object&) = 		&NetworkStack::setTCPDatabaseAdaptor;
 	void (NetworkStack::*setTCPDatabaseAdaptor2)(boost::python::object&, int) = 	&NetworkStack::setTCPDatabaseAdaptor;
 	void (NetworkStack::*setUDPDatabaseAdaptor1)(boost::python::object&) = 		&NetworkStack::setUDPDatabaseAdaptor;
@@ -109,18 +103,9 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Sets a RegexManager for the UDP traffic.")
                 .def("setTCPRegexManager",pure_virtual(&NetworkStack::setTCPRegexManager),
 			"Sets a RegexManager for the TCP traffic.")
-                .def("setDNSDomainNameManager",pure_virtual(setDNSDomainNameManager1),
-			"Sets a DomainNameManager for the DNS traffic.")
-                .def("setDNSDomainNameManager",pure_virtual(setDNSDomainNameManager2))
-                .def("setHTTPHostNameManager",pure_virtual(setHTTPHostNameManager1),
-			"Sets a HostNameManager for the HTTP traffic.")
-                .def("setHTTPHostNameManager",pure_virtual(setHTTPHostNameManager2))
-                .def("setSSLHostNameManager",pure_virtual(setSSLHostNameManager1),
-			"Sets a HostNameManager for the SSL traffic.")
-                .def("setSSLHostNameManager",pure_virtual(setSSLHostNameManager2))
-                .def("setSMTPHostNameManager",pure_virtual(setSMTPHostNameManager1),
-			"Sets a HostNameManager for the SMTP traffic.")
-                .def("setSMTPHostNameManager",pure_virtual(setSMTPHostNameManager2))
+                .def("setDomainNameManager",pure_virtual(setDomainNameManager1),
+			"Sets a DomainNameManager on the protocol given.")
+                .def("setDomainNameManager",pure_virtual(setDomainNameManager2))
                 .def("setTotalTCPFlows",pure_virtual(&NetworkStack::setTotalTCPFlows),
 			"Sets the maximum number of flows to be on the cache for TCP traffic.")
                 .def("setTotalUDPFlows",pure_virtual(&NetworkStack::setTotalUDPFlows),
@@ -159,14 +144,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	// Definitions for the StackLan class
 	void (StackLan::*showFlowsLan)() = 						&StackLan::showFlows;
-        void (StackLan::*setDNSDomainNameManagerLan1)(DomainNameManager&) = 		&StackLan::setDNSDomainNameManager;
-        void (StackLan::*setDNSDomainNameManagerLan2)(DomainNameManager&, bool) = 	&StackLan::setDNSDomainNameManager;
-        void (StackLan::*setHTTPHostNameManagerLan1)(DomainNameManager&) = 		&StackLan::setHTTPHostNameManager;
-        void (StackLan::*setHTTPHostNameManagerLan2)(DomainNameManager&, bool) = 	&StackLan::setHTTPHostNameManager;
-        void (StackLan::*setSSLHostNameManagerLan1)(DomainNameManager&) = 		&StackLan::setSSLHostNameManager;
-        void (StackLan::*setSSLHostNameManagerLan2)(DomainNameManager&, bool) = 	&StackLan::setSSLHostNameManager;
-        void (StackLan::*setSMTPHostNameManagerLan1)(DomainNameManager&) = 		&StackLan::setSMTPHostNameManager;
-        void (StackLan::*setSMTPHostNameManagerLan2)(DomainNameManager&, bool) = 	&StackLan::setSMTPHostNameManager;
+        void (StackLan::*setDomainNameManagerLan1)(DomainNameManager&,const std::string&) = 		&StackLan::setDomainNameManager;
+        void (StackLan::*setDomainNameManagerLan2)(DomainNameManager&,const std::string&, bool) = 	&StackLan::setDomainNameManager;
 	void (StackLan::*setTCPDatabaseAdaptorLan1)(boost::python::object&) = 		&StackLan::setTCPDatabaseAdaptor;
 	void (StackLan::*setTCPDatabaseAdaptorLan2)(boost::python::object&, int) = 	&StackLan::setTCPDatabaseAdaptor;
 	void (StackLan::*setUDPDatabaseAdaptorLan1)(boost::python::object&) = 		&StackLan::setUDPDatabaseAdaptor;
@@ -181,14 +160,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getName",&StackLan::getName)
 		.def("setUDPRegexManager",&StackLan::setUDPRegexManager)	
 		.def("setTCPRegexManager",&StackLan::setTCPRegexManager)	
-                .def("setDNSDomainNameManager",setDNSDomainNameManagerLan1)
-                .def("setDNSDomainNameManager",setDNSDomainNameManagerLan2)
-                .def("setHTTPHostNameManager",setHTTPHostNameManagerLan1)
-                .def("setHTTPHostNameManager",setHTTPHostNameManagerLan2)
-                .def("setSSLHostNameManager",setSSLHostNameManagerLan1)
-                .def("setSSLHostNameManager",setSSLHostNameManagerLan2)
-                .def("setSMTPHostNameManager",setSMTPHostNameManagerLan1)
-                .def("setSMTPHostNameManager",setSMTPHostNameManagerLan2)
+                .def("setDomainNameManager",setDomainNameManagerLan1)
+                .def("setDomainNameManager",setDomainNameManagerLan2)
 		.def("setTotalTCPFlows",&StackLan::setTotalTCPFlows)
 		.def("setTotalUDPFlows",&StackLan::setTotalUDPFlows)
 		.def(self_ns::str(self_ns::self))
@@ -214,14 +187,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	// Definitions for the StackMobile class
        	void (StackMobile::*showFlowsMobile)() = 						&StackMobile::showFlows;
-        void (StackMobile::*setDNSDomainNameManagerMobile1)(DomainNameManager&) = 		&StackMobile::setDNSDomainNameManager;
-        void (StackMobile::*setDNSDomainNameManagerMobile2)(DomainNameManager&, bool) = 	&StackMobile::setDNSDomainNameManager;
-        void (StackMobile::*setHTTPHostNameManagerMobile1)(DomainNameManager&) = 		&StackMobile::setHTTPHostNameManager;
-        void (StackMobile::*setHTTPHostNameManagerMobile2)(DomainNameManager&, bool) = 		&StackMobile::setHTTPHostNameManager;
-        void (StackMobile::*setSSLHostNameManagerMobile1)(DomainNameManager&) = 		&StackMobile::setSSLHostNameManager;
-        void (StackMobile::*setSSLHostNameManagerMobile2)(DomainNameManager&, bool) = 		&StackMobile::setSSLHostNameManager;
-        void (StackMobile::*setSMTPHostNameManagerMobile1)(DomainNameManager&) = 		&StackMobile::setSMTPHostNameManager;
-        void (StackMobile::*setSMTPHostNameManagerMobile2)(DomainNameManager&, bool) = 		&StackMobile::setSMTPHostNameManager;
+        void (StackMobile::*setDomainNameManagerMobile1)(DomainNameManager&,const std::string&) = 		&StackMobile::setDomainNameManager;
+        void (StackMobile::*setDomainNameManagerMobile2)(DomainNameManager&,const std::string&, bool) = 	&StackMobile::setDomainNameManager;
         void (StackMobile::*setTCPDatabaseAdaptorMobile1)(boost::python::object&) =     	&StackMobile::setTCPDatabaseAdaptor;
         void (StackMobile::*setTCPDatabaseAdaptorMobile2)(boost::python::object&, int) =  	&StackMobile::setTCPDatabaseAdaptor;
         void (StackMobile::*setUDPDatabaseAdaptorMobile1)(boost::python::object&) =       	&StackMobile::setUDPDatabaseAdaptor;
@@ -236,14 +203,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getName",&StackMobile::getName)
 		.def("setUDPRegexManager",&StackMobile::setUDPRegexManager)	
 		.def("setTCPRegexManager",&StackMobile::setTCPRegexManager)	
-                .def("setDNSDomainNameManager",setDNSDomainNameManagerMobile1)
-                .def("setDNSDomainNameManager",setDNSDomainNameManagerMobile2)
-                .def("setHTTPHostNameManager",setHTTPHostNameManagerMobile1)
-                .def("setHTTPHostNameManager",setHTTPHostNameManagerMobile2)
-                .def("setSSLHostNameManager",setSSLHostNameManagerMobile1)
-                .def("setSSLHostNameManager",setSSLHostNameManagerMobile2)
-                .def("setSMTPHostNameManager",setSMTPHostNameManagerMobile1)
-                .def("setSMTPHostNameManager",setSMTPHostNameManagerMobile2)
+                .def("setDomainNameManager",setDomainNameManagerMobile1)
+                .def("setDomainNameManager",setDomainNameManagerMobile2)
                 .def("setTotalTCPFlows",&StackMobile::setTotalTCPFlows)
                 .def("setTotalUDPFlows",&StackMobile::setTotalUDPFlows)
 		.def(self_ns::str(self_ns::self))
@@ -269,15 +230,9 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 
 	// Definitions for the StackLanIPv6 class
-      	void (StackLanIPv6::*showFlowsLanIPv6)() = 						&StackLanIPv6::showFlows;
-        void (StackLanIPv6::*setDNSDomainNameManagerLanIPv61)(DomainNameManager&) = 		&StackLanIPv6::setDNSDomainNameManager;
-        void (StackLanIPv6::*setDNSDomainNameManagerLanIPv62)(DomainNameManager&, bool) = 	&StackLanIPv6::setDNSDomainNameManager;
-        void (StackLanIPv6::*setHTTPHostNameManagerLanIPv61)(DomainNameManager&) = 		&StackLanIPv6::setHTTPHostNameManager;
-        void (StackLanIPv6::*setHTTPHostNameManagerLanIPv62)(DomainNameManager&, bool) =	&StackLanIPv6::setHTTPHostNameManager;
-        void (StackLanIPv6::*setSSLHostNameManagerLanIPv61)(DomainNameManager&) = 		&StackLanIPv6::setSSLHostNameManager;
-        void (StackLanIPv6::*setSSLHostNameManagerLanIPv62)(DomainNameManager&, bool) = 	&StackLanIPv6::setSSLHostNameManager;
-        void (StackLanIPv6::*setSMTPHostNameManagerLanIPv61)(DomainNameManager&) = 		&StackLanIPv6::setSMTPHostNameManager;
-        void (StackLanIPv6::*setSMTPHostNameManagerLanIPv62)(DomainNameManager&, bool) = 	&StackLanIPv6::setSMTPHostNameManager;
+     	void (StackLanIPv6::*showFlowsLanIPv6)() = 						&StackLanIPv6::showFlows;
+        void (StackLanIPv6::*setDomainNameManagerLanIPv61)(DomainNameManager&,const std::string&) = 		&StackLanIPv6::setDomainNameManager;
+        void (StackLanIPv6::*setDomainNameManagerLanIPv62)(DomainNameManager&,const std::string&, bool) = 	&StackLanIPv6::setDomainNameManager;
         void (StackLanIPv6::*setTCPDatabaseAdaptorLanIPv61)(boost::python::object&) = 		&StackLanIPv6::setTCPDatabaseAdaptor;
         void (StackLanIPv6::*setTCPDatabaseAdaptorLanIPv62)(boost::python::object&, int) =	&StackLanIPv6::setTCPDatabaseAdaptor;
         void (StackLanIPv6::*setUDPDatabaseAdaptorLanIPv61)(boost::python::object&) =     	&StackLanIPv6::setUDPDatabaseAdaptor;
@@ -292,14 +247,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getName",&StackLanIPv6::getName)
                 .def("setUDPRegexManager",&StackLanIPv6::setUDPRegexManager)
                 .def("setTCPRegexManager",&StackLanIPv6::setTCPRegexManager)
-                .def("setDNSDomainNameManager",setDNSDomainNameManagerLanIPv61)
-                .def("setDNSDomainNameManager",setDNSDomainNameManagerLanIPv62)
-                .def("setHTTPHostNameManager",setHTTPHostNameManagerLanIPv61)
-                .def("setHTTPHostNameManager",setHTTPHostNameManagerLanIPv62)
-                .def("setSSLHostNameManager",setSSLHostNameManagerLanIPv61)
-                .def("setSSLHostNameManager",setSSLHostNameManagerLanIPv62)
-                .def("setSMTPHostNameManager",setSMTPHostNameManagerLanIPv61)
-                .def("setSMTPHostNameManager",setSMTPHostNameManagerLanIPv62)
+                .def("setDomainNameManager",setDomainNameManagerLanIPv61)
+                .def("setDomainNameManager",setDomainNameManagerLanIPv62)
                 .def("setTotalTCPFlows",&StackLanIPv6::setTotalTCPFlows)
                 .def("setTotalUDPFlows",&StackLanIPv6::setTotalUDPFlows)
                 .def(self_ns::str(self_ns::self))
@@ -325,14 +274,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
         // Definitions for the StackVirtual class
         void (StackVirtual::*showFlowsVirtual)() =                                             	&StackVirtual::showFlows;
-        void (StackVirtual::*setDNSDomainNameManagerVirt1)(DomainNameManager&) =              	&StackVirtual::setDNSDomainNameManager;
-        void (StackVirtual::*setDNSDomainNameManagerVirt2)(DomainNameManager&, bool) =         	&StackVirtual::setDNSDomainNameManager;
-        void (StackVirtual::*setHTTPHostNameManagerVirt1)(DomainNameManager&) =               	&StackVirtual::setHTTPHostNameManager;
-        void (StackVirtual::*setHTTPHostNameManagerVirt2)(DomainNameManager&, bool) =         	&StackVirtual::setHTTPHostNameManager;
-        void (StackVirtual::*setSSLHostNameManagerVirt1)(DomainNameManager&) =                	&StackVirtual::setSSLHostNameManager;
-        void (StackVirtual::*setSSLHostNameManagerVirt2)(DomainNameManager&, bool) =          	&StackVirtual::setSSLHostNameManager;
-        void (StackVirtual::*setSMTPHostNameManagerVirt1)(DomainNameManager&) =                	&StackVirtual::setSMTPHostNameManager;
-        void (StackVirtual::*setSMTPHostNameManagerVirt2)(DomainNameManager&, bool) =          	&StackVirtual::setSMTPHostNameManager;
+        void (StackVirtual::*setDomainNameManagerVirt1)(DomainNameManager&,const std::string&) =              	&StackVirtual::setDomainNameManager;
+        void (StackVirtual::*setDomainNameManagerVirt2)(DomainNameManager&,const std::string&, bool) =         	&StackVirtual::setDomainNameManager;
         void (StackVirtual::*setTCPDatabaseAdaptorVirt1)(boost::python::object&) =            	&StackVirtual::setTCPDatabaseAdaptor;
         void (StackVirtual::*setTCPDatabaseAdaptorVirt2)(boost::python::object&, int) =       	&StackVirtual::setTCPDatabaseAdaptor;
         void (StackVirtual::*setUDPDatabaseAdaptorVirt1)(boost::python::object&) =            	&StackVirtual::setUDPDatabaseAdaptor;
@@ -347,14 +290,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("getName",&StackVirtual::getName)
                 .def("setUDPRegexManager",&StackVirtual::setUDPRegexManager)
                 .def("setTCPRegexManager",&StackVirtual::setTCPRegexManager)
-                .def("setDNSDomainNameManager",setDNSDomainNameManagerVirt1)
-                .def("setDNSDomainNameManager",setDNSDomainNameManagerVirt2)
-                .def("setHTTPHostNameManager",setHTTPHostNameManagerVirt1)
-                .def("setHTTPHostNameManager",setHTTPHostNameManagerVirt2)
-                .def("setSSLHostNameManager",setSSLHostNameManagerVirt1)
-                .def("setSSLHostNameManager",setSSLHostNameManagerVirt2)
-                .def("setSMTPHostNameManager",setSMTPHostNameManagerVirt1)
-                .def("setSMTPHostNameManager",setSMTPHostNameManagerVirt2)
+                .def("setDomainNameManager",setDomainNameManagerVirt1)
+                .def("setDomainNameManager",setDomainNameManagerVirt2)
                 .def("setTotalTCPFlows",&StackVirtual::setTotalTCPFlows)
                 .def("setTotalUDPFlows",&StackVirtual::setTotalUDPFlows)
                 .def(self_ns::str(self_ns::self))
@@ -379,15 +316,9 @@ BOOST_PYTHON_MODULE(pyaiengine)
         ;
 
         // Definitions for the StackOpenFlow class
-        void (StackOpenFlow::*showFlowsOpenFlow)() =                                            &StackOpenFlow::showFlows;
-        void (StackOpenFlow::*setDNSDomainNameManagerOF1)(DomainNameManager&) =                	&StackOpenFlow::setDNSDomainNameManager;
-        void (StackOpenFlow::*setDNSDomainNameManagerOF2)(DomainNameManager&, bool) =          	&StackOpenFlow::setDNSDomainNameManager;
-        void (StackOpenFlow::*setHTTPHostNameManagerOF1)(DomainNameManager&) =                 	&StackOpenFlow::setHTTPHostNameManager;
-        void (StackOpenFlow::*setHTTPHostNameManagerOF2)(DomainNameManager&, bool) =           	&StackOpenFlow::setHTTPHostNameManager;
-        void (StackOpenFlow::*setSSLHostNameManagerOF1)(DomainNameManager&) =                  	&StackOpenFlow::setSSLHostNameManager;
-        void (StackOpenFlow::*setSSLHostNameManagerOF2)(DomainNameManager&, bool) =            	&StackOpenFlow::setSSLHostNameManager;
-        void (StackOpenFlow::*setSMTPHostNameManagerOF1)(DomainNameManager&) =                  &StackOpenFlow::setSMTPHostNameManager;
-        void (StackOpenFlow::*setSMTPHostNameManagerOF2)(DomainNameManager&, bool) =            &StackOpenFlow::setSMTPHostNameManager;
+       	void (StackOpenFlow::*showFlowsOpenFlow)() =                                            &StackOpenFlow::showFlows;
+        void (StackOpenFlow::*setDomainNameManagerOF1)(DomainNameManager&,const std::string&) =    		&StackOpenFlow::setDomainNameManager;
+        void (StackOpenFlow::*setDomainNameManagerOF2)(DomainNameManager&,const std::string&, bool) =      	&StackOpenFlow::setDomainNameManager;
         void (StackOpenFlow::*setTCPDatabaseAdaptorOF1)(boost::python::object&) =              	&StackOpenFlow::setTCPDatabaseAdaptor;
         void (StackOpenFlow::*setTCPDatabaseAdaptorOF2)(boost::python::object&, int) =         	&StackOpenFlow::setTCPDatabaseAdaptor;
         void (StackOpenFlow::*setUDPDatabaseAdaptorOF1)(boost::python::object&) =              	&StackOpenFlow::setUDPDatabaseAdaptor;
@@ -402,14 +333,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("getName",&StackOpenFlow::getName)
                 .def("setUDPRegexManager",&StackOpenFlow::setUDPRegexManager)
                 .def("setTCPRegexManager",&StackOpenFlow::setTCPRegexManager)
-                .def("setDNSDomainNameManager",setDNSDomainNameManagerOF1)
-                .def("setDNSDomainNameManager",setDNSDomainNameManagerOF2)
-                .def("setHTTPHostNameManager",setHTTPHostNameManagerOF1)
-                .def("setHTTPHostNameManager",setHTTPHostNameManagerOF2)
-                .def("setSSLHostNameManager",setSSLHostNameManagerOF1)
-                .def("setSSLHostNameManager",setSSLHostNameManagerOF2)
-                .def("setSMTPHostNameManager",setSMTPHostNameManagerOF1)
-                .def("setSMTPHostNameManager",setSMTPHostNameManagerOF2)
+                .def("setDomainNameManager",setDomainNameManagerOF1)
+                .def("setDomainNameManager",setDomainNameManagerOF2)
                 .def("setTotalTCPFlows",&StackOpenFlow::setTotalTCPFlows)
                 .def("setTotalUDPFlows",&StackOpenFlow::setTotalUDPFlows)
                 .def(self_ns::str(self_ns::self))

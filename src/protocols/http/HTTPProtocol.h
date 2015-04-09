@@ -40,7 +40,6 @@
 #include "StringCache.h"
 #include "CacheManager.h"
 #include <unordered_map>
-#include "names/DomainNameManager.h"
 #include "regex/Regex.h"
 #include "flow/FlowManager.h"
 
@@ -74,7 +73,7 @@ public:
 		host_cache_(new Cache<StringCache>("Host cache")),
 		ua_cache_(new Cache<StringCache>("UserAgent cache")),
 		ua_map_(),host_map_(),uri_map_(),
-		host_mng_(),ban_host_mng_(),
+		domain_mng_(),ban_domain_mng_(),
 		flow_mng_(),
 		http_ref_header_(),header_field_(),header_parameter_() {
 
@@ -109,6 +108,9 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
+        void setDomainNameManager(DomainNameManagerPtrWeak dnm) override { domain_mng_ = dnm; } 
+        void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) override { ban_domain_mng_ = dnm; }
+
 	void releaseCache(); // Three caches will be clear 
 
         void setHeader(unsigned char *raw_packet) {
@@ -141,9 +143,6 @@ public:
 
 	void createHTTPInfos(int number);
 	void destroyHTTPInfos(int number);
-
-	void setDomainNameManager(DomainNameManagerPtrWeak dnm) { host_mng_ = dnm;}
-	void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) { ban_host_mng_ = dnm;}
 
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 
@@ -197,8 +196,8 @@ private:
 	GenericMapType host_map_;	
 	GenericMapType uri_map_;	
 
-	DomainNameManagerPtrWeak host_mng_;
-	DomainNameManagerPtrWeak ban_host_mng_;
+        DomainNameManagerPtrWeak domain_mng_;
+        DomainNameManagerPtrWeak ban_domain_mng_;
 
 	FlowManagerPtrWeak flow_mng_;
 #ifdef HAVE_LIBLOG4CXX

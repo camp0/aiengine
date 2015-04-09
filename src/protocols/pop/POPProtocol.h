@@ -41,7 +41,6 @@
 #include <cstring>
 #include "CacheManager.h"
 #include <unordered_map>
-#include "names/DomainNameManager.h"
 #include "flow/FlowManager.h"
 
 namespace aiengine {
@@ -123,8 +122,8 @@ public:
         void createPOPInfos(int number);
         void destroyPOPInfos(int number);
 
-        void setDomainNameManager(DomainNameManagerPtrWeak dnm) { domain_mng_ = dnm;}
-        void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) { ban_domain_mng_ = dnm;}
+        void setDomainNameManager(DomainNameManagerPtrWeak dnm) override { domain_mng_ = dnm;}
+        void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) override { ban_domain_mng_ = dnm;}
 
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 

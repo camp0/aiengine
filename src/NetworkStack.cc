@@ -192,64 +192,25 @@ std::ostream& operator<< (std::ostream& out, const NetworkStack& ns) {
 
 #ifdef PYTHON_BINDING
 
-template <class T> 
-void NetworkStack::set_domain_name_manager(DomainNameManager& dnm, bool allow) {
+void NetworkStack::setDomainNameManager(DomainNameManager& dnm, const std::string& name) {
 
-        ProtocolPtr pp = get_protocol(T::default_name);
+	setDomainNameManager(dnm,name,true);
+}
+
+void NetworkStack::setDomainNameManager(DomainNameManager& dnm, const std::string& name,bool allow) {
+
+        ProtocolPtr pp = get_protocol(name);
         if (pp) {
-                std::shared_ptr<T> proto = std::static_pointer_cast<T>(pp);
-                if (proto) {
-			DomainNameManagerPtr dn = std::make_shared<DomainNameManager>(dnm);
+		DomainNameManagerPtr dn = std::make_shared<DomainNameManager>(dnm);
 
-			// Keep a reference to the object
-			domain_mng_list_.push_back(dn);
-                        if (allow) {
-                                proto->setDomainNameManager(dn);
-                        } else {
-                                proto->setDomainNameBanManager(dn);
-                        }
-                }
+		// Keep a reference to the object
+		domain_mng_list_.push_back(dn);
+		if (allow) {
+			pp->setDomainNameManager(dn);
+		} else {
+			pp->setDomainNameBanManager(dn);
+		}	
         }
-}
-
-void NetworkStack::setDNSDomainNameManager(DomainNameManager& dnm, bool allow) {
-
-	set_domain_name_manager<DNSProtocol>(dnm,allow);
-}
-
-void NetworkStack::setHTTPHostNameManager(DomainNameManager& dnm, bool allow) {
-	
-	set_domain_name_manager<HTTPProtocol>(dnm,allow);
-}
-
-void NetworkStack::setSSLHostNameManager(DomainNameManager& dnm, bool allow ) {
-
-	set_domain_name_manager<SSLProtocol>(dnm,allow);
-}
-
-void NetworkStack::setSMTPHostNameManager(DomainNameManager& dnm, bool allow ) {
-
-	set_domain_name_manager<SMTPProtocol>(dnm,allow);
-}
-
-void NetworkStack::setDNSDomainNameManager(DomainNameManager& dnm) {
-
-        setDNSDomainNameManager(dnm,true);
-}
-
-void NetworkStack::setHTTPHostNameManager(DomainNameManager& dnm) {
-
-        setHTTPHostNameManager(dnm,true);
-}
-
-void NetworkStack::setSSLHostNameManager(DomainNameManager& dnm) {
-
-        setSSLHostNameManager(dnm,true);
-}
-
-void NetworkStack::setSMTPHostNameManager(DomainNameManager& dnm) {
-
-        setSMTPHostNameManager(dnm,true);
 }
 
 void NetworkStack::setUDPDatabaseAdaptor(boost::python::object &dbptr) {

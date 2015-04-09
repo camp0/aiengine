@@ -46,6 +46,7 @@
 #include "Multiplexer.h"
 #include "DatabaseAdaptor.h"
 #include "./ipset/IPSetManager.h"
+#include "names/DomainNameManager.h"
 
 namespace aiengine {
 
@@ -98,7 +99,10 @@ public:
 
 	// Memory comsumption of the Protocol, caches and so on
 	virtual int64_t getAllocatedMemory() const = 0;
- 
+
+        virtual void setDomainNameManager(DomainNameManagerPtrWeak dnm) {} // Non pure virtual methods
+        virtual void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) {}
+
 #ifdef PYTHON_BINDING
 
         virtual boost::python::dict getCounters() const = 0;

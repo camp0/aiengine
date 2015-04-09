@@ -166,7 +166,7 @@ class StackLanTests(unittest.TestCase):
         dm = pyaiengine.DomainNameManager()
         dm.addDomainName(d)
 
-        self.s.setSSLHostNameManager(dm)
+        self.s.setDomainNameManager(dm,"SSLProtocol")
 
         self.dis.open("../pcapfiles/sslflow.pcap");
         self.dis.run();
@@ -199,7 +199,7 @@ class StackLanTests(unittest.TestCase):
         dm.addDomainName(d)
 
         self.s.setTCPIPSetManager(ipm)
-        self.s.setSSLHostNameManager(dm)
+        self.s.setDomainNameManager(dm,"SSLProtocol")
 
         self.dis.open("../pcapfiles/sslflow.pcap");
         self.dis.run();
@@ -255,7 +255,7 @@ class StackLanTests(unittest.TestCase):
         d.setCallback(domain_callback)
         dm.addDomainName(d)
 
-        self.s.setSSLHostNameManager(dm)
+        self.s.setDomainNameManager(dm,"SSLProtocol")
 
         db = databaseTestAdaptor()
 
@@ -361,7 +361,7 @@ class StackLanTests(unittest.TestCase):
         d.setCallback(domain_callback)
         dm.addDomainName(d)
 
-        self.s.setHTTPHostNameManager(dm)
+        self.s.setDomainNameManager(dm,"HTTPProtocol")
 
         self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
         self.dis.run()
@@ -438,7 +438,7 @@ class StackLanTests(unittest.TestCase):
         dm = pyaiengine.DomainNameManager()
         dm.addDomainName(d)
 
-        self.s.setHTTPHostNameManager(dm,False)
+        self.s.setDomainNameManager(dm,"HTTPProtocol",False)
 
         self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
         self.dis.run()
@@ -477,7 +477,7 @@ class StackLanTests(unittest.TestCase):
         d.setCallback(domain_callback)
         dm.addDomainName(d)
 
-        self.s.setHTTPHostNameManager(dm)
+        self.s.setDomainNameManager(dm,"HTTPProtocol")
 
         self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
         self.dis.run()
@@ -535,7 +535,7 @@ class StackLanTests(unittest.TestCase):
         dm = pyaiengine.DomainNameManager()
         dm.addDomainName(d)
 
-        self.s.setSMTPHostNameManager(dm)
+        self.s.setDomainNameManager(dm,"SMTPProtocol")
 
         with pyaiengine.PacketDispatcher("../pcapfiles/smtp.pcap") as pd:
             pd.setStack(self.s)
@@ -650,7 +650,7 @@ class StackLanTests(unittest.TestCase):
 
 	d.setHTTPUriSet(self.uset)
 
-        self.s.setHTTPHostNameManager(dm)
+        self.s.setDomainNameManager(dm,"HTTPProtocol")
 
         with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
             pd.setStack(self.s)
@@ -689,7 +689,7 @@ class StackLanTests(unittest.TestCase):
 
         d.setHTTPUriSet(self.uset)
 
-        self.s.setHTTPHostNameManager(dm)
+        self.s.setDomainNameManager(dm,"HTTPProtocol")
 
         with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
             pd.setStack(self.s)
@@ -862,7 +862,7 @@ class StackLanIPv6Tests(unittest.TestCase):
         dm = pyaiengine.DomainNameManager()
         dm.addDomainName(d)
 
-        self.s.setDNSDomainNameManager(dm)
+        self.s.setDomainNameManager(dm,"DNSProtocol")
 
         self.dis.open("../pcapfiles/ipv6_google_dns.pcap")
         self.dis.run()

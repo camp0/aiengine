@@ -42,7 +42,6 @@
 #include <cstring>
 #include "Cache.h"
 #include <unordered_map>
-#include "names/DomainNameManager.h"
 #include "flow/FlowManager.h"
 
 namespace aiengine {
@@ -86,10 +85,10 @@ public:
         	total_dns_type_ds_(0),
         	total_dns_type_dnskey_(0),
 		total_dns_type_others_(0),
-		domain_mng_(),ban_domain_mng_(),
 		info_cache_(new Cache<DNSInfo>("Info cache")),
 		name_cache_(new Cache<StringCache>("Name cache")),
 		domain_map_(),
+		domain_mng_(),ban_domain_mng_(),
 		flow_mng_() {}
 
     	virtual ~DNSProtocol() {}
@@ -111,6 +110,9 @@ public:
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
+
+        void setDomainNameManager(DomainNameManagerPtrWeak dnm) override { domain_mng_ = dnm;}
+        void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) override { ban_domain_mng_ = dnm;}
 
 	void releaseCache(); 
 
@@ -135,9 +137,6 @@ public:
 
         void createDNSDomains(int number);
         void destroyDNSDomains(int number);
-
-	void setDomainNameManager(DomainNameManagerPtrWeak dnm) { domain_mng_ = dnm;}
-	void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) { ban_domain_mng_ = dnm;}
 
 	int32_t getTotalAllowQueries() const { return total_allow_queries_;}
 	int32_t getTotalBanQueries() const { return total_ban_queries_;}
@@ -180,13 +179,14 @@ private:
 	int32_t total_dns_type_dnskey_;
 	int32_t total_dns_type_others_;
 
-	DomainNameManagerPtrWeak domain_mng_;
-	DomainNameManagerPtrWeak ban_domain_mng_;
-
 	Cache<DNSInfo>::CachePtr info_cache_;
 	Cache<StringCache>::CachePtr name_cache_;
 
 	GenericMapType domain_map_;
+
+	DomainNameManagerPtrWeak domain_mng_;
+	DomainNameManagerPtrWeak ban_domain_mng_;
+
 	FlowManagerPtrWeak flow_mng_;	
 	char dns_buffer_name_[MAX_DNS_BUFFER_NAME];
 #ifdef HAVE_LIBLOG4CXX

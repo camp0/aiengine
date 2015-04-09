@@ -40,7 +40,6 @@
 #include <iostream>
 #include "CacheManager.h"
 #include <unordered_map>
-#include "names/DomainNameManager.h"
 #include "regex/Regex.h"
 #include "flow/FlowManager.h"
 #include "SIPInfo.h"
@@ -92,7 +91,7 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-	void releaseCache(); // Three caches will be clear 
+	void releaseCache(); // Three caches will be clean 
 
         void setHeader(unsigned char *raw_packet) {
         

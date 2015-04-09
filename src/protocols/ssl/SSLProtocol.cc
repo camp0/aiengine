@@ -154,9 +154,7 @@ void SSLProtocol::handle_client_hello(Flow *flow,int offset, u_char *data) {
 						if ((block_offset + server_length < payload_length )and(server_length > 0)) {
 							boost::string_ref servername((char*)server->data,server_length);
 							
-							DomainNameManagerPtr ban_dnm = ban_host_mng_.lock();
-
-							ban_dnm = ban_host_mng_.lock();
+							DomainNameManagerPtr ban_dnm = ban_domain_mng_.lock();
 							if (ban_dnm) {
 								SharedPointer<DomainName> host_candidate = ban_dnm->getDomainName(servername);
 								if (host_candidate) {
@@ -242,7 +240,7 @@ void SSLProtocol::processFlow(Flow *flow) {
 				if (maxattemps == 4 ) break;
 			}while(offset < flow->packet->getLength());
 
-			DomainNameManagerPtr host_mng = host_mng_.lock();
+			DomainNameManagerPtr host_mng = domain_mng_.lock();
 			if (host_mng) {
 				SharedPointer<StringCache> host_name = flow->ssl_host.lock();
 
@@ -276,8 +274,8 @@ void SSLProtocol::statistics(std::basic_ostream<char>& out) {
 
                 out << getName() << "(" << this <<") statistics" << std::dec << std::endl;
 
-                if (ban_host_mng_.lock()) out << "\t" << "Plugged banned domains from:" << ban_host_mng_.lock()->getName() << std::endl;
-                if (host_mng_.lock()) out << "\t" << "Plugged domains from:" << host_mng_.lock()->getName() << std::endl;
+                if (ban_domain_mng_.lock()) out << "\t" << "Plugged banned domains from:" << ban_domain_mng_.lock()->getName() << std::endl;
+                if (domain_mng_.lock()) out << "\t" << "Plugged domains from:" << domain_mng_.lock()->getName() << std::endl;
 
                 out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
 		out << "\t" << "Total packets:          " << std::setw(10) << total_packets_ <<std::endl;
