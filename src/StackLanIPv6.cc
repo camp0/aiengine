@@ -60,6 +60,7 @@ StackLanIPv6::StackLanIPv6() {
         addProtocol(dns);
         addProtocol(sip);
         addProtocol(ntp);
+        addProtocol(snmp);
         addProtocol(udp_generic);
         addProtocol(freqs_udp);
  
@@ -175,7 +176,7 @@ StackLanIPv6::StackLanIPv6() {
 	udp_->setFlowForwarder(ff_udp_);	
 
 	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
-        enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_udp_generic});
+        enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_udp_generic});
 	
 #ifdef HAVE_LIBLOG4CXX
 	LOG4CXX_INFO (logger, name_<< " ready.");
@@ -249,7 +250,7 @@ void StackLanIPv6::enableNIDSEngine(bool enable) {
 
 	if (enable) {
         	disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop});
-        	disableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp});
+        	disableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp});
 #ifdef HAVE_LIBLOG4CXX
 		LOG4CXX_INFO (logger, "Enable NIDSEngine on " << name_ );
 #else
@@ -269,7 +270,7 @@ void StackLanIPv6::enableNIDSEngine(bool enable) {
         	disableFlowForwarders(ff_udp_,{ff_udp_generic});
 
         	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
-        	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_udp_generic});
+        	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_udp_generic});
 	}
 }
 

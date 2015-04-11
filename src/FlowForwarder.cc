@@ -58,6 +58,7 @@ void FlowForwarder::forwardFlow(Flow *flow) {
 		if(ff->acceptPacket(*(flow->packet))) {
 			// The packet have been accepted by the FlowForwarder
 			flow->forwarder = (*it);
+			ff->incTotalReceivedFlows();
 			ff->flow_func_(flow);
 #ifdef DEBUG
 			std::cout << __PRETTY_FUNCTION__ << ":flow:" << *flow << ":assigned to:" << ff << std::endl;

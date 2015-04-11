@@ -44,7 +44,8 @@ enum class PacketAnomaly : std::int8_t {
 	DNS_LONG_NAME = 8, 
 	SMTP_BOGUS_HEADER = 9, 
 	IMAP_BOGUS_HEADER = 10, 
-	POP_BOGUS_HEADER = 11 
+	POP_BOGUS_HEADER = 11, 
+	SNMP_BOGUS_HEADER = 12
 };
 
 const std::unordered_map<std::int8_t,std::string> PacketAnomalyToString {
@@ -59,7 +60,8 @@ const std::unordered_map<std::int8_t,std::string> PacketAnomalyToString {
 	{ static_cast<std::int8_t>(PacketAnomaly::DNS_LONG_NAME), "DNS long domain name" },
 	{ static_cast<std::int8_t>(PacketAnomaly::SMTP_BOGUS_HEADER), "SMTP bogus header" },
 	{ static_cast<std::int8_t>(PacketAnomaly::IMAP_BOGUS_HEADER), "IMAP bogus header" },
-	{ static_cast<std::int8_t>(PacketAnomaly::POP_BOGUS_HEADER), "POP bogus header" }
+	{ static_cast<std::int8_t>(PacketAnomaly::POP_BOGUS_HEADER), "POP bogus header" },
+	{ static_cast<std::int8_t>(PacketAnomaly::SNMP_BOGUS_HEADER), "SNMP bogus header" }
 };
 
 } // namespace aiengine 

@@ -525,8 +525,12 @@ class StackLanTests(unittest.TestCase):
 
     def test18(self):
         """ Verify SMTP traffic with domain callback """
-
+        self.from_correct = False
         def domain_callback(flow):
+            s = flow.getSMTPInfo()
+            if (s):
+                if (str(s.getFrom()) == "gurpartap@patriots.in"):
+                    self.from_correct = True
             self.called_callback += 1
 
         d = pyaiengine.DomainName("Some domain",".patriots.in")
@@ -543,6 +547,7 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(d.getMatchs() , 1)
         self.assertEqual(self.called_callback,1)
+        self.assertEqual(self.from_correct,True)
 
     def test19(self):
         """ Test the chains of regex with RegexManagers """

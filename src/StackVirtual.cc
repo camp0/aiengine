@@ -72,6 +72,7 @@ StackVirtual::StackVirtual() {
         addProtocol(sip);
         addProtocol(dhcp);
         addProtocol(ntp);
+        addProtocol(snmp);
         addProtocol(udp_generic);
         addProtocol(freqs_udp);
 
@@ -268,7 +269,7 @@ StackVirtual::StackVirtual() {
 	udp_vir_->setFlowForwarder(ff_udp_vir_);	
 
         enableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
-        enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_udp_generic});
+        enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_udp_generic});
 
 #ifdef HAVE_LIBLOG4CXX
 	LOG4CXX_INFO (logger, name_<< " ready.");
@@ -343,7 +344,7 @@ void StackVirtual::enableNIDSEngine(bool enable) {
 
 	if (enable) {
         	disableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop});
-        	disableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp});
+        	disableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp});
 #ifdef HAVE_LIBLOG4CXX
 		LOG4CXX_INFO (logger, "Enable NIDSEngine on " << name_ );
 #else
@@ -363,7 +364,7 @@ void StackVirtual::enableNIDSEngine(bool enable) {
         	disableFlowForwarders(ff_udp_vir_,{ff_udp_generic});
 
         	enableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
-        	enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_udp_generic});
+        	enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_udp_generic});
 	}
 }
 

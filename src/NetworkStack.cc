@@ -34,6 +34,7 @@ NetworkStack::NetworkStack() {
         sip = SIPProtocolPtr(new SIPProtocol());
         dhcp = DHCPProtocolPtr(new DHCPProtocol());
         ntp = NTPProtocolPtr(new NTPProtocol());
+        snmp = SNMPProtocolPtr(new SNMPProtocol());
         smtp = SMTPProtocolPtr(new SMTPProtocol());
         imap = IMAPProtocolPtr(new IMAPProtocol());
         pop = POPProtocolPtr(new POPProtocol());
@@ -48,6 +49,7 @@ NetworkStack::NetworkStack() {
         ff_sip = FlowForwarderPtr(new FlowForwarder());
         ff_dhcp = FlowForwarderPtr(new FlowForwarder());
         ff_ntp = FlowForwarderPtr(new FlowForwarder());
+        ff_snmp = FlowForwarderPtr(new FlowForwarder());
         ff_smtp = FlowForwarderPtr(new FlowForwarder());
         ff_imap = FlowForwarderPtr(new FlowForwarder());
         ff_pop = FlowForwarderPtr(new FlowForwarder());
@@ -91,6 +93,12 @@ NetworkStack::NetworkStack() {
         ff_ntp->setProtocol(static_cast<ProtocolPtr>(ntp));
         ff_ntp->addChecker(std::bind(&NTPProtocol::ntpChecker,ntp,std::placeholders::_1));
         ff_ntp->addFlowFunction(std::bind(&NTPProtocol::processFlow,ntp,std::placeholders::_1));
+
+        // Configure the SNMP 
+        snmp->setFlowForwarder(ff_snmp);
+        ff_snmp->setProtocol(static_cast<ProtocolPtr>(snmp));
+        ff_snmp->addChecker(std::bind(&SNMPProtocol::snmpChecker,snmp,std::placeholders::_1));
+        ff_snmp->addFlowFunction(std::bind(&SNMPProtocol::processFlow,snmp,std::placeholders::_1));
 
         // Configure the SMTP 
         smtp->setFlowForwarder(ff_smtp);

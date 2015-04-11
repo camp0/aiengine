@@ -40,6 +40,7 @@
 #include "./protocols/sip/SIPProtocol.h"
 #include "./protocols/dhcp/DHCPProtocol.h"
 #include "./protocols/ntp/NTPProtocol.h"
+#include "./protocols/snmp/SNMPProtocol.h"
 #include "./protocols/ssl/SSLProtocol.h"
 #include "./protocols/http/HTTPProtocol.h"
 #include "./protocols/smtp/SMTPProtocol.h"
@@ -130,6 +131,7 @@ public:
         SIPProtocolPtr sip;
         DHCPProtocolPtr dhcp;
         NTPProtocolPtr ntp;
+        SNMPProtocolPtr snmp;
         SMTPProtocolPtr smtp;
         IMAPProtocolPtr imap;
         POPProtocolPtr pop;
@@ -143,7 +145,7 @@ public:
         FlowForwarderPtr ff_dns;
         FlowForwarderPtr ff_sip;
         FlowForwarderPtr ff_dhcp;
-        FlowForwarderPtr ff_ntp;
+        FlowForwarderPtr ff_ntp,ff_snmp;
         FlowForwarderPtr ff_smtp;
         FlowForwarderPtr ff_imap;
         FlowForwarderPtr ff_pop;

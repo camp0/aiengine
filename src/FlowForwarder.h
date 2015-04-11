@@ -89,6 +89,7 @@ public:
 	int64_t getTotalFailFlows() const { return total_fail_flows_;}
 	int64_t getTotalReceivedFlows() const { return total_received_flows_;}
 
+	void incTotalReceivedFlows() { ++total_received_flows_; }
 private:
 	ProtocolPtr proto_;
 	bool default_check(Packet&) const { return true;};
