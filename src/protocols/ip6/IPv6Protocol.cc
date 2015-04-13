@@ -104,18 +104,28 @@ bool IPv6Protocol::processPacket(Packet& packet) {
 				// std::cout << "IPv6ProtocolAH:hdr len="<< header_size << " ext hdr=" << extension_length << std::endl;
 				break;
 			}
+			case IPPROTO_UDP: 
+			case IPPROTO_TCP:
+			case IPPROTO_ICMPV6: {
+        			mux->setHeaderSize(header_size + extension_length);
+       				mux->setNextProtocolIdentifier(next_proto);
+       				packet.setPrevHeaderSize(header_size + extension_length);
+				return true;
+			} 
 			case IPPROTO_FRAGMENT: 
 				++total_frag_packets_;
 				packet.setPacketAnomaly(PacketAnomaly::IPV6_FRAGMENTATION);
 				return false; // The packet can not progress through the stack
+			case IPPROTO_NONE:
+				++total_no_header_packets_;
+				return false;	
+			default:
+				++total_other_extension_header_packets_;
+				break;
 		} 
 	} while ( iter < 2);
 
-        mux->setHeaderSize(header_size + extension_length);
-       	mux->setNextProtocolIdentifier(next_proto);
-       	packet.setPrevHeaderSize(header_size + extension_length);
-
-	return true;
+	return false;
 }
 
 void IPv6Protocol::statistics(std::basic_ostream<char>& out) {
@@ -135,7 +145,9 @@ void IPv6Protocol::statistics(std::basic_ostream<char>& out) {
                         out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
                         if(stats_level_ > 3) {
                                 out << "\t" << "Total fragment packets: " << std::setw(10) << total_frag_packets_ <<std::endl;
+                                out << "\t" << "Total no hdr packets:   " << std::setw(10) << total_no_header_packets_ <<std::endl;
                                 out << "\t" << "Total extension packets:" << std::setw(10) << total_extension_header_packets_ <<std::endl;
+                                out << "\t" << "Total other ext packets:" << std::setw(10) << total_other_extension_header_packets_ <<std::endl;
                         }
 
                         if (stats_level_ > 2) {

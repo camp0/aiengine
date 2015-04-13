@@ -42,6 +42,13 @@ struct snmp_hdr {
 	u_char data[0]; // snmp data 
 } __attribute__((packed));
 
+enum snmp_ber_types {
+	SNMP_GET_REQ = 0xa0,
+	SNMP_GET_NEXT_REQ = 0xa1,
+	SNMP_GET_RES = 0xa2,
+	SNMP_SET_REQ = 0xa3
+};
+
 class SNMPProtocol: public Protocol 
 {
 public:

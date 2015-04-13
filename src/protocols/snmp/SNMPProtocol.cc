@@ -57,13 +57,13 @@ void SNMPProtocol::processFlow(Flow *flow) {
 		offset = offset + community_length + 2;
 		btag = snmp_header_->data[offset];
 		
-		if (btag == 0xa0) { // get request
+		if (btag == SNMP_GET_REQ) { // get request
 			++total_snmp_get_requests_;
-		} else if (btag == 0xa1) {
+		} else if (btag == SNMP_GET_NEXT_REQ) {
 			++total_snmp_get_next_requests_;
-		} else if (btag == 0xa2) {
+		} else if (btag == SNMP_GET_RES) {
 			++total_snmp_get_responses_;
-		} else if (btag == 0xa3) {
+		} else if (btag == SNMP_SET_REQ) {
 			++total_snmp_set_requests_;
 		}
 	}

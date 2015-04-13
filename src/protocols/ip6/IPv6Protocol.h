@@ -41,7 +41,9 @@ class IPv6Protocol: public Protocol
 public:
     	explicit IPv6Protocol():Protocol("IPv6Protocol"),stats_level_(0),
 		ip6_header_(nullptr),total_bytes_(0),total_frag_packets_(0),
-		total_extension_header_packets_(0) {}
+		total_no_header_packets_(0),
+		total_extension_header_packets_(0),
+		total_other_extension_header_packets_(0) {}
 
     	virtual ~IPv6Protocol() {}
 
@@ -104,7 +106,9 @@ private:
 	struct ip6_hdr *ip6_header_;
 	int64_t total_bytes_;
 	int32_t total_frag_packets_;
+	int32_t total_no_header_packets_;
 	int32_t total_extension_header_packets_;
+	int32_t total_other_extension_header_packets_;
 };
 
 typedef std::shared_ptr<IPv6Protocol> IPv6ProtocolPtr;
