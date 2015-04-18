@@ -150,9 +150,10 @@ void DNSProtocol::processFlow(Flow *flow) {
 			}
 		}
 	} else {
-               	if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
-               		flow->setPacketAnomaly(PacketAnomaly::DNS_BOGUS_HEADER);
+               	if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
+               		flow->setPacketAnomaly(PacketAnomalyType::DNS_BOGUS_HEADER);
 		}
+                AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::DNS_BOGUS_HEADER);
 	}
 	return;
 } 
@@ -170,9 +171,10 @@ int DNSProtocol::extract_domain_name(Flow *flow) {
                 ++offset;
                 // TODO: extra check for bogus packets check length
                 if (offset >= MAX_DNS_BUFFER_NAME) {
-                        if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
-                                flow->setPacketAnomaly(PacketAnomaly::DNS_LONG_NAME);
+                        if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                                flow->setPacketAnomaly(PacketAnomalyType::DNS_LONG_NAME);
                         }
+                	AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::DNS_LONG_NAME);
                         break;
                 }
         }
@@ -197,9 +199,10 @@ void DNSProtocol::handle_standard_query(Flow *flow, DNSInfo *info, int length) {
 
 	// Check if the payload is malformed
 	if (header_size + offset > length) {
-               	if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
-               		flow->setPacketAnomaly(PacketAnomaly::DNS_BOGUS_HEADER);
+               	if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
+               		flow->setPacketAnomaly(PacketAnomalyType::DNS_BOGUS_HEADER);
 		}
+               	AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::DNS_BOGUS_HEADER);
 	}
 
 	uint16_t qtype = ntohs((dns_header_->data[offset+2] << 8) + dns_header_->data[offset+1]);

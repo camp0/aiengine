@@ -1389,6 +1389,43 @@ BOOST_AUTO_TEST_CASE (test5_http)
         }
 }
 
+BOOST_AUTO_TEST_CASE (test6_http)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_hophop_dstopt_tcp_http_get);
+        int length = raw_packet_ethernet_ipv6_hophop_dstopt_tcp_http_get_length;
+        Packet packet(pkt,length);
+
+        mux_eth->setPacket(&packet);
+        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        BOOST_CHECK(ip6->getTotalPackets() == 1);
+        BOOST_CHECK(ip6->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(ip6->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(ip6->getTotalBytes() == 155 + 32 + 56);
+
+        BOOST_CHECK(tcp->getTotalPackets() == 1);
+        BOOST_CHECK(tcp->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(tcp->getTotalBytes() == 155 + 32);
+
+        BOOST_CHECK(flow_mng->getTotalFlows() == 1);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 1);
+        BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
+        BOOST_CHECK(flow_cache->getTotalReleases() == 0);
+
+        BOOST_CHECK(http->getTotalPackets() == 1);
+        BOOST_CHECK(http->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(http->getTotalBytes() == 155);
+
+        std::string cad("GET / HTTP/1.1");
+        std::ostringstream h;
+
+        h << http->getPayload();
+
+        BOOST_CHECK(cad.compare(0,14,h.str()));
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 

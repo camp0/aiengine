@@ -136,15 +136,16 @@ bool UDPProtocol::processPacket(Packet& packet) {
 		int bytes = (getLength() - getHeaderLength());
 
 		// Propagate the anomaly of the packet to the flow
-		if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
+		if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
 			flow->setPacketAnomaly(packet.getPacketAnomaly());
 		}
 		
 		if (bytes > packet.getLength()) { // The length of the packet is corrupted or not valid
 			bytes = packet.getLength();
-			if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
-				flow->setPacketAnomaly(PacketAnomaly::UDP_BOGUS_HEADER);
+			if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
+				flow->setPacketAnomaly(PacketAnomalyType::UDP_BOGUS_HEADER);
 			}
+			AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::UDP_BOGUS_HEADER);
 		}
 
 		total_bytes_ += bytes;

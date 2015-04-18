@@ -8,6 +8,7 @@ check_PROGRAMS = test_dns
 
 test_dns_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../FlowForwarder.cc ../../CacheManager.cc \
+			../../AnomalyManager.cc \
 			../../protocols/ethernet/EthernetProtocol.cc \
 			../../protocols/ip/IPProtocol.cc \
 			../../ipset/IPSetManager.cc \

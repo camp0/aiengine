@@ -56,7 +56,7 @@ char* IPv6Protocol::getDstAddrDotNotation() const {
 bool IPv6Protocol::processPacket(Packet& packet) {
 
         MultiplexerPtr mux = mux_.lock();
-	uint8_t next_proto = getProtocol();
+	uint16_t next_proto = getProtocol();
 	int extension_length = 0;
 	bool have_extension_hdr = false;
 	int iter = 0;
@@ -69,39 +69,41 @@ bool IPv6Protocol::processPacket(Packet& packet) {
 	mux->address.setSourceAddress6(getSourceAddress());
 	mux->address.setDestinationAddress6(getDestinationAddress());
 
+	unsigned char *ipv6pkt = getPayload();
+
 	do {
 		++iter;
 		// I dont like switch statements but sometimes.....
 		switch (next_proto) {
 			case IPPROTO_DSTOPTS:
 			case IPPROTO_ROUTING:
-			case IPPROTO_HOPOPTS: { 
-				struct ip6_ext *ip6_generic_ext = reinterpret_cast <struct ip6_ext*> (getPayload()); 
+			case IPPROTO_HOPOPTS: {
+				ipv6pkt = &ipv6pkt[extension_length];
+
+				struct ip6_ext *ip6_generic_ext = reinterpret_cast <struct ip6_ext*> (ipv6pkt); 
 
 				next_proto = ip6_generic_ext->ip6e_nxt;
-				extension_length = (ip6_generic_ext->ip6e_len + 1) * 8;  /* length in units of 8 octets.  */
+				extension_length += (ip6_generic_ext->ip6e_len + 1) * 8;  /* length in units of 8 octets.  */
 
 				if (have_extension_hdr) {
-					packet.setPacketAnomaly(PacketAnomaly::IPV6_LOOP_EXTENSION_HEADERS);
+					packet.setPacketAnomaly(PacketAnomalyType::IPV6_LOOP_EXTENSION_HEADERS);
 				}
 				++total_extension_header_packets_;
 				have_extension_hdr = true;
-				// std::cout << "IPv6Protocol:hdr len="<< header_size << " ext hdr=" << extension_length << std::endl;
 				break;
 			}
 			case IPPROTO_AH: {
-				struct ip6_ext *ip6_generic_ext = reinterpret_cast <struct ip6_ext*> (getPayload()); 
+				struct ip6_ext *ip6_generic_ext = reinterpret_cast <struct ip6_ext*> (ipv6pkt); 
 
 				next_proto = ip6_generic_ext->ip6e_nxt;
 				extension_length = (ip6_generic_ext->ip6e_len) * 6;  /* length in units of 6 octets.  */
 				
 				if (have_extension_hdr) {
-					packet.setPacketAnomaly(PacketAnomaly::IPV6_LOOP_EXTENSION_HEADERS);
+					packet.setPacketAnomaly(PacketAnomalyType::IPV6_LOOP_EXTENSION_HEADERS);
 				}
 				
 				++total_extension_header_packets_;
 				have_extension_hdr = true;
-				// std::cout << "IPv6ProtocolAH:hdr len="<< header_size << " ext hdr=" << extension_length << std::endl;
 				break;
 			}
 			case IPPROTO_UDP: 
@@ -114,7 +116,7 @@ bool IPv6Protocol::processPacket(Packet& packet) {
 			} 
 			case IPPROTO_FRAGMENT: 
 				++total_frag_packets_;
-				packet.setPacketAnomaly(PacketAnomaly::IPV6_FRAGMENTATION);
+				packet.setPacketAnomaly(PacketAnomalyType::IPV6_FRAGMENTATION);
 				return false; // The packet can not progress through the stack
 			case IPPROTO_NONE:
 				++total_no_header_packets_;
@@ -123,8 +125,11 @@ bool IPv6Protocol::processPacket(Packet& packet) {
 				++total_other_extension_header_packets_;
 				break;
 		} 
-	} while ( iter < 2);
+	} while ( iter < 3);
 
+	// Update the mux but the packet is not gonna be forwarder
+       	mux->setHeaderSize(header_size + extension_length);
+       	mux->setNextProtocolIdentifier(0);
 	return false;
 }
 

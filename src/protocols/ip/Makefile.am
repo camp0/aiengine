@@ -6,7 +6,7 @@ TEST = test_ip
 
 check_PROGRAMS = test_ip
 
-test_ip_SOURCES = 	../../Multiplexer.cc \
+test_ip_SOURCES = 	../../Multiplexer.cc ../../AnomalyManager.cc \
 			../ethernet/EthernetProtocol.cc \
 			../vlan/VLanProtocol.cc \
 			IPProtocol.cc test_ip.cc

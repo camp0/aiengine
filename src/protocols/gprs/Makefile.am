@@ -8,6 +8,7 @@ check_PROGRAMS = test_gprs
 
 test_gprs_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../FlowForwarder.cc ../../CacheManager.cc \
+			../../AnomalyManager.cc \
 			../ethernet/EthernetProtocol.cc \
 			../vlan/VLanProtocol.cc \
 			../../Flow.cc \

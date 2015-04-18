@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE (test7_tcp)
         BOOST_CHECK(flow != nullptr);
         BOOST_CHECK(flow->tcp_info.lock() != nullptr);
         SharedPointer<TCPInfo> info = flow->tcp_info.lock();
-	PacketAnomaly pa = flow->getPacketAnomaly();
+	PacketAnomalyType pa = flow->getPacketAnomaly();
 
         BOOST_CHECK(info->syn == 0);
         BOOST_CHECK(info->fin == 1);
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE (test7_tcp)
         BOOST_CHECK(info->push == 0);
 
 	// Verfiy that the packet is bad :D
-	BOOST_CHECK(pa == PacketAnomaly::TCP_BAD_FLAGS);
+	BOOST_CHECK(pa == PacketAnomalyType::TCP_BAD_FLAGS);
 }
 
 // The TCP header is corrupted on terms of length
@@ -221,8 +221,8 @@ BOOST_AUTO_TEST_CASE (test8_tcp)
 
         BOOST_CHECK(flow != nullptr);
         BOOST_CHECK(flow->tcp_info.lock() != nullptr);
-	PacketAnomaly pa = flow->getPacketAnomaly();
-	BOOST_CHECK(pa == PacketAnomaly::TCP_BOGUS_HEADER);
+	PacketAnomalyType pa = flow->getPacketAnomaly();
+	BOOST_CHECK(pa == PacketAnomalyType::TCP_BOGUS_HEADER);
 }
 
 
@@ -290,6 +290,30 @@ BOOST_AUTO_TEST_CASE (test3_tcp)
 	BOOST_CHECK(tcp->isAck() == false);
 	BOOST_CHECK(tcp->isPushSet() == false);
         BOOST_CHECK(tcp->getTotalBytes() == 20);
+}
+
+BOOST_AUTO_TEST_CASE (test4_tcp)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_hophop_dstopt_tcp_syn);
+        int length = raw_packet_ethernet_ipv6_hophop_dstopt_tcp_syn_length;
+        Packet packet(pkt,length);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        // Check the TCP integrity
+        BOOST_CHECK(tcp->getSrcPort() == 55617);
+        BOOST_CHECK(tcp->getDstPort() == 80);
+        BOOST_CHECK(tcp->isSyn() == true);
+        BOOST_CHECK(tcp->isFin() == false);
+        BOOST_CHECK(tcp->isRst() == false);
+        BOOST_CHECK(tcp->isAck() == false);
+        BOOST_CHECK(tcp->isPushSet() == false);
+        BOOST_CHECK(tcp->getTotalBytes() == 40);
 }
 
 
@@ -416,10 +440,10 @@ BOOST_AUTO_TEST_CASE (test1_tcp) // Two flows, the first expires
 {
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn);
         int length1 = raw_packet_ethernet_ip_tcp_syn_length;
-        Packet packet1(pkt1,length1,0,PacketAnomaly::NONE,0);
+        Packet packet1(pkt1,length1,0,PacketAnomalyType::NONE,0);
         unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn_2);
         int length2 = raw_packet_ethernet_ip_tcp_syn_2_length;
-        Packet packet2(pkt2,length2,0,PacketAnomaly::NONE,100);
+        Packet packet2(pkt2,length2,0,PacketAnomalyType::NONE,100);
 
 	flow_mng->setTimeout(80);
 
@@ -456,10 +480,10 @@ BOOST_AUTO_TEST_CASE (test2_tcp) // Two flows, none of them expires due to the t
 {
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn);
         int length1 = raw_packet_ethernet_ip_tcp_syn_length;
-        Packet packet1(pkt1,length1,0,PacketAnomaly::NONE,0);
+        Packet packet1(pkt1,length1,0,PacketAnomalyType::NONE,0);
         unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_syn_2);
         int length2 = raw_packet_ethernet_ip_tcp_syn_2_length;
-        Packet packet2(pkt2,length2,0,PacketAnomaly::NONE,100);
+        Packet packet2(pkt2,length2,0,PacketAnomalyType::NONE,100);
 
         flow_mng->setTimeout(120);
 

@@ -10,6 +10,7 @@ test_gre_SOURCES = 	../../Multiplexer.cc \
 			../ethernet/EthernetProtocol.cc \
 			../../Flow.cc ../../CacheManager.cc \
 			../../FlowForwarder.cc \
+			../../AnomalyManager.cc \
 			../../flow/FlowManager.cc \
 			../ip/IPProtocol.cc \
 			../../ipset/IPSet.cc \

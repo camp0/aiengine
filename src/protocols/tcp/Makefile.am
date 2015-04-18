@@ -9,6 +9,7 @@ check_PROGRAMS = test_tcp
 test_tcp_SOURCES = 	../../Multiplexer.cc  \
 			../../FlowForwarder.cc \
 			../../Flow.cc ../../CacheManager.cc \
+			../../AnomalyManager.cc \
 			../../flow/FlowManager.cc \
 			../ethernet/EthernetProtocol.cc \
 			../vlan/VLanProtocol.cc \

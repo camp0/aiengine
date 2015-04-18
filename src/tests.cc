@@ -1568,7 +1568,7 @@ BOOST_AUTO_TEST_CASE ( test_case_18 )
         FlowManagerPtr flows_udp = stack->getUDPFlowManager().lock();
         BOOST_CHECK(flows_udp->getTotalFlows() == 1);
         for (auto &flow: flows_udp->getFlowTable()) {
-                BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomaly::UDP_BOGUS_HEADER);
+                BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::UDP_BOGUS_HEADER);
         }
 }
 

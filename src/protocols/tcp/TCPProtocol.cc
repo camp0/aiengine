@@ -169,7 +169,7 @@ bool TCPProtocol::processPacket(Packet &packet) {
 			flow->total_bytes += bytes;
 			++flow->total_packets;
 
-			if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
+			if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
 				flow->setPacketAnomaly(packet.getPacketAnomaly());
 			}
 
@@ -320,9 +320,10 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 		}
 
 		if (bad_flags) {
-			if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
-				flow->setPacketAnomaly(PacketAnomaly::TCP_BAD_FLAGS);
+			if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
+				flow->setPacketAnomaly(PacketAnomalyType::TCP_BAD_FLAGS);
 			}
+			AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::TCP_BAD_FLAGS);
 		}
 
 		// Check if the sequence numbers are fine

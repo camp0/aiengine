@@ -9,7 +9,7 @@ EXTRA_FLAGS = -O3
 EXTRA_DIST = py_wrapper.cc setup.py MANIFEST.in
 
 noinst_HEADERS =        Packet.h Pointer.h \
-			Protocol.h PacketAnomaly.h \
+			Protocol.h AnomalyManager.h \
 			PacketDispatcher.h \
 			NetworkStack.h \
 			StackLan.h \
@@ -69,7 +69,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			FlowForwarder.cc \
 			PacketDispatcher.cc \
 			Flow.cc CacheManager.cc \
-			Protocol.cc \
+			Protocol.cc AnomalyManager.cc \
 			Callback.cc \
 			Interpreter.cc \
 			flow/FlowManager.cc \

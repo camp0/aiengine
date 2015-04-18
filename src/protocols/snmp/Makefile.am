@@ -9,6 +9,7 @@ check_PROGRAMS = test_snmp
 test_snmp_SOURCES = 	../../Multiplexer.cc \
 			../ethernet/EthernetProtocol.cc \
 			../../Flow.cc ../../CacheManager.cc \
+			../../AnomalyManager.cc \
 			../../FlowForwarder.cc \
 			../../flow/FlowManager.cc \
 			../ip/IPProtocol.cc \

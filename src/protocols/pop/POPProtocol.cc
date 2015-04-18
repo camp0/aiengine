@@ -174,9 +174,10 @@ void POPProtocol::handle_cmd_user(Flow *flow,POPInfo *info, const char *header) 
         size_t end = h.find("\x0d\x0a") - 5;
 
 	if ((token > h.length())or(end > h.length())) {
-                if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
-                        flow->setPacketAnomaly(PacketAnomaly::POP_BOGUS_HEADER);
+                if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        flow->setPacketAnomaly(PacketAnomalyType::POP_BOGUS_HEADER);
                 }
+		AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::POP_BOGUS_HEADER);
 		return;
 	}
 

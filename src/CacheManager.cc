@@ -29,6 +29,7 @@ void CacheManager::statistics() {
 
 }
 
+// TODO: missing the rest of the items of the flow SMTPInfo,etc.....
 void CacheManager::releaseFlow(Flow *flow) {
 
         if (flow->getProtocol() == IPPROTO_TCP) {

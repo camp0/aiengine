@@ -73,7 +73,7 @@ void Flow::reset() {
 	packet = nullptr;
 	frequency_engine_inspected = false;
 	prev_direction_ = direction_ = FlowDirection::FORWARD;
-	pa_ = PacketAnomaly::NONE;
+	pa_ = PacketAnomalyType::NONE;
 	arrive_time_ = 0;
 	current_time_ = 0;
 }
@@ -94,8 +94,8 @@ void Flow::serialize(std::ostream& stream) {
         if(ipset.lock())
                 stream << ",\"i\":\"" << ipset.lock()->getName() << "\"";
 	
-	if(pa_ != PacketAnomaly::NONE)
-		stream << ",\"a\":\"" << PacketAnomalyToString.at(static_cast<std::int8_t>(pa_)) << "\"";
+	if(pa_ != PacketAnomalyType::NONE)
+		stream << ",\"a\":\"" << AnomaliesManager::getInstance()->getName(pa_) << "\"";
 
 	stream << ",\"p\":\"" << getL7ProtocolName() << "\"";
 
@@ -140,8 +140,8 @@ void Flow::serialize(std::ostream& stream) {
 	if(ipset.lock())
 		stream << ",\"ipset\":\"" << ipset.lock()->getName() << "\"";
 
-	if(pa_ != PacketAnomaly::NONE)
-		stream << ",\"anomaly\":\"" << PacketAnomalyToString.at(static_cast<std::int8_t>(pa_)) << "\"";
+	if(pa_ != PacketAnomalyType::NONE)
+		stream << ",\"anomaly\":\"" << AnomalyManager::getInstance()->getName(pa_) << "\"";
 
 	stream << ",\"layer7\":\"" << getL7ProtocolName() << "\"";
 
@@ -180,8 +180,8 @@ void Flow::showFlowInfo(std::ostream& out) {
         	out << " Tag:" << getTag();
         }
 
-        if (getPacketAnomaly() != PacketAnomaly::NONE)
-        	out << " Anomaly:" << PacketAnomalyToString.at(static_cast<std::int8_t>(getPacketAnomaly()));
+        if (getPacketAnomaly() != PacketAnomalyType::NONE)
+		out << " Anomaly:" << AnomalyManager::getInstance()->getName(pa_);
 
         if (ipset.lock()) out << " IPset:" << ipset.lock()->getName();
 

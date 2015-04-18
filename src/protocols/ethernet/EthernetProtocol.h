@@ -86,7 +86,7 @@ public:
 			setHeader(packet.getPayload());
 
 			// The packet dont contains an anomaly by default
-			packet.setPacketAnomaly(PacketAnomaly::NONE);
+			packet.setPacketAnomaly(PacketAnomalyType::NONE);
 			++total_validated_packets_;
 			total_bytes_ += length; 
 			return true;

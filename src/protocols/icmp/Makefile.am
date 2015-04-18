@@ -6,7 +6,7 @@ TEST = test_icmp
 
 check_PROGRAMS = test_icmp
 
-test_icmp_SOURCES = 	../../Multiplexer.cc \
+test_icmp_SOURCES = 	../../Multiplexer.cc ../../AnomalyManager.cc \
 			../ethernet/EthernetProtocol.cc \
 			../ip/IPProtocol.cc \
 			ICMPProtocol.cc test_icmp.cc

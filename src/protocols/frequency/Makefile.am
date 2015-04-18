@@ -11,6 +11,7 @@ check_PROGRAMS = test_frequency
 test_frequency_SOURCES = 	../../Multiplexer.cc \
 				../../FlowForwarder.cc \
 				../../Protocol.cc ../../CacheManager.cc \
+				../../AnomalyManager.cc \
 				../ethernet/EthernetProtocol.cc \
 				../ip/IPProtocol.cc \
 				../../ipset/IPSetManager.cc \

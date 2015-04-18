@@ -42,7 +42,7 @@ MultiplexerPtrWeak Multiplexer::getUpMultiplexer(int key) const {
 	return mp;
 } 
 
-void Multiplexer::setPacketInfo(unsigned char *packet, int length, int prev_header_size,PacketAnomaly pa,std::time_t packet_time) { 
+void Multiplexer::setPacketInfo(unsigned char *packet, int length, int prev_header_size,PacketAnomalyType pa,std::time_t packet_time) { 
 
 	packet_.setPayload(packet);
 	packet_.setPayloadLength(length);

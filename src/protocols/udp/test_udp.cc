@@ -111,8 +111,8 @@ BOOST_AUTO_TEST_CASE(test5_udp) // Test timeout on UDP traffic
         unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dhcp_offer);
         int length2 = raw_packet_ethernet_ip_udp_dhcp_offer_length;
 
-        Packet packet1(pkt1,length1,0,PacketAnomaly::NONE);
-        Packet packet2(pkt2,length2,0,PacketAnomaly::NONE,190);
+        Packet packet1(pkt1,length1,0,PacketAnomalyType::NONE);
+        Packet packet2(pkt2,length2,0,PacketAnomalyType::NONE,190);
 
         FlowCachePtr flow_cache = FlowCachePtr(new FlowCache());
         FlowManagerPtr flow_mng = FlowManagerPtr(new FlowManager());
@@ -161,8 +161,8 @@ BOOST_AUTO_TEST_CASE(test6_udp) // Test timeout on UDP traffic, no expire flows
         unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dhcp_offer);
         int length2 = raw_packet_ethernet_ip_udp_dhcp_offer_length;
 
-        Packet packet1(pkt1,length1,0,PacketAnomaly::NONE,0);
-        Packet packet2(pkt2,length2,0,PacketAnomaly::NONE,120);
+        Packet packet1(pkt1,length1,0,PacketAnomalyType::NONE,0);
+        Packet packet2(pkt2,length2,0,PacketAnomalyType::NONE,120);
 
         FlowCachePtr flow_cache = FlowCachePtr(new FlowCache());
         FlowManagerPtr flow_mng = FlowManagerPtr(new FlowManager());

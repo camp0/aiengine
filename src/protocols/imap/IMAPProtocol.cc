@@ -187,9 +187,10 @@ void IMAPProtocol::handle_cmd_login(Flow *flow,IMAPInfo *info, const char *heade
 		domain = h.substr(0,end);
 		user_name = h.substr(0,end);
 	} else {
-	       	if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
-                        flow->setPacketAnomaly(PacketAnomaly::IMAP_BOGUS_HEADER);
+	       	if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        flow->setPacketAnomaly(PacketAnomalyType::IMAP_BOGUS_HEADER);
                 }
+		AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::IMAP_BOGUS_HEADER);
 	}
 
 	if (token < h.length()) {

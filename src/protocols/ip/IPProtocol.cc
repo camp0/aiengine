@@ -50,7 +50,7 @@ bool IPProtocol::processPacket(Packet& packet) {
 
 	if (isFragment() == true) {
 		++total_frag_packets_;
-		packet.setPacketAnomaly(PacketAnomaly::IPV4_FRAGMENTATION);
+		packet.setPacketAnomaly(PacketAnomalyType::IPV4_FRAGMENTATION);
 		return false;
 	}
 

@@ -10,6 +10,7 @@ test_vxlan_SOURCES = 	../../Multiplexer.cc \
 			../../Protocol.cc ../../CacheManager.cc \
 			../ethernet/EthernetProtocol.cc \
 			../../Flow.cc \
+			../../AnomalyManager.cc \
 			../../FlowForwarder.cc \
 			../../flow/FlowManager.cc \
 			../ip/IPProtocol.cc \

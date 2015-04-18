@@ -6,7 +6,7 @@ TEST = test_mpls
 
 check_PROGRAMS = test_mpls
 
-test_mpls_SOURCES = 	../../Multiplexer.cc \
+test_mpls_SOURCES = 	../../Multiplexer.cc ../../AnomalyManager.cc \
 			../ethernet/EthernetProtocol.cc \
 			../ip/IPProtocol.cc \
 			../icmp/ICMPProtocol.cc \

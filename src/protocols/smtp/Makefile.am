@@ -8,6 +8,7 @@ check_PROGRAMS = test_smtp
 
 test_smtp_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../FlowForwarder.cc ../../CacheManager.cc \
+			../../AnomalyManager.cc \
 			../../protocols/ethernet/EthernetProtocol.cc \
 			../../protocols/ip/IPProtocol.cc \
 			../../ipset/IPSetManager.cc \

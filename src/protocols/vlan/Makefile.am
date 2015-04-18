@@ -6,7 +6,7 @@ TEST = test_vlan
 
 check_PROGRAMS = test_vlan
 
-test_vlan_SOURCES = 	../../Multiplexer.cc \
+test_vlan_SOURCES = 	../../Multiplexer.cc ../../AnomalyManager.cc \
 			../ethernet/EthernetProtocol.cc \
 			VLanProtocol.cc test_vlan.cc
 

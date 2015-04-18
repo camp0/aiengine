@@ -202,9 +202,10 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header
 	size_t end = h.rfind(">");
 
 	if ((start > h.length())or(end > h.length())) {
-                if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
-                        flow->setPacketAnomaly(PacketAnomaly::SMTP_BOGUS_HEADER);
+                if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        flow->setPacketAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
                 }
+		AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
 		return;
 	}
 
@@ -212,9 +213,10 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header
 	size_t token = from.find("@");
 
 	if (token > from.length()) {
-                if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
-                        flow->setPacketAnomaly(PacketAnomaly::SMTP_BOGUS_HEADER);
+                if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        flow->setPacketAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
                 }
+		AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
 		return;
 	}
 	boost::string_ref domain(from.substr(token + 1,from.size()));

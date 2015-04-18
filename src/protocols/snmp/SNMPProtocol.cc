@@ -35,9 +35,10 @@ void SNMPProtocol::processFlow(Flow *flow) {
 	++total_packets_;
 
 	if ((getLength() > length)or(getVersionLength() > length)) { // the packet is corrupted
-                if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
-                        flow->setPacketAnomaly(PacketAnomaly::SNMP_BOGUS_HEADER);
+                if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        flow->setPacketAnomaly(PacketAnomalyType::SNMP_BOGUS_HEADER);
                 }
+		AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::SNMP_BOGUS_HEADER);
                 return;
 	}
 
@@ -48,8 +49,8 @@ void SNMPProtocol::processFlow(Flow *flow) {
 		uint8_t community_length = snmp_header_->data[offset+1];
 
 		if (community_length > (length - offset)) {
-                	if (flow->getPacketAnomaly() == PacketAnomaly::NONE) {
-                        	flow->setPacketAnomaly(PacketAnomaly::SNMP_BOGUS_HEADER);
+                	if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        	flow->setPacketAnomaly(PacketAnomalyType::SNMP_BOGUS_HEADER);
                 	}
 			return;	
 		}

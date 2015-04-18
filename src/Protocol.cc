@@ -119,13 +119,12 @@ void Protocol::showCacheMap(std::basic_ostream<char>& out,GenericMapType &mt, co
 
         out << "\t" << title << " usage" << std::endl;
 
-        std::vector<std::pair<boost::string_ref,StringCacheHits>> g_list(mt.begin(),mt.end());
+        std::vector<PairStringCacheHits> g_list(mt.begin(),mt.end());
         // Sort by using lambdas
         std::sort(
                 g_list.begin(),
                 g_list.end(),
-                [](std::pair<boost::string_ref,StringCacheHits> const &a,
-                        std::pair<boost::string_ref,StringCacheHits> const &b)
+                [](PairStringCacheHits const &a, PairStringCacheHits const &b )
                 {
                         int v1 = std::get<1>(a.second);
                         int v2 = std::get<1>(b.second);

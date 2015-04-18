@@ -77,8 +77,8 @@ public:
 	FlowDirection getFlowDirection() { return direction_; }
 	FlowDirection getPrevFlowDirection() { return prev_direction_; }
 
-	void setPacketAnomaly(const PacketAnomaly &pa) { pa_ = pa; }
-	PacketAnomaly getPacketAnomaly() const { return pa_; }
+	void setPacketAnomaly(const PacketAnomalyType &pa) { pa_ = pa; /* ++ PacketAnomalies[static_cast<std::int8_t>(pa)].hits; */ }
+	PacketAnomalyType getPacketAnomaly() const { return pa_; }
 
 	// IP functions
 	void setFiveTuple(uint32_t src_a,uint16_t src_p,uint16_t proto,uint32_t dst_a,uint16_t dst_p);
@@ -166,7 +166,7 @@ public:
 	StringCache& getSSLHost() const { return *ssl_host.lock().get();}
 	SMTPInfo& getSMTPInfo() const { return *smtp_info.lock().get();}
 	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
-	std::string getFlowAnomaly() const { return PacketAnomalyToString.at(static_cast<std::int8_t>(pa_)); }
+	const char *getFlowAnomaly() const { return AnomalyManager::getInstance()->getName(pa_); }
 #endif
 
 private:
@@ -179,7 +179,7 @@ private:
 	bool have_tag_;
 	FlowDirection direction_; 
 	FlowDirection prev_direction_; 
-	PacketAnomaly pa_;
+	PacketAnomalyType pa_;
 	time_t arrive_time_;
 	time_t current_time_;
 };

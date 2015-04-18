@@ -6,7 +6,7 @@ TEST = test_ip6
 
 check_PROGRAMS = test_ip6
 
-test_ip6_SOURCES = 	../../Multiplexer.cc \
+test_ip6_SOURCES = 	../../Multiplexer.cc ../../AnomalyManager.cc \
 			../ethernet/EthernetProtocol.cc \
 			IPv6Protocol.cc test_ip6.cc
 
