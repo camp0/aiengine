@@ -95,7 +95,7 @@ void Flow::serialize(std::ostream& stream) {
                 stream << ",\"i\":\"" << ipset.lock()->getName() << "\"";
 	
 	if(pa_ != PacketAnomalyType::NONE)
-		stream << ",\"a\":\"" << AnomaliesManager::getInstance()->getName(pa_) << "\"";
+		stream << ",\"a\":\"" << AnomalyManager::getInstance()->getName(pa_) << "\"";
 
 	stream << ",\"p\":\"" << getL7ProtocolName() << "\"";
 
