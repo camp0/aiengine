@@ -20,8 +20,8 @@ if __name__ == '__main__':
     # Load an instance of a Network Stack on a Lan network
     st1 = pyaiengine.StackLan()
 
-    st1.setTotalUDPFlows(16384)
-    st1.setTotalTCPFlows(16384)
+    st1.tcpflows = 327680
+    st1.udpflows = 163840
 
     """ Generate two instances of the FrequencyGroup and LearnerEngine """
     learn = pyaiengine.LearnerEngine()
@@ -32,7 +32,7 @@ if __name__ == '__main__':
        
     """ Open the pcapfile and process """ 
     with pyaiengine.PacketDispatcher("unknown_traffic.pcap") as pd:
-        pd.setStack(st1)
+        pd.stack = st1
         pd.run()
 
     """ Asuming that the unknown traffic is TCP """
@@ -61,12 +61,12 @@ if __name__ == '__main__':
     st2.setTCPRegexManager(rm)
     st2.enableNIDSEngine(True)    
 
-    st2.setTotalUDPFlows(16384)
-    st2.setTotalTCPFlows(16384)
+    st2.tcpflows = 327680
+    st2.udpflows = 163840
   
     with pyaiengine.PacketDispatcher("eth0") as pd:
         """ Plug a new stack """ 
-        pd.setStack(st2)
+        pd.stack = st2 
         pd.run()
  
     sys.exit(0)

@@ -40,6 +40,41 @@ int64_t SSLProtocol::getAllocatedMemory() const {
         return value;
 }
 
+int32_t SSLProtocol::release_ssl_info(SSLInfo *info) {
+
+        int32_t bytes_released = 0;
+
+        SharedPointer<StringCache> host = info->host.lock();
+
+        if (host) { // The flow have a ssl host attached
+                bytes_released += host->getNameSize();
+                host_cache_->release(host);
+        }
+
+        return bytes_released;
+}
+
+// Removes or decrements the hits of the maps.
+void SSLProtocol::release_ssl_info_cache(SSLInfo *info) {
+
+        SharedPointer<StringCache> host_ptr = info->host.lock();
+
+        if (host_ptr) { // There is no host attached
+                GenericMapType::iterator it = host_map_.find(host_ptr->getName());
+                if (it != host_map_.end()) {
+                        int *counter = &std::get<1>(it->second);
+                        --(*counter);
+
+                        if ((*counter) <= 0) {
+                                host_map_.erase(it);
+                        }
+                }
+        }
+
+        release_ssl_info(info);
+}
+
+
 void SSLProtocol::releaseCache() {
 
         FlowManagerPtr fm = flow_mng_.lock();
@@ -63,12 +98,14 @@ void SSLProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-                        SharedPointer<StringCache> host = flow->ssl_host.lock();
+                        SharedPointer<SSLInfo> sinfo = flow->ssl_info.lock();
 
-                        if (host) { // The flow have a host attatched
-                                flow->ssl_host.reset();
-				total_bytes_released_by_flows += host->getNameSize();
-                                host_cache_->release(host);
+                        if (sinfo) { // The flow have a host attatched
+                                total_bytes_released_by_flows += release_ssl_info(sinfo.get());
+                                total_bytes_released_by_flows += sizeof(sinfo);
+				sinfo.reset();	
+                                flow->ssl_info.reset();
+                                info_cache_->release(sinfo);
 				++release_flows;
                         }
                 } 
@@ -87,33 +124,30 @@ void SSLProtocol::releaseCache() {
         }
 }
 
+void SSLProtocol::attach_host(SSLInfo *info, boost::string_ref &host) {
 
-void SSLProtocol::attach_host_to_flow(Flow *flow, boost::string_ref &servername) {
+        SharedPointer<StringCache> host_ptr = info->host.lock();
 
-	SharedPointer<StringCache> host_ptr = flow->ssl_host.lock();
-
-	if (!host_ptr) { // There is no Host object attached to the flow
-		GenericMapType::iterator it = host_map_.find(servername);
-		if (it == host_map_.end()) {
-			host_ptr = host_cache_->acquire().lock();
-			if (host_ptr) {
-				host_ptr->setName(servername.data(),servername.size());
-				flow->ssl_host = host_ptr;
-				host_map_.insert(std::make_pair(boost::string_ref(host_ptr->getName()),
-					std::make_pair(host_ptr,1)));
-			}
-		} else {
-			int *counter = &std::get<1>(it->second);
-			++(*counter);
-			flow->ssl_host = std::get<0>(it->second);
-		}
-	}
+        if (!host_ptr) { // There is no from attached
+                GenericMapType::iterator it = host_map_.find(host);
+                if (it == host_map_.end()) {
+                        host_ptr = host_cache_->acquire().lock();
+                        if (host_ptr) {
+                                host_ptr->setName(host.data(),host.length());
+                                info->host = host_ptr;
+                                host_map_.insert(std::make_pair(boost::string_ref(host_ptr->getName()),
+                                        std::make_pair(host_ptr,1)));
+                        }
+                } else {
+                        int *counter = &std::get<1>(it->second);
+                        ++(*counter);
+                        info->host = std::get<0>(it->second);
+                }
+        }
 }
 
+void SSLProtocol::handle_client_hello(SSLInfo *info,int length,int offset, u_char *data) {
 
-void SSLProtocol::handle_client_hello(Flow *flow,int offset, u_char *data) {
-
-	int payload_length = flow->packet->getLength();
 	ssl_hello *hello = reinterpret_cast<ssl_hello*>(data); 
 	uint16_t version = ntohs(hello->version);
 	int block_offset = sizeof(ssl_hello) + offset;
@@ -129,7 +163,7 @@ void SSLProtocol::handle_client_hello(Flow *flow,int offset, u_char *data) {
 		}
 
 		uint16_t cipher_length = ntohs((data[block_offset+1] << 8) + data[block_offset]);
-		if (cipher_length < payload_length) {
+		if (cipher_length < length) {
 
 			block_offset += cipher_length  + 2;
 			u_char *compression_pointer = &data[block_offset];
@@ -138,10 +172,10 @@ void SSLProtocol::handle_client_hello(Flow *flow,int offset, u_char *data) {
 			if(compression_length > 0) {
 				block_offset += compression_length + 2;
 			}
-			if (block_offset < payload_length) {
+			if (block_offset < length) {
 				u_char *extensions = &data[block_offset];
 				uint16_t extensions_length = ((extensions[1] << 8) + extensions[0]);
-				if (extensions_length + block_offset < payload_length) {
+				if (extensions_length + block_offset < length) {
 					block_offset += 2;
 					extensions = &data[block_offset];
 					uint16_t extension_type = ((extensions[1] << 8) + extensions[0]);
@@ -151,7 +185,7 @@ void SSLProtocol::handle_client_hello(Flow *flow,int offset, u_char *data) {
 						//block_offset += 2;
 						ssl_server_name *server = reinterpret_cast<ssl_server_name*>(&extensions[3]);
 						int server_length = ntohs(server->length);
-						if ((block_offset + server_length < payload_length )and(server_length > 0)) {
+						if ((block_offset + server_length < length )and(server_length > 0)) {
 							boost::string_ref servername((char*)server->data,server_length);
 							
 							DomainNameManagerPtr ban_dnm = ban_domain_mng_.lock();
@@ -167,7 +201,7 @@ void SSLProtocol::handle_client_hello(Flow *flow,int offset, u_char *data) {
 							}
 							++total_allow_hosts_;
 
-							attach_host_to_flow(flow,servername);
+							attach_host(info,servername);
 						}	
 					} // Server name 
 				}
@@ -176,13 +210,13 @@ void SSLProtocol::handle_client_hello(Flow *flow,int offset, u_char *data) {
 	} // end version 
 }
 
-void SSLProtocol::handle_server_hello(Flow *flow,int offset,unsigned char *data) {
+void SSLProtocol::handle_server_hello(SSLInfo *info,int offset,unsigned char *data) {
 
 	ssl_hello *hello __attribute__((unused)) = reinterpret_cast<ssl_hello*>(data); 
 	++ total_server_hellos_;
 }
 
-void SSLProtocol::handle_certificate(Flow *flow,int offset, unsigned char *data) {
+void SSLProtocol::handle_certificate(SSLInfo *info,int offset, unsigned char *data) {
 
 	++ total_certificates_;
 }
@@ -193,8 +227,23 @@ void SSLProtocol::processFlow(Flow *flow) {
 	total_bytes_ += flow->packet->getLength();
 	++flow->total_packets_l7;
 
+        SharedPointer<SSLInfo> sinfo = flow->ssl_info.lock();
+
+        if(!sinfo) {
+                sinfo = info_cache_->acquire().lock();
+                if (!sinfo) {
+                        return;
+                }
+                flow->ssl_info = sinfo;
+        }
+
+        if (sinfo->getIsBanned() == true) {
+                // No need to process the SSL pdu.
+                return;
+        }
+
+	setHeader(flow->packet->getPayload());
 	if (flow->total_packets_l7 < 3) { 
-		setHeader(flow->packet->getPayload());
 
 		int length = ntohs(ssl_header_->length);
 		if (length > 0) {
@@ -215,13 +264,13 @@ void SSLProtocol::processFlow(Flow *flow) {
 					bool have_data = false;
 
 					if (type == SSL3_MT_CLIENT_HELLO)  {
-						handle_client_hello(flow,offset,ssl_data);
+						handle_client_hello(sinfo.get(),flow->packet->getLength(),offset,ssl_data);
 						have_data = true;
 					} else if (type == SSL3_MT_SERVER_HELLO)  {
-						handle_server_hello(flow,offset,ssl_data);
+						handle_server_hello(sinfo.get(),offset,ssl_data);
 						have_data = true;
 					} else if (type == SSL3_MT_CERTIFICATE) {
-						handle_certificate(flow,offset,ssl_data);
+						handle_certificate(sinfo.get(),offset,ssl_data);
 						have_data = true;
 					}
 
@@ -242,7 +291,7 @@ void SSLProtocol::processFlow(Flow *flow) {
 
 			DomainNameManagerPtr host_mng = domain_mng_.lock();
 			if (host_mng) {
-				SharedPointer<StringCache> host_name = flow->ssl_host.lock();
+				SharedPointer<StringCache> host_name = sinfo->host.lock();
 
 				// TODO: just handled the client hello, so there is no need of checking on packetsl7 > than 1
 				if ((host_name)and(flow->total_packets_l7 == 1)) {
@@ -260,6 +309,11 @@ void SSLProtocol::processFlow(Flow *flow) {
 					}
 				}
 			}
+		}
+	} else {
+		// Check if the PDU is encrypted data
+		if (std::memcmp("\x17\x03",ssl_header_,2)==0) {
+			sinfo->incDataPdus();
 		}
 	}
 }
@@ -297,6 +351,7 @@ void SSLProtocol::statistics(std::basic_ostream<char>& out) {
 					flow_forwarder_.lock()->statistics(out);
 			}
 			if (stats_level_ > 3) {
+				info_cache_->statistics(out);
 				host_cache_->statistics(out);
 				if(stats_level_ > 4) {
 					showCacheMap(out,host_map_,"SSL Hosts","Host");
@@ -304,6 +359,19 @@ void SSLProtocol::statistics(std::basic_ostream<char>& out) {
 			}
 		}
 	}
+}
+
+
+void SSLProtocol::createSSLInfos(int number) { 
+
+	info_cache_->create(number);
+	host_cache_->create(number);
+}
+
+void SSLProtocol::destroySSLInfos(int number) { 
+
+	info_cache_->destroy(number);
+	host_cache_->destroy(number);
 }
 
 #ifdef PYTHON_BINDING

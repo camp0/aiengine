@@ -33,10 +33,10 @@ if __name__ == '__main__':
     st = pyaiengine.StackLan()
 
     # Plug the stack on the PacketDispatcher
-    pdis.setStack(st)
+    pdis.stack = st
 
-    st.setTotalTCPFlows(327680)
-    st.setTotalUDPFlows(163840)
+    st.tcpflows = 327680
+    st.udpflows = 163840
 
     """ Create a NetfilterQueue object """
     nfqueue = NetfilterQueue()
@@ -49,7 +49,7 @@ if __name__ == '__main__':
         print("Exit netfilter queue")
 
     # Dump on file the statistics of the stack
-    st.setStatisticsLevel(5)
+    st.statslevel = 5
     f = open("statistics.log","w")
     f.write(str(st))
     f.close()

@@ -284,7 +284,7 @@ void StackLanIPv6::setTotalTCPFlows(int value) {
 	http->createHTTPInfos(value * 0.75);
 
         // The 40% of the traffic is SSL
-        ssl->createSSLHosts(value * 0.4);
+        ssl->createSSLInfos(value * 0.4);
 
 	// 5% of the traffic could be SMTP/IMAP, im really positive :D
 	smtp->createSMTPInfos(value * 0.05);
@@ -300,6 +300,10 @@ void StackLanIPv6::setTotalUDPFlows(int value) {
         // SIP values
         sip->createSIPInfos(value * 0.2);
 }
+
+int StackLanIPv6::getTotalTCPFlows() const { return flow_cache_tcp_->getTotalFlows(); }
+
+int StackLanIPv6::getTotalUDPFlows() const { return flow_cache_udp_->getTotalFlows(); }
 
 void StackLanIPv6::enableLinkLayerTagging(std::string type) {
 

@@ -93,7 +93,8 @@ public:
         explicit AnomalyManager()
                 {}
 
-        void statistics();
+	void statistics(std::basic_ostream<char>& out);
+        void statistics() { statistics(std::cout); }
 	void incAnomaly(PacketAnomalyType t); 
 	const char *getName(PacketAnomalyType t);
 

@@ -74,7 +74,9 @@ public:
 	virtual MultiplexerPtrWeak getLinkLayerMultiplexer() = 0; 
 
 	virtual void setTotalTCPFlows(int value) = 0;
+	virtual int getTotalTCPFlows() const = 0;
 	virtual void setTotalUDPFlows(int value) = 0;
+	virtual int getTotalUDPFlows() const = 0;
 
 	virtual void setTCPRegexManager(SharedPointer<RegexManager> sig) = 0;	
 	virtual void setUDPRegexManager(SharedPointer<RegexManager> sig) = 0;	
@@ -84,6 +86,7 @@ public:
 	virtual void enableLinkLayerTagging(std::string type) = 0;
 
 	virtual void setFlowsTimeout(int timeout) = 0;
+	virtual int getFlowsTimeout() const = 0;
 
 	// Release the memory of the caches of every protocol on the stack
 	void releaseCache(const std::string &name);

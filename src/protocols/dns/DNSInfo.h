@@ -54,8 +54,7 @@ public:
         	return out;
 	}
 
-	StringCache& getName() const { return *name.lock().get();}
-
+	const char *getDomainName() const { return (*name.lock()).getName();}
 #endif
 	void addIPAddress(const char* ipstr) { ips_.push_back(ipstr); }
 

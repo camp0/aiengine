@@ -64,8 +64,7 @@ public:
         	return out;
 	}
 
-	StringCache& getUserName() const { return *user_name.lock().get();}
-
+	const char *getUserName() const { return (user_name.lock() ? user_name.lock()->getName() : ""); }
 #endif
 
 private:

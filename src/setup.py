@@ -5,8 +5,10 @@
 import os
 import sys
 import distutils.sysconfig
-from distutils.core import setup
+# from distutils.core import Command
+from distutils.core import setup, Command
 from distutils.extension import Extension
+# from setuptools import setup
 
 """ List of the files of the lib """
 src_files =  ["Multiplexer.cc","FlowForwarder.cc","PacketDispatcher.cc","Flow.cc","Protocol.cc"]
@@ -39,6 +41,64 @@ src_files += ["regex/Regex.cc","regex/RegexManager.cc","protocols/frequency/Freq
 src_files += ["protocols/frequency/FrequencyCounter.cc","learner/LearnerEngine.cc","names/DomainNameManager.cc"]
 src_files += ["System.cc","StackMobile.cc","StackLan.cc","StackLanIPv6.cc","StackVirtual.cc","StackOpenFlow.cc"]
 src_files += ["py_wrapper.cc"]
+
+class SetupBuildCommand(Command):
+    """
+    Master setup build command to subclass from.
+    """
+
+    user_options = []
+
+    def initialize_options(self):
+        """
+        Setup the current dir.
+        """
+        self._dir = os.getcwd()
+
+    def finalize_options(self):
+        """
+        Set final values for all the options that this command supports.
+        """
+        pass
+
+class TODOCommand(SetupBuildCommand):
+    """
+    Quick command to show code TODO's.
+    """
+
+    description = "prints out TODO's in the code"
+
+    def run(self):
+        """
+        Prints out TODO's in the code.
+        """
+        import re
+
+        # The format of the string to print: file_path (line_no): %s line_str
+        format_str = "%s (%i): %s"
+        # regex to remove whitespace in front of TODO's
+        remove_front_whitespace = re.compile("^[ ]*(.*)$")
+
+        # Look at all non pyc files in src/ and bin/
+        for rootdir in ['./']:
+            # walk down each root directory
+            for root, dirs, files in os.walk(rootdir):
+                # for each single file in the files
+                for afile in files:
+                    # if the file doesn't end with .pyc
+                    if not afile.endswith('.pyc'):
+                        full_path = os.path.join(root, afile)
+                        fobj = open(full_path, 'r')
+                        line_no = 0
+                        # look at each line for TODO's
+                        for line in fobj.readlines():
+                            if 'todo' in line.lower():
+                                nice_line = remove_front_whitespace.match(
+                                    line).group(1)
+                                # print the info if we have a TODO
+                                print(format_str % (
+                                    full_path, line_no, nice_line))
+                            line_no += 1
 
 def setup_compiler():
     distutils.sysconfig.get_config_vars()
@@ -122,5 +182,6 @@ if __name__ == "__main__":
             "Topic :: System :: Networking",
             "Topic :: System :: Networking :: Monitoring",
           ],
+       cmdclass = {'todo': TODOCommand},
     )
 

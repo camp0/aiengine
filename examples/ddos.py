@@ -44,12 +44,12 @@ if __name__ == '__main__':
     # Load an instance of a Network Stack 
     st = pyaiengine.StackLan()
 
-    st.setTotalUDPFlows(16384)
-    st.setTotalTCPFlows(163840)
+    st.tcpflows = 327680
+    st.udpflows = 163840
 
     # Create a instace of a PacketDispatcher
     with pyaiengine.PacketDispatcher("ens7") as pd:
-        pd.setStack(st)
+        pd.stack = st
         # Sets a handler method that will be call
         # every 5 seconds for check the values
         pd.setScheduler(scheduler_handler_tcp,5)

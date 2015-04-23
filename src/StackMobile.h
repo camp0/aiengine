@@ -111,12 +111,15 @@ public:
 
 	void setTotalTCPFlows(int value);
 	void setTotalUDPFlows(int value);
+        int getTotalTCPFlows() const;
+        int getTotalUDPFlows() const;
 
 	void enableNIDSEngine(bool value);
 	void enableFrequencyEngine(bool value);
 	void enableLinkLayerTagging(std::string type);
 
 	void setFlowsTimeout(int timeout);
+	int getFlowsTimeout() const { return flow_table_tcp_->getTimeout(); }
 
 #ifdef PYTHON_BINDING
         FlowManager &getTCPFlowManager() { return *flow_table_tcp_.get();}

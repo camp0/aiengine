@@ -61,7 +61,10 @@ public:
 
       	const char *getName() const { return name_.c_str(); }
         const char *getExpression() const { return expression_.c_str(); }
-        void incrementMatchs() { ++total_matchs_; }
+      	void setName(const std::string& name) { name_ = name; }
+        void setExpression(const std::string& exp) { expression_ = exp; }
+        
+	void incrementMatchs() { ++total_matchs_; }
         int32_t getMatchs() const { return total_matchs_; }
 	int32_t getTotalEvaluates() const { return total_evaluates_;}
 

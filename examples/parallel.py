@@ -21,10 +21,10 @@ def threadHandler(netmask):
     pdis = pyaiengine.PacketDispatcher()
 
     # Plug the stack on the PacketDispatcher
-    pdis.setStack(st)
+    pdis.stack = st
 
-    st.setTotalTCPFlows(32768)
-    st.setTotalUDPFlows(16384)
+    st.tcpflows = 327680
+    st.udpflows = 163840
  
     pdis.open("re0")
     pdis.setPcapFilter(netmask)
@@ -37,7 +37,7 @@ def threadHandler(netmask):
 
     pdis.close()
 
-    st.setStatisticsLevel(5)
+    st.statslevel = 5
     f = open("statistics.log.%d" % os.getpid(),"w")
     f.write(str(st))
     f.close()

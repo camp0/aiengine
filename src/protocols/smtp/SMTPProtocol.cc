@@ -197,7 +197,6 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header
 
 	boost::string_ref h(header);
 
-	// TODO: Check the length for bogus packets
 	size_t start = h.find("<");
 	size_t end = h.rfind(">");
 

@@ -277,6 +277,28 @@ void PacketDispatcher::setPcapFilter(const std::string &filter) {
 
 #ifdef PYTHON_BINDING
 
+void PacketDispatcher::setStack(boost::python::object& stack) {
+
+	if (stack.is_none()) {
+		// The user sends a Py_None 
+		pystack_ = boost::python::object();
+		stack_name_ = "None";
+        	defMux_.reset();
+	} else {
+		boost::python::extract<SharedPointer<NetworkStack>> extractor(stack);
+
+        	if (extractor.check()) {
+        		SharedPointer<NetworkStack> pstack = extractor();
+                	pystack_ = stack;
+                
+			// The NetworkStack have been extracted and now call the setStack method
+                	setStack(pstack);
+        	} else {
+			std::cerr << "Can not extract NetworkStack from python object" << std::endl;
+		}
+	}
+}
+
 PacketDispatcher& PacketDispatcher::__enter__() {
 
 	open(input_name_);
@@ -326,12 +348,6 @@ void PacketDispatcher::forwardPacket(const std::string &packet, int length) {
 void PacketDispatcher::enableShell(bool enable) {
 
 	user_shell_->enableShell(enable);
-}
-
-void PacketDispatcher::unsetStack() {
-
-	stack_name_ = "None";
-       	defMux_.reset();
 }
 
 void PacketDispatcher::setScheduler(PyObject *callback, int seconds) {

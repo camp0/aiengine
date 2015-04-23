@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE ( test9_frequencies )
         FrequencyGroup<char*> group_by_address;
 
         group_by_address.agregateFlows(flow_mng,
-                ([] (const SharedPointer<Flow>& flow) { return flow->getDstAddrDotNotation();})
+                ([] (const SharedPointer<Flow>& flow) { return (char*)flow->getDstAddrDotNotation();})
         );
         group_by_address.compute();
 

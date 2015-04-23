@@ -67,8 +67,8 @@ public:
         	return out;
 	}
 
-	StringCache& getFrom() const { return *from.lock().get();}	
-	StringCache& getTo() const { return *to.lock().get();}	
+	const char *getFrom() const { return (from.lock() ? from.lock()->getName() : ""); }	
+	const char *getTo() const { return (to.lock() ? to.lock()->getName() : ""); }	
 #endif
 
 private:

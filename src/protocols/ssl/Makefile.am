@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS =	test_ssl.h SSLHost.h
+noinst_HEADERS =	test_ssl.h SSLInfo.h
 
 TEST = test_ssl
 

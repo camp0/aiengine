@@ -87,8 +87,8 @@ AIEngine supports five types of Network stacks depending on the network topology
 
 - StackOpenFlow (oflow) Stack for openflow environments.
 
-Integrating AIEngine with other systems 
----------------------------------------
+Integrating/Programa AIEngine with other systems 
+------------------------------------------------
 
 AIEngine is a python module also that allows to be more flexible in terms of integration with other systems and functionalities.
 The main objects that the python module provide are the following ones.
@@ -102,6 +102,8 @@ The main objects that the python module provide are the following ones.
         Frequencies
         FrequencyGroup
         HTTPInfo
+        HTTPUriSet
+        IMAPInfo
         IPAbstractSet (Abstract class)
             IPSet
         IPSetManager
@@ -112,13 +114,14 @@ The main objects that the python module provide are the following ones.
             StackMobile
             StackOpenFlow
             StackVirtual
+        POPInfo
         PacketDispatcher
         PacketFrequencies
         Regex
         RegexManager
         SIPInfo
         SMTPInfo
-        StringCache
+        SSLInfo
 
 For a complete description of the class methods 
 
@@ -128,13 +131,33 @@ For a complete description of the class methods
 Check the configuration wiki pages or the examples directory in order to have more complex examples.
 [https://bitbucket.org/camp0/aiengine/wiki/Configurations Configurations]
 
-Compile AIEngine
-----------------
+Compile AIEngine binary
+-----------------------
 
     $ git clone https://bitbucket.com/camp0/aiengine
     $ ./autogen.sh
     $ ./configure
     $ make
+
+Compile AIEngine library
+------------------------
+
+The first option for compile the library is using O3 compile optimization, this will generate a small library
+
+    $ git clone https://bitbucket.com/camp0/aiengine
+    $ ./autogen.sh
+    $ ./configure
+    $ make python
+
+The second option will compile the library by ussing the standard pythonic way by using setup.py, this will generate
+a bigger library size if compare with the previous one.
+
+    $ git clone https://bitbucket.com/camp0/aiengine
+    $ ./autogen.sh
+    $ ./configure
+    $ cd src
+    $ python setup.py build_ext -i 
+    
 
 Contributing to AIEngine 
 -------------------------

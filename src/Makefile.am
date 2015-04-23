@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
 
+all: aiengine
+
 python_PYTHON = pyai_tests.py
 
 # EXTRA_FLAGS = -flto not supported on the freebsd compiler
@@ -181,9 +183,14 @@ tests_CPPFLAGS = $(BOOST_CPPFLAGS)
 # Dont forget to put -lgcov if need on test_LDADD
 tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread 
 
-BUILT_SOURCES = $(srcdir)/pyaiengine.so
+CLEANFILES = *.o *.lo *.so
 
-$(srcdir)/pyaiengine.so: py_wrapper.cc
+MAINTAINERCLEANFILES = \
+        $(srcdir)/Makefile \
+        $(srcdir)/Makefile.in \
+        `rm -rf $(srcdir)/build `
+
+python:
 	@echo "**************************************************************************************"
 	@echo "* Depending on your machine this compilation could take some time, please be patient.*"
 	@echo "* You can use alternatively the setup.py script (python setup.py build_ext -i).      *"
@@ -197,11 +204,4 @@ $(srcdir)/pyaiengine.so: py_wrapper.cc
 		-l$(BOOST_PYTHON_LIB) \
 		`pkg-config --libs python-$(PYTHON_VERSION)` -lpcap \
 		$(LOG4CXX_FLAGS) $(PCRE_LIB) -o pyaiengine.so -shared
-
-CLEANFILES = *.o *.lo *.so
-
-MAINTAINERCLEANFILES = \
-        $(srcdir)/Makefile \
-        $(srcdir)/Makefile.in \
-        `rm -rf $(srcdir)/build `
 

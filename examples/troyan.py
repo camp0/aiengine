@@ -12,7 +12,7 @@ sys.path.append("../src/")
 import pyaiengine
 
 def callback_troyan_activity(flow):
-    ip = str(flow).split(":")[0]
+    ip = flow.srcip
 
     print("Detected OSX_DocksterTrojan on ip:",ip)
 
@@ -54,15 +54,15 @@ if __name__ == '__main__':
     st.setDomainNameManager(dm,"DNSProtocol")
     st.setTCPRegexManager(r_mng)
 
-    st.setTotalTCPFlows(327680)
-    st.setTotalUDPFlows(163840)
+    st.tcpflows = 327680
+    st.udpflows = 163840
 
     with pyaiengine.PacketDispatcher("/home/luis/pcapfiles/troyan/OSX_DocksterTrojan.pcap") as pd:
-        pd.setStack(st)
+        pd.stack = st
         pd.run()
 
     # Dump on file the statistics of the stack
-    st.setStatisticsLevel(5)
+    st.statslevel = 5
     f = open("statistics.log","w")
     f.write(str(st))
     f.close()

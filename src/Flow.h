@@ -43,6 +43,7 @@
 #include "protocols/tcp/TCPInfo.h"
 #include "protocols/gprs/GPRSInfo.h"
 #include "protocols/http/HTTPInfo.h"
+#include "protocols/ssl/SSLInfo.h"
 #include "protocols/smtp/SMTPInfo.h"
 #include "protocols/imap/IMAPInfo.h"
 #include "protocols/pop/POPInfo.h"
@@ -90,8 +91,8 @@ public:
 	uint16_t getSourcePort() const { return source_port_;}
 	uint16_t getDestinationPort() const { return dest_port_;}
 	uint16_t getProtocol() const { return protocol_;}
-        char* getSrcAddrDotNotation() const { return address_.getSrcAddrDotNotation();}
-        char* getDstAddrDotNotation() const { return address_.getDstAddrDotNotation();}
+        const char* getSrcAddrDotNotation() const { return address_.getSrcAddrDotNotation();}
+        const char* getDstAddrDotNotation() const { return address_.getDstAddrDotNotation();}
 
 	const char* getL7ProtocolName() const;
 
@@ -115,7 +116,7 @@ public:
 	WeakPointer<DNSInfo> dns_info;
 	WeakPointer<Regex> regex;
 	WeakPointer<HTTPInfo> http_info;
-	WeakPointer<StringCache> ssl_host;
+	WeakPointer<SSLInfo> ssl_info;
 	WeakPointer<SIPInfo> sip_info;
 	WeakPointer<SMTPInfo> smtp_info;
 	WeakPointer<IMAPInfo> imap_info;
@@ -163,8 +164,9 @@ public:
 	PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.lock().get();}
 	Regex& getRegex() const { return *regex.lock().get();}
 	DNSInfo& getDNSInfo() const { return *dns_info.lock().get();}
-	StringCache& getSSLHost() const { return *ssl_host.lock().get();}
+	SSLInfo& getSSLInfo() const { return *ssl_info.lock().get();}
 	SMTPInfo& getSMTPInfo() const { return *smtp_info.lock().get();}
+	POPInfo& getPOPInfo() const { return *pop_info.lock().get();}
 	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
 	const char *getFlowAnomaly() const { return AnomalyManager::getInstance()->getName(pa_); }
 #endif

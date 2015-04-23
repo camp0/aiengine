@@ -270,7 +270,7 @@ void StackMobile::setTotalTCPFlows(int value) {
 	http->createHTTPInfos(value * 0.75);
 
         // The 40% of the traffic is SSL
-        ssl->createSSLHosts(value * 0.4);
+        ssl->createSSLInfos(value * 0.4);
 
         // 5% of the traffic could be SMTP/IMAP, im really positive :D
         smtp->createSMTPInfos(value * 0.05);
@@ -288,6 +288,10 @@ void StackMobile::setTotalUDPFlows(int value) {
         // SIP values
         sip->createSIPInfos(value * 0.2);
 }
+
+int StackMobile::getTotalTCPFlows() const { return flow_cache_tcp_->getTotalFlows(); }
+
+int StackMobile::getTotalUDPFlows() const { return flow_cache_udp_high_->getTotalFlows(); }
 
 void StackMobile::enableFrequencyEngine(bool enable) {
 

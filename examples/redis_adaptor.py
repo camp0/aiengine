@@ -49,8 +49,8 @@ if __name__ == '__main__':
     # Load an instance of a Network Stack on Lan Network
     st = pyaiengine.StackLan()
 
-    st.setTotalTCPFlows(327680)
-    st.setTotalUDPFlows(163840)
+    st.tcpflows = 327680
+    st.udpflows = 163840
  
     """
      Create a redisAdaptor object. 
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     # st.setTCPDatabaseAdaptor(db,512)
 
     with pyaiengine.PacketDispatcher("eth1") as pd:
-        pd.setStack(st)
+        pd.stack = st
         pd.run()
 
     db.show()

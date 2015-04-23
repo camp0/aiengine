@@ -378,7 +378,7 @@ void StackVirtual::setTotalTCPFlows(int value) {
 	http->createHTTPInfos(value * 0.75);
 
 	// The 40% of the traffic is SSL
-	ssl->createSSLHosts(value * 0.4);
+	ssl->createSSLInfos(value * 0.4);
 
         // 5% of the traffic could be SMTP/IMAP, im really positive :D
         smtp->createSMTPInfos(value * 0.05);
@@ -388,13 +388,17 @@ void StackVirtual::setTotalTCPFlows(int value) {
 
 void StackVirtual::setTotalUDPFlows(int value) {
 
-	flow_cache_udp_->createFlows(value/32); // TODO: Recheck
+	flow_cache_udp_->createFlows(value/32); 
 	flow_cache_udp_vir_->createFlows(value);
 	dns->createDNSDomains(value/ 2);
 
         // SIP values
         sip->createSIPInfos(value * 0.2);
 }
+
+int StackVirtual::getTotalTCPFlows() const { return flow_cache_tcp_vir_->getTotalFlows(); }
+
+int StackVirtual::getTotalUDPFlows() const { return flow_cache_udp_vir_->getTotalFlows(); }
 
 void StackVirtual::enableLinkLayerTagging(std::string type) {
 

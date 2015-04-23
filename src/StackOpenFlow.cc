@@ -292,7 +292,7 @@ void StackOpenFlow::setTotalTCPFlows(int value) {
 	http->createHTTPInfos(value * 0.75);
 
         // The 40% of the traffic is SSL
-        ssl->createSSLHosts(value * 0.4);
+        ssl->createSSLInfos(value * 0.4);
 
         // 5% of the traffic could be SMTP/IMAP, im really positive :D
         smtp->createSMTPInfos(value * 0.05);
@@ -308,6 +308,10 @@ void StackOpenFlow::setTotalUDPFlows(int value) {
         // SIP values
         sip->createSIPInfos(value * 0.2);
 }
+
+int StackOpenFlow::getTotalTCPFlows() const { return flow_cache_tcp_->getTotalFlows(); }
+
+int StackOpenFlow::getTotalUDPFlows() const { return flow_cache_udp_vir_->getTotalFlows(); }
 
 void StackOpenFlow::enableFrequencyEngine(bool enable) {
 

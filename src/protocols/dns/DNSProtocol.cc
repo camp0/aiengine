@@ -169,7 +169,8 @@ int DNSProtocol::extract_domain_name(Flow *flow) {
                         dns_buffer_name_[offset-1] = dns_header_->data[offset];
                 }
                 ++offset;
-                // TODO: extra check for bogus packets check length
+
+                // Extra check for bogus packets 
                 if (offset >= MAX_DNS_BUFFER_NAME) {
                         if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
                                 flow->setPacketAnomaly(PacketAnomalyType::DNS_LONG_NAME);
@@ -267,7 +268,15 @@ void DNSProtocol::handle_standard_response(Flow *flow, DNSInfo *info, int length
                 	// Pass over the query request
                 	while (dns_header_->data[offset] != '\x00') {
                        		++offset;
-                       		// TODO: extra check for bogus packets check length
+                       	
+                		// Extra check for bogus packets
+                		if (offset >= MAX_DNS_BUFFER_NAME) {
+                        		if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                                		flow->setPacketAnomaly(PacketAnomalyType::DNS_LONG_NAME);
+                        		}
+                        		AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::DNS_LONG_NAME);
+                        		return;
+				}
                 	}
 
 			// Need to increase by 4 the generate offset due to the type and class dns fields

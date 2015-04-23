@@ -42,24 +42,25 @@ std::array <Anomaly,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMA
 }};
 
 
-void AnomalyManager::statistics() {
+void AnomalyManager::statistics(std::basic_ostream<char>& out) {
 
-	std::cout << "Packet Anomalies " << std::endl;
+	out << "Packet Anomalies " << std::endl;
 	for (int i = 1; i < static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES) ; ++i ) { 
                 const char *name = anomalies_[i].name;
                 int32_t hits = anomalies_[i].hits;
 
-                std::cout << "\t" << " Total " << name << ":" << std::right << std::setfill(' ') << std::setw(27 - strlen(name)) ;
-		std::cout << hits <<std::endl;
+                out << "\t" << "Total " << name << ":" << std::right << std::setfill(' ') << std::setw(27 - strlen(name)) ;
+		out << hits <<std::endl;
         }
 }
 
-
 void AnomalyManager::incAnomaly(PacketAnomalyType t) { 
+
 	anomalies_[static_cast<std::int8_t>(t)].hits += 1; 
 }
 
 const char *AnomalyManager::getName(PacketAnomalyType t) {
+
 	return anomalies_[static_cast<std::int8_t>(t)].name;
 }
 

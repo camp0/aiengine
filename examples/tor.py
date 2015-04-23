@@ -21,12 +21,6 @@ if __name__ == '__main__':
     # Load an instance of a Network Stack on a Lan network
     st = pyaiengine.StackLan()
 
-    # Create a instace of a PacketDispatcher
-    pdis = pyaiengine.PacketDispatcher()
-
-    # Plug the stack on the PacketDispatcher
-    pdis.setStack(st)
-
     ipset = pyaiengine.IPSet()
     ipset.setCallback(callback_tor)
 
@@ -48,19 +42,13 @@ if __name__ == '__main__':
         print("Error:",e)
 
     st.setTCPIPSetManager(ipset_mng)
-    st.setTotalTCPFlows(327680)
-    st.setTotalUDPFlows(163840)
 
-    pdis.open("eth0")
+    st.tcpflows = 327680
+    st.udpflows = 163840
 
-    try:
-        pdis.run()
-    except:
-        e = sys.exc_info()[0]
-        print("Interrupt during capturing packets:",e)
+    with pyaiengine.PacketDispatcher("eth0") as pd:
+        pd.stack = st 
+        pd.run()
 
-    pdis.close()
-
-    # st.printFlows()
     sys.exit(0)
 

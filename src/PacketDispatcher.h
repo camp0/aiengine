@@ -107,7 +107,8 @@ public:
 		user_shell_(SharedPointer<Interpreter>(new Interpreter(io_service_))),
         	scheduler_set_(false),
         	scheduler_callback_(nullptr),
-        	scheduler_seconds_(0)
+        	scheduler_seconds_(0),
+		pystack_()
 #endif
 		{	
 		setIdleFunction(std::bind(&PacketDispatcher::default_idle_function,this));
@@ -134,19 +135,23 @@ public:
 
 	void forwardPacket(const std::string &packet, int length);
 	void enableShell(bool enable);
-	void unsetStack();
 	void setScheduler(PyObject *callback, int seconds);
+
+	void setStack(boost::python::object& stack);
+	boost::python::object getStack() const { return pystack_; }
+
+#else
+        void setStack(StackLan& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock()); }
+        void setStack(StackMobile& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
+        void setStack(StackLanIPv6& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
+        void setStack(StackVirtual& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
+        void setStack(StackOpenFlow& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
 #endif
 
 	uint64_t getTotalBytes(void) const { return total_bytes_;}
 	uint64_t getTotalPackets(void) const { return total_packets_;}
 
-	void setStack(NetworkStackPtr stack) { stack_name_ = stack->getName(); setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());}
-	void setStack(StackLan& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
-	void setStack(StackMobile& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
-	void setStack(StackLanIPv6& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
-	void setStack(StackVirtual& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
-	void setStack(StackOpenFlow& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
+	void setStack(const SharedPointer<NetworkStack>& stack) { stack_name_ = stack->getName(); setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());}
 
 	void setDefaultMultiplexer(MultiplexerPtr mux); // just use for the unit tests
 	void setIdleFunction(std::function <void ()> idle_function) { idle_function_ = idle_function;}
@@ -201,6 +206,7 @@ private:
 	bool scheduler_set_;
 	PyObject *scheduler_callback_;
 	int scheduler_seconds_;
+	boost::python::object pystack_;
 #endif
 };
 

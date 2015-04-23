@@ -12,9 +12,8 @@ sys.path.append("../src/")
 import pyaiengine
 
 def callback(flow):
-    ip = str(flow).split(":")[0]
 
-    print("Detected Bitcoinminer on ip:",ip)
+    print("Detected Bitcoinminer on ip:",flow.srcip)
 
 if __name__ == '__main__':
 
@@ -33,16 +32,16 @@ if __name__ == '__main__':
 
     st.setTCPRegexManager(r_mng)
 
-    st.setTotalTCPFlows(327680)
-    st.setTotalUDPFlows(163840)
+    st.tcpflows = 327680
+    st.udpflows = 163840
 
     with pyaiengine.PacketDispatcher("/home/luis/pcapfiles/bitcoinminer.pcap") as pd:
-        pd.setStack(st) 
+        pd.stack = st 
         pd.run()
 
     st.printFlows()
     # Dump on file the statistics of the stack
-    st.setStatisticsLevel(5)
+    st.statslevel = 5
     f = open("statistics.log","w")
     f.write(str(st))
     f.close()

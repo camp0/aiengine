@@ -92,9 +92,9 @@ public:
         	return out;
 	}
 
-	StringCache& getUri() const { return *uri.lock().get();}	
-	StringCache& getHost() const { return *host.lock().get();}	
-	StringCache& getUserAgent() const { return *ua.lock().get();}	
+	const char *getUri() const { return  (uri.lock() ? uri.lock()->getName() : ""); }	
+	const char *getHostName() const { return (host.lock() ? host.lock()->getName() : ""); }	
+	const char *getUserAgent() const { return (ua.lock() ? ua.lock()->getName() : ""); }	
 #endif
 
 private:

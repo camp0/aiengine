@@ -283,7 +283,6 @@ BOOST_FIXTURE_TEST_CASE(test_case_7,StackLanTest)
 
 BOOST_FIXTURE_TEST_CASE(test_case_8,StackLanTest)
 {
-
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         FlowManagerPtr flowmgr = FlowManagerPtr(new FlowManager());
         FlowCachePtr flowcache = FlowCachePtr(new FlowCache());
@@ -311,6 +310,8 @@ BOOST_FIXTURE_TEST_CASE(test_case_8,StackLanTest)
 
 	ff_ssl_aux->addChecker(std::bind(&SSLProtocol::sslChecker,ssl_aux,std::placeholders::_1));
         ff_ssl_aux->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl_aux,std::placeholders::_1));
+
+	ssl_aux->createSSLInfos(4);
 
         pd->open("../pcapfiles/sslflow.pcap");
         pd->run();
@@ -833,7 +834,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_20,StackLanTest) // Tests for release the cach
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
 
-	ssl->createSSLHosts(4);
+	ssl->createSSLInfos(4);
 
         //flow_table_udp->setTimeout(60*60*24*365);
         //flow_table_tcp->setTimeout(60*60*24*365);
@@ -849,7 +850,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_20,StackLanTest) // Tests for release the cach
 	releaseCaches();
 
 	for (auto &f: flow_table_tcp->getFlowTable()) {
-		BOOST_CHECK(f->ssl_host.lock() == nullptr);
+		BOOST_CHECK(f->ssl_info.lock() == nullptr);
 	}
 }
 
@@ -917,13 +918,13 @@ BOOST_FIXTURE_TEST_CASE(test_case_22,StackLanTest) // Tests for release the cach
        	SharedPointer<SMTPInfo> info = f->smtp_info.lock();
 	BOOST_CHECK(info != nullptr); 
         BOOST_CHECK(f->http_info.lock() == nullptr);
-        BOOST_CHECK(f->ssl_host.lock() == nullptr);
+        BOOST_CHECK(f->ssl_info.lock() == nullptr);
 
         releaseCaches();
 
         BOOST_CHECK(f->smtp_info.lock() == nullptr);
         BOOST_CHECK(f->http_info.lock() == nullptr);
-        BOOST_CHECK(f->ssl_host.lock() == nullptr);
+        BOOST_CHECK(f->ssl_info.lock() == nullptr);
 }
 
 

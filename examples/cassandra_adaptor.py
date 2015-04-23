@@ -57,8 +57,8 @@ if __name__ == '__main__':
     # Load an instance of a Network Stack on Lan Network
     st = pyaiengine.StackMobile()
 
-    st.setTotalTCPFlows(327680)
-    st.setTotalUDPFlows(163840)
+    st.tcpflows = 327680
+    st.udpflows = 163840
  
     """
      Create a cassandraAdaptor object. 
@@ -80,7 +80,7 @@ if __name__ == '__main__':
 
     with pyaiengine.PacketDispatcher("eth0") as pd:
         """ Plug the stack on the PacketDispatcher """
-        pd.setStack(st)
+        pd.stack = st 
         pd.run()
 
     sys.exit(0)

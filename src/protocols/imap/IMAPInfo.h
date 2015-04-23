@@ -61,6 +61,8 @@ public:
 		out << "Client cmds:" << iinfo.client_commands_ << " Server cmds:" << iinfo.server_commands_;
         	return out;
 	}
+
+	const char *getUserName() const { return (user_name.lock() ? user_name.lock()->getName() : ""); }
 #endif
 
 private:

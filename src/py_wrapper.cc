@@ -106,10 +106,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setDomainNameManager",pure_virtual(setDomainNameManager1),
 			"Sets a DomainNameManager on the protocol given.")
                 .def("setDomainNameManager",pure_virtual(setDomainNameManager2))
-                .def("setTotalTCPFlows",pure_virtual(&NetworkStack::setTotalTCPFlows),
-			"Sets the maximum number of flows to be on the cache for TCP traffic.")
-                .def("setTotalUDPFlows",pure_virtual(&NetworkStack::setTotalUDPFlows),
-			"Sets the maximum number of flows to be on the cache for UDP traffic.")
               	.def("showFlows",pure_virtual(showFlowsNetworkStack),
 			"Shows the active flows of the stack.")
 		.def("enableFrequencyEngine",pure_virtual(&NetworkStack::enableFrequencyEngine),
@@ -122,8 +118,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Returns the FlowManager attached for manage the TCP Flows.")
 		.def("getUDPFlowManager",pure_virtual(&NetworkStack::getUDPFlowManager),return_internal_reference<>(),
 			"Returns the FlowManager attached for manage the UDP Flows.")
-		.def("setStatisticsLevel",pure_virtual(&NetworkStack::setStatisticsLevel),
-			"Sets the number of statistics level for the stack (1-5).")
 		.def("getStatistics",pure_virtual(statisticsByProtocol),
 			"Shows statistics given a protocol name.")
 		.def("setTCPDatabaseAdaptor",pure_virtual(setTCPDatabaseAdaptor1))
@@ -132,8 +126,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setUDPDatabaseAdaptor",pure_virtual(setUDPDatabaseAdaptor2))
 		.def("setTCPIPSetManager", pure_virtual(&NetworkStack::setTCPIPSetManager))
 		.def("setUDPIPSetManager", pure_virtual(&NetworkStack::setUDPIPSetManager))
-		.def("setFlowsTimeout", pure_virtual(&NetworkStack::setFlowsTimeout),
-			"Sets the timeouts for all the flows of the Network Stack.")
                 .def("releaseCache",pure_virtual(releaseCache),
 			"Release the cache of a specific protocol given.")
                 .def("releaseCaches",pure_virtual(releaseCaches),
@@ -157,13 +149,19 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	boost::python::class_<StackLan, bases<NetworkStack> >("StackLan",
 		"Class that implements a network stack for lan enviroments")
-		.def("getName",&StackLan::getName)
+		.def_readonly("name",&StackLan::getName)
+		.add_property("statslevel",&StackLan::getStatisticsLevel,&StackLan::setStatisticsLevel,
+			"Gets/Sets the number of statistics level for the stack (1-5).")
+		.add_property("flowstimeout",&StackLan::getFlowsTimeout,&StackLan::setFlowsTimeout,
+			"Gets/Sets the timeout for the TCP/UDP flows of the stack")
+                .add_property("tcpflows",&StackLan::getTotalTCPFlows,&StackLan::setTotalTCPFlows,
+                        "Gets/Sets the maximum number of flows to be on the cache for TCP traffic.")
+                .add_property("udpflows",&StackLan::getTotalUDPFlows,&StackLan::setTotalUDPFlows,
+                        "Gets/Sets the maximum number of flows to be on the cache for UDP traffic.")
 		.def("setUDPRegexManager",&StackLan::setUDPRegexManager)	
 		.def("setTCPRegexManager",&StackLan::setTCPRegexManager)	
                 .def("setDomainNameManager",setDomainNameManagerLan1)
                 .def("setDomainNameManager",setDomainNameManagerLan2)
-		.def("setTotalTCPFlows",&StackLan::setTotalTCPFlows)
-		.def("setTotalUDPFlows",&StackLan::setTotalUDPFlows)
 		.def(self_ns::str(self_ns::self))
 		.def("getStatistics",statisticsByProtocolLan)
 		.def("showFlows",showFlowsLan)
@@ -172,14 +170,12 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("enableNIDSEngine",&StackLan::enableNIDSEngine)
 		.def("getTCPFlowManager",&StackLan::getTCPFlowManager,return_internal_reference<>())
 		.def("getUDPFlowManager",&StackLan::getUDPFlowManager,return_internal_reference<>())
-		.def("setStatisticsLevel",&StackLan::setStatisticsLevel)
 		.def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorLan1)
 		.def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorLan2)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLan1)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLan2)
 		.def("setTCPIPSetManager", &StackLan::setTCPIPSetManager)
 		.def("setUDPIPSetManager", &StackLan::setUDPIPSetManager)
-		.def("setFlowsTimeout", &StackLan::setFlowsTimeout)
 		.def("releaseCache", releaseCacheLan)
 		.def("releaseCaches", releaseCachesLan)
 		.def("getCounters", getCountersLan)
@@ -200,13 +196,19 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
         boost::python::class_<StackMobile, bases<NetworkStack> >("StackMobile",
 		"Class that implements a network stack for mobile enviroments")
-		.def("getName",&StackMobile::getName)
+		.def_readonly("name",&StackMobile::getName)
+                .add_property("statslevel",&StackMobile::getStatisticsLevel,&StackMobile::setStatisticsLevel,
+                        "Gets/Sets the number of statistics level for the stack (1-5).")
+                .add_property("flowstimeout",&StackMobile::getFlowsTimeout,&StackMobile::setFlowsTimeout,
+                        "Gets/Sets the timeout for the TCP/UDP flows of the stack")
+                .add_property("tcpflows",&StackMobile::getTotalTCPFlows,&StackMobile::setTotalTCPFlows,
+                        "Gets/Sets the maximum number of flows to be on the cache for TCP traffic.")
+                .add_property("udpflows",&StackMobile::getTotalUDPFlows,&StackMobile::setTotalUDPFlows,
+                        "Gets/Sets the maximum number of flows to be on the cache for UDP traffic.")
 		.def("setUDPRegexManager",&StackMobile::setUDPRegexManager)	
 		.def("setTCPRegexManager",&StackMobile::setTCPRegexManager)	
                 .def("setDomainNameManager",setDomainNameManagerMobile1)
                 .def("setDomainNameManager",setDomainNameManagerMobile2)
-                .def("setTotalTCPFlows",&StackMobile::setTotalTCPFlows)
-                .def("setTotalUDPFlows",&StackMobile::setTotalUDPFlows)
 		.def(self_ns::str(self_ns::self))
 		.def("getStatistics",statisticsByProtocolMobile)
                 .def("showFlows",showFlowsMobile)
@@ -215,14 +217,12 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("enableNIDSEngine",&StackMobile::enableNIDSEngine)
 		.def("getTCPFlowManager",&StackMobile::getTCPFlowManager,return_internal_reference<>())
 		.def("getUDPFlowManager",&StackMobile::getUDPFlowManager,return_internal_reference<>())
-		.def("setStatisticsLevel",&StackMobile::setStatisticsLevel)
 		.def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorMobile1)
 		.def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorMobile2)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorMobile1)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorMobile2)
 		.def("setTCPIPSetManager", &StackMobile::setTCPIPSetManager)
 		.def("setUDPIPSetManager", &StackMobile::setUDPIPSetManager)
-		.def("setFlowsTimeout", &StackMobile::setFlowsTimeout)
 		.def("releaseCache", releaseCacheMobile)
 		.def("releaseCaches", releaseCachesMobile)
 		.def("getCounters", getCountersMobile)
@@ -244,13 +244,19 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
         boost::python::class_<StackLanIPv6, bases<NetworkStack> >("StackLanIPv6",
 		"Class that implements a network stack for lan environments with IPv6")
-		.def("getName",&StackLanIPv6::getName)
+		.def_readonly("name",&StackLanIPv6::getName)
+                .add_property("statslevel",&StackLanIPv6::getStatisticsLevel,&StackLanIPv6::setStatisticsLevel,
+                        "Gets/Sets the number of statistics level for the stack (1-5).")
+                .add_property("flowstimeout",&StackLanIPv6::getFlowsTimeout,&StackLanIPv6::setFlowsTimeout,
+                        "Gets/Sets the timeout for the TCP/UDP flows of the stack")
+                .add_property("tcpflows",&StackLanIPv6::getTotalTCPFlows,&StackLanIPv6::setTotalTCPFlows,
+                        "Gets/Sets the maximum number of flows to be on the cache for TCP traffic.")
+                .add_property("udpflows",&StackLanIPv6::getTotalUDPFlows,&StackLanIPv6::setTotalUDPFlows,
+                        "Gets/Sets the maximum number of flows to be on the cache for UDP traffic.")
                 .def("setUDPRegexManager",&StackLanIPv6::setUDPRegexManager)
                 .def("setTCPRegexManager",&StackLanIPv6::setTCPRegexManager)
                 .def("setDomainNameManager",setDomainNameManagerLanIPv61)
                 .def("setDomainNameManager",setDomainNameManagerLanIPv62)
-                .def("setTotalTCPFlows",&StackLanIPv6::setTotalTCPFlows)
-                .def("setTotalUDPFlows",&StackLanIPv6::setTotalUDPFlows)
                 .def(self_ns::str(self_ns::self))
 		.def("getStatistics",statisticsByProtocolLanIPv6)
                 .def("showFlows",showFlowsLanIPv6)
@@ -259,14 +265,12 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("enableNIDSEngine",&StackLanIPv6::enableNIDSEngine)
                 .def("getTCPFlowManager",&StackLanIPv6::getTCPFlowManager,return_internal_reference<>())
                 .def("getUDPFlowManager",&StackLanIPv6::getUDPFlowManager,return_internal_reference<>())
-                .def("setStatisticsLevel",&StackLanIPv6::setStatisticsLevel)
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorLanIPv61)
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorLanIPv62)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLanIPv61)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLanIPv62)
 		.def("setTCPIPSetManager", &StackLanIPv6::setTCPIPSetManager)
 		.def("setUDPIPSetManager", &StackLanIPv6::setUDPIPSetManager)
-		.def("setFlowsTimeout", &StackLanIPv6::setFlowsTimeout)
 		.def("releaseCache", releaseCacheLanIPv6)
 		.def("releaseCaches", releaseCachesLanIPv6)
 		.def("getCounters", getCountersLanIPv6)
@@ -287,13 +291,19 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
         boost::python::class_<StackVirtual, bases<NetworkStack> >("StackVirtual",
                 "Class that implements a network stack for cloud/virtual environments")
-                .def("getName",&StackVirtual::getName)
+                .def_readonly("name",&StackVirtual::getName)
+                .add_property("statslevel",&StackVirtual::getStatisticsLevel,&StackVirtual::setStatisticsLevel,
+                        "Gets/Sets the number of statistics level for the stack (1-5).")
+                .add_property("flowstimeout",&StackVirtual::getFlowsTimeout,&StackVirtual::setFlowsTimeout,
+                        "Gets/Sets the timeout for the TCP/UDP flows of the stack")
+                .add_property("tcpflows",&StackVirtual::getTotalTCPFlows,&StackVirtual::setTotalTCPFlows,
+                        "Gets/Sets the maximum number of flows to be on the cache for TCP traffic.")
+                .add_property("udpflows",&StackVirtual::getTotalUDPFlows,&StackVirtual::setTotalUDPFlows,
+                        "Gets/Sets the maximum number of flows to be on the cache for UDP traffic.")
                 .def("setUDPRegexManager",&StackVirtual::setUDPRegexManager)
                 .def("setTCPRegexManager",&StackVirtual::setTCPRegexManager)
                 .def("setDomainNameManager",setDomainNameManagerVirt1)
                 .def("setDomainNameManager",setDomainNameManagerVirt2)
-                .def("setTotalTCPFlows",&StackVirtual::setTotalTCPFlows)
-                .def("setTotalUDPFlows",&StackVirtual::setTotalUDPFlows)
                 .def(self_ns::str(self_ns::self))
                 .def("getStatistics",statisticsByProtocolVirt)
                 .def("showFlows",showFlowsVirtual)
@@ -302,14 +312,12 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("enableNIDSEngine",&StackVirtual::enableNIDSEngine)
                 .def("getTCPFlowManager",&StackVirtual::getTCPFlowManager,return_internal_reference<>())
                 .def("getUDPFlowManager",&StackVirtual::getUDPFlowManager,return_internal_reference<>())
-                .def("setStatisticsLevel",&StackVirtual::setStatisticsLevel)
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorVirt1)
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorVirt2)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorVirt1)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorVirt2)
                 .def("setTCPIPSetManager", &StackVirtual::setTCPIPSetManager)
                 .def("setUDPIPSetManager", &StackVirtual::setUDPIPSetManager)
-                .def("setFlowsTimeout", &StackVirtual::setFlowsTimeout)
 		.def("releaseCache", releaseCacheVirtual)
 		.def("releaseCaches", releaseCachesVirtual)
 		.def("getCounters", getCountersVirtual)
@@ -330,13 +338,19 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
         boost::python::class_<StackOpenFlow, bases<NetworkStack> >("StackOpenFlow",
                 "Class that implements a network stack for openflow environments")
-                .def("getName",&StackOpenFlow::getName)
+                .def_readonly("name",&StackOpenFlow::getName)
+                .add_property("statslevel",&StackOpenFlow::getStatisticsLevel,&StackOpenFlow::setStatisticsLevel,
+                        "Gets/Sets the number of statistics level for the stack (1-5).")
+                .add_property("flowstimeout",&StackOpenFlow::getFlowsTimeout,&StackOpenFlow::setFlowsTimeout,
+                        "Gets/Sets the timeout for the TCP/UDP flows of the stack")
+                .add_property("tcpflows",&StackOpenFlow::getTotalTCPFlows,&StackOpenFlow::setTotalTCPFlows,
+                        "Gets/Sets the maximum number of flows to be on the cache for TCP traffic.")
+                .add_property("udpflows",&StackOpenFlow::getTotalUDPFlows,&StackOpenFlow::setTotalUDPFlows,
+                        "Gets/Sets the maximum number of flows to be on the cache for UDP traffic.")
                 .def("setUDPRegexManager",&StackOpenFlow::setUDPRegexManager)
                 .def("setTCPRegexManager",&StackOpenFlow::setTCPRegexManager)
                 .def("setDomainNameManager",setDomainNameManagerOF1)
                 .def("setDomainNameManager",setDomainNameManagerOF2)
-                .def("setTotalTCPFlows",&StackOpenFlow::setTotalTCPFlows)
-                .def("setTotalUDPFlows",&StackOpenFlow::setTotalUDPFlows)
                 .def(self_ns::str(self_ns::self))
                 .def("getStatistics",statisticsByProtocolOF)
                 .def("showFlows",showFlowsOpenFlow)
@@ -345,14 +359,12 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("enableNIDSEngine",&StackOpenFlow::enableNIDSEngine)
                 .def("getTCPFlowManager",&StackOpenFlow::getTCPFlowManager,return_internal_reference<>())
                 .def("getUDPFlowManager",&StackOpenFlow::getUDPFlowManager,return_internal_reference<>())
-                .def("setStatisticsLevel",&StackOpenFlow::setStatisticsLevel)
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorOF1)
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorOF2)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorOF1)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorOF2)
                 .def("setTCPIPSetManager", &StackOpenFlow::setTCPIPSetManager)
                 .def("setUDPIPSetManager", &StackOpenFlow::setUDPIPSetManager)
-                .def("setFlowsTimeout", &StackOpenFlow::setFlowsTimeout)
                 .def("releaseCache", releaseCacheOpenFlow)
                 .def("releaseCaches", releaseCachesOpenFlow)
                 .def("getCounters", getCountersOpenFlow)
@@ -375,16 +387,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
 	// for overload the methods within the class
-	void (PacketDispatcher::*setStackLan)(StackLan&) = 		&PacketDispatcher::setStack;
-	void (PacketDispatcher::*setStackMobile)(StackMobile&) = 	&PacketDispatcher::setStack;
-	void (PacketDispatcher::*setStackLanIPv6)(StackLanIPv6&) = 	&PacketDispatcher::setStack;
-	void (PacketDispatcher::*setStackVirtual)(StackVirtual&) = 	&PacketDispatcher::setStack;
-	void (PacketDispatcher::*setStackOpenFlow)(StackOpenFlow&) = 	&PacketDispatcher::setStack;
+	void (PacketDispatcher::*setStackPtr)(boost::python::object&) = 	&PacketDispatcher::setStack;
 
 	boost::python::class_<PacketDispatcher, boost::noncopyable>("PacketDispatcher",
 		"Class that manage the packets and forwards to the associated network stack")
 		.def(init<>())	// Default constructor
                 .def(init<const std::string&>()) // Constructor for using with the 'with' statement
+		.add_property("stack", &PacketDispatcher::getStack, setStackPtr,
+			"Gets/Sets the Network stack on the PacketDispatcher.")
 		.def("open",&PacketDispatcher::open,
 			"Opens a network device or a pcap file")
 		.def("close",&PacketDispatcher::close,
@@ -397,12 +407,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Sets a pcap filter on the PacketDispatcher")
 		.def("forwardPacket",&PacketDispatcher::forwardPacket,
 			"Forwards the received packet to a external packet engine(Netfilter)")
-		.def("setStack",setStackLan)
-		.def("setStack",setStackMobile)
-		.def("setStack",setStackLanIPv6)
-		.def("setStack",setStackVirtual)
-		.def("setStack",setStackOpenFlow)
-		.def("unsetStack",&PacketDispatcher::unsetStack)
 		.def("enableShell",&PacketDispatcher::enableShell,
 			"Enables a python shell in order to interact with the system on real time")
 		.def("setScheduler",&PacketDispatcher::setScheduler,
@@ -426,34 +430,34 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	boost::python::class_<FlowManager,SharedPointer<FlowManager>,boost::noncopyable >("FlowManager")
 		.def("__iter__",boost::python::range(&FlowManager::begin,&FlowManager::end))
 		.def("__len__", &FlowManager::getTotalFlows)
-		.def("getTotalFlows", &FlowManager::getTotalFlows)
-		.def("getTotalProcessFlows", &FlowManager::getTotalProcessFlows)
-		.def("getTotalTimeoutFlows", &FlowManager::getTotalTimeoutFlows)
+		.add_property("flows", &FlowManager::getTotalFlows)
+		.add_property("processflows", &FlowManager::getTotalProcessFlows)
+		.add_property("timeoutflows", &FlowManager::getTotalTimeoutFlows)
 		.def(self_ns::str(self_ns::self))
 	;
 	
 	boost::python::class_<Flow,SharedPointer<Flow>>("Flow",
 		"Class that keeps all the relevant information of a network flow.")
-		.def("getProtocol",&Flow::getProtocol,
-			"Returns the protocol of the flow (tcp,udp).")
-		.def("getDestinationPort",&Flow::getDestinationPort,
-			"Returns the protocol of the flow (tcp,udp).")
-		.def("getSourcePort",&Flow::getSourcePort,
-			"Returns the source port.")
-		.def("getDestinationAddress",&Flow::getDestinationAddress,
-			"Returns the destination IP address.")
-		.def("getSourceAddress",&Flow::getSourceAddress,
-			"Returns the source IP address.")
-		.def("getTotalPacketsLayer7",&Flow::getTotalPacketsLayer7,
-			"Returns the total number of layer7 packets.")
-		.def("getTotalPackets",&Flow::getTotalPackets,
-			"Returns the total number of packets on the flow.")
-		.def("getTotalBytes",&Flow::getTotalBytes,
-			"Returns the total number of bytes.")
-		.def("haveTag",&Flow::haveTag,
-			"Returns if the flow have tag from lower network layers.")
-		.def("getTag",&Flow::getTag,
-			"Returns the tag from lower network layers.")
+		.add_property("protocol",&Flow::getProtocol,
+			"Gets the protocol of the flow (tcp,udp).")
+		.add_property("dstport",&Flow::getDestinationPort,
+			"Gets the protocol of the flow (tcp,udp).")
+		.add_property("srcport",&Flow::getSourcePort,
+			"Gets the source port.")
+		.add_property("dstip",&Flow::getDstAddrDotNotation,
+			"Gets the destination IP address.")
+		.add_property("srcip",&Flow::getSrcAddrDotNotation,
+			"Gets the source IP address.")
+		.add_property("packetslayer7",&Flow::getTotalPacketsLayer7,
+			"Gets the total number of layer7 packets.")
+		.add_property("packets",&Flow::getTotalPackets,
+			"Gets the total number of packets on the flow.")
+		.add_property("bytes",&Flow::getTotalBytes,
+			"Gets the total number of bytes.")
+		.add_property("havetag",&Flow::haveTag,
+			"Gets if the flow have tag from lower network layers.")
+		.add_property("tag",&Flow::getTag,
+			"Gets the tag from lower network layers.")
 		.def("getHTTPInfo",&Flow::getHTTPInfo,return_internal_reference<>(),
 			"Returns the HTTP Info of the flow if the flow is HTTP.")
 		.def("getSIPInfo",&Flow::getSIPInfo,return_internal_reference<>(),
@@ -466,8 +470,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Returns the packet frequencies of the flow.")
 		.def("getDNSInfo",&Flow::getDNSInfo,return_internal_reference<>(),
 			"Returns the DNS info name if the flow is a DNS.")
-		.def("getSSLHost",&Flow::getSSLHost,return_internal_reference<>(),
-			"Returns the CA domain name if the flow is SSL.")
+		.def("getSSLInfo",&Flow::getSSLInfo,return_internal_reference<>(),
+			"Returns the SSL info if the flow is SSL.")
 		.def("getRegex",&Flow::getRegex,return_internal_reference<>(),
 			"Returns the regex if the flow have been matched with the associated regex.")
 		.def("getPayload",&Flow::getPayload,
@@ -483,62 +487,80 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	boost::python::class_<DNSInfo, SharedPointer<DNSInfo>,boost::noncopyable>("DNSInfo")
 		.def("__iter__",boost::python::range(&DNSInfo::begin,&DNSInfo::end))
-                .def("getName",&DNSInfo::getName,return_internal_reference<>(),
-			"Returns the DNS domain name.")
+		.add_property("domainname", &DNSInfo::getDomainName,
+				"Gets the DNS domain name.")
 		.def(self_ns::str(self_ns::self))
 	;
 
-	boost::python::class_<HTTPInfo, SharedPointer<HTTPInfo>, boost::noncopyable>("HTTPInfo")
-                .def("getUri",&HTTPInfo::getUri,return_internal_reference<>(),
-                      	"Returns the HTTP URI of the flow if the flow is HTTP.")
-                .def("getHost",&HTTPInfo::getHost,return_internal_reference<>(),
-                      	"Returns the HTTP Host of the flow if the flow is HTTP.")
-                .def("getUserAgent",&HTTPInfo::getUserAgent,return_internal_reference<>(),
-                      	"Returns the HTTP UserAgent of the flow if the flow is HTTP.")
-		.def("setBanned",&HTTPInfo::setBanAndRelease,
-		     	"Sets the flow to banned for no more analysis on the python side and release resources.")
-	;
+        boost::python::class_<SSLInfo, SharedPointer<SSLInfo>,boost::noncopyable>("SSLInfo")
+                .add_property("servername",&SSLInfo::getServerName,
+                        "Gets the SSL server name.")
+                .def(self_ns::str(self_ns::self))
+        ;
 
+	boost::python::class_<HTTPInfo, SharedPointer<HTTPInfo>, boost::noncopyable>("HTTPInfo")
+                .add_property("uri",&HTTPInfo::getUri,
+                        "Gets the HTTP URI of the flow if the flow is HTTP.")
+                .add_property("hostname",&HTTPInfo::getHostName,
+                        "Gets the HTTP Host of the flow if the flow is HTTP.")
+                .add_property("useragent",&HTTPInfo::getUserAgent,
+                        "Gets the HTTP UserAgent of the flow if the flow is HTTP.")
+                .add_property("banned",&HTTPInfo::getIsBanned,&HTTPInfo::setBanAndRelease,
+                        "Gets and sets the flow banned for no more analysis on the python side and release resources.")
+                .def(self_ns::str(self_ns::self))
+	;
+	
         boost::python::class_<HTTPUriSet, SharedPointer<HTTPUriSet>, boost::noncopyable>("HTTPUriSet")
 		.def(init<>())
 		.def(init<const std::string&>())
                 .def("addURI",&HTTPUriSet::addURI,
                         "Adds a URI to the HTTPUriSet.")
-		.def("getTotalURIs",&HTTPUriSet::getTotalURIs,
-			"Returns the total number of URIs on the set.")
-		.def("getTotalLookups",&HTTPUriSet::getTotalLookups,
-			"Returns the total number of lookups of the set.")
-		.def("getTotalLookupsIn",&HTTPUriSet::getTotalLookupsIn,
-			"Returns the total number of matched lookups of the set.")
-		.def("getTotalLookupsOut",&HTTPUriSet::getTotalLookupsOut,
-			"Returns the total number of non matched lookups of the set.")
+		.add_property("uris",&HTTPUriSet::getTotalURIs,
+			"Gets the total number of URIs on the set.")
+		.add_property("lookups",&HTTPUriSet::getTotalLookups,
+			"Gets the total number of lookups of the set.")
+		.add_property("lookupsin",&HTTPUriSet::getTotalLookupsIn,
+			"Gets the total number of matched lookups of the set.")
+		.add_property("lookupsout",&HTTPUriSet::getTotalLookupsOut,
+			"Gets the total number of non matched lookups of the set.")
                 .def("setCallback",&HTTPUriSet::setCallback,
                         "Sets a callback function for the matching set.")
 		.def(self_ns::str(self_ns::self))
         ;
 
         boost::python::class_<SIPInfo, SharedPointer<SIPInfo>, boost::noncopyable>("SIPInfo")
-                .def("getUri",&SIPInfo::getUri,return_internal_reference<>(),
-                        "Returns the SIP URI of the flow if the flow is SIP.")
-                .def("getFrom",&SIPInfo::getFrom,return_internal_reference<>(),
-                        "Returns the SIP From of the flow if the flow is SIP.")
-                .def("getTo",&SIPInfo::getTo,return_internal_reference<>(),
-                        "Returns the SIP To of the flow if the flow is SIP.")
-                .def("getVia",&SIPInfo::getVia,return_internal_reference<>(),
-                        "Returns the SIP Via of the flow if the flow is SIP.")
-        ;
-
-        boost::python::class_<SMTPInfo, SharedPointer<SMTPInfo>, boost::noncopyable>("SMTPInfo")
-                .def("getFrom",&SMTPInfo::getFrom,return_internal_reference<>(),
-                        "Returns the Mail From of the flow if the flow is SMTP.")
-                .def("getTo",&SMTPInfo::getTo,return_internal_reference<>(),
-                        "Returns the Rcpt To of the flow if the flow is SMTP.")
-        ;
-
-
-	boost::python::class_<StringCache, SharedPointer<StringCache>,boost::noncopyable>("StringCache")
+                .add_property("uri",&SIPInfo::getUri,
+                        "Gets the SIP URI of the flow if the flow is SIP.")
+                .add_property("fromname",&SIPInfo::getFrom,
+                        "Gets the SIP From of the flow if the flow is SIP.")
+                .add_property("toname",&SIPInfo::getTo,
+                        "Gets the SIP To of the flow if the flow is SIP.")
+                .add_property("via",&SIPInfo::getVia,
+                        "Gets the SIP Via of the flow if the flow is SIP.")
 		.def(self_ns::str(self_ns::self))
-	;
+        ;
+	
+        boost::python::class_<SMTPInfo, SharedPointer<SMTPInfo>, boost::noncopyable>("SMTPInfo")
+                .add_property("mailfrom",&SMTPInfo::getFrom,
+                        "Gets the Mail From of the flow if the flow is SMTP.")
+                .add_property("mailto",&SMTPInfo::getTo,
+                        "Gets the Rcpt To of the flow if the flow is SMTP.")
+		.add_property("banned",&SMTPInfo::getIsBanned, &SMTPInfo::setIsBanned,
+                        "Gets or Sets the banned of the flow.")
+		.def(self_ns::str(self_ns::self))
+        ;
+
+        boost::python::class_<POPInfo, SharedPointer<POPInfo>, boost::noncopyable>("POPInfo")
+                .add_property("username",&POPInfo::getUserName,
+                        "Gets the user name of the POP session if the flow is POP.")
+		.def(self_ns::str(self_ns::self))
+        ;
+
+       	boost::python::class_<IMAPInfo, SharedPointer<IMAPInfo>, boost::noncopyable>("IMAPInfo")
+                .add_property("username",&POPInfo::getUserName,
+                        "Gets the user name of the IMAP session if the flow is IMAP.")
+		.def(self_ns::str(self_ns::self))
+        ;
 
 	boost::python::class_<Frequencies, SharedPointer<Frequencies>, boost::noncopyable>("Frequencies")
 		.def("getDispersion",&Frequencies::getDispersion)
@@ -551,7 +573,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("getPacketFrequenciesString",&PacketFrequencies::getPacketFrequenciesString)
 		.def(self_ns::str(self_ns::self))
 	;
-
 
         boost::python::class_<DomainName, SharedPointer<DomainName>, boost::noncopyable>("DomainName",init<const std::string&,const std::string&>())
                 .def("getExpression",&DomainName::getExpression,return_value_policy<return_by_value>(),

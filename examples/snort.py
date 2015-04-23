@@ -14,7 +14,7 @@ import pyaiengine
 
 def callback(flow):
 
-    ip = str(flow).split(":")[0]
+    ip = flow.srcip
     r = flow.getRegex()
     if(r):
         print("Detection of ", r.getName(), " on ",ip) 
@@ -77,12 +77,12 @@ if __name__ == '__main__':
      pdis = pyaiengine.PacketDispatcher()
 
      # Plug the stack on the PacketDispatcher
-     pdis.setStack(st)
+     pdis.stack = st
 
      r_tcp,r_udp = loadRegexFromSnort()
 
-     st.setTotalUDPFlows(16384)
-     st.setTotalTCPFlows(16384)
+     st.tcpflows = 327680
+     st.udpflows = 163840
 
      st.setTCPRegexManager(r_tcp)
      st.setUDPRegexManager(r_udp)

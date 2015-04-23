@@ -60,10 +60,10 @@ public:
         	return out;
 	}
 
-	StringCache& getUri() const { return *uri.lock().get();}	
-	StringCache& getFrom() const { return *from.lock().get();}	
-	StringCache& getTo() const { return *to.lock().get();}	
-	StringCache& getVia() const { return *via.lock().get();}	
+	const char *getUri() const { return uri.lock()->getName();}	
+	const char *getFrom() const { return from.lock()->getName();}	
+	const char *getTo() const { return to.lock()->getName();}	
+	const char *getVia() const { return via.lock()->getName();}	
 #endif
 
 private:

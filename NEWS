@@ -107,4 +107,4 @@ Features/Changes of 1.2
 - Performance improvements on the DomainNameManager getDomainName lookups.
 - Add the HTTPUriSet functionality for lookups on HTTP Uris.
 - IMAP, POP and SNMP(basic) support.
-- Improvements on the python API.
+- Improvements on the python API (more Pythonic).

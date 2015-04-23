@@ -47,13 +47,13 @@ if __name__ == '__main__':
 
     st.setTCPRegexManager(sm)
 
-    st.setTotalTCPFlows(327680)
-    st.setTotalUDPFlows(163840)
+    st.tcpflows = 327680
+    st.udpflows = 163840
 
     st.enableNIDSEngine(True)
 
     with pyaiengine.PacketDispatcher("eth0") as pd:
-        pd.setStack(st)
+        pd.stack = st
         pd.run()
 
     sys.exit(0)

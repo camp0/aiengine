@@ -22,9 +22,9 @@ def queryFlows(flows,cond):
     for flow in flows:
         t_flows += 1
         if (eval(cond)):
-            m_bytes += flow.getTotalBytes()
+            m_bytes += flow.bytes
             m_flows += 1
-        t_bytes += flow.getTotalBytes()
+        t_bytes += flow.bytes
 
     print("Total bytes       %d , flows       %d " % (t_bytes,t_flows))
     print("Total query bytes %d , query flows %d " % (m_bytes,m_flows))
@@ -38,10 +38,10 @@ if __name__ == '__main__':
     pdis = pyaiengine.PacketDispatcher()
 
     # Plug the stack on the PacketDispatcher
-    pdis.setStack(st)
+    pdis.stack = st
 
-    st.setTotalUDPFlows(80000)
-    st.setTotalTCPFlows(200000)
+    st.tcpflows = 327680
+    st.udpflows = 163840
 
     flows_tcp = st.getTCPFlowManager()    
     flows_udp = st.getUDPFlowManager()    

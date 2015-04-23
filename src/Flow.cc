@@ -60,7 +60,7 @@ void Flow::reset() {
 	forwarder.reset();
 	frequencies.reset();
 	http_info.reset();
-	ssl_host.reset();
+	ssl_info.reset();
 	sip_info.reset();
 	smtp_info.reset();
 	imap_info.reset();
@@ -109,8 +109,8 @@ void Flow::serialize(std::ostream& stream) {
                         	stream << ",\"h\":\"" << info->host.lock()->getName() << "\"";
 		}
 
-                if(ssl_host.lock())
-                        stream << ",\"s\":\"" << ssl_host.lock()->getName() << "\"";
+                if(ssl_info.lock())
+                        stream << ",\"s\":\"" << ssl_info->host.lock()->getName() << "\"";
 
         } else { // UDP
                 if(dns_info.lock()) {
@@ -155,8 +155,10 @@ void Flow::serialize(std::ostream& stream) {
 				stream << ",\"httphost\":\"" << info->host.lock()->getName() << "\"";
 		}	
 
-		if(ssl_host.lock())	
-			stream << ",\"sslhost\":\"" << ssl_host.lock()->getName() << "\"";
+		if(ssl_info.lock()){
+			SharedPointer<SSLInfo> sinfo = ssl_info.lock();	
+			stream << ",\"sslhost\":\"" << sinfo->host.lock()->getName() << "\"";
+		}
 
 	} else { // UDP
 		if(dns_info.lock()) {
@@ -190,13 +192,14 @@ void Flow::showFlowInfo(std::ostream& out) {
 
         	SharedPointer<HTTPInfo> hinfo = http_info.lock();
         	if (hinfo) {
-                	out << "REQ(" << hinfo->getTotalRequests() << ")RES(" << hinfo->getTotalResponses() << ") ";
+                	out << " REQ(" << hinfo->getTotalRequests() << ")RES(" << hinfo->getTotalResponses() << ") ";
                 	if (hinfo->getIsBanned()) out << " Banned ";
                 	if (hinfo->host.lock()) out << "Host:" << hinfo->host.lock()->getName();
                 	if (hinfo->ua.lock()) out << " UserAgent:" << hinfo->ua.lock()->getName();
         	} else {
-        		if (ssl_host.lock()) {
-				 out << " Host:" << ssl_host.lock()->getName();
+			SharedPointer<SSLInfo> sinfo = ssl_info.lock();
+        		if (sinfo) {
+				 out << " Pdus:" << sinfo->getTotalDataPdus() << " Host:" << sinfo->host.lock()->getName();
 			} else {
 				SharedPointer<SMTPInfo> sinfo = smtp_info.lock();
 				if (sinfo) {

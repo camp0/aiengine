@@ -33,7 +33,7 @@
 #include "log4cxx/logger.h"
 #endif
 #include "Protocol.h"
-#include "StringCache.h"
+#include "SSLInfo.h"
 #include "Cache.h"
 #include <netinet/ip.h>
 #include <netinet/in.h>
@@ -108,6 +108,7 @@ public:
 		total_client_hellos_(0),total_server_hellos_(0),
 		total_certificates_(0),total_records_(0),total_ban_hosts_(0),
 		total_allow_hosts_(0),
+		info_cache_(new Cache<SSLInfo>("Info cache")),
 		host_cache_(new Cache<StringCache>("Host cache")),
 		host_map_(),
 		domain_mng_(),ban_domain_mng_(),
@@ -159,8 +160,8 @@ public:
 	int32_t getTotalBanHosts() const { return total_ban_hosts_; }
 	int32_t getTotalAllowHosts() const { return total_allow_hosts_; }
 
-        void createSSLHosts(int number) { host_cache_->create(number);}
-        void destroySSLHosts(int number) { host_cache_->destroy(number);}
+        void createSSLInfos(int number);
+        void destroySSLInfos(int number);
 
 	void setDomainNameManager(DomainNameManagerPtrWeak dnm) override { domain_mng_ = dnm;}
 	void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) override { ban_domain_mng_ = dnm;}
@@ -174,6 +175,9 @@ public:
 #endif
 
 private:
+        void release_ssl_info_cache(SSLInfo *info);
+        int32_t release_ssl_info(SSLInfo *info);
+
 	int stats_level_;
 	ssl_record *ssl_header_;
         int64_t total_bytes_;
@@ -184,6 +188,7 @@ private:
 	int32_t total_ban_hosts_;
 	int32_t total_allow_hosts_;
 
+	Cache<SSLInfo>::CachePtr info_cache_;
 	Cache<StringCache>::CachePtr host_cache_;
 
         GenericMapType host_map_;
@@ -192,11 +197,11 @@ private:
         DomainNameManagerPtrWeak ban_domain_mng_;
 	FlowManagerPtrWeak flow_mng_;
 
-	void handle_client_hello(Flow *flow,int offset, unsigned char *data);
-	void handle_server_hello(Flow *flow,int offset, unsigned char *data);
-	void handle_certificate(Flow *flow,int offset, unsigned char *data);
+	void handle_client_hello(SSLInfo *info,int length,int offset, unsigned char *data);
+	void handle_server_hello(SSLInfo *info,int offset, unsigned char *data);
+	void handle_certificate(SSLInfo *info,int offset, unsigned char *data);
 
-	void attach_host_to_flow(Flow *flow, boost::string_ref &servername); 
+	void attach_host(SSLInfo *info, boost::string_ref &servername); 
 
 #ifdef HAVE_LIBLOG4CXX
         static log4cxx::LoggerPtr logger;

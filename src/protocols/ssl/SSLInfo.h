@@ -21,40 +21,57 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#ifndef SRC_PROTOCOLS_SSL_SSLHOST_H_
-#define SRC_PROTOCOLS_SSL_SSLHOST_H_
+#ifndef SRC_PROTOCOLS_SSL_SSLINFO_H_
+#define SRC_PROTOCOLS_SSL_SSLINFO_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
 #include <iostream>
+#include "StringCache.h"
 
 namespace aiengine {
 
-class SSLHost 
+class SSLInfo
 {
 public:
-    	explicit SSLHost(const std::string& name):host_name_(name) {}
-    	explicit SSLHost() { reset(); }
-    	virtual ~SSLHost() {}
+        explicit SSLInfo() { reset(); }
+        virtual ~SSLInfo() {}
 
-	void reset() { host_name_ = ""; }	
-	std::string &getName() { return host_name_; }
-	const char *getName() const { return host_name_.c_str(); }
-	void setName(const std::string& name) { host_name_ = name;}
+        void reset() {
+                host.reset();
+		is_banned_ = false;
+		data_pdus_ = 0;
+        }
+
+        WeakPointer<StringCache> host;
+
+        void setIsBanned(bool value) { is_banned_ = value; }
+        bool getIsBanned() const { return is_banned_; }
+
+	void incDataPdus() { ++data_pdus_; }
+	int32_t getTotalDataPdus() const { return data_pdus_; }
 
 #ifdef PYTHON_BINDING
-	friend std::ostream& operator<< (std::ostream& out, const SSLHost& host) {
-	
-		out << host.host_name_;
-        	return out;
-	}
+
+        friend std::ostream& operator<< (std::ostream& out, const SSLInfo& sinfo) {
+
+		out << " DataPdus:" << sinfo.data_pdus_;
+                if (sinfo.host.lock())
+                        out << " Host:" << sinfo.getServerName() << " ";
+
+                return out;
+        }
+
+        const char *getServerName() const { return host.lock()->getName();}
 #endif
+
 private:
-	std::string host_name_;
+	bool is_banned_;
+	int32_t data_pdus_;
 };
 
 } // namespace aiengine  
 
-#endif  // SRC_PROTOCOLS_SSL_SSLHOST_H_
+#endif  // SRC_PROTOCOLS_SSL_SSLINFO_H_

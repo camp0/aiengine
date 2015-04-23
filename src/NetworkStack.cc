@@ -195,7 +195,8 @@ std::ostream& operator<< (std::ostream& out, const NetworkStack& ns) {
 			out << std::endl;
 		});
 		// Print the PacketAnomailes
-		AnomalyManager::getInstance()->statistics();
+		AnomalyManager::getInstance()->statistics(out);
+		out << std::endl;
         }
         return out;
 }
