@@ -87,11 +87,11 @@ AIEngine supports five types of Network stacks depending on the network topology
 
 - StackOpenFlow (oflow) Stack for openflow environments.
 
-Integrating/Programa AIEngine with other systems 
+Integrating/Program AIEngine with other systems 
 ------------------------------------------------
 
 AIEngine is a python module also that allows to be more flexible in terms of integration with other systems and functionalities.
-The main objects that the python module provide are the following ones.
+The main objects that the python module provide export are the following ones.
 
         DNSInfo
         DatabaseAdaptor (Abstract class)
@@ -147,9 +147,10 @@ The first option for compile the library is using O3 compile optimization, this 
     $ git clone https://bitbucket.com/camp0/aiengine
     $ ./autogen.sh
     $ ./configure
+    $ cd src
     $ make python
 
-The second option will compile the library by ussing the standard pythonic way by using setup.py, this will generate
+The second option will compile the library by using the standard pythonic way by using setup.py, this will generate
 a bigger library size if compare with the previous one.
 
     $ git clone https://bitbucket.com/camp0/aiengine
