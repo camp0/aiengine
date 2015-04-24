@@ -87,21 +87,21 @@ class StackLanTests(unittest.TestCase):
         self.dis.run();
         self.dis.close();
 
-        self.assertEqual(r.getMatchs(), 1)
+        self.assertEqual(r.matchs, 1)
 
     def test2(self):
         """ Create a regex for netbios with callback """
         def callback(flow):
             self.called_callback += 1 
             r = flow.getRegex()
-            self.assertEqual(r.getMatchs(),1)
-            self.assertEqual(r.getName(), "netbios")
+            self.assertEqual(r.matchs,1)
+            self.assertEqual(r.name, "netbios")
     
         self.s.enableLinkLayerTagging("vlan")
 
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("netbios","CACACACA")
-        r.setCallback(callback)
+        r.callback = callback
         rm.addRegex(r)
         self.s.setUDPRegexManager(rm)
 
@@ -109,7 +109,7 @@ class StackLanTests(unittest.TestCase):
         self.dis.run();
         self.dis.close();
 
-        self.assertEqual(r.getMatchs(), 1)
+        self.assertEqual(r.matchs, 1)
         self.assertEqual(self.called_callback, 1)
 
     def test3(self):
@@ -174,7 +174,7 @@ class StackLanTests(unittest.TestCase):
             self.called_callback += 1 
 
         d = pyaiengine.DomainName("Google Drive Cert",".drive.google.com")
-        d.setCallback(domain_callback)
+        d.callback = domain_callback
 
         dm = pyaiengine.DomainNameManager()
         dm.addDomainName(d)
@@ -185,8 +185,8 @@ class StackLanTests(unittest.TestCase):
         self.dis.run();
         self.dis.close();
 
-        self.assertEqual(dm.getTotalDomains(), 1)
-        self.assertEqual(d.getMatchs() , 1)
+        self.assertEqual(len(dm), 1)
+        self.assertEqual(d.matchs , 1)
         self.assertEqual(self.called_callback, 1)
 
     def test6(self):
@@ -200,13 +200,13 @@ class StackLanTests(unittest.TestCase):
 
         ip = pyaiengine.IPSet("Specific IP address")
         ip.addIPAddress("74.125.24.189")
-        ip.setCallback(ipset_callback)
+        ip.callback = ipset_callback
 
         ipm = pyaiengine.IPSetManager()
         ipm.addIPSet(ip)
 
         d = pyaiengine.DomainName("Google All",".google.com")
-        d.setCallback(domain_callback)
+        d.callback = domain_callback
 
         dm = pyaiengine.DomainNameManager()
         dm.addDomainName(d)
@@ -218,7 +218,7 @@ class StackLanTests(unittest.TestCase):
         self.dis.run();
         self.dis.close();
 
-        self.assertEqual(d.getMatchs() , 1)
+        self.assertEqual(d.matchs, 1)
         self.assertEqual(self.called_callback,1)
         self.assertEqual(self.ip_called_callback,1)
 
@@ -265,7 +265,7 @@ class StackLanTests(unittest.TestCase):
         d = pyaiengine.DomainName("Google All",".google.com")
 
         dm = pyaiengine.DomainNameManager()
-        d.setCallback(domain_callback)
+        d.callback = domain_callback
         dm.addDomainName(d)
 
         self.s.setDomainNameManager(dm,"SSLProtocol")
@@ -281,7 +281,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(db.getInserts(), 1)
         self.assertEqual(db.getUpdates(), 5)
         self.assertEqual(db.getRemoves(), 0)
-        self.assertEqual(d.getMatchs(), 1)
+        self.assertEqual(d.matchs,  1)
         self.assertEqual(self.called_callback, 1)
 
     def test10(self):
@@ -303,7 +303,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(len(rm), 5)
     
         for r in rl:
-    	    self.assertEqual(r.getMatchs(), 0)
+    	    self.assertEqual(r.matchs, 0)
 
     def test11(self):
         """ Verify the IPBloomSet class """
@@ -322,7 +322,7 @@ class StackLanTests(unittest.TestCase):
             ip = pyaiengine.IPBloomSet("Specific IP address")
             ip = IPBloomSet("Specific IP address")
             ip.addIPAddress("74.125.24.189")
-            ip.setCallback(ipset_callback)
+            ip.callback = ipset_callback
 
             ipm = pyaiengine.IPSetManager()
             ipm.addIPSet(ip)
@@ -371,7 +371,7 @@ class StackLanTests(unittest.TestCase):
         d = pyaiengine.DomainName("Wired domain",".wired.com")
 
         dm = pyaiengine.DomainNameManager()
-        d.setCallback(domain_callback)
+        d.callback = domain_callback
         dm.addDomainName(d)
 
         self.s.setDomainNameManager(dm,"HTTPProtocol")
@@ -458,7 +458,7 @@ class StackLanTests(unittest.TestCase):
         self.dis.run()
         self.dis.close()
 
-        self.assertEqual(d.getMatchs(), 1)
+        self.assertEqual(d.matchs, 1)
 
         ft = self.s.getTCPFlowManager()
 
@@ -488,7 +488,7 @@ class StackLanTests(unittest.TestCase):
         d = pyaiengine.DomainName("Wired domain",".wired.com")
 
         dm = pyaiengine.DomainNameManager()
-        d.setCallback(domain_callback)
+        d.callback = domain_callback
         dm.addDomainName(d)
 
         self.s.setDomainNameManager(dm,"HTTPProtocol")
@@ -548,7 +548,7 @@ class StackLanTests(unittest.TestCase):
             self.called_callback += 1
 
         d = pyaiengine.DomainName("Some domain",".patriots.in")
-        d.setCallback(domain_callback)
+        d.callback = domain_callback
 
         dm = pyaiengine.DomainNameManager()
         dm.addDomainName(d)
@@ -564,7 +564,7 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(oldstack,self.s)
 
-        self.assertEqual(d.getMatchs() , 1)
+        self.assertEqual(d.matchs , 1)
         self.assertEqual(self.called_callback,1)
         self.assertEqual(self.from_correct,True)
 
@@ -609,14 +609,14 @@ class StackLanTests(unittest.TestCase):
             pd.run();
 
 	for r in rlist:
-        	self.assertEqual(r.getMatchs() , 0)
+        	self.assertEqual(r.matchs , 0)
 
-	self.assertEqual(r1.getMatchs(), 1)
-	self.assertEqual(r2.getMatchs(), 0)
-	self.assertEqual(r3.getMatchs(), 1)
-	self.assertEqual(r4.getMatchs(), 0)
-	self.assertEqual(r5.getMatchs(), 1)
-	self.assertEqual(r6.getMatchs(), 1)
+	self.assertEqual(r1.matchs, 1)
+	self.assertEqual(r2.matchs, 0)
+	self.assertEqual(r3.matchs, 1)
+	self.assertEqual(r4.matchs, 0)
+	self.assertEqual(r5.matchs, 1)
+	self.assertEqual(r6.matchs, 1)
 
     def test20(self):
         """ Tests the parameters of the callbacks """
@@ -632,19 +632,19 @@ class StackLanTests(unittest.TestCase):
         r = pyaiengine.Regex("netbios","CACACACA")
 
         try: 
-            r.setCallback(None)
+            r.callback = None
             self.assertTrue(False)
         except:
             self.assertTrue(True)
 
         try:
-            r.setCallback(callback2)
+            r.callback = callback2
             self.assertTrue(False)
         except:
             self.assertTrue(True)
 
         try:
-            r.setCallback(callback1)
+            r.callback = callback1
             self.assertTrue(True)
         except:
             self.assertTrue(False)
@@ -666,11 +666,11 @@ class StackLanTests(unittest.TestCase):
         d = pyaiengine.DomainName("Wired domain",".wired.com")
 
         dm = pyaiengine.DomainNameManager()
-        d.setCallback(domain_callback)
+        d.callback = domain_callback
         dm.addDomainName(d)
 
         self.uset.addURI("/js/jquery.hoverIntent.js")
-        self.uset.setCallback(uri_callback)
+        self.uset.callback = uri_callback
 
 	d.setHTTPUriSet(self.uset)
 
@@ -704,12 +704,12 @@ class StackLanTests(unittest.TestCase):
         d = pyaiengine.DomainName("Wired domain",".wired.com")
 
         dm = pyaiengine.DomainNameManager()
-        d.setCallback(domain_callback)
+        d.callback = domain_callback
         dm.addDomainName(d)
 
 	# This uri is the thrid of the wired.com flow
         self.uset.addURI("/js/ecom/ecomPlacement.js")
-        self.uset.setCallback(uri_callback)
+        self.uset.callback = uri_callback
 
         d.setHTTPUriSet(self.uset)
 
@@ -766,7 +766,7 @@ class StackLanIPv6Tests(unittest.TestCase):
         self.dis.run()
         self.dis.close()
 
-        self.assertEqual(r.getMatchs(), 1)
+        self.assertEqual(r.matchs, 1)
 
     def test2(self):
         """ Create a regex for a generic exploit and a IPSet """
@@ -776,7 +776,7 @@ class StackLanIPv6Tests(unittest.TestCase):
         ipset = pyaiengine.IPSet("IPv6 generic set")
         ipset.addIPAddress("dc20:c7f:2012:11::2")
         ipset.addIPAddress("dc20:c7f:2012:11::1")
-        ipset.setCallback(ipset_callback)
+        ipset.callback = ipset_callback
         im = pyaiengine.IPSetManager()
 
         im.addIPSet(ipset)
@@ -793,8 +793,8 @@ class StackLanIPv6Tests(unittest.TestCase):
         self.dis.run()
         self.dis.close()
 
-        self.assertEqual(r1.getMatchs(), 1)
-        self.assertEqual(r2.getMatchs(), 0)
+        self.assertEqual(r1.matchs, 1)
+        self.assertEqual(r2.matchs, 0)
         self.assertEqual(self.called_callback , 1)
 
     def test3(self):
@@ -805,7 +805,7 @@ class StackLanIPv6Tests(unittest.TestCase):
         ipset = pyaiengine.IPSet()
         ipset.addIPAddress("dc20:c7f:2012:11::22")
         ipset.addIPAddress("dc20:c7f:2012:11::1")
-        ipset.setCallback(ipset_callback)
+        ipset.callback = ipset_callback
         im = pyaiengine.IPSetManager()
 
         im.addIPSet(ipset)
@@ -822,8 +822,8 @@ class StackLanIPv6Tests(unittest.TestCase):
         self.dis.run()
         self.dis.close()
 
-        self.assertEqual(r1.getMatchs(), 0)
-        self.assertEqual(r2.getMatchs(), 0)
+        self.assertEqual(r1.matchs, 0)
+        self.assertEqual(r2.matchs, 0)
         self.assertEqual(self.called_callback , 0)
 
     def test4(self):
@@ -896,7 +896,7 @@ class StackLanIPv6Tests(unittest.TestCase):
                     self.called_callback += 1
 
         d = pyaiengine.DomainName("Google test",".google.com")
-        d.setCallback(dns_callback)
+        d.callback = dns_callback
 
         dm = pyaiengine.DomainNameManager()
         dm.addDomainName(d)
@@ -931,9 +931,9 @@ class StackLanIPv6Tests(unittest.TestCase):
             pd.stack = self.s
             pd.run()
 
-        self.assertEqual(r1.getMatchs(), 1)
-        self.assertEqual(r2.getMatchs(), 0)
-        self.assertEqual(r3.getMatchs(), 1)
+        self.assertEqual(r1.matchs, 1)
+        self.assertEqual(r2.matchs, 0)
+        self.assertEqual(r3.matchs, 1)
 
     def test9(self):
         """ Another test for the functionality of make graphs of regex, for complex detecctions """
@@ -970,10 +970,10 @@ class StackLanIPv6Tests(unittest.TestCase):
 
         self.assertEqual(self.s, oldstack)
 
-        self.assertEqual(r1.getMatchs(), 1)
-        self.assertEqual(r2.getMatchs(), 0)
-        self.assertEqual(r3.getMatchs(), 1)
-        self.assertEqual(r4.getMatchs(), 1)
+        self.assertEqual(r1.matchs, 1)
+        self.assertEqual(r2.matchs, 0)
+        self.assertEqual(r3.matchs, 1)
+        self.assertEqual(r4.matchs, 1)
 
         # ft = self.s.getTCPFlowManager()
 
@@ -1090,7 +1090,7 @@ class StackVirtualTests(unittest.TestCase):
         self.dis.run()
         self.dis.close()
 
-        self.assertEqual(r.getMatchs(), 1)
+        self.assertEqual(r.matchs, 1)
 
     def test2(self):
         """ Create a regex for a detect the flow on a virtual network on the GRE side """
@@ -1104,7 +1104,7 @@ class StackVirtualTests(unittest.TestCase):
         self.dis.run()
         self.dis.close()
 
-        self.assertEqual(r.getMatchs(), 1)
+        self.assertEqual(r.matchs, 1)
         ft = self.s.getTCPFlowManager()
         fu = self.s.getUDPFlowManager()
 
@@ -1135,7 +1135,7 @@ class StackVirtualTests(unittest.TestCase):
         self.assertEqual(ft.processflows , 1)
         self.assertEqual(ft.timeoutflows , 0)
 
-        self.assertEqual(r.getMatchs(), 0)
+        self.assertEqual(r.matchs, 0)
         self.assertEqual(len(ft), 1)
         self.assertEqual(len(fu), 0)
 
@@ -1150,7 +1150,7 @@ class StackVirtualTests(unittest.TestCase):
         self.assertEqual(ft.processflows , 2)
         self.assertEqual(ft.timeoutflows , 0)
 
-        self.assertEqual(r.getMatchs(), 1)
+        self.assertEqual(r.matchs, 1)
         self.assertEqual(len(ft), 2)
         self.assertEqual(len(fu), 0)
 
@@ -1163,7 +1163,7 @@ class StackVirtualTests(unittest.TestCase):
 
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("Bin directory",b"^bin$")
-        r.setCallback(virt_callback)
+        r.callback = virt_callback
         rm.addRegex(r)
         self.s.setTCPRegexManager(rm)
 
@@ -1173,7 +1173,8 @@ class StackVirtualTests(unittest.TestCase):
         self.dis.run()
         self.dis.close()
 
-        self.assertEqual(r.getMatchs(), 1)
+        self.assertEqual(r.callback, virt_callback)
+        self.assertEqual(r.matchs, 1)
         self.assertEqual(self.called_callback,1)
 
 class StackOpenFlowTests(unittest.TestCase):
@@ -1202,7 +1203,7 @@ class StackOpenFlowTests(unittest.TestCase):
         self.dis.run()
         self.dis.close()
 
-        self.assertEqual(r.getMatchs(), 1)
+        self.assertEqual(r.matchs, 1)
 
     def test2(self):
         """ Test the with statement of the PacketDispatcher """
@@ -1216,7 +1217,7 @@ class StackOpenFlowTests(unittest.TestCase):
             pd.stack = self.s
             pd.run()
 
-        self.assertEqual(r.getMatchs(), 1)
+        self.assertEqual(r.matchs, 1)
 
 if __name__ == '__main__':
 

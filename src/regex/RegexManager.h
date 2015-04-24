@@ -38,10 +38,17 @@ namespace aiengine {
 class RegexManager
 {
 public:
-        explicit RegexManager():
-                total_matched_signatures_(0) {}
+        explicit RegexManager(const std::string& name):
+                name_(name),current_signature_(),
+		total_matched_signatures_(0),
+		signatures_() {}
+        
+	explicit RegexManager():RegexManager("Generic Regex Manager") {}
 
         virtual ~RegexManager() = default;
+
+	void setName(const std::string& name) { name_ = name; }
+	const char *getName() const { return name_.c_str(); }
 
 	int32_t getTotalRegexs() { return signatures_.size();}
 	int32_t getTotalMatchingRegexs() { return total_matched_signatures_;}
@@ -63,6 +70,7 @@ public:
 #endif
 
 private:
+	std::string name_;
 	SharedPointer<Regex> current_signature_;
 	int32_t total_matched_signatures_;
 	std::vector<SharedPointer<Regex>> signatures_;

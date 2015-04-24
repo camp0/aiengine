@@ -52,7 +52,7 @@ public:
 	void setCallback(PyObject *callback); 
 	void executeCallback(Flow *flow);
 	
-	PyObject *getCallback() { return callback_;}
+	PyObject *getCallback() const { return callback_;}
 	
 private:
 	bool callback_set_;

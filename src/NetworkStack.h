@@ -78,8 +78,8 @@ public:
 	virtual void setTotalUDPFlows(int value) = 0;
 	virtual int getTotalUDPFlows() const = 0;
 
-	virtual void setTCPRegexManager(SharedPointer<RegexManager> sig) = 0;	
-	virtual void setUDPRegexManager(SharedPointer<RegexManager> sig) = 0;	
+	virtual void setTCPRegexManager(const SharedPointer<RegexManager>& sig) = 0;	
+	virtual void setUDPRegexManager(const SharedPointer<RegexManager>& sig) = 0;	
 
 	virtual void enableFrequencyEngine(bool enable) = 0;
 	virtual void enableNIDSEngine(bool enable) = 0;

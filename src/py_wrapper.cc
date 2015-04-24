@@ -371,19 +371,19 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 	
 	boost::python::class_<Regex, SharedPointer<Regex>,boost::noncopyable>("Regex",init<const std::string&,const std::string&>())
-		.def("getExpression",&Regex::getExpression,return_value_policy<return_by_value>(),
-			"Returns the regular expression")
-		.def("getName",&Regex::getName,return_value_policy<return_by_value>(),
-			"Returns the name of the regular expression") 
-		.def("getMatchs",&Regex::getMatchs,
-			"Returns the number of matches of the regular expression")
-		.def(self_ns::str(self_ns::self))
-		.def("setCallback",&Regex::setCallback,
-			"Sets the callback function for the regular expression")
+		.add_property("expression", &Regex::getExpression,
+			"Gets the regular expression")
+		.add_property("name", &Regex::getName,
+			"Gets the name of the regular expression") 
+		.add_property("matchs", &Regex::getMatchs,
+			"Gets the number of matches of the regular expression")
+		.add_property("callback", &Regex::getCallback, &Regex::setCallback,
+			"Gets/Sets the callback function for the regular expression")
 		.def("setNextRegex",&Regex::setNextRegex,
 			"Sets the next regular expression that should match")
 		.def("setNextRegexManager",&Regex::setNextRegexManager,
 			"Sets the next RegexManager for assign to the flow when a match occurs.")
+		.def(self_ns::str(self_ns::self))
 	;
 
 	// for overload the methods within the class
@@ -421,6 +421,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	boost::python::class_<RegexManager,SharedPointer<RegexManager>,boost::noncopyable >("RegexManager")
 		.def("__iter__",boost::python::range(&RegexManager::begin,&RegexManager::end))
+		.add_property("name",&RegexManager::getName, &RegexManager::setName,
+			"Gets/Sets the name of the RegexManager.")
 		.def("addRegex",addRegex1)
 		.def("addRegex",addRegex2)
 		.def("__len__",&RegexManager::getTotalRegexs)
@@ -513,6 +515,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         boost::python::class_<HTTPUriSet, SharedPointer<HTTPUriSet>, boost::noncopyable>("HTTPUriSet")
 		.def(init<>())
 		.def(init<const std::string&>())
+                .add_property("callback",&HTTPUriSet::getCallback, &HTTPUriSet::setCallback,
+                        "Gets/Sets a callback function for the matching set.")
                 .def("addURI",&HTTPUriSet::addURI,
                         "Adds a URI to the HTTPUriSet.")
 		.add_property("uris",&HTTPUriSet::getTotalURIs,
@@ -523,8 +527,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Gets the total number of matched lookups of the set.")
 		.add_property("lookupsout",&HTTPUriSet::getTotalLookupsOut,
 			"Gets the total number of non matched lookups of the set.")
-                .def("setCallback",&HTTPUriSet::setCallback,
-                        "Sets a callback function for the matching set.")
 		.def(self_ns::str(self_ns::self))
         ;
 
@@ -563,8 +565,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         ;
 
 	boost::python::class_<Frequencies, SharedPointer<Frequencies>, boost::noncopyable>("Frequencies")
-		.def("getDispersion",&Frequencies::getDispersion)
-		.def("getEnthropy",&Frequencies::getEnthropy)
+		.add_property("dispersion",&Frequencies::getDispersion)
+		.add_property("enthropy",&Frequencies::getEnthropy)
 		.def("getFrequenciesString",&Frequencies::getFrequenciesString)
 		.def(self_ns::str(self_ns::self))
 	;
@@ -575,16 +577,16 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
         boost::python::class_<DomainName, SharedPointer<DomainName>, boost::noncopyable>("DomainName",init<const std::string&,const std::string&>())
-                .def("getExpression",&DomainName::getExpression,return_value_policy<return_by_value>(),
-			"Returns the domain expression.")
-                .def("getName",&DomainName::getName,return_value_policy<return_by_value>(),
-			"Returns the name of the domain.")
-                .def("getMatchs",&DomainName::getMatchs,
-			"Returns the total number of matches of the domain.")
+                .add_property("expression",&DomainName::getExpression,
+			"Gets the domain expression.")
+                .add_property("name",&DomainName::getName,
+			"Gets the name of the domain.")
+                .add_property("matchs",&DomainName::getMatchs,
+			"Gets the total number of matches of the domain.")
+                .add_property("callback",&DomainName::getCallback,&DomainName::setCallback,
+			"Gets/Sets the callback of the domain.")
                 .def("setHTTPUriSet",&DomainName::setHTTPUriSet,
 			"Sets the HTTPUriSet used on this DomainName (only works on HTTP).")
-                .def("setCallback",&DomainName::setCallback,
-			"Sets the callback of the domain.")
 		.def(self_ns::str(self_ns::self))
         ;
 
@@ -595,11 +597,11 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		"Class that manages DomainsNames.")
 		.def(init<>())
 		.def(init<const std::string&>())
+		.add_property("name",&DomainNameManager::getName,&DomainNameManager::setName,
+			"Gets/Sets the name of the DomainNameManager object.")
                 .def("addDomainName",addDomainName1,
 			"Adds a DomainName to the DomainNameManager.")
                 .def("addDomainName",addDomainName2)
-		.def("getTotalDomains", &DomainNameManager::getTotalDomains,
-			"Returns the total number of domains on the DomainNameManager.")
 		.def("__len__", &DomainNameManager::getTotalDomains)
                 .def(self_ns::str(self_ns::self))
         ;
@@ -625,12 +627,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	boost::python::class_<IPSet, bases<IPAbstractSet>, SharedPointer<IPSet>>("IPSet")
 		.def(init<>())
 		.def(init<const std::string&>())
+		.add_property("callback",&IPSet::getCallback, &IPSet::setCallback,
+			"Gets/Sets a function callback for the IPSet.")
 		.def("addIPAddress",&IPSet::addIPAddress,
 			"Add a IP address to the IPSet.")
-		.def("setCallback",&IPSet::setCallback,
-			"Sets a function callback for the IPSet.")
-		.def("getTotalIPs",&IPSet::getTotalIPs,
-			"Returns the total number of IPs on the IPSet.")
 		.def("__len__",&IPSet::getTotalIPs)
                 .def(self_ns::str(self_ns::self))
 	;
@@ -639,9 +639,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         boost::python::class_<IPBloomSet, bases<IPAbstractSet>, SharedPointer<IPBloomSet>>("IPBloomSet")
                 .def(init<>())
                 .def(init<const std::string&>())
+                .add_property("callback",&IPBloomSet::getCallback,&IPBloomSet::setCallback)
                 .def("addIPAddress",&IPBloomSet::addIPAddress)
-                .def("setCallback",&IPBloomSet::setCallback)
-                .def("getTotalIPs",&IPBloomSet::getTotalIPs)
                 .def("__len__",&IPBloomSet::getTotalIPs)
                 .def(self_ns::str(self_ns::self))
         ;
@@ -653,8 +652,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("__iter__",boost::python::range(&IPSetManager::begin,&IPSetManager::end))
                 .def("addIPSet",addIPSet,
 			"Adds a IPSet.")
-		.def("getTotalSets",&IPSetManager::getTotalSets,
-			"Returns the number of total IPSets.")
 		.def("__len__",&IPSetManager::getTotalSets)
                 .def(self_ns::str(self_ns::self))
         ;

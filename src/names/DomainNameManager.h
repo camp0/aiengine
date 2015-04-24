@@ -48,6 +48,7 @@ public:
 
     	virtual ~DomainNameManager() {}
 
+	void setName(const std::string& name) { name_ = name; }
 	const char *getName() const { return name_.c_str(); }
 
 	void addDomainName(const SharedPointer<DomainName>& domain); 

@@ -343,13 +343,13 @@ void StackLanIPv6::setFlowsTimeout(int timeout) {
         flow_table_tcp_->setTimeout(timeout);
 }
 
-void StackLanIPv6::setTCPRegexManager(SharedPointer<RegexManager> sig) {
+void StackLanIPv6::setTCPRegexManager(const SharedPointer<RegexManager>& sig) {
 
         tcp_->setRegexManager(sig);
         tcp_generic->setRegexManager(sig);
 }
 
-void StackLanIPv6::setUDPRegexManager(SharedPointer<RegexManager> sig) {
+void StackLanIPv6::setUDPRegexManager(const SharedPointer<RegexManager>& sig) {
 
         udp_->setRegexManager(sig);
         udp_generic->setRegexManager(sig);

@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS = gnu
 
 all: aiengine
 
-python_PYTHON = pyai_tests.py
+python_PYTHON = pyai_tests.py __init__.py
 
 # EXTRA_FLAGS = -flto not supported on the freebsd compiler
 # EXTRA_FLAGS = -O3 '-fprofile-arcs -ftest-coverage -g' For enable gcov tool

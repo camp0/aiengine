@@ -86,7 +86,7 @@ public:
 		return true;
 	}
 
-	void setRegexManager(SharedPointer<RegexManager> sig) { sigs_ = sig;}
+	void setRegexManager(const SharedPointer<RegexManager>& sig) { sigs_ = sig;}
 
 	int64_t getAllocatedMemory() const { return sizeof(UDPGenericProtocol); }
 

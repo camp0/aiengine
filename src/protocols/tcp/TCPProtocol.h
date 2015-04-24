@@ -145,7 +145,7 @@ public:
         void setFlowCache(FlowCachePtr flow_cache) { flow_cache_ = flow_cache; } 
         FlowCachePtr getFlowCache() { return flow_cache_;}
 
-	void setRegexManager(SharedPointer<RegexManager> sig) { sigs_ = sig;}
+	void setRegexManager(const SharedPointer<RegexManager>& sig) { sigs_ = sig;}
 
         void createTCPInfos(int number) { tcp_info_cache_->create(number);}
         void destroyTCPInfos(int number) { tcp_info_cache_->destroy(number);}

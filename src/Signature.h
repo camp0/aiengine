@@ -70,6 +70,7 @@ public:
 
 #ifdef PYTHON_BINDING
 	void setCallback(PyObject *callback) { pycall.setCallback(callback); }
+	PyObject *getCallback() const { return pycall.getCallback(); }
 #endif
 
 	int32_t total_matchs_;

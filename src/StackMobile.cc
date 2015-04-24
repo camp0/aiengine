@@ -403,13 +403,13 @@ void StackMobile::setFlowsTimeout(int timeout) {
         flow_table_udp_high_->setTimeout(timeout);
 }
 
-void StackMobile::setTCPRegexManager(SharedPointer<RegexManager> sig) {
+void StackMobile::setTCPRegexManager(const SharedPointer<RegexManager>& sig) {
 
         tcp_->setRegexManager(sig);
         tcp_generic->setRegexManager(sig);
 }
 
-void StackMobile::setUDPRegexManager(SharedPointer<RegexManager> sig) {
+void StackMobile::setUDPRegexManager(const SharedPointer<RegexManager>& sig) {
 
         udp_high_->setRegexManager(sig);
         udp_generic->setRegexManager(sig);
