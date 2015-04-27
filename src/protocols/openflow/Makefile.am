@@ -22,6 +22,7 @@ test_openflow_SOURCES =	../../Multiplexer.cc ../../Protocol.cc \
 			../../regex/RegexManager.cc \
 			../../regex/Regex.cc \
 			../../names/DomainNameManager.cc \
+			../../names/DomainName.cc \
 			../dns/DNSProtocol.cc \
 			../icmp/ICMPProtocol.cc \
 			OpenFlowProtocol.cc test_openflow.cc

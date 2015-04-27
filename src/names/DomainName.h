@@ -41,23 +41,30 @@ class DomainName: public Signature
 { 
 public:
     	explicit DomainName(const std::string &name,const std::string &expression):Signature(name,expression),
-		uris_() {}
+		uris_()
+#ifdef PYTHON_BINDING
+		,uriobj_()
+#endif
+ 	{}
+
     	virtual ~DomainName() {}
 
-	friend std::ostream& operator<< (std::ostream& out, const DomainName& dom) {
+	friend std::ostream& operator<< (std::ostream& out, const DomainName& dom); 
        
-		out << "\t" <<  boost::format("Name:%-25s Domain:%-30s matchs:%-10d") % dom.getName() % dom.getExpression() % dom.total_matchs_;
-		if (dom.uris_) out << " plug to:" << dom.uris_->getName();
-		out << std::endl; 
-        	return out;
-	}
-
+#ifdef PYTHON_BINDING
+        void setHTTPUriSet(boost::python::object& obj); 
+        boost::python::object getPyHTTPUriSet() { return uriobj_; }
+#else
         void setHTTPUriSet(const SharedPointer<HTTPUriSet>& uset) { uris_ = uset; }
+#endif
         SharedPointer<HTTPUriSet> &getHTTPUriSet() { return uris_; }
 
 	// The rest from the base class
 private:
 	SharedPointer<HTTPUriSet> uris_;
+#ifdef PYTHON_BINDING
+	boost::python::object uriobj_;
+#endif
 };
 
 typedef std::shared_ptr<DomainName> DomainNamePtr;

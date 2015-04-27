@@ -17,6 +17,7 @@ test_dns_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \
+			../../names/DomainName.cc \
 			DNSProtocol.cc test_dns.cc
 
 test_dns_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE

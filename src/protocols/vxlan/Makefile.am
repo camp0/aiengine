@@ -19,6 +19,7 @@ test_vxlan_SOURCES = 	../../Multiplexer.cc \
 			../udp/UDPProtocol.cc \
 			../tcp/TCPProtocol.cc \
 			../../names/DomainNameManager.cc \
+			../../names/DomainName.cc \
 			../dns/DNSProtocol.cc \
 			../icmp/ICMPProtocol.cc \
 			VxLanProtocol.cc test_vxlan.cc

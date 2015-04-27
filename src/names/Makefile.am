@@ -6,7 +6,7 @@ TEST = test_names
 
 check_PROGRAMS = test_names
 
-test_names_SOURCES = 	DomainNameManager.cc test_names.cc
+test_names_SOURCES = 	DomainName.cc DomainNameManager.cc test_names.cc
 
 test_names_CPPFLAGS = $(BOOST_CPPFLAGS) -DSTAND_ALONE
 test_names_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework

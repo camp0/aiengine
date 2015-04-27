@@ -18,6 +18,7 @@ test_http_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \
+			../../names/DomainName.cc \
 			../../regex/Regex.cc \
 			HTTPUriSet.cc \
 			HTTPProtocol.cc test_http.cc

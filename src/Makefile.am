@@ -110,6 +110,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/frequency/FrequencyCounter.cc \
 			learner/LearnerEngine.cc \
 			names/DomainNameManager.cc \
+			names/DomainName.cc \
 			System.cc \
 			NetworkStack.cc \
 			StackMobile.cc StackLan.cc \

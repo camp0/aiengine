@@ -672,7 +672,7 @@ class StackLanTests(unittest.TestCase):
         self.uset.addURI("/js/jquery.hoverIntent.js")
         self.uset.callback = uri_callback
 
-	d.setHTTPUriSet(self.uset)
+	d.httpuriset = self.uset
 
         self.s.setDomainNameManager(dm,"HTTPProtocol")
 
@@ -680,6 +680,7 @@ class StackLanTests(unittest.TestCase):
             pd.stack = self.s
             pd.run();
 
+        self.assertEqual(d.httpuriset, self.uset)
         self.assertEqual(self.uset.uris, 1)
         self.assertEqual(self.uset.lookups, 39)
         self.assertEqual(self.uset.lookupsin, 1)
@@ -711,7 +712,7 @@ class StackLanTests(unittest.TestCase):
         self.uset.addURI("/js/ecom/ecomPlacement.js")
         self.uset.callback = uri_callback
 
-        d.setHTTPUriSet(self.uset)
+        d.httpuriset = self.uset
 
         self.s.setDomainNameManager(dm,"HTTPProtocol")
 

@@ -18,6 +18,7 @@ test_sip_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \
+			../../names/DomainName.cc \
 			../../regex/Regex.cc \
 			SIPProtocol.cc test_sip.cc
 
