@@ -34,12 +34,6 @@ if __name__ == '__main__':
     # Load an instance of a Network Stack on Mobile network (GN interface)
     st = pyaiengine.StackLan()
 
-    # Create a instace of a PacketDispatcher
-    pdis = pyaiengine.PacketDispatcher()
-
-    # Plug the stack on the PacketDispatcher
-    pdis.stack = st
-
     st.tcpflows = 327680
     st.udpflows = 163840
 
@@ -52,15 +46,9 @@ if __name__ == '__main__':
     # query = "('Shellcode' in str(flow.getRegex().getName()))"
     # queryFlows(flows_tcp,query)
 
-    pdis.enableShell(True)
-    pdis.open("eth0")
-
-    try:
-        pdis.run()
-    except:
-        e = sys.exc_info()[0]
-        print("Interrupt during capturing packets:",e)
+    with pyaiengine.PacketDispatcher("eth0") as pd:
+        pd.stack = st
+        pd.enableshell = True 
+        pd.run()
      
-    pdis.close()
- 
     sys.exit(0)

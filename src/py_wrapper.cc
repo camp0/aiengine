@@ -395,6 +395,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def(init<const std::string&>()) // Constructor for using with the 'with' statement
 		.add_property("stack", &PacketDispatcher::getStack, setStackPtr,
 			"Gets/Sets the Network stack on the PacketDispatcher.")
+		.add_property("enableshell", &PacketDispatcher::getShell, &PacketDispatcher::setShell,
+			"Gets/Sets a python shell in order to interact with the system on real time")
 		.def("open",&PacketDispatcher::open,
 			"Opens a network device or a pcap file")
 		.def("close",&PacketDispatcher::close,
@@ -407,8 +409,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Sets a pcap filter on the PacketDispatcher")
 		.def("forwardPacket",&PacketDispatcher::forwardPacket,
 			"Forwards the received packet to a external packet engine(Netfilter)")
-		.def("enableShell",&PacketDispatcher::enableShell,
-			"Enables a python shell in order to interact with the system on real time")
 		.def("setScheduler",&PacketDispatcher::setScheduler,
 			"Sets the scheduler for make periodically task.")
 		.def(self_ns::str(self_ns::self))

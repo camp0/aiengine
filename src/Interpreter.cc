@@ -27,7 +27,7 @@ namespace aiengine {
 
 #ifdef PYTHON_BINDING
 
-void Interpreter::enableShell(bool enable) {
+void Interpreter::setShell(bool enable) {
 
 	if (python_shell_enable_) {
 		if (!enable) {
@@ -73,7 +73,8 @@ void Interpreter::handle_read_user_input(boost::system::error_code error) {
 
                 user_stream >> header;
                 buffer << header;
-                while (std::getline(user_stream, header) && header != "\r") {
+        
+	        while (std::getline(user_stream, header) && header != "\r") {
                         buffer << header;
                 }
 

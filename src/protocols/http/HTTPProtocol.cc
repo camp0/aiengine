@@ -30,6 +30,91 @@ namespace aiengine {
 log4cxx::LoggerPtr HTTPProtocol::logger(log4cxx::Logger::getLogger("aiengine.http"));
 #endif
 
+std::unordered_map<int,HttpResponseType> HTTPProtocol::responses_ {
+	{ 0, std::make_tuple("unknown code",				0) },
+	// Informational
+	{ 100, std::make_tuple("continue",				0) },
+	{ 101, std::make_tuple("switching protocols",			0) },
+	{ 102, std::make_tuple("processing",				0) },
+	// Success 
+	{ 200, std::make_tuple("ok",					0) },
+	{ 201, std::make_tuple("created",				0) },
+	{ 202, std::make_tuple("accepted",				0) },
+	{ 203, std::make_tuple("non-authoritative information",		0) },
+	{ 204, std::make_tuple("no content",				0) },
+	{ 205, std::make_tuple("reset content",				0) },
+	{ 206, std::make_tuple("partial content",			0) },
+	{ 207, std::make_tuple("multi-status",				0) },
+	{ 208, std::make_tuple("already reported",			0) },
+	{ 226, std::make_tuple("im used",				0) },
+	// Redirection
+	{ 300, std::make_tuple("multiple choices",			0) },
+	{ 301, std::make_tuple("moved permanently",			0) },
+	{ 302, std::make_tuple("found",					0) },
+	{ 303, std::make_tuple("see other",				0) },
+	{ 304, std::make_tuple("not modified",				0) },
+	{ 305, std::make_tuple("use proxy",				0) },
+	{ 306, std::make_tuple("switch proxy",				0) },
+	{ 307, std::make_tuple("temporary redirect",			0) },
+	{ 308, std::make_tuple("permanent redirect",			0) },
+	// Client Error
+	{ 400, std::make_tuple("bad request",				0) },
+	{ 401, std::make_tuple("unauthorized",				0) },
+	{ 402, std::make_tuple("payment required",			0) },
+	{ 403, std::make_tuple("forbidden",				0) },
+	{ 404, std::make_tuple("not found",				0) },
+	{ 405, std::make_tuple("method not allowed",			0) },
+	{ 406, std::make_tuple("not acceptable",			0) },
+	{ 407, std::make_tuple("proxy authentication required",		0) },
+	{ 408, std::make_tuple("request timeout",			0) },
+	{ 409, std::make_tuple("conflict",				0) },
+	{ 410, std::make_tuple("gone",					0) },
+	{ 411, std::make_tuple("length required",			0) },
+	{ 412, std::make_tuple("precondition failed",			0) },
+	{ 413, std::make_tuple("request entity too large",		0) },
+	{ 414, std::make_tuple("request-URI too long",			0) },
+	{ 415, std::make_tuple("unsupported media type",		0) },
+	{ 416, std::make_tuple("requested range not satisfiable",	0) },
+	{ 417, std::make_tuple("expectation failed",			0) },
+	{ 418, std::make_tuple("i'm a teapot",				0) },
+	{ 419, std::make_tuple("authentication timeout",		0) },
+	{ 420, std::make_tuple("method failure",			0) },
+	{ 421, std::make_tuple("misdirected request",			0) },
+	{ 422, std::make_tuple("unprocessable entity",			0) },
+	{ 423, std::make_tuple("locked",				0) },
+	{ 424, std::make_tuple("failed dependency",			0) },
+	{ 426, std::make_tuple("upgrade required",			0) },
+	{ 428, std::make_tuple("precondition required",			0) },
+	{ 429, std::make_tuple("too many requests",			0) },
+	{ 431, std::make_tuple("request header fields too large",	0) },
+	{ 440, std::make_tuple("login timeout",				0) },
+	{ 444, std::make_tuple("no response",				0) },
+	{ 449, std::make_tuple("retry with",				0) },
+	{ 450, std::make_tuple("blocked by windows parental",		0) },
+	{ 451, std::make_tuple("unavailable for legal reasons",		0) },
+	{ 494, std::make_tuple("request header too large",		0) },
+	{ 495, std::make_tuple("cert error",				0) },
+	{ 496, std::make_tuple("no cert",				0) },
+	{ 497, std::make_tuple("HTTP to HTTPS",				0) },
+	{ 498, std::make_tuple("token expired/invalid",			0) },
+	{ 499, std::make_tuple("client closed request",			0) },
+	// Server Error
+	{ 500, std::make_tuple("internal server error",			0) },
+	{ 501, std::make_tuple("not implemented",			0) },
+	{ 502, std::make_tuple("bad gateway",				0) },
+	{ 503, std::make_tuple("service unavailable",			0) },
+	{ 504, std::make_tuple("gateway timeout",			0) },
+	{ 505, std::make_tuple("HTTP version not supported",		0) },
+	{ 506, std::make_tuple("variant also negotiates",		0) },
+	{ 507, std::make_tuple("insufficient storage",			0) },
+	{ 508, std::make_tuple("loop detected",				0) },
+	{ 509, std::make_tuple("bandwidth limit exceeded",		0) },
+	{ 510, std::make_tuple("not extended",				0) },
+	{ 511, std::make_tuple("network authentication required",	0) },
+	{ 598, std::make_tuple("network read timeout error",		0) },
+	{ 599, std::make_tuple("network connect timeout error",		0) }
+};
+
 // List of support request methods rfc 2616
 std::vector<HttpMethodType> HTTPProtocol::methods_ {
         std::make_tuple("GET"      	,3,     "gets"     	,0),
@@ -304,6 +389,16 @@ int HTTPProtocol::extract_uri(HTTPInfo *info, const char *header) {
 		if (end > 0) {
 			method_size = end + 2;
 		}
+		
+		int response_code = std::atoi(&header[8]);
+		auto rescode = responses_.find(response_code);
+		if (rescode != responses_.end()) {
+			int32_t *hits = &std::get<1>(rescode->second);	
+		
+			info->setResponseCode(response_code);	
+			++(*hits);
+		}
+
                 // No uri to extract
                 return method_size;
         }
@@ -563,6 +658,7 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 				out << "\t" << "Total banned hosts:     " << std::setw(10) << total_ban_hosts_ <<std::endl;
                                 out << "\t" << "Total requests:         " << std::setw(10) << total_requests_ <<std::endl;
                                 out << "\t" << "Total responses:        " << std::setw(10) << total_responses_ <<std::endl;
+				out << "\t" << "HTTP Methods" << std::endl;
                                 for (auto &method: methods_) {
                                         const char *label = std::get<2>(method);
                                         int32_t hits = std::get<3>(method);
@@ -570,6 +666,17 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 
                                 }
                                 out << "\t" << "Total others:           " << std::setw(10) << total_http_others_ <<std::endl;
+				if (stats_level_ > 4) {
+					out << "\t" << "HTTP Responses" << std::endl;
+					for (auto &res: responses_) {
+						auto item = std::get<1>(res);
+						const char *label = std::get<0>(item);
+						int32_t hits = std::get<1>(item);
+                                        
+						out << "\t" << "Total " << label << ":" << std::right << std::setfill(' ') << std::setw(35 - strlen(label)) << hits <<std::endl;
+					}
+
+				}
 			}
 			if (stats_level_ > 2) {
 				if (flow_forwarder_.lock())

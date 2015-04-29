@@ -31,7 +31,7 @@ log4cxx::LoggerPtr StackVirtual::logger(log4cxx::Logger::getLogger("aiengine.sta
 
 StackVirtual::StackVirtual() {
 
-	name_ = "Virtual network stack";
+	setName("Virtual network stack");
 
 	// Allocate all the specific Protocol objects
         eth_ = EthernetProtocolPtr(new EthernetProtocol());
@@ -272,7 +272,7 @@ StackVirtual::StackVirtual() {
         enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_udp_generic});
 
 #ifdef HAVE_LIBLOG4CXX
-	LOG4CXX_INFO (logger, name_<< " ready.");
+	LOG4CXX_INFO (logger, getName()<< " ready.");
 #else
 	std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
         std::time_t now = std::chrono::system_clock::to_time_t(time_point);
@@ -283,7 +283,7 @@ StackVirtual::StackVirtual() {
         std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
         std::cout << "[" << mbstr << "] ";
 #endif
-	std::cout << name_ << " ready." << std::endl;
+	std::cout << getName() << " ready." << std::endl;
 #endif
 
 }
@@ -305,7 +305,7 @@ void StackVirtual::enableFrequencyEngine(bool enable) {
 	ff_tcp_vir_->removeUpFlowForwarder();
 	if (enable) {
 #ifdef HAVE_LIBLOG4CXX	
-		LOG4CXX_INFO (logger, "Enable FrequencyEngine on " << name_ );
+		LOG4CXX_INFO (logger, "Enable FrequencyEngine on " << getName() );
 #else
                 std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
                 std::time_t now = std::chrono::system_clock::to_time_t(time_point);
@@ -316,7 +316,7 @@ void StackVirtual::enableFrequencyEngine(bool enable) {
                 std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
                 std::cout << "[" << mbstr << "] ";
 #endif
-        	std::cout << "Enable FrequencyEngine on " << name_ << std::endl;
+        	std::cout << "Enable FrequencyEngine on " << getName() << std::endl;
 #endif
 		freqs_tcp->createFrequencies(tcp_flows_created);	
 		freqs_udp->createFrequencies(udp_flows_created);	
@@ -346,7 +346,7 @@ void StackVirtual::enableNIDSEngine(bool enable) {
         	disableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop});
         	disableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp});
 #ifdef HAVE_LIBLOG4CXX
-		LOG4CXX_INFO (logger, "Enable NIDSEngine on " << name_ );
+		LOG4CXX_INFO (logger, "Enable NIDSEngine on " << getName() );
 #else
                 std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
                 std::time_t now = std::chrono::system_clock::to_time_t(time_point);
@@ -357,7 +357,7 @@ void StackVirtual::enableNIDSEngine(bool enable) {
                 std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
                 std::cout << "[" << mbstr << "] ";
 #endif
-                std::cout << "Enable NIDSEngine on " << name_ << std::endl;
+                std::cout << "Enable NIDSEngine on " << getName() << std::endl;
 #endif
 	} else {
         	disableFlowForwarders(ff_tcp_vir_,{ff_tcp_generic});

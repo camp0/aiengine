@@ -41,7 +41,7 @@ namespace aiengine {
 
 // TODO
 #ifndef VERSION
-#define VERSION "1.0"
+#define VERSION "1.2"
 #endif
 
 class Interpreter 
@@ -63,7 +63,8 @@ public:
 	void stop();
 	void readUserInput();
 
-	void enableShell(bool enable);  
+	void setShell(bool enable);  
+	bool getShell() const { return python_shell_enable_; }  
 private:
 
 	void handle_read_user_input(boost::system::error_code error);

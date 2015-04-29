@@ -345,9 +345,14 @@ void PacketDispatcher::forwardPacket(const std::string &packet, int length) {
 	return;
 }
 
-void PacketDispatcher::enableShell(bool enable) {
+void PacketDispatcher::setShell(bool enable) {
 
-	user_shell_->enableShell(enable);
+	user_shell_->setShell(enable);
+}
+
+bool PacketDispatcher::getShell() const {
+
+	return user_shell_->getShell();
 }
 
 void PacketDispatcher::setScheduler(PyObject *callback, int seconds) {

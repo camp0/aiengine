@@ -47,6 +47,7 @@ namespace aiengine {
 
 // Methods and response with statistics
 typedef std::tuple<const char*,int,const char*,int32_t> HttpMethodType;
+typedef std::tuple<const char*,int32_t> HttpResponseType;
 typedef std::function <bool (HTTPInfo*,boost::string_ref &parameter)> HttpParameterHandler;
 
 struct string_hasher
@@ -172,6 +173,7 @@ private:
 	int32_t release_http_info(HTTPInfo *info);
 	void release_http_info_cache(HTTPInfo *info);
 
+	static std::unordered_map<int,HttpResponseType> responses_;
 	static std::vector<HttpMethodType> methods_;
 	std::unordered_map<boost::string_ref,HttpParameterHandler,string_hasher> parameters_;
 

@@ -104,9 +104,6 @@ public:
 	explicit StackOpenFlow();
         virtual ~StackOpenFlow() {}
 
-        const char* getName() { return name_.c_str();} 
-        void setName(char *name) { name_ = name;}
-
         void setLinkLayerMultiplexer(MultiplexerPtrWeak mux) { }
         MultiplexerPtrWeak getLinkLayerMultiplexer() { return mux_eth_;}
 	
@@ -143,7 +140,6 @@ public:
         void setUDPRegexManager(const SharedPointer<RegexManager>& sig);
 
 private:
-	std::string name_;
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
 #endif

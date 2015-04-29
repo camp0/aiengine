@@ -192,14 +192,15 @@ void Flow::showFlowInfo(std::ostream& out) {
 
         	SharedPointer<HTTPInfo> hinfo = http_info.lock();
         	if (hinfo) {
-                	out << " REQ(" << hinfo->getTotalRequests() << ")RES(" << hinfo->getTotalResponses() << ") ";
-                	if (hinfo->getIsBanned()) out << " Banned ";
+                	out << " Req(" << hinfo->getTotalRequests() << ")Res(" << hinfo->getTotalResponses() << ")Code(" << hinfo->getResponseCode() << ") ";
+                	if (hinfo->getIsBanned()) out << "Banned ";
                 	if (hinfo->host.lock()) out << "Host:" << hinfo->host.lock()->getName();
                 	if (hinfo->ua.lock()) out << " UserAgent:" << hinfo->ua.lock()->getName();
         	} else {
-			SharedPointer<SSLInfo> sinfo = ssl_info.lock();
-        		if (sinfo) {
-				 out << " Pdus:" << sinfo->getTotalDataPdus() << " Host:" << sinfo->host.lock()->getName();
+			SharedPointer<SSLInfo> ssinfo = ssl_info.lock();
+        		if (ssinfo) {
+				out << " Pdus:" << ssinfo->getTotalDataPdus();
+				if (ssinfo->host.lock()) out << " Host:" << ssinfo->host.lock()->getName();
 			} else {
 				SharedPointer<SMTPInfo> sinfo = smtp_info.lock();
 				if (sinfo) {
@@ -212,12 +213,12 @@ void Flow::showFlowInfo(std::ostream& out) {
 					} else {
 						SharedPointer<IMAPInfo> iinfo = imap_info.lock();
 						if (iinfo) {
-							if (iinfo->user_name.lock()) out << " User:" << pinfo->user_name.lock()->getName();
+							if (iinfo->user_name.lock()) out << " User:" << iinfo->user_name.lock()->getName();
 						}
 					}
-				}
-			}
-		}
+				} 
+			} 
+		} 
 	} else {
 		if (gprs_info.lock()) out << " GPRS:" << *gprs_info.lock();
 

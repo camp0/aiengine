@@ -67,8 +67,8 @@ public:
         void statistics() { statistics(std::cout);}
 	void statistics(const std::string &name);
 
-	virtual const char* getName() = 0;
-	virtual void setName(char *name) = 0;
+	const char* getName() const { return name_.c_str(); }
+	void setName(const std::string& name) { name_ = name; }
 
 	virtual void setLinkLayerMultiplexer(MultiplexerPtrWeak mux) = 0;
 	virtual MultiplexerPtrWeak getLinkLayerMultiplexer() = 0; 
@@ -164,6 +164,7 @@ private:
 	ProtocolPtr get_protocol(const std::string &name);
 
 	int stats_level_;
+	std::string name_;
 	ProtocolMap proto_map_;
 	ProtocolVector proto_vector_;
 	std::vector<DomainNameManagerPtr> domain_mng_list_;

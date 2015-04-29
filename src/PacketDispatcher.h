@@ -134,7 +134,8 @@ public:
 	bool __exit__(boost::python::object type, boost::python::object val, boost::python::object traceback);
 
 	void forwardPacket(const std::string &packet, int length);
-	void enableShell(bool enable);
+	void setShell(bool enable);
+	bool getShell() const;
 	void setScheduler(PyObject *callback, int seconds);
 
 	void setStack(boost::python::object& stack);

@@ -156,6 +156,8 @@ BOOST_AUTO_TEST_CASE (test4_http)
         BOOST_CHECK(info->ua.lock() != nullptr);
         BOOST_CHECK(info->host.lock() != nullptr);
 
+	BOOST_CHECK(info->getResponseCode() == 0); // There is no response
+
         // The host is valid
         BOOST_CHECK(cad_host.compare(info->host.lock()->getName()) == 0);
         BOOST_CHECK(cad_ua.compare(info->ua.lock()->getName()) == 0);
@@ -713,6 +715,8 @@ BOOST_AUTO_TEST_CASE (test15_http)
         BOOST_CHECK(flow->http_info.lock() != nullptr);
         SharedPointer<HTTPInfo> info = flow->http_info.lock();
 
+	BOOST_CHECK(info->getResponseCode() == 200);
+
 	BOOST_CHECK(info->getContentLength() == 125);
 
         BOOST_CHECK(info->getTotalRequests()  == 0);
@@ -887,6 +891,7 @@ BOOST_AUTO_TEST_CASE (test19_http)
         BOOST_CHECK(flow->http_info.lock() != nullptr);
         SharedPointer<HTTPInfo> info = flow->http_info.lock();
 
+	BOOST_CHECK(info->getResponseCode() == 200);
         BOOST_CHECK(info->host.lock() == nullptr);
         BOOST_CHECK(info->ua.lock() == nullptr);
         BOOST_CHECK(info->uri.lock() == nullptr);
@@ -1026,6 +1031,7 @@ BOOST_AUTO_TEST_CASE (test21_http)
 
         BOOST_CHECK(http->getTotalL7Bytes() == 37);
 	// No header size
+	BOOST_CHECK(info->getResponseCode() == 200);
         BOOST_CHECK(http->getHTTPHeaderSize() == 0);
 	BOOST_CHECK(info->getHaveData() == false);
 	BOOST_CHECK(info->getDataChunkLength() == 0);

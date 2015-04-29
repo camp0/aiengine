@@ -47,7 +47,8 @@ public:
 		have_data_ = false; 
 		is_banned_ = false;
 		total_requests_ = 0;
-		total_responses_ = 0; 
+		total_responses_ = 0;
+		response_code_ = 0; 
 #ifdef PYTHON_BINDING
 		needs_release_ = false; 
 #endif
@@ -74,6 +75,9 @@ public:
 
 	int16_t getTotalRequests() const { return total_requests_; }
 	int16_t getTotalResponses() const { return total_responses_; }
+
+	void setResponseCode(int16_t code) { response_code_ = code; }
+	int16_t getResponseCode() const { return response_code_; }
 
         WeakPointer<StringCache> uri;
         WeakPointer<StringCache> host;
@@ -107,6 +111,7 @@ private:
 	int32_t data_chunk_length_;
 	int16_t total_requests_;
 	int16_t total_responses_;	
+	int16_t response_code_;
 };
 
 } // namespace aiengine

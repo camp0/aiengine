@@ -25,7 +25,10 @@
 
 namespace aiengine {
 
-NetworkStack::NetworkStack() {
+NetworkStack::NetworkStack():
+	stats_level_(0),name_(""),
+	proto_map_(),proto_vector_(),
+	domain_mng_list_() {
 
 	// Allocate the layer 7 protocols
         http = HTTPProtocolPtr(new HTTPProtocol());
