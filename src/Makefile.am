@@ -117,7 +117,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			StackLanIPv6.cc StackVirtual.cc \
 			StackOpenFlow.cc 
 
-if SUPPORT_LOG4CXX
+if HAVE_LIBLOG4CXX
   LOG4CXX_FLAGS = -llog4cxx
 else
   LOG4CXX_FLAGS = 

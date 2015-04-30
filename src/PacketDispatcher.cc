@@ -264,7 +264,8 @@ void PacketDispatcher::setPcapFilter(const std::string &filter) {
 		char *c_filter = const_cast<char*>(filter.c_str());
 
 		if (pcap_compile(pcap_, &fp, c_filter, 1, PCAP_NETMASK_UNKNOWN) == 0) {
-			
+
+			pcap_filter_ = filter;			
 			if (pcap_setfilter(pcap_,&fp) == 0) {
 				std::ostringstream msg;
                 		msg << "Pcap filter set:" << filter;

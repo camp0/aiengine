@@ -24,6 +24,15 @@
 #ifndef _test_udpgeneric_H_
 #define _test_udpgeneric_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_LIBLOG4CXX
+#include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
+#endif
+
 #include <string>
 #include "../test/torrent_test_packets.h"
 #include "Protocol.h"
@@ -34,6 +43,11 @@
 #include "UDPGenericProtocol.h"
 
 using namespace aiengine;
+
+#ifdef HAVE_LIBLOG4CXX
+using namespace log4cxx;
+using namespace log4cxx::helpers;
+#endif
 
 struct StackUDPGenericTest
 {
@@ -55,6 +69,9 @@ struct StackUDPGenericTest
 
         StackUDPGenericTest()
         {
+#ifdef HAVE_LIBLOG4CXX
+                BasicConfigurator::configure();
+#endif
                 ip = IPProtocolPtr(new IPProtocol());
                 eth = EthernetProtocolPtr(new EthernetProtocol());
                 udp = UDPProtocolPtr(new UDPProtocol());

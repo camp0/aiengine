@@ -193,7 +193,7 @@ void SSLProtocol::handle_client_hello(SSLInfo *info,int length,int offset, u_cha
 								SharedPointer<DomainName> host_candidate = ban_dnm->getDomainName(servername);
 								if (host_candidate) {
 #ifdef HAVE_LIBLOG4CXX
-									LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with banned host " << host_candidate->getName());
+									LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with banned host " << host_candidate->getName());
 #endif
 									++total_ban_hosts_;
 									return;
@@ -241,6 +241,8 @@ void SSLProtocol::processFlow(Flow *flow) {
                 // No need to process the SSL pdu.
                 return;
         }
+
+	current_flow_ = flow;
 
 	setHeader(flow->packet->getPayload());
 	if (flow->total_packets_l7 < 3) { 

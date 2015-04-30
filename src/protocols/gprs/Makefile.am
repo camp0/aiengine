@@ -1,5 +1,11 @@
 AUTOMAKE_OPTIONS = gnu
 
+if HAVE_LIBLOG4CXX
+  LOG4CXX_FLAGS = -llog4cxx
+else
+  LOG4CXX_FLAGS =
+endif
+
 noinst_HEADERS = 	GPRSInfo.h test_gprs.h
 
 TEST = test_gprs
@@ -24,7 +30,7 @@ test_gprs_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			GPRSProtocol.cc test_gprs.cc
 
 test_gprs_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
-test_gprs_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
+test_gprs_LDADD   = $(BOOST_LDFLAGS) $(LOG4CXX_FLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so
 

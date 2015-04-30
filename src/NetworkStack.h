@@ -125,6 +125,8 @@ public:
 	void setStatisticsLevel(int level); 
 	int getStatisticsLevel() const { return stats_level_; }
 
+	void infoMessage(const std::string& msg);
+
 	friend std::ostream& operator<< (std::ostream& out, const NetworkStack& ns);
 
 	// Protocols shared with all the stacks, layer 7
@@ -158,6 +160,9 @@ public:
         FlowForwarderPtr ff_udp_freqs;
 
 private:
+#ifdef HAVE_LIBLOG4CXX
+        static log4cxx::LoggerPtr logger;
+#endif
 	template <class T> 
 	void set_domain_name_manager(DomainNameManager& dnm, bool allow);
 

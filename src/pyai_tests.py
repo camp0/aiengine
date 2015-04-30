@@ -397,7 +397,7 @@ class StackLanTests(unittest.TestCase):
 
         for flow in ft:
             self.assertNotEqual(flow.getSSLInfo(),None)
-        
+       
         self.dis.open("../pcapfiles/accessgoogle.pcap")
         self.dis.run()
         self.dis.close()
@@ -455,6 +455,7 @@ class StackLanTests(unittest.TestCase):
         self.s.setDomainNameManager(dm,"HTTPProtocol",False)
 
         self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
+        self.dis.pcapfilter = "tcp" 
         self.dis.run()
         self.dis.close()
 
@@ -463,6 +464,7 @@ class StackLanTests(unittest.TestCase):
         ft = self.s.getTCPFlowManager()
 
         self.assertEqual(len(ft), 2)
+        self.assertEqual(self.dis.pcapfilter, "tcp")
 
         # Only the first flow is the banned
         for flow in ft:

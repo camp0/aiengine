@@ -113,7 +113,13 @@ AX_BOOST_PYTHON
 AC_CHECK_HEADER([log4cxx/logger.h])
 AC_CHECK_LIB([log4cxx],[main],have_log4cxx=yes,have_log4cxx=no)
 
-AM_CONDITIONAL(SUPPORT_LOG4CXX, [test "$have_log4cxx" = yes])
+if test x"$have_log4cxx" = x"yes"; then
+    AC_DEFINE([HAVE_LIBLOG4CXX],[1],[Log4cxx support])
+    AM_CONDITIONAL([HAVE_LIBLOG4CXX],true)
+else
+    # AC_DEFINE([HAVE_LIBLOG4CXX],[0],[No Log4cxx support])
+    AM_CONDITIONAL([HAVE_LIBLOG4CXX],false)
+fi
 
 ##########################################################################
 # Pcre++ support 

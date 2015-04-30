@@ -107,11 +107,13 @@ void Flow::serialize(std::ostream& stream) {
 			SharedPointer<HTTPInfo> info = http_info.lock();
 			if(info->host.lock())	
                         	stream << ",\"h\":\"" << info->host.lock()->getName() << "\"";
+		} else {
+                	if(ssl_info.lock()) {
+				SharedPointer<SSLInfo> sinfo = ssl_info.lock();
+				if (sinfo->host.lock())
+                        		stream << ",\"s\":\"" << sinfo->host.lock()->getName() << "\"";
+			}
 		}
-
-                if(ssl_info.lock())
-                        stream << ",\"s\":\"" << ssl_info->host.lock()->getName() << "\"";
-
         } else { // UDP
                 if(dns_info.lock()) {
 			SharedPointer<DNSInfo> info = dns_info.lock();

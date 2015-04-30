@@ -24,6 +24,15 @@
 #ifndef _test_gprs_H_
 #define _test_gprs_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_LIBLOG4CXX
+#include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
+#endif
+
 #include <string>
 #include "../test/tests_packets.h"
 #include "../test/gprs_packets.h"
@@ -60,6 +69,9 @@ struct Stack3Gtest
 
         Stack3Gtest()
         {
+#ifdef HAVE_LIBLOG4CXX
+                log4cxx::BasicConfigurator::configure();
+#endif
                 eth = EthernetProtocolPtr(new EthernetProtocol());
                 ip_low = IPProtocolPtr(new IPProtocol());
                 ip_high = IPProtocolPtr(new IPProtocol());

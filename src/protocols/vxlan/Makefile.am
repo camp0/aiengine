@@ -1,5 +1,11 @@
 AUTOMAKE_OPTIONS = gnu
 
+if HAVE_LIBLOG4CXX
+  LOG4CXX_FLAGS = -llog4cxx
+else
+  LOG4CXX_FLAGS =
+endif
+
 noinst_HEADERS =	test_vxlan.h
 
 TEST = test_vxlan
@@ -25,7 +31,7 @@ test_vxlan_SOURCES = 	../../Multiplexer.cc \
 			VxLanProtocol.cc test_vxlan.cc
 
 test_vxlan_CPPFLAGS = -I../.. -g $(BOOST_CPPFLAGS) -DSTAND_ALONE
-test_vxlan_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
+test_vxlan_LDADD   = $(BOOST_LDFLAGS) $(LOG4CXX_FLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so
 

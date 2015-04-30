@@ -1,5 +1,11 @@
 AUTOMAKE_OPTIONS = gnu
 
+if HAVE_LIBLOG4CXX
+  LOG4CXX_FLAGS = -llog4cxx
+else
+  LOG4CXX_FLAGS =
+endif
+
 TEST = test_http
 
 check_PROGRAMS = test_http
@@ -24,7 +30,7 @@ test_http_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			HTTPProtocol.cc test_http.cc
 
 test_http_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
-test_http_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework $(PCRE_LIB)
+test_http_LDADD   = $(BOOST_LDFLAGS) $(LOG4CXX_FLAGS) -lboost_unit_test_framework $(PCRE_LIB)
 
 CLEANFILES = *.o *.lo *.so
 

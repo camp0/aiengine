@@ -1,5 +1,11 @@
 AUTOMAKE_OPTIONS = gnu
 
+if HAVE_LIBLOG4CXX
+  LOG4CXX_FLAGS = -llog4cxx
+else
+  LOG4CXX_FLAGS =
+endif
+
 noinst_HEADERS =	test_tcpgeneric.h
 
 TEST = test_tcpgeneric
@@ -22,7 +28,7 @@ test_tcpgeneric_SOURCES = 	../../Multiplexer.cc \
 				TCPGenericProtocol.cc test_tcpgeneric.cc
 
 test_tcpgeneric_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
-test_tcpgeneric_LDADD   = $(BOOST_LDFLAGS) $(PCRE_LIB) -lboost_unit_test_framework -lboost_regex
+test_tcpgeneric_LDADD   = $(BOOST_LDFLAGS) $(PCRE_LIB) $(LOG4CXX_FLAGS) -lboost_unit_test_framework 
 
 CLEANFILES = *.o *.lo *.so
 

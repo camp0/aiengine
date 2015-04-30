@@ -101,7 +101,8 @@ public:
 		io_service_(),
 		signals_(io_service_, SIGINT, SIGTERM),
 		stats_(),header_(nullptr),pkt_data_(nullptr),
-		eth_(),current_packet_(),defMux_(),stack_name_(),input_name_(source)
+		eth_(),current_packet_(),defMux_(),stack_name_(),input_name_(source),
+		pcap_filter_()
 #ifdef PYTHON_BINDING
 		,timer_(SharedPointer<boost::asio::deadline_timer>(new boost::asio::deadline_timer(io_service_))),
 		user_shell_(SharedPointer<Interpreter>(new Interpreter(io_service_))),
@@ -125,6 +126,7 @@ public:
 	void close(void);
     	void stop(void) { io_service_.stop(); }
 	void setPcapFilter(const std::string& filter);
+	const char *getPcapFilter() const { return pcap_filter_.c_str(); }
 	void status(void);
 
 #ifdef PYTHON_BINDING
@@ -200,6 +202,7 @@ private:
 	MultiplexerPtr defMux_;
 	std::string stack_name_;
 	std::string input_name_;
+	std::string pcap_filter_;
 
 #ifdef PYTHON_BINDING
 	SharedPointer<boost::asio::deadline_timer> timer_;

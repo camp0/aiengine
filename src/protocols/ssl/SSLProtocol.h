@@ -112,7 +112,8 @@ public:
 		host_cache_(new Cache<StringCache>("Host cache")),
 		host_map_(),
 		domain_mng_(),ban_domain_mng_(),
-		flow_mng_() {}
+		flow_mng_(),
+		current_flow_(nullptr) {}
 
     	virtual ~SSLProtocol() {}
 
@@ -206,6 +207,7 @@ private:
 #ifdef HAVE_LIBLOG4CXX
         static log4cxx::LoggerPtr logger;
 #endif
+	Flow *current_flow_; // For accessing for logging
 };
 
 typedef std::shared_ptr<SSLProtocol> SSLProtocolPtr;

@@ -1,5 +1,11 @@
 AUTOMAKE_OPTIONS = gnu
 
+if HAVE_LIBLOG4CXX
+  LOG4CXX_FLAGS = -llog4cxx
+else
+  LOG4CXX_FLAGS =
+endif
+
 noinst_HEADERS =	test_openflow.h
 
 TEST = test_openflow
@@ -28,7 +34,7 @@ test_openflow_SOURCES =	../../Multiplexer.cc ../../Protocol.cc \
 			OpenFlowProtocol.cc test_openflow.cc
 
 test_openflow_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
-test_openflow_LDADD   = $(BOOST_LDFLAGS) $(PCRE_LIB) -lboost_unit_test_framework
+test_openflow_LDADD   = $(BOOST_LDFLAGS) $(PCRE_LIB) $(LOG4CXX_FLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so
 

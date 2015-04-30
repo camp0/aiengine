@@ -1,5 +1,11 @@
 AUTOMAKE_OPTIONS = gnu
 
+if HAVE_LIBLOG4CXX
+  LOG4CXX_FLAGS = -llog4cxx
+else
+  LOG4CXX_FLAGS =
+endif
+
 noinst_HEADERS =	test_ssl.h SSLInfo.h
 
 TEST = test_ssl
@@ -21,7 +27,7 @@ test_ssl_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			SSLProtocol.cc test_ssl.cc
 
 test_ssl_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE -g
-test_ssl_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
+test_ssl_LDADD   = $(BOOST_LDFLAGS) $(LOG4CXX_FLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so
 

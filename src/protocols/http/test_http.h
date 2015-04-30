@@ -24,6 +24,15 @@
 #ifndef _test_http_H_
 #define _test_http_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_LIBLOG4CXX
+#include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
+#endif
+
 #include <string>
 #include "../test/tests_packets.h"
 #include "../test/ipv6_test_packets.h"
@@ -60,6 +69,9 @@ struct StackHTTPtest
 
         StackHTTPtest()
         {
+#ifdef HAVE_LIBLOG4CXX
+                log4cxx::BasicConfigurator::configure();
+#endif
                 // Allocate all the Protocol objects
                 tcp = TCPProtocolPtr(new TCPProtocol());
                 ip = IPProtocolPtr(new IPProtocol());
@@ -157,6 +169,9 @@ struct StackIPv6HTTPtest
 
         StackIPv6HTTPtest()
         {
+#ifdef HAVE_LIBLOG4CXX
+                log4cxx::BasicConfigurator::configure();
+#endif
                 // Allocate all the Protocol objects
                 tcp = TCPProtocolPtr(new TCPProtocol());
                 ip6 = IPv6ProtocolPtr(new IPv6Protocol());

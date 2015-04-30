@@ -179,22 +179,11 @@ StackLan::StackLan() {
 	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
 	
 	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_udp_generic});
-	
-#ifdef HAVE_LIBLOG4CXX
-	LOG4CXX_INFO (logger, getName()<< " ready.");
-#else
-	std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
-        std::time_t now = std::chrono::system_clock::to_time_t(time_point);
-#ifdef __clang__
-        std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
-#else 
-        char mbstr[100];
-        std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
-        std::cout << "[" << mbstr << "] ";
-#endif
-	std::cout << getName() << " ready." << std::endl;
-#endif
 
+	std::ostringstream msg;
+        msg << getName() << " ready.";
+
+        infoMessage(msg.str());
 }
 
 void StackLan::showFlows(std::basic_ostream<char>& out) {
@@ -212,20 +201,11 @@ void StackLan::enableFrequencyEngine(bool enable) {
 	ff_udp_->removeUpFlowForwarder();
 	ff_tcp_->removeUpFlowForwarder();
 	if (enable) {
-#ifdef HAVE_LIBLOG4CXX	
-		LOG4CXX_INFO (logger, "Enable FrequencyEngine on " << getName() );
-#else
-                std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
-                std::time_t now = std::chrono::system_clock::to_time_t(time_point);
-#ifdef __clang__
-                std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
-#else 
-                char mbstr[100];
-                std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
-                std::cout << "[" << mbstr << "] ";
-#endif
-        	std::cout << "Enable FrequencyEngine on " << getName() << std::endl;
-#endif
+		std::ostringstream msg;
+                msg << "Enable FrequencyEngine on " << getName(); 
+
+                infoMessage(msg.str());
+
 		freqs_tcp->createFrequencies(tcp_flows_created);	
 		freqs_udp->createFrequencies(udp_flows_created);	
 
@@ -255,20 +235,10 @@ void StackLan::enableNIDSEngine(bool enable) {
 		disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop}); // we dont remove the ff_tcp_generic
 		disableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp}); // we dont remove the ff_udp_generic
 
-#ifdef HAVE_LIBLOG4CXX
-		LOG4CXX_INFO (logger, "Enable NIDSEngine on " << getName() );
-#else
-                std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
-                std::time_t now = std::chrono::system_clock::to_time_t(time_point);
-#ifdef __clang__
-                std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
-#else 
-                char mbstr[100];
-                std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
-                std::cout << "[" << mbstr << "] ";
-#endif
-                std::cout << "Enable NIDSEngine on " << getName() << std::endl;
-#endif
+                std::ostringstream msg;
+                msg << "Enable NIDSEngine on " << getName();
+
+                infoMessage(msg.str());
 	} else {
 		disableFlowForwarders(ff_tcp_,{ff_tcp_generic}); 
 		disableFlowForwarders(ff_udp_,{ff_udp_generic}); 
@@ -324,20 +294,10 @@ void StackLan::enableLinkLayerTagging(std::string type) {
                         mux_mpls_->addUpMultiplexer(mux_ip_,ETHERTYPE_IP);
                         mux_ip_->addDownMultiplexer(mux_mpls_);
                 } else {
-#ifdef HAVE_LIBLOG4CXX
-                        LOG4CXX_WARN (logger, "Unknown tagging type " << type );
-#else
-                	std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
-                	std::time_t now = std::chrono::system_clock::to_time_t(time_point);
-#ifdef __clang__
-                	std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
-#else 
-                	char mbstr[100];
-                	std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
-                	std::cout << "[" << mbstr << "] ";
-#endif
-                	std::cout << "Unknown tagging type " << type << std::endl; 
-#endif
+                	std::ostringstream msg;
+                	msg << "Unknown tagging type " << type;
+
+                	infoMessage(msg.str());
                 }
         }
 }

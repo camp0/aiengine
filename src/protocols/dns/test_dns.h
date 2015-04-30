@@ -24,6 +24,15 @@
 #ifndef _test_dns_H_
 #define _test_dns_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_LIBLOG4CXX
+#include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
+#endif
+
 #include <string>
 #include "../test/dns_test_packets.h"
 #include "Protocol.h"
@@ -58,6 +67,9 @@ struct StackDNStest
 
         StackDNStest()
         {
+#ifdef HAVE_LIBLOG4CXX
+                log4cxx::BasicConfigurator::configure();
+#endif
                 // Allocate all the Protocol objects
                 udp = UDPProtocolPtr(new UDPProtocol());
                 ip = IPProtocolPtr(new IPProtocol());

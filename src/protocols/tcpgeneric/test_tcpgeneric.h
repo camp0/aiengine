@@ -24,6 +24,15 @@
 #ifndef _test_tcpgeneric_H_
 #define _test_tcpgeneric_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_LIBLOG4CXX
+#include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
+#endif
+
 #include <string>
 #include "../test/tests_packets.h"
 #include "../test/torrent_test_packets.h"
@@ -65,6 +74,9 @@ struct StackTCPGenericTest {
 
         StackTCPGenericTest()
         {
+#ifdef HAVE_LIBLOG4CXX
+        	log4cxx::BasicConfigurator::configure();
+#endif
                 ip = IPProtocolPtr(new IPProtocol());
                 ip6 = IPv6ProtocolPtr(new IPv6Protocol());
                 eth = EthernetProtocolPtr(new EthernetProtocol());

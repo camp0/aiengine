@@ -295,7 +295,7 @@ bool HTTPProtocol::process_host_parameter(HTTPInfo *info,boost::string_ref &host
         	SharedPointer<DomainName> host_candidate = ban_hosts->getDomainName(host);
                 if (host_candidate) {
 #ifdef HAVE_LIBLOG4CXX
-                	LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with ban host " << host_candidate->getName());
+                	LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with ban host " << host_candidate->getName());
 #endif
                         ++total_ban_hosts_;
                         return false;
@@ -523,6 +523,8 @@ void HTTPProtocol::processFlow(Flow *flow) {
 #endif
 		return;
 	}
+
+	current_flow_ = flow;
 
 	if (info->getHaveData() == true) {
 		total_l7_bytes_ += flow_bytes;

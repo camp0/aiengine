@@ -25,6 +25,10 @@
 
 namespace aiengine {
 
+#ifdef HAVE_LIBLOG4CXX
+log4cxx::LoggerPtr Protocol::logger(log4cxx::Logger::getLogger("aiengine.protocol"));
+#endif
+
 #ifdef PYTHON_BINDING
 
 void Protocol::setDatabaseAdaptor(boost::python::object &dbptr) { 

@@ -24,6 +24,15 @@
 #ifndef _test_openflow_H_
 #define _test_openflow_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_LIBLOG4CXX
+#include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
+#endif
+
 #include <string>
 #include "../test/openflow_packets.h"
 #include "Protocol.h"
@@ -69,7 +78,9 @@ struct StackTestOpenFlow
 
         StackTestOpenFlow()
         {
-
+#ifdef HAVE_LIBLOG4CXX
+                log4cxx::BasicConfigurator::configure();
+#endif
                 eth = EthernetProtocolPtr(new EthernetProtocol());
                 eth_vir = EthernetProtocolPtr(new EthernetProtocol("Virtual EthernetProtocol"));
                 ip = IPProtocolPtr(new IPProtocol());

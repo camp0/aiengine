@@ -17,25 +17,13 @@ def threadHandler(netmask):
     # Load an instance of a Network Stack on Lan Network
     st = pyaiengine.StackLan()
 
-    # Create a instace of a PacketDispatcher
-    pdis = pyaiengine.PacketDispatcher()
-
-    # Plug the stack on the PacketDispatcher
-    pdis.stack = st
-
     st.tcpflows = 327680
     st.udpflows = 163840
  
-    pdis.open("re0")
-    pdis.setPcapFilter(netmask)
-
-    try:
-        pdis.run()
-    except:
-        e = sys.exc_info()[0]
-        print("Interrupt during capturing packets:",e)
-
-    pdis.close()
+    with pyaiengine.PacketDispatcher("re0") as pd:
+        pd.stack = st
+        pd.pcapfilter = netmask 
+        pd.run()
 
     st.statslevel = 5
     f = open("statistics.log.%d" % os.getpid(),"w")

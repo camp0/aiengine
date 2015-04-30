@@ -24,6 +24,15 @@
 #ifndef _test_pop_H_
 #define _test_pop_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_LIBLOG4CXX
+#include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
+#endif
+
 #include <string>
 #include "../test/pop_test_packets.h"
 #include "Protocol.h"
@@ -58,6 +67,9 @@ struct StackPOPtest
 
         StackPOPtest()
         {
+#ifdef HAVE_LIBLOG4CXX
+                log4cxx::BasicConfigurator::configure();
+#endif
                 // Allocate all the Protocol objects
                 tcp = TCPProtocolPtr(new TCPProtocol());
                 ip = IPProtocolPtr(new IPProtocol());

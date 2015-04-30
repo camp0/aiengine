@@ -28,6 +28,10 @@
 #include <config.h>
 #endif
 
+#ifdef HAVE_LIBLOG4CXX
+#include "log4cxx/logger.h"
+#endif
+
 #include <sys/types.h>
 #if defined(__OPENBSD__)
 #include <netinet/in_systm.h>
@@ -139,6 +143,9 @@ private:
         boost::python::object dbptr_;
         bool is_set_db_;
 	int packet_sampling_;
+#endif
+#ifdef HAVE_LIBLOG4CXX
+        static log4cxx::LoggerPtr logger;
 #endif
 };
 

@@ -1,5 +1,11 @@
 AUTOMAKE_OPTIONS = gnu
 
+if HAVE_LIBLOG4CXX
+  LOG4CXX_FLAGS = -llog4cxx
+else
+  LOG4CXX_FLAGS =
+endif
+
 TEST = test_sip
 
 check_PROGRAMS = test_sip
@@ -23,7 +29,7 @@ test_sip_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			SIPProtocol.cc test_sip.cc
 
 test_sip_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
-test_sip_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework -lboost_regex $(PCRE_LIB)
+test_sip_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework $(LOG4CXX_FLAGS) $(PCRE_LIB)
 
 CLEANFILES = *.o *.lo *.so
 

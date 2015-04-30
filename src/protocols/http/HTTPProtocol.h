@@ -76,7 +76,8 @@ public:
 		ua_map_(),host_map_(),uri_map_(),
 		domain_mng_(),ban_domain_mng_(),
 		flow_mng_(),
-		http_ref_header_(),header_field_(),header_parameter_() {
+		http_ref_header_(),header_field_(),header_parameter_(),
+		current_flow_(nullptr) {
 
 		// Add the parameters that wants to be process by the HTTPProtocol		
 		parameters_.insert(std::make_pair<boost::string_ref,HttpParameterHandler>(boost::string_ref("Host"),
@@ -208,6 +209,7 @@ private:
 	boost::string_ref http_ref_header_;
 	boost::string_ref header_field_;
 	boost::string_ref header_parameter_;
+	Flow *current_flow_;
 };
 
 typedef std::shared_ptr<HTTPProtocol> HTTPProtocolPtr;

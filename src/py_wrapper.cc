@@ -397,6 +397,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Gets/Sets the Network stack on the PacketDispatcher.")
 		.add_property("enableshell", &PacketDispatcher::getShell, &PacketDispatcher::setShell,
 			"Gets/Sets a python shell in order to interact with the system on real time")
+		.add_property("pcapfilter", &PacketDispatcher::getPcapFilter, &PacketDispatcher::setPcapFilter,
+			"Gets/Sets a pcap filter on the PacketDispatcher")
 		.def("open",&PacketDispatcher::open,
 			"Opens a network device or a pcap file")
 		.def("close",&PacketDispatcher::close,
@@ -405,8 +407,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Start to process packets")
 		.def("status",&PacketDispatcher::status,
 			"Shows the status of the PacketDispatcher")
-		.def("setPcapFilter",&PacketDispatcher::setPcapFilter,
-			"Sets a pcap filter on the PacketDispatcher")
 		.def("forwardPacket",&PacketDispatcher::forwardPacket,
 			"Forwards the received packet to a external packet engine(Netfilter)")
 		.def("setScheduler",&PacketDispatcher::setScheduler,

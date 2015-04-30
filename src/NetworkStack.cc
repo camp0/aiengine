@@ -25,6 +25,10 @@
 
 namespace aiengine {
 
+#ifdef HAVE_LIBLOG4CXX
+log4cxx::LoggerPtr NetworkStack::logger(log4cxx::Logger::getLogger("aiengine.stack"));
+#endif
+
 NetworkStack::NetworkStack():
 	stats_level_(0),name_(""),
 	proto_map_(),proto_vector_(),
@@ -314,6 +318,24 @@ void NetworkStack::disableFlowForwarders(const FlowForwarderPtr& ff, std::initia
 	for (auto &f: fps) {
 		ff->removeUpFlowForwarder(f);
 	}
+}
+
+void NetworkStack::infoMessage(const std::string& msg) {
+
+#ifdef HAVE_LIBLOG4CXX
+        LOG4CXX_INFO(logger, msg);
+#else
+        std::chrono::system_clock::time_point time_point = std::chrono::system_clock::now();
+        std::time_t now = std::chrono::system_clock::to_time_t(time_point);
+#ifdef __clang__
+        std::cout << "[" << std::put_time(std::localtime(&now), "%D %X") << "] ";
+#else
+        char mbstr[100];
+        std::strftime(mbstr, 100, "%D %X", std::localtime(&now));
+        std::cout << "[" << mbstr << "] ";
+#endif
+        std::cout << msg << std::endl;
+#endif
 }
 
 } // namespace aiengine
