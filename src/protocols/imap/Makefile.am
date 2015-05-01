@@ -8,6 +8,7 @@ check_PROGRAMS = test_imap
 
 test_imap_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../FlowForwarder.cc ../../CacheManager.cc \
+			../../AnomalyManager.cc \
 			../../protocols/ethernet/EthernetProtocol.cc \
 			../../protocols/ip/IPProtocol.cc \
 			../../ipset/IPSetManager.cc \
@@ -15,6 +16,7 @@ test_imap_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../protocols/tcp/TCPProtocol.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
+			../../names/DomainName.cc \
 			../../names/DomainNameManager.cc \
 			IMAPProtocol.cc test_imap.cc
 

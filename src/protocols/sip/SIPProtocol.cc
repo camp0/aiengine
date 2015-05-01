@@ -175,12 +175,10 @@ void SIPProtocol::extract_from_value(SIPInfo *info, const char *header) {
 
 void SIPProtocol::attach_from_to_flow(SIPInfo *info, boost::string_ref &from) {
 
-	SharedPointer<StringCache> from_ptr = info->from.lock();
-
-	if (!from_ptr) { 
+	if (info->from.expired()) {
 		GenericMapType::iterator it = from_map_.find(from);
 		if (it == from_map_.end()) {
-			from_ptr = from_cache_->acquire().lock();
+			SharedPointer<StringCache> from_ptr = from_cache_->acquire().lock();
 			if (from_ptr) {
 				from_ptr->setName(from.data(),from.length());
 				info->from = from_ptr;
@@ -208,12 +206,10 @@ void SIPProtocol::extract_to_value(SIPInfo *info, const char *header) {
 
 void SIPProtocol::attach_to_to_flow(SIPInfo *info, boost::string_ref &to) {
 
-	SharedPointer<StringCache> to_ptr = info->to.lock();
-
-	if (!to_ptr) { 
+	if (info->to.expired()) {
 		GenericMapType::iterator it = to_map_.find(to);
 		if (it == to_map_.end()) {
-			to_ptr = to_cache_->acquire().lock();
+			SharedPointer<StringCache> to_ptr = to_cache_->acquire().lock();
 			if (to_ptr) {
 				to_ptr->setName(to.data(),to.length());
 				info->to = to_ptr;
@@ -231,12 +227,10 @@ void SIPProtocol::attach_to_to_flow(SIPInfo *info, boost::string_ref &to) {
 
 void SIPProtocol::attach_via_to_flow(SIPInfo *info, boost::string_ref &via) {
 
-        SharedPointer<StringCache> via_ptr = info->via.lock();
-
-        if (!via_ptr) {
+	if (info->via.expired()) {
                 GenericMapType::iterator it = via_map_.find(via);
                 if (it == via_map_.end()) {
-                        via_ptr = via_cache_->acquire().lock();
+                        SharedPointer<StringCache> via_ptr = via_cache_->acquire().lock();
                         if (via_ptr) {
                                 via_ptr->setName(via.data(),via.length());
                                 info->via = via_ptr;

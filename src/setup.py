@@ -87,7 +87,8 @@ class TODOCommand(SetupBuildCommand):
                 # for each single file in the files
                 for afile in files:
                     # if the file doesn't end with .pyc
-                    if not afile.endswith('.pyc'):
+                    if ((afile.endswith('.cc')) or (afile.endswith('.h'))):
+                    #if not afile.endswith('.pyc'):
                         full_path = os.path.join(root, afile)
                         fobj = open(full_path, 'r')
                         line_no = 0

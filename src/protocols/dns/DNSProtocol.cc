@@ -103,7 +103,7 @@ void DNSProtocol::attach_dns_to_flow(DNSInfo *info, boost::string_ref &domain, u
         if (!name) { // There is no DNS attached
 		GenericMapType::iterator it = domain_map_.find(domain);
                 if (it == domain_map_.end()) {
-                	name = name_cache_->acquire().lock();
+                       	name = name_cache_->acquire().lock();
                         if (name) {
                         	name->setName(domain.data(),domain.length());
 				info->setQueryType(qtype);
@@ -211,9 +211,8 @@ void DNSProtocol::handle_standard_query(Flow *flow, DNSInfo *info, int length) {
 	update_query_types(qtype);
 
 	if (domain.length() > 0) { // The domain is valid
-
-		DomainNameManagerPtr ban_dnm = ban_domain_mng_.lock();
-		if (ban_dnm) {
+		if (!ban_domain_mng_.expired()) {
+			DomainNameManagerPtr ban_dnm = ban_domain_mng_.lock();
 			SharedPointer<DomainName> domain_candidate = ban_dnm->getDomainName(domain);
 			if (domain_candidate) {
 #ifdef HAVE_LIBLOG4CXX
@@ -235,8 +234,8 @@ void DNSProtocol::handle_standard_response(Flow *flow, DNSInfo *info, int length
 
 	++total_responses_;
 
-	SharedPointer<StringCache> name = info->name.lock();
-	if (!name) {
+       	SharedPointer<StringCache> name = info->name.lock();
+       	if (!name) {
 		// There is no name attached so lets try to extract from the response
         	int offset = extract_domain_name(flow);
 
@@ -259,6 +258,10 @@ void DNSProtocol::handle_standard_response(Flow *flow, DNSInfo *info, int length
 	}
 
 	// Check if the DNSProtocol have a DomainNameManager attached for match domains
+	if (domain_mng_.expired()) {
+		return;
+	}
+ 
         DomainNameManagerPtr dnm = domain_mng_.lock();
         if (dnm) {
         	SharedPointer<DomainName> domain_candidate = dnm->getDomainName(domain);

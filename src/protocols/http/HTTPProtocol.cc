@@ -144,9 +144,8 @@ int64_t HTTPProtocol::getAllocatedMemory() const {
 // Removes or decrements the hits of the maps.
 void HTTPProtocol::release_http_info_cache(HTTPInfo *info) {
 
-        SharedPointer<StringCache> ua_ptr = info->ua.lock();
-
-        if (ua_ptr) { // There is no user agent attached
+	if (!info->ua.expired()) {
+        	SharedPointer<StringCache> ua_ptr = info->ua.lock();
                 GenericMapType::iterator it = ua_map_.find(ua_ptr->getName());
 		if (it != ua_map_.end()) {
 			int *counter = &std::get<1>(it->second);
@@ -158,9 +157,8 @@ void HTTPProtocol::release_http_info_cache(HTTPInfo *info) {
 		}
 	}
 
-        SharedPointer<StringCache> uri_ptr = info->uri.lock();
-
-        if (uri_ptr) { // There is a Uri attached
+	if (!info->uri.expired()) {
+        	SharedPointer<StringCache> uri_ptr = info->uri.lock();
                 GenericMapType::iterator it = uri_map_.find(uri_ptr->getName());
                 if (it != uri_map_.end()) {
                         int *counter = &std::get<1>(it->second);
@@ -268,12 +266,11 @@ void HTTPProtocol::releaseCache() {
 
 void HTTPProtocol::attach_host(HTTPInfo *info, boost::string_ref &host) {
 
-	SharedPointer<StringCache> host_ptr = info->host.lock();
-
-	if (!host_ptr) { // There is no Host object attached to the flow
+	// There is no host attached to the HTTPInfo
+	if (info->host.expired()) {
 		GenericMapType::iterator it = host_map_.find(host);
 		if (it == host_map_.end()) {
-			host_ptr = host_cache_->acquire().lock();
+			SharedPointer<StringCache> host_ptr = host_cache_->acquire().lock();
 			if (host_ptr) {
 				host_ptr->setName(host.data(),host.size());
 				info->host = host_ptr;
@@ -290,8 +287,8 @@ void HTTPProtocol::attach_host(HTTPInfo *info, boost::string_ref &host) {
 
 bool HTTPProtocol::process_host_parameter(HTTPInfo *info,boost::string_ref &host) {
 
-	DomainNameManagerPtr ban_hosts = ban_domain_mng_.lock();
-        if (ban_hosts) {
+	if (!ban_domain_mng_.expired()) {
+		DomainNameManagerPtr ban_hosts = ban_domain_mng_.lock();
         	SharedPointer<DomainName> host_candidate = ban_hosts->getDomainName(host);
                 if (host_candidate) {
 #ifdef HAVE_LIBLOG4CXX
@@ -332,12 +329,10 @@ bool HTTPProtocol::process_content_length_parameter(HTTPInfo *info, boost::strin
 
 void HTTPProtocol::attach_useragent(HTTPInfo *info, boost::string_ref &ua) {
 
-	SharedPointer<StringCache> ua_ptr = info->ua.lock();
-
-	if (!ua_ptr) { // There is no user agent attached
+	if (info->ua.expired()) {
 		GenericMapType::iterator it = ua_map_.find(ua);
 		if (it == ua_map_.end()) {
-			ua_ptr = ua_cache_->acquire().lock();
+			SharedPointer<StringCache> ua_ptr = ua_cache_->acquire().lock();
 			if (ua_ptr) {
 				ua_ptr->setName(ua.data(),ua.length());
 				info->ua = ua_ptr;
@@ -556,11 +551,10 @@ void HTTPProtocol::processFlow(Flow *flow) {
 
 		// Just verify the Host on the first request
 		if (info->getTotalRequests() == 1) {
-                	DomainNameManagerPtr host_mng = domain_mng_.lock();
-                	if (host_mng) {
-				SharedPointer<StringCache> host_name = info->host.lock();
-
-				if (host_name) {
+			if (!domain_mng_.expired()) {
+				if (!info->host.expired()) {
+                			DomainNameManagerPtr host_mng = domain_mng_.lock();
+					SharedPointer<StringCache> host_name = info->host.lock();
                 			SharedPointer<DomainName> host_candidate = host_mng->getDomainName(host_name->getName());
 					if (host_candidate) {
 #ifdef PYTHON_BINDING
@@ -577,8 +571,8 @@ void HTTPProtocol::processFlow(Flow *flow) {
 			}
 		}
 
-		SharedPointer<DomainName> mhost = info->matched_host.lock();
-		if (mhost) {
+		if (!info->matched_host.expired()) {
+			SharedPointer<DomainName> mhost = info->matched_host.lock();
 			SharedPointer<HTTPUriSet> uset = mhost->getHTTPUriSet();
 			if((uset) and (offset >0)) {
 				if (uset->lookupURI(info->uri.lock()->getName())) {

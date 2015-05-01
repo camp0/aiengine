@@ -76,7 +76,7 @@ public:
 
 	void processFlow(Flow *flow) {}; // This protocol generates flows but not for destination.
 	bool processPacket(Packet &packet);
-	void computeState(Flow *flow,int32_t bytes);
+	void computeState(Flow *flow, TCPInfo *info,int32_t bytes);
 
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);

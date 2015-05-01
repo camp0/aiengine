@@ -391,6 +391,14 @@ void PacketDispatcher::setScheduler(PyObject *callback, int seconds) {
 	}
 }
 
+const char *PacketDispatcher::getStatus() const {
+
+        if (status_ == PacketDispatcherStatus::RUNNING)
+                return "running";
+        else
+                return "stoped";
+}
+
 #endif
 
 std::ostream& operator<< (std::ostream& out, const PacketDispatcher& pdis) {

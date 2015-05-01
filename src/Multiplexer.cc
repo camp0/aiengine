@@ -66,26 +66,24 @@ void Multiplexer::forwardPacket(Packet &packet) {
         ++total_received_packets_;
 	next_mux = getUpMultiplexer(next_protocol_id_);
 	if(!next_mux.expired()) {
-                MultiplexerPtr mux = next_mux.lock();
-                if (mux) {
-                      	Packet pkt_candidate(packet); 
+		MultiplexerPtr mux = next_mux.lock();
+                Packet pkt_candidate(packet); 
 
-			// Modify just the packet payload and the length of it
-			pkt_candidate.setPayload(&packet.getPayload()[header_size_]);
-			pkt_candidate.setPayloadLength(packet.getLength() - header_size_);
+		// Modify just the packet payload and the length of it
+		pkt_candidate.setPayload(&packet.getPayload()[header_size_]);
+		pkt_candidate.setPayloadLength(packet.getLength() - header_size_);
 
-			if(mux->acceptPacket(pkt_candidate)) { // The packet is accepted by the destination mux
-    				if (mux->packet_func_(pkt_candidate)) { // Forward the packet to upper layers
-                        		++total_forward_packets_;
-                        		mux->forwardPacket(pkt_candidate);
-				}
-#ifdef DEBUG
-			} else {
-				std::cout << "WARNING: PACKET NO ACCEPTED by Multiplexer(" << this <<")" << std::endl;
-				std::cout << pkt_candidate;
-#endif
+		if(mux->acceptPacket(pkt_candidate)) { // The packet is accepted by the destination mux
+    			if (mux->packet_func_(pkt_candidate)) { // Forward the packet to upper layers
+                       		++total_forward_packets_;
+                       		mux->forwardPacket(pkt_candidate);
 			}
-                }
+#ifdef DEBUG
+		} else {
+			std::cout << "WARNING: PACKET NO ACCEPTED by Multiplexer(" << this <<")" << std::endl;
+			std::cout << pkt_candidate;
+#endif
+		}
         } else {
                 ++total_fail_packets_;
         }

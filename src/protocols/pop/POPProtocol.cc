@@ -145,12 +145,10 @@ void POPProtocol::releaseCache() {
 
 void POPProtocol::attach_user_name(POPInfo *info, boost::string_ref &name) {
 
-        SharedPointer<StringCache> user_ptr = info->user_name.lock();
-
-        if (!user_ptr) { // There is user name attached
+	if (info->user_name.expired()) {
                 GenericMapType::iterator it = user_map_.find(name);
                 if (it == user_map_.end()) {
-                        user_ptr = user_cache_->acquire().lock();
+                        SharedPointer<StringCache> user_ptr = user_cache_->acquire().lock();
                         if (user_ptr) {
                                 user_ptr->setName(name.data(),name.length());
                                 info->user_name = user_ptr;
@@ -185,8 +183,8 @@ void POPProtocol::handle_cmd_user(Flow *flow,POPInfo *info, const char *header) 
 
         boost::string_ref domain(h.substr(token + 1,h.size()-2));
 
-        DomainNameManagerPtr ban_hosts = ban_domain_mng_.lock();
-        if (ban_hosts) {
+	if (!ban_domain_mng_.expired()) {
+        	DomainNameManagerPtr ban_hosts = ban_domain_mng_.lock();
                 SharedPointer<DomainName> dom_candidate = ban_hosts->getDomainName(domain);
                 if (dom_candidate) {
 #ifdef HAVE_LIBLOG4CXX
@@ -201,9 +199,8 @@ void POPProtocol::handle_cmd_user(Flow *flow,POPInfo *info, const char *header) 
 
         attach_user_name(info,user_name);
 
-        DomainNameManagerPtr dom_mng = domain_mng_.lock();
-        if (dom_mng) {
-
+	if (!domain_mng_.expired()) {
+        	DomainNameManagerPtr dom_mng = domain_mng_.lock();
                 SharedPointer<DomainName> dom_candidate = dom_mng->getDomainName(domain);
                 if (dom_candidate) {
 #ifdef PYTHON_BINDING

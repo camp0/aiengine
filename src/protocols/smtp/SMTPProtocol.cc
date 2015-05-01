@@ -171,12 +171,10 @@ void SMTPProtocol::releaseCache() {
 
 void SMTPProtocol::attach_from(SMTPInfo *info, boost::string_ref &from) {
 
-        SharedPointer<StringCache> from_ptr = info->from.lock();
-
-        if (!from_ptr) { // There is no from attached
+	if (info->from.expired()) {
                 GenericMapType::iterator it = from_map_.find(from);
                 if (it == from_map_.end()) {
-                        from_ptr = from_cache_->acquire().lock();
+                        SharedPointer<StringCache> from_ptr = from_cache_->acquire().lock();
                         if (from_ptr) {
                                 from_ptr->setName(from.data(),from.length());
                                 info->from = from_ptr;
@@ -220,8 +218,8 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header
 	}
 	boost::string_ref domain(from.substr(token + 1,from.size()));
 
-        DomainNameManagerPtr ban_hosts = ban_domain_mng_.lock();
-        if (ban_hosts) {
+	if (!ban_domain_mng_.expired()) {
+        	DomainNameManagerPtr ban_hosts = ban_domain_mng_.lock();
                 SharedPointer<DomainName> dom_candidate = ban_hosts->getDomainName(domain);
                 if (dom_candidate) {
 #ifdef HAVE_LIBLOG4CXX
@@ -236,9 +234,8 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header
 
 	attach_from(info,from);
 
-        DomainNameManagerPtr dom_mng = domain_mng_.lock();
-       	if (dom_mng) {
-
+	if (!domain_mng_.expired()) {
+        	DomainNameManagerPtr dom_mng = domain_mng_.lock();
         	SharedPointer<DomainName> dom_candidate = dom_mng->getDomainName(domain);
                 if (dom_candidate) {
 #ifdef PYTHON_BINDING
@@ -255,18 +252,16 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header
 
 void SMTPProtocol::handle_cmd_rcpt(SMTPInfo *info, const char *header) {
 
-        SharedPointer<StringCache> to_ptr = info->to.lock();
+	if (info->to.expired()) {
+        	boost::string_ref h(header);
 
-        boost::string_ref h(header);
+        	size_t start = h.find("<");
+        	size_t end = h.rfind(">");
 
-        size_t start = h.find("<");
-        size_t end = h.rfind(">");
-
-        if (!to_ptr) { // There is no from attached
 		boost::string_ref to(h.substr(start + 1,end - start - 1));
                 GenericMapType::iterator it = to_map_.find(to);
                 if (it == to_map_.end()) {
-                        to_ptr = to_cache_->acquire().lock();
+                        SharedPointer<StringCache> to_ptr = to_cache_->acquire().lock();
                         if (to_ptr) {
                                 to_ptr->setName(to.data(),to.length());
                                 info->to = to_ptr;

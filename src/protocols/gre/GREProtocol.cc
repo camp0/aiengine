@@ -30,9 +30,10 @@ bool GREProtocol::processPacket(Packet &packet) {
 
         ++total_packets_;
         total_bytes_ += packet.getLength();
-        MultiplexerPtr mux = mux_.lock();
 
-        if (mux) {
+	if (!mux_.expired()) {
+        	MultiplexerPtr mux = mux_.lock();
+     
                 mux->setNextProtocolIdentifier(0);
 
                 mux->setHeaderSize(header_size);

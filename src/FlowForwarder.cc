@@ -52,12 +52,11 @@ void FlowForwarder::forwardFlow(Flow *flow) {
 		return;
 	}
 
-	for (auto it = flowForwarderVector_.begin(); it != flowForwarderVector_.end(); ++it) {
-		ff = (*it).lock();
-
+	for (auto &fw: flowForwarderVector_) {
+		ff = fw.lock();
 		if(ff->acceptPacket(*(flow->packet))) {
 			// The packet have been accepted by the FlowForwarder
-			flow->forwarder = (*it);
+			flow->forwarder = ff;
 			ff->incTotalReceivedFlows();
 			ff->flow_func_(flow);
 #ifdef DEBUG

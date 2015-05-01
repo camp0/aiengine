@@ -158,12 +158,11 @@ bool TCPProtocol::processPacket(Packet &packet) {
 	++total_packets_;
 
         if (flow) {
-		SharedPointer<TCPInfo> tcp_info = flow->tcp_info.lock();
-        	MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();
-        	MultiplexerPtr ipmux = downmux.lock();
+		if (!flow->tcp_info.expired()) {
+			SharedPointer<TCPInfo> tcp_info = flow->tcp_info.lock();
+        		MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();
+        		MultiplexerPtr ipmux = downmux.lock();
 
-		if (tcp_info) {              
- 
 			int bytes = (ipmux->total_length - ipmux->getHeaderSize() - getTcpHdrLength());
 
 			flow->total_bytes += bytes;
@@ -173,13 +172,13 @@ bool TCPProtocol::processPacket(Packet &packet) {
 				flow->setPacketAnomaly(packet.getPacketAnomaly());
 			}
 
-			computeState(flow.get(),bytes);
+			computeState(flow.get(),tcp_info.get(),bytes);
 #ifdef DEBUG
                 	char mbstr[100];
                 	std::strftime(mbstr, 100, "%D %X", std::localtime(&packet_time_));
                 	std::cout << __FILE__ << ":" << __func__ << ": flow(" << current_flow_ << ")[" << mbstr << "] pkts:" << flow->total_packets << " " << *tcp_info.get() << std::endl;
 #endif
-			if (flow_forwarder_.lock()&&(bytes > 0)) {
+			if (!flow_forwarder_.expired()&&(bytes > 0)) {
 			
 				FlowForwarderPtr ff = flow_forwarder_.lock();
 
@@ -249,7 +248,7 @@ bool TCPProtocol::processPacket(Packet &packet) {
 	return true;
 }
 
-void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
+void TCPProtocol::computeState(Flow *flow, TCPInfo *info,int32_t bytes) {
 
 	bool syn = isSyn();
 	bool ack = isAck();
@@ -258,110 +257,106 @@ void TCPProtocol::computeState(Flow *flow, int32_t bytes) {
 	int flags = static_cast<int>(TcpFlags::INVALID);
 	char *str_flag __attribute__((unused)) = (char*)"None";
 	char *str_num __attribute__((unused)) = (char*)"None";
-	SharedPointer<TCPInfo> tcp_info = flow->tcp_info.lock();
 
-	if (tcp_info) {
-		bool bad_flags = false;
-		int flowdir = static_cast<int>(flow->getFlowDirection());
-		int prev_flowdir __attribute__((unused)) = static_cast<int>(flow->getPrevFlowDirection());
-		uint32_t seq_num = getSequence();
-		uint32_t ack_num __attribute__((unused)) = getAckSequence();
-		uint32_t next_seq_num = 0;
-		uint32_t next_ack_num __attribute__((unused)) = 0;
-		int state = tcp_info->state_curr;
+	bool bad_flags = false;
+	int flowdir = static_cast<int>(flow->getFlowDirection());
+	int prev_flowdir __attribute__((unused)) = static_cast<int>(flow->getPrevFlowDirection());
+	uint32_t seq_num = getSequence();
+	uint32_t ack_num __attribute__((unused)) = getAckSequence();
+	uint32_t next_seq_num = 0;
+	uint32_t next_ack_num __attribute__((unused)) = 0;
+	int state = info->state_curr;
 
-		if (syn) { 
-			if (ack) {
-				flags = static_cast<int>(TcpFlags::SYNACK);
-				str_flag = (char*)"SynAck";
-				++ tcp_info->syn_ack;
-				++ total_flags_synack_;
+	if (syn) { 
+		if (ack) {
+			flags = static_cast<int>(TcpFlags::SYNACK);
+			str_flag = (char*)"SynAck";
+			++ info->syn_ack;
+			++ total_flags_synack_;
 				
-				tcp_info->seq_num[flowdir] = seq_num;
-			} else {
-				flags = static_cast<int>(TcpFlags::SYN);
-				str_flag = (char*)"Syn";
-				++ tcp_info->syn;
-				++ total_flags_syn_;
-
-				tcp_info->seq_num[flowdir] = seq_num + 1;
-				++seq_num;
-			}
-                        if (fin) { 
-				bad_flags = true;
-				++ tcp_info->fin;
-				++ total_flags_fin_;
-			}
-			if (rst) {
-				bad_flags = true;
-                        }
+			info->seq_num[flowdir] = seq_num;
 		} else {
-			if ((ack)&&(fin)) {
+			flags = static_cast<int>(TcpFlags::SYN);
+			str_flag = (char*)"Syn";
+			++ info->syn;
+			++ total_flags_syn_;
+
+			info->seq_num[flowdir] = seq_num + 1;
+			++seq_num;
+		}
+                if (fin) { 
+			bad_flags = true;
+			++ info->fin;
+			++ total_flags_fin_;
+		}
+		if (rst) {
+			bad_flags = true;
+                }
+	} else {
+		if ((ack)&&(fin)) {
+			flags = static_cast<int>(TcpFlags::FIN);
+			str_flag = (char*)"Fin";
+			++ total_flags_fin_;
+			++ info->fin;
+		} else {
+			if (fin) {
 				flags = static_cast<int>(TcpFlags::FIN);
 				str_flag = (char*)"Fin";
 				++ total_flags_fin_;
-				++ tcp_info->fin;
+				++ info->fin;
 			} else {
-				if (fin) {
-					flags = static_cast<int>(TcpFlags::FIN);
-					str_flag = (char*)"Fin";
-					++ total_flags_fin_;
-					++ tcp_info->fin;
-				} else {
-					flags = static_cast<int>(TcpFlags::ACK);
-					str_flag = (char*)"Ack";
-					++ total_flags_ack_;
-					++ tcp_info->ack;
-				}
-			}
-			if (isPushSet()) {
-				++ tcp_info->push;
+				flags = static_cast<int>(TcpFlags::ACK);
+				str_flag = (char*)"Ack";
+				++ total_flags_ack_;
+				++ info->ack;
 			}
 		}
+		if (isPushSet()) {
+			++ info->push;
+		}
+	}
 
-		if (bad_flags) {
-			if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
-				flow->setPacketAnomaly(PacketAnomalyType::TCP_BAD_FLAGS);
-			}
-			AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::TCP_BAD_FLAGS);
+	if (bad_flags) {
+		if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
+			flow->setPacketAnomaly(PacketAnomalyType::TCP_BAD_FLAGS);
 		}
+		AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::TCP_BAD_FLAGS);
+	}
 
-		// Check if the sequence numbers are fine
-		if (seq_num == tcp_info->seq_num[flowdir]) {
-			str_num = (char*)"numOK";
-		} else {
-			// Duplicated packets or retransmited
-			str_num = (char*)"numBad";
-		}
+	// Check if the sequence numbers are fine
+	if (seq_num == info->seq_num[flowdir]) {
+		str_num = (char*)"numOK";
+	} else {
+		// Duplicated packets or retransmited
+		str_num = (char*)"numBad";
+	}
 			
-		next_seq_num = seq_num + bytes;
-		tcp_info->seq_num[flowdir] = next_seq_num;
+	next_seq_num = seq_num + bytes;
+	info->seq_num[flowdir] = next_seq_num;
 
-		tcp_info->state_prev = tcp_info->state_curr;
+	info->state_prev = info->state_curr;
 		
-		// Compute the new transition state
-		int newstate = ((tcp_states[static_cast<int>(state)]).state)->dir[flowdir].flags[flags];
+	// Compute the new transition state
+	int newstate = ((tcp_states[static_cast<int>(state)]).state)->dir[flowdir].flags[flags];
 
-		if (newstate == -1) {
-			// Continue on the same state
-			newstate = tcp_info->state_prev;
-		}
-		tcp_info->state_curr = newstate;
-		if (rst) {
-			// Hard reset, close the flow 
-			tcp_info->state_prev = static_cast<int>(TcpState::CLOSED);
-			tcp_info->state_curr = static_cast<int>(TcpState::CLOSED);
-			++ total_flags_rst_;
-		}
+	if (newstate == -1) {
+		// Continue on the same state
+		newstate = info->state_prev;
+	}
+	info->state_curr = newstate;
+	if (rst) {
+		// Hard reset, close the flow 
+		info->state_prev = static_cast<int>(TcpState::CLOSED);
+		info->state_curr = static_cast<int>(TcpState::CLOSED);
+		++ total_flags_rst_;
+	}
 #ifdef DEBUG
-		const char *prev_state = ((tcp_states[tcp_info->state_prev]).state)->name;
-		const char *curr_state = ((tcp_states[tcp_info->state_curr]).state)->name;
-		std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << " curr:" << curr_state << " flg:" << str_flag << " " << str_num;
-		std::cout << " seq(" << seq_num << ")ack(" << ack_num << ") dir:" << flowdir << " bytes:" << bytes;
-		std::cout << " nseq(" << next_seq_num << ")nack(" << next_ack_num << ")" << std::endl;
+	const char *prev_state = ((tcp_states[info->state_prev]).state)->name;
+	const char *curr_state = ((tcp_states[info->state_curr]).state)->name;
+	std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << " curr:" << curr_state << " flg:" << str_flag << " " << str_num;
+	std::cout << " seq(" << seq_num << ")ack(" << ack_num << ") dir:" << flowdir << " bytes:" << bytes;
+	std::cout << " nseq(" << next_seq_num << ")nack(" << next_ack_num << ")" << std::endl;
 #endif
-
-	} // end tcp_info
 }
 
 #ifdef PYTHON_BINDING

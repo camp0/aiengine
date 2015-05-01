@@ -143,6 +143,7 @@ public:
 	void setStack(boost::python::object& stack);
 	boost::python::object getStack() const { return pystack_; }
 
+	const char *getStatus() const ;
 #else
         void setStack(StackLan& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock()); }
         void setStack(StackMobile& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}

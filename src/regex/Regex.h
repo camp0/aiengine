@@ -85,11 +85,11 @@ public:
 	friend std::ostream& operator<< (std::ostream& out, const Regex& sig);
 
 	bool isTerminal() const { return is_terminal_;}
-	void setNextRegex(SharedPointer<Regex> reg) { next_regex_ = reg;is_terminal_ = false;}
+	void setNextRegex(const SharedPointer<Regex>& reg) { next_regex_ = reg;is_terminal_ = false;}
 	SharedPointer<Regex> getNextRegex() { return next_regex_;}
 
 	// Reference to the next RegexManager for use on the flow
-	void setNextRegexManager(const SharedPointer<RegexManager> regex_mng) { regex_mng_ = regex_mng; is_terminal_ = false; }
+	void setNextRegexManager(const SharedPointer<RegexManager>& regex_mng) { regex_mng_ = regex_mng; is_terminal_ = false; }
 	SharedPointer<RegexManager> getNextRegexManager() const { return regex_mng_; }
 
 	bool matchAndExtract(const std::string& data);

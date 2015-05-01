@@ -143,7 +143,7 @@ void GPRSProtocol::processFlow(Flow *flow) {
         total_bytes_ += bytes;
 	++total_packets_;
 
-        if (mux_.lock()&&(bytes > 0)) {
+        if (!mux_.expired()&&(bytes > 0)) {
        
 		uint8_t type = gprs_header_->type; 
 		

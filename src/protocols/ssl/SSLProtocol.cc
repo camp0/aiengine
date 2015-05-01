@@ -126,12 +126,10 @@ void SSLProtocol::releaseCache() {
 
 void SSLProtocol::attach_host(SSLInfo *info, boost::string_ref &host) {
 
-        SharedPointer<StringCache> host_ptr = info->host.lock();
-
-        if (!host_ptr) { // There is no from attached
+	if (info->host.expired()) {
                 GenericMapType::iterator it = host_map_.find(host);
                 if (it == host_map_.end()) {
-                        host_ptr = host_cache_->acquire().lock();
+                        SharedPointer<StringCache> host_ptr = host_cache_->acquire().lock();
                         if (host_ptr) {
                                 host_ptr->setName(host.data(),host.length());
                                 info->host = host_ptr;
@@ -187,9 +185,9 @@ void SSLProtocol::handle_client_hello(SSLInfo *info,int length,int offset, u_cha
 						int server_length = ntohs(server->length);
 						if ((block_offset + server_length < length )and(server_length > 0)) {
 							boost::string_ref servername((char*)server->data,server_length);
-							
-							DomainNameManagerPtr ban_dnm = ban_domain_mng_.lock();
-							if (ban_dnm) {
+					
+							if (!ban_domain_mng_.expired()) {		
+								DomainNameManagerPtr ban_dnm = ban_domain_mng_.lock();
 								SharedPointer<DomainName> host_candidate = ban_dnm->getDomainName(servername);
 								if (host_candidate) {
 #ifdef HAVE_LIBLOG4CXX
@@ -291,23 +289,23 @@ void SSLProtocol::processFlow(Flow *flow) {
 				if (maxattemps == 4 ) break;
 			}while(offset < flow->packet->getLength());
 
-			DomainNameManagerPtr host_mng = domain_mng_.lock();
-			if (host_mng) {
-				SharedPointer<StringCache> host_name = sinfo->host.lock();
+			if (!domain_mng_.expired()) {
+				if(!sinfo->host.expired()) {
+					if (flow->total_packets_l7 == 1) {
+						DomainNameManagerPtr host_mng = domain_mng_.lock();
+						SharedPointer<StringCache> host_name = sinfo->host.lock();
 
-				// TODO: just handled the client hello, so there is no need of checking on packetsl7 > than 1
-				if ((host_name)and(flow->total_packets_l7 == 1)) {
-					SharedPointer<DomainName> host_candidate = host_mng->getDomainName(host_name->getName());
-					
-					if (host_candidate) {
+						SharedPointer<DomainName> host_candidate = host_mng->getDomainName(host_name->getName());
+						if (host_candidate) {
 #ifdef PYTHON_BINDING
 #ifdef HAVE_LIBLOG4CXX
-						LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
+							LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
 #endif  
-						if(host_candidate->pycall.haveCallback()) {
-							host_candidate->pycall.executeCallback(flow);
-						}
+							if(host_candidate->pycall.haveCallback()) {
+								host_candidate->pycall.executeCallback(flow);
+							}
 #endif
+						}
 					}
 				}
 			}

@@ -32,13 +32,13 @@ log4cxx::LoggerPtr UDPGenericProtocol::logger(log4cxx::Logger::getLogger("aiengi
 
 void UDPGenericProtocol::processFlow(Flow *flow) {
 
-        SharedPointer<RegexManager> sig = flow->regex_mng.lock();
         ++total_packets_;
         total_bytes_ += flow->packet->getLength();
 
 	++flow->total_packets_l7;
 
-        if (sig) { // There is a RegexManager attached
+	if (!flow->regex_mng.expired()) {
+        	SharedPointer<RegexManager> sig = flow->regex_mng.lock();
                 SharedPointer<Regex> regex = flow->regex.lock();
                 const unsigned char *payload = flow->packet->getPayload();
 		boost::string_ref data(reinterpret_cast<const char*>(payload),flow->packet->getLength());

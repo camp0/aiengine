@@ -36,6 +36,7 @@
 
 namespace aiengine {
 
+// TODO: evaluate the use of valarray on the code
 class Frequencies 
 {
 public:

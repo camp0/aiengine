@@ -393,6 +393,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		"Class that manage the packets and forwards to the associated network stack")
 		.def(init<>())	// Default constructor
                 .def(init<const std::string&>()) // Constructor for using with the 'with' statement
+		.def_readonly("status",&PacketDispatcher::getStatus,
+			"Gets the status of the PacketDispatcher")
 		.add_property("stack", &PacketDispatcher::getStack, setStackPtr,
 			"Gets/Sets the Network stack on the PacketDispatcher.")
 		.add_property("enableshell", &PacketDispatcher::getShell, &PacketDispatcher::setShell,
@@ -405,8 +407,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Closes a network device or a pcap file")
 		.def("run",&PacketDispatcher::run,
 			"Start to process packets")
-		.def("status",&PacketDispatcher::status,
-			"Shows the status of the PacketDispatcher")
 		.def("forwardPacket",&PacketDispatcher::forwardPacket,
 			"Forwards the received packet to a external packet engine(Netfilter)")
 		.def("setScheduler",&PacketDispatcher::setScheduler,

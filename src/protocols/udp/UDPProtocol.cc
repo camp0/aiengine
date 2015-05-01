@@ -158,7 +158,7 @@ bool UDPProtocol::processPacket(Packet& packet) {
                 std::cout << " bytes:" << bytes << " pktlen:" << packet.getLength() << std::endl;
 #endif
 
-		if(flow_forwarder_.lock()&&(bytes>0)) {
+		if(!flow_forwarder_.expired() and (bytes>0)) {
 			FlowForwarderPtr ff = flow_forwarder_.lock();
 
                         // Modify the packet for the next level
