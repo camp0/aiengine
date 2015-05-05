@@ -49,6 +49,7 @@ To use AIEngine(reduce version) just execute the binary aiengine or use the pyth
 	  -r [ --regex ] arg (=.*)       Sets the regex for evaluate agains the flows.
 	  -c [ --flow-class ] arg (=all) Uses tcp, udp or all for matches the signature
 					 on the flows.
+          -m [ --matched-flows ]         Shows the flows that matchs with the regex.
 
 	Frequencies optional arguments:
 	  -F [ --enable-frequencies ]       Enables the Frequency engine.

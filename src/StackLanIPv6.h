@@ -109,11 +109,11 @@ public:
         FlowManager &getTCPFlowManager() { return *flow_table_tcp_.get();}
         FlowManager &getUDPFlowManager() { return *flow_table_udp_.get();}
         
-        void setTCPIPSetManager(IPSetManager& ipset_mng) { tcp_->setIPSetManager(ipset_mng);}
-        void setUDPIPSetManager(IPSetManager& ipset_mng) { udp_->setIPSetManager(ipset_mng);}
+        void setTCPIPSetManager(const IPSetManager& ipset_mng) { tcp_->setIPSetManager(ipset_mng);}
+        void setUDPIPSetManager(const IPSetManager& ipset_mng) { udp_->setIPSetManager(ipset_mng);}
 #else
-        void setTCPIPSetManager(SharedPointer<IPSetManager> ipset_mng) { tcp_->setIPSetManager(ipset_mng);}
-        void setUDPIPSetManager(SharedPointer<IPSetManager> ipset_mng) { udp_->setIPSetManager(ipset_mng);}
+        void setTCPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) { tcp_->setIPSetManager(ipset_mng);}
+        void setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) { udp_->setIPSetManager(ipset_mng);}
 
         FlowManagerPtrWeak getTCPFlowManager() { return flow_table_tcp_;}
         FlowManagerPtrWeak getUDPFlowManager() { return flow_table_udp_;}

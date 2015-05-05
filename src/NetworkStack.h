@@ -107,15 +107,14 @@ public:
 	void setTCPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling);
 	void setUDPDatabaseAdaptor(boost::python::object &dbptr);
 	void setUDPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling);
-	
-	virtual void setTCPIPSetManager(IPSetManager& ipset_mng) = 0;
-	virtual void setUDPIPSetManager(IPSetManager& ipset_mng) = 0;
+
+       	virtual void setTCPIPSetManager(const IPSetManager& ipset_mng) = 0;
+       	virtual void setUDPIPSetManager(const IPSetManager& ipset_mng) = 0;
 
 	boost::python::dict getCounters(const std::string &name);
-
 #else
-	virtual void setTCPIPSetManager(SharedPointer<IPSetManager> ipset_mng) = 0;
-	virtual void setUDPIPSetManager(SharedPointer<IPSetManager> ipset_mng) = 0;
+	virtual void setTCPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) = 0;
+	virtual void setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) = 0;
 
 	virtual FlowManagerPtrWeak getTCPFlowManager() = 0;
 	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;

@@ -56,7 +56,9 @@ void UDPGenericProtocol::processFlow(Flow *flow) {
                 }
 
                 if((result)and(regex)) {
-
+                        if (regex->getShowMatch()) {
+                                std::cout << "UDP Flow:" << *flow << " matchs with regex " << regex->getName() << std::endl;
+                        }
 #ifdef HAVE_LIBLOG4CXX
                         LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << regex->getName());
 #endif

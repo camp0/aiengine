@@ -46,7 +46,7 @@ public:
 		Signature(name,exp)
 		,extract_buffer_()
 		,next_regex_(),is_terminal_(true),have_jit_(false),
-		regex_mng_()
+		show_match_(false),regex_mng_()
 	{
 		study_exp_ = NULL;
 		const char *errorstr;
@@ -96,6 +96,10 @@ public:
 
 	const char *getExtract() const { return extract_buffer_;} 
 
+	// For show the matched regex on std::cout
+	void setShowMatch(bool value) { show_match_ = value; }
+	bool getShowMatch() const { return show_match_; }
+
 private:
 	pcre *exp_;
 	pcre_extra *study_exp_;
@@ -104,6 +108,7 @@ private:
 	SharedPointer<Regex> next_regex_;
 	bool is_terminal_;
 	bool have_jit_;
+	bool show_match_;
 	SharedPointer<RegexManager> regex_mng_;
 };
 

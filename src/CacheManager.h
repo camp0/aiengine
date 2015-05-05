@@ -61,6 +61,9 @@ private:
 
 template <class T> T*  SingletonCache<T>::cacheMngInstance_ = nullptr;
 
+
+// TODO: make the class non singleton in order to have different stacks 
+// running at the same time from the python side.
 class CacheManager: public SingletonCache<CacheManager>
 {
 public:

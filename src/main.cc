@@ -82,6 +82,7 @@ std::vector<std::string> vector_regex;
 std::string option_selected_protocol;
 std::string option_release_cache_protocol;
 bool option_show_flows = false;
+bool option_show_matched_regex = false;
 bool option_enable_frequencies = false;
 bool option_enable_regex = false;
 bool option_enable_learner = false;
@@ -337,6 +338,7 @@ int main(int argc, char* argv[]) {
 		  			"Sets the regexs for evaluate agains the flows.")
                 ("flow-class,c",  	po::value<std::string>(&option_regex_type_flows)->default_value("all"),
 					"Uses tcp, udp or all for matches the signature on the flows.") 
+                ("matched-flows,m",  	"Shows the flows that matchs with the regex.")
 		;
 
         po::options_description optional_ops_freq("Frequencies optional arguments");
@@ -408,6 +410,7 @@ int main(int argc, char* argv[]) {
 		if (var_map.count("enable-learner")) option_enable_learner = true;
 		if (var_map.count("release")) option_release_caches = true;
 		if (var_map.count("enable-yara")) option_generate_yara = true; 
+		if (var_map.count("matched-flows")) option_show_matched_regex = true;
 
         	po::notify(var_map);
     	
@@ -473,7 +476,8 @@ int main(int argc, char* argv[]) {
 
 				prevr->setNextRegex(r);
 				prevr = r;
-			}	
+			}
+			topr->setShowMatch(option_show_matched_regex);	
 			sm->addRegex(topr);	
         	}
 
