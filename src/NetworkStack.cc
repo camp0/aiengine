@@ -32,7 +32,9 @@ log4cxx::LoggerPtr NetworkStack::logger(log4cxx::Logger::getLogger("aiengine.sta
 NetworkStack::NetworkStack():
 	stats_level_(0),name_(""),
 	proto_map_(),proto_vector_(),
-	domain_mng_list_() {
+	domain_mng_list_(),
+	tcp_regex_mng_(),udp_regex_mng_(),
+	tcp_ipset_mng_(),udp_ipset_mng_() {
 
 	// Allocate the layer 7 protocols
         http = HTTPProtocolPtr(new HTTPProtocol());

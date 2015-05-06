@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     dom = pyaiengine.DomainName("Service to analyze",
         "marca.com")
-    dom.setCallback(callback_host)
+    dom.callback = callback_host
     dm.addDomainName(dom)
 
     st.setDomainNameManager(dm,"HTTPProtocol")

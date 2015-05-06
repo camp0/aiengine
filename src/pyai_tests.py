@@ -81,15 +81,33 @@ class StackLanTests(unittest.TestCase):
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("netbios","CACACACA")
         rm.addRegex(r)
-        self.s.setUDPRegexManager(rm)
+        self.s.udpregexmanager = rm
 
         self.dis.open("../pcapfiles/flow_vlan_netbios.pcap");
         self.dis.run();
         self.dis.close();
 
         self.assertEqual(r.matchs, 1)
+        self.assertEqual(self.s.udpregexmanager, rm)
 
     def test2(self):
+        """ Verify that None is working on the udpregexmanager """
+        self.s.enableLinkLayerTagging("vlan")
+
+        rm = pyaiengine.RegexManager()
+        r = pyaiengine.Regex("netbios","CACACACA")
+        rm.addRegex(r)
+        self.s.udpregexmanager = rm
+        self.s.udpregexmanager = None
+
+        self.dis.open("../pcapfiles/flow_vlan_netbios.pcap");
+        self.dis.run();
+        self.dis.close();
+
+        self.assertEqual(r.matchs, 0)
+        self.assertEqual(self.s.udpregexmanager, None)
+
+    def test3(self):
         """ Create a regex for netbios with callback """
         def callback(flow):
             self.called_callback += 1 
@@ -103,7 +121,7 @@ class StackLanTests(unittest.TestCase):
         r = pyaiengine.Regex("netbios","CACACACA")
         r.callback = callback
         rm.addRegex(r)
-        self.s.setUDPRegexManager(rm)
+        self.s.udpregexmanager = rm
 
         self.dis.open("../pcapfiles/flow_vlan_netbios.pcap");
         self.dis.run();
@@ -112,7 +130,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(r.matchs, 1)
         self.assertEqual(self.called_callback, 1)
 
-    def test3(self):
+    def test4(self):
         """ Verify DNS and HTTP traffic """
 
         self.dis.open("../pcapfiles/accessgoogle.pcap");
@@ -149,7 +167,7 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(str(http_flow.getHTTPInfo().hostname),"www.google.com")
 
-    def test4(self):
+    def test5(self):
         """ Verify SSL traffic """
 
         self.dis.open("../pcapfiles/sslflow.pcap");
@@ -167,7 +185,7 @@ class StackLanTests(unittest.TestCase):
         inf = f.getSSLInfo()
         self.assertEqual(str(inf.servername),"0.drive.google.com")
 
-    def test5(self):
+    def test6(self):
         """ Verify SSL traffic with domain callback"""
         
         def domain_callback(flow):
@@ -189,7 +207,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(d.matchs , 1)
         self.assertEqual(self.called_callback, 1)
 
-    def test6(self):
+    def test7(self):
         """ Verify SSL traffic with domain callback and IPset"""
 
         def ipset_callback(flow):
@@ -211,7 +229,7 @@ class StackLanTests(unittest.TestCase):
         dm = pyaiengine.DomainNameManager()
         dm.addDomainName(d)
 
-        self.s.setTCPIPSetManager(ipm)
+        self.s.tcpipsetmanager = ipm
         self.s.setDomainNameManager(dm,"SSLProtocol")
 
         self.dis.open("../pcapfiles/sslflow.pcap");
@@ -222,7 +240,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(self.called_callback,1)
         self.assertEqual(self.ip_called_callback,1)
 
-    def test7(self):
+    def test8(self):
         """ Attach a database to the engine """
 
         db = databaseTestAdaptor()
@@ -237,7 +255,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(db.getUpdates(), 5)
         self.assertEqual(db.getRemoves(), 0)
 
-    def test8(self):
+    def test9(self):
         """ Attach a database to the engine """
 
         db = databaseTestAdaptor()
@@ -254,7 +272,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(db.getRemoves(), 0)
 
 
-    def test9(self):
+    def test10(self):
         """ Attach a database to the engine and domain name"""
 
         def domain_callback(flow):
@@ -284,7 +302,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(d.matchs,  1)
         self.assertEqual(self.called_callback, 1)
 
-    def test10(self):
+    def test11(self):
         """ Verify iterators of the RegexManager """
 
         rl = [ pyaiengine.Regex("expression %d" % x, "some regex %d" % x) for x in xrange(0,5) ]
@@ -292,8 +310,10 @@ class StackLanTests(unittest.TestCase):
         rm = pyaiengine.RegexManager()
 
         [rm.addRegex(r) for r in rl] 
-    
-        self.s.setTCPRegexManager(rm)
+ 
+        self.assertEqual(self.s.tcpregexmanager, None) 
+      
+        self.s.tcpregexmanager = rm 
         self.s.enableNIDSEngine(True)	
 
         self.dis.open("../pcapfiles/sslflow.pcap")
@@ -302,10 +322,11 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(len(rm), 5)
     
+        self.assertEqual(rm, self.s.tcpregexmanager)
         for r in rl:
     	    self.assertEqual(r.matchs, 0)
 
-    def test11(self):
+    def test12(self):
         """ Verify the IPBloomSet class """
 
         have_bloom = False
@@ -335,7 +356,7 @@ class StackLanTests(unittest.TestCase):
 
             self.assertEqual(self.ip_called_callback,1)
 
-    def test12(self):
+    def test13(self):
         """ Verify all the URIs of an HTTP flow """
 
         def domain_callback(flow):
@@ -382,7 +403,7 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(self.called_callback, 1)
 
-    def test13(self):
+    def test14(self):
         """ Verify cache release functionality """
 
         self.s.flowstimeout = 50000000 # No timeout :D
@@ -425,7 +446,7 @@ class StackLanTests(unittest.TestCase):
         for flow in fu:
             self.assertEqual(flow.getDNSInfo(),None)
 
-    def test14(self):
+    def test15(self):
         """ Attach a database to the engine and test timeouts on udp flows """
 
         db = databaseTestAdaptor()
@@ -444,7 +465,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(db.getRemoves(), 1)
         self.assertEqual(self.s.flowstimeout, 1)
 
-    def test15(self):
+    def test16(self):
         """ Verify that ban domains dont take memory """
 
         d = pyaiengine.DomainName("Wired domain",".wired.com")
@@ -474,7 +495,7 @@ class StackLanTests(unittest.TestCase):
             self.assertEqual(info.uri, '')
             break
 
-    def test16(self):
+    def test17(self):
         """ Verify the ban functionatly on the fly with a callback """
 
         def domain_callback(flow):
@@ -514,7 +535,7 @@ class StackLanTests(unittest.TestCase):
             self.assertEqual(inf.hostname, '')
             break
 
-    def test17(self):
+    def test18(self):
         """ Verify the getCounters functionatly """
 
         self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
@@ -539,7 +560,7 @@ class StackLanTests(unittest.TestCase):
         c = self.s.getCounters("UnknownProtocol")
         self.assertEqual(len(c), 0)
 
-    def test18(self):
+    def test19(self):
         """ Verify SMTP traffic with domain callback """
         self.from_correct = False
         def domain_callback(flow):
@@ -570,7 +591,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(self.called_callback,1)
         self.assertEqual(self.from_correct,True)
 
-    def test19(self):
+    def test20(self):
         """ Test the chains of regex with RegexManagers """
 
         rlist = [ pyaiengine.Regex("expression %d" % x, "some regex %d" % x) for x in xrange(0,5) ]
@@ -603,7 +624,7 @@ class StackLanTests(unittest.TestCase):
 	r6 = pyaiengine.Regex("smtp6" , "^QUIT")
 	rm3.addRegex(r6)
 
-        self.s.setTCPRegexManager(rmbase)
+        self.s.tcpregexmanager = rmbase
         self.s.enableNIDSEngine(True)
 
         with pyaiengine.PacketDispatcher("../pcapfiles/smtp.pcap") as pd:
@@ -620,7 +641,7 @@ class StackLanTests(unittest.TestCase):
 	self.assertEqual(r5.matchs, 1)
 	self.assertEqual(r6.matchs, 1)
 
-    def test20(self):
+    def test21(self):
         """ Tests the parameters of the callbacks """
         def callback1(flow):
             pass
@@ -651,7 +672,7 @@ class StackLanTests(unittest.TestCase):
         except:
             self.assertTrue(False)
 
-    def test21(self):
+    def test22(self):
         """ Verify the functionatliy of the HTTPUriSets with the callbacks """
 
         self.uset = pyaiengine.HTTPUriSet()
@@ -690,7 +711,7 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(self.called_callback,2)
 
-    def test22(self):
+    def test23(self):
         """ Verify the functionatliy of the HTTPUriSets with the callbacks """
 
         self.uset = pyaiengine.HTTPUriSet()
@@ -728,7 +749,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(self.uset.lookupsout, 38)
         self.assertEqual(self.called_callback,2)
 
-    def test23(self):
+    def test24(self):
         """ Verify the property of the PacketDispatcher.stack """
 
         p = pyaiengine.PacketDispatcher()
@@ -763,7 +784,7 @@ class StackLanIPv6Tests(unittest.TestCase):
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("generic exploit",b"\x90\x90\x90\x90\x90\x90\x90")
         rm.addRegex(r)
-        self.s.setTCPRegexManager(rm)
+        self.s.tcpregexmanager = rm
 
         self.dis.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
         self.dis.run()
@@ -783,14 +804,14 @@ class StackLanIPv6Tests(unittest.TestCase):
         im = pyaiengine.IPSetManager()
 
         im.addIPSet(ipset)
-        self.s.setTCPIPSetManager(im)
+        self.s.tcpipsetmanager = im
 
         rm = pyaiengine.RegexManager()
         r1 = pyaiengine.Regex("generic exploit","\x90\x90\x90\x90\x90\x90\x90")
         rm.addRegex(r1)
         r2 = pyaiengine.Regex("other exploit","(this can not match)")
         rm.addRegex(r2)
-        self.s.setTCPRegexManager(rm)
+        self.s.tcpregexmanager = rm
 
         self.dis.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
         self.dis.run()
@@ -812,14 +833,14 @@ class StackLanIPv6Tests(unittest.TestCase):
         im = pyaiengine.IPSetManager()
 
         im.addIPSet(ipset)
-        self.s.setTCPIPSetManager(im)
+        self.s.tcpipsetmanager = im
 
         rm = pyaiengine.RegexManager()
         r1 = pyaiengine.Regex("generic exploit","\xaa\xbb\xcc\xdd\x90\x90\x90")
         rm.addRegex(r1)
         r2 = pyaiengine.Regex("other exploit","(this can not match)")
         rm.addRegex(r2)
-        self.s.setTCPRegexManager(rm)
+        self.s.tcpregexmanager = rm
 
         self.dis.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
         self.dis.run()
@@ -882,7 +903,7 @@ class StackLanIPv6Tests(unittest.TestCase):
         im.addIPSet(ipset2)
         im.addIPSet(ipset3)
 
-        self.s.setTCPIPSetManager(im)
+        self.s.tcpipsetmanager = im
 
         self.dis.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
         self.dis.run()
@@ -890,6 +911,7 @@ class StackLanIPv6Tests(unittest.TestCase):
 
         self.assertEqual(len(im), 3)
         self.assertEqual(self.called_callback , 0)
+        self.assertEqual(self.s.tcpipsetmanager , im)
 
     def test7(self):
         """ Extract IPv6 address from a DomainName matched """
@@ -928,7 +950,7 @@ class StackLanIPv6Tests(unittest.TestCase):
         rm2.addRegex(r2)
         rm2.addRegex(r3)
 
-        self.s.setTCPRegexManager(rmbase)
+        self.s.tcpregexmanager = rmbase
 
         with pyaiengine.PacketDispatcher("../pcapfiles/generic_exploit_ipv6_defcon20.pcap") as pd:
             pd.stack = self.s
@@ -962,7 +984,7 @@ class StackLanIPv6Tests(unittest.TestCase):
 	rm3.addRegex(r4)
 	rm3.addRegex(r5)
 
-        self.s.setTCPRegexManager(rm1)
+        self.s.tcpregexmanager = rm1
 
         oldstack = None
 
@@ -1087,7 +1109,7 @@ class StackVirtualTests(unittest.TestCase):
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("Bin directory","^bin$")
         rm.addRegex(r)
-        self.s.setTCPRegexManager(rm)
+        self.s.tcpregexmanager = rm
 
         self.dis.open("../pcapfiles/vxlan_ftp.pcap")
         self.dis.run()
@@ -1101,7 +1123,7 @@ class StackVirtualTests(unittest.TestCase):
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("Bin directory",b"^SSH-2.0.*$")
         rm.addRegex(r)
-        self.s.setTCPRegexManager(rm)
+        self.s.tcpregexmanager = rm
 
         self.dis.open("../pcapfiles/gre_ssh.pcap")
         self.dis.run()
@@ -1121,7 +1143,7 @@ class StackVirtualTests(unittest.TestCase):
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("SSH activity",b"^SSH-2.0.*$")
         rm.addRegex(r)
-        self.s.setTCPRegexManager(rm)
+        self.s.tcpregexmanager = rm
 
         self.s.enableNIDSEngine(True)	
 
@@ -1168,7 +1190,7 @@ class StackVirtualTests(unittest.TestCase):
         r = pyaiengine.Regex("Bin directory",b"^bin$")
         r.callback = virt_callback
         rm.addRegex(r)
-        self.s.setTCPRegexManager(rm)
+        self.s.tcpregexmanager = rm
 
         self.s.enableNIDSEngine(True)
 
@@ -1200,7 +1222,7 @@ class StackOpenFlowTests(unittest.TestCase):
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("Bin directory",b"^\x26\x01")
         rm.addRegex(r)
-        self.s.setTCPRegexManager(rm)
+        self.s.tcpregexmanager = rm
 
         self.dis.open("../pcapfiles/openflow.pcap")
         self.dis.run()
@@ -1214,7 +1236,7 @@ class StackOpenFlowTests(unittest.TestCase):
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("Bin directory",b"^\x26\x01")
         rm.addRegex(r)
-        self.s.setTCPRegexManager(rm)
+        self.s.tcpregexmanager = rm
 
         with pyaiengine.PacketDispatcher("../pcapfiles/openflow.pcap") as pd:
             pd.stack = self.s

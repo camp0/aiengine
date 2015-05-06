@@ -389,12 +389,26 @@ void StackOpenFlow::setTCPRegexManager(const SharedPointer<RegexManager>& sig) {
 
 	tcp_vir_->setRegexManager(sig);
 	tcp_generic->setRegexManager(sig);
+	super_::setTCPRegexManager(sig);
 }
 
 void StackOpenFlow::setUDPRegexManager(const SharedPointer<RegexManager>& sig) {
 
 	udp_vir_->setRegexManager(sig);
 	udp_generic->setRegexManager(sig);
+	super_::setUDPRegexManager(sig);
+}
+
+void StackOpenFlow::setTCPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) { 
+
+	tcp_vir_->setIPSetManager(ipset_mng);
+	super_::setTCPIPSetManager(ipset_mng);
+}
+
+void StackOpenFlow::setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) { 
+
+	udp_vir_->setIPSetManager(ipset_mng);
+	super_::setUDPIPSetManager(ipset_mng);
 }
 
 } // namespace aiengine

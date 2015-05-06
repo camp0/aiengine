@@ -39,13 +39,13 @@ if __name__ == '__main__':
     ssl_sig = pyaiengine.Regex("SSL Basic regex","^\x16\x03")
 
     sig = pyaiengine.Regex("SSL Heartbeat","^.*\x18\x03(\x01|\x02|\x03).*$")
-    sig.setCallback(callback_heartbeat)
+    sig.callback = callback_heartbeat
 
     ssl_sig.setNextRegex(sig)
 
     sm.addRegex(ssl_sig)
 
-    st.setTCPRegexManager(sm)
+    st.tcpregexmanager = sm
 
     st.tcpflows = 327680
     st.udpflows = 163840

@@ -96,9 +96,6 @@ void Protocol::databaseAdaptorRemoveHandler(Flow *flow) {
 }
 
 #endif
-
-void Protocol::setIPSetManager(const IPSetManager& ipset_mng) { ipset_mng_ = boost::make_shared<IPSetManager>(ipset_mng);} 
-
 #endif
 
 void Protocol::infoMessage(const std::string& msg) {

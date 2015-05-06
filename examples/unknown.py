@@ -52,13 +52,13 @@ if __name__ == '__main__':
     print("Generated Regex:",r_candidate)
     rm = pyaiengine.RegexManager()
     r = pyaiengine.Regex("Unknown attack/traffic",r_candidate)
-    r.setCallback(unknown_callback)
+    r.callback = unknown_callback
     rm.addRegex(r)    
 
     """ We create another clean StackLan """
     st2 = pyaiengine.StackLan()
     
-    st2.setTCPRegexManager(rm)
+    st2.tcpregexmanager = rm
     st2.enableNIDSEngine(True)    
 
     st2.tcpflows = 327680

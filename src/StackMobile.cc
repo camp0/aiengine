@@ -369,12 +369,26 @@ void StackMobile::setTCPRegexManager(const SharedPointer<RegexManager>& sig) {
 
         tcp_->setRegexManager(sig);
         tcp_generic->setRegexManager(sig);
+	super_::setTCPRegexManager(sig);
 }
 
 void StackMobile::setUDPRegexManager(const SharedPointer<RegexManager>& sig) {
 
         udp_high_->setRegexManager(sig);
         udp_generic->setRegexManager(sig);
+	super_::setUDPRegexManager(sig);
+}
+
+void StackMobile::setTCPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) {
+
+        tcp_->setIPSetManager(ipset_mng);
+        super_::setTCPIPSetManager(ipset_mng);
+}
+
+void StackMobile::setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) {
+
+        udp_high_->setIPSetManager(ipset_mng);
+        super_::setUDPIPSetManager(ipset_mng);
 }
 
 } // namespace aiengine

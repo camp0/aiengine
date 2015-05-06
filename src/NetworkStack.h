@@ -78,9 +78,6 @@ public:
 	virtual void setTotalUDPFlows(int value) = 0;
 	virtual int getTotalUDPFlows() const = 0;
 
-	virtual void setTCPRegexManager(const SharedPointer<RegexManager>& sig) = 0;	
-	virtual void setUDPRegexManager(const SharedPointer<RegexManager>& sig) = 0;	
-
 	virtual void enableFrequencyEngine(bool enable) = 0;
 	virtual void enableNIDSEngine(bool enable) = 0;
 	virtual void enableLinkLayerTagging(std::string type) = 0;
@@ -95,6 +92,13 @@ public:
 	void enableFlowForwarders(const FlowForwarderPtr& ff, std::initializer_list<FlowForwarderPtr> fps);
 	void disableFlowForwarders(const FlowForwarderPtr& ff, std::initializer_list<FlowForwarderPtr> fps);
 
+	// The Python API sends an empty shared_ptr for the None assignment
+	virtual void setTCPRegexManager(const SharedPointer<RegexManager>& sig) { tcp_regex_mng_ = sig; } 
+	virtual void setUDPRegexManager(const SharedPointer<RegexManager>& sig) { udp_regex_mng_ = sig; } 
+
+	virtual void setTCPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) { tcp_ipset_mng_ = ipset_mng; }
+	virtual void setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) { udp_ipset_mng_ = ipset_mng; }
+
 #ifdef PYTHON_BINDING
 
 	virtual FlowManager& getTCPFlowManager() = 0;
@@ -108,13 +112,14 @@ public:
 	void setUDPDatabaseAdaptor(boost::python::object &dbptr);
 	void setUDPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling);
 
-       	virtual void setTCPIPSetManager(const IPSetManager& ipset_mng) = 0;
-       	virtual void setUDPIPSetManager(const IPSetManager& ipset_mng) = 0;
-
 	boost::python::dict getCounters(const std::string &name);
+
+	SharedPointer<RegexManager> getTCPRegexManager() const { return tcp_regex_mng_; }
+	SharedPointer<RegexManager> getUDPRegexManager() const { return udp_regex_mng_; }
+
+	SharedPointer<IPSetManager> getTCPIPSetManager() const { return tcp_ipset_mng_; }
+	SharedPointer<IPSetManager> getUDPIPSetManager() const { return udp_ipset_mng_; }
 #else
-	virtual void setTCPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) = 0;
-	virtual void setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) = 0;
 
 	virtual FlowManagerPtrWeak getTCPFlowManager() = 0;
 	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;
@@ -172,6 +177,11 @@ private:
 	ProtocolMap proto_map_;
 	ProtocolVector proto_vector_;
 	std::vector<DomainNameManagerPtr> domain_mng_list_;
+
+	SharedPointer<RegexManager> tcp_regex_mng_;
+	SharedPointer<RegexManager> udp_regex_mng_;
+	SharedPointer<IPSetManager> tcp_ipset_mng_;
+	SharedPointer<IPSetManager> udp_ipset_mng_;
 };
 
 typedef std::shared_ptr <NetworkStack> NetworkStackPtr;

@@ -34,7 +34,7 @@ def callback_domain(flow):
 
         # Something of the references of python are wrong
         # do not remove this call, fix on future.
-        st.setTCPRegexManager(r_mng)
+        st.tcpregexmanager = r_mng
 
 
 if __name__ == '__main__':
@@ -46,13 +46,13 @@ if __name__ == '__main__':
 
     dom = pyaiengine.DomainName("OSX_DocksterTrojan suspicious domain",
         "itsec.eicp.net")
-    dom.setCallback(callback_domain)
+    dom.callback = callback_domain
     dm.addDomainName(dom)
 
     r_mng = pyaiengine.RegexManager()
 
     st.setDomainNameManager(dm,"DNSProtocol")
-    st.setTCPRegexManager(r_mng)
+    st.tcpregexmanager = r_mng
 
     st.tcpflows = 327680
     st.udpflows = 163840

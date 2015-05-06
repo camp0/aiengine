@@ -27,10 +27,10 @@ if __name__ == '__main__':
 
     reg_head.setNextRegex(reg_tail)
 
-    reg_tail.setCallback(callback)
+    reg_tail.callback = callback
     r_mng.addRegex(reg_head)
 
-    st.setTCPRegexManager(r_mng)
+    st.tcpregexmanager = r_mng
 
     st.tcpflows = 327680
     st.udpflows = 163840

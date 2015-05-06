@@ -22,7 +22,7 @@ if __name__ == '__main__':
     st = pyaiengine.StackLan()
 
     ipset = pyaiengine.IPSet()
-    ipset.setCallback(callback_tor)
+    ipset.callback = callback_tor
 
     ipset_mng = pyaiengine.IPSetManager()
     ipset_mng.addIPSet(ipset)
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     except urllib2.URLError as e:
         print("Error:",e)
 
-    st.setTCPIPSetManager(ipset_mng)
+    st.tcpipsetmanager = ipset_mng
 
     st.tcpflows = 327680
     st.udpflows = 163840

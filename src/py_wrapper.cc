@@ -99,10 +99,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	boost::python::dict (NetworkStack::*getCounters)(const std::string& name) =	&NetworkStack::getCounters;
 
         boost::python::class_<NetworkStack, boost::noncopyable>("NetworkStack",no_init)
-                .def("setUDPRegexManager",pure_virtual(&NetworkStack::setUDPRegexManager),
-			"Sets a RegexManager for the UDP traffic.")
-                .def("setTCPRegexManager",pure_virtual(&NetworkStack::setTCPRegexManager),
-			"Sets a RegexManager for the TCP traffic.")
                 .def("setDomainNameManager",pure_virtual(setDomainNameManager1),
 			"Sets a DomainNameManager on the protocol given.")
                 .def("setDomainNameManager",pure_virtual(setDomainNameManager2))
@@ -124,8 +120,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setTCPDatabaseAdaptor",pure_virtual(setTCPDatabaseAdaptor2))
 		.def("setUDPDatabaseAdaptor",pure_virtual(setUDPDatabaseAdaptor1))
 		.def("setUDPDatabaseAdaptor",pure_virtual(setUDPDatabaseAdaptor2))
-		.def("setTCPIPSetManager", pure_virtual(&NetworkStack::setTCPIPSetManager))
-		.def("setUDPIPSetManager", pure_virtual(&NetworkStack::setUDPIPSetManager))
                 .def("releaseCache",pure_virtual(releaseCache),
 			"Release the cache of a specific protocol given.")
                 .def("releaseCaches",pure_virtual(releaseCaches),
@@ -158,8 +152,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         "Gets/Sets the maximum number of flows to be on the cache for TCP traffic.")
                 .add_property("udpflows",&StackLan::getTotalUDPFlows,&StackLan::setTotalUDPFlows,
                         "Gets/Sets the maximum number of flows to be on the cache for UDP traffic.")
-		.def("setUDPRegexManager",&StackLan::setUDPRegexManager)	
-		.def("setTCPRegexManager",&StackLan::setTCPRegexManager)	
+		.add_property("tcpregexmanager",&StackLan::getTCPRegexManager,&StackLan::setTCPRegexManager,
+                        "Gets/Sets the TCP RegexManager for TCP traffic.")
+		.add_property("udpregexmanager",&StackLan::getUDPRegexManager,&StackLan::setUDPRegexManager,
+                        "Gets/Sets the UDP RegexManager for UDP traffic.")
+		.add_property("tcpipsetmanager",&StackLan::getTCPIPSetManager,&StackLan::setTCPIPSetManager,
+			"Gets/Sets the TCP IPSetManager for TCP traffic.")
+		.add_property("udpipsetmanager",&StackLan::getUDPIPSetManager,&StackLan::setUDPIPSetManager,
+			"Gets/Sets the UDP IPSetManager for UDP traffic.")
                 .def("setDomainNameManager",setDomainNameManagerLan1)
                 .def("setDomainNameManager",setDomainNameManagerLan2)
 		.def(self_ns::str(self_ns::self))
@@ -174,8 +174,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorLan2)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLan1)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLan2)
-		.def("setTCPIPSetManager", &StackLan::setTCPIPSetManager)
-		.def("setUDPIPSetManager", &StackLan::setUDPIPSetManager)
 		.def("releaseCache", releaseCacheLan)
 		.def("releaseCaches", releaseCachesLan)
 		.def("getCounters", getCountersLan)
@@ -205,8 +203,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         "Gets/Sets the maximum number of flows to be on the cache for TCP traffic.")
                 .add_property("udpflows",&StackMobile::getTotalUDPFlows,&StackMobile::setTotalUDPFlows,
                         "Gets/Sets the maximum number of flows to be on the cache for UDP traffic.")
-		.def("setUDPRegexManager",&StackMobile::setUDPRegexManager)	
-		.def("setTCPRegexManager",&StackMobile::setTCPRegexManager)	
+                .add_property("tcpregexmanager",&StackMobile::getTCPRegexManager,&StackMobile::setTCPRegexManager,
+                        "Gets/Sets the TCP RegexManager for TCP traffic.")
+                .add_property("udpregexmanager",&StackMobile::getUDPRegexManager,&StackMobile::setUDPRegexManager,
+                        "Gets/Sets the UDP RegexManager for UDP traffic.")
+                .add_property("tcpipsetmanager",&StackMobile::getTCPIPSetManager,&StackMobile::setTCPIPSetManager,
+                        "Gets/Sets the TCP IPSetManager for TCP traffic.")
+                .add_property("udpipsetmanager",&StackMobile::getUDPIPSetManager,&StackMobile::setUDPIPSetManager,
+                        "Gets/Sets the UDP IPSetManager for UDP traffic.")
                 .def("setDomainNameManager",setDomainNameManagerMobile1)
                 .def("setDomainNameManager",setDomainNameManagerMobile2)
 		.def(self_ns::str(self_ns::self))
@@ -221,8 +225,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorMobile2)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorMobile1)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorMobile2)
-		.def("setTCPIPSetManager", &StackMobile::setTCPIPSetManager)
-		.def("setUDPIPSetManager", &StackMobile::setUDPIPSetManager)
 		.def("releaseCache", releaseCacheMobile)
 		.def("releaseCaches", releaseCachesMobile)
 		.def("getCounters", getCountersMobile)
@@ -253,8 +255,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         "Gets/Sets the maximum number of flows to be on the cache for TCP traffic.")
                 .add_property("udpflows",&StackLanIPv6::getTotalUDPFlows,&StackLanIPv6::setTotalUDPFlows,
                         "Gets/Sets the maximum number of flows to be on the cache for UDP traffic.")
-                .def("setUDPRegexManager",&StackLanIPv6::setUDPRegexManager)
-                .def("setTCPRegexManager",&StackLanIPv6::setTCPRegexManager)
+                .add_property("tcpregexmanager",&StackLanIPv6::getTCPRegexManager,&StackLanIPv6::setTCPRegexManager,
+                        "Gets/Sets the TCP RegexManager for TCP traffic.")
+                .add_property("udpregexmanager",&StackLanIPv6::getUDPRegexManager,&StackLanIPv6::setUDPRegexManager,
+                        "Gets/Sets the UDP RegexManager for UDP traffic.")
+                .add_property("tcpipsetmanager",&StackLanIPv6::getTCPIPSetManager,&StackLanIPv6::setTCPIPSetManager,
+                        "Gets/Sets the TCP IPSetManager for TCP traffic.")
+                .add_property("udpipsetmanager",&StackLanIPv6::getUDPIPSetManager,&StackLanIPv6::setUDPIPSetManager,
+                        "Gets/Sets the UDP IPSetManager for UDP traffic.")
                 .def("setDomainNameManager",setDomainNameManagerLanIPv61)
                 .def("setDomainNameManager",setDomainNameManagerLanIPv62)
                 .def(self_ns::str(self_ns::self))
@@ -269,8 +277,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorLanIPv62)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLanIPv61)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLanIPv62)
-		.def("setTCPIPSetManager", &StackLanIPv6::setTCPIPSetManager)
-		.def("setUDPIPSetManager", &StackLanIPv6::setUDPIPSetManager)
 		.def("releaseCache", releaseCacheLanIPv6)
 		.def("releaseCaches", releaseCachesLanIPv6)
 		.def("getCounters", getCountersLanIPv6)
@@ -300,8 +306,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         "Gets/Sets the maximum number of flows to be on the cache for TCP traffic.")
                 .add_property("udpflows",&StackVirtual::getTotalUDPFlows,&StackVirtual::setTotalUDPFlows,
                         "Gets/Sets the maximum number of flows to be on the cache for UDP traffic.")
-                .def("setUDPRegexManager",&StackVirtual::setUDPRegexManager)
-                .def("setTCPRegexManager",&StackVirtual::setTCPRegexManager)
+                .add_property("tcpregexmanager",&StackVirtual::getTCPRegexManager,&StackVirtual::setTCPRegexManager,
+                        "Gets/Sets the TCP RegexManager for TCP traffic.")
+                .add_property("udpregexmanager",&StackVirtual::getUDPRegexManager,&StackVirtual::setUDPRegexManager,
+                        "Gets/Sets the UDP RegexManager for UDP traffic.")
+                .add_property("tcpipsetmanager",&StackVirtual::getTCPIPSetManager,&StackVirtual::setTCPIPSetManager,
+                        "Gets/Sets the TCP IPSetManager for TCP traffic.")
+                .add_property("udpipsetmanager",&StackVirtual::getUDPIPSetManager,&StackVirtual::setUDPIPSetManager,
+                        "Gets/Sets the UDP IPSetManager for UDP traffic.")
                 .def("setDomainNameManager",setDomainNameManagerVirt1)
                 .def("setDomainNameManager",setDomainNameManagerVirt2)
                 .def(self_ns::str(self_ns::self))
@@ -316,8 +328,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorVirt2)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorVirt1)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorVirt2)
-                .def("setTCPIPSetManager", &StackVirtual::setTCPIPSetManager)
-                .def("setUDPIPSetManager", &StackVirtual::setUDPIPSetManager)
 		.def("releaseCache", releaseCacheVirtual)
 		.def("releaseCaches", releaseCachesVirtual)
 		.def("getCounters", getCountersVirtual)
@@ -347,8 +357,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         "Gets/Sets the maximum number of flows to be on the cache for TCP traffic.")
                 .add_property("udpflows",&StackOpenFlow::getTotalUDPFlows,&StackOpenFlow::setTotalUDPFlows,
                         "Gets/Sets the maximum number of flows to be on the cache for UDP traffic.")
-                .def("setUDPRegexManager",&StackOpenFlow::setUDPRegexManager)
-                .def("setTCPRegexManager",&StackOpenFlow::setTCPRegexManager)
+                .add_property("tcpregexmanager",&StackOpenFlow::getTCPRegexManager,&StackOpenFlow::setTCPRegexManager,
+                        "Gets/Sets the TCP RegexManager for TCP traffic.")
+                .add_property("udpregexmanager",&StackOpenFlow::getUDPRegexManager,&StackOpenFlow::setUDPRegexManager,
+                        "Gets/Sets the UDP RegexManager for UDP traffic.")
+                .add_property("tcpipsetmanager",&StackOpenFlow::getTCPIPSetManager,&StackOpenFlow::setTCPIPSetManager,
+                        "Gets/Sets the TCP IPSetManager for TCP traffic.")
+                .add_property("udpipsetmanager",&StackOpenFlow::getUDPIPSetManager,&StackOpenFlow::setUDPIPSetManager,
+                        "Gets/Sets the UDP IPSetManager for UDP traffic.")
                 .def("setDomainNameManager",setDomainNameManagerOF1)
                 .def("setDomainNameManager",setDomainNameManagerOF2)
                 .def(self_ns::str(self_ns::self))
@@ -363,8 +379,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorOF2)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorOF1)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorOF2)
-                .def("setTCPIPSetManager", &StackOpenFlow::setTCPIPSetManager)
-                .def("setUDPIPSetManager", &StackOpenFlow::setUDPIPSetManager)
                 .def("releaseCache", releaseCacheOpenFlow)
                 .def("releaseCaches", releaseCachesOpenFlow)
                 .def("getCounters", getCountersOpenFlow)

@@ -122,10 +122,8 @@ public:
 	void databaseAdaptorUpdateHandler(Flow *flow); 
 	void databaseAdaptorRemoveHandler(Flow *flow); 
 #endif
-	void setIPSetManager(const IPSetManager& ipset_mng);
-#else
-	void setIPSetManager(SharedPointer<IPSetManager> ipset_mng) { ipset_mng_ = ipset_mng;} 
 #endif
+	void setIPSetManager(const SharedPointer<IPSetManager> ipset_mng) { ipset_mng_ = ipset_mng;} 
 
 	// Helper for show the content of cache of StringCache types
 	void showCacheMap(std::basic_ostream<char>& out,GenericMapType &mt, const std::string &title, const std::string &item_name);

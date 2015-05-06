@@ -25,7 +25,7 @@ def loadSignaturesForTcp():
      sig = pyaiengine.Regex("Shellcode Generic Exploit","\x90\x90\x90\x90\x90\x90\x90\x90\x90")
 
      """ Sets a specific callback to the signature created """
-     sig.setCallback(callback_drop_packets)
+     sig.callback = callback_drop_packets
      sm.addRegex(sig)
 
      return sm
@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
      # Load Signatures/Rules in order to detect the traffic
      s_tcp = loadSignaturesForTcp()
-     st.setTCPRegexManager(s_tcp)
+     st.tcpregexmanager = s_tcp
 
      st.enableNIDSEngine(True)
 

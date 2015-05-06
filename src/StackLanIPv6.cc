@@ -308,12 +308,26 @@ void StackLanIPv6::setTCPRegexManager(const SharedPointer<RegexManager>& sig) {
 
         tcp_->setRegexManager(sig);
         tcp_generic->setRegexManager(sig);
+	super_::setTCPRegexManager(sig);
 }
 
 void StackLanIPv6::setUDPRegexManager(const SharedPointer<RegexManager>& sig) {
 
         udp_->setRegexManager(sig);
         udp_generic->setRegexManager(sig);
+	super_::setUDPRegexManager(sig);
+}
+
+void StackLanIPv6::setTCPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) { 
+
+	tcp_->setIPSetManager(ipset_mng);
+	super_::setTCPIPSetManager(ipset_mng);
+}
+
+void StackLanIPv6::setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) { 
+
+	udp_->setIPSetManager(ipset_mng);
+	super_::setUDPIPSetManager(ipset_mng);
 }
 
 } // namespace aiengine

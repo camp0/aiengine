@@ -50,7 +50,7 @@ def loadRegexFromSnort():
             if (pcre != None):
                 try:
                     r = pyaiengine.Regex(name,pcre)
-                    r.setCallback(callback)
+                    r.callback = callback
                     dm_tcp.addRegex(r) 
                 except:
                     print("Can not add %s %s" % (name, pcre))
@@ -60,7 +60,7 @@ def loadRegexFromSnort():
             if (pcre != None):
                 try:
                     r = pyaiengine.Regex(name,pcre)
-                    r.setCallback(callback)
+                    r.callback = callback
                     dm_udp.addRegex(r) 
                 except:
                     print("Can not add %s %s" % (name, pcre))
@@ -84,8 +84,8 @@ if __name__ == '__main__':
      st.tcpflows = 327680
      st.udpflows = 163840
 
-     st.setTCPRegexManager(r_tcp)
-     st.setUDPRegexManager(r_udp)
+     st.tcpregexmanager = r_tcp
+     st.udpregexmanager = r_udp
 
      st.enableNIDSEngine(True)
 
@@ -93,7 +93,7 @@ if __name__ == '__main__':
 
      """ Enable the shell so the user can take under control
          the all system """
-     pdis.enableShell(True)
+     pdis.enableshell = True
      try:
          pdis.run()
      except:
