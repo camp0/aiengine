@@ -29,34 +29,52 @@ namespace aiengine {
 log4cxx::LoggerPtr StackMobile::logger(log4cxx::Logger::getLogger("aiengine.stackmobile"));
 #endif
 
-StackMobile::StackMobile() {
+StackMobile::StackMobile(): 
+        eth_(EthernetProtocolPtr(new EthernetProtocol())),
+        vlan_(VLanProtocolPtr(new VLanProtocol())),
+        mpls_(MPLSProtocolPtr(new MPLSProtocol())),
+        ip_low_(IPProtocolPtr(new IPProtocol())),
+        ip_high_(IPProtocolPtr(new IPProtocol())),
+        udp_low_(UDPProtocolPtr(new UDPProtocol())),
+        udp_high_(UDPProtocolPtr(new UDPProtocol())),
+        tcp_(TCPProtocolPtr(new TCPProtocol())),
+	gprs_(GPRSProtocolPtr(new GPRSProtocol())),
+        icmp_(ICMPProtocolPtr(new ICMPProtocol())),
+	// Multiplexers
+        mux_ip_high_(MultiplexerPtr(new Multiplexer())),
+        mux_udp_low_(MultiplexerPtr(new Multiplexer())),
+        mux_udp_high_(MultiplexerPtr(new Multiplexer())),
+        mux_gprs_(MultiplexerPtr(new Multiplexer())),
+        mux_tcp_(MultiplexerPtr(new Multiplexer())),
+        mux_icmp_(MultiplexerPtr(new Multiplexer())),
+	// FlowManager and FlowCache
+        flow_table_tcp_(FlowManagerPtr(new FlowManager())),
+        flow_table_udp_high_(FlowManagerPtr(new FlowManager())),
+        flow_table_udp_low_(FlowManagerPtr(new FlowManager())),
+        flow_cache_tcp_(FlowCachePtr(new FlowCache())),
+        flow_cache_udp_low_(FlowCachePtr(new FlowCache())),
+        flow_cache_udp_high_(FlowCachePtr(new FlowCache())),
+	// FlowForwarders
+        ff_udp_low_(FlowForwarderPtr(new FlowForwarder())),
+        ff_gprs_(FlowForwarderPtr(new FlowForwarder())), 
+        ff_tcp_(FlowForwarderPtr(new FlowForwarder())), 
+        ff_udp_high_(FlowForwarderPtr(new FlowForwarder())) { 
 
 	setName("Mobile Network Stack");
 
-	// Allocate all the Protocol objects
-        eth_= EthernetProtocolPtr(new EthernetProtocol());
+	// Add the Protocol objects
 	addProtocol(eth_);
-        vlan_= VLanProtocolPtr(new VLanProtocol());
 	addProtocol(vlan_);
-        mpls_= MPLSProtocolPtr(new MPLSProtocol());
 	addProtocol(mpls_);
-        ip_low_ = IPProtocolPtr(new IPProtocol("IPProtocol low"));
 	addProtocol(ip_low_);
-        udp_low_ = UDPProtocolPtr(new UDPProtocol("UDPProtocol low"));
 	addProtocol(udp_low_);
-        gprs_ = GPRSProtocolPtr(new GPRSProtocol());
 	addProtocol(gprs_);
-
-	ip_high_ = IPProtocolPtr(new IPProtocol());
 	addProtocol(ip_high_);
-
-	udp_high_ = UDPProtocolPtr(new UDPProtocol());
 	addProtocol(udp_high_);
-        tcp_ = TCPProtocolPtr(new TCPProtocol());
 	addProtocol(tcp_);
-        icmp_ = ICMPProtocolPtr(new ICMPProtocol());
 	addProtocol(icmp_);
 
+	// Add the L7 protocols
 	addProtocol(http);
 	addProtocol(ssl);
 	addProtocol(smtp);
@@ -71,66 +89,41 @@ StackMobile::StackMobile() {
 	addProtocol(udp_generic);
 	addProtocol(freqs_udp);
 
-	// Allocate the Multiplexers
-	mux_eth_ = MultiplexerPtr(new Multiplexer());
-	mux_vlan_ = MultiplexerPtr(new Multiplexer());
-	mux_mpls_ = MultiplexerPtr(new Multiplexer());
-	mux_ip_low_ = MultiplexerPtr(new Multiplexer());
-	mux_ip_high_ = MultiplexerPtr(new Multiplexer());
-	mux_udp_low_ = MultiplexerPtr(new Multiplexer());
-	mux_udp_high_ = MultiplexerPtr(new Multiplexer());
-	mux_tcp_ = MultiplexerPtr(new Multiplexer());
-	mux_icmp_ = MultiplexerPtr(new Multiplexer());
-	mux_gprs_ = MultiplexerPtr(new Multiplexer());
-
-	// Allocate the flow caches and tables
-       	flow_cache_tcp_ = FlowCachePtr(new FlowCache());
-        flow_cache_udp_low_ = FlowCachePtr(new FlowCache());
-        flow_cache_udp_high_ = FlowCachePtr(new FlowCache());
-        flow_table_tcp_ = FlowManagerPtr(new FlowManager());
-        flow_table_udp_high_ = FlowManagerPtr(new FlowManager());
-        flow_table_udp_low_ = FlowManagerPtr(new FlowManager());
-
         // Link the FlowCaches to their corresponding FlowManager for timeouts
         flow_table_udp_low_->setFlowCache(flow_cache_udp_low_);
         flow_table_udp_high_->setFlowCache(flow_cache_udp_high_);
         flow_table_tcp_->setFlowCache(flow_cache_tcp_);
 
-	ff_tcp_ = FlowForwarderPtr(new FlowForwarder());
-	ff_udp_low_ = FlowForwarderPtr(new FlowForwarder());
-	ff_udp_high_ = FlowForwarderPtr(new FlowForwarder());
-	ff_gprs_ = FlowForwarderPtr(new FlowForwarder());
-
 	//configure the Ethernet Layer 
-	eth_->setMultiplexer(mux_eth_);
-	mux_eth_->setProtocol(static_cast<ProtocolPtr>(eth_));
-	mux_eth_->setProtocolIdentifier(0);
-	mux_eth_->setHeaderSize(eth_->getHeaderSize());
-	mux_eth_->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth_,std::placeholders::_1));
+	eth_->setMultiplexer(mux_eth);
+	mux_eth->setProtocol(static_cast<ProtocolPtr>(eth_));
+	mux_eth->setProtocolIdentifier(0);
+	mux_eth->setHeaderSize(eth_->getHeaderSize());
+	mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth_,std::placeholders::_1));
 
         //configure the VLan tagging Layer
-        vlan_->setMultiplexer(mux_vlan_);
-        mux_vlan_->setProtocol(static_cast<ProtocolPtr>(vlan_));
-        mux_vlan_->setProtocolIdentifier(ETHERTYPE_VLAN);
-        mux_vlan_->setHeaderSize(vlan_->getHeaderSize());
-        mux_vlan_->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan_,std::placeholders::_1));
-	mux_vlan_->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan_,std::placeholders::_1));
+        vlan_->setMultiplexer(mux_vlan);
+        mux_vlan->setProtocol(static_cast<ProtocolPtr>(vlan_));
+        mux_vlan->setProtocolIdentifier(ETHERTYPE_VLAN);
+        mux_vlan->setHeaderSize(vlan_->getHeaderSize());
+        mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan_,std::placeholders::_1));
+	mux_vlan->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan_,std::placeholders::_1));
 
         //configure the MPLS Layer
-        mpls_->setMultiplexer(mux_mpls_);
-        mux_mpls_->setProtocol(static_cast<ProtocolPtr>(mpls_));
-        mux_mpls_->setProtocolIdentifier(ETHERTYPE_MPLS);
-        mux_mpls_->setHeaderSize(mpls_->getHeaderSize());
-        mux_mpls_->addChecker(std::bind(&MPLSProtocol::mplsChecker,mpls_,std::placeholders::_1));
-	mux_mpls_->addPacketFunction(std::bind(&MPLSProtocol::processPacket,mpls_,std::placeholders::_1));
+        mpls_->setMultiplexer(mux_mpls);
+        mux_mpls->setProtocol(static_cast<ProtocolPtr>(mpls_));
+        mux_mpls->setProtocolIdentifier(ETHERTYPE_MPLS);
+        mux_mpls->setHeaderSize(mpls_->getHeaderSize());
+        mux_mpls->addChecker(std::bind(&MPLSProtocol::mplsChecker,mpls_,std::placeholders::_1));
+	mux_mpls->addPacketFunction(std::bind(&MPLSProtocol::processPacket,mpls_,std::placeholders::_1));
 
 	// configure the low IP Layer 
-	ip_low_->setMultiplexer(mux_ip_low_);
-	mux_ip_low_->setProtocol(static_cast<ProtocolPtr>(ip_low_));
-	mux_ip_low_->setProtocolIdentifier(ETHERTYPE_IP);
-	mux_ip_low_->setHeaderSize(ip_low_->getHeaderSize());
-	mux_ip_low_->addChecker(std::bind(&IPProtocol::ipChecker,ip_low_,std::placeholders::_1));
-	mux_ip_low_->addPacketFunction(std::bind(&IPProtocol::processPacket,ip_low_,std::placeholders::_1));
+	ip_low_->setMultiplexer(mux_ip);
+	mux_ip->setProtocol(static_cast<ProtocolPtr>(ip_low_));
+	mux_ip->setProtocolIdentifier(ETHERTYPE_IP);
+	mux_ip->setHeaderSize(ip_low_->getHeaderSize());
+	mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip_low_,std::placeholders::_1));
+	mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip_low_,std::placeholders::_1));
 
 	//configure the low UDP Layer 
 	udp_low_->setMultiplexer(mux_udp_low_);
@@ -186,10 +179,10 @@ StackMobile::StackMobile() {
 	mux_icmp_->addPacketFunction(std::bind(&ICMPProtocol::processPacket,icmp_,std::placeholders::_1));
 
 	// configure the multiplexers
-	mux_eth_->addUpMultiplexer(mux_ip_low_,ETHERTYPE_IP);
-	mux_ip_low_->addDownMultiplexer(mux_eth_);
-	mux_ip_low_->addUpMultiplexer(mux_udp_low_,IPPROTO_UDP);
-	mux_udp_low_->addDownMultiplexer(mux_ip_low_);
+	mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
+	mux_ip->addDownMultiplexer(mux_eth);
+	mux_ip->addUpMultiplexer(mux_udp_low_,IPPROTO_UDP);
+	mux_udp_low_->addDownMultiplexer(mux_ip);
 
 	// configure the multiplexers of the second part
 	mux_gprs_->addUpMultiplexer(mux_ip_high_,ETHERTYPE_IP);
@@ -334,28 +327,6 @@ void StackMobile::enableNIDSEngine(bool enable) {
 
 		enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
         	enableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_udp_generic});
-        }
-}
-
-void StackMobile::enableLinkLayerTagging(std::string type) {
-
-        if (type.compare("vlan") == 0) {
-                mux_eth_->addUpMultiplexer(mux_vlan_,ETHERTYPE_VLAN);
-                mux_vlan_->addDownMultiplexer(mux_eth_);
-                mux_vlan_->addUpMultiplexer(mux_ip_low_,ETHERTYPE_IP);
-                mux_ip_low_->addDownMultiplexer(mux_vlan_);
-        } else {
-                if (type.compare("mpls") == 0) {
-                        mux_eth_->addUpMultiplexer(mux_mpls_,ETHERTYPE_MPLS);
-                	mux_mpls_->addDownMultiplexer(mux_eth_);
-                        mux_mpls_->addUpMultiplexer(mux_ip_low_,ETHERTYPE_IP);
-                        mux_ip_low_->addDownMultiplexer(mux_mpls_);
-                } else {
-        		std::ostringstream msg;
-        		msg << "Unknown tagging type " << type; 
-
-        		infoMessage(msg.str());
-                }
         }
 }
 

@@ -32,6 +32,7 @@
 #include "flow/FlowManager.h"
 #include "DatabaseAdaptor.h"
 #include "ipset/IPSetManager.h"
+#include "protocols/mpls/MPLSProtocol.h"
 #include "./protocols/tcp/TCPProtocol.h"
 #include "./protocols/udp/UDPProtocol.h"
 #include "./protocols/tcpgeneric/TCPGenericProtocol.h"
@@ -80,7 +81,8 @@ public:
 
 	virtual void enableFrequencyEngine(bool enable) = 0;
 	virtual void enableNIDSEngine(bool enable) = 0;
-	virtual void enableLinkLayerTagging(std::string type) = 0;
+
+	void enableLinkLayerTagging(const std::string& type); 
 
 	virtual void setFlowsTimeout(int timeout) = 0;
 	virtual int getFlowsTimeout() const = 0;
@@ -119,6 +121,9 @@ public:
 
 	SharedPointer<IPSetManager> getTCPIPSetManager() const { return tcp_ipset_mng_; }
 	SharedPointer<IPSetManager> getUDPIPSetManager() const { return udp_ipset_mng_; }
+
+	const char *getLinkLayerTag() const { return link_layer_tag_name_.c_str(); } 
+
 #else
 
 	virtual FlowManagerPtrWeak getTCPFlowManager() = 0;
@@ -132,6 +137,13 @@ public:
 	void infoMessage(const std::string& msg);
 
 	friend std::ostream& operator<< (std::ostream& out, const NetworkStack& ns);
+
+protected:
+	// Multiplexers of low layer parts (vlan, mpls, ethernet, etc....)
+        MultiplexerPtr mux_eth;
+        MultiplexerPtr mux_vlan;
+        MultiplexerPtr mux_mpls;
+        MultiplexerPtr mux_ip;
 
 	// Protocols shared with all the stacks, layer 7
         HTTPProtocolPtr http;
@@ -182,6 +194,7 @@ private:
 	SharedPointer<RegexManager> udp_regex_mng_;
 	SharedPointer<IPSetManager> tcp_ipset_mng_;
 	SharedPointer<IPSetManager> udp_ipset_mng_;
+	std::string link_layer_tag_name_;
 };
 
 typedef std::shared_ptr <NetworkStack> NetworkStackPtr;

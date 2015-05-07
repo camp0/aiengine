@@ -76,7 +76,7 @@ class StackLanTests(unittest.TestCase):
 
     def test1(self):
         """ Create a regex for netbios and detect """
-        self.s.enableLinkLayerTagging("vlan")
+        self.s.linklayertag = "vlan"
 
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("netbios","CACACACA")
@@ -89,10 +89,11 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(r.matchs, 1)
         self.assertEqual(self.s.udpregexmanager, rm)
+        self.assertEqual(self.s.linklayertag,"vlan")
 
     def test2(self):
         """ Verify that None is working on the udpregexmanager """
-        self.s.enableLinkLayerTagging("vlan")
+        self.s.linklayertag = "vlan"
 
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("netbios","CACACACA")
@@ -111,11 +112,10 @@ class StackLanTests(unittest.TestCase):
         """ Create a regex for netbios with callback """
         def callback(flow):
             self.called_callback += 1 
-            r = flow.getRegex()
-            self.assertEqual(r.matchs,1)
-            self.assertEqual(r.name, "netbios")
+            self.assertEqual(flow.regex.matchs,1)
+            self.assertEqual(flow.regex.name, "netbios")
     
-        self.s.enableLinkLayerTagging("vlan")
+        self.s.linklayertag = "vlan"
 
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("netbios","CACACACA")
@@ -147,7 +147,7 @@ class StackLanTests(unittest.TestCase):
     	    udp_flow = flow
     	    break
 
-        self.assertEqual(str(udp_flow.getDNSInfo().domainname),"www.google.com")	
+        self.assertEqual(str(udp_flow.dnsinfo.domainname),"www.google.com")	
 
         """ Verify the properties of the flows """
         self.assertEqual(str(udp_flow.srcip),"192.168.1.13")
@@ -165,7 +165,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(http_flow.bytes, 1826)
         self.assertEqual(http_flow.havetag, False)
 
-        self.assertEqual(str(http_flow.getHTTPInfo().hostname),"www.google.com")
+        self.assertEqual(str(http_flow.httpinfo.hostname),"www.google.com")
 
     def test5(self):
         """ Verify SSL traffic """
@@ -182,8 +182,7 @@ class StackLanTests(unittest.TestCase):
             f = flow
             break
 
-        inf = f.getSSLInfo()
-        self.assertEqual(str(inf.servername),"0.drive.google.com")
+        self.assertEqual(str(f.sslinfo.servername),"0.drive.google.com")
 
     def test6(self):
         """ Verify SSL traffic with domain callback"""
@@ -260,7 +259,7 @@ class StackLanTests(unittest.TestCase):
 
         db = databaseTestAdaptor()
 
-        self.s.enableLinkLayerTagging("vlan")
+        self.s.linklayertag  = "vlan"
         self.s.setUDPDatabaseAdaptor(db,16)
 
         self.dis.open("../pcapfiles/flow_vlan_netbios.pcap");
@@ -277,8 +276,8 @@ class StackLanTests(unittest.TestCase):
 
         def domain_callback(flow):
             self.called_callback += 1 
-            self.assertEqual(str(flow.getSSLInfo().servername),"0.drive.google.com")
-            self.assertEqual(flow.getL7ProtocolName(),"SSLProtocol")
+            self.assertEqual(str(flow.sslinfo.servername),"0.drive.google.com")
+            self.assertEqual(flow.l7protocolname,"SSLProtocol")
 
         d = pyaiengine.DomainName("Google All",".google.com")
 
@@ -382,12 +381,12 @@ class StackLanTests(unittest.TestCase):
 
             sw = False
             for url in urls:
-                if (str(flow.getHTTPInfo().uri) == url):
+                if (str(flow.httpinfo.uri) == url):
                     sw = True
 
             self.assertEqual(sw,True)
-            self.assertEqual(str(flow.getHTTPInfo().hostname),"www.wired.com")
-            self.assertEqual(flow.getL7ProtocolName(),"HTTPProtocol")
+            self.assertEqual(str(flow.httpinfo.hostname),"www.wired.com")
+            self.assertEqual(flow.l7protocolname,"HTTPProtocol")
 
         d = pyaiengine.DomainName("Wired domain",".wired.com")
 
@@ -417,7 +416,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(len(ft), 1)
 
         for flow in ft:
-            self.assertNotEqual(flow.getSSLInfo(),None)
+            self.assertNotEqual(flow.sslinfo,None)
        
         self.dis.open("../pcapfiles/accessgoogle.pcap")
         self.dis.run()
@@ -428,30 +427,30 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(len(fu), 1)
 
         for flow in fu:
-            self.assertNotEqual(flow.getDNSInfo(),None)
+            self.assertNotEqual(flow.dnsinfo,None)
 
         # release some of the caches
         self.s.releaseCache("SSLProtocol")
         
         for flow in ft:
-            self.assertEqual(flow.getSSLInfo(),None)
+            self.assertEqual(flow.sslinfo,None)
 
         # release all the caches
         self.s.releaseCaches()
 
         for flow in ft:
-            self.assertEqual(flow.getSSLInfo(),None)
-            self.assertEqual(flow.getHTTPInfo(),None)
+            self.assertEqual(flow.sslinfo,None)
+            self.assertEqual(flow.httpinfo,None)
 
         for flow in fu:
-            self.assertEqual(flow.getDNSInfo(),None)
+            self.assertEqual(flow.dnsinfo,None)
 
     def test15(self):
         """ Attach a database to the engine and test timeouts on udp flows """
 
         db = databaseTestAdaptor()
 
-        self.s.enableLinkLayerTagging("vlan")
+        self.s.linklayertag = "vlan"
         self.s.setUDPDatabaseAdaptor(db,16)
 
         self.s.flowstimeout = 1
@@ -489,7 +488,7 @@ class StackLanTests(unittest.TestCase):
 
         # Only the first flow is the banned
         for flow in ft:
-            info = flow.getHTTPInfo()
+            info = flow.httpinfo
             self.assertEqual(info.hostname, '')
             self.assertEqual(info.useragent, '')
             self.assertEqual(info.uri, '')
@@ -501,7 +500,7 @@ class StackLanTests(unittest.TestCase):
         def domain_callback(flow):
             self.called_callback += 1
             
-            info = flow.getHTTPInfo()
+            info = flow.httpinfo
             url = info.uri
 
             # Some URI analsys on the first request could be done here
@@ -528,7 +527,7 @@ class StackLanTests(unittest.TestCase):
 
         # Only the first flow is the banned and released
         for flow in ft:
-            inf = flow.getHTTPInfo()
+            inf = flow.httpinfo
             self.assertNotEqual(inf, None)
             self.assertEqual(inf.uri, '')
             self.assertEqual(inf.useragent, '')
@@ -564,7 +563,7 @@ class StackLanTests(unittest.TestCase):
         """ Verify SMTP traffic with domain callback """
         self.from_correct = False
         def domain_callback(flow):
-            s = flow.getSMTPInfo()
+            s = flow.smtpinfo
             if (s):
                 if (str(s.mailfrom) == "gurpartap@patriots.in"):
                     self.from_correct = True
@@ -604,7 +603,7 @@ class StackLanTests(unittest.TestCase):
         [rmbase.addRegex(r) for r in rlist]
 
 	r1 = pyaiengine.Regex("smtp1" , "^AUTH LOGIN")
-	r1.setNextRegexManager(rm1)
+	r1.nextregexmanager = rm1
 	rmbase.addRegex(r1)
 
 	r2 = pyaiengine.Regex("smtp2" , "^NO MATCHS")
@@ -612,14 +611,14 @@ class StackLanTests(unittest.TestCase):
 
 	rm1.addRegex(r2)
 	rm1.addRegex(r3)
-	r3.setNextRegexManager(rm2)	
+	r3.nextregexmanager = rm2	
 
 	r4 = pyaiengine.Regex("smtp4" , "^NO MATCHS")
 	r5 = pyaiengine.Regex("smtp5" , "^DATA")
 	
 	rm2.addRegex(r4)
 	rm2.addRegex(r5)
-	r5.setNextRegexManager(rm3)
+	r5.nextregexmanager = rm3
 
 	r6 = pyaiengine.Regex("smtp6" , "^QUIT")
 	rm3.addRegex(r6)
@@ -916,7 +915,7 @@ class StackLanIPv6Tests(unittest.TestCase):
     def test7(self):
         """ Extract IPv6 address from a DomainName matched """
         def dns_callback(flow):
-            for ip in flow.getDNSInfo():
+            for ip in flow.dnsinfo:
                 if (ip == "2607:f8b0:4001:c05::6a"):
                     self.called_callback += 1
 
@@ -943,7 +942,7 @@ class StackLanIPv6Tests(unittest.TestCase):
       
         rmbase.addRegex(r1)
 
-        r1.setNextRegexManager(rm2) 
+        r1.nextregexmanager = rm2 
 
         r2 = pyaiengine.Regex("r2",b"(this can not match)")
         r3 = pyaiengine.Regex("r3",b"^\x90\x90\x90\x90.*$")
@@ -968,7 +967,7 @@ class StackLanIPv6Tests(unittest.TestCase):
         rm3 = pyaiengine.RegexManager()
         r1 = pyaiengine.Regex("r1",b"^(No hacker should visit Las Vegas).*$")
 
-        r1.setNextRegexManager(rm2)
+        r1.nextregexmanager = rm2
         rm1.addRegex(r1)
 
         r2 = pyaiengine.Regex("r2",b"(this can not match)")
@@ -976,7 +975,7 @@ class StackLanIPv6Tests(unittest.TestCase):
         rm2.addRegex(r2)
         rm2.addRegex(r3)
 
-	r3.setNextRegexManager(rm3)
+	r3.nextregexmanager = rm3
 
 	r4 = pyaiengine.Regex("r4",b"^Upgrade.*$")
 	r5 = pyaiengine.Regex("r5",b"(this can not match)")

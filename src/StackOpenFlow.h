@@ -105,7 +105,7 @@ public:
         virtual ~StackOpenFlow() {}
 
         void setLinkLayerMultiplexer(MultiplexerPtrWeak mux) { }
-        MultiplexerPtrWeak getLinkLayerMultiplexer() { return mux_eth_;}
+        MultiplexerPtrWeak getLinkLayerMultiplexer() { return mux_eth;}
 	
 	void showFlows(std::basic_ostream<char>& out);
 	void showFlows() { showFlows(std::cout);}
@@ -117,7 +117,6 @@ public:
 
 	void enableNIDSEngine(bool value);
 	void enableFrequencyEngine(bool value);
-	void enableLinkLayerTagging(std::string type);
 
 	void setFlowsTimeout(int timeout);
 	int getFlowsTimeout() const { return flow_table_tcp_vir_->getTimeout(); }
@@ -142,32 +141,34 @@ private:
 	static log4cxx::LoggerPtr logger;
 #endif
         //Protocols
-        EthernetProtocolPtr eth_,eth_vir_;
+        EthernetProtocolPtr eth_;
+        EthernetProtocolPtr eth_vir_;
         VLanProtocolPtr vlan_;
         MPLSProtocolPtr mpls_;
-        IPProtocolPtr ip_,ip_vir_;
+        IPProtocolPtr ip_;
+	IPProtocolPtr ip_vir_;
         UDPProtocolPtr udp_vir_;
-        TCPProtocolPtr tcp_,tcp_vir_;
+        TCPProtocolPtr tcp_;
+	TCPProtocolPtr tcp_vir_;
         OpenFlowProtocolPtr of_;
         ICMPProtocolPtr icmp_;
 	
-        // Multiplexers
-        MultiplexerPtr mux_eth_,mux_eth_vir_;
-        MultiplexerPtr mux_vlan_;
-        MultiplexerPtr mux_mpls_;
-        MultiplexerPtr mux_ip_,mux_ip_vir_;
+        // Specific Multiplexers
+        MultiplexerPtr mux_eth_vir_;
+        MultiplexerPtr mux_ip_vir_;
         MultiplexerPtr mux_udp_vir_;
         MultiplexerPtr mux_of_;
-        MultiplexerPtr mux_tcp_,mux_tcp_vir_;
+        MultiplexerPtr mux_tcp_;
+	MultiplexerPtr mux_tcp_vir_;
         MultiplexerPtr mux_icmp_;
 
         // FlowManager and FlowCache
-        FlowCachePtr flow_cache_tcp_;
-        FlowCachePtr flow_cache_udp_vir_;
-        FlowCachePtr flow_cache_tcp_vir_;
         FlowManagerPtr flow_table_tcp_;
         FlowManagerPtr flow_table_udp_vir_;
         FlowManagerPtr flow_table_tcp_vir_;
+        FlowCachePtr flow_cache_tcp_;
+        FlowCachePtr flow_cache_udp_vir_;
+        FlowCachePtr flow_cache_tcp_vir_;
 
         // FlowForwarders
         FlowForwarderPtr ff_of_;

@@ -29,27 +29,39 @@ namespace aiengine {
 log4cxx::LoggerPtr StackLanIPv6::logger(log4cxx::Logger::getLogger("aiengine.stacklan6"));
 #endif
 
-StackLanIPv6::StackLanIPv6() {
+StackLanIPv6::StackLanIPv6():
+	eth_(EthernetProtocolPtr(new EthernetProtocol())),
+	vlan_(VLanProtocolPtr(new VLanProtocol())),
+	mpls_(MPLSProtocolPtr(new MPLSProtocol())),
+	ip6_(IPv6ProtocolPtr(new IPv6Protocol())),
+	udp_(UDPProtocolPtr(new UDPProtocol())),
+	tcp_(TCPProtocolPtr(new TCPProtocol())),
+	icmp6_(ICMPv6ProtocolPtr(new ICMPv6Protocol())),
+        // Multiplexers
+        mux_udp_(MultiplexerPtr(new Multiplexer())),
+        mux_tcp_(MultiplexerPtr(new Multiplexer())),
+        mux_icmp_(MultiplexerPtr(new Multiplexer())),
+        // FlowManagers and FlowCaches
+        flow_table_udp_(FlowManagerPtr(new FlowManager())),
+        flow_table_tcp_(FlowManagerPtr(new FlowManager())),
+        flow_cache_udp_(FlowCachePtr(new FlowCache())),
+        flow_cache_tcp_(FlowCachePtr(new FlowCache())),
+        // FlowForwarders
+        ff_tcp_(FlowForwarderPtr(new FlowForwarder())),
+        ff_udp_(FlowForwarderPtr(new FlowForwarder())) {
 
 	setName("Lan IPv6 network stack");
 
-	// Allocate all the specific Protocol objects
-        eth_ = EthernetProtocolPtr(new EthernetProtocol());
+	// Add the specific Protocol objects
 	addProtocol(eth_);
-        vlan_ = VLanProtocolPtr(new VLanProtocol());
 	addProtocol(vlan_);
-        mpls_ = MPLSProtocolPtr(new MPLSProtocol());
 	addProtocol(mpls_);
-        ip6_ = IPv6ProtocolPtr(new IPv6Protocol());
 	addProtocol(ip6_);
-
-        tcp_ = TCPProtocolPtr(new TCPProtocol());
 	addProtocol(tcp_);
-        udp_ = UDPProtocolPtr(new UDPProtocol());
 	addProtocol(udp_);
-        icmp6_ = ICMPv6ProtocolPtr(new ICMPv6Protocol());
 	addProtocol(icmp6_);
-       
+      
+	// Layer7 protocols 
         addProtocol(http);
         addProtocol(ssl);
         addProtocol(smtp);
@@ -64,58 +76,40 @@ StackLanIPv6::StackLanIPv6() {
         addProtocol(udp_generic);
         addProtocol(freqs_udp);
  
-	// Allocate the Multiplexers
-        mux_eth_ = MultiplexerPtr(new Multiplexer());
-        mux_vlan_ = MultiplexerPtr(new Multiplexer());
-        mux_mpls_ = MultiplexerPtr(new Multiplexer());
-        mux_ip_ = MultiplexerPtr(new Multiplexer());
-	mux_udp_ = MultiplexerPtr(new Multiplexer());
-	mux_tcp_ = MultiplexerPtr(new Multiplexer());
-	mux_icmp_ = MultiplexerPtr(new Multiplexer());
-
-	// Allocate the flow caches and tables
-	flow_table_udp_ = FlowManagerPtr(new FlowManager());
-	flow_table_tcp_ = FlowManagerPtr(new FlowManager());
-	flow_cache_udp_ = FlowCachePtr(new FlowCache());
-	flow_cache_tcp_ = FlowCachePtr(new FlowCache());
-
         // Link the FlowCaches to their corresponding FlowManager for timeouts
         flow_table_udp_->setFlowCache(flow_cache_udp_);
         flow_table_tcp_->setFlowCache(flow_cache_tcp_);
 
-	ff_tcp_ = FlowForwarderPtr(new FlowForwarder());
-	ff_udp_ = FlowForwarderPtr(new FlowForwarder());
-
 	//configure the Ethernet Layer 
-	eth_->setMultiplexer(mux_eth_);
-	mux_eth_->setProtocol(static_cast<ProtocolPtr>(eth_));
-	mux_eth_->setProtocolIdentifier(0);
-	mux_eth_->setHeaderSize(eth_->getHeaderSize());
-	mux_eth_->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth_,std::placeholders::_1));
+	eth_->setMultiplexer(mux_eth);
+	mux_eth->setProtocol(static_cast<ProtocolPtr>(eth_));
+	mux_eth->setProtocolIdentifier(0);
+	mux_eth->setHeaderSize(eth_->getHeaderSize());
+	mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth_,std::placeholders::_1));
 
 	//configure the VLan tagging Layer 
-	vlan_->setMultiplexer(mux_vlan_);
-	mux_vlan_->setProtocol(static_cast<ProtocolPtr>(vlan_));
-	mux_vlan_->setProtocolIdentifier(ETHERTYPE_VLAN);
-	mux_vlan_->setHeaderSize(vlan_->getHeaderSize());
-	mux_vlan_->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan_,std::placeholders::_1));
-	mux_vlan_->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan_,std::placeholders::_1));
+	vlan_->setMultiplexer(mux_vlan);
+	mux_vlan->setProtocol(static_cast<ProtocolPtr>(vlan_));
+	mux_vlan->setProtocolIdentifier(ETHERTYPE_VLAN);
+	mux_vlan->setHeaderSize(vlan_->getHeaderSize());
+	mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan_,std::placeholders::_1));
+	mux_vlan->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan_,std::placeholders::_1));
 
 	//configure the MPLS Layer 
-	mpls_->setMultiplexer(mux_mpls_);
-	mux_mpls_->setProtocol(static_cast<ProtocolPtr>(mpls_));
-	mux_mpls_->setProtocolIdentifier(ETHERTYPE_MPLS);
-	mux_mpls_->setHeaderSize(mpls_->getHeaderSize());
-	mux_mpls_->addChecker(std::bind(&MPLSProtocol::mplsChecker,mpls_,std::placeholders::_1));
-	mux_mpls_->addPacketFunction(std::bind(&MPLSProtocol::processPacket,mpls_,std::placeholders::_1));
+	mpls_->setMultiplexer(mux_mpls);
+	mux_mpls->setProtocol(static_cast<ProtocolPtr>(mpls_));
+	mux_mpls->setProtocolIdentifier(ETHERTYPE_MPLS);
+	mux_mpls->setHeaderSize(mpls_->getHeaderSize());
+	mux_mpls->addChecker(std::bind(&MPLSProtocol::mplsChecker,mpls_,std::placeholders::_1));
+	mux_mpls->addPacketFunction(std::bind(&MPLSProtocol::processPacket,mpls_,std::placeholders::_1));
 
 	// configure the IP Layer 
-	ip6_->setMultiplexer(mux_ip_);
-	mux_ip_->setProtocol(static_cast<ProtocolPtr>(ip6_));
-	mux_ip_->setProtocolIdentifier(ETHERTYPE_IPV6);
-	mux_ip_->setHeaderSize(ip6_->getHeaderSize());
-	mux_ip_->addChecker(std::bind(&IPv6Protocol::ip6Checker,ip6_,std::placeholders::_1));
-	mux_ip_->addPacketFunction(std::bind(&IPv6Protocol::processPacket,ip6_,std::placeholders::_1));
+	ip6_->setMultiplexer(mux_ip);
+	mux_ip->setProtocol(static_cast<ProtocolPtr>(ip6_));
+	mux_ip->setProtocolIdentifier(ETHERTYPE_IPV6);
+	mux_ip->setHeaderSize(ip6_->getHeaderSize());
+	mux_ip->addChecker(std::bind(&IPv6Protocol::ip6Checker,ip6_,std::placeholders::_1));
+	mux_ip->addPacketFunction(std::bind(&IPv6Protocol::processPacket,ip6_,std::placeholders::_1));
 
 	//configure the ICMPv6 Layer 
 	icmp6_->setMultiplexer(mux_icmp_);
@@ -144,14 +138,14 @@ StackLanIPv6::StackLanIPv6() {
 	mux_tcp_->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp_,std::placeholders::_1));
 
 	// configure the multiplexers
-	mux_eth_->addUpMultiplexer(mux_ip_,ETHERTYPE_IPV6);
-	mux_ip_->addDownMultiplexer(mux_eth_);
-	mux_ip_->addUpMultiplexer(mux_udp_,IPPROTO_UDP);
-	mux_udp_->addDownMultiplexer(mux_ip_);
-	mux_ip_->addUpMultiplexer(mux_tcp_,IPPROTO_TCP);
-	mux_tcp_->addDownMultiplexer(mux_ip_);
-	mux_ip_->addUpMultiplexer(mux_icmp_,IPPROTO_ICMPV6);
-	mux_icmp_->addDownMultiplexer(mux_ip_);
+	mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IPV6);
+	mux_ip->addDownMultiplexer(mux_eth);
+	mux_ip->addUpMultiplexer(mux_udp_,IPPROTO_UDP);
+	mux_udp_->addDownMultiplexer(mux_ip);
+	mux_ip->addUpMultiplexer(mux_tcp_,IPPROTO_TCP);
+	mux_tcp_->addDownMultiplexer(mux_ip);
+	mux_ip->addUpMultiplexer(mux_icmp_,IPPROTO_ICMPV6);
+	mux_icmp_->addDownMultiplexer(mux_ip);
 	
 	// Connect the FlowManager and FlowCache
 	tcp_->setFlowCache(flow_cache_tcp_);
@@ -275,28 +269,6 @@ void StackLanIPv6::setTotalUDPFlows(int value) {
 int StackLanIPv6::getTotalTCPFlows() const { return flow_cache_tcp_->getTotalFlows(); }
 
 int StackLanIPv6::getTotalUDPFlows() const { return flow_cache_udp_->getTotalFlows(); }
-
-void StackLanIPv6::enableLinkLayerTagging(std::string type) {
-
-	if (type.compare("vlan") == 0) {
-                mux_eth_->addUpMultiplexer(mux_vlan_,ETHERTYPE_VLAN);
-                mux_vlan_->addDownMultiplexer(mux_eth_);
-                mux_vlan_->addUpMultiplexer(mux_ip_,ETHERTYPE_IP);
-                mux_ip_->addDownMultiplexer(mux_vlan_);
-        } else {
-                if (type.compare("mpls") == 0) {
-                        mux_eth_->addUpMultiplexer(mux_mpls_,ETHERTYPE_MPLS);
-                	mux_mpls_->addDownMultiplexer(mux_eth_);
-                        mux_mpls_->addUpMultiplexer(mux_ip_,ETHERTYPE_IP);
-                        mux_ip_->addDownMultiplexer(mux_mpls_);
-                } else {
-        		std::ostringstream msg;
-        		msg << "Unknown tagging type " << type; 
-
-        		infoMessage(msg.str());
-                }
-        }
-}
 
 void StackLanIPv6::setFlowsTimeout(int timeout) {
 

@@ -106,8 +106,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Shows the active flows of the stack.")
 		.def("enableFrequencyEngine",pure_virtual(&NetworkStack::enableFrequencyEngine),
 			"Enable or disable the frequency engine on the stack.")
-		.def("enableLinkLayerTagging",pure_virtual(&NetworkStack::enableLinkLayerTagging),
-			"Enable or disable the link layer tags (vlan,mpls).")
 		.def("enableNIDSEngine",pure_virtual(&NetworkStack::enableNIDSEngine),
 			"Enable or disable the NIDS engine.")
 		.def("getTCPFlowManager",pure_virtual(&NetworkStack::getTCPFlowManager),return_internal_reference<>(),
@@ -160,13 +158,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Gets/Sets the TCP IPSetManager for TCP traffic.")
 		.add_property("udpipsetmanager",&StackLan::getUDPIPSetManager,&StackLan::setUDPIPSetManager,
 			"Gets/Sets the UDP IPSetManager for UDP traffic.")
+		.add_property("linklayertag",&StackLan::getLinkLayerTag,&StackLan::enableLinkLayerTagging,
+			"Gets/Sets the Link layer tag for Vlans,Mpls encapsulations.")
                 .def("setDomainNameManager",setDomainNameManagerLan1)
                 .def("setDomainNameManager",setDomainNameManagerLan2)
 		.def(self_ns::str(self_ns::self))
 		.def("getStatistics",statisticsByProtocolLan)
 		.def("showFlows",showFlowsLan)
 		.def("enableFrequencyEngine",&StackLan::enableFrequencyEngine)
-		.def("enableLinkLayerTagging",&StackLan::enableLinkLayerTagging)
 		.def("enableNIDSEngine",&StackLan::enableNIDSEngine)
 		.def("getTCPFlowManager",&StackLan::getTCPFlowManager,return_internal_reference<>())
 		.def("getUDPFlowManager",&StackLan::getUDPFlowManager,return_internal_reference<>())
@@ -211,13 +210,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         "Gets/Sets the TCP IPSetManager for TCP traffic.")
                 .add_property("udpipsetmanager",&StackMobile::getUDPIPSetManager,&StackMobile::setUDPIPSetManager,
                         "Gets/Sets the UDP IPSetManager for UDP traffic.")
+                .add_property("linklayertag",&StackMobile::getLinkLayerTag,&StackMobile::enableLinkLayerTagging,
+                        "Gets/Sets the Link layer tag for Vlans,Mpls encapsulations.")
                 .def("setDomainNameManager",setDomainNameManagerMobile1)
                 .def("setDomainNameManager",setDomainNameManagerMobile2)
 		.def(self_ns::str(self_ns::self))
 		.def("getStatistics",statisticsByProtocolMobile)
                 .def("showFlows",showFlowsMobile)
 		.def("enableFrequencyEngine",&StackMobile::enableFrequencyEngine)
-		.def("enableLinkLayerTagging",&StackMobile::enableLinkLayerTagging)
 		.def("enableNIDSEngine",&StackMobile::enableNIDSEngine)
 		.def("getTCPFlowManager",&StackMobile::getTCPFlowManager,return_internal_reference<>())
 		.def("getUDPFlowManager",&StackMobile::getUDPFlowManager,return_internal_reference<>())
@@ -263,13 +263,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         "Gets/Sets the TCP IPSetManager for TCP traffic.")
                 .add_property("udpipsetmanager",&StackLanIPv6::getUDPIPSetManager,&StackLanIPv6::setUDPIPSetManager,
                         "Gets/Sets the UDP IPSetManager for UDP traffic.")
+                .add_property("linklayertag",&StackLanIPv6::getLinkLayerTag,&StackLanIPv6::enableLinkLayerTagging,
+                        "Gets/Sets the Link layer tag for Vlans,Mpls encapsulations.")
                 .def("setDomainNameManager",setDomainNameManagerLanIPv61)
                 .def("setDomainNameManager",setDomainNameManagerLanIPv62)
                 .def(self_ns::str(self_ns::self))
 		.def("getStatistics",statisticsByProtocolLanIPv6)
                 .def("showFlows",showFlowsLanIPv6)
                 .def("enableFrequencyEngine",&StackLanIPv6::enableFrequencyEngine)
-                .def("enableLinkLayerTagging",&StackLanIPv6::enableLinkLayerTagging)
                 .def("enableNIDSEngine",&StackLanIPv6::enableNIDSEngine)
                 .def("getTCPFlowManager",&StackLanIPv6::getTCPFlowManager,return_internal_reference<>())
                 .def("getUDPFlowManager",&StackLanIPv6::getUDPFlowManager,return_internal_reference<>())
@@ -314,6 +315,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         "Gets/Sets the TCP IPSetManager for TCP traffic.")
                 .add_property("udpipsetmanager",&StackVirtual::getUDPIPSetManager,&StackVirtual::setUDPIPSetManager,
                         "Gets/Sets the UDP IPSetManager for UDP traffic.")
+                .add_property("linklayertag",&StackVirtual::getLinkLayerTag,&StackVirtual::enableLinkLayerTagging,
+                        "Gets/Sets the Link layer tag for Vlans,Mpls encapsulations.")
                 .def("setDomainNameManager",setDomainNameManagerVirt1)
                 .def("setDomainNameManager",setDomainNameManagerVirt2)
                 .def(self_ns::str(self_ns::self))
@@ -365,13 +368,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         "Gets/Sets the TCP IPSetManager for TCP traffic.")
                 .add_property("udpipsetmanager",&StackOpenFlow::getUDPIPSetManager,&StackOpenFlow::setUDPIPSetManager,
                         "Gets/Sets the UDP IPSetManager for UDP traffic.")
+                .add_property("linklayertag",&StackOpenFlow::getLinkLayerTag,&StackOpenFlow::enableLinkLayerTagging,
+                        "Gets/Sets the Link layer tag for Vlans,Mpls encapsulations.")
                 .def("setDomainNameManager",setDomainNameManagerOF1)
                 .def("setDomainNameManager",setDomainNameManagerOF2)
                 .def(self_ns::str(self_ns::self))
                 .def("getStatistics",statisticsByProtocolOF)
                 .def("showFlows",showFlowsOpenFlow)
                 .def("enableFrequencyEngine",&StackOpenFlow::enableFrequencyEngine)
-                .def("enableLinkLayerTagging",&StackOpenFlow::enableLinkLayerTagging)
                 .def("enableNIDSEngine",&StackOpenFlow::enableNIDSEngine)
                 .def("getTCPFlowManager",&StackOpenFlow::getTCPFlowManager,return_internal_reference<>())
                 .def("getUDPFlowManager",&StackOpenFlow::getUDPFlowManager,return_internal_reference<>())
@@ -393,10 +397,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Gets the number of matches of the regular expression")
 		.add_property("callback", &Regex::getCallback, &Regex::setCallback,
 			"Gets/Sets the callback function for the regular expression")
-		.def("setNextRegex",&Regex::setNextRegex,
-			"Sets the next regular expression that should match")
-		.def("setNextRegexManager",&Regex::setNextRegexManager,
-			"Sets the next RegexManager for assign to the flow when a match occurs.")
+		.add_property("nextregex",&Regex::getNextRegex,&Regex::setNextRegex,
+			"Gets/Sets the next regular expression that should match")
+		.add_property("nextregexmanager",&Regex::getNextRegexManager,&Regex::setNextRegexManager,
+			"Gets/Sets the next RegexManager for assign to the flow when a match occurs.")
 		.def(self_ns::str(self_ns::self))
 	;
 
@@ -474,30 +478,30 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Gets if the flow have tag from lower network layers.")
 		.add_property("tag",&Flow::getTag,
 			"Gets the tag from lower network layers.")
-		.def("getHTTPInfo",&Flow::getHTTPInfo,return_internal_reference<>(),
+		.add_property("httpinfo",make_function(&Flow::getHTTPInfo,return_internal_reference<>()),
 			"Returns the HTTP Info of the flow if the flow is HTTP.")
-		.def("getSIPInfo",&Flow::getSIPInfo,return_internal_reference<>(),
+		.add_property("sipinfo",make_function(&Flow::getSIPInfo,return_internal_reference<>()),
 			"Returns the SIP Info of the flow if the flow is SIP.")
-		.def("getSMTPInfo",&Flow::getSMTPInfo,return_internal_reference<>(),
-			"Returns the SMTP Info of the flow if the flow is SMTP.")
-		.def("getFrequencies",&Flow::getFrequencies,return_internal_reference<>(),
-			"Returns a map of frequencies of the payload of the flow.")
-		.def("getPacketFrequencies",&Flow::getPacketFrequencies,return_internal_reference<>(),
-			"Returns the packet frequencies of the flow.")
-		.def("getDNSInfo",&Flow::getDNSInfo,return_internal_reference<>(),
-			"Returns the DNS info name if the flow is a DNS.")
-		.def("getSSLInfo",&Flow::getSSLInfo,return_internal_reference<>(),
-			"Returns the SSL info if the flow is SSL.")
-		.def("getRegex",&Flow::getRegex,return_internal_reference<>(),
-			"Returns the regex if the flow have been matched with the associated regex.")
-		.def("getPayload",&Flow::getPayload,
-			"Returns a list of the bytes of the payload of the flow.")
-		.def("getIPSet",&Flow::getIPSet,return_internal_reference<>(),
-			"Returns the IPset attached to the flow if they IPs matchs.")
-		.def("getAnomaly",&Flow::getFlowAnomaly,return_value_policy<return_by_value>(),
-			"Returns the attached anomaly of the flow.")
-		.def("getL7ProtocolName",&Flow::getL7ProtocolName,return_value_policy<return_by_value>(),
-			"Returns the name of the Protocol of L7 of the flow.")
+		.add_property("smtpinfo",make_function(&Flow::getSMTPInfo,return_internal_reference<>()),
+			"Gets the SMTP Info of the flow if the flow is SMTP.")
+		.add_property("frequencies",make_function(&Flow::getFrequencies,return_internal_reference<>()),
+			"Gets a map of frequencies of the payload of the flow.")
+		.add_property("packetfrequencies",make_function(&Flow::getPacketFrequencies,return_internal_reference<>()),
+			"Gets the packet frequencies of the flow.")
+		.add_property("dnsinfo",make_function(&Flow::getDNSInfo,return_internal_reference<>()),
+			"Gets the DNS info name if the flow is a DNS.")
+		.add_property("sslinfo",make_function(&Flow::getSSLInfo,return_internal_reference<>()),
+			"Gets the SSL info if the flow is SSL.")
+		.add_property("regex",make_function(&Flow::getRegex,return_internal_reference<>()),
+			"Gets the regex if the flow have been matched with the associated regex.")
+		.add_property("payload",&Flow::getPayload,
+			"Gets a list of the bytes of the payload of the flow.")
+		.add_property("ipset",make_function(&Flow::getIPSet,return_internal_reference<>()),
+			"Gets the IPset attached to the flow if they IPs matchs.")
+		.add_property("anomaly",make_function(&Flow::getFlowAnomaly,return_value_policy<return_by_value>()),
+			"Gets the attached anomaly of the flow.")
+		.add_property("l7protocolname",make_function(&Flow::getL7ProtocolName,return_value_policy<return_by_value>()),
+			"Gets the name of the Protocol of L7 of the flow.")
 		.def(self_ns::str(self_ns::self))
 	;
 

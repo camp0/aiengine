@@ -29,36 +29,55 @@ namespace aiengine {
 log4cxx::LoggerPtr StackOpenFlow::logger(log4cxx::Logger::getLogger("aiengine.stackopenflow"));
 #endif
 
-StackOpenFlow::StackOpenFlow() {
-
+StackOpenFlow::StackOpenFlow():
+	eth_(EthernetProtocolPtr(new EthernetProtocol())),
+	eth_vir_(EthernetProtocolPtr(new EthernetProtocol())),
+	vlan_(VLanProtocolPtr(new VLanProtocol())),
+	mpls_(MPLSProtocolPtr(new MPLSProtocol())),
+	ip_(IPProtocolPtr(new IPProtocol())),
+	ip_vir_(IPProtocolPtr(new IPProtocol())),
+	udp_vir_(UDPProtocolPtr(new UDPProtocol())),
+	tcp_(TCPProtocolPtr(new TCPProtocol())),
+	tcp_vir_(TCPProtocolPtr(new TCPProtocol())),
+	of_(OpenFlowProtocolPtr(new OpenFlowProtocol())),
+	icmp_(ICMPProtocolPtr(new ICMPProtocol())),
+	// Multiplexers
+	mux_eth_vir_(MultiplexerPtr(new Multiplexer())),
+	mux_ip_vir_(MultiplexerPtr(new Multiplexer())),
+	mux_udp_vir_(MultiplexerPtr(new Multiplexer())),
+	mux_of_(MultiplexerPtr(new Multiplexer())),
+	mux_tcp_(MultiplexerPtr(new Multiplexer())),
+	mux_tcp_vir_(MultiplexerPtr(new Multiplexer())),
+	mux_icmp_(MultiplexerPtr(new Multiplexer())),
+	// FlowManagers and FlowCaches 
+	flow_table_tcp_(FlowManagerPtr(new FlowManager())),
+	flow_table_udp_vir_(FlowManagerPtr(new FlowManager())),
+	flow_table_tcp_vir_(FlowManagerPtr(new FlowManager())),
+	flow_cache_tcp_(FlowCachePtr(new FlowCache())),
+	flow_cache_udp_vir_(FlowCachePtr(new FlowCache())),
+	flow_cache_tcp_vir_(FlowCachePtr(new FlowCache())),
+	// FlowForwarders
+	ff_of_(FlowForwarderPtr(new FlowForwarder())),
+	ff_tcp_(FlowForwarderPtr(new FlowForwarder())),
+	ff_tcp_vir_(FlowForwarderPtr(new FlowForwarder())),
+	ff_udp_vir_(FlowForwarderPtr(new FlowForwarder())) {
+ 
 	setName("OpenFlow Network Stack");
 
-	// Allocate all the Protocol objects
-        eth_= EthernetProtocolPtr(new EthernetProtocol());
+	// Add all the Protocol objects
 	addProtocol(eth_);
-        vlan_= VLanProtocolPtr(new VLanProtocol());
 	addProtocol(vlan_);
-        mpls_= MPLSProtocolPtr(new MPLSProtocol());
 	addProtocol(mpls_);
-        ip_ = IPProtocolPtr(new IPProtocol());
 	addProtocol(ip_);
-        tcp_ = TCPProtocolPtr(new TCPProtocol());
 	addProtocol(tcp_);
-        of_ = OpenFlowProtocolPtr(new OpenFlowProtocol());
 	addProtocol(of_);
-
-	eth_vir_ = EthernetProtocolPtr(new EthernetProtocol("Virtual EthernetProtocol"));
 	addProtocol(eth_vir_);
-        ip_vir_ = IPProtocolPtr(new IPProtocol("Virtual IPProtocol"));
 	addProtocol(ip_vir_);
-        tcp_vir_ = TCPProtocolPtr(new TCPProtocol("Virtual TCPProtocol"));
 	addProtocol(tcp_vir_);
-        udp_vir_ = UDPProtocolPtr(new UDPProtocol("Virtual UDPProtocol"));
 	addProtocol(udp_vir_);
-
-        icmp_ = ICMPProtocolPtr(new ICMPProtocol());
 	addProtocol(icmp_);
 
+	// Add the L7 protocols
         addProtocol(http);
         addProtocol(ssl);
         addProtocol(smtp);
@@ -74,27 +93,6 @@ StackOpenFlow::StackOpenFlow() {
         addProtocol(udp_generic);
         addProtocol(freqs_udp);
 
-	// Allocate the Multiplexers
-        mux_eth_ = MultiplexerPtr(new Multiplexer());
-        mux_vlan_ = MultiplexerPtr(new Multiplexer());
-        mux_mpls_ = MultiplexerPtr(new Multiplexer());
-        mux_ip_ = MultiplexerPtr(new Multiplexer());
-	mux_tcp_ = MultiplexerPtr(new Multiplexer());
-	mux_of_ = MultiplexerPtr(new Multiplexer());
-	mux_eth_vir_ = MultiplexerPtr(new Multiplexer());
-	mux_ip_vir_ = MultiplexerPtr(new Multiplexer());
-	mux_udp_vir_ = MultiplexerPtr(new Multiplexer());
-	mux_tcp_vir_ = MultiplexerPtr(new Multiplexer());
-	mux_icmp_ = MultiplexerPtr(new Multiplexer());
-
-	// Allocate the flow caches and tables
-       	flow_cache_tcp_ = FlowCachePtr(new FlowCache());
-        flow_cache_udp_vir_ = FlowCachePtr(new FlowCache());
-        flow_cache_tcp_vir_ = FlowCachePtr(new FlowCache());
-        flow_table_tcp_ = FlowManagerPtr(new FlowManager());
-        flow_table_udp_vir_ = FlowManagerPtr(new FlowManager());
-        flow_table_tcp_vir_ = FlowManagerPtr(new FlowManager());
-
 	// Link the FlowCaches to their corresponding FlowManager for timeouts
 	// The physic FlowManager have a 24 hours timeout 
 	flow_table_tcp_->setTimeout(86400);
@@ -103,41 +101,36 @@ StackOpenFlow::StackOpenFlow() {
 	flow_table_udp_vir_->setFlowCache(flow_cache_udp_vir_);
 	flow_table_tcp_vir_->setFlowCache(flow_cache_tcp_vir_);
 
-	ff_tcp_ = FlowForwarderPtr(new FlowForwarder());
-	ff_of_ = FlowForwarderPtr(new FlowForwarder());
-	ff_tcp_vir_ = FlowForwarderPtr(new FlowForwarder());
-	ff_udp_vir_ = FlowForwarderPtr(new FlowForwarder());
-
 	//configure the Ethernet Layer 
-	eth_->setMultiplexer(mux_eth_);
-	mux_eth_->setProtocol(static_cast<ProtocolPtr>(eth_));
-	mux_eth_->setProtocolIdentifier(0);
-	mux_eth_->setHeaderSize(eth_->getHeaderSize());
-	mux_eth_->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth_,std::placeholders::_1));
+	eth_->setMultiplexer(mux_eth);
+	mux_eth->setProtocol(static_cast<ProtocolPtr>(eth_));
+	mux_eth->setProtocolIdentifier(0);
+	mux_eth->setHeaderSize(eth_->getHeaderSize());
+	mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth_,std::placeholders::_1));
 
         //configure the VLan tagging Layer
-        vlan_->setMultiplexer(mux_vlan_);
-        mux_vlan_->setProtocol(static_cast<ProtocolPtr>(vlan_));
-        mux_vlan_->setProtocolIdentifier(ETHERTYPE_VLAN);
-        mux_vlan_->setHeaderSize(vlan_->getHeaderSize());
-        mux_vlan_->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan_,std::placeholders::_1));
-	mux_vlan_->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan_,std::placeholders::_1));
+        vlan_->setMultiplexer(mux_vlan);
+        mux_vlan->setProtocol(static_cast<ProtocolPtr>(vlan_));
+        mux_vlan->setProtocolIdentifier(ETHERTYPE_VLAN);
+        mux_vlan->setHeaderSize(vlan_->getHeaderSize());
+        mux_vlan->addChecker(std::bind(&VLanProtocol::vlanChecker,vlan_,std::placeholders::_1));
+	mux_vlan->addPacketFunction(std::bind(&VLanProtocol::processPacket,vlan_,std::placeholders::_1));
 
         //configure the MPLS Layer
-        mpls_->setMultiplexer(mux_mpls_);
-        mux_mpls_->setProtocol(static_cast<ProtocolPtr>(mpls_));
-        mux_mpls_->setProtocolIdentifier(ETHERTYPE_MPLS);
-        mux_mpls_->setHeaderSize(mpls_->getHeaderSize());
-        mux_mpls_->addChecker(std::bind(&MPLSProtocol::mplsChecker,mpls_,std::placeholders::_1));
-	mux_mpls_->addPacketFunction(std::bind(&MPLSProtocol::processPacket,mpls_,std::placeholders::_1));
+        mpls_->setMultiplexer(mux_mpls);
+        mux_mpls->setProtocol(static_cast<ProtocolPtr>(mpls_));
+        mux_mpls->setProtocolIdentifier(ETHERTYPE_MPLS);
+        mux_mpls->setHeaderSize(mpls_->getHeaderSize());
+        mux_mpls->addChecker(std::bind(&MPLSProtocol::mplsChecker,mpls_,std::placeholders::_1));
+	mux_mpls->addPacketFunction(std::bind(&MPLSProtocol::processPacket,mpls_,std::placeholders::_1));
 
 	// configure the low IP Layer 
-	ip_->setMultiplexer(mux_ip_);
-	mux_ip_->setProtocol(static_cast<ProtocolPtr>(ip_));
-	mux_ip_->setProtocolIdentifier(ETHERTYPE_IP);
-	mux_ip_->setHeaderSize(ip_->getHeaderSize());
-	mux_ip_->addChecker(std::bind(&IPProtocol::ipChecker,ip_,std::placeholders::_1));
-	mux_ip_->addPacketFunction(std::bind(&IPProtocol::processPacket,ip_,std::placeholders::_1));
+	ip_->setMultiplexer(mux_ip);
+	mux_ip->setProtocol(static_cast<ProtocolPtr>(ip_));
+	mux_ip->setProtocolIdentifier(ETHERTYPE_IP);
+	mux_ip->setHeaderSize(ip_->getHeaderSize());
+	mux_ip->addChecker(std::bind(&IPProtocol::ipChecker,ip_,std::placeholders::_1));
+	mux_ip->addPacketFunction(std::bind(&IPProtocol::processPacket,ip_,std::placeholders::_1));
 
 	// Configure the low TCP Layer 
 	tcp_->setMultiplexer(mux_tcp_);
@@ -201,10 +194,10 @@ StackOpenFlow::StackOpenFlow() {
 
 
 	// Configure the multiplexers of the physical side
-	mux_eth_->addUpMultiplexer(mux_ip_,ETHERTYPE_IP);
-	mux_ip_->addDownMultiplexer(mux_eth_);
-	mux_ip_->addUpMultiplexer(mux_tcp_,IPPROTO_TCP);
-	mux_tcp_->addDownMultiplexer(mux_ip_);
+	mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
+	mux_ip->addDownMultiplexer(mux_eth);
+	mux_ip->addUpMultiplexer(mux_tcp_,IPPROTO_TCP);
+	mux_tcp_->addDownMultiplexer(mux_ip);
 	mux_of_->addUpMultiplexer(mux_eth_vir_,0);
 
         mux_eth_vir_->addDownMultiplexer(mux_of_);
@@ -354,28 +347,6 @@ void StackOpenFlow::enableNIDSEngine(bool enable) {
 
         	enableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
         	enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_udp_generic});
-        }
-}
-
-void StackOpenFlow::enableLinkLayerTagging(std::string type) {
-
-        if (type.compare("vlan") == 0) {
-                mux_eth_->addUpMultiplexer(mux_vlan_,ETHERTYPE_VLAN);
-                mux_vlan_->addDownMultiplexer(mux_eth_);
-                mux_vlan_->addUpMultiplexer(mux_ip_,ETHERTYPE_IP);
-                mux_ip_->addDownMultiplexer(mux_vlan_);
-        } else {
-                if (type.compare("mpls") == 0) {
-                        mux_eth_->addUpMultiplexer(mux_mpls_,ETHERTYPE_MPLS);
-                	mux_mpls_->addDownMultiplexer(mux_eth_);
-                        mux_mpls_->addUpMultiplexer(mux_ip_,ETHERTYPE_IP);
-                        mux_ip_->addDownMultiplexer(mux_mpls_);
-                } else {
-                        std::ostringstream msg;
-                        msg << "Unknown tagging type " << type;
-
-                        infoMessage(msg.str());
-                }
         }
 }
 

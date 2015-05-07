@@ -101,7 +101,7 @@ public:
         virtual ~StackMobile() {}
 
         void setLinkLayerMultiplexer(MultiplexerPtrWeak mux) { }
-        MultiplexerPtrWeak getLinkLayerMultiplexer() { return mux_eth_;}
+        MultiplexerPtrWeak getLinkLayerMultiplexer() { return mux_eth;}
 	
 	void showFlows(std::basic_ostream<char>& out);
 	void showFlows() { showFlows(std::cout);}
@@ -113,7 +113,6 @@ public:
 
 	void enableNIDSEngine(bool value);
 	void enableFrequencyEngine(bool value);
-	void enableLinkLayerTagging(std::string type);
 
 	void setFlowsTimeout(int timeout);
 	int getFlowsTimeout() const { return flow_table_tcp_->getTimeout(); }
@@ -141,29 +140,29 @@ private:
         EthernetProtocolPtr eth_;
         VLanProtocolPtr vlan_;
         MPLSProtocolPtr mpls_;
-        IPProtocolPtr ip_low_,ip_high_;
-        UDPProtocolPtr udp_low_,udp_high_;
+        IPProtocolPtr ip_low_;
+	IPProtocolPtr ip_high_;
+        UDPProtocolPtr udp_low_;
+	UDPProtocolPtr udp_high_;
         TCPProtocolPtr tcp_;
         GPRSProtocolPtr gprs_;
         ICMPProtocolPtr icmp_;
 	
-        // Multiplexers
-        MultiplexerPtr mux_eth_;
-        MultiplexerPtr mux_vlan_;
-        MultiplexerPtr mux_mpls_;
-        MultiplexerPtr mux_ip_low_,mux_ip_high_;
-        MultiplexerPtr mux_udp_low_,mux_udp_high_;
+        // Specific Multiplexers
+        MultiplexerPtr mux_ip_high_;
+        MultiplexerPtr mux_udp_low_;
+	MultiplexerPtr mux_udp_high_;
         MultiplexerPtr mux_gprs_;
         MultiplexerPtr mux_tcp_;
         MultiplexerPtr mux_icmp_;
 
         // FlowManager and FlowCache
-        FlowCachePtr flow_cache_tcp_;
-        FlowCachePtr flow_cache_udp_low_;
-        FlowCachePtr flow_cache_udp_high_;
         FlowManagerPtr flow_table_tcp_;
         FlowManagerPtr flow_table_udp_high_;
         FlowManagerPtr flow_table_udp_low_;
+        FlowCachePtr flow_cache_tcp_;
+        FlowCachePtr flow_cache_udp_low_;
+        FlowCachePtr flow_cache_udp_high_;
 
         // FlowForwarders
         FlowForwarderPtr ff_udp_low_;

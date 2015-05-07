@@ -30,42 +30,47 @@ log4cxx::LoggerPtr NetworkStack::logger(log4cxx::Logger::getLogger("aiengine.sta
 #endif
 
 NetworkStack::NetworkStack():
+        mux_eth(MultiplexerPtr(new Multiplexer())),
+        mux_vlan(MultiplexerPtr(new Multiplexer())),
+        mux_mpls(MultiplexerPtr(new Multiplexer())),
+        mux_ip(MultiplexerPtr(new Multiplexer())),
+	// Allocate the layer 7 protocols
+        http(HTTPProtocolPtr(new HTTPProtocol())),
+        ssl(SSLProtocolPtr(new SSLProtocol())),
+        dns(DNSProtocolPtr(new DNSProtocol())),
+        sip(SIPProtocolPtr(new SIPProtocol())),
+        dhcp(DHCPProtocolPtr(new DHCPProtocol())),
+        ntp(NTPProtocolPtr(new NTPProtocol())),
+        snmp(SNMPProtocolPtr(new SNMPProtocol())),
+        smtp(SMTPProtocolPtr(new SMTPProtocol())),
+        imap(IMAPProtocolPtr(new IMAPProtocol())),
+        pop(POPProtocolPtr(new POPProtocol())),
+        tcp_generic(TCPGenericProtocolPtr(new TCPGenericProtocol())),
+        udp_generic(UDPGenericProtocolPtr(new UDPGenericProtocol())),
+        freqs_tcp(FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol"))),
+        freqs_udp(FrequencyProtocolPtr(new FrequencyProtocol("UDPFrequencyProtocol"))),
+	// Common FlowForwarders
+        ff_http(FlowForwarderPtr(new FlowForwarder())),
+        ff_ssl(FlowForwarderPtr(new FlowForwarder())),
+        ff_dns(FlowForwarderPtr(new FlowForwarder())),
+        ff_sip(FlowForwarderPtr(new FlowForwarder())),
+        ff_dhcp(FlowForwarderPtr(new FlowForwarder())),
+        ff_ntp(FlowForwarderPtr(new FlowForwarder())),
+        ff_snmp(FlowForwarderPtr(new FlowForwarder())),
+        ff_smtp(FlowForwarderPtr(new FlowForwarder())),
+        ff_imap(FlowForwarderPtr(new FlowForwarder())),
+        ff_pop(FlowForwarderPtr(new FlowForwarder())),
+        ff_tcp_generic(FlowForwarderPtr(new FlowForwarder())),
+        ff_udp_generic(FlowForwarderPtr(new FlowForwarder())),
+        ff_tcp_freqs(FlowForwarderPtr(new FlowForwarder())),
+        ff_udp_freqs(FlowForwarderPtr(new FlowForwarder())),
+
 	stats_level_(0),name_(""),
 	proto_map_(),proto_vector_(),
 	domain_mng_list_(),
 	tcp_regex_mng_(),udp_regex_mng_(),
-	tcp_ipset_mng_(),udp_ipset_mng_() {
-
-	// Allocate the layer 7 protocols
-        http = HTTPProtocolPtr(new HTTPProtocol());
-        ssl = SSLProtocolPtr(new SSLProtocol());
-        dns = DNSProtocolPtr(new DNSProtocol());
-        sip = SIPProtocolPtr(new SIPProtocol());
-        dhcp = DHCPProtocolPtr(new DHCPProtocol());
-        ntp = NTPProtocolPtr(new NTPProtocol());
-        snmp = SNMPProtocolPtr(new SNMPProtocol());
-        smtp = SMTPProtocolPtr(new SMTPProtocol());
-        imap = IMAPProtocolPtr(new IMAPProtocol());
-        pop = POPProtocolPtr(new POPProtocol());
-        tcp_generic = TCPGenericProtocolPtr(new TCPGenericProtocol());
-        udp_generic = UDPGenericProtocolPtr(new UDPGenericProtocol());
-        freqs_tcp = FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol"));
-        freqs_udp = FrequencyProtocolPtr(new FrequencyProtocol("UDPFrequencyProtocol"));
-
-        ff_http = FlowForwarderPtr(new FlowForwarder());
-        ff_ssl = FlowForwarderPtr(new FlowForwarder());
-        ff_dns = FlowForwarderPtr(new FlowForwarder());
-        ff_sip = FlowForwarderPtr(new FlowForwarder());
-        ff_dhcp = FlowForwarderPtr(new FlowForwarder());
-        ff_ntp = FlowForwarderPtr(new FlowForwarder());
-        ff_snmp = FlowForwarderPtr(new FlowForwarder());
-        ff_smtp = FlowForwarderPtr(new FlowForwarder());
-        ff_imap = FlowForwarderPtr(new FlowForwarder());
-        ff_pop = FlowForwarderPtr(new FlowForwarder());
-        ff_tcp_generic = FlowForwarderPtr(new FlowForwarder());
-        ff_udp_generic = FlowForwarderPtr(new FlowForwarder());
-        ff_tcp_freqs = FlowForwarderPtr(new FlowForwarder());
-        ff_udp_freqs = FlowForwarderPtr(new FlowForwarder());
+	tcp_ipset_mng_(),udp_ipset_mng_(),
+	link_layer_tag_name_() {
 
         // configure the HTTP Layer
         http->setFlowForwarder(ff_http);
@@ -338,6 +343,31 @@ void NetworkStack::infoMessage(const std::string& msg) {
 #endif
         std::cout << msg << std::endl;
 #endif
+}
+
+void NetworkStack::enableLinkLayerTagging(const std::string& type) {
+
+        if (type.compare("vlan") == 0) {
+                mux_eth->addUpMultiplexer(mux_vlan,ETHERTYPE_VLAN);
+                mux_vlan->addDownMultiplexer(mux_eth);
+                mux_vlan->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
+                mux_ip->addDownMultiplexer(mux_vlan);
+		link_layer_tag_name_ = type;
+        } else {
+                if (type.compare("mpls") == 0) {
+                        mux_eth->addUpMultiplexer(mux_mpls,ETHERTYPE_MPLS);
+                        mux_mpls->addDownMultiplexer(mux_eth);
+                        mux_mpls->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
+                        mux_ip->addDownMultiplexer(mux_mpls);
+			link_layer_tag_name_ = type;
+                } else {
+                        std::ostringstream msg;
+                        msg << "Unknown tagging type " << type;
+
+                        infoMessage(msg.str());
+			link_layer_tag_name_ = "";
+                }
+        }
 }
 
 } // namespace aiengine

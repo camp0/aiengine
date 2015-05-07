@@ -88,7 +88,7 @@ public:
         virtual ~StackLanIPv6() {}
 
         void setLinkLayerMultiplexer(MultiplexerPtrWeak mux) { }
-        MultiplexerPtrWeak getLinkLayerMultiplexer() { return mux_eth_;}
+        MultiplexerPtrWeak getLinkLayerMultiplexer() { return mux_eth;}
 	
 	void showFlows(std::basic_ostream<char>& out);
 	void showFlows() { showFlows(std::cout);}
@@ -100,7 +100,6 @@ public:
 
 	void enableNIDSEngine(bool enable);
 	void enableFrequencyEngine(bool enable);
-	void enableLinkLayerTagging(std::string type);
 
 	void setFlowsTimeout(int timeout);
 	int getFlowsTimeout() const { return flow_table_tcp_->getTimeout(); }
@@ -134,10 +133,6 @@ private:
         ICMPv6ProtocolPtr icmp6_;
 
         // Multiplexers
-        MultiplexerPtr mux_eth_;
-        MultiplexerPtr mux_vlan_;
-        MultiplexerPtr mux_mpls_;
-        MultiplexerPtr mux_ip_;
         MultiplexerPtr mux_udp_;
         MultiplexerPtr mux_tcp_;
         MultiplexerPtr mux_icmp_;
