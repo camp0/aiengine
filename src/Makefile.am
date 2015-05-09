@@ -180,7 +180,7 @@ tests_LDFLAGS = 	-DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ \
 			-lboost_program_options \
 			-lboost_filesystem -lpcap $(LOG4CXX_FLAGS) 
 
-tests_CPPFLAGS = $(BOOST_CPPFLAGS)
+tests_CPPFLAGS = $(BOOST_CPPFLAGS) 
 # Dont forget to put -lgcov if need on test_LDADD
 tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread 
 

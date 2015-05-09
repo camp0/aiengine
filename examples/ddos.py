@@ -31,10 +31,9 @@ def scheduler_handler_ntp():
     c = st.getCounters("NTPProtocol")
 
     # Count the number different ips of the NTP flows
-    fu = st.getUDPFlowManager()    
-    for flow in fu:
-        if (flow.getL7ProtocolName() == "NTPProtocol"):
-            total_ips[flow.getSourceAddress()] = 1
+    for flow in st.udpflowmanager:
+        if (flow.l7protoconame == "NTPProtocol"):
+            total_ips[flow.srcip] = 1
 
     if (total_ips.len() == len(fu)):
         print("System under a NTP DDoS attack")

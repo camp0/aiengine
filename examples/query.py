@@ -37,13 +37,13 @@ if __name__ == '__main__':
     st.tcpflows = 327680
     st.udpflows = 163840
 
-    flows_tcp = st.getTCPFlowManager()    
-    flows_udp = st.getUDPFlowManager()    
+    flows_tcp = st.tcpflowmanager
+    flows_udp = st.udpflowmanager    
 
     # Some query examples
     # query = "('google.com' in str(flow.getSSLHost())) or ('google.com' in str(flow.getHTTPHost()))"
     # query = "('mybogusdomain' in str(flow.getDNSDomain()))"
-    # query = "('Shellcode' in str(flow.getRegex().getName()))"
+    # query = "('Shellcode' in str(flow.regex.name))"
     # queryFlows(flows_tcp,query)
 
     with pyaiengine.PacketDispatcher("eth0") as pd:

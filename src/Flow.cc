@@ -91,7 +91,7 @@ void Flow::serialize(std::ostream& stream) {
 
 	stream << "\"b\":" << total_bytes; 
 
-        if(ipset.lock())
+	if (!ipset.expired()) 
                 stream << ",\"i\":\"" << ipset.lock()->getName() << "\"";
 	
 	if(pa_ != PacketAnomalyType::NONE)
@@ -100,30 +100,30 @@ void Flow::serialize(std::ostream& stream) {
 	stream << ",\"p\":\"" << getL7ProtocolName() << "\"";
 
         if (protocol_ == IPPROTO_TCP) {
-                if(tcp_info.lock())
+                if(!tcp_info.expired())
                         stream << ",\"t\":\"" << *tcp_info.lock() << "\"";
 
-		if (http_info.lock()) {
+		if (!http_info.expired()) {
 			SharedPointer<HTTPInfo> info = http_info.lock();
 			if(info->host.lock())	
                         	stream << ",\"h\":\"" << info->host.lock()->getName() << "\"";
 		} else {
-                	if(ssl_info.lock()) {
+                	if(!ssl_info.expired()) {
 				SharedPointer<SSLInfo> sinfo = ssl_info.lock();
 				if (sinfo->host.lock())
                         		stream << ",\"s\":\"" << sinfo->host.lock()->getName() << "\"";
 			}
 		}
         } else { // UDP
-                if(dns_info.lock()) {
+                if(!dns_info.expired()) {
 			SharedPointer<DNSInfo> info = dns_info.lock();
 			if (info->name.lock())
                         	stream << ",\"d\":\"" << info->name.lock()->getName() << "\"";
               	} 
-		if(gprs_info.lock())
+		if(!gprs_info.expired())
                         stream << ",\"g\":\"" << gprs_info.lock()->getIMSIString() << "\"";
         }
-        if(regex.lock())
+        if(!regex.expired())
                 stream << ",\"m\":\"" << regex.lock()->getName() << "\"";
 	
 	stream << "}";
@@ -139,39 +139,38 @@ void Flow::serialize(std::ostream& stream) {
 
 	stream << "\"bytes\":" << total_bytes; 
 
-	if(ipset.lock())
+	if (!ipset.expired())
 		stream << ",\"ipset\":\"" << ipset.lock()->getName() << "\"";
 
-	if(pa_ != PacketAnomalyType::NONE)
+	if (pa_ != PacketAnomalyType::NONE)
 		stream << ",\"anomaly\":\"" << AnomalyManager::getInstance()->getName(pa_) << "\"";
 
 	stream << ",\"layer7\":\"" << getL7ProtocolName() << "\"";
 
 	if (protocol_ == IPPROTO_TCP) {
-		if(tcp_info.lock())	
+		if (!tcp_info.expired())	
 			stream << ",\"tcpflags\":\"" << *tcp_info.lock() << "\"";
 	
-		if (http_info.lock()) {
+		if (!http_info.expired()) {
 			SharedPointer<HTTPInfo> info = http_info.lock();
-			if(info->host.lock())	
+			if (info->host.lock())	
 				stream << ",\"httphost\":\"" << info->host.lock()->getName() << "\"";
-		}	
-
-		if(ssl_info.lock()){
-			SharedPointer<SSLInfo> sinfo = ssl_info.lock();	
-			stream << ",\"sslhost\":\"" << sinfo->host.lock()->getName() << "\"";
+		} else {	
+			if (!ssl_info.expired()){
+				SharedPointer<SSLInfo> sinfo = ssl_info.lock();	
+				stream << ",\"sslhost\":\"" << sinfo->host.lock()->getName() << "\"";
+			}
 		}
-
 	} else { // UDP
-		if(dns_info.lock()) {
+		if (!dns_info.expired()) {
 			SharedPointer<DNSInfo> info = dns_info.lock();
 			if (info->name.lock()) 	
 				stream << ",\"dnsdomain\":\"" << info->name.lock()->getName() << "\"";
 		}
-		if(gprs_info.lock())	
+		if (!gprs_info.expired())	
 			stream << ",\"imsi\":\"" << gprs_info.lock()->getIMSIString() << "\"";
 	}
-	if(regex.lock())	
+	if (!regex.expired())	
 		stream << ",\"matchs\":\"" << regex.lock()->getName() << "\"";
 	
 	stream << "}";
@@ -192,29 +191,29 @@ void Flow::showFlowInfo(std::ostream& out) {
 	if (protocol_ == IPPROTO_TCP) {
 		if (tcp_info.lock()) out << " TCP:" << *tcp_info.lock();
 
-        	SharedPointer<HTTPInfo> hinfo = http_info.lock();
-        	if (hinfo) {
+		if (!http_info.expired()) {
+        		SharedPointer<HTTPInfo> hinfo = http_info.lock();
                 	out << " Req(" << hinfo->getTotalRequests() << ")Res(" << hinfo->getTotalResponses() << ")Code(" << hinfo->getResponseCode() << ") ";
                 	if (hinfo->getIsBanned()) out << "Banned ";
                 	if (hinfo->host.lock()) out << "Host:" << hinfo->host.lock()->getName();
                 	if (hinfo->ua.lock()) out << " UserAgent:" << hinfo->ua.lock()->getName();
         	} else {
-			SharedPointer<SSLInfo> ssinfo = ssl_info.lock();
-        		if (ssinfo) {
+			if (!ssl_info.expired()) {
+				SharedPointer<SSLInfo> ssinfo = ssl_info.lock();
 				out << " Pdus:" << ssinfo->getTotalDataPdus();
 				if (ssinfo->host.lock()) out << " Host:" << ssinfo->host.lock()->getName();
 			} else {
-				SharedPointer<SMTPInfo> sinfo = smtp_info.lock();
-				if (sinfo) {
+				if (!smtp_info.expired()) {
+					SharedPointer<SMTPInfo> sinfo = smtp_info.lock();
 					if (sinfo->from.lock())	out << " From:" << sinfo->from.lock()->getName();
 					if (sinfo->to.lock())	out << " To:" << sinfo->to.lock()->getName();
 				} else {
-					SharedPointer<POPInfo> pinfo = pop_info.lock();
-					if (pinfo) {
+					if (!pop_info.expired()) {
+						SharedPointer<POPInfo> pinfo = pop_info.lock();
 						if (pinfo->user_name.lock())	out << " User:" << pinfo->user_name.lock()->getName();
 					} else {
-						SharedPointer<IMAPInfo> iinfo = imap_info.lock();
-						if (iinfo) {
+						if (!imap_info.expired()) {
+							SharedPointer<IMAPInfo> iinfo = imap_info.lock();
 							if (iinfo->user_name.lock()) out << " User:" << iinfo->user_name.lock()->getName();
 						}
 					}
@@ -222,14 +221,16 @@ void Flow::showFlowInfo(std::ostream& out) {
 			} 
 		} 
 	} else {
-		if (gprs_info.lock()) out << " GPRS:" << *gprs_info.lock();
+		if (!gprs_info.expired()) {
+			out << " GPRS:" << *gprs_info.lock();
+		} 
 
-		SharedPointer<DNSInfo> dinfo = dns_info.lock();
-        	if (dinfo) {
+		if (!dns_info.expired()) {
+			SharedPointer<DNSInfo> dinfo = dns_info.lock();
 			if (dinfo->name.lock()) out << " Domain:" << dinfo->name.lock()->getName();	
 		} else {
-        		SharedPointer<SIPInfo> sinfo = sip_info.lock();
-        		if (sinfo) {
+			if (!sip_info.expired()) {
+        			SharedPointer<SIPInfo> sinfo = sip_info.lock();
                 		if (sinfo->uri.lock()) out << " SIPUri:" << sinfo->uri.lock()->getName();
                 		if (sinfo->from.lock()) out << " SIPFrom:" << sinfo->from.lock()->getName();
                 		if (sinfo->to.lock()) out << " SIPTo:" << sinfo->to.lock()->getName();
@@ -238,10 +239,14 @@ void Flow::showFlowInfo(std::ostream& out) {
         	}
 	}
 
-        if (regex.lock()) out << " Regex:" << regex.lock()->getName();
+        if (!regex.expired()) out << " Regex:" << regex.lock()->getName();
 
-        if (frequencies.lock()) out << boost::format("%-8s") % frequencies.lock()->getFrequenciesString();
-
+	if (!frequencies.expired()) {
+		SharedPointer<Frequencies> f = frequencies.lock();
+       
+		out << " Dispersion(" << f->getDispersion() << ")Enthropy(" << std::setprecision(4) << f->getEnthropy() << ") ";
+		out << boost::format("%-8s") % f->getFrequenciesString();
+	}
 	return;
 }
 

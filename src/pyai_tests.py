@@ -137,13 +137,13 @@ class StackLanTests(unittest.TestCase):
         self.dis.run();
         self.dis.close();
 
-        ft = self.s.getTCPFlowManager()
-        fu = self.s.getUDPFlowManager()
+        ft = self.s.tcpflowmanager 
+        fu = self.s.udpflowmanager
 
         self.assertEqual(len(ft), 1)
         self.assertEqual(len(fu), 1)
 
-        for flow in fu:
+        for flow in self.s.udpflowmanager:
     	    udp_flow = flow
     	    break
 
@@ -174,11 +174,9 @@ class StackLanTests(unittest.TestCase):
         self.dis.run();
         self.dis.close();
 
-        ft = self.s.getTCPFlowManager()
+        self.assertEqual(len(self.s.tcpflowmanager), 1)
 
-        self.assertEqual(len(ft), 1)
-
-        for flow in ft:
+        for flow in self.s.tcpflowmanager:
             f = flow
             break
 
@@ -411,7 +409,7 @@ class StackLanTests(unittest.TestCase):
         self.dis.run()
         self.dis.close()
         
-        ft = self.s.getTCPFlowManager()
+        ft = self.s.tcpflowmanager
 
         self.assertEqual(len(ft), 1)
 
@@ -422,7 +420,7 @@ class StackLanTests(unittest.TestCase):
         self.dis.run()
         self.dis.close()
 
-        fu = self.s.getUDPFlowManager()
+        fu = self.s.udpflowmanager
 
         self.assertEqual(len(fu), 1)
 
@@ -481,7 +479,7 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(d.matchs, 1)
 
-        ft = self.s.getTCPFlowManager()
+        ft = self.s.tcpflowmanager
 
         self.assertEqual(len(ft), 2)
         self.assertEqual(self.dis.pcapfilter, "tcp")
@@ -521,12 +519,12 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(self.called_callback, 1)
 
-        ft = self.s.getTCPFlowManager()
+        ft = self.s.tcpflowmanager
 
         self.assertEqual(len(ft), 2)
 
         # Only the first flow is the banned and released
-        for flow in ft:
+        for flow in self.s.tcpflowmanager:
             inf = flow.httpinfo
             self.assertNotEqual(inf, None)
             self.assertEqual(inf.uri, '')
@@ -1029,8 +1027,7 @@ class StackLanLearningTests(unittest.TestCase):
         self.assertEqual(self.f.getTotalComputedFrequencies(), 0)
 
         """ Add the TCP Flows of the FlowManager on the FrequencyEngine """
-        ft = self.s.getTCPFlowManager()
-        self.f.addFlowsByDestinationPort(ft)
+        self.f.addFlowsByDestinationPort(self.s.tcpflowmanager)
         self.f.compute()
     
         self.assertEqual(self.f.getTotalProcessFlows(), 2)
@@ -1049,8 +1046,7 @@ class StackLanLearningTests(unittest.TestCase):
         self.assertEqual(self.f.getTotalComputedFrequencies(), 0)
 
         """ Add the TCP Flows of the FlowManager on the FrequencyEngine """
-        ft = self.s.getTCPFlowManager()
-        self.f.addFlowsByDestinationPort(ft)
+        self.f.addFlowsByDestinationPort(self.s.tcpflowmanager)
         self.f.compute()
 
         self.assertEqual(len(self.f.getReferenceFlowsByKey("80")), 4)
@@ -1071,8 +1067,7 @@ class StackLanLearningTests(unittest.TestCase):
         self.dis.close()
 
         """ Add the TCP Flows of the FlowManager on the FrequencyEngine """
-        ft = self.s.getTCPFlowManager()
-        self.f.addFlowsByDestinationPort(ft)
+        self.f.addFlowsByDestinationPort(self.s.tcpflowmanager)
         self.f.compute()
 
         flow_list = self.f.getReferenceFlows()
@@ -1080,13 +1075,15 @@ class StackLanLearningTests(unittest.TestCase):
         learn.agregateFlows(flow_list)
         learn.compute()
 
+        self.assertTrue(learn.flowsprocess,4)
+ 
         """ Get the generated regex and compile with the regex module """
-        r = learn.getRegex()
         try:
-            rc = re.compile(r)		
+            rc = re.compile(learn.regex)		
             self.assertTrue(True)	
         except:
             self.assertFalse(False)	
+       
 
 class StackVirtualTests(unittest.TestCase):
 
@@ -1129,11 +1126,9 @@ class StackVirtualTests(unittest.TestCase):
         self.dis.close()
 
         self.assertEqual(r.matchs, 1)
-        ft = self.s.getTCPFlowManager()
-        fu = self.s.getUDPFlowManager()
 
-        self.assertEqual(len(ft), 1)
-        self.assertEqual(len(fu), 0)
+        self.assertEqual(len(self.s.tcpflowmanager), 1)
+        self.assertEqual(len(self.s.udpflowmanager), 0)
 
 
     def test3(self):
@@ -1152,16 +1147,16 @@ class StackVirtualTests(unittest.TestCase):
         self.dis.close()
 
         """ This FlowManagers points to the virtualize layer """
-        ft = self.s.getTCPFlowManager()
-        fu = self.s.getUDPFlowManager()
+        ft = self.s.tcpflowmanager
+        fu = self.s.udpflowmanager
 
         self.assertEqual(ft.flows , 1)
         self.assertEqual(ft.processflows , 1)
         self.assertEqual(ft.timeoutflows , 0)
 
         self.assertEqual(r.matchs, 0)
-        self.assertEqual(len(ft), 1)
-        self.assertEqual(len(fu), 0)
+        self.assertEqual(len(self.s.tcpflowmanager), 1)
+        self.assertEqual(len(self.s.udpflowmanager), 0)
 
         self.s.flowstimeout = (60 * 60 * 24)
 

@@ -108,10 +108,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Enable or disable the frequency engine on the stack.")
 		.def("enableNIDSEngine",pure_virtual(&NetworkStack::enableNIDSEngine),
 			"Enable or disable the NIDS engine.")
-		.def("getTCPFlowManager",pure_virtual(&NetworkStack::getTCPFlowManager),return_internal_reference<>(),
-			"Returns the FlowManager attached for manage the TCP Flows.")
-		.def("getUDPFlowManager",pure_virtual(&NetworkStack::getUDPFlowManager),return_internal_reference<>(),
-			"Returns the FlowManager attached for manage the UDP Flows.")
 		.def("getStatistics",pure_virtual(statisticsByProtocol),
 			"Shows statistics given a protocol name.")
 		.def("setTCPDatabaseAdaptor",pure_virtual(setTCPDatabaseAdaptor1))
@@ -160,6 +156,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Gets/Sets the UDP IPSetManager for UDP traffic.")
 		.add_property("linklayertag",&StackLan::getLinkLayerTag,&StackLan::enableLinkLayerTagging,
 			"Gets/Sets the Link layer tag for Vlans,Mpls encapsulations.")
+		.add_property("tcpflowmanager",make_function(&StackLan::getTCPFlowManager,return_internal_reference<>()),
+			"Gets the TCP FlowManager for iterate over the flows.")
+		.add_property("udpflowmanager",make_function(&StackLan::getUDPFlowManager,return_internal_reference<>()),
+			"Gets the UDP FlowManager for iterate over the flows.")
                 .def("setDomainNameManager",setDomainNameManagerLan1)
                 .def("setDomainNameManager",setDomainNameManagerLan2)
 		.def(self_ns::str(self_ns::self))
@@ -167,8 +167,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("showFlows",showFlowsLan)
 		.def("enableFrequencyEngine",&StackLan::enableFrequencyEngine)
 		.def("enableNIDSEngine",&StackLan::enableNIDSEngine)
-		.def("getTCPFlowManager",&StackLan::getTCPFlowManager,return_internal_reference<>())
-		.def("getUDPFlowManager",&StackLan::getUDPFlowManager,return_internal_reference<>())
 		.def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorLan1)
 		.def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorLan2)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLan1)
@@ -212,6 +210,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         "Gets/Sets the UDP IPSetManager for UDP traffic.")
                 .add_property("linklayertag",&StackMobile::getLinkLayerTag,&StackMobile::enableLinkLayerTagging,
                         "Gets/Sets the Link layer tag for Vlans,Mpls encapsulations.")
+		.add_property("tcpflowmanager",make_function(&StackMobile::getTCPFlowManager,return_internal_reference<>()),
+			"Gets the TCP FlowManager for iterate over the flows.")
+		.add_property("udpflowmanager",make_function(&StackMobile::getUDPFlowManager,return_internal_reference<>()),
+			"Gets the UDP FlowManager for iterate over the flows.")
                 .def("setDomainNameManager",setDomainNameManagerMobile1)
                 .def("setDomainNameManager",setDomainNameManagerMobile2)
 		.def(self_ns::str(self_ns::self))
@@ -219,8 +221,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("showFlows",showFlowsMobile)
 		.def("enableFrequencyEngine",&StackMobile::enableFrequencyEngine)
 		.def("enableNIDSEngine",&StackMobile::enableNIDSEngine)
-		.def("getTCPFlowManager",&StackMobile::getTCPFlowManager,return_internal_reference<>())
-		.def("getUDPFlowManager",&StackMobile::getUDPFlowManager,return_internal_reference<>())
 		.def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorMobile1)
 		.def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorMobile2)
 		.def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorMobile1)
@@ -265,6 +265,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         "Gets/Sets the UDP IPSetManager for UDP traffic.")
                 .add_property("linklayertag",&StackLanIPv6::getLinkLayerTag,&StackLanIPv6::enableLinkLayerTagging,
                         "Gets/Sets the Link layer tag for Vlans,Mpls encapsulations.")
+                .add_property("tcpflowmanager",make_function(&StackLanIPv6::getTCPFlowManager,return_internal_reference<>()),
+                        "Gets the TCP FlowManager for iterate over the flows.")
+                .add_property("udpflowmanager",make_function(&StackLanIPv6::getUDPFlowManager,return_internal_reference<>()),
+                        "Gets the UDP FlowManager for iterate over the flows.")
                 .def("setDomainNameManager",setDomainNameManagerLanIPv61)
                 .def("setDomainNameManager",setDomainNameManagerLanIPv62)
                 .def(self_ns::str(self_ns::self))
@@ -272,8 +276,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("showFlows",showFlowsLanIPv6)
                 .def("enableFrequencyEngine",&StackLanIPv6::enableFrequencyEngine)
                 .def("enableNIDSEngine",&StackLanIPv6::enableNIDSEngine)
-                .def("getTCPFlowManager",&StackLanIPv6::getTCPFlowManager,return_internal_reference<>())
-                .def("getUDPFlowManager",&StackLanIPv6::getUDPFlowManager,return_internal_reference<>())
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorLanIPv61)
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorLanIPv62)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorLanIPv61)
@@ -317,6 +319,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         "Gets/Sets the UDP IPSetManager for UDP traffic.")
                 .add_property("linklayertag",&StackVirtual::getLinkLayerTag,&StackVirtual::enableLinkLayerTagging,
                         "Gets/Sets the Link layer tag for Vlans,Mpls encapsulations.")
+                .add_property("tcpflowmanager",make_function(&StackVirtual::getTCPFlowManager,return_internal_reference<>()),
+                        "Gets the TCP FlowManager for iterate over the flows.")
+                .add_property("udpflowmanager",make_function(&StackVirtual::getUDPFlowManager,return_internal_reference<>()),
+                        "Gets the UDP FlowManager for iterate over the flows.")
                 .def("setDomainNameManager",setDomainNameManagerVirt1)
                 .def("setDomainNameManager",setDomainNameManagerVirt2)
                 .def(self_ns::str(self_ns::self))
@@ -325,8 +331,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("enableFrequencyEngine",&StackVirtual::enableFrequencyEngine)
                 .def("enableLinkLayerTagging",&StackVirtual::enableLinkLayerTagging)
                 .def("enableNIDSEngine",&StackVirtual::enableNIDSEngine)
-                .def("getTCPFlowManager",&StackVirtual::getTCPFlowManager,return_internal_reference<>())
-                .def("getUDPFlowManager",&StackVirtual::getUDPFlowManager,return_internal_reference<>())
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorVirt1)
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorVirt2)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorVirt1)
@@ -370,6 +374,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         "Gets/Sets the UDP IPSetManager for UDP traffic.")
                 .add_property("linklayertag",&StackOpenFlow::getLinkLayerTag,&StackOpenFlow::enableLinkLayerTagging,
                         "Gets/Sets the Link layer tag for Vlans,Mpls encapsulations.")
+                .add_property("tcpflowmanager",make_function(&StackOpenFlow::getTCPFlowManager,return_internal_reference<>()),
+                        "Gets the TCP FlowManager for iterate over the flows.")
+                .add_property("udpflowmanager",make_function(&StackOpenFlow::getUDPFlowManager,return_internal_reference<>()),
+                        "Gets the UDP FlowManager for iterate over the flows.")
                 .def("setDomainNameManager",setDomainNameManagerOF1)
                 .def("setDomainNameManager",setDomainNameManagerOF2)
                 .def(self_ns::str(self_ns::self))
@@ -377,8 +385,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("showFlows",showFlowsOpenFlow)
                 .def("enableFrequencyEngine",&StackOpenFlow::enableFrequencyEngine)
                 .def("enableNIDSEngine",&StackOpenFlow::enableNIDSEngine)
-                .def("getTCPFlowManager",&StackOpenFlow::getTCPFlowManager,return_internal_reference<>())
-                .def("getUDPFlowManager",&StackOpenFlow::getUDPFlowManager,return_internal_reference<>())
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorOF1)
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorOF2)
                 .def("setUDPDatabaseAdaptor",setUDPDatabaseAdaptorOF1)
@@ -535,8 +541,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def(init<const std::string&>())
                 .add_property("callback",&HTTPUriSet::getCallback, &HTTPUriSet::setCallback,
                         "Gets/Sets a callback function for the matching set.")
-                .def("addURI",&HTTPUriSet::addURI,
-                        "Adds a URI to the HTTPUriSet.")
 		.add_property("uris",&HTTPUriSet::getTotalURIs,
 			"Gets the total number of URIs on the set.")
 		.add_property("lookups",&HTTPUriSet::getTotalLookups,
@@ -545,6 +549,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Gets the total number of matched lookups of the set.")
 		.add_property("lookupsout",&HTTPUriSet::getTotalLookupsOut,
 			"Gets the total number of non matched lookups of the set.")
+                .def("addURI",&HTTPUriSet::addURI,
+                        "Adds a URI to the HTTPUriSet.")
 		.def(self_ns::str(self_ns::self))
         ;
 
@@ -702,12 +708,12 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
         boost::python::class_<LearnerEngine,SharedPointer<LearnerEngine>>("LearnerEngine")
-                .def("getTotalFlowsProcess",&LearnerEngine::getTotalFlowsProcess,
-			"Returns the total number of flows processes by the LearnerEngine")
+		.add_property("flowsprocess",&LearnerEngine::getTotalFlowsProcess,
+			"Gets the total number of flows processes by the LearnerEngine")
+                .add_property("regex",&LearnerEngine::getRegularExpression,
+			"Gets the generated regular expression")
                 .def("agregateFlows",&LearnerEngine::agregateFlows,
 			"Adds a list of flows to be process")
-                .def("getRegex",&LearnerEngine::getRegularExpression,
-			"Returns the generated regular expression")
                 .def("compute",&LearnerEngine::compute,
 			"runs the engine")
         ;

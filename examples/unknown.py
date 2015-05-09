@@ -35,11 +35,8 @@ if __name__ == '__main__':
         pd.stack = st1
         pd.run()
 
-    """ Asuming that the unknown traffic is TCP """
-    ft = st1.getTCPFlowManager()
-
     """ Use the method most suitable for your case """
-    freq.addFlowsByDestinationPort(ft)
+    freq.addFlowsByDestinationPort(st1.tcpflowmanager)
     freq.compute()
 
     flow_list = freq.getReferenceFlows()
