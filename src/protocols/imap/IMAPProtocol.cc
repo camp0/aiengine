@@ -127,8 +127,9 @@ void IMAPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-                        SharedPointer<IMAPInfo> iinfo = flow->imap_info.lock();
-                        if (iinfo) {
+			if (!flow->imap_info.expired()) {
+                        	SharedPointer<IMAPInfo> iinfo = flow->imap_info.lock();
+                    
 				total_bytes_released_by_flows = release_imap_info(iinfo.get()); 
                                 total_bytes_released_by_flows += sizeof(iinfo);
                                 iinfo.reset();

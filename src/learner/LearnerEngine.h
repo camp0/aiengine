@@ -62,6 +62,7 @@ public:
 	void agregatePacketFlow(const SharedPointer<PacketFrequencies>& pkt_freq); 
 	
 	void compute();
+	void setMaxBufferSize(int size) { max_raw_expression_ = size; }
 
 	int getQualityByte(int offset);
 

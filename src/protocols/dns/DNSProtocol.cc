@@ -64,9 +64,9 @@ void DNSProtocol::releaseCache() {
 		});
 
 		for (auto &flow: ft) {
-			SharedPointer<DNSInfo> info = flow->dns_info.lock();
+			if (!flow->dns_info.expired()) {
+				SharedPointer<DNSInfo> info = flow->dns_info.lock();
 
-			if (info) { // The flow have a domain attatched
 				SharedPointer<StringCache> name = info->name.lock();		
 
 				if (name) {
@@ -454,6 +454,21 @@ boost::python::dict DNSProtocol::getCounters() const {
         counters["total type others"] = total_dns_type_others_;
 
 	return counters;
+}
+
+boost::python::dict DNSProtocol::getCache() const {
+	boost::python::dict dnsc;
+
+	for (auto &item: domain_map_) {
+		boost::string_ref label = item.first;
+		int32_t hits = std::get<1>(item.second);
+
+		// The lable must be converted to std::string
+		dnsc[std::string(label)] = hits;
+
+	}
+
+	return dnsc;
 }
 
 #endif

@@ -114,7 +114,8 @@ public:
 	void setUDPDatabaseAdaptor(boost::python::object &dbptr);
 	void setUDPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling);
 
-	boost::python::dict getCounters(const std::string &name);
+	boost::python::dict getCounters(const std::string& name);
+	boost::python::dict getCache(const std::string& name);
 
 	SharedPointer<RegexManager> getTCPRegexManager() const { return tcp_regex_mng_; }
 	SharedPointer<RegexManager> getUDPRegexManager() const { return udp_regex_mng_; }

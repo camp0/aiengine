@@ -48,15 +48,16 @@ bool IPProtocol::processPacket(Packet& packet) {
 	mux->setNextProtocolIdentifier(getProtocol());
 	packet.setPrevHeaderSize(header_size);
 
+#ifdef DEBUG
+	std::cout << __FILE__ << ":" << __func__ << ": ip.src(" << getSrcAddrDotNotation() << ")ip.dst(" << getDstAddrDotNotation() << ")ip.id(" << getID() << ")" ;
+	std::cout << "ip.hdrlen(" << getIPHeaderLength() << ")ip.len(" << getPacketLength() << ")" << ip_header_->ip_len << std::endl;
+#endif
+
 	if (isFragment() == true) {
 		++total_frag_packets_;
 		packet.setPacketAnomaly(PacketAnomalyType::IPV4_FRAGMENTATION);
 		return false;
 	}
-
-#ifdef DEBUG
-	std::cout << __FILE__ << ":" << __func__ << ": ip.src(" << getSrcAddrDotNotation() << ")ip.dst(" << getDstAddrDotNotation() << ")ip.id(" << getID() << ")" << std::endl;
-#endif
 	return true;
 }
 

@@ -1483,7 +1483,7 @@ BOOST_AUTO_TEST_CASE (test_case_16)
         pd->close();
 
         BOOST_CHECK(r_generic->getMatchs() == 0);
-        BOOST_CHECK(r_generic->getTotalEvaluates() == 74);
+        BOOST_CHECK(r_generic->getTotalEvaluates() == 75);
 }
 
 // Test the release cache funcionality

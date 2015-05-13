@@ -118,8 +118,9 @@ void POPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-                        SharedPointer<POPInfo> pinfo = flow->pop_info.lock();
-                        if (pinfo) {
+			if (!flow->pop_info.expired()) {
+                        	SharedPointer<POPInfo> pinfo = flow->pop_info.lock();
+                      
 				total_bytes_released_by_flows += release_pop_info(pinfo.get());
                                 total_bytes_released_by_flows += sizeof(pinfo);
                                 pinfo.reset();

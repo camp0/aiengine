@@ -58,6 +58,8 @@ To use AIEngine(reduce version) just execute the binary aiengine or use the pyth
 	  -f [ --flow-type ] arg (=tcp)     Uses tcp or udp flows.
 	  -L [ --enable-learner ]           Enables the Learner engine.
 	  -k [ --key-learner ] arg (=80)    Sets the key for the Learner engine.
+	  -b [ --buffer-size ] arg (=64)    Sets the size of the internal buffer for 
+        	                            generate the regex.
 	  -y [ --enable-yara ]              Generates a yara signature.
 
 	Optional arguments:

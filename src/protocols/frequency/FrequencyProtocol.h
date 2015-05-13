@@ -108,7 +108,6 @@ public:
 
                 return counters;
         }
-
 #endif
 
 private:

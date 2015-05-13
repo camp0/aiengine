@@ -147,6 +147,7 @@ public:
 
 #ifdef PYTHON_BINDING
 	boost::python::dict getCounters() const;
+	boost::python::dict getCache() const;
 #endif
 
 private:

@@ -189,7 +189,10 @@ void PacketDispatcher::run_pcap(void) {
 
 	status_ = PacketDispatcherStatus::RUNNING;
 	while (pcap_next_ex(pcap_,&header_,&pkt_data_) >= 0) {
-		forward_raw_packet((unsigned char*)pkt_data_,header_->len,header_->ts.tv_sec);
+		// Friendly remminder:
+		//     header_->len contains length this packet (off wire)
+		//     header_->caplen length of portion present	
+		forward_raw_packet((unsigned char*)pkt_data_,header_->caplen,header_->ts.tv_sec);
 	}
 	status_ = PacketDispatcherStatus::STOP;
 }

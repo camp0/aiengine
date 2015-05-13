@@ -93,6 +93,7 @@ int tcp_flows_cache;
 int udp_flows_cache;
 int option_statistics_level = 0;
 int option_flows_timeout = 180;
+int learner_buffer_size = 64;
 
 void signalHandler( int signum ){
 
@@ -232,10 +233,11 @@ void showLearnerResults() {
 	flow_list = group.getReferenceFlowsByKey(option_learner_key);
 	if (flow_list.size()>0) {
 		learner.reset();
+		learner.setMaxBufferSize(learner_buffer_size);
 		std::cout << "Agregating "<< flow_list.size() << " to the LearnerEngine" << std::endl;
 		learner.agregateFlows(flow_list);
 		learner.compute();
-		std::cout << "Regular expression generated with key:" << option_learner_key << std::endl;
+		std::cout << "Regular expression generated with key:" << option_learner_key << " buffer size:" << learner_buffer_size << std::endl;
 		std::cout << "Regex:" << learner.getRegularExpression() <<std::endl;
 		std::cout << "Ascii buffer:" << learner.getAsciiExpression() << std::endl;	
 
@@ -351,6 +353,8 @@ int main(int argc, char* argv[]) {
                 ("enable-learner,L",  	"Enables the Learner engine.") 
                 ("key-learner,k",  	po::value<std::string>(&option_learner_key)->default_value("80"),
 					"Sets the key for the Learner engine.") 
+                ("buffer-size,b",  	po::value<int>(&learner_buffer_size)->default_value(64),
+					"Sets the size of the internal buffer for generate the regex.") 
                 ("enable-yara,y",  		"Generates a yara signature.") 
                 ;
 

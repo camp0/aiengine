@@ -98,9 +98,9 @@ void SSLProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-                        SharedPointer<SSLInfo> sinfo = flow->ssl_info.lock();
+               		if (!flow->ssl_info.expired()) { 
+		        	SharedPointer<SSLInfo> sinfo = flow->ssl_info.lock();
 
-                        if (sinfo) { // The flow have a host attatched
                                 total_bytes_released_by_flows += release_ssl_info(sinfo.get());
                                 total_bytes_released_by_flows += sizeof(sinfo);
 				sinfo.reset();	
@@ -389,6 +389,20 @@ boost::python::dict SSLProtocol::getCounters() const {
 	counters["records"] = total_records_;
 
         return counters;
+}
+
+boost::python::dict SSLProtocol::getCache() const {
+        boost::python::dict sslc;
+
+        for (auto &item: host_map_) {
+                boost::string_ref label = item.first;
+                int32_t hits = std::get<1>(item.second);
+
+                // The label must be converted to std::string
+                sslc[std::string(label)] = hits;
+        }
+
+        return sslc;
 }
 
 #endif

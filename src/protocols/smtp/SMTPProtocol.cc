@@ -140,8 +140,8 @@ void SMTPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-                        SharedPointer<SMTPInfo> sinfo = flow->smtp_info.lock();
-                        if (sinfo) {
+			if (!flow->smtp_info.expired()) {
+                        	SharedPointer<SMTPInfo> sinfo = flow->smtp_info.lock();
 
                                 total_bytes_released_by_flows += release_smtp_info(sinfo.get());
                                 total_bytes_released_by_flows += sizeof(sinfo);

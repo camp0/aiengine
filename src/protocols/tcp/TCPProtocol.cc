@@ -164,7 +164,7 @@ bool TCPProtocol::processPacket(Packet &packet) {
         		MultiplexerPtr ipmux = downmux.lock();
 
 			int bytes = (ipmux->total_length - ipmux->getHeaderSize() - getTcpHdrLength());
-
+			
 			flow->total_bytes += bytes;
 			++flow->total_packets;
 
@@ -176,7 +176,8 @@ bool TCPProtocol::processPacket(Packet &packet) {
 #ifdef DEBUG
                 	char mbstr[100];
                 	std::strftime(mbstr, 100, "%D %X", std::localtime(&packet_time_));
-                	std::cout << __FILE__ << ":" << __func__ << ": flow(" << current_flow_ << ")[" << mbstr << "] pkts:" << flow->total_packets << " " << *tcp_info.get() << std::endl;
+                	std::cout << __FILE__ << ":" << __func__ << ": flow(" << current_flow_ << ")[" << mbstr << "] pkts:" << flow->total_packets;
+			std::cout << " bytes:" << bytes << " " << *tcp_info.get() << std::endl;
 #endif
 			if (!flow_forwarder_.expired()&&(bytes > 0)) {
 			

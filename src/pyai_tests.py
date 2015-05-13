@@ -204,6 +204,12 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(d.matchs , 1)
         self.assertEqual(self.called_callback, 1)
 
+        """ check also the integrity of the ssl cache and counters """
+        cc = self.s.getCounters("SSLProtocol")
+        ca = self.s.getCache("SSLProtocol")
+        self.assertEqual(len(ca),1)
+        self.assertEqual(cc['server hellos'], 1)
+
     def test7(self):
         """ Verify SSL traffic with domain callback and IPset"""
 
@@ -345,7 +351,7 @@ class StackLanTests(unittest.TestCase):
             ipm = pyaiengine.IPSetManager()
             ipm.addIPSet(ip)
 
-            self.s.setTCPIPSetManager(ipm)
+            self.s.tcpipsetmanager = ipm
 
             self.dis.open("../pcapfiles/sslflow.pcap");
             self.dis.run();
@@ -546,7 +552,7 @@ class StackLanTests(unittest.TestCase):
 
         c = self.s.getCounters("TCPProtocol")
 
-        self.assertEqual(c["bytes"], 888524)
+        self.assertEqual(c["bytes"], 879940)
         self.assertEqual(c["packets"], 886)
         self.assertEqual(c["syns"], 2)
         self.assertEqual(c["synacks"], 2)
@@ -678,9 +684,9 @@ class StackLanTests(unittest.TestCase):
 
         def uri_callback(flow):
             self.assertEqual(self.uset.uris, 1)
-            self.assertEqual(self.uset.lookups, 2)
+            self.assertEqual(self.uset.lookups, 15)
             self.assertEqual(self.uset.lookupsin, 1)
-            self.assertEqual(self.uset.lookupsout, 1)
+            self.assertEqual(self.uset.lookupsout, 14)
             self.called_callback += 1
 
         d = pyaiengine.DomainName("Wired domain",".wired.com")
@@ -689,7 +695,8 @@ class StackLanTests(unittest.TestCase):
         d.callback = domain_callback
         dm.addDomainName(d)
 
-        self.uset.addURI("/js/jquery.hoverIntent.js")
+        self.uset.addURI("/images_blogs/gadgetlab/2013/08/AP090714043057-60x60.jpg")
+        # self.uset.addURI("/js/jquery.hoverIntent.js")
         self.uset.callback = uri_callback
 
 	d.httpuriset = self.uset
@@ -702,9 +709,9 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(d.httpuriset, self.uset)
         self.assertEqual(self.uset.uris, 1)
-        self.assertEqual(self.uset.lookups, 39)
+        self.assertEqual(self.uset.lookups, 15)
         self.assertEqual(self.uset.lookupsin, 1)
-        self.assertEqual(self.uset.lookupsout, 38)
+        self.assertEqual(self.uset.lookupsout, 14)
 
         self.assertEqual(self.called_callback,2)
 
@@ -717,9 +724,9 @@ class StackLanTests(unittest.TestCase):
 
         def uri_callback(flow):
             self.assertEqual(self.uset.uris, 1)
-            self.assertEqual(self.uset.lookups, 3)
+            self.assertEqual(self.uset.lookups, 2)
             self.assertEqual(self.uset.lookupsin, 1)
-            self.assertEqual(self.uset.lookupsout, 2)
+            self.assertEqual(self.uset.lookupsout, 1)
             self.called_callback += 1
 
         d = pyaiengine.DomainName("Wired domain",".wired.com")
@@ -729,7 +736,7 @@ class StackLanTests(unittest.TestCase):
         dm.addDomainName(d)
 
 	# This uri is the thrid of the wired.com flow
-        self.uset.addURI("/js/ecom/ecomPlacement.js")
+        self.uset.addURI("/js/scrolldock/scrolldock.css?v=20121120a")
         self.uset.callback = uri_callback
 
         d.httpuriset = self.uset
@@ -741,9 +748,9 @@ class StackLanTests(unittest.TestCase):
             pd.run();
 
         self.assertEqual(self.uset.uris, 1)
-        self.assertEqual(self.uset.lookups, 39)
+        self.assertEqual(self.uset.lookups, 15)
         self.assertEqual(self.uset.lookupsin, 1)
-        self.assertEqual(self.uset.lookupsout, 38)
+        self.assertEqual(self.uset.lookupsout, 14)
         self.assertEqual(self.called_callback,2)
 
     def test24(self):
@@ -758,15 +765,12 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(self.dis.stack, None)
         
-
-
 class StackLanIPv6Tests(unittest.TestCase):
 
     def setUp(self):
         self.s = pyaiengine.StackLanIPv6()
         self.dis = pyaiengine.PacketDispatcher()
         self.dis.stack = self.s
-        # self.dis.setStack(self.s)
         self.s.tcpflows = 2048
         self.s.udpflows = 1024
         self.called_callback = 0
@@ -997,8 +1001,20 @@ class StackLanIPv6Tests(unittest.TestCase):
         self.assertEqual(r3.matchs, 1)
         self.assertEqual(r4.matchs, 1)
 
-        # ft = self.s.getTCPFlowManager()
+    def test10(self):
+        """ Verify the functionality of the getCache method """
 
+        with pyaiengine.PacketDispatcher("../pcapfiles/ipv6_google_dns.pcap") as pd:
+            pd.stack = self.s
+            pd.run()
+            d = self.s.getCache("DNSProtocol")
+            self.assertEqual(len(self.s.getCache("DNSProtocol")),1)
+            self.assertEqual(len(self.s.getCache("DNSProtocolNoExists")),0)
+            self.s.releaseCache("DNSProtocol")
+            self.assertEqual(len(self.s.getCache("DNSProtocol")),0)
+            self.assertEqual(len(self.s.getCache("HTTPProtocol")),0)
+            self.assertEqual(len(self.s.getCache("SSLProtocol")),0)
+ 
 class StackLanLearningTests(unittest.TestCase):
 
     def setUp(self):

@@ -233,8 +233,8 @@ void HTTPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-			SharedPointer<HTTPInfo> info = flow->http_info.lock();
-			if (info) {
+			if (!flow->http_info.expired()) {
+				SharedPointer<HTTPInfo> info = flow->http_info.lock();
 
 				total_bytes_released_by_flows += release_http_info(info.get());
 				total_bytes_released_by_flows += sizeof(info);
@@ -715,6 +715,21 @@ boost::python::dict HTTPProtocol::getCounters() const {
 	counters["others"] = total_http_others_;
 
         return counters;
+}
+
+boost::python::dict HTTPProtocol::getCache() const {
+        boost::python::dict httpc;
+
+        for (auto &item: host_map_) {
+                boost::string_ref label = item.first;
+                int32_t hits = std::get<1>(item.second);
+
+                // The lable must be converted to std::string
+                httpc[std::string(label)] = hits;
+
+        }
+
+        return httpc;
 }
 
 #endif

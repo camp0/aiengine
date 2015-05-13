@@ -282,7 +282,7 @@ void NetworkStack::setTCPDatabaseAdaptor(boost::python::object &dbptr, int packe
         }
 }
 
-boost::python::dict NetworkStack::getCounters(const std::string &name) {
+boost::python::dict NetworkStack::getCounters(const std::string& name) {
 	boost::python::dict counters;
         ProtocolPtr pp = get_protocol(name);
         
@@ -291,6 +291,17 @@ boost::python::dict NetworkStack::getCounters(const std::string &name) {
         }
 
         return counters;
+}
+
+boost::python::dict NetworkStack::getCache(const std::string& name) {
+        boost::python::dict cache;
+        ProtocolPtr pp = get_protocol(name);
+
+        if (pp) {
+                cache = pp->getCache();
+        }
+
+        return cache;
 }
 
 #endif

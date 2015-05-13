@@ -96,31 +96,35 @@ void SIPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-			SharedPointer<SIPInfo> sinfo = flow->sip_info.lock();
-			if (sinfo) {
-	
-                        	SharedPointer<StringCache> sc = sinfo->uri.lock();
-				if (sc) {
+			if (!flow->sip_info.expired()) {
+				SharedPointer<SIPInfo> sinfo = flow->sip_info.lock();
+
+				if (!sinfo->uri.expired()) {	
+                        		SharedPointer<StringCache> sc = sinfo->uri.lock();
+		
 					sinfo->uri.reset();
 					total_bytes_released_by_flows += sc->getNameSize();
 					uri_cache_->release(sc);
 				}
 
-                        	sc = sinfo->from.lock();
-                        	if (sc) {
+				if (!sinfo->from.expired()) {	
+                        		SharedPointer<StringCache> sc = sinfo->from.lock();
+                        
                                 	sinfo->from.reset();
                                 	total_bytes_released_by_flows += sc->getNameSize();
                                 	from_cache_->release(sc);
                         	}
 
-                        	sc = sinfo->to.lock();
-                        	if (sc) {
+				if (!sinfo->to.expired()) {	
+                        		SharedPointer<StringCache> sc = sinfo->to.lock();
+                        	
                                 	sinfo->to.reset();
                                 	total_bytes_released_by_flows += sc->getNameSize();
                                 	to_cache_->release(sc);
                         	}
-                        	sc = sinfo->via.lock();
-                        	if (sc) {
+				if (!sinfo->via.expired()) {	
+                        		SharedPointer<StringCache> sc = sinfo->via.lock();
+                        	
                                 	sinfo->via.reset();
                                 	total_bytes_released_by_flows += sc->getNameSize();
                                 	to_cache_->release(sc);

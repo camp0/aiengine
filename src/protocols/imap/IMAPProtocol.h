@@ -147,7 +147,6 @@ public:
 #endif
 
 private:
-private:
         void release_imap_info_cache(IMAPInfo *info);
         int32_t release_imap_info(IMAPInfo *info);
 
