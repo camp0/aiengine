@@ -97,8 +97,17 @@ void Flow::serialize(std::ostream& stream) {
 	if(pa_ != PacketAnomalyType::NONE)
 		stream << ",\"a\":\"" << AnomalyManager::getInstance()->getName(pa_) << "\"";
 
-	stream << ",\"p\":\"" << getL7ProtocolName() << "\"";
+	// The protocol name are like HTTPProtocol, SMTPProtocol, SSLProtocol and so on
+	// So for reduce the number of bytes transmited we remove the word Protocol.
+	boost::string_ref sname(getL7ProtocolName());
 
+	if (sname.length() > 4) { 
+		boost::string_ref pname(sname.substr(0,sname.length()-8));
+
+		stream << ",\"p\":\"" << pname << "\"";
+	} else {
+		stream << ",\"p\":\"" << sname << "\"";
+	}
         if (protocol_ == IPPROTO_TCP) {
                 if(!tcp_info.expired())
                         stream << ",\"t\":\"" << *tcp_info.lock() << "\"";

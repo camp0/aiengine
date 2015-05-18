@@ -147,8 +147,6 @@ void GPRSProtocol::processFlow(Flow *flow) {
        
 		uint8_t type = gprs_header_->type; 
 		
-		// just forward the packet if contains data
-		// TODO: Applie a visitor pattern :)
 		if (type == T_PDU) {
 			MultiplexerPtr mux = mux_.lock();
 

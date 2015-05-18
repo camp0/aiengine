@@ -329,7 +329,6 @@ void PacketDispatcher::scheduler_handler(boost::system::error_code error) {
 
 	PyGILState_STATE state(PyGILState_Ensure());
         try {
-        	// TODO: Fix
                 boost::python::call<void>(scheduler_callback_);
 	} catch (std::exception &e) {
         	std::cout << "ERROR:" << e.what() << std::endl;

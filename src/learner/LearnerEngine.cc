@@ -29,8 +29,8 @@ void LearnerEngine::reset() {
 
 	items_ = 0;
 	length_ = 0;
-	raw_expression_="";
-	regex_expression_="";
+	raw_expression_.clear();
+	regex_expression_.clear();
 	for (int i = 0;i< MAX_PACKET_FREQUENCIES_VALUES ;++i) q_array_[i].clear();
 }
 
@@ -121,7 +121,42 @@ void LearnerEngine::compute() {
 		expr << token.str();
 		raw_expr << raw_token.str();
         }
-	regex_expression_ = expr.str();
+
+	std::ostringstream re_opt;
+
+	// Remove .? and substitute for operators {n} or .*
+
+	std::string candidate(expr.str());
+	const char *r_data = candidate.c_str();
+	int rlen = candidate.length();
+
+	for (int i = 0; i < rlen ; ++i) {
+		if (std::memcmp(".?",&r_data[i],2) == 0 ) {
+
+			int total_tokens = 0;
+			for (int j = i; j < rlen; ++j) {
+				if (std::memcmp(".?",&r_data[j],2) == 0 ) {
+					++total_tokens;
+					++j;
+				} else {
+					break;
+				}
+			}	
+		
+			if (total_tokens > 1 ) {
+				i += (total_tokens * 2) - 2;
+		
+				re_opt << ".{" << total_tokens << "}";
+			} else {
+				re_opt << r_data[i] << r_data[i+1];
+			}	
+			++i;
+		} else {
+			re_opt << r_data[i];
+		}
+	}
+
+	regex_expression_ = re_opt.str();
 	raw_expression_ = raw_expr.str();
 }
 

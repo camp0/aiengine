@@ -1085,7 +1085,7 @@ BOOST_AUTO_TEST_CASE ( test_case_4 )
         learner->compute();
         std::string header("^\\x16\\x03\\x01\\x00\\xd1\\x01\\x00\\x00\\xcd\\x03\\x01\\x52\\xc1\\xd5\\x86\\xd0\\xd3\\x8f\\x87\\xb8\\xf1\\x6e\\x0f\\xe1\\x59\\xff");// a SSL header on hexa
         std::string reg(learner->getRegularExpression());
-        
+       
         BOOST_CHECK(header.compare(0,header.length(),reg,0,header.length())== 0);
 }
 
@@ -1344,11 +1344,10 @@ BOOST_AUTO_TEST_CASE ( test_case_11 )
         learner->agregateFlows(flow_list);
         learner->compute();
 
-	// TODO: The resulting regex should be with operators {} to avoid .?.?.?.?.? tags
-        // std::string header("^\\x16\\x03\\x01\\x00\\xd1\\x01\\x00\\x00\\xcd\\x03\\x01\\x52\\xc1\\xd5\\x86\\xd0\\xd3\\x8f\\x87\\xb8\\xf1\\x6e\\x0f\\xe1\\x59\\xff");// a SSL header on hexa
-        // std::string reg(learner->getRegularExpression());
+	std::string header("^\\x16\\x03\\x01\\x00\\xe1\\x01\\x00\\x00\\xdd\\x03\\x03\\x53\\x17\\xc4\\x30.{28}\\x00\\x00");
+        std::string reg(learner->getRegularExpression());
 
-        // BOOST_CHECK(header.compare(0,header.length(),reg,0,header.length())== 0);
+        BOOST_CHECK(header.compare(0,header.length(),reg,0,header.length())== 0);
 }
 
 // Test the statistics method by passing the protocol name

@@ -44,8 +44,6 @@ void VxLanProtocol::processFlow(Flow *flow) {
 		// Sets the Tag for the packet
 		gpacket.setTag(getVni());
 
-                //gpacket.setPrevHeaderSize(header_size);
-
                 mux->setNextProtocolIdentifier(0);
                 mux->forwardPacket(gpacket);
          }
