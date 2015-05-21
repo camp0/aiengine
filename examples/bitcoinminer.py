@@ -25,7 +25,7 @@ if __name__ == '__main__':
     reg_head = pyaiengine.Regex("First regex","mining.subscribe")
     reg_tail = pyaiengine.Regex("Second regex","c4758493e4f9804beeb784b4ff0be019b03678952ea8bb6f5c5365b2b76438a7")
 
-    reg_head.setNextRegex(reg_tail)
+    reg_head.nextregex = reg_tail
 
     reg_tail.callback = callback
     r_mng.addRegex(reg_head)
