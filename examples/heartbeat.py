@@ -14,7 +14,7 @@ import pyaiengine
 
 def callback_heartbeat(flow):
 
-    payload = flow.getPayload()
+    payload = flow.payload
     if(len(payload) > 7): 
         """ Heartbeat minimum header """
         if(int(payload[7])>1):
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     sig = pyaiengine.Regex("SSL Heartbeat","^.*\x18\x03(\x01|\x02|\x03).*$")
     sig.callback = callback_heartbeat
 
-    ssl_sig.setNextRegex(sig)
+    ssl_sig.nextregex = sig
 
     sm.addRegex(ssl_sig)
 

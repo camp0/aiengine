@@ -457,17 +457,20 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (RegexManager::*addRegex2)(const SharedPointer<Regex>) = &RegexManager::addRegex;
 
 	boost::python::class_<RegexManager,SharedPointer<RegexManager>,boost::noncopyable >("RegexManager")
-		.def("__iter__",boost::python::range(&RegexManager::begin,&RegexManager::end))
+		.def("__iter__",boost::python::range(&RegexManager::begin,&RegexManager::end),
+			"Iterate over the Regex stored on the RegexManager object.")
 		.add_property("name",&RegexManager::getName, &RegexManager::setName,
 			"Gets/Sets the name of the RegexManager.")
 		.def("addRegex",addRegex1)
 		.def("addRegex",addRegex2)
-		.def("__len__",&RegexManager::getTotalRegexs)
+		.def("__len__",&RegexManager::getTotalRegexs,
+			"Gets the total number of Regex stored on the RegexManager object.")
 		.def(self_ns::str(self_ns::self))
 	;
 
 	boost::python::class_<FlowManager,SharedPointer<FlowManager>,boost::noncopyable >("FlowManager")
-		.def("__iter__",boost::python::range(&FlowManager::begin,&FlowManager::end))
+		.def("__iter__",boost::python::range(&FlowManager::begin,&FlowManager::end),
+			"Iterate over the Flows stored on the FlowManager object.")
 		.def("__len__", &FlowManager::getTotalFlows)
 		.add_property("flows", &FlowManager::getTotalFlows)
 		.add_property("processflows", &FlowManager::getTotalProcessFlows)
@@ -525,7 +528,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
 	boost::python::class_<DNSInfo, SharedPointer<DNSInfo>,boost::noncopyable>("DNSInfo")
-		.def("__iter__",boost::python::range(&DNSInfo::begin,&DNSInfo::end))
+		.def("__iter__",boost::python::range(&DNSInfo::begin,&DNSInfo::end),
+			"Iterate over the IP addresses returned on the query response.")
 		.add_property("domainname", &DNSInfo::getDomainName,
 				"Gets the DNS domain name.")
 		.def(self_ns::str(self_ns::self))

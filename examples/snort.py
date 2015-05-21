@@ -14,10 +14,9 @@ import pyaiengine
 
 def callback(flow):
 
-    ip = flow.srcip
-    r = flow.getRegex()
+    r = flow.regex
     if(r):
-        print("Detection of ", r.getName(), " on ",ip) 
+        print("Detection of ", r.name, " on ",flow.srcip) 
 
 
 def parseSnortLine(line):
@@ -73,9 +72,6 @@ if __name__ == '__main__':
      # Load an instance of a Network Stack 
      st = pyaiengine.StackLan()
 
-     # Create a instace of a PacketDispatcher
-     pdis = pyaiengine.PacketDispatcher()
-
      # Plug the stack on the PacketDispatcher
      pdis.stack = st
 
@@ -89,18 +85,13 @@ if __name__ == '__main__':
 
      st.enableNIDSEngine(True)
 
-     pdis.open("eth0")
-
-     """ Enable the shell so the user can take under control
+     with pyaiengine.PacketDispatcher("eth0") as pd:
+         pd.stack = st
+         """ Enable the shell so the user can take under control
          the all system """
-     pdis.enableshell = True
-     try:
-         pdis.run()
-     except:
-         e = sys.exc_info()[0]
-         print("Interrupt during capturing packets:",e)
+         pd.enableshell = True
+         pd.run()
      
-     pdis.close()
      print(r_tcp)
      print(r_udp) 
 
