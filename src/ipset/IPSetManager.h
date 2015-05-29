@@ -33,6 +33,7 @@
 #include <iostream>
 #include <vector>
 #include "IPAbstractSet.h"
+#include "IPSet.h"
 
 namespace aiengine {
 
@@ -56,6 +57,9 @@ public:
 	std::vector<SharedPointer<IPAbstractSet>>::iterator end() { return sets_.end(); }
 #endif
 
+#ifdef SWIGRUBY
+	void addIPSet(const IPSet& ipset) { /* addIPSet(std::make_shared<IPAbstractSet>(ipset));*/ } 
+#endif
 	friend std::ostream& operator<< (std::ostream& out, const IPSetManager& im);
 
 	SharedPointer<IPAbstractSet> getMatchedIPSet() { return matched_set_;}

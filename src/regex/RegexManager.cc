@@ -28,14 +28,14 @@ namespace aiengine {
 
 void RegexManager::addRegex(const std::string name,const std::string expression) {
 
-	SharedPointer<Regex> sig = SharedPointer<Regex>(new Regex(name,expression));
+        SharedPointer<Regex> sig = SharedPointer<Regex>(new Regex(name,expression));
 
-	addRegex(sig);
+        addRegex(sig);
 }
 
-void RegexManager::addRegex(SharedPointer<Regex> sig) {
+void RegexManager::addRegex(const SharedPointer<Regex>& sig) {
 
-	signatures_.push_back(sig);
+        signatures_.push_back(sig);
 }
 
 void RegexManager::evaluate(boost::string_ref &data, bool *result) {
@@ -53,7 +53,6 @@ void RegexManager::evaluate(boost::string_ref &data, bool *result) {
         }
         return;
 }
-
 
 std::ostream& operator<< (std::ostream& out, const RegexManager& sig) {
 

@@ -66,12 +66,12 @@ public:
 	}
     	virtual ~Multiplexer() {}
 
-    	void virtual addUpMultiplexer(MultiplexerPtrWeak mux,unsigned int key) {
+    	virtual void addUpMultiplexer(MultiplexerPtrWeak mux,unsigned int key) {
 	
 		muxUpMap_[key] = mux;
 	}
 
-	void virtual addDownMultiplexer(MultiplexerPtrWeak mux) {
+	virtual void addDownMultiplexer(MultiplexerPtrWeak mux) {
 	
 		muxDown_ = mux;
 	}

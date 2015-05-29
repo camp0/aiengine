@@ -97,7 +97,10 @@ public:
 	// The Python API sends an empty shared_ptr for the None assignment
 	virtual void setTCPRegexManager(const SharedPointer<RegexManager>& sig) { tcp_regex_mng_ = sig; } 
 	virtual void setUDPRegexManager(const SharedPointer<RegexManager>& sig) { udp_regex_mng_ = sig; } 
-
+#ifdef SWIGRUBY
+	virtual void setTCPRegexManager(const RegexManager& sig) { tcp_regex_mng_ = std::make_shared<RegexManager>(sig); } 
+	virtual void setUDPRegexManager(const RegexManager& sig) { udp_regex_mng_ = std::make_shared<RegexManager>(sig); } 
+#endif
 	virtual void setTCPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) { tcp_ipset_mng_ = ipset_mng; }
 	virtual void setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) { udp_ipset_mng_ = ipset_mng; }
 

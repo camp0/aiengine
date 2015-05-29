@@ -454,7 +454,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
 	void (RegexManager::*addRegex1)(const std::string,const std::string) = &RegexManager::addRegex;
-	void (RegexManager::*addRegex2)(const SharedPointer<Regex>) = &RegexManager::addRegex;
+	void (RegexManager::*addRegex2)(const SharedPointer<Regex>&) = &RegexManager::addRegex;
 
 	boost::python::class_<RegexManager,SharedPointer<RegexManager>,boost::noncopyable >("RegexManager")
 		.def("__iter__",boost::python::range(&RegexManager::begin,&RegexManager::end),

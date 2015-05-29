@@ -128,6 +128,8 @@ public:
 	void setPcapFilter(const std::string& filter);
 	const char *getPcapFilter() const { return pcap_filter_.c_str(); }
 	void status(void);
+	const char *getStackName() const { return stack_name_.c_str(); }
+
 
 #ifdef PYTHON_BINDING
 
@@ -152,14 +154,14 @@ public:
         void setStack(StackOpenFlow& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
 #endif
 
-	uint64_t getTotalBytes(void) const { return total_bytes_;}
-	uint64_t getTotalPackets(void) const { return total_packets_;}
+	int64_t getTotalBytes(void) const { return total_bytes_;}
+	int64_t getTotalPackets(void) const { return total_packets_;}
 
 	void setStack(const SharedPointer<NetworkStack>& stack) { stack_name_ = stack->getName(); setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());}
 
 	void setDefaultMultiplexer(MultiplexerPtr mux); // just use for the unit tests
 	void setIdleFunction(std::function <void ()> idle_function) { idle_function_ = idle_function;}
-
+	
 	friend std::ostream& operator<< (std::ostream& out, const PacketDispatcher& pdis);
 
 private:
@@ -188,8 +190,8 @@ private:
 	bool read_in_progress_;
 	bool device_is_ready_;
 
-	uint64_t total_packets_;	
-	uint64_t total_bytes_;	
+	int64_t total_packets_;	
+	int64_t total_bytes_;	
     	pcap_t* pcap_;
 	boost::asio::io_service io_service_;
 	boost::asio::signal_set signals_;

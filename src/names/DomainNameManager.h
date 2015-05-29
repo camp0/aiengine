@@ -61,6 +61,37 @@ public:
 
 	friend std::ostream& operator<< (std::ostream& out, const DomainNameManager& domain);
 
+	void statistics() { std::cout << *this; }
+
+#ifdef SWIGRUBY
+        void addDomainName(const DomainName& domain) {
+
+                addDomainName(std::make_shared<DomainName>(domain));
+        }
+
+        void deattachRubyObjects() {
+
+		deattachRubyObjects(root_);
+        }
+
+	void deattachRubyObjects(const SharedPointer<DomainNode>& node) { 
+        
+		for (auto it = node->begin(); it != node->end(); ++it) {
+                	SharedPointer<DomainNode> node_in = it->second;
+                	SharedPointer<DomainName> name = node_in->getDomainName();
+
+                	if (!name) {
+                        	deattachRubyObjects(node_in);
+                	} else {
+                       		DomainName *pname = name.get();
+
+                        	SWIG_RubyUnlinkObjects(pname);
+                        	SWIG_RubyRemoveTracking(pname);
+                	}
+        	}
+	}
+#endif
+
 private:
 	std::string name_;
 	SharedPointer<DomainNode> root_;

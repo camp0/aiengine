@@ -58,5 +58,4 @@ std::ostream& operator<< (std::ostream& out, const IPSetManager& im) {
 	return out;
 }
 
-
 } // namespace aiengine

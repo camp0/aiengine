@@ -15,6 +15,9 @@ m4_include([m4/ax_boost_system.m4])
 m4_include([m4/ax_boost_unit_test_framework.m4])
 m4_include([m4/ax_boost_program_options.m4])
 m4_include([m4/ac_c++11.m4])
+m4_include([m4/ax_pkg_swig.m4])
+m4_include([m4/ax_swig_enable_cxx.m4])
+m4_include([m4/ax_swig_multi_module_support.m4])
 
 AC_PREREQ(2.59)
 
@@ -267,6 +270,20 @@ if test x"$fscompress_support" = x"yes"; then
 fi
 
 ##########################################################################
+# Swig ruby support
+##########################################################################
+
+AC_PATH_PROGS([SWIG],[swig swig2.0])
+if test -z "$SWIG" ; then
+    enable_swig=no
+else
+    enable_swig=yes
+    AX_PKG_SWIG(3.0.0, , AC_MSG_ERROR("Swig is required."))
+    AX_SWIG_ENABLE_CXX
+    AX_SWIG_MULTI_MODULE_SUPPORT
+fi
+
+##########################################################################
 
 CXXFLAGS=$AM_CXXFLAGS
 
@@ -340,5 +357,6 @@ echo "
   Database support....: $adaptor_support
   Bloom filter support: $bloom_support
   Flow sc support.....: $fscompress_support
+  Swig support........: $enable_swig
 "
 

@@ -8,7 +8,7 @@ python_PYTHON = pyai_tests.py __init__.py
 # EXTRA_FLAGS = -O3 '-fprofile-arcs -ftest-coverage -g' For enable gcov tool
 EXTRA_FLAGS = -O3
 
-EXTRA_DIST = py_wrapper.cc setup.py MANIFEST.in
+EXTRA_DIST = python_wrapper.cc ruby_wrapper.i setup.py MANIFEST.in ruai_test.rb
 
 noinst_HEADERS =        Packet.h Pointer.h \
 			Protocol.h AnomalyManager.h \
@@ -180,6 +180,26 @@ tests_LDFLAGS = 	-DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ \
 			-lboost_program_options \
 			-lboost_filesystem -lpcap $(LOG4CXX_FLAGS) 
 
+ruby_objects = 	NetworkStack.o EthernetProtocol.o \
+		AnomalyManager.o CacheManager.o Multiplexer.o FlowForwarder.o PacketDispatcher.o \
+		Flow.o \
+		Regex.o RegexManager.o \
+		VLanProtocol.o MPLSProtocol.o \
+		IPProtocol.o IPv6Protocol.o TCPProtocol.o UDPProtocol.o \
+		TCPGenericProtocol.o UDPGenericProtocol.o \
+		HTTPProtocol.o SSLProtocol.o \
+		DNSProtocol.o GPRSProtocol.o \
+		NTPProtocol.o SNMPProtocol.o \
+		SMTPProtocol.o IMAPProtocol.o \
+		DHCPProtocol.o SIPProtocol.o \
+		POPProtocol.o GREProtocol.o \
+		FrequencyProtocol.o \
+		ICMPProtocol.o ICMPv6Protocol.o \
+		StackLan.o \
+		FlowManager.o \
+		IPSetManager.o IPSet.o \
+		DomainNameManager.o
+
 tests_CPPFLAGS = $(BOOST_CPPFLAGS) 
 # Dont forget to put -lgcov if need on test_LDADD
 tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread 
@@ -199,10 +219,20 @@ python:
 	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DPYTHON_BINDING \
 		-I. -I.. $(BOOST_CPPFLAGS) $(BOOST_CPPFLAGS)/boost/python \
 		`pkg-config --cflags python-$(PYTHON_VERSION)` \
-		$(aiengine_core_sources) py_wrapper.cc \
+		$(aiengine_core_sources) python_wrapper.cc \
 		-std=c++11 -lpthread -lstdc++ \
 		$(BOOST_LDFLAGS) $(BOOST_LINK_CORE) \
 		-l$(BOOST_PYTHON_LIB) \
 		`pkg-config --libs python-$(PYTHON_VERSION)` -lpcap \
 		$(LOG4CXX_FLAGS) $(PCRE_LIB) -o pyaiengine.so -shared
 
+ruby:
+	@echo "**************************************************************************************"
+	@echo "* Compiling Ruby extension.                                                          *"
+	@echo "**************************************************************************************"
+	@echo "Generating interface" $(SWIG)	
+	$(SWIG) -globalmodule -c++ -ruby ruby_wrapper.i 	
+	@echo "Compiling ruby interface"
+	$(CXX) -fPIC -std=c++11 -c $(aiengine_core_sources) ruby_wrapper_wrap.cxx -I/usr/include/ruby -I/usr/local/lib/ruby/1.6/i686-linux -I.
+	@echo "Linking ruby interface"
+	$(CXX) -shared -std=c++11 $(ruby_objects) ruby_wrapper_wrap.o -o ruaiengine.so -lpcap -lruby -lboost_system -lpcre
