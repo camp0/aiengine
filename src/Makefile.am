@@ -198,7 +198,7 @@ ruby_objects = 	NetworkStack.o EthernetProtocol.o \
 		StackLan.o \
 		FlowManager.o \
 		IPSetManager.o IPSet.o \
-		DomainNameManager.o
+		DomainNameManager.o DomainName.o
 
 tests_CPPFLAGS = $(BOOST_CPPFLAGS) 
 # Dont forget to put -lgcov if need on test_LDADD
@@ -231,8 +231,8 @@ ruby:
 	@echo "* Compiling Ruby extension.                                                          *"
 	@echo "**************************************************************************************"
 	@echo "Generating interface" $(SWIG)	
-	$(SWIG) -globalmodule -c++ -ruby ruby_wrapper.i 	
+	swig -DRUBY_BINDING -globalmodule -c++ -ruby ruby_wrapper.i 	
 	@echo "Compiling ruby interface"
-	$(CXX) -fPIC -std=c++11 -c $(aiengine_core_sources) ruby_wrapper_wrap.cxx -I/usr/include/ruby -I/usr/local/lib/ruby/1.6/i686-linux -I.
+	$(CXX) -DRUBY_BINDING -fPIC -std=c++11 -c $(aiengine_core_sources) ruby_wrapper_wrap.cxx -I/usr/include/ruby -I/usr/local/lib/ruby/1.6/i686-linux -I.
 	@echo "Linking ruby interface"
-	$(CXX) -shared -std=c++11 $(ruby_objects) ruby_wrapper_wrap.o -o ruaiengine.so -lpcap -lruby -lboost_system -lpcre
+	$(CXX) -DRUBY_BINDING -shared -std=c++11 $(ruby_objects) ruby_wrapper_wrap.o -o ruaiengine.so -lpcap -lruby -lboost_system -lpcre

@@ -56,9 +56,12 @@ public:
 	void evaluate(const std::string& data,bool *result); // Remove in future versions  
 	void evaluate(boost::string_ref& data,bool *result); 
 
-	void addRegex(const std::string name,const std::string expression);
+#ifndef PYTHON_BINDING
+	void addRegex(Regex& sig) { addRegex(std::make_shared<Regex>(sig)); }
+#endif
+	void addRegex(const std::string& name,const std::string& expression);
 	void addRegex(const SharedPointer<Regex>& sig);
-
+	
 	SharedPointer<Regex> getMatchedRegex() { return current_signature_;}
 
 	friend std::ostream& operator<< (std::ostream& out, const RegexManager& sig);
@@ -69,22 +72,6 @@ public:
 	// Methods for exposing the class to python iterable methods
 	std::vector<SharedPointer<Regex>>::iterator begin() { return signatures_.begin(); }
 	std::vector<SharedPointer<Regex>>::iterator end() { return signatures_.end(); }
-#endif
-
-#ifdef SWIGRUBY
-	void addRegex(const Regex& sig) {
-
-        	addRegex(std::make_shared<Regex>(sig));
-	}
-
-	void deattachRubyObjects() {
-
-        	for (auto &r: signatures_) {
-                	Regex *re = r.get();
-                	SWIG_RubyUnlinkObjects(re);
-                	SWIG_RubyRemoveTracking(re);
-        	}
-	}
 #endif
 
 private:

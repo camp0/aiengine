@@ -142,8 +142,8 @@ Compile AIEngine binary
     $ ./configure
     $ make
 
-Compile AIEngine library
-------------------------
+Compile AIEngine Python library
+--------------------------------
 
 The first option for compile the library is using O3 compile optimization, this will generate a small library
 
@@ -161,7 +161,17 @@ a bigger library size if compare with the previous one.
     $ ./configure
     $ cd src
     $ python setup.py build_ext -i 
-    
+   
+Compile AIEngine Ruby library 
+------------------------------
+
+The ruby library is still on develop phase.
+
+    $ git clone https://bitbucket.com/camp0/aiengine
+    $ ./autogen.sh
+    $ ./configure
+    $ cd src
+    $ make ruby
 
 Contributing to AIEngine 
 -------------------------

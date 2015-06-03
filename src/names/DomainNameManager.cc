@@ -25,7 +25,7 @@
 
 namespace aiengine {
 
-void DomainNameManager::addDomainName(const std::string name,const std::string expression) {
+void DomainNameManager::addDomainName(const std::string& name,const std::string& expression) {
 
 	SharedPointer<DomainName> dom = SharedPointer<DomainName>(new DomainName(name,expression));
 

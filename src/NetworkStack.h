@@ -33,20 +33,20 @@
 #include "DatabaseAdaptor.h"
 #include "ipset/IPSetManager.h"
 #include "protocols/mpls/MPLSProtocol.h"
-#include "./protocols/tcp/TCPProtocol.h"
-#include "./protocols/udp/UDPProtocol.h"
-#include "./protocols/tcpgeneric/TCPGenericProtocol.h"
-#include "./protocols/udpgeneric/UDPGenericProtocol.h"
-#include "./protocols/dns/DNSProtocol.h"
-#include "./protocols/sip/SIPProtocol.h"
-#include "./protocols/dhcp/DHCPProtocol.h"
-#include "./protocols/ntp/NTPProtocol.h"
-#include "./protocols/snmp/SNMPProtocol.h"
-#include "./protocols/ssl/SSLProtocol.h"
-#include "./protocols/http/HTTPProtocol.h"
-#include "./protocols/smtp/SMTPProtocol.h"
-#include "./protocols/imap/IMAPProtocol.h"
-#include "./protocols/pop/POPProtocol.h"
+#include "protocols/tcp/TCPProtocol.h"
+#include "protocols/udp/UDPProtocol.h"
+#include "protocols/tcpgeneric/TCPGenericProtocol.h"
+#include "protocols/udpgeneric/UDPGenericProtocol.h"
+#include "protocols/dns/DNSProtocol.h"
+#include "protocols/sip/SIPProtocol.h"
+#include "protocols/dhcp/DHCPProtocol.h"
+#include "protocols/ntp/NTPProtocol.h"
+#include "protocols/snmp/SNMPProtocol.h"
+#include "protocols/ssl/SSLProtocol.h"
+#include "protocols/http/HTTPProtocol.h"
+#include "protocols/smtp/SMTPProtocol.h"
+#include "protocols/imap/IMAPProtocol.h"
+#include "protocols/pop/POPProtocol.h"
 #include "protocols/frequency/FrequencyProtocol.h"
 
 namespace aiengine {
@@ -94,13 +94,19 @@ public:
 	void enableFlowForwarders(const FlowForwarderPtr& ff, std::initializer_list<FlowForwarderPtr> fps);
 	void disableFlowForwarders(const FlowForwarderPtr& ff, std::initializer_list<FlowForwarderPtr> fps);
 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) 
+	void setDomainNameManager(DomainNameManager& dnm, const std::string& name);
+	void setDomainNameManager(DomainNameManager& dnm, const std::string& name, bool allow);
+#endif
+
+#ifdef RUBY_BINDING
+	virtual void setTCPRegexManager(RegexManager &sig) { setTCPRegexManager(std::make_shared<RegexManager>(sig)); } 
+	virtual void setUDPRegexManager(RegexManager &sig) { setUDPRegexManager(std::make_shared<RegexManager>(sig)); } 
+#endif
 	// The Python API sends an empty shared_ptr for the None assignment
 	virtual void setTCPRegexManager(const SharedPointer<RegexManager>& sig) { tcp_regex_mng_ = sig; } 
 	virtual void setUDPRegexManager(const SharedPointer<RegexManager>& sig) { udp_regex_mng_ = sig; } 
-#ifdef SWIGRUBY
-	virtual void setTCPRegexManager(const RegexManager& sig) { tcp_regex_mng_ = std::make_shared<RegexManager>(sig); } 
-	virtual void setUDPRegexManager(const RegexManager& sig) { udp_regex_mng_ = std::make_shared<RegexManager>(sig); } 
-#endif
+	
 	virtual void setTCPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) { tcp_ipset_mng_ = ipset_mng; }
 	virtual void setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) { udp_ipset_mng_ = ipset_mng; }
 
@@ -109,9 +115,6 @@ public:
 	virtual FlowManager& getTCPFlowManager() = 0;
 	virtual FlowManager& getUDPFlowManager() = 0;
 
-	void setDomainNameManager(DomainNameManager& dnm, const std::string& name);
-	void setDomainNameManager(DomainNameManager& dnm, const std::string& name, bool allow);
-	
 	void setTCPDatabaseAdaptor(boost::python::object &dbptr);
 	void setTCPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling);
 	void setUDPDatabaseAdaptor(boost::python::object &dbptr);
@@ -129,7 +132,6 @@ public:
 	const char *getLinkLayerTag() const { return link_layer_tag_name_.c_str(); } 
 
 #else
-
 	virtual FlowManagerPtrWeak getTCPFlowManager() = 0;
 	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;
 #endif

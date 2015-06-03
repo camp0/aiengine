@@ -51,8 +51,15 @@ public:
 	void setName(const std::string& name) { name_ = name; }
 	const char *getName() const { return name_.c_str(); }
 
+#ifdef RUBY_BINDING
+        void addDomainName(DomainName& domain) {
+
+		std::cout << "DomainNameManager::addDomainName" << std::endl;
+                addDomainName(std::make_shared<DomainName>(domain));
+        }
+#endif
 	void addDomainName(const SharedPointer<DomainName>& domain); 
-	void addDomainName(const std::string name,const std::string expression);
+	void addDomainName(const std::string& name,const std::string& expression);
 
 	SharedPointer<DomainName> getDomainName(boost::string_ref &name);
 	SharedPointer<DomainName> getDomainName(const char *name); 
@@ -62,35 +69,6 @@ public:
 	friend std::ostream& operator<< (std::ostream& out, const DomainNameManager& domain);
 
 	void statistics() { std::cout << *this; }
-
-#ifdef SWIGRUBY
-        void addDomainName(const DomainName& domain) {
-
-                addDomainName(std::make_shared<DomainName>(domain));
-        }
-
-        void deattachRubyObjects() {
-
-		deattachRubyObjects(root_);
-        }
-
-	void deattachRubyObjects(const SharedPointer<DomainNode>& node) { 
-        
-		for (auto it = node->begin(); it != node->end(); ++it) {
-                	SharedPointer<DomainNode> node_in = it->second;
-                	SharedPointer<DomainName> name = node_in->getDomainName();
-
-                	if (!name) {
-                        	deattachRubyObjects(node_in);
-                	} else {
-                       		DomainName *pname = name.get();
-
-                        	SWIG_RubyUnlinkObjects(pname);
-                        	SWIG_RubyRemoveTracking(pname);
-                	}
-        	}
-	}
-#endif
 
 private:
 	std::string name_;

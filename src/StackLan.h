@@ -113,9 +113,10 @@ public:
 
         void setTCPRegexManager(const SharedPointer<RegexManager>& sig); 
         void setUDPRegexManager(const SharedPointer<RegexManager>& sig);
-#ifdef SWIGRUBY
-        void setTCPRegexManager(const RegexManager& sig) { setTCPRegexManager(std::make_shared<RegexManager>(sig)); } 
-        void setUDPRegexManager(const RegexManager& sig) { setUDPRegexManager(std::make_shared<RegexManager>(sig)); }
+
+#ifndef PYTHON_BINDING
+        void setTCPRegexManager(RegexManager& sig) { setTCPRegexManager(std::make_shared<RegexManager>(sig)); } 
+        void setUDPRegexManager(RegexManager& sig) { setUDPRegexManager(std::make_shared<RegexManager>(sig)); }
 #endif
         void setTCPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng);
         void setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng);

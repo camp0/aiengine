@@ -26,7 +26,7 @@
 
 namespace aiengine {
 
-void RegexManager::addRegex(const std::string name,const std::string expression) {
+void RegexManager::addRegex(const std::string& name,const std::string& expression) {
 
         SharedPointer<Regex> sig = SharedPointer<Regex>(new Regex(name,expression));
 

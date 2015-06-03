@@ -215,7 +215,7 @@ std::ostream& operator<< (std::ostream& out, const NetworkStack& ns) {
         return out;
 }
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
 void NetworkStack::setDomainNameManager(DomainNameManager& dnm, const std::string& name) {
 
@@ -237,6 +237,10 @@ void NetworkStack::setDomainNameManager(DomainNameManager& dnm, const std::strin
 		}	
         }
 }
+
+#endif
+
+#ifdef PYTHON_BINDING
 
 void NetworkStack::setUDPDatabaseAdaptor(boost::python::object &dbptr) {
 

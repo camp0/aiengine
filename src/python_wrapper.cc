@@ -453,7 +453,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("__exit__",&PacketDispatcher::__exit__)
 	;
 
-	void (RegexManager::*addRegex1)(const std::string,const std::string) = &RegexManager::addRegex;
+	void (RegexManager::*addRegex1)(const std::string&,const std::string&) = &RegexManager::addRegex;
 	void (RegexManager::*addRegex2)(const SharedPointer<Regex>&) = &RegexManager::addRegex;
 
 	boost::python::class_<RegexManager,SharedPointer<RegexManager>,boost::noncopyable >("RegexManager")
@@ -631,7 +631,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def(self_ns::str(self_ns::self))
         ;
 
-        void (DomainNameManager::*addDomainName1)(const std::string,const std::string) = &DomainNameManager::addDomainName;
+        void (DomainNameManager::*addDomainName1)(const std::string&,const std::string&) = &DomainNameManager::addDomainName;
         void (DomainNameManager::*addDomainName2)(const SharedPointer<DomainName>&) = &DomainNameManager::addDomainName;
 
         boost::python::class_<DomainNameManager,SharedPointer<DomainNameManager>,boost::noncopyable >("DomainNameManager",
