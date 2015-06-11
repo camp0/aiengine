@@ -36,10 +36,14 @@
 #include <boost/function.hpp>
 #endif
 
+#ifdef RUBY_BINDING
+#include <ruby.h>
+#endif
+
 namespace aiengine {
 
 class Flow;
-
+// http://www.lysator.liu.se/~norling/ruby_callbacks.html
 class Callback 
 {
 #ifdef PYTHON_BINDING
@@ -58,6 +62,30 @@ private:
 	bool callback_set_;
 	PyObject *callback_;
 #endif // PYTHON_BINDING
+
+#ifdef RUBY_BINDING
+public:
+	Callback():callback_set_(false),callback_(Qnil),memory_wrapper_(Qnil) {
+		memory_wrapper_ = Data_Wrap_Struct(0 /* klass */, staticMark, NULL, static_cast<void*>(this));
+		rb_gc_register_address(&memory_wrapper_);
+
+	}
+	virtual ~Callback() { rb_gc_unregister_address(&memory_wrapper_);}
+
+	bool haveCallback() const { return callback_set_;}
+	
+	void setCallback(VALUE callback);
+	void executeCallback(Flow *flow); 
+	
+protected:
+	static void staticMark(Callback *me) { me->mark(); }
+
+	void mark();
+private:
+	bool callback_set_;
+	VALUE callback_;
+	VALUE memory_wrapper_;
+#endif
 };
 
 } // namespace aiengine

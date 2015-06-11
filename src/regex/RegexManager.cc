@@ -35,6 +35,7 @@ void RegexManager::addRegex(const std::string& name,const std::string& expressio
 
 void RegexManager::addRegex(const SharedPointer<Regex>& sig) {
 
+//	std::cout << "RegexManager::addRegex2::" << std::addressof(sig) << ":" << std::addressof(*sig.get()) << std::endl;
         signatures_.push_back(sig);
 }
 
@@ -56,7 +57,7 @@ void RegexManager::evaluate(boost::string_ref &data, bool *result) {
 
 std::ostream& operator<< (std::ostream& out, const RegexManager& sig) {
 
-	out << "RegexManager(" << &sig << ") statistics" << std::dec <<  std::endl;	
+	out << "RegexManager(" << std::addressof(sig) << ") statistics" << std::dec <<  std::endl;	
         for (auto it = sig.signatures_.begin(); it != sig.signatures_.end(); ++it) {
                 SharedPointer<Regex> ssig = (*it);
 		std::ostringstream tabs;	

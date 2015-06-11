@@ -37,6 +37,9 @@
 #include <boost/function.hpp>
 #include "Callback.h"
 #endif
+#ifdef RUBY_BINDING
+#include "Callback.h"
+#endif
 
 namespace aiengine {
 
@@ -48,8 +51,8 @@ public:
 	Signature(const std::string &name, const std::string& exp):
 		total_matchs_(0),
 		total_evaluates_(0), 
-#ifdef PYTHON_BINDING
-	 	pycall(),	
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+	 	call(),	
 #endif
 		name_(name),
 		expression_(exp)
@@ -69,15 +72,20 @@ public:
 	int32_t getTotalEvaluates() const { return total_evaluates_;}
 
 #ifdef PYTHON_BINDING
-	void setCallback(PyObject *callback) { pycall.setCallback(callback); }
-	PyObject *getCallback() const { return pycall.getCallback(); }
+	void setCallback(PyObject *callback) { call.setCallback(callback); }
+	PyObject *getCallback() const { return call.getCallback(); }
 #endif
 
 	int32_t total_matchs_;
 	int32_t total_evaluates_;
-#ifdef PYTHON_BINDING
-	Callback pycall;	
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+	Callback call;	
 #endif
+
+#ifdef RUBY_BINDING
+	void setCallback(VALUE callback) { call.setCallback(callback); }
+#endif
+
 private:
 	std::string name_;	
 	std::string expression_;	

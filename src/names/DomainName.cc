@@ -27,7 +27,7 @@ namespace aiengine {
 
 std::ostream& operator<< (std::ostream& out, const DomainName& dom) {
        
-	out << "\t" <<  boost::format("Name:%-25s Domain:%-30s matchs:%-10d") % dom.getName() % dom.getExpression() % dom.total_matchs_;
+	out << "\t" <<  boost::format("Name:%-25s Domain:%-30s matchs:%-10d") % dom.getName() % dom.getExpression() % dom.getMatchs();
 	if (dom.uris_) out << " plug to:" << dom.uris_->getName();
 	out << std::endl; 
        	return out;

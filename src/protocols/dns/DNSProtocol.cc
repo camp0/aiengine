@@ -318,9 +318,9 @@ void DNSProtocol::handle_standard_response(Flow *flow, DNSInfo *info, int length
 				// TODO: Check offset size lengths and possible anomalies	
 				ptr = &(addr->data[block_length]);	
 			}	
-#ifdef PYTHON_BINDING
-                        if(domain_candidate->pycall.haveCallback()) {
-                                domain_candidate->pycall.executeCallback(flow);
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+                        if(domain_candidate->call.haveCallback()) {
+                                domain_candidate->call.executeCallback(flow);
                         }
 #endif
                 }

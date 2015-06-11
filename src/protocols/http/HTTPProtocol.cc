@@ -557,12 +557,12 @@ void HTTPProtocol::processFlow(Flow *flow) {
 					SharedPointer<StringCache> host_name = info->host.lock();
                 			SharedPointer<DomainName> host_candidate = host_mng->getDomainName(host_name->getName());
 					if (host_candidate) {
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 #ifdef HAVE_LIBLOG4CXX
 						LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
 #endif	
-						if(host_candidate->pycall.haveCallback()) {
-							host_candidate->pycall.executeCallback(flow);
+						if(host_candidate->call.haveCallback()) {
+							host_candidate->call.executeCallback(flow);
                                 		}
 #endif
 						info->matched_host = host_candidate;
@@ -576,9 +576,9 @@ void HTTPProtocol::processFlow(Flow *flow) {
 			SharedPointer<HTTPUriSet> uset = mhost->getHTTPUriSet();
 			if((uset) and (offset >0)) {
 				if (uset->lookupURI(info->uri.lock()->getName())) {
-#ifdef PYTHON_BINDING
-					if (uset->pycall.haveCallback()) {
-						uset->pycall.executeCallback(flow);	
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+					if (uset->call.haveCallback()) {
+						uset->call.executeCallback(flow);	
 					}
 #endif
 				}

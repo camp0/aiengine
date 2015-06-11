@@ -204,12 +204,12 @@ void POPProtocol::handle_cmd_user(Flow *flow,POPInfo *info, const char *header) 
         	DomainNameManagerPtr dom_mng = domain_mng_.lock();
                 SharedPointer<DomainName> dom_candidate = dom_mng->getDomainName(domain);
                 if (dom_candidate) {
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 #ifdef HAVE_LIBLOG4CXX
                         LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << dom_candidate->getName());
 #endif
-                        if(dom_candidate->pycall.haveCallback()) {
-                                dom_candidate->pycall.executeCallback(flow);
+                        if(dom_candidate->call.haveCallback()) {
+                                dom_candidate->call.executeCallback(flow);
                         }
 #endif
                 }

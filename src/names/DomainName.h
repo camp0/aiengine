@@ -47,6 +47,8 @@ public:
 #endif
  	{}
 
+	explicit DomainName():DomainName("None","") {}
+
     	virtual ~DomainName() {}
 
 	friend std::ostream& operator<< (std::ostream& out, const DomainName& dom); 
@@ -58,6 +60,8 @@ public:
         void setHTTPUriSet(const SharedPointer<HTTPUriSet>& uset) { uris_ = uset; }
 #endif
         SharedPointer<HTTPUriSet> &getHTTPUriSet() { return uris_; }
+
+	int32_t getPepe() const { return getMatchs(); }
 
 	// The rest from the base class
 private:

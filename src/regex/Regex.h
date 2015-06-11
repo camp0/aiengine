@@ -100,6 +100,8 @@ public:
 	void setShowMatch(bool value) { show_match_ = value; }
 	bool getShowMatch() const { return show_match_; }
 
+	int getPaco() { return getMatchs(); }
+
 private:
 	pcre *exp_;
 	pcre_extra *study_exp_;

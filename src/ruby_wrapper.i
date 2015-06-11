@@ -13,13 +13,14 @@
 #include "names/DomainName.h"
 %}
 
+%apply SWIGTYPE *DISOWN { Signature* signature };
 %apply SWIGTYPE *DISOWN { Regex* regex };
 %apply SWIGTYPE *DISOWN { DomainName* domain };
 
 %trackobjects;
 
 %init %{ 
-std::cout << "Initialization etc. gets done here" << std::endl;
+std::cout << "Ruby AIengine BETA init." << std::endl;
 %}
 
 %ignore aiengine::NetworkStack::setName;
@@ -54,11 +55,10 @@ std::cout << "Initialization etc. gets done here" << std::endl;
 %ignore aiengine::Signature::total_matchs_;
 %ignore aiengine::Signature::total_evaluates_;
 
-%ignore aiengine::Regex::evalute;
+%ignore aiengine::Regex::evaluate;
 %ignore aiengine::Regex::isTerminal;
 %ignore aiengine::Regex::matchAndExtract;
 %ignore aiengine::Regex::getExtract;
-%ignore aiengine::Regex::setShowMatch;
 %ignore aiengine::Regex::getShowMatch;
 %ignore aiengine::Regex::setNextRegex;
 %ignore aiengine::Regex::getNextRegex;
@@ -72,7 +72,6 @@ std::cout << "Initialization etc. gets done here" << std::endl;
 %ignore aiengine::PacketDispatcher::setStack(StackOpenFlow& stack);
 %ignore aiengine::PacketDispatcher::setDefaultMultiplexer;
 
-/*
 %ignore aiengine::Flow::setPacketAnomaly;
 %ignore aiengine::Flow::getPacketAnomaly;
 %ignore aiengine::Flow::ipset;
@@ -95,7 +94,6 @@ std::cout << "Initialization etc. gets done here" << std::endl;
 
 %ignore aiengine::IPSetManager::addIPSet(const SharedPointer<IPAbstractSet> ipset);
 %ignore aiengine::IPSetManager::getMatchedIPSet;
-*/
 
 %ignore aiengine::DomainNameManager::addDomainName(const SharedPointer<DomainName>& domain);
 %ignore aiengine::DomainNameManager::getDomainName;
@@ -109,13 +107,15 @@ std::cout << "Initialization etc. gets done here" << std::endl;
 %typemap(in) DomainName & "DomainName"
 
 %apply long long { int64_t };
-%apply long long { int32_t };
+%apply int { int32_t };
 
 %freefunc RegexManager "free_RegexManager";
-%markfunc RegexManager "mark_RegexManager";
+%freefunc DomainNameManager "free_DomainNameManager";
+// %markfunc RegexManager "mark_RegexManager";
 
 %ignore operator<<;
 
+%include "Callback.h"
 %include "Signature.h"
 %include "regex/Regex.h"
 %include "regex/RegexManager.h"
@@ -124,6 +124,17 @@ std::cout << "Initialization etc. gets done here" << std::endl;
 %include "NetworkStack.h"
 %include "StackLan.h"
 %include "PacketDispatcher.h"
+%include "Flow.h"
+%include "ipset/IPSet.h"
+%include "ipset/IPSetManager.h"
+
+// %typemap(in) (fpvoid, void *) {
+  // CALLBACK TYPE (VOID*) for $1 of type $1_type and $2 of type $2_type
+//  static Callback cbo;
+//  cbo.setCallback($input);
+//  $1 = Callback::staticCallback;
+//  $2 = static_cast(&cbo);
+// }
 
 %header %{
 
@@ -133,6 +144,14 @@ std::cout << "Initialization etc. gets done here" << std::endl;
         std::cout << "Marking object" << std::endl;
 
   }
+
+    static void free_DomainNameManager(void *ptr) {
+	aiengine::DomainNameManager *dmng = (aiengine::DomainNameManager*) ptr;
+	std::cout << "Destroy DomainNameManager" << std::endl;
+
+        SWIG_RubyRemoveTracking(ptr);
+
+    }
 
     static void free_RegexManager(void* ptr) {
         aiengine::RegexManager *rmng  = (aiengine::RegexManager*) ptr;

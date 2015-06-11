@@ -54,8 +54,10 @@ public:
 #ifdef RUBY_BINDING
         void addDomainName(DomainName& domain) {
 
-		std::cout << "DomainNameManager::addDomainName" << std::endl;
-                addDomainName(std::make_shared<DomainName>(domain));
+		SharedPointer<DomainName> d = SharedPointer<DomainName>(new DomainName());
+		
+		d.reset(&domain);
+                addDomainName(d);
         }
 #endif
 	void addDomainName(const SharedPointer<DomainName>& domain); 

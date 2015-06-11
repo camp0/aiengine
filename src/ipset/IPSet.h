@@ -59,8 +59,8 @@ public:
 	friend std::ostream& operator<< (std::ostream& out, const IPSet& is);
 
 #ifdef PYTHON_BINDING
-        void setCallback(PyObject *callback) { pycall.setCallback(callback); }
-	PyObject *getCallback() const { return pycall.getCallback(); }
+        void setCallback(PyObject *callback) { call.setCallback(callback); }
+	PyObject *getCallback() const { return call.getCallback(); }
 #endif
 
 private:

@@ -68,6 +68,36 @@ void Callback::executeCallback(Flow *flow) {
 
 #endif
 
+#ifdef RUBY_BINDING
+
+void Callback::setCallback(VALUE callback) {
+
+	if (!NIL_P(callback)) {
+        	callback_ = callback;
+                callback_set_ = true;
+	} else {
+        	callback_ = Qnil;
+                callback_set_ = false;
+	}
+}
+
+
+void Callback::executeCallback(Flow *flow) {
+
+	if (!NIL_P(callback_)) {
+       		rb_funcall(callback_,rb_intern("call"), 0);
+        }
+}
+
+void Callback::mark() {
+
+	if (!NIL_P(callback_)) {
+        	rb_gc_mark(callback_);
+        }
+}
+
+#endif
+
 } // namespace aiengine
 
 

@@ -80,8 +80,9 @@ SharedPointer<DomainName> DomainNameManager::getDomainName(boost::string_ref &na
                                 curr_node = node;
                                 domain_candidate = node->getDomainName();
                         } else {
-                                if (domain_candidate)
+                                if (domain_candidate) {
                                         domain_candidate->incrementMatchs();
+				}					
 
                                 return domain_candidate;
                         }
@@ -95,13 +96,15 @@ SharedPointer<DomainName> DomainNameManager::getDomainName(boost::string_ref &na
                 SharedPointer<DomainNode> node = curr_node->haveKey(key_);
                 if (node) {
                         domain_candidate = node->getDomainName();
-                        if (domain_candidate)
-                                 domain_candidate->incrementMatchs();
+                        if (domain_candidate) {
+                                domain_candidate->incrementMatchs();
+			}					
 
                         return domain_candidate;
                 } else {
-                        if (domain_candidate)
-                                 domain_candidate->incrementMatchs();
+                        if (domain_candidate) {
+                                domain_candidate->incrementMatchs();
+			}					
 
                         return domain_candidate;
 		}

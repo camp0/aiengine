@@ -58,7 +58,7 @@ void TCPGenericProtocol::processFlow(Flow *flow) {
 
 		if((result)and(regex)) {
 			if (regex->getShowMatch()) {
-				std::cout << "TCP Flow:" << *flow << " matchs with regex " << regex->getName() << std::endl;
+				std::cout << "TCP Flow:" << *flow << " matchs with (" << std::addressof(*regex.get()) << ")Regex " << regex->getName() << std::endl;
 			}
 #ifdef HAVE_LIBLOG4CXX
 			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << regex->getName());
@@ -70,9 +70,9 @@ void TCPGenericProtocol::processFlow(Flow *flow) {
 				flow->regex_mng = rmng;
 				flow->regex.reset();
 			} 
-#ifdef PYTHON_BINDING
-                        if(regex->pycall.haveCallback()) {
-				regex->pycall.executeCallback(flow);
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+                        if(regex->call.haveCallback()) {
+				regex->call.executeCallback(flow);
                         }
 #endif
 		}	

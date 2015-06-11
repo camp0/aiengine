@@ -297,12 +297,12 @@ void SSLProtocol::processFlow(Flow *flow) {
 
 						SharedPointer<DomainName> host_candidate = host_mng->getDomainName(host_name->getName());
 						if (host_candidate) {
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 #ifdef HAVE_LIBLOG4CXX
 							LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
 #endif  
-							if(host_candidate->pycall.haveCallback()) {
-								host_candidate->pycall.executeCallback(flow);
+							if(host_candidate->call.haveCallback()) {
+								host_candidate->call.executeCallback(flow);
 							}
 #endif
 						}

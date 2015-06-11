@@ -32,7 +32,7 @@
 #include <string>
 #include <iostream>
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 #include "Callback.h"
 #endif
 
@@ -45,8 +45,8 @@ class IPAbstractSet
 public:
     	explicit IPAbstractSet(const std::string &name):total_ips_(0),
 		total_ips_not_on_set_(0),total_ips_on_set_(0),
-#ifdef PYTHON_BINDING
-		pycall(),
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+		call(),
 #endif
 		name_(name) 
 	{}
@@ -67,15 +67,15 @@ public:
 	int32_t getTotalLookupsOut() const { return total_ips_not_on_set_; }
 
 #ifdef PYTHON_BINDING
-	void setCallback(PyObject *callback) { pycall.setCallback(callback); }
-	PyObject *getCallback() const { return pycall.getCallback(); }
+	void setCallback(PyObject *callback) { call.setCallback(callback); }
+	PyObject *getCallback() const { return call.getCallback(); }
 #endif
 
 	int32_t total_ips_;
 	int32_t total_ips_not_on_set_;
 	int32_t total_ips_on_set_;
-#ifdef PYTHON_BINDING
-	Callback pycall;	
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+	Callback call;	
 #endif
 private:
 	std::string name_;

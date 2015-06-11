@@ -33,8 +33,9 @@ bool Regex::evaluate(boost::string_ref &data) {
         if (ret == 0)
                 result = true;
 
-        if (result) total_matchs_++;
-        total_evaluates_++;
+        if (result) 
+		++total_matchs_;
+        ++total_evaluates_;
         return result;
 }
 
@@ -48,8 +49,9 @@ bool Regex::matchAndExtract(const std::string &data) {
 
 	ret = pcre_copy_substring(data.c_str(),ovecount_,ret,0,extract_buffer_,256);
 
-        if (result) total_matchs_++;
-        total_evaluates_++;
+        if (result) 
+		++total_matchs_;
+        ++total_evaluates_;
         return result;
 }
 
