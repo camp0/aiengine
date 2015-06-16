@@ -56,9 +56,11 @@ public:
 #ifdef PYTHON_BINDING
         void setHTTPUriSet(boost::python::object& obj); 
         boost::python::object getPyHTTPUriSet() { return uriobj_; }
-#else
-        void setHTTPUriSet(const SharedPointer<HTTPUriSet>& uset) { uris_ = uset; }
+#elif defined(RUBY_BINDING)
+        void setHTTPUriSet(const HTTPUriSet& uset) { setHTTPUriSet(std::make_shared<HTTPUriSet>(uset)); }
 #endif
+
+        void setHTTPUriSet(const SharedPointer<HTTPUriSet>& uset) { uris_ = uset; }
         SharedPointer<HTTPUriSet> &getHTTPUriSet() { return uris_; }
 
 	int32_t getPepe() const { return getMatchs(); }

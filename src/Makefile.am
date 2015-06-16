@@ -193,11 +193,12 @@ ruby_objects = 	NetworkStack.o EthernetProtocol.o \
 		SMTPProtocol.o IMAPProtocol.o \
 		DHCPProtocol.o SIPProtocol.o \
 		POPProtocol.o GREProtocol.o \
+		OpenFlowProtocol.o VxLanProtocol.o \
 		FrequencyProtocol.o \
 		ICMPProtocol.o ICMPv6Protocol.o \
-		StackLan.o \
+		StackLan.o StackMobile.o StackLanIPv6.o StackVirtual.o StackOpenFlow.o \
 		FlowManager.o \
-		IPSetManager.o IPSet.o \
+		IPSetManager.o IPSet.o HTTPUriSet.o \
 		DomainNameManager.o DomainName.o
 
 tests_CPPFLAGS = $(BOOST_CPPFLAGS) 

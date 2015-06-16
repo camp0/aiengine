@@ -66,9 +66,7 @@ void Callback::executeCallback(Flow *flow) {
         PyGILState_Release(state);
 }
 
-#endif
-
-#ifdef RUBY_BINDING
+#elif RUBY_BINDING
 
 void Callback::setCallback(VALUE callback) {
 
@@ -85,7 +83,10 @@ void Callback::setCallback(VALUE callback) {
 void Callback::executeCallback(Flow *flow) {
 
 	if (!NIL_P(callback_)) {
-       		rb_funcall(callback_,rb_intern("call"), 0);
+		// TODO: Missing the parameter flow on the call
+       		// rb_funcall(callback_,rb_intern("call"), 1, rb_str_new2(flow->getSrcAddrDotNotation()));
+       		rb_funcall(callback_,rb_intern("call"), 1, rb_str_new2("TODO: missing parameter"));
+       		//rb_funcall(callback_,rb_intern("call"), 0);
         }
 }
 

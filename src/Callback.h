@@ -34,9 +34,7 @@
 #ifdef PYTHON_BINDING
 #include <boost/python.hpp>
 #include <boost/function.hpp>
-#endif
-
-#ifdef RUBY_BINDING
+#elif defined(RUBY_BINDING)
 #include <ruby.h>
 #endif
 
@@ -61,9 +59,9 @@ public:
 private:
 	bool callback_set_;
 	PyObject *callback_;
-#endif // PYTHON_BINDING
 
-#ifdef RUBY_BINDING
+#elif defined(RUBY_BINDING)
+
 public:
 	Callback():callback_set_(false),callback_(Qnil),memory_wrapper_(Qnil) {
 		memory_wrapper_ = Data_Wrap_Struct(0 /* klass */, staticMark, NULL, static_cast<void*>(this));

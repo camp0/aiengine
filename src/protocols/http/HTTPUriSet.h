@@ -82,7 +82,10 @@ public:
 #ifdef PYTHON_BINDING
 	void setCallback(PyObject *callback) { call.setCallback(callback); }
 	PyObject *getCallback() const { return call.getCallback(); }
+#elif defined(RUBY_BINDING)
+	void setCallback(VALUE callback) { call.setCallback(callback); }
 #endif	
+
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) 
 	Callback call;	
 #endif

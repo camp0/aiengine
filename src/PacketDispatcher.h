@@ -164,6 +164,10 @@ public:
 	
 	friend std::ostream& operator<< (std::ostream& out, const PacketDispatcher& pdis);
 
+#ifdef RUBY_BINDING
+	void statistics() { std::cout << *this; }
+#endif
+
 private:
 	void start_operations(void);
 	void handle_receive(boost::system::error_code error);

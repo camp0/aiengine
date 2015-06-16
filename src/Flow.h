@@ -169,6 +169,14 @@ public:
 	POPInfo& getPOPInfo() const { return *pop_info.lock().get();}
 	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
 	const char *getFlowAnomaly() const { return AnomalyManager::getInstance()->getName(pa_); }
+
+#elif defined(RUBY_BINDING)
+
+	int32_t getTotalBytes() const { return total_bytes; }
+
+	HTTPInfo& getHTTPInfo() const {  return *http_info.lock().get();}
+
+	void showName() { std::cout << *this; }
 #endif
 
 private:

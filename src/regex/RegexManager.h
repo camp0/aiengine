@@ -57,18 +57,16 @@ public:
 	void evaluate(const std::string& data,bool *result); // Remove in future versions  
 	void evaluate(boost::string_ref& data,bool *result); 
 
-#ifndef PYTHON_BINDING
+#ifdef RUBY_BINDING
 	void addRegex(Regex& sig) { 
-
 		// Create a shared pointer and reset it to the object
 		SharedPointer<Regex> re = SharedPointer<Regex>(new Regex());
 		re.reset(&sig);
 
-		addRegex(re); }
+		addRegex(re); 
+	}
 #endif
 	void addRegex(const std::string& name,const std::string& expression);
-	//void addRegex(std::shared_ptr<Regex> sig);
-	// void addRegex(SharedPointer<Regex>& sig);
 	void addRegex(const SharedPointer<Regex>& sig);
 	
 	SharedPointer<Regex> getMatchedRegex() { return current_signature_;}
@@ -88,7 +86,6 @@ private:
 	SharedPointer<Regex> current_signature_;
 	int32_t total_matched_signatures_;
 	std::vector<SharedPointer<Regex>> signatures_;
-//	std::list<SharedPointer<Regex>> signatures_;
 };
 
 typedef std::shared_ptr<RegexManager> RegexManagerPtr;

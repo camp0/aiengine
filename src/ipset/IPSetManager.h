@@ -57,9 +57,16 @@ public:
 	std::vector<SharedPointer<IPAbstractSet>>::iterator end() { return sets_.end(); }
 #endif
 
-#ifdef SWIGRUBY
-	void addIPSet(const IPSet& ipset) { /* addIPSet(std::make_shared<IPAbstractSet>(ipset));*/ } 
+#ifdef RUBY_BINDING
+        void addIPSet(IPSet& ipset) {
+                // Create a shared pointer and reset it to the object
+                SharedPointer<IPSet> ip = SharedPointer<IPSet>(new IPSet());
+                ip.reset(&ipset);
+
+                addIPSet(ip);
+        }
 #endif
+
 	friend std::ostream& operator<< (std::ostream& out, const IPSetManager& im);
 
 	SharedPointer<IPAbstractSet> getMatchedIPSet() { return matched_set_;}

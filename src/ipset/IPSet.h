@@ -63,6 +63,10 @@ public:
 	PyObject *getCallback() const { return call.getCallback(); }
 #endif
 
+#ifdef RUBY_BINDING
+        void setCallback(VALUE callback) { call.setCallback(callback); }
+#endif
+
 private:
 	std::unordered_set<std::string> map_;
 };
