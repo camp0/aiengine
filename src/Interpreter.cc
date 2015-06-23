@@ -25,11 +25,11 @@
 
 namespace aiengine {
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
 void Interpreter::setShell(bool enable) {
 
-	if (python_shell_enable_) {
+	if (shell_enable_) {
 		if (!enable) {
 			stop();
 		}
@@ -42,14 +42,14 @@ void Interpreter::setShell(bool enable) {
 
 void Interpreter::start() {
 
-	python_shell_enable_ = true;
+	shell_enable_ = true;
 	std::cout << "AIEngine " << VERSION << " shell" << std::endl << std::flush;
 	std::cout << "==> " << std::flush;
 }
 
 void Interpreter::stop() {
        
-        python_shell_enable_ = false;
+        shell_enable_ = false;
         user_input_buffer_.consume(64);
         std::cout << "exiting AIEngine " << VERSION << " shell" <<std::endl << std::flush;
 	user_input_.close();
@@ -57,7 +57,7 @@ void Interpreter::stop() {
 
 void Interpreter::readUserInput() {
 
-	if (python_shell_enable_) {
+	if (shell_enable_) {
         	boost::asio::async_read_until(user_input_, user_input_buffer_,'\n',
                 	boost::bind(&Interpreter::handle_read_user_input, this,
                         boost::asio::placeholders::error));
@@ -66,7 +66,7 @@ void Interpreter::readUserInput() {
 
 void Interpreter::handle_read_user_input(boost::system::error_code error) {
 
-	if ((!error)and(python_shell_enable_)) {
+	if ((!error)and(shell_enable_)) {
 		std::istream user_stream(&user_input_buffer_);
                 std::ostringstream buffer;
                 std::string header;
@@ -97,7 +97,7 @@ void Interpreter::handle_read_user_input(boost::system::error_code error) {
 			want_exit_ = true;
 			return;
 		}
-
+#if defined(PYTHON_BINDING)
 		try {
 			// Retrieve the main module.
 			boost::python::object main = boost::python::import("__main__");
@@ -106,9 +106,16 @@ void Interpreter::handle_read_user_input(boost::system::error_code error) {
 
 			boost::python::exec(cmd.c_str(),global);
 		} catch (boost::python::error_already_set const &) {	
-			//std::cout << "JODER" << std::endl;
 			PyErr_Print();
 		}
+#elif defined(RUBY_BINDING)
+		// TODO: Execute the string with rb_eval_string_protect
+		int state = 0;
+		rb_eval_string_protect(cmd.c_str(),&state);
+		if (state) {
+			rb_raise(rb_eRuntimeError, "Error");
+		}
+#endif
                 user_input_buffer_.consume(64);
 		
 		std::cout << "==> " << std::flush;

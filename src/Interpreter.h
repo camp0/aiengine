@@ -29,15 +29,18 @@
 #endif
 
 #include <iostream>
-#ifdef PYTHON_BINDING
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
+
+#if defined(PYTHON_BINDING)
 #include <boost/python.hpp>
+#elif defined(RUBY_BINDING)
+#include <ruby.h>
 #endif 
 
 namespace aiengine {
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
 // TODO
 #ifndef VERSION
@@ -53,7 +56,7 @@ public:
 	Interpreter(boost::asio::io_service &io_service_, int fd):
 		user_input_(io_service_,::dup(fd)),
 		user_input_buffer_(64),
-		python_shell_enable_(false),
+		shell_enable_(false),
 		want_exit_(false) {}
 
 
@@ -64,18 +67,18 @@ public:
 	void readUserInput();
 
 	void setShell(bool enable);  
-	bool getShell() const { return python_shell_enable_; }  
+	bool getShell() const { return shell_enable_; }  
 private:
 
 	void handle_read_user_input(boost::system::error_code error);
 
 	boost::asio::posix::stream_descriptor user_input_;
 	boost::asio::streambuf user_input_buffer_;
-	bool python_shell_enable_;
+	bool shell_enable_;
 	bool want_exit_;
 };
 
-#endif // PYTHON_BINDING
+#endif // PYTHON_BINDING || RUBY_BINDING
 
 } // namespace aiengine
 

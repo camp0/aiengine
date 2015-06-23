@@ -50,8 +50,6 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::StackLan::getUDPFlowManager;
 %ignore aiengine::StackLan::getTCPRegexManager;
 %ignore aiengine::StackLan::getUDPRegexManager;
-// %ignore aiengine::StackLan::setTCPIPSetManager;
-// %ignore aiengine::StackLan::setUDPIPSetManager;
 
 %ignore aiengine::StackMobile::setLinkLayerMultiplexer;
 %ignore aiengine::StackMobile::getLinkLayerMultiplexer;
@@ -59,8 +57,6 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::StackMobile::getUDPFlowManager;
 %ignore aiengine::StackMobile::getTCPRegexManager;
 %ignore aiengine::StackMobile::getUDPRegexManager;
-%ignore aiengine::StackMobile::setTCPIPSetManager;
-%ignore aiengine::StackMobile::setUDPIPSetManager;
 
 %ignore aiengine::StackLanIPv6::setLinkLayerMultiplexer;
 %ignore aiengine::StackLanIPv6::getLinkLayerMultiplexer;
@@ -68,8 +64,6 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::StackLanIPv6::getUDPFlowManager;
 %ignore aiengine::StackLanIPv6::getTCPRegexManager;
 %ignore aiengine::StackLanIPv6::getUDPRegexManager;
-%ignore aiengine::StackLanIPv6::setTCPIPSetManager;
-%ignore aiengine::StackLanIPv6::setUDPIPSetManager;
 
 %ignore aiengine::StackVirtual::setLinkLayerMultiplexer;
 %ignore aiengine::StackVirtual::getLinkLayerMultiplexer;
@@ -77,8 +71,6 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::StackVirtual::getUDPFlowManager;
 %ignore aiengine::StackVirtual::getTCPRegexManager;
 %ignore aiengine::StackVirtual::getUDPRegexManager;
-%ignore aiengine::StackVirtual::setTCPIPSetManager;
-%ignore aiengine::StackVirtual::setUDPIPSetManager;
 
 %ignore aiengine::StackOpenFlow::setLinkLayerMultiplexer;
 %ignore aiengine::StackOpenFlow::getLinkLayerMultiplexer;
@@ -86,8 +78,6 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::StackOpenFlow::getUDPFlowManager;
 %ignore aiengine::StackOpenFlow::getTCPRegexManager;
 %ignore aiengine::StackOpenFlow::getUDPRegexManager;
-%ignore aiengine::StackOpenFlow::setTCPIPSetManager;
-%ignore aiengine::StackOpenFlow::setUDPIPSetManager;
 
 %ignore aiengine::RegexManager::addRegex(const SharedPointer<Regex>& sig);
 %ignore aiengine::RegexManager::getMatchedRegex;
@@ -110,6 +100,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 
 %ignore aiengine::PacketDispatcher::setStack(const SharedPointer<NetworkStack>& stack);
 %ignore aiengine::PacketDispatcher::setDefaultMultiplexer;
+%ignore aiengine::PacketDispatcher::setIdleFunction;
 
 %ignore aiengine::Flow::setPacketAnomaly;
 %ignore aiengine::Flow::getPacketAnomaly;
@@ -130,9 +121,33 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::Flow::packet_frequencies;
 %ignore aiengine::Flow::forwarder;
 %ignore aiengine::Flow::regex_mng;
+%ignore aiengine::Flow::setId;
+%ignore aiengine::Flow::getId;
+%ignore aiengine::Flow::setFlowDirection;
+%ignore aiengine::Flow::getFlowDirection;
+%ignore aiengine::Flow::getPrevFlowDirection;
+%ignore aiengine::Flow::setFiveTuple;
+%ignore aiengine::Flow::setFiveTuple6;
+%ignore aiengine::Flow::setArriveTime;
+%ignore aiengine::Flow::setLastPacketTime;
+%ignore aiengine::Flow::frequency_engine_inspected;
+%ignore aiengine::Flow::reset;
+%ignore aiengine::Flow::serialize;
+%ignore aiengine::Flow::deserialize;
+%ignore aiengine::Flow::showFlowInfo;
+%ignore aiengine::Flow::getSourceAddress;
+%ignore aiengine::Flow::getDestinationAddress;
+%ignore aiengine::Flow::haveTag;
+%ignore aiengine::Flow::setTag;
+%ignore aiengine::Flow::getTotalBytes;
+%ignore aiengine::Flow::getLastPacketTime;
+%ignore aiengine::Flow::getDuration;
 
 %ignore aiengine::IPSetManager::addIPSet(const SharedPointer<IPAbstractSet> ipset);
 %ignore aiengine::IPSetManager::getMatchedIPSet;
+
+%ignore aiengine::IPSet::getFalsePositiveRate;
+%ignore aiengine::IPSet::lookupIPAddress;
 
 %ignore aiengine::DomainNameManager::addDomainName(const SharedPointer<DomainName>& domain);
 %ignore aiengine::DomainNameManager::getDomainName;
@@ -141,10 +156,60 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::DomainName::setHTTPUriSet(const SharedPointer<HTTPUriSet>& uset);
 %ignore aiengine::DomainName::getHTTPUriSet;
 
+
+%ignore aiengine::HTTPInfo::reset;
+%ignore aiengine::HTTPInfo::resetStrings;
+%ignore aiengine::HTTPInfo::getContentLength;
+%ignore aiengine::HTTPInfo::setContentLength;
+%ignore aiengine::HTTPInfo::getDataChunkLength;
+%ignore aiengine::HTTPInfo::setDataChunkLength;
+%ignore aiengine::HTTPInfo::setIsBanned;
+%ignore aiengine::HTTPInfo::getIsBanned;
+%ignore aiengine::HTTPInfo::setHaveData;
+%ignore aiengine::HTTPInfo::getHaveData;
+%ignore aiengine::HTTPInfo::incTotalRequests;
+%ignore aiengine::HTTPInfo::incTotalResponses;
+%ignore aiengine::HTTPInfo::setResponseCode;
 %ignore aiengine::HTTPInfo::uri;
 %ignore aiengine::HTTPInfo::host;
 %ignore aiengine::HTTPInfo::ua;
 %ignore aiengine::HTTPInfo::matched_host;
+
+%rename("user_agent")			aiengine::HTTPInfo::getUserAgent;
+%rename("host_name")			aiengine::HTTPInfo::getHostName;
+%rename("uri")				aiengine::HTTPInfo::getUri;
+%rename("http_info")			aiengine::Flow::getHTTPInfo;
+%rename("tag")				aiengine::Flow::getTag;
+%rename("l7_protocol_name")		aiengine::Flow::getL7ProtocolName;
+%rename("protocol")			aiengine::Flow::getProtocol;
+%rename("src_port")			aiengine::Flow::getSourcePort;
+%rename("dst_port")			aiengine::Flow::getDestinationPort;
+%rename("src_ip")			aiengine::Flow::getSrcAddrDotNotation;
+%rename("dst_ip")			aiengine::Flow::getDstAddrDotNotation;
+%rename("pcap_filter=")			aiengine::PacketDispatcher::setPcapFilter;
+%rename("pcap_filter")			aiengine::PacketDispatcher::getPcapFilter;
+%rename("total_bytes")			aiengine::PacketDispatcher::getTotalBytes;
+%rename("total_packets")		aiengine::PacketDispatcher::getTotalPackets;
+%rename("stack=")			aiengine::PacketDispatcher::setStack;
+%rename("callback=") 			setCallback(VALUE callback);
+%rename("add_ip_set")			aiengine::IPSetManager::addIPSet;
+%rename("tcpip_set_manager=")		setTCPIPSetManager;	
+%rename("udpip_set_manager=")		setUDPIPSetManager;	
+%rename("tcp_regex_manager=")		setTCPRegexManager;
+%rename("udp_regex_manager=")		setUDPRegexManager;
+%rename("total_tcp_flows=") 		setTotalTCPFlows;
+%rename("total_tcp_flows") 		getTotalTCPFlows;
+%rename("total_udp_flows=") 		setTotalUDPFlows;
+%rename("total_udp_flows") 		getTotalUDPFlows;
+%rename("flows_timeout=")		setFlowsTimeout;
+%rename("flows_timeout")		getFlowsTimeout;
+%rename("add_regex")			addRegex;
+%rename("add_domain_name")		addDomainName;
+%rename("matchs")			aiengine::Signature::getMatchs;
+%rename("name")				aiengine::Signature::getName;
+%rename("add_ip_address")		addIPAddress;
+
+%rename setDomainNameManager		set_domain_name_manager;
 
 %typemap(in) IPSetManager & "IPSetManager"
 %typemap(in) IPSet & "IPSet"
@@ -159,7 +224,6 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %freefunc RegexManager "free_RegexManager";
 %freefunc DomainNameManager "free_DomainNameManager";
 %freefunc IPSetManager "free_IPSetManager";
-// %markfunc RegexManager "mark_RegexManager";
 
 %ignore operator<<;
 
@@ -182,26 +246,18 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %include "protocols/http/HTTPInfo.h"
 %include "Flow.h"
 
-// %typemap(in) (fpvoid, void *) {
-  // CALLBACK TYPE (VOID*) for $1 of type $1_type and $2 of type $2_type
-//  static Callback cbo;
-//  cbo.setCallback($input);
-//  $1 = Callback::staticCallback;
-//  $2 = static_cast(&cbo);
-// }
-
 %header %{
 
     static void mark_RegexManager(void *ptr) {
 	aiengine::RegexManager *rmng  = (aiengine::RegexManager*) ptr;
 
-        std::cout << "Marking object" << std::endl;
+//        std::cout << "Marking object" << std::endl;
 
   }
 
     static void free_IPSetManager(void *ptr) {
         aiengine::IPSetManager *imng = (aiengine::IPSetManager*) ptr;
-        std::cout << "Destroy IPSetManager" << std::endl;
+  //      std::cout << "Destroy IPSetManager" << std::endl;
 
         SWIG_RubyRemoveTracking(ptr);
 
@@ -209,7 +265,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 
     static void free_DomainNameManager(void *ptr) {
 	aiengine::DomainNameManager *dmng = (aiengine::DomainNameManager*) ptr;
-	std::cout << "Destroy DomainNameManager" << std::endl;
+//	std::cout << "Destroy DomainNameManager" << std::endl;
 
         SWIG_RubyRemoveTracking(ptr);
 
@@ -217,7 +273,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 
     static void free_RegexManager(void* ptr) {
         aiengine::RegexManager *rmng  = (aiengine::RegexManager*) ptr;
-        std::cout << "Destroy RegexManager" << std::endl;
+  //      std::cout << "Destroy RegexManager" << std::endl;
 
 	// auto start = rmng->begin();
 	// auto end = rmng->end();

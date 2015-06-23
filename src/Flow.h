@@ -172,11 +172,18 @@ public:
 
 #elif defined(RUBY_BINDING)
 
-	int32_t getTotalBytes() const { return total_bytes; }
-
 	HTTPInfo& getHTTPInfo() const {  return *http_info.lock().get();}
-
-	void showName() { std::cout << *this; }
+	/* SIPInfo& getSIPInfo() const { return *sip_info.lock().get();}
+	Frequencies& getFrequencies() const { return *frequencies.lock().get();}
+	PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.lock().get();}
+	Regex& getRegex() const { return *regex.lock().get();}
+	DNSInfo& getDNSInfo() const { return *dns_info.lock().get();}
+	SSLInfo& getSSLInfo() const { return *ssl_info.lock().get();}
+	SMTPInfo& getSMTPInfo() const { return *smtp_info.lock().get();}
+	POPInfo& getPOPInfo() const { return *pop_info.lock().get();}
+	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
+	const char *getFlowAnomaly() const { return AnomalyManager::getInstance()->getName(pa_); }
+	*/	
 #endif
 
 private:

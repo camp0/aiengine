@@ -79,7 +79,7 @@ public:
 
 	friend std::ostream& operator<< (std::ostream& out, const HTTPUriSet& us);
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
 	void setCallback(PyObject *callback) { call.setCallback(callback); }
 	PyObject *getCallback() const { return call.getCallback(); }
 #elif defined(RUBY_BINDING)

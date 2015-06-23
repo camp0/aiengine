@@ -53,22 +53,20 @@ public:
 
 	friend std::ostream& operator<< (std::ostream& out, const DomainName& dom); 
        
-#ifdef PYTHON_BINDING
-        void setHTTPUriSet(boost::python::object& obj); 
+#if defined(PYTHON_BINDING)
+        void setPyHTTPUriSet(boost::python::object& obj); 
         boost::python::object getPyHTTPUriSet() { return uriobj_; }
 #elif defined(RUBY_BINDING)
-        void setHTTPUriSet(const HTTPUriSet& uset) { setHTTPUriSet(std::make_shared<HTTPUriSet>(uset)); }
+       	void setHTTPUriSet(const HTTPUriSet& uset) { setHTTPUriSet(std::make_shared<HTTPUriSet>(uset)); }
 #endif
 
         void setHTTPUriSet(const SharedPointer<HTTPUriSet>& uset) { uris_ = uset; }
         SharedPointer<HTTPUriSet> &getHTTPUriSet() { return uris_; }
 
-	int32_t getPepe() const { return getMatchs(); }
-
 	// The rest from the base class
 private:
 	SharedPointer<HTTPUriSet> uris_;
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
 	boost::python::object uriobj_;
 #endif
 };

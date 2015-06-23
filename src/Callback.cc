@@ -71,6 +71,9 @@ void Callback::executeCallback(Flow *flow) {
 void Callback::setCallback(VALUE callback) {
 
 	if (!NIL_P(callback)) {
+		// Check_Type(callback, T_CLASS);	
+		// TODO: Verify the number of arguments of the callback
+
         	callback_ = callback;
                 callback_set_ = true;
 	} else {
@@ -83,10 +86,12 @@ void Callback::setCallback(VALUE callback) {
 void Callback::executeCallback(Flow *flow) {
 
 	if (!NIL_P(callback_)) {
-		// TODO: Missing the parameter flow on the call
-       		// rb_funcall(callback_,rb_intern("call"), 1, rb_str_new2(flow->getSrcAddrDotNotation()));
-       		rb_funcall(callback_,rb_intern("call"), 1, rb_str_new2("TODO: missing parameter"));
-       		//rb_funcall(callback_,rb_intern("call"), 0);
+		ID id = rb_intern("Flow");
+		if (rb_const_defined(rb_cObject, id)) {	
+                        VALUE rbFlowClass = rb_const_get(rb_cObject,id);
+	                VALUE rbFlow = Data_Wrap_Struct(rbFlowClass, 0, 0, flow);	
+       			rb_funcall(callback_,rb_intern("call"), 1, rbFlow);
+		}
         }
 }
 

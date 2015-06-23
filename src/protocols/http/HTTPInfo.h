@@ -84,7 +84,7 @@ public:
         WeakPointer<StringCache> ua;
 	WeakPointer<DomainName> matched_host;
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
 	void setBanAndRelease(bool value) { needs_release_ = value; is_banned_ = value; }
 	void setIsRelease(bool value) { needs_release_ = value; }
@@ -104,7 +104,7 @@ public:
 private:
 	bool have_data_;
 	bool is_banned_;
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 	bool needs_release_;
 #endif
 	int32_t content_length_;	

@@ -31,7 +31,6 @@
 #include "../Signature.h"
 #include "../Pointer.h"
 #include <boost/utility/string_ref.hpp>
-
 #include <pcre.h>
 
 namespace aiengine {
@@ -92,6 +91,26 @@ public:
 	void setNextRegexManager(const SharedPointer<RegexManager>& regex_mng) { regex_mng_ = regex_mng; is_terminal_ = false; }
 	SharedPointer<RegexManager> getNextRegexManager() const { return regex_mng_; }
 
+#ifdef RUBY_BINDING
+
+	void setNextRegex(Regex& reg) {
+
+        SharedPointer<Regex> r = SharedPointer<Regex>(new Regex());
+        r.reset(&reg);
+
+        setNextRegex(r);
+	}
+
+void setNextRegexManager(RegexManager& regex_mng) {
+
+/*        SharedPointer<RegexManager> rm = SharedPointer<RegexManager>(new RegexManager());
+        rm.reset(&regex_mng);
+
+        setNextRegexManager(rm);
+*/
+}
+
+#endif
 	bool matchAndExtract(const std::string& data);
 
 	const char *getExtract() const { return extract_buffer_;} 

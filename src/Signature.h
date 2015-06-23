@@ -32,12 +32,11 @@
 #include <iostream>
 #include <string>
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
 #include <boost/python.hpp>
 #include <boost/function.hpp>
 #include "Callback.h"
-#endif
-#ifdef RUBY_BINDING
+#elif defined(RUBY_BINDING)
 #include "Callback.h"
 #endif
 
@@ -71,19 +70,17 @@ public:
         int32_t getMatchs() const { return total_matchs_; }
 	int32_t getTotalEvaluates() const { return total_evaluates_;}
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
 	void setCallback(PyObject *callback) { call.setCallback(callback); }
 	PyObject *getCallback() const { return call.getCallback(); }
+#elif defined(RUBY_BINDING)
+	void setCallback(VALUE callback) { call.setCallback(callback); }
 #endif
 
 	int32_t total_matchs_;
 	int32_t total_evaluates_;
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 	Callback call;	
-#endif
-
-#ifdef RUBY_BINDING
-	void setCallback(VALUE callback) { call.setCallback(callback); }
 #endif
 
 private:

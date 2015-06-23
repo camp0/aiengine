@@ -183,7 +183,7 @@ tests_LDFLAGS = 	-DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ \
 ruby_objects = 	NetworkStack.o EthernetProtocol.o \
 		AnomalyManager.o CacheManager.o Multiplexer.o FlowForwarder.o PacketDispatcher.o \
 		Flow.o Callback.o \
-		Regex.o RegexManager.o \
+		RegexManager.o Regex.o \
 		VLanProtocol.o MPLSProtocol.o \
 		IPProtocol.o IPv6Protocol.o TCPProtocol.o UDPProtocol.o \
 		TCPGenericProtocol.o UDPGenericProtocol.o \
@@ -197,7 +197,7 @@ ruby_objects = 	NetworkStack.o EthernetProtocol.o \
 		FrequencyProtocol.o \
 		ICMPProtocol.o ICMPv6Protocol.o \
 		StackLan.o StackMobile.o StackLanIPv6.o StackVirtual.o StackOpenFlow.o \
-		FlowManager.o \
+		FlowManager.o Interpreter.o \
 		IPSetManager.o IPSet.o HTTPUriSet.o \
 		DomainNameManager.o DomainName.o
 

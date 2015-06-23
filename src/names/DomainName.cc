@@ -35,7 +35,7 @@ std::ostream& operator<< (std::ostream& out, const DomainName& dom) {
 
 #ifdef PYTHON_BINDING
 
-void DomainName::setHTTPUriSet(boost::python::object& obj) { 
+void DomainName::setPyHTTPUriSet(boost::python::object& obj) { 
 
         if (obj.is_none()) {
                 // The user sends a Py_None

@@ -626,7 +626,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Gets the total number of matches of the domain.")
                 .add_property("callback",&DomainName::getCallback,&DomainName::setCallback,
 			"Gets/Sets the callback of the domain.")
-		.add_property("httpuriset", &DomainName::getPyHTTPUriSet, &DomainName::setHTTPUriSet,
+		.add_property("httpuriset", &DomainName::getPyHTTPUriSet, &DomainName::setPyHTTPUriSet,
 			"Gets/Sets the HTTPUriSet used on this DomainName (only works on HTTP).")
 		.def(self_ns::str(self_ns::self))
         ;
