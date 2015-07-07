@@ -506,6 +506,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Returns the SIP Info of the flow if the flow is SIP.")
 		.add_property("smtpinfo",make_function(&Flow::getSMTPInfo,return_internal_reference<>()),
 			"Gets the SMTP Info of the flow if the flow is SMTP.")
+		.add_property("popinfo",make_function(&Flow::getPOPInfo,return_internal_reference<>()),
+			"Gets the POP Info of the flow if the flow is POP.")
+		.add_property("imapinfo",make_function(&Flow::getIMAPInfo,return_internal_reference<>()),
+			"Gets the IMAP Info of the flow if the flow is IMAP.")
 		.add_property("frequencies",make_function(&Flow::getFrequencies,return_internal_reference<>()),
 			"Gets a map of frequencies of the payload of the flow.")
 		.add_property("packetfrequencies",make_function(&Flow::getPacketFrequencies,return_internal_reference<>()),

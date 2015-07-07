@@ -49,7 +49,7 @@
 #include "StackLanIPv6.h"
 #include "StackVirtual.h"
 #include "StackOpenFlow.h"
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 #include "Interpreter.h"
 #endif
 #include <sys/resource.h>
@@ -103,13 +103,15 @@ public:
 		stats_(),header_(nullptr),pkt_data_(nullptr),
 		eth_(),current_packet_(),defMux_(),stack_name_(),input_name_(source),
 		pcap_filter_()
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 		,timer_(SharedPointer<boost::asio::deadline_timer>(new boost::asio::deadline_timer(io_service_))),
-		user_shell_(SharedPointer<Interpreter>(new Interpreter(io_service_))),
-        	scheduler_set_(false),
+		user_shell_(SharedPointer<Interpreter>(new Interpreter(io_service_)))
+#if defined(PYTHON_BINDING)
+        	,scheduler_set_(false),
         	scheduler_callback_(nullptr),
         	scheduler_seconds_(0),
 		pystack_()
+#endif
 #endif
 		{	
 		setIdleFunction(std::bind(&PacketDispatcher::default_idle_function,this));
@@ -138,8 +140,6 @@ public:
 	bool __exit__(boost::python::object type, boost::python::object val, boost::python::object traceback);
 
 	void forwardPacket(const std::string &packet, int length);
-	void setShell(bool enable);
-	bool getShell() const;
 	void setScheduler(PyObject *callback, int seconds);
 
 	void setStack(boost::python::object& stack);
@@ -163,6 +163,11 @@ public:
 	void setIdleFunction(std::function <void ()> idle_function) { idle_function_ = idle_function;}
 	
 	friend std::ostream& operator<< (std::ostream& out, const PacketDispatcher& pdis);
+
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+	void setShell(bool enable);
+	bool getShell() const;
+#endif
 
 #ifdef RUBY_BINDING
 	void statistics() { std::cout << *this; }
@@ -211,13 +216,15 @@ private:
 	std::string input_name_;
 	std::string pcap_filter_;
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 	SharedPointer<boost::asio::deadline_timer> timer_;
 	SharedPointer<Interpreter> user_shell_;
+#ifdef PYTHON_BINDING
 	bool scheduler_set_;
 	PyObject *scheduler_callback_;
 	int scheduler_seconds_;
 	boost::python::object pystack_;
+#endif
 #endif
 };
 

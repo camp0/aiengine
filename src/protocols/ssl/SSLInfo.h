@@ -53,7 +53,7 @@ public:
 	void incDataPdus() { ++data_pdus_; }
 	int32_t getTotalDataPdus() const { return data_pdus_; }
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
         friend std::ostream& operator<< (std::ostream& out, const SSLInfo& sinfo) {
 

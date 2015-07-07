@@ -56,7 +56,7 @@ public:
 
 	WeakPointer<StringCache> user_name;
 	
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
 	friend std::ostream& operator<< (std::ostream& out, const POPInfo& iinfo) {
 	

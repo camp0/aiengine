@@ -174,7 +174,7 @@ void PacketDispatcher::start_operations(void) {
 		stream_->async_read_some(boost::asio::null_buffers(),
                 	boost::bind(&PacketDispatcher::do_read, this,
                                 boost::asio::placeholders::error));
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 		user_shell_->readUserInput();
 #endif
 	}
@@ -279,6 +279,20 @@ void PacketDispatcher::setPcapFilter(const std::string &filter) {
 	}
 }
 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+
+void PacketDispatcher::setShell(bool enable) {
+
+        user_shell_->setShell(enable);
+}
+
+bool PacketDispatcher::getShell() const {
+
+        return user_shell_->getShell();
+}
+
+#endif
+
 #ifdef PYTHON_BINDING
 
 void PacketDispatcher::setStack(boost::python::object& stack) {
@@ -346,16 +360,6 @@ void PacketDispatcher::forwardPacket(const std::string &packet, int length) {
 	// python binding
 	forward_raw_packet((unsigned char*)pkt,length,0);
 	return;
-}
-
-void PacketDispatcher::setShell(bool enable) {
-
-	user_shell_->setShell(enable);
-}
-
-bool PacketDispatcher::getShell() const {
-
-	return user_shell_->getShell();
 }
 
 void PacketDispatcher::setScheduler(PyObject *callback, int seconds) {

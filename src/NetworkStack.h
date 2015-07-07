@@ -136,6 +136,9 @@ public:
 	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;
 #endif
 
+#ifdef RUBY_BINDING
+	void setTCPDatabaseAdaptor(DatabaseAdaptor& dbptr) { std::cout << "Calling meeeeee yahhhhh" << std::endl; }
+#endif
 	void addProtocol(ProtocolPtr proto); 
 	void setStatisticsLevel(int level); 
 	int getStatisticsLevel() const { return stats_level_; }

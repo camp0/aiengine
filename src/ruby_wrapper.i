@@ -156,7 +156,6 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::DomainName::setHTTPUriSet(const SharedPointer<HTTPUriSet>& uset);
 %ignore aiengine::DomainName::getHTTPUriSet;
 
-
 %ignore aiengine::HTTPInfo::reset;
 %ignore aiengine::HTTPInfo::resetStrings;
 %ignore aiengine::HTTPInfo::getContentLength;
@@ -175,6 +174,71 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::HTTPInfo::ua;
 %ignore aiengine::HTTPInfo::matched_host;
 
+%ignore aiengine::SIPInfo::reset;
+%ignore aiengine::SIPInfo::resetStrings;
+%ignore aiengine::SIPInfo::uri;
+%ignore aiengine::SIPInfo::from;
+%ignore aiengine::SIPInfo::to;
+%ignore aiengine::SIPInfo::via;
+
+%ignore aiengine::MAX_PACKET_FREQUENCIES_VALUES;
+
+%ignore aiengine::Frequencies::addPayload;
+
+%ignore aiengine::PacketFrequencies::addPayload;
+
+%ignore aiengine::DNSInfo::name;
+%ignore aiengine::DNSInfo::addIPAddress;
+%ignore aiengine::DNSInfo::begin;
+%ignore aiengine::DNSInfo::end;
+%ignore aiengine::DNSInfo::reset;
+%ignore aiengine::DNSInfo::resetStrings;
+
+%ignore aiengine::SSLInfo::reset;
+%ignore aiengine::SSLInfo::host;
+%ignore aiengine::SSLInfo::setIsBanned;
+%ignore aiengine::SSLInfo::getIsBanned;
+%ignore aiengine::SSLInfo::incDataPdus;
+%ignore aiengine::SSLInfo::getTotalDataPdus;
+
+%ignore aiengine::SMTPInfo::reset;
+%ignore aiengine::SMTPInfo::resetStrings;
+%ignore aiengine::SMTPInfo::setIsBanned;
+%ignore aiengine::SMTPInfo::getIsBanned;
+%ignore aiengine::SMTPInfo::setCommand;
+%ignore aiengine::SMTPInfo::from;
+%ignore aiengine::SMTPInfo::to;
+
+%ignore aiengine::IMAPInfo::reset;
+%ignore aiengine::IMAPInfo::setIsBanned;
+%ignore aiengine::IMAPInfo::getIsBanned;
+%ignore aiengine::IMAPInfo::incClientCommands;
+%ignore aiengine::IMAPInfo::incServerCommands;
+%ignore aiengine::IMAPInfo::user_name;
+
+%ignore aiengine::POPInfo::reset;
+%ignore aiengine::POPInfo::setIsBanned;
+%ignore aiengine::POPInfo::getIsBanned;
+%ignore aiengine::POPInfo::incClientCommands;
+%ignore aiengine::POPInfo::incServerCommands;
+%ignore aiengine::POPInfo::user_name;
+
+%rename("user_name")			aiengine::POPInfo::getUserName;
+%rename("user_name")			aiengine::IMAPInfo::getUserName;
+%rename("mail_to")			aiengine::SMTPInfo::getTo;
+%rename("mail_from")			aiengine::SMTPInfo::getFrom;
+%rename("server_name")			aiengine::SSLInfo::getServerName;
+%rename("pop_info")			aiengine::Flow::getPOPInfo;
+%rename("imap_info")			aiengine::Flow::getIMAPInfo;
+%rename("smtp_info")			aiengine::Flow::getSMTPInfo;
+%rename("ssl_info")			aiengine::Flow::getSSLInfo;
+%rename("dns_info")			aiengine::Flow::getDNSInfo;
+%rename("regex")			aiengine::Flow::getRegex;
+%rename("uri")				aiengine::SIPInfo::getUri;
+%rename("from")				aiengine::SIPInfo::getFrom;
+%rename("to")				aiengine::SIPInfo::getTo;
+%rename("via")				aiengine::SIPInfo::getVia;
+%rename("sip_info")			aiengine::Flow::getSIPInfo;
 %rename("user_agent")			aiengine::HTTPInfo::getUserAgent;
 %rename("host_name")			aiengine::HTTPInfo::getHostName;
 %rename("uri")				aiengine::HTTPInfo::getUri;
@@ -191,6 +255,8 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("total_bytes")			aiengine::PacketDispatcher::getTotalBytes;
 %rename("total_packets")		aiengine::PacketDispatcher::getTotalPackets;
 %rename("stack=")			aiengine::PacketDispatcher::setStack;
+%rename("shell")			aiengine::PacketDispatcher::getShell;
+%rename("shell=")			aiengine::PacketDispatcher::setShell;
 %rename("callback=") 			setCallback(VALUE callback);
 %rename("add_ip_set")			aiengine::IPSetManager::addIPSet;
 %rename("tcpip_set_manager=")		setTCPIPSetManager;	
@@ -236,6 +302,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %include "names/DomainNameManager.h"
 %include "ipset/IPSet.h"
 %include "ipset/IPSetManager.h"
+%include "DatabaseAdaptor.h"
 %include "NetworkStack.h"
 %include "StackLan.h"
 %include "StackMobile.h"
@@ -244,6 +311,14 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %include "StackOpenFlow.h"
 %include "PacketDispatcher.h"
 %include "protocols/http/HTTPInfo.h"
+%include "protocols/sip/SIPInfo.h"
+%include "protocols/frequency/Frequencies.h"
+%include "protocols/frequency/PacketFrequencies.h"
+%include "protocols/dns/DNSInfo.h"
+%include "protocols/ssl/SSLInfo.h"
+%include "protocols/smtp/SMTPInfo.h"
+%include "protocols/imap/IMAPInfo.h"
+%include "protocols/pop/POPInfo.h"
 %include "Flow.h"
 
 %header %{

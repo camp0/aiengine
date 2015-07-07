@@ -1,6 +1,11 @@
 require './ruaiengine'
 require 'test/unit'
 
+class FileAdaptor < DatabaseAdaptor
+  def initialize
+  end
+end
+
 class StackLanUnitTests < Test::Unit::TestCase
   def setup
     @s = StackLan.new
@@ -64,11 +69,23 @@ class StackLanUnitTests < Test::Unit::TestCase
   end
 
   def test_3
+    @have_been_called_regex = false
+
+    def regex_callback(flow)
+      r = flow.regex
+      if (r)
+        assert_equal(r.matchs, 1)
+        assert_equal(r.name,"Netbios")
+        @have_been_called_regex = true
+      end
+    end
+
     @s.enableLinkLayerTagging("vlan")
     
     udp_r = RegexManager.new
     r1 = Regex.new("Netbios","CACACACA")
 
+    r1.callback = method(:regex_callback)
     udp_r.add_regex(r1)
     @s.udp_regex_manager = udp_r
 
@@ -76,6 +93,7 @@ class StackLanUnitTests < Test::Unit::TestCase
     @pd.run()
     @pd.close()
 
+    assert_equal(@have_been_called_regex, true)
     assert_equal(r1.matchs, 1)
   end
 
@@ -85,7 +103,11 @@ class StackLanUnitTests < Test::Unit::TestCase
 
     def callback_ssl(flow)
       assert_equal(flow.l7_protocol_name,"SSLProtocol")
-      @have_been_call_ssl = true 
+      s = flow.ssl_info
+      if (s)
+        assert_equal(s.server_name,"0.drive.google.com")
+        @have_been_call_ssl = true 
+      end
     end
     
     def callback_ipset(flow)
@@ -161,6 +183,33 @@ class StackLanUnitTests < Test::Unit::TestCase
     assert_equal( @have_been_call_uri , true)
     assert_equal( @have_been_call_domain , true)
   end
+
+  def test_6
+    # Test smtp values on the flow
+    @have_been_called_smtp = false
+
+    def callback_smtp(flow)
+      s = flow.smtp_info
+      if (s)
+        assert_equal(s.mail_from,"gurpartap@patriots.in")
+        @have_been_called_smtp = true
+      end
+    end
+
+    d = DomainName.new("Some domain",".patriots.in")
+    d.callback = method(:callback_smtp)
+    dmng = DomainNameManager.new
+    dmng.add_domain_name(d)
+
+    @s.set_domain_name_manager(dmng,"SMTPProtocol")
+
+    @pd.open("../pcapfiles/smtp.pcap")
+    @pd.run()
+    @pd.close()
+
+    assert_equal( d.matchs, 1)
+    assert_equal( @have_been_called_smtp , true)
+  end
 end
 
 class StackMobileUnitTests < Test::Unit::TestCase
@@ -204,8 +253,12 @@ class StackLanIPv6UnitTests < Test::Unit::TestCase
     @have_been_call = false
 
     def callback_dns(flow)
-      assert_equal(flow.l7_protocol_name,"DNSProtocol")
-      @have_been_call = true 
+      d = flow.dns_info
+      # TODO: Make iterable the object dns_info for retrieve the IP address
+      if (d)
+        assert_equal(flow.l7_protocol_name,"DNSProtocol")
+        @have_been_call = true 
+      end
     end
 
     d1 = DomainName.new("Google",".google.com")
@@ -316,6 +369,10 @@ class StackOpenFlowUnitTests < Test::Unit::TestCase
 
     # Verify some values
     assert_equal(r1.matchs, 1)
+  end
+
+  def test_2
+
   end
 end
 
