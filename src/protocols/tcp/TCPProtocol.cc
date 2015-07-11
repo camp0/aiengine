@@ -128,8 +128,8 @@ SharedPointer<Flow> TCPProtocol::getFlow(const Packet& packet) {
 					if (tcp_info_ptr) { 
 						flow->tcp_info = tcp_info_ptr;
 					}
-#if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
-                                        if (getPythonObjectIsSet()) { // There is attached a database object
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING)) && defined(HAVE_ADAPTOR)
+                                        if (getDatabaseObjectIsSet()) { // There is attached a database object
 						databaseAdaptorInsertHandler(flow.get());
                                         }
 #endif
@@ -204,8 +204,8 @@ bool TCPProtocol::processPacket(Packet &packet) {
 					flow_table_->removeFlow(flow);
 					flow_cache_->releaseFlow(flow);
 
-#if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
-                                        if (getPythonObjectIsSet()) { // There is attached a database object
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING)) && defined(HAVE_ADAPTOR)
+                                        if (getDatabaseObjectIsSet()) { // There is attached a database object
 						databaseAdaptorRemoveHandler(flow.get());
                                         }
 #endif
@@ -230,9 +230,9 @@ bool TCPProtocol::processPacket(Packet &packet) {
                         	}
                 	}
 
-#if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING)) && defined(HAVE_ADAPTOR)
                 	if ((flow->total_packets % getPacketSampling()) == 0) {
-                        	if (getPythonObjectIsSet()) { // There is attached a database object
+                        	if (getDatabaseObjectIsSet()) { // There is attached a database object
 					databaseAdaptorUpdateHandler(flow.get());
                         	}
                 	}

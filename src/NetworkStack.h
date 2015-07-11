@@ -137,7 +137,10 @@ public:
 #endif
 
 #ifdef RUBY_BINDING
-	void setTCPDatabaseAdaptor(DatabaseAdaptor& dbptr) { std::cout << "Calling meeeeee yahhhhh" << std::endl; }
+	void setTCPDatabaseAdaptor(VALUE dbptr); 
+	void setTCPDatabaseAdaptor(VALUE dbptr, int packet_sampling); 
+	void setUDPDatabaseAdaptor(VALUE dbptr);
+	void setUDPDatabaseAdaptor(VALUE dbptr, int packet_sampling);
 #endif
 	void addProtocol(ProtocolPtr proto); 
 	void setStatisticsLevel(int level); 

@@ -24,6 +24,8 @@
 %apply SWIGTYPE *DISOWN { DomainName* domain };
 %apply SWIGTYPE *DISOWN { IPSet* ipset };
 
+%feature("director") DatabaseAdaptor;
+
 %trackobjects;
 
 %init %{ 
@@ -223,6 +225,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::POPInfo::incServerCommands;
 %ignore aiengine::POPInfo::user_name;
 
+%rename("domain_name")			aiengine::DNSInfo::getDomainName;
 %rename("user_name")			aiengine::POPInfo::getUserName;
 %rename("user_name")			aiengine::IMAPInfo::getUserName;
 %rename("mail_to")			aiengine::SMTPInfo::getTo;
@@ -259,6 +262,8 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("shell=")			aiengine::PacketDispatcher::setShell;
 %rename("callback=") 			setCallback(VALUE callback);
 %rename("add_ip_set")			aiengine::IPSetManager::addIPSet;
+%rename("set_tcp_database_adaptor")	setTCPDatabaseAdaptor;
+%rename("set_udp_database_adaptor")	setUDPDatabaseAdaptor;
 %rename("tcpip_set_manager=")		setTCPIPSetManager;	
 %rename("udpip_set_manager=")		setUDPIPSetManager;	
 %rename("tcp_regex_manager=")		setTCPRegexManager;

@@ -1,8 +1,26 @@
 require './ruaiengine'
 require 'test/unit'
 
-class FileAdaptor < DatabaseAdaptor
+# Class for verify the DatabaseAdaptor funcionality
+class FileAdaptor < DatabaseAdaptor 
+  attr_reader :total_inserts 
+  attr_reader :total_updates 
+  attr_reader :total_removes 
+
   def initialize
+    @total_inserts = 0
+    @total_updates = 0
+    @total_removes = 0
+  end
+
+  def insert(flowid)
+    @total_inserts += 1
+  end
+  def remove(flowid)
+    @total_removes += 1
+  end
+  def update(flowid, data)
+    @total_updates += 1
   end
 end
 
@@ -257,6 +275,8 @@ class StackLanIPv6UnitTests < Test::Unit::TestCase
       # TODO: Make iterable the object dns_info for retrieve the IP address
       if (d)
         assert_equal(flow.l7_protocol_name,"DNSProtocol")
+        assert_equal(d.domain_name,"www.google.com")
+        assert_equal(flow.src_ip,"2014:dead:beef::1")
         @have_been_call = true 
       end
     end
@@ -372,7 +392,24 @@ class StackOpenFlowUnitTests < Test::Unit::TestCase
   end
 
   def test_2
+    # Check the DatabaseAdaptor functionality for external data storages
+    storage_tcp = FileAdaptor.new
+    storage_udp = FileAdaptor.new
 
+    @s.set_tcp_database_adaptor(storage_tcp)
+    @s.set_udp_database_adaptor(storage_udp,1)
+
+    @pd.open("../pcapfiles/openflow.pcap")
+    @pd.run()
+    @pd.close()
+
+    assert_equal(storage_tcp.total_inserts,1)
+    assert_equal(storage_tcp.total_updates,1)
+    assert_equal(storage_tcp.total_removes,0)
+    
+    assert_equal(storage_udp.total_inserts,1)
+    assert_equal(storage_udp.total_updates,3)
+    assert_equal(storage_udp.total_removes,0)
   end
 end
 

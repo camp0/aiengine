@@ -30,12 +30,6 @@ log4cxx::LoggerPtr Protocol::logger(log4cxx::Logger::getLogger("aiengine.protoco
 #endif
 
 #ifdef PYTHON_BINDING
-
-void Protocol::setDatabaseAdaptor(boost::python::object &dbptr) { 
-
-	setDatabaseAdaptor(dbptr,16); 
-}
-
 void Protocol::setDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) { 
 
 	// The user could unref the DatabaseAdaptor on execution time
@@ -48,14 +42,38 @@ void Protocol::setDatabaseAdaptor(boost::python::object &dbptr, int packet_sampl
 		packet_sampling_ = packet_sampling; 
 	}
 }
+#elif defined(RUBY_BINDING)
+void Protocol::setDatabaseAdaptor(VALUE dbptr, int packet_sampling) { 
 
-#ifdef HAVE_ADAPTOR
+        if (!NIL_P(dbptr)) {
+		// Ruby dont have the concept of abstract clases so in order
+		// to verify that VALUE inheritance from DatabaseAdaptor we just
+		// verify from the object dbptr that the methods insert,update and remove
+		// exists on the instance
+		
+		if (rb_respond_to(dbptr, rb_intern("insert"))) {
+			if (rb_respond_to(dbptr, rb_intern("update"))) {
+				if (rb_respond_to(dbptr, rb_intern("remove"))) {
+                			dbptr_ = dbptr;
+                			is_set_db_ = true;
+					packet_sampling_ = packet_sampling;
+				}
+			}
+		}
+        } else {
+                dbptr_ = Qnil;
+                is_set_db_ = false;
+        }
+}
+#endif
+
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING)) && defined(HAVE_ADAPTOR)
 
 void Protocol::databaseAdaptorInsertHandler(Flow *flow) {
 	std::ostringstream key;
 
         key << *flow;
-
+#if defined(PYTHON_BINDING)
         PyGILState_STATE state(PyGILState_Ensure());
        	try {
                	boost::python::call_method<void>(dbptr_.ptr(),"insert",key.str());
@@ -63,6 +81,12 @@ void Protocol::databaseAdaptorInsertHandler(Flow *flow) {
               	std::cout << "ERROR:" << e.what() << std::endl;
         } 
         PyGILState_Release(state);
+#elif defined(RUBY_BINDING)
+        if (!NIL_P(dbptr_)) {
+		VALUE flowid = rb_str_new2(key.str().c_str());
+        	rb_funcall(dbptr_,rb_intern("insert"), 1, flowid);
+        }
+#endif
 }
 
 void Protocol::databaseAdaptorUpdateHandler(Flow *flow) {
@@ -72,6 +96,7 @@ void Protocol::databaseAdaptorUpdateHandler(Flow *flow) {
         key << *flow;
         flow->serialize(data);
 
+#if defined(PYTHON_BINDING)
         PyGILState_STATE state(PyGILState_Ensure());
         try {
               	boost::python::call_method<void>(dbptr_.ptr(),"update",key.str(),data.str());
@@ -79,6 +104,13 @@ void Protocol::databaseAdaptorUpdateHandler(Flow *flow) {
                 std::cout << "ERROR:" << e.what() << std::endl;
         }
         PyGILState_Release(state);
+#elif defined(RUBY_BINDING)
+        if (!NIL_P(dbptr_)) {
+		VALUE flowid = rb_str_new2(key.str().c_str());
+		VALUE rbdata = rb_str_new2(data.str().c_str());
+        	rb_funcall(dbptr_,rb_intern("update"), 2, flowid,rbdata);
+        }
+#endif
 }
 
 void Protocol::databaseAdaptorRemoveHandler(Flow *flow) {
@@ -86,6 +118,7 @@ void Protocol::databaseAdaptorRemoveHandler(Flow *flow) {
 
         key << *flow;
 
+#if defined(PYTHON_BINDING)
         PyGILState_STATE state(PyGILState_Ensure());
         try {
                	boost::python::call_method<void>(dbptr_.ptr(),"remove",key.str());
@@ -93,9 +126,14 @@ void Protocol::databaseAdaptorRemoveHandler(Flow *flow) {
                 std::cout << "ERROR:" << e.what() << std::endl;
         }
         PyGILState_Release(state);
+#elif defined(RUBY_BINDING)
+        if (!NIL_P(dbptr_)) {
+		VALUE flowid = rb_str_new2(key.str().c_str());
+        	rb_funcall(dbptr_,rb_intern("remove"), 1, flowid);
+        }
+#endif
 }
 
-#endif
 #endif
 
 void Protocol::infoMessage(const std::string& msg) {

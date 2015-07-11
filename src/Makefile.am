@@ -180,7 +180,7 @@ tests_LDFLAGS = 	-DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ \
 			-lboost_program_options \
 			-lboost_filesystem -lpcap $(LOG4CXX_FLAGS) 
 
-ruby_objects = 	NetworkStack.o EthernetProtocol.o \
+ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		AnomalyManager.o CacheManager.o Multiplexer.o FlowForwarder.o PacketDispatcher.o \
 		Flow.o Callback.o \
 		RegexManager.o Regex.o \
@@ -234,6 +234,6 @@ ruby:
 	@echo "Generating interface" $(SWIG)	
 	swig -DRUBY_BINDING -globalmodule -c++ -ruby ruby_wrapper.i 	
 	@echo "Compiling ruby interface"
-	$(CXX) -DRUBY_BINDING -fPIC -std=c++11 -c $(aiengine_core_sources) ruby_wrapper_wrap.cxx -I/usr/include/ruby -I/usr/local/lib/ruby/1.6/i686-linux -I.
+	$(CXX) -DHAVE_CONFIG_H -DRUBY_BINDING -I.. -fPIC -std=c++11 -c $(aiengine_core_sources) ruby_wrapper_wrap.cxx -I/usr/include/ruby -I/usr/local/lib/ruby/1.6/i686-linux -I.
 	@echo "Linking ruby interface"
-	$(CXX) -DRUBY_BINDING -shared -std=c++11 $(ruby_objects) ruby_wrapper_wrap.o -o ruaiengine.so -lpcap -lruby -lboost_system -lpcre
+	$(CXX) -DHAVE_CONFIG_H -DRUBY_BINDING -I.. -shared -std=c++11 $(ruby_objects) ruby_wrapper_wrap.o -o ruaiengine.so -lpcap -lruby -lboost_system -lpcre

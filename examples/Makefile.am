@@ -18,6 +18,7 @@ EXTRA_DIST = 	bitcoinminer.py \
 		uri_exploit.py \
 		zeus_malware.py \
 		ddos.py \
-		malware.rb 
+		malware.rb \
+		file_adaptor.rb 
 
 MAINTAINERCLEANFILES = Makefile.in 

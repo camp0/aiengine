@@ -76,6 +76,8 @@ public:
 		name_(name),protocol_id_(0)
 #ifdef PYTHON_BINDING
 		,dbptr_(),is_set_db_(false),packet_sampling_(32)
+#elif defined(RUBY_BINDING)
+		,dbptr_(Qnil),is_set_db_(false),packet_sampling_(32)
 #endif
 		{}
 
@@ -108,22 +110,28 @@ public:
         virtual void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) {}
 
 #ifdef PYTHON_BINDING
-
         virtual boost::python::dict getCounters() const = 0;
 	virtual boost::python::dict getCache() const { return boost::python::dict(); }
 
-	void setDatabaseAdaptor(boost::python::object &dbptr); 
 	void setDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling);  
 
-	bool getPythonObjectIsSet() const { return is_set_db_;}
+#elif defined(RUBY_BINDING)
+	void setDatabaseAdaptor(VALUE dbptr, int packet_sampling);  
+#endif
+
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+
+	bool getDatabaseObjectIsSet() const { return is_set_db_;}
 	int getPacketSampling() const { return packet_sampling_;}
 
-#ifdef HAVE_ADAPTOR
+#if defined(HAVE_ADAPTOR)
 	void databaseAdaptorInsertHandler(Flow *flow);
 	void databaseAdaptorUpdateHandler(Flow *flow); 
 	void databaseAdaptorRemoveHandler(Flow *flow); 
 #endif
 #endif
+
+
 	void setIPSetManager(const SharedPointer<IPSetManager> ipset_mng) { ipset_mng_ = ipset_mng;} 
 
 	// Helper for show the content of cache of StringCache types
@@ -142,7 +150,12 @@ private:
         boost::python::object dbptr_;
         bool is_set_db_;
 	int packet_sampling_;
+#elif defined(RUBY_BINDING)
+	VALUE dbptr_;
+	bool is_set_db_;
+	int packet_sampling_;
 #endif
+
 #ifdef HAVE_LIBLOG4CXX
         static log4cxx::LoggerPtr logger;
 #endif

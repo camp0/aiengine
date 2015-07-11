@@ -27,7 +27,7 @@ The main functionalities of AIEngine are:
 Using AIEngine 
 ---------------
 
-To use AIEngine(reduce version) just execute the binary aiengine or use the python binding.
+To use AIEngine(reduce version) just execute the binary aiengine or use the python/ruby binding.
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
 	aiengine 1.2
@@ -93,7 +93,7 @@ AIEngine supports five types of Network stacks depending on the network topology
 Integrating/Program AIEngine with other systems 
 ------------------------------------------------
 
-AIEngine is a python module also that allows to be more flexible in terms of integration with other systems and functionalities.
+AIEngine is a python/ruby module also that allows to be more flexible in terms of integration with other systems and functionalities.
 The main objects that the python module provide export are the following ones.
 
         DNSInfo

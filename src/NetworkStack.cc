@@ -240,32 +240,29 @@ void NetworkStack::setDomainNameManager(DomainNameManager& dnm, const std::strin
 
 #endif
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
+#if defined(PYTHON_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(boost::python::object &dbptr) {
-
-        ProtocolPtr pp = get_protocol(UDPProtocol::default_name);
-        if (pp) {
-                UDPProtocolPtr proto = std::static_pointer_cast<UDPProtocol>(pp);
-                if (proto) {
-        		proto->setDatabaseAdaptor(dbptr);
-		}
-	}
+#elif defined(RUBY_BINDING)
+void NetworkStack::setUDPDatabaseAdaptor(VALUE dbptr) {
+#endif
+	setUDPDatabaseAdaptor(dbptr,32);
 }
 
+#if defined(PYTHON_BINDING)
 void NetworkStack::setTCPDatabaseAdaptor(boost::python::object &dbptr) {
-
-        ProtocolPtr pp = get_protocol(TCPProtocol::default_name);
-        if (pp) {
-                TCPProtocolPtr proto = std::static_pointer_cast<TCPProtocol>(pp);
-                if (proto) {
-                        proto->setDatabaseAdaptor(dbptr);
-                }
-        }
+#elif defined(RUBY_BINDING)
+void NetworkStack::setTCPDatabaseAdaptor(VALUE dbptr) {
+#endif
+	setTCPDatabaseAdaptor(dbptr,32);
 }
 
+#if defined(PYTHON_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
-
+#elif defined(RUBY_BINDING)
+void NetworkStack::setUDPDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
+#endif
         ProtocolPtr pp = get_protocol(UDPProtocol::default_name);
         if (pp) {
                 UDPProtocolPtr proto = std::static_pointer_cast<UDPProtocol>(pp);
@@ -275,8 +272,11 @@ void NetworkStack::setUDPDatabaseAdaptor(boost::python::object &dbptr, int packe
         }
 }
 
+#if defined(PYTHON_BINDING)
 void NetworkStack::setTCPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
-
+#elif defined(RUBY_BINDING)
+void NetworkStack::setTCPDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
+#endif
         ProtocolPtr pp = get_protocol(TCPProtocol::default_name);
         if (pp) {
                 TCPProtocolPtr proto = std::static_pointer_cast<TCPProtocol>(pp);
@@ -285,6 +285,10 @@ void NetworkStack::setTCPDatabaseAdaptor(boost::python::object &dbptr, int packe
                 }
         }
 }
+
+#endif
+
+#if defined(PYTHON_BINDING)
 
 boost::python::dict NetworkStack::getCounters(const std::string& name) {
 	boost::python::dict counters;

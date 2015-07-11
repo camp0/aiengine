@@ -226,9 +226,9 @@ AC_ARG_ENABLE([adaptor],
 AC_MSG_RESULT([$adaptor_support])
 
 if test x"$adaptor_support" = x"yes"; then
-    AC_DEFINE([HAVE_ADAPTOR],[1],[Database adaptor python support])
+    AC_DEFINE([HAVE_ADAPTOR],[1],[Database adaptor python/ruby support])
 else
-    AC_DEFINE([HAVE_ADAPTOR],[0],[No database adaptor python support])
+    AC_DEFINE([HAVE_ADAPTOR],[0],[No database adaptor python/ruby support])
 fi
 
 ##########################################################################

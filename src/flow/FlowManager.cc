@@ -115,7 +115,7 @@ void FlowManager::updateTimers(std::time_t current_time) {
 			if (!protocol_.expired()) {
 				ProtocolPtr proto = protocol_.lock();
 
-				if (proto->getPythonObjectIsSet()) {
+				if (proto->getDatabaseObjectIsSet()) {
 					proto->databaseAdaptorRemoveHandler(flow.get());
 				}
 			}
