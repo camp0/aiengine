@@ -25,6 +25,7 @@
 %apply SWIGTYPE *DISOWN { IPSet* ipset };
 
 %feature("director") DatabaseAdaptor;
+// %ignorestack DatabaseAdaptor;
 
 %trackobjects;
 
@@ -274,6 +275,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("total_udp_flows") 		getTotalUDPFlows;
 %rename("flows_timeout=")		setFlowsTimeout;
 %rename("flows_timeout")		getFlowsTimeout;
+%rename("link_layer_tag=")		enableLinkLayerTagging;
 %rename("add_regex")			addRegex;
 %rename("add_domain_name")		addDomainName;
 %rename("matchs")			aiengine::Signature::getMatchs;

@@ -32,6 +32,10 @@
 #include "log4cxx/logger.h"
 #endif
 
+#if defined(RUBY_BINDING)
+#include <ruby.h>
+#endif
+
 #include <sys/types.h>
 #if defined(__OPENBSD__)
 #include <netinet/in_systm.h>
@@ -65,6 +69,17 @@ static std::function <void(int&,std::string&)> unitConverter = [](int &bytes,std
 	if (bytes >1024) { bytes = bytes / 1024; unit = "MBytes"; } 
 	if (bytes >1024) { bytes = bytes / 1024; unit = "GBytes"; } 
 };
+
+#if defined(RUBY_BINDING)
+
+typedef struct ruby_shared_data {
+        VALUE obj;
+	ID method_id;
+	int nargs;
+	VALUE args[4];
+} ruby_shared_data;
+
+#endif
 
 class Protocol 
 {
@@ -130,7 +145,6 @@ public:
 	void databaseAdaptorRemoveHandler(Flow *flow); 
 #endif
 #endif
-
 
 	void setIPSetManager(const SharedPointer<IPSetManager> ipset_mng) { ipset_mng_ = ipset_mng;} 
 

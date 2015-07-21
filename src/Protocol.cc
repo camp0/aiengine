@@ -69,6 +69,18 @@ void Protocol::setDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
 
 #if (defined(PYTHON_BINDING) || defined(RUBY_BINDING)) && defined(HAVE_ADAPTOR)
 
+#if defined(RUBY_BINDING)
+
+// function for call ruby objects
+static VALUE ruby_database_callback(VALUE ptr) {
+
+	ruby_shared_data *data = (ruby_shared_data*)ptr;
+
+	return rb_funcall2(data->obj,data->method_id,data->nargs,data->args);
+}
+
+#endif
+
 void Protocol::databaseAdaptorInsertHandler(Flow *flow) {
 	std::ostringstream key;
 
@@ -82,10 +94,20 @@ void Protocol::databaseAdaptorInsertHandler(Flow *flow) {
         } 
         PyGILState_Release(state);
 #elif defined(RUBY_BINDING)
-        if (!NIL_P(dbptr_)) {
-		VALUE flowid = rb_str_new2(key.str().c_str());
-        	rb_funcall(dbptr_,rb_intern("insert"), 1, flowid);
-        }
+
+	ruby_shared_data rbdata;
+
+	rbdata.obj = dbptr_;
+	rbdata.method_id = rb_intern("insert");
+	rbdata.nargs = 1;
+	rbdata.args[0] = rb_str_new2(key.str().c_str());
+ 
+	int error = 0;
+	VALUE result = rb_protect(ruby_database_callback,(VALUE)&rbdata,&error);
+
+	if (error)
+		throw "Ruby execption on insert";	
+
 #endif
 }
 
@@ -105,11 +127,20 @@ void Protocol::databaseAdaptorUpdateHandler(Flow *flow) {
         }
         PyGILState_Release(state);
 #elif defined(RUBY_BINDING)
-        if (!NIL_P(dbptr_)) {
-		VALUE flowid = rb_str_new2(key.str().c_str());
-		VALUE rbdata = rb_str_new2(data.str().c_str());
-        	rb_funcall(dbptr_,rb_intern("update"), 2, flowid,rbdata);
-        }
+
+        ruby_shared_data rbdata;
+
+        rbdata.obj = dbptr_;
+        rbdata.method_id = rb_intern("update");
+        rbdata.nargs = 2;
+        rbdata.args[0] = rb_str_new2(key.str().c_str());
+        rbdata.args[1] = rb_str_new2(data.str().c_str());
+
+        int error = 0;
+        VALUE result = rb_protect(ruby_database_callback,(VALUE)&rbdata,&error);
+
+        if (error)
+                throw "Ruby execption on update";
 #endif
 }
 
@@ -127,10 +158,20 @@ void Protocol::databaseAdaptorRemoveHandler(Flow *flow) {
         }
         PyGILState_Release(state);
 #elif defined(RUBY_BINDING)
-        if (!NIL_P(dbptr_)) {
-		VALUE flowid = rb_str_new2(key.str().c_str());
-        	rb_funcall(dbptr_,rb_intern("remove"), 1, flowid);
-        }
+
+        ruby_shared_data rbdata;
+
+        rbdata.obj = dbptr_;
+        rbdata.method_id = rb_intern("remove");
+        rbdata.nargs = 1;
+        rbdata.args[0] = rb_str_new2(key.str().c_str());
+
+        int error = 0;
+        VALUE result = rb_protect(ruby_database_callback,(VALUE)&rbdata,&error);
+
+        if (error)
+                throw "Ruby execption on remove";
+
 #endif
 }
 

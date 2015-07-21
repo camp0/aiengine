@@ -98,7 +98,7 @@ class StackLanUnitTests < Test::Unit::TestCase
       end
     end
 
-    @s.enableLinkLayerTagging("vlan")
+    @s.link_layer_tag = "vlan"
     
     udp_r = RegexManager.new
     r1 = Regex.new("Netbios","CACACACA")
@@ -227,6 +227,24 @@ class StackLanUnitTests < Test::Unit::TestCase
 
     assert_equal( d.matchs, 1)
     assert_equal( @have_been_called_smtp , true)
+  end
+
+  def test_7
+    # Attach a database to the engine and test timeouts on udp flows 
+    file_udp = FileAdaptor.new
+
+    @s.flows_timeout = 1
+    @s.link_layer_tag = "vlan"
+    @s.set_udp_database_adaptor(file_udp,16)
+
+    @pd.open("../pcapfiles/flow_vlan_netbios.pcap")
+    @pd.run()
+    @pd.close()
+
+    assert_equal(file_udp.total_inserts,1)
+    assert_equal(file_udp.total_updates,1)
+    assert_equal(file_udp.total_removes,1)
+
   end
 end
 
