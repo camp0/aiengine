@@ -28,6 +28,10 @@
 #include <config.h>
 #endif
 
+#if defined(RUBY_BINDING)
+#include <list>
+#endif
+
 #include "../Signature.h"
 #include "../Pointer.h"
 #include <boost/utility/string_ref.hpp>
@@ -36,6 +40,21 @@
 namespace aiengine {
 
 class RegexManager;
+
+#if defined(RUBY_BINDING)
+
+// Global list of Regex objects so the ruby garbage collector
+// dont have problems with the destruction of the nested shared pointers
+
+static std::list<SharedPointer<void>> free_list;
+
+struct RegexNullDeleter {
+	template<typename T> 
+
+	void operator()(T*) {} 
+};
+
+#endif
 
 class Regex: public Signature
 {
@@ -75,8 +94,10 @@ public:
 	explicit Regex(): Regex("None","^.*$") {}
 
 	virtual ~Regex() {
-        	pcre_free_study(study_exp_);
-        	pcre_free(exp_);
+		if (!is_terminal_) next_regex_.reset();
+
+		pcre_free_study(study_exp_);
+		pcre_free(exp_); 
 	}
  
 	bool evaluate(boost::string_ref &data);
@@ -95,13 +116,18 @@ public:
 
 	void setNextRegex(Regex& reg) {
 
-        SharedPointer<Regex> r = SharedPointer<Regex>(new Regex());
-        r.reset(&reg);
+		// Assign a null deleter to the objects created from ruby to avoid
+		// conflits with the ruby garbage collector
 
-        setNextRegex(r);
+        	SharedPointer<Regex> r(new Regex(),RegexNullDeleter());
+        	r.reset(&reg);
+
+		// Add a reference to the shared regex object
+		free_list.push_back(r);
+        	setNextRegex(r);
 	}
 
-void setNextRegexManager(RegexManager& regex_mng) {
+	void setNextRegexManager(RegexManager& regex_mng) {
 
 /*        SharedPointer<RegexManager> rm = SharedPointer<RegexManager>(new RegexManager());
         rm.reset(&regex_mng);

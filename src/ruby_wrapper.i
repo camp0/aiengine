@@ -25,13 +25,14 @@
 %apply SWIGTYPE *DISOWN { IPSet* ipset };
 
 %feature("director") DatabaseAdaptor;
-// %ignorestack DatabaseAdaptor;
 
 %trackobjects;
 
 %init %{ 
 std::cout << "Ruby AIengine BETA init." << std::endl;
 %}
+
+%ignore aiengine::free_list;
 
 %ignore aiengine::NetworkStack::setName;
 %ignore aiengine::NetworkStack::setLinkLayerMultiplexer;
@@ -96,7 +97,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::Regex::matchAndExtract;
 %ignore aiengine::Regex::getExtract;
 %ignore aiengine::Regex::getShowMatch;
-%ignore aiengine::Regex::setNextRegex;
+%ignore aiengine::Regex::setNextRegex(const SharedPointer<Regex>& reg);
 %ignore aiengine::Regex::getNextRegex;
 %ignore aiengine::Regex::setNextRegexManager;
 %ignore aiengine::Regex::getNextRegexManager;
@@ -226,6 +227,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::POPInfo::incServerCommands;
 %ignore aiengine::POPInfo::user_name;
 
+%rename("next_regex=")			aiengine::Regex::setNextRegex;
 %rename("domain_name")			aiengine::DNSInfo::getDomainName;
 %rename("user_name")			aiengine::POPInfo::getUserName;
 %rename("user_name")			aiengine::IMAPInfo::getUserName;
@@ -238,6 +240,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("ssl_info")			aiengine::Flow::getSSLInfo;
 %rename("dns_info")			aiengine::Flow::getDNSInfo;
 %rename("regex")			aiengine::Flow::getRegex;
+%rename("payload")			aiengine::Flow::getPayload;
 %rename("uri")				aiengine::SIPInfo::getUri;
 %rename("from")				aiengine::SIPInfo::getFrom;
 %rename("to")				aiengine::SIPInfo::getTo;
@@ -275,6 +278,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("total_udp_flows") 		getTotalUDPFlows;
 %rename("flows_timeout=")		setFlowsTimeout;
 %rename("flows_timeout")		getFlowsTimeout;
+%rename("enable_nids_engine=")		enableNIDSEngine;
 %rename("link_layer_tag=")		enableLinkLayerTagging;
 %rename("add_regex")			addRegex;
 %rename("add_domain_name")		addDomainName;
@@ -294,6 +298,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %apply long long { int64_t };
 %apply int { int32_t };
 
+%freefunc Regex "free_Regex";
 %freefunc RegexManager "free_RegexManager";
 %freefunc DomainNameManager "free_DomainNameManager";
 %freefunc IPSetManager "free_IPSetManager";
@@ -329,6 +334,12 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %include "Flow.h"
 
 %header %{
+
+
+    static void free_Regex(void *ptr) {
+	aiengine::Regex *re  = (aiengine::Regex*) ptr;
+
+   }
 
     static void mark_RegexManager(void *ptr) {
 	aiengine::RegexManager *rmng  = (aiengine::RegexManager*) ptr;

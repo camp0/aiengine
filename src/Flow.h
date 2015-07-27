@@ -178,6 +178,16 @@ public:
 
 #elif defined(RUBY_BINDING)
 
+	VALUE getPayload() {
+		VALUE arr = rb_ary_new2(packet->getLength());
+		unsigned char *pkt = packet->getPayload();
+
+		for (int i = 0; i != packet->getLength();++i) 
+			rb_ary_push(arr,INT2NUM((short)pkt[i]));
+
+		return arr;
+	}
+
 	/* 
 	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
 	*/	

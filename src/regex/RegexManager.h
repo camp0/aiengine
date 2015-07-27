@@ -60,9 +60,10 @@ public:
 #ifdef RUBY_BINDING
 	void addRegex(Regex& sig) { 
 		// Create a shared pointer and reset it to the object
-		SharedPointer<Regex> re = SharedPointer<Regex>(new Regex());
+		SharedPointer<Regex> re(new Regex());
 		re.reset(&sig);
 
+	//	free_list.push_back(re);
 		addRegex(re); 
 	}
 #endif

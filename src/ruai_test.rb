@@ -74,7 +74,7 @@ class StackLanUnitTests < Test::Unit::TestCase
     @tcp_r.add_regex(r2)
 
     @s.tcp_regex_manager = @tcp_r
-    @s.enableNIDSEngine(true)
+    @s.enable_nids_engine = true
 
     @pd.open("../pcapfiles/accessgoogle.pcap")
     @pd.run()
@@ -126,6 +126,9 @@ class StackLanUnitTests < Test::Unit::TestCase
         assert_equal(s.server_name,"0.drive.google.com")
         @have_been_call_ssl = true 
       end
+      # Verify the integrity of the payload 
+      s = flow.payload
+      # Iterate s.each { |x| puts x }
     end
     
     def callback_ipset(flow)
@@ -246,6 +249,46 @@ class StackLanUnitTests < Test::Unit::TestCase
     assert_equal(file_udp.total_removes,1)
 
   end
+
+  def test_8
+    # Verify the double callback calling on linked regex
+
+    @have_been_call_tcp_1 = false
+    @have_been_call_tcp_2 = false
+
+    def callback_1(flow)
+      @have_been_call_tcp_1 = true
+    end
+
+    def callback_2(flow)
+      @have_been_call_tcp_2 = true
+    end
+
+    @tcp_r = RegexManager.new
+    r1 = Regex.new("clienthello","^\x16\x03\x01.*$")
+    r2 = Regex.new("serverhello","^\x16\x03\x02.*$")
+
+    r1.callback = method(:callback_1)
+    r1.next_regex = r2
+    r2.callback = method(:callback_2)
+
+    @tcp_r.add_regex(r1)
+
+    @s.tcp_regex_manager = @tcp_r
+
+    @s.enable_nids_engine = true
+
+    @pd.open("../pcapfiles/sslflow.pcap")
+    @pd.run()
+    @pd.close()
+
+    assert_equal( r1.matchs, 1)
+    # assert_equal( r2.matchs, 1)
+    assert_equal( @have_been_call_tcp_1 , true)
+    # assert_equal( @have_been_call_tcp_2 , true)
+
+  end
+
 end
 
 class StackMobileUnitTests < Test::Unit::TestCase
