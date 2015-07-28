@@ -20,6 +20,7 @@ EXTRA_DIST = 	bitcoinminer.py \
 		ddos.py \
 		malware.rb \
 		file_adaptor.rb \
-		redis_adaptor.rb 
+		redis_adaptor.rb \
+		heartbeat.rb
 
 MAINTAINERCLEANFILES = Makefile.in 

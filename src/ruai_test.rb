@@ -255,22 +255,37 @@ class StackLanUnitTests < Test::Unit::TestCase
 
     @have_been_call_tcp_1 = false
     @have_been_call_tcp_2 = false
+    @have_been_call_tcp_3 = false
 
-    def callback_1(flow)
+    def callback_client_hello(flow)
+      p = flow.payload
+      assert_equal( p.length, 193)
+      assert_equal( p[1], 3)
       @have_been_call_tcp_1 = true
     end
 
-    def callback_2(flow)
+    def callback_server_hello(flow)
       @have_been_call_tcp_2 = true
+    end
+
+    def callback_application_data(flow)
+      assert_equal( flow.payload.length, 53)
+      @have_been_call_tcp_3 = true
     end
 
     @tcp_r = RegexManager.new
     r1 = Regex.new("clienthello","^\x16\x03\x01.*$")
     r2 = Regex.new("serverhello","^\x16\x03\x02.*$")
+    r3 = Regex.new("application data","^\x17\x03\x02.*$")
 
-    r1.callback = method(:callback_1)
+    # Sets the callbacks
+    r1.callback = method(:callback_client_hello)
+    r2.callback = method(:callback_server_hello)
+    r3.callback = method(:callback_application_data)
+
+    # Link the regex
     r1.next_regex = r2
-    r2.callback = method(:callback_2)
+    r2.next_regex = r3
 
     @tcp_r.add_regex(r1)
 
@@ -283,9 +298,14 @@ class StackLanUnitTests < Test::Unit::TestCase
     @pd.close()
 
     assert_equal( r1.matchs, 1)
-    # assert_equal( r2.matchs, 1)
+    assert_equal( r1.total_evaluates, 1) 
+    assert_equal( r2.matchs, 1)
+    assert_equal( r2.total_evaluates, 1) 
+    assert_equal( r3.matchs, 1)
+    assert_equal( r3.total_evaluates, 5) 
     assert_equal( @have_been_call_tcp_1 , true)
-    # assert_equal( @have_been_call_tcp_2 , true)
+    assert_equal( @have_been_call_tcp_2 , true)
+    assert_equal( @have_been_call_tcp_3 , true)
 
   end
 

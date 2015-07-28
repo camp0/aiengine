@@ -97,6 +97,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::Regex::matchAndExtract;
 %ignore aiengine::Regex::getExtract;
 %ignore aiengine::Regex::getShowMatch;
+%ignore aiengine::Regex::setShowMatch;
 %ignore aiengine::Regex::setNextRegex(const SharedPointer<Regex>& reg);
 %ignore aiengine::Regex::getNextRegex;
 %ignore aiengine::Regex::setNextRegexManager;
@@ -227,6 +228,8 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::POPInfo::incServerCommands;
 %ignore aiengine::POPInfo::user_name;
 
+%rename("total_evaluates")		aiengine::Signature::getTotalEvaluates;
+%rename("expression")			aiengine::Signature::getExpression;
 %rename("next_regex=")			aiengine::Regex::setNextRegex;
 %rename("domain_name")			aiengine::DNSInfo::getDomainName;
 %rename("user_name")			aiengine::POPInfo::getUserName;
