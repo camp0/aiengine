@@ -352,20 +352,24 @@ void IMAPProtocol::destroyIMAPInfos(int number) {
 }
 
 
-#ifdef PYTHON_BINDING
-
+#if defined(PYTHON_BINDING) || (RUBY_BINDING)
+#if defined(PYTHON_BINDING)
 boost::python::dict IMAPProtocol::getCounters() const {
 	boost::python::dict counters;
+#elif defined(RUBY_BINDING)
+VALUE IMAPProtocol::getCounters() const {
+        VALUE counters = rb_hash_new();
+#endif
 
-        counters["packets"] = total_packets_;
-        counters["bytes"] = total_bytes_;
-        counters["commands"] = total_imap_client_commands_;
-        counters["responses"] = total_imap_server_responses_;
+        addValueToCounter(counters,"packets", total_packets_);
+        addValueToCounter(counters,"bytes", total_bytes_);
+        addValueToCounter(counters,"commands", total_imap_client_commands_);
+        addValueToCounter(counters,"responses", total_imap_server_responses_);
 
         for (auto &command: commands_) {
                 const char *label = std::get<2>(command);
 
-                counters[label] = std::get<3>(command);
+		addValueToCounter(counters,label,std::get<3>(command));
         }
 
 	return counters;

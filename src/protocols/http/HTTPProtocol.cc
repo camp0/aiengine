@@ -525,10 +525,6 @@ void HTTPProtocol::processFlow(Flow *flow) {
 		total_l7_bytes_ += flow_bytes;
 		int32_t left_length = info->getDataChunkLength() - flow_bytes;	
 
-		// std::cout << "DATA PACKET: left_length == "<< left_length;
-		// std::cout << " flow_bytes == "<< flow_bytes ;
-		// std::cout << " info->getDataChunkLength() == "<< info->getDataChunkLength() << std::endl;
-		
 		if (left_length > 0) {
 			info->setDataChunkLength(left_length);
 		} else {
@@ -694,45 +690,42 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 }
 
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
+#if defined(PYTHON_BINDING)
+boost::python::dict HTTPProtocol::getCache() const {
+#elif defined(RUBY_BINDING)
+VALUE HTTPProtocol::getCache() const {
+#endif
+        return addMapToHash(host_map_);
+}
+
+#if defined(PYTHON_BINDING)
 boost::python::dict HTTPProtocol::getCounters() const {
 	boost::python::dict counters;
+#elif defined(RUBY_BINDING)
+VALUE HTTPProtocol::getCounters() const {
+        VALUE counters = rb_hash_new();
+#endif
 
-        counters["packets"] = total_packets_;
-        counters["bytes"] = total_bytes_;
-        counters["L7 bytes"] = total_l7_bytes_;
-	counters["allow hosts"] = total_allow_hosts_;
-	counters["banned hosts"] = total_ban_hosts_;
-	counters["requests"] = total_requests_;
-	counters["responses"] = total_responses_;
+        addValueToCounter(counters,"packets", total_packets_);
+        addValueToCounter(counters,"bytes", total_bytes_);
+        addValueToCounter(counters,"L7 bytes", total_l7_bytes_);
+	addValueToCounter(counters,"allow hosts", total_allow_hosts_);
+	addValueToCounter(counters,"banned hosts", total_ban_hosts_);
+	addValueToCounter(counters,"requests", total_requests_);
+	addValueToCounter(counters,"responses", total_responses_);
 
 	for (auto &method: methods_) {
 		const char *label = std::get<2>(method);
 
-		counters[label] = std::get<3>(method);
+		addValueToCounter(counters,label,std::get<3>(method));
 	}
-	counters["others"] = total_http_others_;
+	addValueToCounter(counters,"others", total_http_others_);
 
         return counters;
 }
 
-boost::python::dict HTTPProtocol::getCache() const {
-        boost::python::dict httpc;
-
-        for (auto &item: host_map_) {
-                boost::string_ref label = item.first;
-                int32_t hits = std::get<1>(item.second);
-
-                // The lable must be converted to std::string
-                httpc[std::string(label)] = hits;
-
-        }
-
-        return httpc;
-}
-
 #endif
-
 
 } // namespace aiengine 

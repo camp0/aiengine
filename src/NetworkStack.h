@@ -141,6 +141,9 @@ public:
 	void setTCPDatabaseAdaptor(VALUE dbptr, int packet_sampling); 
 	void setUDPDatabaseAdaptor(VALUE dbptr);
 	void setUDPDatabaseAdaptor(VALUE dbptr, int packet_sampling);
+
+	VALUE getCounters(const std::string& name);
+	VALUE getCache(const std::string& name);
 #endif
 	void addProtocol(ProtocolPtr proto); 
 	void setStatisticsLevel(int level); 

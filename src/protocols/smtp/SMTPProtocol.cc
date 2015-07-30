@@ -412,23 +412,25 @@ void SMTPProtocol::destroySMTPInfos(int number) {
 	to_cache_->destroy(number);
 }
 
-#ifdef PYTHON_BINDING
-
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING)
 boost::python::dict SMTPProtocol::getCounters() const {
-	boost::python::dict counters;
-
-        counters["packets"] = total_packets_;
-        counters["bytes"] = total_bytes_;
-        counters["commands"] = total_smtp_client_commands_;
-        counters["responses"] = total_smtp_server_responses_;
+        boost::python::dict counters;
+#elif defined(RUBY_BINDING)
+VALUE SMTPProtocol::getCounters() const {
+        VALUE counters = rb_hash_new();
+#endif
+        addValueToCounter(counters,"packets", total_packets_);
+        addValueToCounter(counters,"bytes", total_bytes_);
+        addValueToCounter(counters,"commands", total_smtp_client_commands_);
+        addValueToCounter(counters,"responses", total_smtp_server_responses_);
 
         for (auto &command: commands_) {
                 const char *label = std::get<2>(command);
 
-                counters[label] = std::get<3>(command);
+                addValueToCounter(counters,label,std::get<3>(command));
         }
-
-	return counters;
+        return counters;
 }
 
 #endif

@@ -220,6 +220,31 @@ void Protocol::showCacheMap(std::basic_ostream<char>& out,GenericMapType &mt, co
         }
 }
 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+
+#if defined(PYTHON_BINDING)
+boost::python::dict Protocol::addMapToHash(const GenericMapType &mt) const {
+        boost::python::dict cc;
+#elif defined(RUBY_BINDING)
+VALUE Protocol::addMapToHash(const GenericMapType &mt) const {
+        VALUE cc = rb_hash_new();
+#endif
+        for (auto &item: mt) {
+                boost::string_ref label = item.first;
+                int32_t hits = std::get<1>(item.second);
+#if defined(PYTHON_BINDING)
+                // The label must be converted to std::string
+                std::string key(label);
+#elif defined(RUBY_BINDING)
+                const char *key = label.data();
+#endif
+                addValueToCounter(cc,key,hits);
+        }
+
+        return cc;
+}
+
+#endif
 
 } // namespace aiengine  
 

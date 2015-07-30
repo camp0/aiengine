@@ -108,10 +108,12 @@ public:
 	//uint8_t getVersionLength() const { return ntohs(snmp_header_->version_length); }
 
 	int64_t getAllocatedMemory() const { return sizeof(SNMPProtocol); }
-	
-#ifdef PYTHON_BINDING
+
+#if defined(PYTHON_BINDING)
         boost::python::dict getCounters() const;
-#endif
+#elif defined(RUBY_BINDING)
+        VALUE getCounters() const;
+#endif	
 
 private:
 	int stats_level_;

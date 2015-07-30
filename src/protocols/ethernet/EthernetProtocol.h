@@ -103,6 +103,8 @@ public:
 
 #ifdef PYTHON_BINDING
         boost::python::dict getCounters() const ;
+#elif defined(RUBY_BINDING)
+	VALUE getCounters() const;
 #endif
 
 private:

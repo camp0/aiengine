@@ -94,14 +94,17 @@ void IPProtocol::statistics(std::basic_ostream<char>& out){
 	}
 }
 
-#ifdef PYTHON_BINDING
-
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING)
 boost::python::dict IPProtocol::getCounters() const {
 	boost::python::dict counters;
-
-	counters["packets"] = total_packets_;
-	counters["bytes"] = total_bytes_;
-	counters["fragmented packets"] = total_frag_packets_;
+#elif defined(RUBY_BINDING)
+VALUE IPProtocol::getCounters() const {
+        VALUE counters = rb_hash_new();
+#endif
+	addValueToCounter(counters,"packets", total_packets_);
+	addValueToCounter(counters,"bytes", total_bytes_);
+	addValueToCounter(counters,"fragmented packets", total_frag_packets_);
 
        	return counters;
 }

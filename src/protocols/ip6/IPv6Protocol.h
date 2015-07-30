@@ -97,8 +97,10 @@ public:
 
 	int64_t getAllocatedMemory() const { return sizeof(IPv6Protocol); }
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
         boost::python::dict getCounters() const;
+#elif defined(RUBY_BINDING)
+        VALUE getCounters() const;
 #endif
 
 private:

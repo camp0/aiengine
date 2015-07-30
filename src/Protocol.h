@@ -70,7 +70,11 @@ static std::function <void(int&,std::string&)> unitConverter = [](int &bytes,std
 	if (bytes >1024) { bytes = bytes / 1024; unit = "GBytes"; } 
 };
 
-#if defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING)
+
+#define addValueToCounter(h,key,value) h[key] = value;
+
+#elif defined(RUBY_BINDING)
 
 typedef struct ruby_shared_data {
         VALUE obj;
@@ -78,6 +82,8 @@ typedef struct ruby_shared_data {
 	int nargs;
 	VALUE args[4];
 } ruby_shared_data;
+
+#define addValueToCounter(h,key,value) rb_hash_aset(h,rb_str_new2(key),INT2NUM(value)); 
 
 #endif
 
@@ -130,8 +136,14 @@ public:
 
 	void setDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling);  
 
+	boost::python::dict addMapToHash(const GenericMapType &mt) const;
+
 #elif defined(RUBY_BINDING)
+        virtual VALUE getCounters() const = 0;
+	virtual VALUE getCache() const { return Qnil; }
 	void setDatabaseAdaptor(VALUE dbptr, int packet_sampling);  
+	
+	VALUE addMapToHash(const GenericMapType &mt) const;
 #endif
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)

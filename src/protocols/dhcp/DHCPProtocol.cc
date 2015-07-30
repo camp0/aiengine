@@ -92,21 +92,25 @@ void DHCPProtocol::statistics(std::basic_ostream<char>& out){
 }
 
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
+#if defined(PYTHON_BINDING)
 boost::python::dict DHCPProtocol::getCounters() const {
         boost::python::dict counters;
-
-        counters["packets"] = total_packets_;
-        counters["bytes"] = total_bytes_;
-        counters["discovers"] = total_dhcp_discover_;
-        counters["offers"] = total_dhcp_offer_;
-        counters["requests"] = total_dhcp_request_;
-        counters["declines"] = total_dhcp_decline_;
-        counters["acks"] = total_dhcp_ack_;
-        counters["naks"] = total_dhcp_nak_;
-        counters["releases"] = total_dhcp_release_;
-        counters["informs"] = total_dhcp_inform_;
+#elif defined(RUBY_BINDING)
+VALUE DHCPProtocol::getCounters() const {
+        VALUE counters = rb_hash_new();
+#endif
+        addValueToCounter(counters,"packets",total_packets_);
+        addValueToCounter(counters,"bytes", total_bytes_);
+        addValueToCounter(counters,"discovers", total_dhcp_discover_);
+        addValueToCounter(counters,"offers", total_dhcp_offer_);
+        addValueToCounter(counters,"requests", total_dhcp_request_);
+        addValueToCounter(counters,"declines", total_dhcp_decline_);
+        addValueToCounter(counters,"acks", total_dhcp_ack_);
+        addValueToCounter(counters,"naks", total_dhcp_nak_);
+        addValueToCounter(counters,"releases", total_dhcp_release_);
+        addValueToCounter(counters,"informs", total_dhcp_inform_);
 
         return counters;
 }

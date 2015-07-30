@@ -101,13 +101,20 @@ public:
 
 	int64_t getAllocatedMemory() const; 
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
 
         boost::python::dict getCounters() const {
                 boost::python::dict counters;
 
                 return counters;
         }
+
+#elif defined(RUBY_BINDING)
+        VALUE getCounters() const {
+		VALUE counters = Qnil;
+
+		return counters;
+	}
 #endif
 
 private:

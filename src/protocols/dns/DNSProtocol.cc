@@ -429,46 +429,42 @@ void DNSProtocol::destroyDNSDomains(int number) {
 	name_cache_->destroy(number);
 }
 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
-#ifdef PYTHON_BINDING
-
-boost::python::dict DNSProtocol::getCounters() const {
-	boost::python::dict counters;
-
-        counters["total allow queries"] = total_allow_queries_;
-        counters["total banned queries"] = total_ban_queries_;
-        counters["total queries"] = total_queries_;
-        counters["total responses"] = total_responses_;
-        counters["total type A"] = total_dns_type_a_;
-        counters["total type NS"] = total_dns_type_ns_;
-        counters["total type CNAME"] = total_dns_type_cname_;
-        counters["total type SOA"] = total_dns_type_soa_;
-        counters["total type PTR"] = total_dns_type_ptr_;
-        counters["total type MX"] = total_dns_type_mx_;
-        counters["total type TXT"] = total_dns_type_txt_;
-        counters["total type AAAA"] = total_dns_type_aaaa_;
-        counters["total type LOC"] = total_dns_type_loc_;
-        counters["total type SRV"] = total_dns_type_srv_;
-        counters["total type DS"] = total_dns_type_ds_;
-        counters["total type DNSKEY"] = total_dns_type_dnskey_;
-        counters["total type others"] = total_dns_type_others_;
-
-	return counters;
+#if defined(PYTHON_BINDING)
+boost::python::dict DNSProtocol::getCache() const {
+#elif defined(RUBY_BINDING)
+VALUE DNSProtocol::getCache() const {
+#endif
+	return addMapToHash(domain_map_);
 }
 
-boost::python::dict DNSProtocol::getCache() const {
-	boost::python::dict dnsc;
+#if defined(PYTHON_BINDING)
+boost::python::dict DNSProtocol::getCounters() const {
+	boost::python::dict counters;
+#elif defined(RUBY_BINDING)
+VALUE DNSProtocol::getCounters() const {
+        VALUE counters = rb_hash_new();
+#endif
+        addValueToCounter(counters,"total allow queries", total_allow_queries_);
+        addValueToCounter(counters,"total banned queries", total_ban_queries_);
+        addValueToCounter(counters,"total queries", total_queries_);
+        addValueToCounter(counters,"total responses", total_responses_);
+        addValueToCounter(counters,"total type A", total_dns_type_a_);
+        addValueToCounter(counters,"total type NS", total_dns_type_ns_);
+        addValueToCounter(counters,"total type CNAME", total_dns_type_cname_);
+        addValueToCounter(counters,"total type SOA", total_dns_type_soa_);
+        addValueToCounter(counters,"total type PTR", total_dns_type_ptr_);
+        addValueToCounter(counters,"total type MX", total_dns_type_mx_);
+        addValueToCounter(counters,"total type TXT", total_dns_type_txt_);
+        addValueToCounter(counters,"total type AAAA", total_dns_type_aaaa_);
+        addValueToCounter(counters,"total type LOC", total_dns_type_loc_);
+        addValueToCounter(counters,"total type SRV", total_dns_type_srv_);
+        addValueToCounter(counters,"total type DS", total_dns_type_ds_);
+        addValueToCounter(counters,"total type DNSKEY", total_dns_type_dnskey_);
+        addValueToCounter(counters,"total type others", total_dns_type_others_);
 
-	for (auto &item: domain_map_) {
-		boost::string_ref label = item.first;
-		int32_t hits = std::get<1>(item.second);
-
-		// The lable must be converted to std::string
-		dnsc[std::string(label)] = hits;
-
-	}
-
-	return dnsc;
+        return counters;
 }
 
 #endif

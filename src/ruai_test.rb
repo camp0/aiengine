@@ -42,7 +42,7 @@ class StackLanUnitTests < Test::Unit::TestCase
     dmng = DomainNameManager.new
     dmng.add_domain_name(d1)
     dmng.add_domain_name(d2)
-
+    
     @s.set_domain_name_manager(dmng,"HTTPProtocol")
 
     @pd.open("../pcapfiles/accessgoogle.pcap")
@@ -309,6 +309,52 @@ class StackLanUnitTests < Test::Unit::TestCase
 
   end
 
+  def test_9
+    # Verify the functionality of the counters
+
+    @pd.open("../pcapfiles/two_http_flows_noending.pcap")
+    @pd.run()
+    @pd.close()
+
+    c = @s.get_counters("EthernetProtocol")
+    assert_equal( c["bytes"], 910064)
+
+    c = @s.get_counters("TCPProtocol")
+
+    assert_equal( c["bytes"], 879940)
+    assert_equal( c["packets"], 886)
+    assert_equal( c["syns"], 2)
+    assert_equal( c["synacks"], 2)
+    assert_equal( c["acks"], 882)
+    assert_equal( c["rsts"], 0)
+    assert_equal( c["fins"], 0)
+
+    c = @s.get_counters("UnknownProtocol")
+    assert_equal( c , nil)
+
+    c = @s.get_counters("HTTPProtocol")
+    assert_equal( c["gets"], 34)
+  end
+
+  def test_10
+    # Verify counters and cache functionality
+
+    @pd.open("../pcapfiles/tor_4flows.pcap")
+    @pd.run()
+    @pd.close()
+
+    c = @s.get_cache("SSLProtocol")
+    assert_equal(c.length, 1)
+    assert_equal(c["www.2crtm25flad.com"], 4)
+
+    @s.release_caches()
+    
+    c = @s.get_cache("SSLProtocol")
+    assert_equal(c.length, 0)
+
+    # www.2crtm25flad.com:4
+  end
+
 end
 
 class StackMobileUnitTests < Test::Unit::TestCase
@@ -330,8 +376,15 @@ class StackMobileUnitTests < Test::Unit::TestCase
     @pd.close()
 
     # Verify some values 
-    assert_equal(@pd.total_bytes,320)
-    assert_equal(@pd.total_packets,2)
+    assert_equal(@pd.total_bytes,536)
+    assert_equal(@pd.total_packets,4)
+
+    c = @s.get_counters("ICMPProtocol")
+    assert_not_equal( c, nil)
+    assert_equal(c["packets"] , 4)
+    assert_equal(c["echo"], 2)
+    assert_equal(c["echoreplay"], 2)
+
   end
 end
 
@@ -396,6 +449,29 @@ class StackLanIPv6UnitTests < Test::Unit::TestCase
     assert_equal(r2.matchs, 0)
     assert_equal(r3.matchs, 0)
   end
+
+  def test_3
+    # Verify the get_cache functionality over a IPv6 stack
+
+    @pd.open("../pcapfiles/ipv6_google_dns.pcap")
+    @pd.run()
+    @pd.close()
+
+    c = @s.get_cache("DNSProtocol")
+    assert_not_equal(c, nil)
+    assert_equal(c["www.google.com"], 1)
+    assert_equal( @s.get_cache("DNSProtocolNoExists"),nil)
+   
+    @s.release_cache("DNSProtocol")
+    c = @s.get_cache("DNSProtocol")
+    assert_not_equal(c, nil)
+    assert_equal(c.length, 0)
+    c = @s.get_cache("SSLProtocol")
+    assert_equal(c.length, 0)
+    c = @s.get_cache("HTTPProtocol")
+    assert_equal(c.length, 0)
+  end
+
 end
 
 class StackVirtualUnitTests < Test::Unit::TestCase

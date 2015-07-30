@@ -154,9 +154,12 @@ public:
 	int16_t getHTTPHeaderSize() const { return http_header_size_; }
 	int64_t getAllocatedMemory() const;
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
         boost::python::dict getCounters() const;
 	boost::python::dict getCache() const; 
+#elif defined(RUBY_BINDING)
+        VALUE getCounters() const;
+	VALUE getCache() const; 
 #endif
 
 private:

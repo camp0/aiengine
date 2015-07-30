@@ -66,13 +66,17 @@ void EthernetProtocol::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
+#if defined(PYTHON_BINDING)
 boost::python::dict EthernetProtocol::getCounters() const {
 	boost::python::dict counters;
-
-	counters["packets"] = total_packets_;
-	counters["bytes"] = total_bytes_;
+#elif defined(RUBY_BINDING)
+VALUE EthernetProtocol::getCounters() const {
+	VALUE counters = rb_hash_new();
+#endif
+	addValueToCounter(counters,"packets", total_packets_);
+	addValueToCounter(counters,"bytes", total_bytes_);
 
         return counters;
 }

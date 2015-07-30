@@ -81,19 +81,22 @@ bool ICMPv6Protocol::processPacket(Packet &packet) {
 	return true;
 }
 
-#ifdef PYTHON_BINDING
-
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING)
 boost::python::dict ICMPv6Protocol::getCounters() const {
         boost::python::dict counters;
-
-        counters["packets"] = total_packets_;
-        counters["echo"] = total_echo_request_;
-        counters["echoreply"] = total_echo_replay_;
-        counters["destination unreach"] = total_destination_unreachable_;
-        counters["redirect"] = total_redirect_;
-        counters["router advertisment"] = total_router_advertisment_;
-        counters["router solicitation"] = total_router_solicitation_;
-        counters["time exceeded"] = total_ttl_exceeded_;
+#elif defined(RUBY_BINDING)
+VALUE ICMPv6Protocol::getCounters() const {
+        VALUE counters = rb_hash_new();
+#endif
+        addValueToCounter(counters,"packets", total_packets_);
+        addValueToCounter(counters,"echo", total_echo_request_);
+        addValueToCounter(counters,"echoreply", total_echo_replay_);
+        addValueToCounter(counters,"destination unreach", total_destination_unreachable_);
+        addValueToCounter(counters,"redirect", total_redirect_);
+        addValueToCounter(counters,"router advertisment", total_router_advertisment_);
+        addValueToCounter(counters,"router solicitation", total_router_solicitation_);
+        addValueToCounter(counters,"time exceeded", total_ttl_exceeded_);
 
         return counters;
 }

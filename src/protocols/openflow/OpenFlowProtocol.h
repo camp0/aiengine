@@ -125,10 +125,12 @@ public:
 
 	int64_t getAllocatedMemory() const { return sizeof(OpenFlowProtocol); } 
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
         boost::python::dict getCounters() const;
+#elif defined(RUBY_BINDING)
+        VALUE getCounters() const;
 #endif
- 
+
 private:
 	int stats_level_;
 	openflow_hdr *of_header_;

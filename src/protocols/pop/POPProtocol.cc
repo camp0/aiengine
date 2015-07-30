@@ -330,18 +330,20 @@ void POPProtocol::destroyPOPInfos(int number) {
         user_cache_->destroy(number);
 }
 
-
-#ifdef PYTHON_BINDING
-
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING)
 boost::python::dict POPProtocol::getCounters() const {
-	boost::python::dict counters;
+        boost::python::dict counters;
+#elif defined(RUBY_BINDING)
+VALUE POPProtocol::getCounters() const {
+        VALUE counters = rb_hash_new();
+#endif
+        addValueToCounter(counters,"packets", total_packets_);
+        addValueToCounter(counters,"bytes", total_bytes_);
+        addValueToCounter(counters,"commands", total_pop_client_commands_);
+        addValueToCounter(counters,"responses", total_pop_server_responses_);
 
-        counters["packets"] = total_packets_;
-        counters["bytes"] = total_bytes_;
-        counters["commands"] = total_pop_client_commands_;
-        counters["responses"] = total_pop_server_responses_;
-
-	return counters;
+        return counters;
 }
 
 #endif

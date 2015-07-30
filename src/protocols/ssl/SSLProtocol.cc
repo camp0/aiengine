@@ -374,35 +374,32 @@ void SSLProtocol::destroySSLInfos(int number) {
 	host_cache_->destroy(number);
 }
 
-#ifdef PYTHON_BINDING
-
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING)
 boost::python::dict SSLProtocol::getCounters() const {
 	boost::python::dict counters;
-
-	counters["packets"] = total_packets_;
-	counters["bytes"] = total_bytes_;
-	counters["allow hosts"] = total_allow_hosts_;
-	counters["banned hosts"] = total_ban_hosts_;
-	counters["client hellos"] = total_client_hellos_;
-	counters["server hellos"] = total_server_hellos_;
-	counters["certificates"] = total_certificates_;
-	counters["records"] = total_records_;
+#elif defined(RUBY_BINDING)
+VALUE SSLProtocol::getCounters() const {
+        VALUE counters = rb_hash_new();
+#endif
+	addValueToCounter(counters,"packets", total_packets_);
+	addValueToCounter(counters,"bytes", total_bytes_);
+	addValueToCounter(counters,"allow hosts", total_allow_hosts_);
+	addValueToCounter(counters,"banned hosts", total_ban_hosts_);
+	addValueToCounter(counters,"client hellos", total_client_hellos_);
+	addValueToCounter(counters,"server hellos", total_server_hellos_);
+	addValueToCounter(counters,"certificates", total_certificates_);
+	addValueToCounter(counters,"records", total_records_);
 
         return counters;
 }
 
+#if defined(PYTHON_BINDING)
 boost::python::dict SSLProtocol::getCache() const {
-        boost::python::dict sslc;
-
-        for (auto &item: host_map_) {
-                boost::string_ref label = item.first;
-                int32_t hits = std::get<1>(item.second);
-
-                // The label must be converted to std::string
-                sslc[std::string(label)] = hits;
-        }
-
-        return sslc;
+#elif defined(RUBY_BINDING)
+VALUE SSLProtocol::getCache() const {
+#endif
+        return addMapToHash(host_map_);
 }
 
 #endif

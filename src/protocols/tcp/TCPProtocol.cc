@@ -360,18 +360,22 @@ void TCPProtocol::computeState(Flow *flow, TCPInfo *info,int32_t bytes) {
 #endif
 }
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
+#if defined(PYTHON_BINDING)
 boost::python::dict TCPProtocol::getCounters() const {
         boost::python::dict counters;
-
-        counters["packets"] = total_packets_;
-        counters["bytes"] = total_bytes_;
-        counters["syns"] = total_flags_syn_;
-        counters["synacks"] = total_flags_synack_;
-        counters["acks"] = total_flags_ack_;
-        counters["fins"] = total_flags_fin_;
-        counters["rsts"] = total_flags_rst_;
+#elif defined(RUBY_BINDING)
+VALUE TCPProtocol::getCounters() const {
+        VALUE counters = rb_hash_new();
+#endif
+        addValueToCounter(counters,"packets", total_packets_);
+        addValueToCounter(counters,"bytes", total_bytes_);
+        addValueToCounter(counters,"syns", total_flags_syn_);
+        addValueToCounter(counters,"synacks", total_flags_synack_);
+        addValueToCounter(counters,"acks", total_flags_ack_);
+        addValueToCounter(counters,"fins", total_flags_fin_);
+        addValueToCounter(counters,"rsts", total_flags_rst_);
 
         return counters;
 }

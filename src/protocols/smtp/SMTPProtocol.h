@@ -137,8 +137,10 @@ public:
 
 	int64_t getAllocatedMemory() const;
 
-#ifdef PYTHON_BINDING
-	boost::python::dict getCounters() const;
+#if defined(PYTHON_BINDING)
+        boost::python::dict getCounters() const;
+#elif defined(RUBY_BINDING)
+        VALUE getCounters() const;
 #endif
 
 private:

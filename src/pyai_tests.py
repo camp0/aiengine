@@ -549,6 +549,7 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(c.has_key("packets"), True) 
         self.assertEqual(c.has_key("bytes"), True) 
+        self.assertEqual(c["bytes"], 910064)
 
         c = self.s.getCounters("TCPProtocol")
 

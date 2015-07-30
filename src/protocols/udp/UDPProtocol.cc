@@ -207,15 +207,19 @@ bool UDPProtocol::processPacket(Packet& packet) {
 }
 
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
+#if defined(PYTHON_BINDING)
 boost::python::dict UDPProtocol::getCounters() const {
 	boost::python::dict counters;
+#elif defined(RUBY_BINDING)
+VALUE UDPProtocol::getCounters() const {
+        VALUE counters = rb_hash_new();
+#endif
+        addValueToCounter(counters,"packets", total_packets_);
+        addValueToCounter(counters,"bytes", total_bytes_);
 
-        counters["Total packets"] = total_packets_;
-        counters["Total bytes"] = total_bytes_;
-
-       return counters;
+       	return counters;
 }
 
 #endif

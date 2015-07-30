@@ -407,22 +407,25 @@ void SIPProtocol::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
-#ifdef PYTHON_BINDING
-
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING)
 boost::python::dict SIPProtocol::getCounters() const {
         boost::python::dict counters;
+#elif defined(RUBY_BINDING)
+VALUE SIPProtocol::getCounters() const {
+        VALUE counters = rb_hash_new();
+#endif
+        addValueToCounter(counters,"packets", total_packets_);
+        addValueToCounter(counters,"bytes", total_bytes_);
 
-        counters["packets"] = total_packets_;
-        counters["bytes"] = total_bytes_;
-        counters["requests"] = total_requests_;
-        counters["responses"] = total_requests_;
+        addValueToCounter(counters,"requests", total_requests_);
+        addValueToCounter(counters,"responses", total_requests_);
 	for (auto &method: methods_) {
 		const char *label = std::get<2>(method);
 
-		counters[label] = std::get<3>(method);
+		addValueToCounter(counters,label,std::get<3>(method));
 	}
-        counters["others"] = total_sip_others_;
-
+        addValueToCounter(counters,"others", total_sip_others_);
         return counters;
 }
 

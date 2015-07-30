@@ -163,15 +163,18 @@ void IPv6Protocol::statistics(std::basic_ostream<char>& out) {
         }
 }
 
-#ifdef PYTHON_BINDING
-
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING)
 boost::python::dict IPv6Protocol::getCounters() const {
         boost::python::dict counters;
-
-        counters["packets"] = total_packets_;
-        counters["bytes"] = total_bytes_;
-        counters["fragmented packets"] = total_frag_packets_;
-	counters["extension header packets"] = total_extension_header_packets_;
+#elif defined(RUBY_BINDING)
+VALUE IPv6Protocol::getCounters() const {
+        VALUE counters = rb_hash_new();
+#endif
+        addValueToCounter(counters,"packets", total_packets_);
+        addValueToCounter(counters,"bytes", total_bytes_);
+        addValueToCounter(counters,"fragmented packets", total_frag_packets_);
+	addValueToCounter(counters,"extension header packets", total_extension_header_packets_);
 
         return counters;
 }

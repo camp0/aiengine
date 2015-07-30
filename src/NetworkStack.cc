@@ -312,6 +312,30 @@ boost::python::dict NetworkStack::getCache(const std::string& name) {
         return cache;
 }
 
+#elif defined(RUBY_BINDING)
+
+VALUE NetworkStack::getCounters(const std::string& name) {
+	VALUE counters = Qnil;
+	ProtocolPtr pp = get_protocol(name);
+
+	if (pp) {
+		counters = pp->getCounters();
+	}
+	
+	return counters;
+}
+
+VALUE NetworkStack::getCache(const std::string& name) {
+	VALUE cache = Qnil;
+	ProtocolPtr pp = get_protocol(name);
+
+	if (pp) {
+		cache = pp->getCache();
+	}
+
+	return cache;
+}
+
 #endif
 
 void NetworkStack::releaseCache(const std::string &name) {

@@ -288,6 +288,10 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("matchs")			aiengine::Signature::getMatchs;
 %rename("name")				aiengine::Signature::getName;
 %rename("add_ip_address")		addIPAddress;
+%rename("get_counters")			aiengine::NetworkStack::getCounters;
+%rename("get_cache")			aiengine::NetworkStack::getCache;
+%rename("release_caches")		aiengine::NetworkStack::releaseCaches;
+%rename("release_cache")		aiengine::NetworkStack::releaseCache;
 
 %rename setDomainNameManager		set_domain_name_manager;
 

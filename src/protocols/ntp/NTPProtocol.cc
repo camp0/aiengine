@@ -88,20 +88,23 @@ void NTPProtocol::statistics(std::basic_ostream<char>& out){
 	}
 }
 
-#ifdef PYTHON_BINDING
-
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING)
 boost::python::dict NTPProtocol::getCounters() const {
         boost::python::dict counters;
-
-        counters["packets"] = total_packets_;
-        counters["bytes"] = total_bytes_;
-	counters["clients"] = total_ntp_client_;
-	counters["servers"] = total_ntp_server_;
-	counters["unspecifieds"] = total_ntp_unspecified_;
-	counters["sym actives"] = total_ntp_sym_active_;
-	counters["sym passives"] = total_ntp_sym_passive_;
-	counters["broadcasts"] = total_ntp_broadcast_;
-	counters["reserveds"] = total_ntp_reserved_;
+#elif defined(RUBY_BINDING)
+VALUE NTPProtocol::getCounters() const {
+        VALUE counters = rb_hash_new();
+#endif
+        addValueToCounter(counters,"packets", total_packets_);
+        addValueToCounter(counters,"bytes", total_bytes_);
+	addValueToCounter(counters,"clients", total_ntp_client_);
+	addValueToCounter(counters,"servers", total_ntp_server_);
+	addValueToCounter(counters,"unspecifieds", total_ntp_unspecified_);
+	addValueToCounter(counters,"sym actives", total_ntp_sym_active_);
+	addValueToCounter(counters,"sym passives", total_ntp_sym_passive_);
+	addValueToCounter(counters,"broadcasts", total_ntp_broadcast_);
+	addValueToCounter(counters,"reserveds", total_ntp_reserved_);
 	
         return counters;
 }
