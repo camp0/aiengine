@@ -26,7 +26,7 @@
 
 namespace aiengine {
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
 
 void Callback::setCallback(PyObject *callback) {
 	
@@ -66,7 +66,7 @@ void Callback::executeCallback(Flow *flow) {
         PyGILState_Release(state);
 }
 
-#elif RUBY_BINDING
+#elif defined(RUBY_BINDING)
 
 void Callback::setCallback(VALUE callback) {
 

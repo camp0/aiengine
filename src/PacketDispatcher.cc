@@ -291,9 +291,111 @@ bool PacketDispatcher::getShell() const {
         return user_shell_->getShell();
 }
 
+#if defined(PYTHON_BINDING)
+void PacketDispatcher::setScheduler(PyObject *callback, int seconds) {
+#elif defined(RUBY_BINDING)
+void PacketDispatcher::setScheduler(VALUE callback, int seconds) {
+#endif
+        if (timer_) // cancel the timer if exists
+                timer_->cancel();
+
+        // reset the values of the scheduler
+#if defined(PYTHON_BINDING)
+        if ((callback == Py_None)or(seconds <= 0)) {
+#elif defined(RUBY_BINDING)
+        if ((callback == Qnil)or(seconds <= 0)) {
+#endif
+                scheduler_set_ = false;
+                scheduler_seconds_ = 0;
+
+#if defined(PYTHON_BINDING)
+                if (scheduler_callback_)
+                        Py_XDECREF(scheduler_callback_);
+#elif defined(RUBY_BINDING)
+		scheduler_callback_ = Qnil;
+#endif
+                timer_.reset();
+        } else {
+#if defined(PYTHON_BINDING)
+                if (!PyCallable_Check(callback)) {
+#elif defined(RUBY_BINDING)
+		// TODO: Verify if the callback is callable
+		if (NIL_P(callback)) {
+#endif
+                        std::cerr << "Object is not callable." << std::endl;
+                } else {
+
+#if defined(PYTHON_BINDING)
+                        if ( scheduler_callback_ ) Py_XDECREF(scheduler_callback_);
+                        scheduler_callback_ = callback;
+                        Py_XINCREF(scheduler_callback_);
+#elif defined(RUBY_BINDING)
+			scheduler_callback_ = callback;
+#endif
+                        scheduler_set_ = true;
+                        scheduler_seconds_ = seconds;
+
+                        // reset the shared pointer and create a new timer.
+                        timer_.reset(new boost::asio::deadline_timer(io_service_,
+                                boost::posix_time::seconds(scheduler_seconds_)));
+
+                        timer_->expires_at(timer_->expires_at() + boost::posix_time::seconds(scheduler_seconds_));
+                        timer_->async_wait(boost::bind(&PacketDispatcher::scheduler_handler, this,
+                                boost::asio::placeholders::error));
+                }
+        }
+}
+
+#if defined(RUBY_BINDING)
+
+static VALUE ruby_schedule_callback(VALUE ptr) {
+
+        ruby_shared_data *data = (ruby_shared_data*)ptr;
+
+        return rb_funcall2(data->obj,data->method_id,data->nargs,data->args);
+}
+
 #endif
 
-#ifdef PYTHON_BINDING
+void PacketDispatcher::scheduler_handler(boost::system::error_code error) {
+
+        // Check if the timer have been cancel
+        if (error ==  boost::asio::error::operation_aborted) {
+                return;
+        }
+
+        // Update the values of the timer and reschedule
+        timer_->expires_at(timer_->expires_at() + boost::posix_time::seconds(scheduler_seconds_));
+        timer_->async_wait(boost::bind(&PacketDispatcher::scheduler_handler, this,
+                boost::asio::placeholders::error));
+
+#if defined(PYTHON_BINDING)
+        PyGILState_STATE state(PyGILState_Ensure());
+        try {
+                boost::python::call<void>(scheduler_callback_);
+        } catch (std::exception &e) {
+                std::cout << "ERROR:" << e.what() << std::endl;
+        }
+        PyGILState_Release(state);
+#elif defined(RUBY_BINDING)
+        ruby_shared_data rbdata;
+
+        rbdata.obj = scheduler_callback_;
+        rbdata.method_id = rb_intern("call");
+        rbdata.nargs = 0;
+
+        int rberror = 0;
+        VALUE result = rb_protect(ruby_schedule_callback,(VALUE)&rbdata,&rberror);
+
+        if (rberror)
+                throw "Ruby execption on schedule callback";
+#endif
+        return;
+}
+
+#endif
+
+#if defined(PYTHON_BINDING)
 
 void PacketDispatcher::setStack(boost::python::object& stack) {
 
@@ -329,29 +431,6 @@ bool PacketDispatcher::__exit__(boost::python::object type, boost::python::objec
         return type.ptr() == Py_None;
 }
 
-void PacketDispatcher::scheduler_handler(boost::system::error_code error) {
-
-	// Check if the timer have been cancel
-        if (error ==  boost::asio::error::operation_aborted) {
-            	return;
-        }
-
-	// Update the values of the timer and reschedule
-        timer_->expires_at(timer_->expires_at() + boost::posix_time::seconds(scheduler_seconds_));
-        timer_->async_wait(boost::bind(&PacketDispatcher::scheduler_handler, this,
-                boost::asio::placeholders::error));
-
-	PyGILState_STATE state(PyGILState_Ensure());
-        try {
-                boost::python::call<void>(scheduler_callback_);
-	} catch (std::exception &e) {
-        	std::cout << "ERROR:" << e.what() << std::endl;
-        }
-        PyGILState_Release(state);
-
-	return;
-}
-
 void PacketDispatcher::forwardPacket(const std::string &packet, int length) {
 
 	const unsigned char *pkt = reinterpret_cast<const unsigned char *>(packet.c_str());
@@ -360,41 +439,6 @@ void PacketDispatcher::forwardPacket(const std::string &packet, int length) {
 	// python binding
 	forward_raw_packet((unsigned char*)pkt,length,0);
 	return;
-}
-
-void PacketDispatcher::setScheduler(PyObject *callback, int seconds) {
-
-	if (timer_) // cancel the timer if exists
-		timer_->cancel();
-
-	// reset the values of the scheduler
-	if ((callback == Py_None)or(seconds <= 0)) {
-		scheduler_set_ = false;
-		scheduler_seconds_ = 0;
-               	if (scheduler_callback_)
-			Py_XDECREF(scheduler_callback_);
-
-		timer_.reset();
-	} else {
-        	if (!PyCallable_Check(callback)) {
-                	std::cerr << "Object is not callable." << std::endl;
-        	} else {
-	
-			if ( scheduler_callback_ ) Py_XDECREF(scheduler_callback_);
-                	scheduler_callback_ = callback;
-                	Py_XINCREF(scheduler_callback_);
-                	scheduler_set_ = true;
-			scheduler_seconds_ = seconds;
-
-			// reset the shared pointer and create a new timer.
-			timer_.reset(new boost::asio::deadline_timer(io_service_,
-				boost::posix_time::seconds(scheduler_seconds_)));
-
-                        timer_->expires_at(timer_->expires_at() + boost::posix_time::seconds(scheduler_seconds_));
-                        timer_->async_wait(boost::bind(&PacketDispatcher::scheduler_handler, this,
-                                boost::asio::placeholders::error));
-        	}
-	}
 }
 
 const char *PacketDispatcher::getStatus() const {
@@ -430,5 +474,7 @@ void PacketDispatcher::status(void) {
 
         info_message(msg.str());
 }
+
+
 
 } // namespace aiengine

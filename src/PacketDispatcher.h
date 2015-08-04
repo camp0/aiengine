@@ -106,11 +106,13 @@ public:
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 		,timer_(SharedPointer<boost::asio::deadline_timer>(new boost::asio::deadline_timer(io_service_))),
 		user_shell_(SharedPointer<Interpreter>(new Interpreter(io_service_)))
-#if defined(PYTHON_BINDING)
         	,scheduler_set_(false),
-        	scheduler_callback_(nullptr),
         	scheduler_seconds_(0),
+#if defined(PYTHON_BINDING)
+        	scheduler_callback_(nullptr),
 		pystack_()
+#elif defined(RUBY_BINDING)
+		scheduler_callback_(Qnil)
 #endif
 #endif
 		{	
@@ -171,6 +173,7 @@ public:
 
 #ifdef RUBY_BINDING
 	void statistics() { std::cout << *this; }
+	void setScheduler(VALUE callback, int seconds);
 #endif
 
 private:
@@ -219,11 +222,13 @@ private:
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 	SharedPointer<boost::asio::deadline_timer> timer_;
 	SharedPointer<Interpreter> user_shell_;
-#ifdef PYTHON_BINDING
 	bool scheduler_set_;
-	PyObject *scheduler_callback_;
 	int scheduler_seconds_;
+#if defined(PYTHON_BINDING)
+	PyObject *scheduler_callback_;
 	boost::python::object pystack_;
+#elif defined(RUBY_BINDING)
+	VALUE scheduler_callback_;
 #endif
 #endif
 };

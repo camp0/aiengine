@@ -1,8 +1,8 @@
 AIEngine (Artificial Inteligent Engine)
 =========
 
-AIEngine is a next generation interactive/programmable packet inspection engine with capabilities of learning
-without any human intervention, NIDS functionality, DNS domain classification, network collector and many others. 
+AIEngine is a next generation interactive/programmable Pythonn/Ruby packet inspection engine with capabilities of learning
+without any human intervention, NIDS(Network Intrusion Detection System) functionality, DNS domain classification, network collector and many others. 
 
 AIEngine also helps network/security professionals to identify traffic and develop
 signatures for use them on NIDS, Firewalls, Traffic classifiers and so on.
@@ -30,7 +30,7 @@ Using AIEngine
 To use AIEngine(reduce version) just execute the binary aiengine or use the python/ruby binding.
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
-	aiengine 1.2
+	aiengine 1.3
 	Mandatory arguments:
 	  -I [ --input ] arg                Sets the network interface ,pcap file or 
 	                                    directory with pcap files.

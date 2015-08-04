@@ -21,7 +21,7 @@ def scheduler_handler_tcp():
     # combination flags, bytes, packets and so on. 
     syns = int(c["syns"])
     synacks = int(c["synacks"])
-    if ((syns * 10) > synacks):
+    if (syns > (synacks * 100)):
         print("System under a SYN DoS attack")
 
 def scheduler_handler_ntp():

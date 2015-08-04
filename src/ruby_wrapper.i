@@ -267,6 +267,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("stack=")			aiengine::PacketDispatcher::setStack;
 %rename("shell")			aiengine::PacketDispatcher::getShell;
 %rename("shell=")			aiengine::PacketDispatcher::setShell;
+%rename("set_scheduler")		aiengine::PacketDispatcher::setScheduler;
 %rename("callback=") 			setCallback(VALUE callback);
 %rename("add_ip_set")			aiengine::IPSetManager::addIPSet;
 %rename("set_tcp_database_adaptor")	setTCPDatabaseAdaptor;
