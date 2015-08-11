@@ -85,11 +85,14 @@ public:
         	total_dns_type_ds_(0),
         	total_dns_type_dnskey_(0),
 		total_dns_type_others_(0),
-		info_cache_(new Cache<DNSInfo>("Info cache")),
+		info_cache_(new Cache<DNSInfo>("DNS Info cache")),
 		name_cache_(new Cache<StringCache>("Name cache")),
 		domain_map_(),
 		domain_mng_(),ban_domain_mng_(),
-		flow_mng_() {}
+		flow_mng_() {
+
+		CacheManager::getInstance()->setCache(info_cache_);
+	}
 
     	virtual ~DNSProtocol() {}
 

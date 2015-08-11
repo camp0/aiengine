@@ -29,7 +29,6 @@ void CacheManager::statistics() {
 
 }
 
-// TODO: missing the rest of the items of the flow SMTPInfo,etc.....
 void CacheManager::releaseFlow(Flow *flow) {
 
         if (flow->getProtocol() == IPPROTO_TCP) {
@@ -39,21 +38,43 @@ void CacheManager::releaseFlow(Flow *flow) {
 			tcp_info_cache_->release(tcpinfo);	
 		}
 
-		SharedPointer<HTTPInfo> httpinfo = flow->http_info.lock();
-		if ((httpinfo)and(http_info_cache_)) {
-			http_info_cache_->release(httpinfo);
+		if (!flow->http_info.expired()) {
+			SharedPointer<HTTPInfo> httpinfo = flow->http_info.lock();
+			if (http_info_cache_) http_info_cache_->release(httpinfo); 
+		} else {
+			if (!flow->ssl_info.expired()) {
+				SharedPointer<SSLInfo> sslinfo = flow->ssl_info.lock();
+				if (ssl_info_cache_) ssl_info_cache_->release(sslinfo);
+			} else {
+				if (!flow->smtp_info.expired()) {
+                                        SharedPointer<SMTPInfo> smtpinfo = flow->smtp_info.lock();
+					if (smtp_info_cache_) smtp_info_cache_->release(smtpinfo);
+				} else {
+					if (!flow->pop_info.expired()) {
+                                        	SharedPointer<POPInfo> popinfo = flow->pop_info.lock();
+						if (pop_info_cache_) pop_info_cache_->release(popinfo);
+					} else {
+						if (!flow->imap_info.expired()) {
+                                        		SharedPointer<IMAPInfo> imapinfo = flow->imap_info.lock();
+							if (imap_info_cache_) imap_info_cache_->release(imapinfo);
+						}
+					}
+				}
+			}
 		}
 	} else {
-		SharedPointer<GPRSInfo> gprsinfo = flow->gprs_info.lock();
-
-		if ((gprsinfo)and(gprs_info_cache_)) {
-			gprs_info_cache_->release(gprsinfo);
-		}
-
-		SharedPointer<SIPInfo> sipinfo = flow->sip_info.lock();
-		
-		if ((sipinfo)and(sip_info_cache_)) {
-			sip_info_cache_->release(sipinfo);
+		if (!flow->gprs_info.expired()) {
+			SharedPointer<GPRSInfo> gprsinfo = flow->gprs_info.lock();
+			if (gprs_info_cache_) gprs_info_cache_->release(gprsinfo);
+		} 
+		if (!flow->dns_info.expired()) {
+			SharedPointer<DNSInfo> dnsinfo = flow->dns_info.lock();
+			if (dns_info_cache_) dns_info_cache_->release(dnsinfo);
+		} else {
+			if (!flow->sip_info.expired()) {
+				SharedPointer<SIPInfo> sipinfo = flow->sip_info.lock();
+				if (sip_info_cache_) sip_info_cache_->release(sipinfo);
+			}
 		}
 	}
 }

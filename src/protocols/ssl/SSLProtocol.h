@@ -108,12 +108,15 @@ public:
 		total_client_hellos_(0),total_server_hellos_(0),
 		total_certificates_(0),total_records_(0),total_ban_hosts_(0),
 		total_allow_hosts_(0),
-		info_cache_(new Cache<SSLInfo>("Info cache")),
+		info_cache_(new Cache<SSLInfo>("SSL Info cache")),
 		host_cache_(new Cache<StringCache>("Host cache")),
 		host_map_(),
 		domain_mng_(),ban_domain_mng_(),
 		flow_mng_(),
-		current_flow_(nullptr) {}
+		current_flow_(nullptr) {
+
+		CacheManager::getInstance()->setCache(info_cache_);
+	}
 
     	virtual ~SSLProtocol() {}
 

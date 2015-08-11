@@ -69,7 +69,7 @@ public:
 		total_bytes_(0),total_l7_bytes_(0),
 		total_allow_hosts_(0),total_ban_hosts_(0),
 		total_requests_(0),total_responses_(0),total_http_others_(0),
-		info_cache_(new Cache<HTTPInfo>("Info Cache")),
+		info_cache_(new Cache<HTTPInfo>("HTTP Info Cache")),
 		uri_cache_(new Cache<StringCache>("Uri cache")),
 		host_cache_(new Cache<StringCache>("Host cache")),
 		ua_cache_(new Cache<StringCache>("UserAgent cache")),

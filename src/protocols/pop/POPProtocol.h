@@ -72,10 +72,13 @@ public:
 		total_pop_client_commands_(0),
 		total_pop_server_responses_(0),
 		domain_mng_(),ban_domain_mng_(),
-		info_cache_(new Cache<POPInfo>("Info cache")),
+		info_cache_(new Cache<POPInfo>("POP Info cache")),
 		user_cache_(new Cache<StringCache>("Name cache")),
 		user_map_(),
-		flow_mng_() {}
+		flow_mng_() {
+
+		CacheManager::getInstance()->setCache(info_cache_);
+	}
 
     	virtual ~POPProtocol() {}
 

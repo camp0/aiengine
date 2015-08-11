@@ -71,8 +71,14 @@ void Callback::executeCallback(Flow *flow) {
 void Callback::setCallback(VALUE callback) {
 
 	if (!NIL_P(callback)) {
-		// Check_Type(callback, T_CLASS);	
-		// TODO: Verify the number of arguments of the callback
+		// Verify the number of arguments of the callback by calling the method arity
+
+		VALUE value = rb_funcall(callback,rb_intern("arity"),0);
+		int nargs = NUM2INT(value);
+
+		if (nargs != 1) {
+			rb_raise(rb_eRuntimeError,"Object should have one parameter.\n");
+		}	
 
         	callback_ = callback;
                 callback_set_ = true;

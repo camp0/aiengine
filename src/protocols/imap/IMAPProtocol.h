@@ -86,9 +86,12 @@ public:
 		total_imap_client_commands_(0),
 		total_imap_server_responses_(0),
 		domain_mng_(),ban_domain_mng_(),
-		info_cache_(new Cache<IMAPInfo>("Info cache")),
+		info_cache_(new Cache<IMAPInfo>("IMAP Info cache")),
 		user_cache_(new Cache<StringCache>("Name cache")),	
-		user_map_(),flow_mng_() {}
+		user_map_(),flow_mng_() {
+
+		CacheManager::getInstance()->setCache(info_cache_);
+	}
 
     	virtual ~IMAPProtocol() {}
 

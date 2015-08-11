@@ -68,16 +68,24 @@ class CacheManager: public SingletonCache<CacheManager>
 {
 public:
 
-	explicit CacheManager():http_info_cache_(),sip_info_cache_(),
+	explicit CacheManager():http_info_cache_(),ssl_info_cache_(),
+		sip_info_cache_(),
 		gprs_info_cache_(),
 		tcp_info_cache_(),
-		smtp_info_cache_() {}
+		smtp_info_cache_(),
+		imap_info_cache_(),
+		pop_info_cache_(),
+		dns_info_cache_() {}
 
 	void setCache(Cache<HTTPInfo>::CachePtr cache) { http_info_cache_ = cache; }
+	void setCache(Cache<SSLInfo>::CachePtr cache) { ssl_info_cache_ = cache; }
 	void setCache(Cache<SIPInfo>::CachePtr cache) { sip_info_cache_ = cache; }
 	void setCache(Cache<GPRSInfo>::CachePtr cache) { gprs_info_cache_ = cache; }
 	void setCache(Cache<TCPInfo>::CachePtr cache) { tcp_info_cache_ = cache; }
 	void setCache(Cache<SMTPInfo>::CachePtr cache) { smtp_info_cache_ = cache; }
+	void setCache(Cache<IMAPInfo>::CachePtr cache) { imap_info_cache_ = cache; }
+	void setCache(Cache<POPInfo>::CachePtr cache) { pop_info_cache_ = cache; }
+	void setCache(Cache<DNSInfo>::CachePtr cache) { dns_info_cache_ = cache; }
 
 	void releaseFlow(Flow *flow);
         
@@ -86,10 +94,14 @@ public:
         friend class SingletonCache<CacheManager>;
 private:
 	Cache<HTTPInfo>::CachePtr http_info_cache_;
+	Cache<SSLInfo>::CachePtr ssl_info_cache_;
 	Cache<SIPInfo>::CachePtr sip_info_cache_;
 	Cache<GPRSInfo>::CachePtr gprs_info_cache_;
 	Cache<TCPInfo>::CachePtr tcp_info_cache_;
 	Cache<SMTPInfo>::CachePtr smtp_info_cache_;
+	Cache<IMAPInfo>::CachePtr imap_info_cache_;
+	Cache<POPInfo>::CachePtr pop_info_cache_;
+	Cache<DNSInfo>::CachePtr dns_info_cache_;
 };
 
 

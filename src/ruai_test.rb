@@ -69,6 +69,7 @@ class StackLanUnitTests < Test::Unit::TestCase
     r1 = Regex.new("Get request","^GET.*$")
     r2 = Regex.new("Post request","^POST.*$")
 
+    f = method(:callback)
     r1.callback = method(:callback)
     @tcp_r.add_regex(r1)
     @tcp_r.add_regex(r2)
@@ -568,5 +569,26 @@ class StackOpenFlowUnitTests < Test::Unit::TestCase
     assert_equal(storage_udp.total_updates,3)
     assert_equal(storage_udp.total_removes,0)
   end
+
+  def test_3
+    # Verify the number of parameters on the regex callbacks
+
+    def callback1
+    end
+
+    def callback2(one)
+    end
+
+    def callback3(owe,two)
+    end
+
+    r = Regex.new("test0","")
+
+    assert_raise( RuntimeError ) { r.callback = method(:callback1) }
+    assert_raise( RuntimeError ) { r.callback = method(:callback3) }
+    assert_nothing_raised( RuntimeError ) { r.callback = method(:callback2) }
+
+  end
+
 end
 

@@ -61,7 +61,7 @@ public:
         	total_requests_(0),
         	total_responses_(0),
         	total_sip_others_(0),
-		info_cache_(new Cache<SIPInfo>("Info cache")),
+		info_cache_(new Cache<SIPInfo>("SIP Info cache")),
 		uri_cache_(new Cache<StringCache>("Uri cache")),
 		via_cache_(new Cache<StringCache>("Via cache")),
 		from_cache_(new Cache<StringCache>("From cache")),

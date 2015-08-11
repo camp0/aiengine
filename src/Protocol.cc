@@ -106,7 +106,7 @@ void Protocol::databaseAdaptorInsertHandler(Flow *flow) {
 	VALUE result = rb_protect(ruby_database_callback,(VALUE)&rbdata,&error);
 
 	if (error)
-		throw "Ruby execption on insert";	
+		throw "Ruby exception on insert";	
 
 #endif
 }
@@ -140,7 +140,7 @@ void Protocol::databaseAdaptorUpdateHandler(Flow *flow) {
         VALUE result = rb_protect(ruby_database_callback,(VALUE)&rbdata,&error);
 
         if (error)
-                throw "Ruby execption on update";
+                throw "Ruby exception on update";
 #endif
 }
 
@@ -170,7 +170,7 @@ void Protocol::databaseAdaptorRemoveHandler(Flow *flow) {
         VALUE result = rb_protect(ruby_database_callback,(VALUE)&rbdata,&error);
 
         if (error)
-                throw "Ruby execption on remove";
+                throw "Ruby exception on remove";
 
 #endif
 }

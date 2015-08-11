@@ -72,7 +72,7 @@ public:
 		total_smtp_client_commands_(0),
 		total_smtp_server_responses_(0),
 		domain_mng_(),ban_domain_mng_(),
-		info_cache_(new Cache<SMTPInfo>("Info cache")),
+		info_cache_(new Cache<SMTPInfo>("SMTP Info cache")),
                 from_cache_(new Cache<StringCache>("From cache")),
                 to_cache_(new Cache<StringCache>("To cache")),
                 from_map_(),to_map_(),
