@@ -193,7 +193,7 @@ class StackLanUnitTests < Test::Unit::TestCase
     u.addURI("/images_blogs/gadgetlab/2013/08/AP090714043057-60x60.jpg")
     u.callback = method(:callback_uri)
 
-    d.setHTTPUriSet(u)
+    d.http_uri_set = u
 
     @s.set_domain_name_manager(dmng,"HTTPProtocol")
 

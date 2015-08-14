@@ -157,7 +157,6 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::DomainNameManager::addDomainName(const SharedPointer<DomainName>& domain);
 %ignore aiengine::DomainNameManager::getDomainName;
 
-// %ignore aiengine::DomainName::setHTTPUriSet;
 %ignore aiengine::DomainName::setHTTPUriSet(const SharedPointer<HTTPUriSet>& uset);
 %ignore aiengine::DomainName::getHTTPUriSet;
 
@@ -252,6 +251,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("user_agent")			aiengine::HTTPInfo::getUserAgent;
 %rename("host_name")			aiengine::HTTPInfo::getHostName;
 %rename("uri")				aiengine::HTTPInfo::getUri;
+%rename("http_uri_set=")		aiengine::DomainName::setHTTPUriSet;
 %rename("http_info")			aiengine::Flow::getHTTPInfo;
 %rename("tag")				aiengine::Flow::getTag;
 %rename("l7_protocol_name")		aiengine::Flow::getL7ProtocolName;

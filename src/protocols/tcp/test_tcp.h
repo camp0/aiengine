@@ -24,9 +24,15 @@
 #ifndef _test_tcp_H_
 #define _test_tcp_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <string>
+#include <vector>
 #include "../test/tests_packets.h"
 #include "../test/ipv6_test_packets.h"
+#include "../test/full_ssl_packets.h"
 #include "Protocol.h"
 #include "Multiplexer.h"
 #include "../ethernet/EthernetProtocol.h"

@@ -40,11 +40,18 @@ public:
     	virtual ~TCPInfo() {}
 
         void reset() { 
-		syn = 0; syn_ack = 0; ack= 0; fin = 0; push= 0; 
+		syn = 0; syn_ack = 0; ack= 0; fin = 0; rst = 0; push= 0; 
 		seq_num[0] = 0; 
 		seq_num[1] = 0; 
 		state_prev = static_cast<int>(TcpState::CLOSED);
 		state_curr = static_cast<int>(TcpState::CLOSED);
+#if defined(HAVE_TCP_QOS_METRICS)
+		last_sample_time = 0;
+		last_client_data_time = 0;
+		connection_setup_time = 0;
+		server_reset_rate = 0;
+		application_response_time = 0;
+#endif	
 	}
 
 	// TCP State
@@ -56,16 +63,28 @@ public:
 	int16_t syn_ack;
 	int16_t ack;
 	int16_t fin;
+	int16_t rst;
 	int16_t push;
 
+#if defined(HAVE_TCP_QOS_METRICS)
+	// http://www.thevisiblenetwork.com/2015/04/12/5-key-tcp-metrics-for-performance-monitoring/
+	int16_t last_sample_time;
+	int16_t connection_setup_time;
+	int16_t server_reset_rate;
+	int16_t last_client_data_time;
+	int16_t application_response_time;
+#endif
 	// TCP Sequence numbers 0 for upstream and 1 for downstream FlowDirection
 	uint32_t seq_num[2];
 
         friend std::ostream& operator<< (std::ostream& out, const TCPInfo& ti) {
         
-                out << "S(" << ti.syn << ")SA(" << ti.syn_ack << ")A(" << ti.ack;
-                out << ")F(" << ti.fin << ")P(" << ti.push << ")Seq(" << ti.seq_num[0] << "," << ti.seq_num[1] << ")";
-//		out << ")Ack(" << ti.ack_num << ")";
+                out << "Flg[S(" << ti.syn << ")SA(" << ti.syn_ack << ")A(" << ti.ack;
+                out << ")F(" << ti.fin << ")R(" << ti.rst << ")P(" << ti.push << ")Seq(" << ti.seq_num[0] << "," << ti.seq_num[1] << ")]";
+#if defined(HAVE_TCP_QOS_METRICS)
+		out << "QoS[ST(" << ti.connection_setup_time << ")RR(" << ti.server_reset_rate << ")";
+		out << "RT(" << ti.application_response_time << ")]";
+#endif
                 return out;
         }
 };

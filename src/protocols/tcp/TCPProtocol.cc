@@ -167,6 +167,7 @@ bool TCPProtocol::processPacket(Packet &packet) {
 			
 			flow->total_bytes += bytes;
 			++flow->total_packets;
+               		flow->setLastPacketTime(packet_time_);
 
 			if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
 				flow->setPacketAnomaly(packet.getPacketAnomaly());
@@ -242,7 +243,6 @@ bool TCPProtocol::processPacket(Packet &packet) {
                        		last_timeout_ = packet_time_;
                        		flow_table_->updateTimers(packet_time_);
                		}
-               		flow->setLastPacketTime(packet_time_);
 		}
 	}
 
@@ -284,6 +284,9 @@ void TCPProtocol::computeState(Flow *flow, TCPInfo *info,int32_t bytes) {
 
 			info->seq_num[flowdir] = seq_num + 1;
 			++seq_num;
+#if defined(HAVE_TCP_QOS_METRICS)
+			info->connection_setup_time = flow->getLastPacketTime();
+#endif
 		}
                 if (fin) { 
 			bad_flags = true;
@@ -310,6 +313,19 @@ void TCPProtocol::computeState(Flow *flow, TCPInfo *info,int32_t bytes) {
 				str_flag = (char*)"Ack";
 				++ total_flags_ack_;
 				++ info->ack;
+#if defined(HAVE_TCP_QOS_METRICS)
+				if (info->ack == 1) {
+					info->connection_setup_time = flow->getLastPacketTime() - info->connection_setup_time;
+				}
+				// TODO: Application response time, time between client and server with payload
+				if (bytes > 0) {
+					if ( flowdir == static_cast<int>(FlowDirection::FORWARD)) { // Client data
+						info->last_client_data_time = flow->getLastPacketTime();
+					} else { // Server data, so compute the values
+						info->application_response_time = flow->getLastPacketTime() - info->last_client_data_time;
+					}
+				}
+#endif
 			}
 		}
 		if (isPushSet()) {
@@ -350,7 +366,19 @@ void TCPProtocol::computeState(Flow *flow, TCPInfo *info,int32_t bytes) {
 		info->state_prev = static_cast<int>(TcpState::CLOSED);
 		info->state_curr = static_cast<int>(TcpState::CLOSED);
 		++ total_flags_rst_;
+		++info->rst;
 	}
+#if defined(HAVE_TCP_QOS_METRICS)
+        // Compute the number of rsts per second
+        if (flow->getLastPacketTime() - info->last_sample_time >= 1) {
+       		if (flow->getDuration() > 0) { 
+	        	info->server_reset_rate = info->rst / flow->getDuration();
+		}
+        }
+
+        info->last_sample_time = flow->getLastPacketTime();
+#endif
+
 #ifdef DEBUG
 	const char *prev_state = ((tcp_states[info->state_prev]).state)->name;
 	const char *curr_state = ((tcp_states[info->state_curr]).state)->name;

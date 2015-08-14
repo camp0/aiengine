@@ -82,6 +82,22 @@ void Flow::serialize(std::ostream& stream) {
 
 #ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION 
 
+	// In order to optimize the data transfer with databases/files
+	// We decide to remove key words and substitute by simple bytes
+	// that allow to reduce the data transfer, similar as msgpack does
+	// Here is the meaning
+	// 	5tuple: The tuple connection
+	// 	b:	Number of bytes transfer
+	// 	i:	IPSet name associated to the flow
+	//	a:	Anomaly name associated to the flow
+	//	p:	Short layer7 protocol name
+	//	t:	TCPInfo (flags,QoS)
+	//	h:	Hostname of the HTTP flow if is HTTP 
+	//	s:	Hostname of the client hello in SSL
+	//	d:	DNSname
+	//	g:	GPRS information if StackMobile is running
+	//	r:	Regex matched on the flow
+		
         stream << "{";
         stream << "\"5tuple\":\"" << address_.getSrcAddrDotNotation() << ":";
         stream << source_port_ << ":";
@@ -133,7 +149,7 @@ void Flow::serialize(std::ostream& stream) {
                         stream << ",\"g\":\"" << gprs_info.lock()->getIMSIString() << "\"";
         }
         if(!regex.expired())
-                stream << ",\"m\":\"" << regex.lock()->getName() << "\"";
+                stream << ",\"r\":\"" << regex.lock()->getName() << "\"";
 	
 	stream << "}";
 

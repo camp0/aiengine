@@ -212,6 +212,22 @@ else
     AM_CXXFLAGS="-O3 $AM_CXXFLAGS "
 fi
 
+##########################################################################
+# TCP QoS Metrics support 
+##########################################################################
+
+AC_MSG_CHECKING([whether to build with TCP QoS Metrics information])
+AC_ARG_ENABLE([tcpqos],
+    [AS_HELP_STRING([--enable-tcpqos],
+        [enable TCP QoS Metrics support (def=no)])],
+    [tcpqos="$enableval"],
+    [tcpqos=no])
+AC_MSG_RESULT([$tcpqos])
+
+if test x"$tcpqos" = x"yes"; then
+    AC_DEFINE([HAVE_TCP_QOS_METRICS],[],[TCP Qos Metrics support])
+fi
+
 
 ##########################################################################
 # database adaptor support
@@ -358,5 +374,6 @@ echo "
   Bloom filter support: $bloom_support
   Flow sc support.....: $fscompress_support
   Swig support........: $enable_swig
+  TCP Qos support.....: $tcpqos
 "
 

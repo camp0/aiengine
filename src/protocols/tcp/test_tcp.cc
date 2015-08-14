@@ -225,6 +225,130 @@ BOOST_AUTO_TEST_CASE (test8_tcp)
 	BOOST_CHECK(pa == PacketAnomalyType::TCP_BOGUS_HEADER);
 }
 
+#if defined(HAVE_TCP_QOS_METRICS)
+
+// Verify the Connection setup time, time between syn and first ack
+// Verify also the application response time
+BOOST_AUTO_TEST_CASE (test9_tcp)
+{
+	std::vector<Packet> pktlist;
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_1);
+        int length1 = raw_packet_ethernet_ip_tcp_ssl_1_length;
+        Packet packet1(pkt1,length1); // Syn packet
+	packet1.setPacketTime(1);
+	pktlist.push_back(packet1);
+	
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_2);
+        int length2 = raw_packet_ethernet_ip_tcp_ssl_2_length;
+        Packet packet2(pkt2,length2); // Syn ACK packet
+	packet2.setPacketTime(5);
+	pktlist.push_back(packet2);
+
+        unsigned char *pkt3 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_3);
+        int length3 = raw_packet_ethernet_ip_tcp_ssl_3_length;
+        Packet packet3(pkt3,length3); // Ack packet
+	packet3.setPacketTime(10);
+	pktlist.push_back(packet3);
+
+        unsigned char *pkt4 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_4);
+        int length4 = raw_packet_ethernet_ip_tcp_ssl_4_length;
+        Packet packet4(pkt4,length4); // Ack with data packet
+	packet4.setPacketTime(11);
+	pktlist.push_back(packet4);
+        
+	unsigned char *pkt5 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_5);
+        int length5 = raw_packet_ethernet_ip_tcp_ssl_5_length;
+        Packet packet5(pkt5,length5); // Ack with no data packet
+	packet5.setPacketTime(11);
+	pktlist.push_back(packet5);
+	
+	unsigned char *pkt6 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_6);
+        int length6 = raw_packet_ethernet_ip_tcp_ssl_6_length;
+        Packet packet6(pkt6,length6); // Ack with data packet
+	packet6.setPacketTime(17);
+	pktlist.push_back(packet6);
+
+	// Inject the 6 packets 
+	for (auto &pkt: pktlist) { 
+		mux_eth->setPacket(&pkt);
+        	eth->setHeader(pkt.getPayload());
+        	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        	mux_eth->forwardPacket(pkt);
+	}
+	
+        Flow *flow = tcp->getCurrentFlow();
+
+        BOOST_CHECK(flow != nullptr);
+        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
+        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+
+	BOOST_CHECK(info->state_curr == static_cast<int>(TcpState::ESTABLISHED));
+	BOOST_CHECK(info->state_prev == static_cast<int>(TcpState::ESTABLISHED));
+	BOOST_CHECK(info->connection_setup_time == 9);
+	BOOST_CHECK(info->application_response_time == 6);
+}
+
+// Similar test case but with different value results
+BOOST_AUTO_TEST_CASE (test10_tcp)
+{
+        std::vector<Packet> pktlist;
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_1);
+        int length1 = raw_packet_ethernet_ip_tcp_ssl_1_length;
+        Packet packet1(pkt1,length1); // Syn packet
+        packet1.setPacketTime(1);
+        pktlist.push_back(packet1);
+
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_2);
+        int length2 = raw_packet_ethernet_ip_tcp_ssl_2_length;
+        Packet packet2(pkt2,length2); // Syn ACK packet
+        packet2.setPacketTime(1);
+        pktlist.push_back(packet2);
+
+        unsigned char *pkt3 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_3);
+        int length3 = raw_packet_ethernet_ip_tcp_ssl_3_length;
+        Packet packet3(pkt3,length3); // Ack packet
+        packet3.setPacketTime(1);
+        pktlist.push_back(packet3);
+
+        unsigned char *pkt4 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_4);
+        int length4 = raw_packet_ethernet_ip_tcp_ssl_4_length;
+        Packet packet4(pkt4,length4); // Ack with data packet
+        packet4.setPacketTime(2);
+        pktlist.push_back(packet4);
+
+        unsigned char *pkt5 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_5);
+        int length5 = raw_packet_ethernet_ip_tcp_ssl_5_length;
+        Packet packet5(pkt5,length5); // Ack with no data packet
+        packet5.setPacketTime(2);
+        pktlist.push_back(packet5);
+
+        unsigned char *pkt6 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_6);
+        int length6 = raw_packet_ethernet_ip_tcp_ssl_6_length;
+        Packet packet6(pkt6,length6); // Ack with data packet
+        packet6.setPacketTime(2);
+        pktlist.push_back(packet6);
+
+        // Inject the 6 packets
+        for (auto &pkt: pktlist) {
+                mux_eth->setPacket(&pkt);
+                eth->setHeader(pkt.getPayload());
+                mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+                mux_eth->forwardPacket(pkt);
+        }
+
+        Flow *flow = tcp->getCurrentFlow();
+
+        BOOST_CHECK(flow != nullptr);
+        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
+        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+
+        BOOST_CHECK(info->state_curr == static_cast<int>(TcpState::ESTABLISHED));
+        BOOST_CHECK(info->state_prev == static_cast<int>(TcpState::ESTABLISHED));
+        BOOST_CHECK(info->connection_setup_time == 0);
+        BOOST_CHECK(info->application_response_time == 0);
+}
+
+#endif
 
 BOOST_AUTO_TEST_SUITE_END( )
 
