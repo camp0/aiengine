@@ -74,9 +74,11 @@ public:
 
 	void setFrequencyGroup(const FrequencyGroup<std::string>::Ptr& fg) { freq_group_ = fg;};
 
-#ifdef PYTHON_BINDING
 	int getTotalFlowsProcess() const { return items_;};
+#if defined(PYTHON_BINDING) 
 	void agregateFlows(boost::python::list flows);
+#elif defined(RUBY_BINDING)
+	void agregateFlows(VALUE flows);
 #else
 	void agregateFlows(const std::vector<WeakPointer<Flow>>& flows);
 #endif

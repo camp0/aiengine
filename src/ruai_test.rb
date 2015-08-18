@@ -592,3 +592,81 @@ class StackOpenFlowUnitTests < Test::Unit::TestCase
 
 end
 
+class StackLanLearningUnitTests < Test::Unit::TestCase
+
+  def setup
+    @s = StackLan.new
+    @pd = PacketDispatcher.new
+    @pd.stack = @s
+    @s.total_tcp_flows = 32
+    @s.total_udp_flows = 32
+    @f = FrequencyGroupString.new
+  end
+
+  def teardown
+  end
+
+  def test_1
+
+    @s.enable_frequency_engine = true
+    @pd.open("../pcapfiles/two_http_flows_noending.pcap")
+    @pd.run()
+    @pd.close()
+
+    assert_equal(@f.total_process_flows , 0)
+    assert_equal(@f.total_computed_frequencies , 0)
+
+    @f.add_flows_by_destination_port(@s.tcp_flow_manager)
+    @f.compute()
+    
+    assert_equal(@f.total_process_flows , 2)
+    assert_equal(@f.total_computed_frequencies , 1)
+
+  end
+  def test_2
+
+    @s.enable_frequency_engine = true
+    @pd.open("../pcapfiles/tor_4flows.pcap")
+    @pd.run()
+    @pd.close()
+
+    assert_equal(@f.total_process_flows , 0)
+    assert_equal(@f.total_computed_frequencies , 0)
+
+    @f.add_flows_by_destination_port(@s.tcp_flow_manager)
+    @f.compute()
+    
+    assert_equal(@f.total_process_flows , 4)
+    assert_equal(@f.total_computed_frequencies , 1)
+
+  end
+
+  def test_3
+    # Integrate with the learner to generate a regex 
+
+    l = LearnerEngine.new
+
+    @s.enable_frequency_engine = true
+    @pd.open("../pcapfiles/tor_4flows.pcap")
+    @pd.run()
+    @pd.close()
+
+    @f.add_flows_by_destination_port(@s.tcp_flow_manager)
+    @f.compute()
+
+    flow_list = @f.reference_flows
+    assert_equal(@f.total_computed_frequencies, 1)
+
+    # For print the flows involved
+    # flow_list.each { |x| puts x.src_ip }
+    
+    # Add the flows to the learner engine
+    l.agregate_flows(flow_list)
+    l.compute()
+
+    assert_equal(l.total_flows_process, 4)
+    assert_nothing_raised( RuntimeError ) { r = Regexp.new(l.regex) }
+
+  end
+end
+

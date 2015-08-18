@@ -161,13 +161,22 @@ void LearnerEngine::compute() {
 }
 
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
 void LearnerEngine::agregateFlows(boost::python::list flows) {
 
 	boost::python::ssize_t len = boost::python::len(flows);
-    	for (int i=0; i<len;++i) {
+    	for (int i=0; i<len; ++i) {
 	
 		SharedPointer<Flow> flow = boost::python::extract<SharedPointer<Flow>>(flows[i]);
+#elif defined(RUBY_BINDING)
+void LearnerEngine::agregateFlows(VALUE flows) {
+
+	size_t len = RARRAY_LEN(flows);
+	for (int i = 0; i<len; ++i) {
+		VALUE obj = rb_ary_entry(flows,i);
+		Flow *flow = nullptr;
+	
+		Data_Get_Struct(obj,Flow,flow);
 #else
 void LearnerEngine::agregateFlows(const std::vector<WeakPointer<Flow>>& flows) {
 

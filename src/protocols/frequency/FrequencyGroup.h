@@ -46,14 +46,18 @@ public:
 	typedef std::weak_ptr< FrequencyGroup<A_Type>> PtrWeak;
 
     	explicit FrequencyGroup(): name_(""),log_level_(0),total_process_flows_(0),total_computed_freqs_(0),
-		group_map_(), flow_list_() {}
+		group_map_(), flow_list_() {
+#if defined(RUBY_BINDING)
+		flow_list_ = rb_ary_new();
+#endif
+	}
 
     	virtual ~FrequencyGroup() {}
 
 	const char* getName() { return name_.c_str();} 
 	void setName(char *name) { name_ = name;}
 
-	void agregateFlows(SharedPointer<FlowManager> flow_t, std::function <A_Type (SharedPointer<Flow>&)> condition);
+	void agregateFlows(const SharedPointer<FlowManager>& flow_t, std::function <A_Type (SharedPointer<Flow>&)> condition);
 	void compute();
 	void reset();
 
@@ -80,19 +84,30 @@ public:
 
 	void setLogLevel(int level) { log_level_ = level;}
 
-	void agregateFlowsBySourcePort(SharedPointer<FlowManager> flow_t);
-	void agregateFlowsByDestinationPort(SharedPointer<FlowManager> flow_t);
-	void agregateFlowsBySourceAddress(SharedPointer<FlowManager> flow_t); 
-	void agregateFlowsByDestinationAddress(SharedPointer<FlowManager> flow_t); 
-	void agregateFlowsByDestinationAddressAndPort(SharedPointer<FlowManager> flow_t); 
-	void agregateFlowsBySourceAddressAndPort(SharedPointer<FlowManager> flow_t); 
-
+#if defined(RUBY_BINDING)
+	void agregateFlowsBySourcePort(const FlowManager& flow_t); 
+	void agregateFlowsByDestinationPort(const FlowManager& flow_t); 
+	void agregateFlowsBySourceAddress(const FlowManager& flow_t); 
+	void agregateFlowsByDestinationAddress(const FlowManager& flow_t); 
+	void agregateFlowsByDestinationAddressAndPort(const FlowManager& flow_t); 
+	void agregateFlowsBySourceAddressAndPort(const FlowManager& flow_t); 
+#else
+	void agregateFlowsBySourcePort(const SharedPointer<FlowManager>& flow_t);
+	void agregateFlowsByDestinationPort(const SharedPointer<FlowManager>& flow_t);
+	void agregateFlowsBySourceAddress(const SharedPointer<FlowManager>& flow_t); 
+	void agregateFlowsByDestinationAddress(const SharedPointer<FlowManager>& flow_t); 
+	void agregateFlowsByDestinationAddressAndPort(const SharedPointer<FlowManager>& flow_t); 
+	void agregateFlowsBySourceAddressAndPort(const SharedPointer<FlowManager>& flow_t); 
+#endif
 	int32_t getTotalProcessFlows() { return total_process_flows_;}
 	int32_t getTotalComputedFrequencies() { return total_computed_freqs_;}
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
 	boost::python::list getReferenceFlows() { return flow_list_;};
 	boost::python::list getReferenceFlowsByKey(A_Type key);
+#elif defined(RUBY_BINDING)
+	VALUE getReferenceFlows() { return flow_list_;};
+	VALUE getReferenceFlowsByKey(A_Type key);
 #else
 	std::vector<WeakPointer<Flow>> &getReferenceFlows() { return flow_list_;};
 	std::vector<WeakPointer<Flow>> &getReferenceFlowsByKey(A_Type key);
@@ -114,8 +129,10 @@ private:
 	int32_t total_process_flows_;
 	int32_t total_computed_freqs_;
 	GroupMapType group_map_;
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
 	boost::python::list flow_list_;
+#elif defined(RUBY_BINDING)
+	VALUE flow_list_;
 #else
 	std::vector<WeakPointer<Flow>> flow_list_;
 #endif

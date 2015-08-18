@@ -194,7 +194,7 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		DHCPProtocol.o SIPProtocol.o \
 		POPProtocol.o GREProtocol.o \
 		OpenFlowProtocol.o VxLanProtocol.o \
-		FrequencyProtocol.o \
+		FrequencyProtocol.o LearnerEngine.o \
 		ICMPProtocol.o ICMPv6Protocol.o \
 		StackLan.o StackMobile.o StackLanIPv6.o StackVirtual.o StackOpenFlow.o \
 		FlowManager.o Interpreter.o \

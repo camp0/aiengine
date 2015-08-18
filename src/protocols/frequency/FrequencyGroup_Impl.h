@@ -30,9 +30,12 @@ namespace aiengine {
 template <class A_Type>
 void FrequencyGroup<A_Type>::reset() {
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
 	int len = boost::python::len(flow_list_);
         for (int i = 0; i<len; ++i) flow_list_.pop();
+#elif defined(RUBY_BINDING)
+	// Clean the ruby array
+	rb_ary_clear(flow_list_);
 #else
 	flow_list_.clear();
 #endif
@@ -47,11 +50,12 @@ void FrequencyGroup<A_Type>::reset() {
 	total_computed_freqs_ = 0;
 }
 
-#ifdef PYTHON_BINDING
 template <class A_Type>
+#if defined(PYTHON_BINDING)
 boost::python::list FrequencyGroup<A_Type>::getReferenceFlowsByKey(A_Type key) { 
+#elif defined(RUBY_BINDING)
+VALUE FrequencyGroup<A_Type>::getReferenceFlowsByKey(A_Type key) { 
 #else
-template <class A_Type>
 std::vector<WeakPointer<Flow>> &FrequencyGroup<A_Type>::getReferenceFlowsByKey(A_Type key) { 
 #endif
 	auto it = group_map_.find(key);
@@ -60,8 +64,10 @@ std::vector<WeakPointer<Flow>> &FrequencyGroup<A_Type>::getReferenceFlowsByKey(A
 		FrequencyGroupItemPtr fgitem = it->second;
 		return fgitem->getReferenceFlows();
 	} else {
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
 		return boost::python::list();// empty_flow_list;
+#elif defined(RUBY_BINDING)
+		return Qnil;
 #else
 		static std::vector<WeakPointer<Flow>> empty_flow_list;
 		return empty_flow_list;	
@@ -70,11 +76,16 @@ std::vector<WeakPointer<Flow>> &FrequencyGroup<A_Type>::getReferenceFlowsByKey(A
 }
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlows(SharedPointer<FlowManager> flow_t, std::function <A_Type (SharedPointer<Flow>&)> condition) {
+void FrequencyGroup<A_Type>::agregateFlows(const SharedPointer<FlowManager>& flow_t, std::function <A_Type (SharedPointer<Flow>&)> condition) {
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
         int len = boost::python::len(flow_list_);
         for (int i = 0; i<len; ++i) flow_list_.pop();
+#elif defined(RUBY_BINDING)
+	rb_ary_clear(flow_list_);
+
+	ID id = rb_intern("Flow");
+        VALUE rbFlowClass = rb_const_get(rb_cObject,id);
 #else
         flow_list_.clear();
 #endif
@@ -106,8 +117,11 @@ void FrequencyGroup<A_Type>::agregateFlows(SharedPointer<FlowManager> flow_t, st
 				flow->frequency_engine_inspected = true;
 				
 				++total_process_flows_;
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
         			flow_list_.append(flow);
+#elif defined(RUBY_BINDING)
+	                	VALUE rbFlow = Data_Wrap_Struct(rbFlowClass, 0, 0, flow.get());	
+				rb_ary_push(flow_list_,rbFlow);
 #else
         			flow_list_.push_back(flow);
 #endif
@@ -133,31 +147,75 @@ void FrequencyGroup<A_Type>::compute() {
 }
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsBySourcePort(SharedPointer<FlowManager> flow_t) {
+#if defined(RUBY_BINDING)
+void FrequencyGroup<A_Type>::agregateFlowsBySourcePort(const FlowManager& flow_t) {
+
+	SharedPointer<FlowManager> f = std::make_shared<FlowManager>(flow_t);
+	agregateFlows(f, ([] (const SharedPointer<Flow>& flow) { return std::to_string(flow->getSourcePort());}));
+}
+#else
+void FrequencyGroup<A_Type>::agregateFlowsBySourcePort(const SharedPointer<FlowManager>& flow_t) {
 
 	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { return std::to_string(flow->getSourcePort());}));
 }
+#endif
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsByDestinationPort(SharedPointer<FlowManager> flow_t) {
+#if defined(RUBY_BINDING)
+void FrequencyGroup<A_Type>::agregateFlowsByDestinationPort(const FlowManager& flow_t) {
+	
+	SharedPointer<FlowManager> f = std::make_shared<FlowManager>(flow_t);
+	agregateFlows(f, ([] (const SharedPointer<Flow>& flow) { return std::to_string(flow->getDestinationPort());}));
+}
+#else
+void FrequencyGroup<A_Type>::agregateFlowsByDestinationPort(const SharedPointer<FlowManager>& flow_t) {
 
 	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { return std::to_string(flow->getDestinationPort());}));
 } 
+#endif
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsBySourceAddress(SharedPointer<FlowManager> flow_t) { 
+#if defined(RUBY_BINDING)
+void FrequencyGroup<A_Type>::agregateFlowsBySourceAddress(const FlowManager& flow_t) { 
+	
+	SharedPointer<FlowManager> f = std::make_shared<FlowManager>(flow_t);
+	agregateFlows(f, ([] (const SharedPointer<Flow>& flow) { return flow->getSrcAddrDotNotation();}));
+}
+#else
+void FrequencyGroup<A_Type>::agregateFlowsBySourceAddress(const SharedPointer<FlowManager>& flow_t) { 
 
 	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { return flow->getSrcAddrDotNotation();}));
 } 
+#endif
 	
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddress(SharedPointer<FlowManager> flow_t) { 
+#if defined(RUBY_BINDING)
+void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddress(const FlowManager& flow_t) { 
+	
+	SharedPointer<FlowManager> f = std::make_shared<FlowManager>(flow_t);
+	agregateFlows(f, ([] (const SharedPointer<Flow>& flow) { return flow->getDstAddrDotNotation();}));
+}
+#else
+void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddress(const SharedPointer<FlowManager>& flow_t) { 
 
 	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { return flow->getDstAddrDotNotation();}));
 } 
+#endif
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddressAndPort(SharedPointer<FlowManager> flow_t) {
+#if defined(RUBY_BINDING)
+void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddressAndPort(const FlowManager& flow_t) {
+
+	SharedPointer<FlowManager> f = std::make_shared<FlowManager>(flow_t);
+	agregateFlows(f, ([] (const SharedPointer<Flow>& flow) { 
+		std::ostringstream os;
+		
+		os << flow->getDstAddrDotNotation() << ":" << std::to_string(flow->getDestinationPort());	
+		return os.str();
+	}));
+}
+#else
+void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddressAndPort(const SharedPointer<FlowManager>& flow_t) {
 
 	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { 
 		std::ostringstream os;
@@ -165,11 +223,23 @@ void FrequencyGroup<A_Type>::agregateFlowsByDestinationAddressAndPort(SharedPoin
 		os << flow->getDstAddrDotNotation() << ":" << std::to_string(flow->getDestinationPort());	
 		return os.str();
 	}));
-
 }
+#endif
 
 template <class A_Type>
-void FrequencyGroup<A_Type>::agregateFlowsBySourceAddressAndPort(SharedPointer<FlowManager> flow_t) {
+#if defined(RUBY_BINDING)
+void FrequencyGroup<A_Type>::agregateFlowsBySourceAddressAndPort(const FlowManager& flow_t) {
+
+	SharedPointer<FlowManager> f = std::make_shared<FlowManager>(flow_t);
+	agregateFlows(f, ([] (const SharedPointer<Flow>& flow) { 
+		std::ostringstream os;
+		
+		os << flow->getSrcAddrDotNotation() << ":" << std::to_string(flow->getSourcePort());
+		return os.str();
+	}));
+}
+#else
+void FrequencyGroup<A_Type>::agregateFlowsBySourceAddressAndPort(const SharedPointer<FlowManager>& flow_t) {
 
 	agregateFlows(flow_t, ([] (const SharedPointer<Flow>& flow) { 
 		std::ostringstream os;
@@ -178,5 +248,5 @@ void FrequencyGroup<A_Type>::agregateFlowsBySourceAddressAndPort(SharedPointer<F
 		return os.str();
 	}));
 }
-
+#endif
 } // namespace aiengine

@@ -104,7 +104,7 @@ public:
 	void setFlowsTimeout(int timeout);
 	int getFlowsTimeout() const { return flow_table_tcp_->getTimeout(); }
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
         FlowManager &getTCPFlowManager() { return *flow_table_tcp_.get();}
         FlowManager &getUDPFlowManager() { return *flow_table_udp_.get();}
 #else

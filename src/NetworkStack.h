@@ -97,6 +97,12 @@ public:
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) 
 	void setDomainNameManager(DomainNameManager& dnm, const std::string& name);
 	void setDomainNameManager(DomainNameManager& dnm, const std::string& name, bool allow);
+	
+	virtual FlowManager& getTCPFlowManager() = 0;
+	virtual FlowManager& getUDPFlowManager() = 0;
+#else
+	virtual FlowManagerPtrWeak getTCPFlowManager() = 0;
+	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;
 #endif
 
 #ifdef RUBY_BINDING
@@ -110,10 +116,7 @@ public:
 	virtual void setTCPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) { tcp_ipset_mng_ = ipset_mng; }
 	virtual void setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) { udp_ipset_mng_ = ipset_mng; }
 
-#ifdef PYTHON_BINDING
-
-	virtual FlowManager& getTCPFlowManager() = 0;
-	virtual FlowManager& getUDPFlowManager() = 0;
+#if defined(PYTHON_BINDING)
 
 	void setTCPDatabaseAdaptor(boost::python::object &dbptr);
 	void setTCPDatabaseAdaptor(boost::python::object &dbptr,int packet_sampling);
@@ -130,10 +133,6 @@ public:
 	SharedPointer<IPSetManager> getUDPIPSetManager() const { return udp_ipset_mng_; }
 
 	const char *getLinkLayerTag() const { return link_layer_tag_name_.c_str(); } 
-
-#else
-	virtual FlowManagerPtrWeak getTCPFlowManager() = 0;
-	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;
 #endif
 
 #ifdef RUBY_BINDING

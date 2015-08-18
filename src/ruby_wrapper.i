@@ -17,6 +17,7 @@
 #include "StackOpenFlow.h"
 #include "names/DomainNameManager.h"
 #include "names/DomainName.h"
+#include "learner/LearnerEngine.h"
 %}
 
 %apply SWIGTYPE *DISOWN { Signature* signature };
@@ -43,43 +44,31 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::NetworkStack::setUDPRegexManager(const SharedPointer<RegexManager>& sig);
 %ignore aiengine::NetworkStack::setTCPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng);
 %ignore aiengine::NetworkStack::setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng);
-%ignore aiengine::NetworkStack::getTCPFlowManager;
-%ignore aiengine::NetworkStack::getUDPFlowManager;
 %ignore aiengine::NetworkStack::addProtocol;
 %ignore aiengine::NetworkStack::infoMessage;
 
 %ignore aiengine::StackLan::setLinkLayerMultiplexer;
 %ignore aiengine::StackLan::getLinkLayerMultiplexer;
-%ignore aiengine::StackLan::getTCPFlowManager;
-%ignore aiengine::StackLan::getUDPFlowManager;
 %ignore aiengine::StackLan::getTCPRegexManager;
 %ignore aiengine::StackLan::getUDPRegexManager;
 
 %ignore aiengine::StackMobile::setLinkLayerMultiplexer;
 %ignore aiengine::StackMobile::getLinkLayerMultiplexer;
-%ignore aiengine::StackMobile::getTCPFlowManager;
-%ignore aiengine::StackMobile::getUDPFlowManager;
 %ignore aiengine::StackMobile::getTCPRegexManager;
 %ignore aiengine::StackMobile::getUDPRegexManager;
 
 %ignore aiengine::StackLanIPv6::setLinkLayerMultiplexer;
 %ignore aiengine::StackLanIPv6::getLinkLayerMultiplexer;
-%ignore aiengine::StackLanIPv6::getTCPFlowManager;
-%ignore aiengine::StackLanIPv6::getUDPFlowManager;
 %ignore aiengine::StackLanIPv6::getTCPRegexManager;
 %ignore aiengine::StackLanIPv6::getUDPRegexManager;
 
 %ignore aiengine::StackVirtual::setLinkLayerMultiplexer;
 %ignore aiengine::StackVirtual::getLinkLayerMultiplexer;
-%ignore aiengine::StackVirtual::getTCPFlowManager;
-%ignore aiengine::StackVirtual::getUDPFlowManager;
 %ignore aiengine::StackVirtual::getTCPRegexManager;
 %ignore aiengine::StackVirtual::getUDPRegexManager;
 
 %ignore aiengine::StackOpenFlow::setLinkLayerMultiplexer;
 %ignore aiengine::StackOpenFlow::getLinkLayerMultiplexer;
-%ignore aiengine::StackOpenFlow::getTCPFlowManager;
-%ignore aiengine::StackOpenFlow::getUDPFlowManager;
 %ignore aiengine::StackOpenFlow::getTCPRegexManager;
 %ignore aiengine::StackOpenFlow::getUDPRegexManager;
 
@@ -227,6 +216,35 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::POPInfo::incServerCommands;
 %ignore aiengine::POPInfo::user_name;
 
+%ignore aiengine::LearnerEngine::agregatePacketFlow;
+%ignore aiengine::LearnerEngine::setFrequencyGroup;
+%ignore aiengine::LearnerEngine::agregateFlows;
+%ignore aiengine::LearnerEngine::setMaxBufferSize;
+%ignore aiengine::LearnerEngine::getQualityByte;
+%ignore aiengine::LearnerEngine::getRawExpression;
+%ignore aiengine::LearnerEngine::setMaxLenghtForRegularExpression;
+%ignore aiengine::LearnerEngine::getAsciiExpression;
+
+%ignore aiengine::FrequencyGroup::agregateFlows;
+//%ignore aiengine::FrequencyGroup::getReferenceFlows;
+%ignore aiengine::FrequencyGroup::getReferenceFlowsByKey;
+%ignore aiengine::FrequencyGroup::cbegin;
+%ignore aiengine::FrequencyGroup::cend;
+%ignore aiengine::FrequencyGroup::getName;
+%ignore aiengine::FrequencyGroup::setName;
+%ignore aiengine::FrequencyGroup::begin;
+%ignore aiengine::FrequencyGroup::end;
+
+%ignore aiengine::FlowManager::addFlow;
+%ignore aiengine::FlowManager::removeFlow;
+%ignore aiengine::FlowManager::findFlow;
+%ignore aiengine::FlowManager::updateTimers;
+%ignore aiengine::FlowManager::setFlowCache;
+%ignore aiengine::FlowManager::setTCPInfoCache;
+%ignore aiengine::FlowManager::getFlowTable;
+%ignore aiengine::FlowManager::getLastProcessFlow;
+%ignore aiengine::FlowManager::setProtocol;
+
 %rename("total_evaluates")		aiengine::Signature::getTotalEvaluates;
 %rename("expression")			aiengine::Signature::getExpression;
 %rename("next_regex=")			aiengine::Regex::setNextRegex;
@@ -280,9 +298,11 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("total_tcp_flows") 		getTotalTCPFlows;
 %rename("total_udp_flows=") 		setTotalUDPFlows;
 %rename("total_udp_flows") 		getTotalUDPFlows;
+%rename("tcp_flow_manager")		getTCPFlowManager;
 %rename("flows_timeout=")		setFlowsTimeout;
 %rename("flows_timeout")		getFlowsTimeout;
 %rename("enable_nids_engine=")		enableNIDSEngine;
+%rename("enable_frequency_engine=")	enableFrequencyEngine;
 %rename("link_layer_tag=")		enableLinkLayerTagging;
 %rename("add_regex")			addRegex;
 %rename("add_domain_name")		addDomainName;
@@ -293,6 +313,18 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("get_cache")			aiengine::NetworkStack::getCache;
 %rename("release_caches")		aiengine::NetworkStack::releaseCaches;
 %rename("release_cache")		aiengine::NetworkStack::releaseCache;
+%rename("total_process_flows")		aiengine::FrequencyGroup<std::string>::getTotalProcessFlows;
+%rename("total_computed_frequencies")	aiengine::FrequencyGroup<std::string>::getTotalComputedFrequencies;
+%rename("reference_flows")		aiengine::FrequencyGroup<std::string>::getReferenceFlows;
+%rename("add_flows_by_destination_port")	agregateFlowsByDestinationPort;
+%rename("add_flows_by_source_port")		agregateFlowsBySourcePort;
+%rename("add_flows_by_destination_address")	agregateFlowsByDestinationAddress;
+%rename("add_flows_by_source_address")		agregateFlowsBySourceAddress;
+%rename("add_flows_by_destination_address_and_port")	agregateFlowsByDestinationAddressAndPort;
+%rename("add_flows_by_source_address_and_port")	agregateFlowsBySourceAddressAndPort;
+%rename("regex")			aiengine::LearnerEngine::getRegularExpression;
+%rename("agregate_flows")		aiengine::LearnerEngine::agregateFlows;
+%rename("total_flows_process")		aiengine::LearnerEngine::getTotalFlowsProcess;
 
 %rename setDomainNameManager		set_domain_name_manager;
 
@@ -323,6 +355,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %include "ipset/IPSet.h"
 %include "ipset/IPSetManager.h"
 %include "DatabaseAdaptor.h"
+%include "flow/FlowManager.h"
 %include "NetworkStack.h"
 %include "StackLan.h"
 %include "StackMobile.h"
@@ -340,6 +373,10 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %include "protocols/imap/IMAPInfo.h"
 %include "protocols/pop/POPInfo.h"
 %include "Flow.h"
+%include "learner/LearnerEngine.h"
+%include "protocols/frequency/FrequencyGroup.h"
+
+%template(FrequencyGroupString) aiengine::FrequencyGroup<std::string>;
 
 %header %{
 
