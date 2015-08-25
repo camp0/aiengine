@@ -54,7 +54,7 @@ class StackLanUnitTests < Test::Unit::TestCase
     assert_equal(@pd.total_packets,14)
     assert_equal(d1.matchs, 1)
     assert_equal(d2.matchs, 0)
-    assert_equal(dmng.getTotalDomains(), 2)
+    assert_equal(dmng.total_domains, 2)
   end
 
   def test_2
@@ -82,7 +82,7 @@ class StackLanUnitTests < Test::Unit::TestCase
     @pd.close()
 
     assert_equal( @have_been_call , true)
-    assert_equal(@tcp_r.getTotalRegexs(), 2)
+    assert_equal(@tcp_r.total_regex, 2)
     assert_equal(r1.matchs, 1)
     assert_equal(r2.matchs, 0)
   end
@@ -190,7 +190,7 @@ class StackLanUnitTests < Test::Unit::TestCase
     dmng.add_domain_name(d)
 
     u = HTTPUriSet.new()
-    u.addURI("/images_blogs/gadgetlab/2013/08/AP090714043057-60x60.jpg")
+    u.add_uri("/images_blogs/gadgetlab/2013/08/AP090714043057-60x60.jpg")
     u.callback = method(:callback_uri)
 
     d.http_uri_set = u

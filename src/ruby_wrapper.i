@@ -35,6 +35,16 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 
 %ignore aiengine::free_list;
 
+%ignore aiengine::Frequencies; 
+%ignore aiengine::PacketFrequencies;
+%ignore aiengine::Callback::haveCallback;
+%ignore aiengine::Callback::executeCallback;
+//%ignore aiengine::Signature;
+
+%ignore aiengine::PACKET_RECVBUFSIZE;
+%ignore PCAP_NETMASK_UNKNOWN;
+%ignore aiengine::RegexNullDeleter;
+
 %ignore aiengine::NetworkStack::setName;
 %ignore aiengine::NetworkStack::setLinkLayerMultiplexer;
 %ignore aiengine::NetworkStack::getLinkLayerMultiplexer;
@@ -139,6 +149,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 
 %ignore aiengine::IPSetManager::addIPSet(const SharedPointer<IPAbstractSet> ipset);
 %ignore aiengine::IPSetManager::getMatchedIPSet;
+%ignore aiengine::IPSetManager::lookupIPAddress;
 
 %ignore aiengine::IPSet::getFalsePositiveRate;
 %ignore aiengine::IPSet::lookupIPAddress;
@@ -148,6 +159,12 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 
 %ignore aiengine::DomainName::setHTTPUriSet(const SharedPointer<HTTPUriSet>& uset);
 %ignore aiengine::DomainName::getHTTPUriSet;
+
+%ignore aiengine::HTTPUriSet::lookupURI;
+%ignore aiengine::HTTPUriSet::getFalsePositiveRate;
+%ignore aiengine::HTTPUriSet::getTotalLookups;
+%ignore aiengine::HTTPUriSet::getTotalLookupsIn;
+%ignore aiengine::HTTPUriSet::getTotalLookupsOut;
 
 %ignore aiengine::HTTPInfo::reset;
 %ignore aiengine::HTTPInfo::resetStrings;
@@ -230,7 +247,6 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::FrequencyGroup::getReferenceFlowsByKey;
 %ignore aiengine::FrequencyGroup::cbegin;
 %ignore aiengine::FrequencyGroup::cend;
-%ignore aiengine::FrequencyGroup::getName;
 %ignore aiengine::FrequencyGroup::setName;
 %ignore aiengine::FrequencyGroup::begin;
 %ignore aiengine::FrequencyGroup::end;
@@ -245,6 +261,12 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::FlowManager::getLastProcessFlow;
 %ignore aiengine::FlowManager::setProtocol;
 
+%rename("timeout=")			aiengine::FlowManager::setTimeout;
+%rename("timeout")			aiengine::FlowManager::getTimeout;
+%rename("total_flows")			aiengine::FlowManager::getTotalFlows;
+%rename("total_process_flows")		aiengine::FlowManager::getTotalProcessFlows;
+%rename("total_timeout_flows")		aiengine::FlowManager::getTotalTimeoutFlows;
+%rename("show_flows")			showFlows;
 %rename("total_evaluates")		aiengine::Signature::getTotalEvaluates;
 %rename("expression")			aiengine::Signature::getExpression;
 %rename("next_regex=")			aiengine::Regex::setNextRegex;
@@ -278,6 +300,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("dst_port")			aiengine::Flow::getDestinationPort;
 %rename("src_ip")			aiengine::Flow::getSrcAddrDotNotation;
 %rename("dst_ip")			aiengine::Flow::getDstAddrDotNotation;
+%rename("stack_name")			aiengine::PacketDispatcher::getStackName;
 %rename("pcap_filter=")			aiengine::PacketDispatcher::setPcapFilter;
 %rename("pcap_filter")			aiengine::PacketDispatcher::getPcapFilter;
 %rename("total_bytes")			aiengine::PacketDispatcher::getTotalBytes;
@@ -299,6 +322,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("total_udp_flows=") 		setTotalUDPFlows;
 %rename("total_udp_flows") 		getTotalUDPFlows;
 %rename("tcp_flow_manager")		getTCPFlowManager;
+%rename("udp_flow_manager")		getUDPFlowManager;
 %rename("flows_timeout=")		setFlowsTimeout;
 %rename("flows_timeout")		getFlowsTimeout;
 %rename("enable_nids_engine=")		enableNIDSEngine;
@@ -307,8 +331,11 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("add_regex")			addRegex;
 %rename("add_domain_name")		addDomainName;
 %rename("matchs")			aiengine::Signature::getMatchs;
-%rename("name")				aiengine::Signature::getName;
+%rename("name")				getName;
+%rename("name=")			setName;
 %rename("add_ip_address")		addIPAddress;
+%rename("stats_level=")			setStatisticsLevel;
+%rename("stats_level")			getStatisticsLevel;
 %rename("get_counters")			aiengine::NetworkStack::getCounters;
 %rename("get_cache")			aiengine::NetworkStack::getCache;
 %rename("release_caches")		aiengine::NetworkStack::releaseCaches;
@@ -325,7 +352,11 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("regex")			aiengine::LearnerEngine::getRegularExpression;
 %rename("agregate_flows")		aiengine::LearnerEngine::agregateFlows;
 %rename("total_flows_process")		aiengine::LearnerEngine::getTotalFlowsProcess;
-
+%rename("total_regex")			aiengine::RegexManager::getTotalRegexs;
+%rename("total_matching_regex")		aiengine::RegexManager::getTotalMatchingRegexs;
+%rename("add_uri")			aiengine::HTTPUriSet::addURI;
+%rename("total_domains")		aiengine::DomainNameManager::getTotalDomains;
+%rename("total_sets")			aiengine::IPSetManager::getTotalSets;
 %rename setDomainNameManager		set_domain_name_manager;
 
 %typemap(in) IPSetManager & "IPSetManager"
