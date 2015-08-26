@@ -35,11 +35,12 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 
 %ignore aiengine::free_list;
 
+%ignore aiengine::FlowDirection;
+
 %ignore aiengine::Frequencies; 
 %ignore aiengine::PacketFrequencies;
 %ignore aiengine::Callback::haveCallback;
 %ignore aiengine::Callback::executeCallback;
-//%ignore aiengine::Signature;
 
 %ignore aiengine::PACKET_RECVBUFSIZE;
 %ignore PCAP_NETMASK_UNKNOWN;
@@ -56,6 +57,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::NetworkStack::setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng);
 %ignore aiengine::NetworkStack::addProtocol;
 %ignore aiengine::NetworkStack::infoMessage;
+%ignore aiengine::NetworkStack::setPacketDispatcher;
 
 %ignore aiengine::StackLan::setLinkLayerMultiplexer;
 %ignore aiengine::StackLan::getLinkLayerMultiplexer;
@@ -146,6 +148,11 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::Flow::getTotalBytes;
 %ignore aiengine::Flow::getLastPacketTime;
 %ignore aiengine::Flow::getDuration;
+%ignore aiengine::Flow::getFrequencies;
+%ignore aiengine::Flow::getPacketFrequencies;
+%ignore aiengine::Flow::getFlowAnomaly;
+%ignore aiengine::Flow::getTotalPackets;
+%ignore aiengine::Flow::getTotalPacketsLayer7;
 
 %ignore aiengine::IPSetManager::addIPSet(const SharedPointer<IPAbstractSet> ipset);
 %ignore aiengine::IPSetManager::getMatchedIPSet;
@@ -173,7 +180,6 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::HTTPInfo::getDataChunkLength;
 %ignore aiengine::HTTPInfo::setDataChunkLength;
 %ignore aiengine::HTTPInfo::setIsBanned;
-%ignore aiengine::HTTPInfo::getIsBanned;
 %ignore aiengine::HTTPInfo::setHaveData;
 %ignore aiengine::HTTPInfo::getHaveData;
 %ignore aiengine::HTTPInfo::incTotalRequests;
@@ -183,6 +189,12 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::HTTPInfo::host;
 %ignore aiengine::HTTPInfo::ua;
 %ignore aiengine::HTTPInfo::matched_host;
+%ignore aiengine::HTTPInfo::getTotalRequests;
+%ignore aiengine::HTTPInfo::getTotalResponses;
+%ignore aiengine::HTTPInfo::getResponseCode;
+%ignore aiengine::HTTPInfo::setBanAndRelease;
+%ignore aiengine::HTTPInfo::setIsRelease;
+%ignore aiengine::HTTPInfo::getIsRelease;
 
 %ignore aiengine::SIPInfo::reset;
 %ignore aiengine::SIPInfo::resetStrings;
@@ -203,6 +215,8 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::DNSInfo::end;
 %ignore aiengine::DNSInfo::reset;
 %ignore aiengine::DNSInfo::resetStrings;
+%ignore aiengine::DNSInfo::getQueryType;
+%ignore aiengine::DNSInfo::setQueryType;
 
 %ignore aiengine::SSLInfo::reset;
 %ignore aiengine::SSLInfo::host;
@@ -232,6 +246,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::POPInfo::incClientCommands;
 %ignore aiengine::POPInfo::incServerCommands;
 %ignore aiengine::POPInfo::user_name;
+%ignore aiengine::POPInfo::resetStrings;
 
 %ignore aiengine::LearnerEngine::agregatePacketFlow;
 %ignore aiengine::LearnerEngine::setFrequencyGroup;
@@ -243,7 +258,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::LearnerEngine::getAsciiExpression;
 
 %ignore aiengine::FrequencyGroup::agregateFlows;
-//%ignore aiengine::FrequencyGroup::getReferenceFlows;
+%ignore aiengine::FrequencyGroup::setLogLevel;
 %ignore aiengine::FrequencyGroup::getReferenceFlowsByKey;
 %ignore aiengine::FrequencyGroup::cbegin;
 %ignore aiengine::FrequencyGroup::cend;
@@ -291,6 +306,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("user_agent")			aiengine::HTTPInfo::getUserAgent;
 %rename("host_name")			aiengine::HTTPInfo::getHostName;
 %rename("uri")				aiengine::HTTPInfo::getUri;
+%rename("banned")			aiengine::HTTPInfo::getIsBanned;
 %rename("http_uri_set=")		aiengine::DomainName::setHTTPUriSet;
 %rename("http_info")			aiengine::Flow::getHTTPInfo;
 %rename("tag")				aiengine::Flow::getTag;
