@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS =	test_ip.h
+noinst_HEADERS =	IPv4Header.h IPv4HdrIncl.h IPProtocol.h test_ip.h
 
 TEST = test_ip
 

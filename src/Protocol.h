@@ -130,6 +130,8 @@ public:
         virtual void setDomainNameManager(DomainNameManagerPtrWeak dnm) {} // Non pure virtual methods
         virtual void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) {}
 
+	virtual void addRejectFunction(std::function <void (Flow*)> reject) {}
+
 #ifdef PYTHON_BINDING
         virtual boost::python::dict getCounters() const = 0;
 	virtual boost::python::dict getCache() const { return boost::python::dict(); }

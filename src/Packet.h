@@ -25,6 +25,7 @@
 #define SRC_PACKET_H_
 
 #include <iostream>
+#include "RawPacket.h"
 #include "AnomalyManager.h"
 
 namespace aiengine {
@@ -34,7 +35,10 @@ class Packet
 public:
     	explicit Packet(unsigned char *packet,int length, int prev_header_size,
 		PacketAnomalyType pa, time_t packet_time):
-		length_(length),packet_(packet),prev_header_size_(prev_header_size),
+		curr_packet(packet,length),prev_packet(packet,length),
+		link_packet(packet,length),net_packet(packet,length),
+		trans_packet(packet,length),
+		prev_header_size_(prev_header_size),
 		source_port_(0),dest_port_(0),pa_(pa),packet_time_(packet_time),
 		have_tag_(false),tag_(0xffffffff) {}
 	
@@ -49,7 +53,8 @@ public:
 
     	explicit Packet():Packet(nullptr,0,0,PacketAnomalyType::NONE,0) {}
 
-	Packet(const Packet& p):length_(p.length_),packet_(p.packet_),
+	Packet(const Packet& p):curr_packet(p.curr_packet),prev_packet(p.prev_packet),
+		link_packet(p.link_packet),net_packet(p.net_packet),trans_packet(p.trans_packet),
 		prev_header_size_(p.prev_header_size_),
 		source_port_(p.source_port_),
 		dest_port_(p.dest_port_),
@@ -65,8 +70,8 @@ public:
 	void setPacketTime(time_t packet_time) { packet_time_ = packet_time; }
 	time_t getPacketTime() const { return packet_time_; }
 
-	void setPayload(unsigned char *packet) { packet_ = packet; }
-	void setPayloadLength(int length) { length_ = length;}
+	void setPayload(unsigned char *packet) { prev_packet.setPayload(curr_packet.getPayload()); curr_packet.setPayload(packet); }
+	void setPayloadLength(int length) { curr_packet.setLength(length);}
 	void setPrevHeaderSize(int size) { prev_header_size_ = size;}
 
 	void setDestinationPort(uint16_t port) { dest_port_ = port;}
@@ -82,25 +87,29 @@ public:
 	uint16_t getDestinationPort() { return dest_port_;}
 	uint16_t getSourcePort() { return source_port_;}
 
-	unsigned char *getPayload() { return packet_;}
-	int getLength()  { return length_;}
+	unsigned char *getPayload() { return curr_packet.getPayload();}
+	unsigned char *getPrevPayload() { return prev_packet.getPayload();}
+	int getLength()  { return curr_packet.getLength();}
 	int getPrevHeaderSize()  { return prev_header_size_;}
 
 	friend std::ostream& operator<<(std::ostream& os, const Packet& p) {
 	
-		os << "Begin packet(" << &p << ") length:" << p.length_ << " prev header size:" << p.prev_header_size_;
+		os << "Begin packet(" << &p << ") length:" << p.curr_packet.getLength() << " prev header size:" << p.prev_header_size_;
 		os << " anomaly:" << " " /* PacketAnomalies[static_cast<int8_t>(p.pa_)].name */ << " time:" << p.packet_time_;
 		os << " sport:" << p.source_port_ << " dport:" << p.dest_port_ << std::endl;
-		for (int i = 0;i< p.length_;++i) {
-			os << std::hex << (int)p.packet_[i] << " ";
+		for (int i = 0;i< p.curr_packet.getLength(); ++i) {
+			os << std::hex << (int)p.curr_packet.getPayload()[i] << " ";
 		}
 		os << std::endl << "End packet" << std::endl; 
 		return os;
 	}	
 
+	RawPacket curr_packet;
+	RawPacket prev_packet;
+	RawPacket link_packet;
+	RawPacket net_packet;
+	RawPacket trans_packet;
 private:
-	int length_;
-	unsigned char *packet_;
 	int prev_header_size_;
 	uint16_t source_port_;
 	uint16_t dest_port_;

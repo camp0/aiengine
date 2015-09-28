@@ -57,6 +57,7 @@ public:
 		total_flags_fin_(0),
 		last_timeout_(0),packet_time_(0) {
 
+		addRejectFunction(std::bind(&TCPProtocol::default_reject_function,this,std::placeholders::_1));
 		CacheManager::getInstance()->setCache(tcp_info_cache_);
 	}
 
@@ -150,6 +151,8 @@ public:
         void createTCPInfos(int number) { tcp_info_cache_->create(number);}
         void destroyTCPInfos(int number) { tcp_info_cache_->destroy(number);}
 
+	void addRejectFunction(std::function <void (Flow*)> reject) { reject_func_ = reject; } 
+
 	Flow *getCurrentFlow() { return current_flow_;} // used just for testing pourposes
 
 	int64_t getAllocatedMemory() const;
@@ -162,6 +165,7 @@ public:
 
 private:
         SharedPointer<Flow> getFlow(const Packet& packet);
+	void default_reject_function(Flow *flow) {}
 
 	int stats_level_;
 	FlowManagerPtr flow_table_;
@@ -178,6 +182,7 @@ private:
 	int32_t total_flags_fin_;
        	time_t last_timeout_;
        	time_t packet_time_;
+	std::function <void (Flow*)> reject_func_;
 };
 
 typedef std::shared_ptr<TCPProtocol> TCPProtocolPtr;

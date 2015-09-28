@@ -498,6 +498,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Gets the total number of bytes.")
 		.add_property("havetag",&Flow::haveTag,
 			"Gets if the flow have tag from lower network layers.")
+		.add_property("reject", &Flow::isReject, &Flow::setReject,
+                        "Gets/Sets the reject of the connection.")
 		.add_property("tag",&Flow::getTag,
 			"Gets the tag from lower network layers.")
 		.add_property("httpinfo",make_function(&Flow::getHTTPInfo,return_internal_reference<>()),

@@ -48,7 +48,8 @@ StackLan::StackLan():
 	flow_cache_tcp_(FlowCachePtr(new FlowCache())),
 	// FlowForwarders
 	ff_tcp_(FlowForwarderPtr(new FlowForwarder())),
-	ff_udp_(FlowForwarderPtr(new FlowForwarder())) {
+	ff_udp_(FlowForwarderPtr(new FlowForwarder())),
+	rj_mng_() {
 
 	setName("Lan network stack");
 
@@ -304,6 +305,24 @@ void StackLan::setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) 
 
 	udp_->setIPSetManager(ipset_mng);
 	super_::setUDPIPSetManager(ipset_mng);
+}
+
+
+void StackLan::setAsioService(boost::asio::io_service& io_service) {
+
+	// Create a new RejectManager with their corresponding sockets
+
+#ifdef HAVE_REJECT_FLOW
+	if (geteuid() == 0) { // The process have rights on raw sockets
+		rj_mng_ = SharedPointer<RejectManager<StackLan>>(new RejectManager<StackLan>(io_service));
+		if (rj_mng_->ready()) {
+			// Attach the reject function to the corresponding protocols tcp/udp
+			tcp_->addRejectFunction(std::bind(&RejectManager<StackLan>::rejectTCPFlow,rj_mng_,std::placeholders::_1));
+			udp_->addRejectFunction(std::bind(&RejectManager<StackLan>::rejectUDPFlow,rj_mng_,std::placeholders::_1));
+		}
+	}
+#endif 
+
 }
 
 } // namespace aiengine

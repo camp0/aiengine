@@ -55,6 +55,7 @@ void Flow::reset() {
 	dest_port_ = 0;
 	protocol_ = 0;
 	have_tag_ = false;
+	reject_ = false;
 	tag_ = 0xffffffff;	
 	ipset.reset();	
 	forwarder.reset();
@@ -265,6 +266,8 @@ void Flow::showFlowInfo(std::ostream& out) {
 	}
 
         if (!regex.expired()) out << " Regex:" << regex.lock()->getName();
+
+	if (isReject()) out << " Rejected";
 
 	if (!frequencies.expired()) {
 		SharedPointer<Frequencies> f = frequencies.lock();

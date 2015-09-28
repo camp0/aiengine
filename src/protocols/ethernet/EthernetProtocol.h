@@ -82,11 +82,14 @@ public:
 	
 		int length = packet.getLength();
 
-		if (length >= 54 && length <= ETHER_MAX_LEN) {
-			setHeader(packet.getPayload());
+		if (length >= 40 && length <= ETHER_MAX_LEN) {
+			unsigned char *pkt = packet.getPayload();
+			setHeader(pkt);
 
 			// The packet dont contains an anomaly by default
 			packet.setPacketAnomaly(PacketAnomalyType::NONE);
+			packet.link_packet.setPayload(pkt);
+			packet.link_packet.setLength(length);
 			++total_validated_packets_;
 			total_bytes_ += length; 
 			return true;

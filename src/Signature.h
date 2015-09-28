@@ -54,7 +54,8 @@ public:
 	 	call(),	
 #endif
 		name_(name),
-		expression_(exp)
+		expression_(exp),
+		reject_connection_(false)
 	{}	
 
 	Signature():Signature("","") {}
@@ -77,6 +78,8 @@ public:
 	void setCallback(VALUE callback) { call.setCallback(callback); }
 #endif
 
+	bool getRejectConnection() const { return reject_connection_; }
+
 	int32_t total_matchs_;
 	int32_t total_evaluates_;
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
@@ -86,6 +89,7 @@ public:
 private:
 	std::string name_;	
 	std::string expression_;	
+	bool reject_connection_;
 };
 
 } // namespace aiengine

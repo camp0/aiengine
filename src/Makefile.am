@@ -10,8 +10,8 @@ EXTRA_FLAGS = -O3
 
 EXTRA_DIST = python_wrapper.cc ruby_wrapper.i setup.py MANIFEST.in ruai_test.rb
 
-noinst_HEADERS =        Packet.h Pointer.h \
-			Protocol.h AnomalyManager.h \
+noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
+			Protocol.h AnomalyManager.h RejectManager.h \
 			PacketDispatcher.h \
 			NetworkStack.h \
 			StackLan.h \
@@ -105,7 +105,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/ntp/NTPProtocol.cc \
 			protocols/snmp/SNMPProtocol.cc \
 			regex/Regex.cc \
-			regex/RegexManager.cc \
+			regex/RegexManager.cc RejectManager.cc \
 			protocols/frequency/FrequencyProtocol.cc \
 			protocols/frequency/FrequencyCounter.cc \
 			learner/LearnerEngine.cc \
@@ -199,7 +199,7 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		StackLan.o StackMobile.o StackLanIPv6.o StackVirtual.o StackOpenFlow.o \
 		FlowManager.o Interpreter.o \
 		IPSetManager.o IPSet.o HTTPUriSet.o \
-		DomainNameManager.o DomainName.o
+		DomainNameManager.o DomainName.o RejectManager.o
 
 tests_CPPFLAGS = $(BOOST_CPPFLAGS) 
 # Dont forget to put -lgcov if need on test_LDADD

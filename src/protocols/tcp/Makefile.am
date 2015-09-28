@@ -1,6 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS =	test_tcp.h TCPStates.h TCPProtocol.h TCPInfo.h
+noinst_HEADERS =	test_tcp.h TCPStates.h TCPProtocol.h TCPInfo.h TCPHeader.h \
+			TCPRawSocket.h
 
 TEST = test_tcp
 

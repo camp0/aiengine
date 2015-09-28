@@ -26,6 +26,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <boost/asio.hpp>
 #include "Multiplexer.h"
 #include "names/DomainNameManager.h"
 #include "regex/RegexManager.h"
@@ -147,6 +148,8 @@ public:
 	void addProtocol(ProtocolPtr proto); 
 	void setStatisticsLevel(int level); 
 	int getStatisticsLevel() const { return stats_level_; }
+
+	virtual void setAsioService(boost::asio::io_service& io_service) {}
 
 	void infoMessage(const std::string& msg);
 

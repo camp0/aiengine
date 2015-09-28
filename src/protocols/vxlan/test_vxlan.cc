@@ -66,10 +66,8 @@ BOOST_AUTO_TEST_CASE (test2_vxlan)
         BOOST_CHECK(vxlan->getTotalMalformedPackets() == 0);
         BOOST_CHECK(vxlan->getTotalBytes() == 50);
 
-	// TODO:The Ethernet protocolo have a checker IS_ETHER_HEADER that
-	// is form 64 to 1518, so the ARP packets are consider as malformed
-        BOOST_CHECK(eth_vir->getTotalMalformedPackets() == 1);
-        BOOST_CHECK(eth_vir->getTotalPackets() == 0);
+        BOOST_CHECK(eth_vir->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(eth_vir->getTotalPackets() == 1);
 }
 
 // Ethernet with IP and ICMP reply 

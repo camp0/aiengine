@@ -300,6 +300,25 @@ else
 fi
 
 ##########################################################################
+# TCP/UDP reject connection support
+##########################################################################
+
+AC_MSG_CHECKING([whether to reject TCP/UDP connections support])
+AC_ARG_ENABLE([reject],
+    [AS_HELP_STRING([--enable-reject],
+        [enable TCP/UDP reject connection support (def=no)])],
+    [reject_support=yes],
+    [reject_support=no])
+AC_MSG_RESULT([$reject_support])
+
+if test x"$reject_support" = x"yes"; then
+    AC_DEFINE([HAVE_REJECT_FLOW],[1],[TCP/UDP reject flow support])
+#else
+#    AC_DEFINE([HAVE_REJECT_FLOW],[0],[TCP/UDP reject flow support])
+fi
+
+
+##########################################################################
 
 CXXFLAGS=$AM_CXXFLAGS
 
@@ -353,27 +372,28 @@ AC_OUTPUT
 echo "
   aiengine 
   ($PACKAGE_NAME) version $PACKAGE_VERSION
-  Host................: $host 
-  Prefix..............: $prefix
-  Debug Build.........: $debugit
-  C++ version.........: $cxx_version 
-  C++ compiler........: $CXX $AM_CXXFLAGS $CPPFLAGS 
-  C++11 support.......: $ac_cv_cxx_compile_cxx11_cxx
-  Linker..............: $LD $LDFLAGS $LIBS
-  Boost include.......: $BOOST_CPPFLAGS/boost
-  Boost...............: $boost_lib_version_req
-  Boost unit tests....: $unittestsit
-  Boost python lib....: $BOOST_PYTHON_LIB
-  Python..............: $PYTHON_VERSION $ax_python_bin 
-  Python include path.: $python_path
-  Log4cxx.............: $ac_cv_lib_log4cxx_main
-  Libpcap.............: $ac_cv_lib_pcap_main
-  Pcre................: $WITH_PCRE
-  Pcre JIT............: $pcre_jit_works
-  Database support....: $adaptor_support
-  Bloom filter support: $bloom_support
-  Flow sc support.....: $fscompress_support
-  Swig support........: $enable_swig
-  TCP Qos support.....: $tcpqos
+  Host..................: $host 
+  Prefix................: $prefix
+  Debug Build...........: $debugit
+  C++ version...........: $cxx_version 
+  C++ compiler..........: $CXX $AM_CXXFLAGS $CPPFLAGS 
+  C++11 support.........: $ac_cv_cxx_compile_cxx11_cxx
+  Linker................: $LD $LDFLAGS $LIBS
+  Boost include.........: $BOOST_CPPFLAGS/boost
+  Boost.................: $boost_lib_version_req
+  Boost unit tests......: $unittestsit
+  Boost python lib......: $BOOST_PYTHON_LIB
+  Python................: $PYTHON_VERSION $ax_python_bin 
+  Python include path...: $python_path
+  Log4cxx...............: $ac_cv_lib_log4cxx_main
+  Libpcap...............: $ac_cv_lib_pcap_main
+  Pcre..................: $WITH_PCRE
+  Pcre JIT..............: $pcre_jit_works
+  Database support......: $adaptor_support
+  Bloom filter support..: $bloom_support
+  Flow sc support.......: $fscompress_support
+  Swig support..........: $enable_swig
+  TCP Qos support.......: $tcpqos
+  TCP/UDP reject support: $reject_support
 "
 

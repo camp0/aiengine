@@ -105,6 +105,7 @@ private:
 	unsigned char *tcp_generic_header_;
         int64_t total_bytes_;
 	SharedPointer<RegexManager> sigs_;
+
 };
 
 typedef std::shared_ptr<TCPGenericProtocol> TCPGenericProtocolPtr;

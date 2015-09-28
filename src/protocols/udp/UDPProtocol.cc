@@ -196,6 +196,12 @@ bool UDPProtocol::processPacket(Packet& packet) {
 			} 
 		}
 #endif
+		// Check if the flow have been rejected by the external login in python/ruby
+		if (flow->isReject()) {
+			reject_func_(flow.get());
+			flow->setReject(false);
+		}
+
 		// Check if we need to update the timers of the flow manager
 		if ((packet_time_ - flow_table_->getTimeout()) > last_timeout_ ) {
 			last_timeout_ = packet_time_;

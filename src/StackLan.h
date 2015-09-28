@@ -77,6 +77,7 @@
 #include "flow/FlowCache.h"
 #include "NetworkStack.h"
 #include "DatabaseAdaptor.h"
+#include "RejectManager.h"
 
 namespace aiengine {
 
@@ -125,6 +126,8 @@ public:
         void setUDPIPSetManager(IPSetManager& ipset_mng) { setUDPIPSetManager(std::make_shared<IPSetManager>(ipset_mng)); }
 #endif
 
+	void setAsioService(boost::asio::io_service& io_service);
+
 private:
 	typedef NetworkStack super_;
 #ifdef HAVE_LIBLOG4CXX
@@ -153,6 +156,8 @@ private:
         // FlowForwarders
         FlowForwarderPtr ff_tcp_;
         FlowForwarderPtr ff_udp_;
+
+	SharedPointer<RejectManager<StackLan>> rj_mng_;
 };
 
 typedef std::shared_ptr<StackLan> StackLanPtr;

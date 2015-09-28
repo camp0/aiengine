@@ -47,7 +47,10 @@ public:
     	explicit UDPProtocol(const std::string& name):Protocol(name),stats_level_(0),
 		flow_table_(),flow_cache_(),sigs_(),
 		udp_header_(nullptr),current_flow_(nullptr),total_bytes_(0),
-		last_timeout_(0),packet_time_(0) {}
+		last_timeout_(0),packet_time_(0) {
+
+		addRejectFunction(std::bind(&UDPProtocol::default_reject_function,this,std::placeholders::_1));
+	}
     	
 	explicit UDPProtocol():UDPProtocol(UDPProtocol::default_name) {}
 
@@ -111,6 +114,8 @@ public:
 	void setFlowCache(FlowCachePtr flow_cache) { flow_cache_ = flow_cache;}
 	FlowCachePtr getFlowCache() { return flow_cache_;}
 
+	void addRejectFunction(std::function <void (Flow*)> reject) { reject_func_ = reject; }
+
 	void setRegexManager(const SharedPointer<RegexManager>& sig) { sigs_ = sig;}
 
 	Flow *getCurrentFlow() { return current_flow_;} // used just for testing pourposes
@@ -125,6 +130,7 @@ public:
 
 private:
 	SharedPointer<Flow> getFlow(const Packet& packet); 
+	void default_reject_function(Flow *flow) {}
 
 	int stats_level_;	
 	FlowManagerPtr flow_table_;
@@ -135,6 +141,8 @@ private:
 	int64_t total_bytes_;
 	time_t last_timeout_;
 	time_t packet_time_;
+
+	std::function <void (Flow*)> reject_func_;
 };
 
 typedef std::shared_ptr<UDPProtocol> UDPProtocolPtr;

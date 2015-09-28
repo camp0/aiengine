@@ -38,6 +38,8 @@ bool EthernetProtocol::processPacket(Packet& packet) {
                 mux->setNextProtocolIdentifier(getEthernetType());
 
                 mux->setHeaderSize(header_size);
+		packet.link_packet.setPayload(packet.getPayload());
+		packet.link_packet.setLength(packet.getLength());
                 packet.setPrevHeaderSize(header_size);
 	}
 	return true;

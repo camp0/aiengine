@@ -134,8 +134,7 @@ public:
 	void status(void);
 	const char *getStackName() const { return stack_name_.c_str(); }
 
-
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
 
 	// For implement the 'with' statement in python needs the methods __enter__ and __exit__
 	PacketDispatcher& __enter__(); 
@@ -149,7 +148,7 @@ public:
 
 	const char *getStatus() const ;
 #else
-        void setStack(StackLan& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock()); }
+        void setStack(StackLan& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock()); } 
         void setStack(StackMobile& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
         void setStack(StackLanIPv6& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
         void setStack(StackVirtual& stack) { stack_name_ = stack.getName(); setDefaultMultiplexer(stack.getLinkLayerMultiplexer().lock());}
@@ -159,7 +158,11 @@ public:
 	int64_t getTotalBytes(void) const { return total_bytes_;}
 	int64_t getTotalPackets(void) const { return total_packets_;}
 
-	void setStack(const SharedPointer<NetworkStack>& stack) { stack_name_ = stack->getName(); setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());}
+	void setStack(const SharedPointer<NetworkStack>& stack) { 
+		stack_name_ = stack->getName(); 
+		setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());
+		stack->setAsioService(io_service_);
+	}
 
 	void setDefaultMultiplexer(MultiplexerPtr mux); // just use for the unit tests
 	void setIdleFunction(std::function <void ()> idle_function) { idle_function_ = idle_function;}

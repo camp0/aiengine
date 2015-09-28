@@ -75,6 +75,8 @@ void TCPGenericProtocol::processFlow(Flow *flow) {
 				regex->call.executeCallback(flow);
                         }
 #endif
+			if (regex->getRejectConnection()) flow->setReject(true);
+			
 		}	
 	}
 }

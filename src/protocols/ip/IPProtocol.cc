@@ -44,6 +44,9 @@ bool IPProtocol::processPacket(Packet& packet) {
 
 	mux->total_length = bytes;
 	total_bytes_ += bytes;
+
+	packet.net_packet.setPayload(packet.getPayload());
+        packet.net_packet.setLength(bytes);
 	
 	mux->setNextProtocolIdentifier(getProtocol());
 	packet.setPrevHeaderSize(header_size);
