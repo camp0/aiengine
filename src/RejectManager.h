@@ -52,13 +52,9 @@ public:
 
 	RejectManager(boost::asio::io_service& io_service):total_tcp_rejects_(0),total_udp_rejects_(0),
 		tcp_socket_(io_service, TCPRawSocket::v4()), 
-		icmp_socket_(io_service, ICMPRawSocket::v4()),
-		data_buffer_(),packet_out_(&data_buffer_)
+		icmp_socket_(io_service, ICMPRawSocket::v4())
 	{
-		boost::asio::socket_base::debug option(true);
-		icmp_socket_.set_option(option);
 		std::srand(std::time(NULL));
-		data_buffer_.prepare(512);
 		tcp_socket_.set_option(IPv4HdrIncl(true));
 		icmp_socket_.set_option(IPv4HdrIncl(true));
 	}
@@ -73,19 +69,11 @@ public:
 	void rejectTCPFlow(Flow *flow);
 	void rejectUDPFlow(Flow *flow);
 
-	void write_info2(boost::system::error_code ec, std::size_t bytes_transferred); 
-	void write_info1(boost::system::error_code ec); 
 private:
 	int32_t total_tcp_rejects_;
 	int32_t total_udp_rejects_;
 	TCPRawSocket::socket tcp_socket_;
 	ICMPRawSocket::socket icmp_socket_;
-
-        boost::asio::streambuf data_buffer_; //
-        std::ostream packet_out_; // (&up_buffer);
-
-	static char buffer_[1024];
-	int length_buffer_;
 };
 
 } // namespace aiengine

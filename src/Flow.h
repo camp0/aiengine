@@ -73,6 +73,9 @@ public:
 	bool isReject() const { return reject_; }
 	void setReject(bool reject) { reject_ = reject; }
 
+	bool isPartialReject() const { return partial_reject_; }
+	void setPartialReject(bool reject) { partial_reject_ = reject; }
+
 	bool haveTag() const { return have_tag_; }
 	void setTag(uint32_t tag) { have_tag_ = true; tag_ = tag; }
 	uint32_t getTag() const { return tag_; }
@@ -205,6 +208,7 @@ private:
 	uint32_t tag_;
 	bool have_tag_;
 	bool reject_; // The flow can be reject from the ruby/python side
+	bool partial_reject_; // For UDP flows
 	FlowDirection direction_; 
 	FlowDirection prev_direction_; 
 	PacketAnomalyType pa_;

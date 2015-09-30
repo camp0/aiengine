@@ -40,8 +40,9 @@ class ICMPRawSocket
 public:
   	typedef boost::asio::ip::basic_endpoint<ICMPRawSocket> endpoint;
 
-  	static ICMPRawSocket v4() { return ICMPRawSocket(IPPROTO_ICMP, AF_INET); }
-		static ICMPRawSocket v6() { return ICMPRawSocket(IPPROTO_ICMP, AF_INET6); }
+  	static ICMPRawSocket v4() { return ICMPRawSocket(IPPROTO_RAW, PF_INET); }
+  	//static ICMPRawSocket v4() { return ICMPRawSocket(IPPROTO_ICMP, AF_INET); }
+	static ICMPRawSocket v6() { return ICMPRawSocket(IPPROTO_ICMP, AF_INET6); }
 
   	int type() const { return SOCK_RAW; }
   	int protocol() const { return protocol_; }

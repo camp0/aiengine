@@ -59,8 +59,8 @@ public:
 	IPv4Header(uint8_t protocol,uint32_t src, uint32_t dst):iphdr_{5,4,0x10,0,0,0x40,default_ttl,protocol,0,src,dst} {}
 	IPv4Header(uint8_t protocol,const char *src, const char*dst):
 		IPv4Header(protocol,inet_addr(src),inet_addr(dst)) {}
-	IPv4Header(uint32_t src, uint32_t dst):IPv4Header(src,dst) {}
-	IPv4Header():IPv4Header(0,0) {}
+	IPv4Header(uint8_t protocol):IPv4Header(protocol,(uint32_t)0,(uint32_t)0) {}
+	IPv4Header():IPv4Header((uint8_t)0,(uint32_t)0,(uint32_t)0) {}
     	
 	virtual ~IPv4Header() {}
  
@@ -78,8 +78,8 @@ public:
 	uint32_t getDestinationAddress() const { return ntohl(iphdr_.daddr); } 
 
 	void setId(uint16_t id) { iphdr_.id = htons(id); }
-	void setSourceAddress(uint32_t src) { iphdr_.saddr = htonl(src); }	
-	void setDestinationAddress(uint32_t dst) { iphdr_.daddr = htonl(dst); }	
+	void setSourceAddress(uint32_t src) { iphdr_.saddr = src; }	
+	void setDestinationAddress(uint32_t dst) { iphdr_.daddr = dst; }	
 	void setVersion(uint8_t version) { iphdr_.version = version; }
 	void setIhl(uint8_t ihl) { iphdr_.ihl = ihl; }
 	void setTypeOfService(uint8_t tos) { iphdr_.tos = tos; }

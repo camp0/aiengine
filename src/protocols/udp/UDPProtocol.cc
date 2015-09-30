@@ -118,7 +118,15 @@ SharedPointer<Flow> UDPProtocol::getFlow(const Packet& packet) {
 #endif
 				}
 			}
-		}
+                } else {
+                        /* In order to identificate the flow direction we use the port */
+                        /* May be there is another way to do it, but this way consume low CPU */
+                        if (getSrcPort() == flow->getSourcePort()) {
+                                flow->setFlowDirection(FlowDirection::FORWARD);
+                        } else {
+                                flow->setFlowDirection(FlowDirection::BACKWARD);
+                        }
+                }
 	}
 	return flow; 
 }
@@ -199,7 +207,11 @@ bool UDPProtocol::processPacket(Packet& packet) {
 		// Check if the flow have been rejected by the external login in python/ruby
 		if (flow->isReject()) {
 			reject_func_(flow.get());
-			flow->setReject(false);
+			if (flow->isPartialReject()) {
+				flow->setReject(false);
+			} else {
+				flow->setPartialReject(true);
+			}	
 		}
 
 		// Check if we need to update the timers of the flow manager

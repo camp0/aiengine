@@ -42,6 +42,13 @@ public:
     	
 	virtual ~ICMPHeader() {}
 
+	uint8_t getType() const { return icmphdr_.type; }
+	uint8_t getCode() const { return icmphdr_.code; }
+	uint16_t getId() const { return icmphdr_.un.echo.id; }
+	uint16_t getSequenceNumber() const { return icmphdr_.un.echo.sequence; }
+
+	void setChecksum(uint16_t check) { icmphdr_.checksum = htons(check); }
+	uint16_t getChecksum() const { return ntohs(icmphdr_.checksum); }
 /* 
 	uint8_t getVersion() const { return iphdr_.version; }
 	uint8_t getIhl() const { return iphdr_.ihl; }
@@ -76,8 +83,15 @@ public:
                 return is.read(raw,sizeof(hdr.icmphdr_));
         }
 
+	void checksum1(const std::string& payload) {
+
+		const unsigned short *buffer = reinterpret_cast<const unsigned short*>(payload.c_str());
+		std::cout << "Checksum1:" << checksum(buffer,payload.length()) << " " << ntohs(checksum(buffer,payload.length())) << std::endl;
+
+	}
+
 private:
-    	unsigned short checksum(unsigned short *buf, int bufsz) {
+    	unsigned short checksum(const unsigned short *buf, int bufsz) {
       		unsigned long sum = 0;
         
 		while( bufsz > 1 ) {
@@ -93,6 +107,28 @@ private:
 
 	struct icmphdr icmphdr_;
 };
+
+template <typename Iterator>
+void compute_checksum(ICMPHeader& header,
+    Iterator body_begin, Iterator body_end)
+{
+  unsigned int sum = (header.getType() << 8) + header.getCode()
+    + header.getId() + header.getSequenceNumber();
+
+  Iterator body_iter = body_begin;
+  while (body_iter != body_end)
+  {
+    sum += (static_cast<unsigned char>(*body_iter++) << 8);
+    if (body_iter != body_end)
+      sum += static_cast<unsigned char>(*body_iter++);
+  }
+
+  sum = (sum >> 16) + (sum & 0xFFFF);
+  sum += (sum >> 16);
+  header.setChecksum(static_cast<unsigned short>(~sum));
+}
+
+
 
 } // namespace aiengine
 

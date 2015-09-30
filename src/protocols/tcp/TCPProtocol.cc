@@ -243,6 +243,7 @@ bool TCPProtocol::processPacket(Packet &packet) {
 			if (flow->isReject()) {
 				reject_func_(flow.get());
 				flow->setReject(false);
+				flow->setPartialReject(true);
 			}
 
 			// Check if we need to update the timers of the flow manager
