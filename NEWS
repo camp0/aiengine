@@ -116,3 +116,4 @@ Features/Changes of 1.3
 - Update on real time the setScheduler functionality (TODO multiple setScheduler, for having more functions).
 - Support for Ruby Language.
 - Support for TCP QoS metrics (--enable-tcpqos).
+- Support for reject TCP/UDP connections on StackLans (--enable-reject).

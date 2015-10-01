@@ -86,8 +86,8 @@ SharedPointer<Flow> TCPProtocol::getFlow(const Packet& packet) {
         	MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();
         	MultiplexerPtr ipmux = downmux.lock();
 
-        	unsigned long h1 = ipmux->address.getHash(getSrcPort(),IPPROTO_TCP,getDstPort());
-        	unsigned long h2 = ipmux->address.getHash(getDstPort(),IPPROTO_TCP,getSrcPort());
+        	unsigned long h1 = ipmux->address.getHash(getSourcePort(),IPPROTO_TCP,getDestinationPort());
+        	unsigned long h2 = ipmux->address.getHash(getDestinationPort(),IPPROTO_TCP,getSourcePort());
            
 		if (packet.haveTag() == true) {
 			h1 = h1 ^ packet.getTag();
@@ -112,14 +112,14 @@ SharedPointer<Flow> TCPProtocol::getFlow(const Packet& packet) {
 
 					if (ipmux->address.getType() == 4) {
                                        		flow->setFiveTuple(ipmux->address.getSourceAddress(),
-                                        		getSrcPort(),IPPROTO_TCP,
+                                        		getSourcePort(),IPPROTO_TCP,
                                                 	ipmux->address.getDestinationAddress(),
-                                                	getDstPort());
+                                                	getDestinationPort());
 					} else {
                                        		flow->setFiveTuple6(ipmux->address.getSourceAddress6(),
-                                        		getSrcPort(),IPPROTO_TCP,
+                                        		getSourcePort(),IPPROTO_TCP,
                                                 	ipmux->address.getDestinationAddress6(),
-                                                	getDstPort());
+                                                	getDestinationPort());
 					}
                                         flow_table_->addFlow(flow);
 
@@ -138,7 +138,7 @@ SharedPointer<Flow> TCPProtocol::getFlow(const Packet& packet) {
                 } else {
 			/* In order to identificate the flow direction we use the port */
 			/* May be there is another way to do it, but this way consume low CPU */
-			if (getSrcPort() == flow->getSourcePort()) {
+			if (getSourcePort() == flow->getSourcePort()) {
 				flow->setFlowDirection(FlowDirection::FORWARD);
 			} else {
 				flow->setFlowDirection(FlowDirection::BACKWARD);
@@ -189,8 +189,8 @@ bool TCPProtocol::processPacket(Packet &packet) {
 				packet.setPrevHeaderSize(getTcpHdrLength());
 				packet.setPayloadLength(packet.getLength() - getTcpHdrLength());	
 
-				packet.setDestinationPort(getDstPort());
-				packet.setSourcePort(getSrcPort());
+				packet.setDestinationPort(getDestinationPort());
+				packet.setSourcePort(getSourcePort());
 
 				flow->packet = const_cast<Packet*>(&packet);
 				ff->forwardFlow(flow.get());

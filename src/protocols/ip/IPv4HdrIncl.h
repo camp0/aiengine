@@ -37,7 +37,7 @@ public:
     	virtual ~IPv4HdrIncl() {}
 
     	template<typename Protocol>
-    	int level(const Protocol &p) const { return SOL_IP; }
+    	int level(const Protocol &p) const { return /* SOL_IP */ IPPROTO_IP; }
 
     	template<typename Protocol>
     	int name(const Protocol &p)  const { return IP_HDRINCL; }

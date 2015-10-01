@@ -60,25 +60,67 @@ class TCPHeader {
 public:
  
     	TCPHeader(uint16_t src,uint16_t dst,uint32_t seq, uint32_t ack):
-		tcphdr_{htons(src),htons(dst),htonl(seq),htonl(ack),0,5,0,0,0,0,0,0,0,4016,0,0} {}
+		tcphdr_{
+#if defined(__FREEBSD__) || (__OPENBSD__) || defined(__DARWIN__)
+			.th_sport = htons(src),
+			.th_dport = htons(dst),
+			.th_seq = htonl(seq),
+			.th_ack = htonl(ack),
+			.th_flags = 0x00,
+			.th_win = 4016,
+			.th_sum = 0,
+			.th_urp = 0
+#else
+                        .source = htons(src),
+                        .dest = htons(dst),
+                        .seq = htonl(seq),
+                        .ack_seq = htonl(ack),
+                        .res1 = 0,
+                        .doff = 5,
+                        .fin = 0,
+                        .syn = 0,
+                        .rst = 0,
+                        .psh = 0,
+                        .ack = 0,
+                        .urg = 0,
+                        .res2 = 0,
+                        .window = 4016,
+                        .check = 0,
+                        .urg_ptr = 0 
+#endif
+		}{}
 	TCPHeader(uint16_t src, uint16_t dst): TCPHeader(src,dst,0,0) {}
     	TCPHeader():TCPHeader(0,0,0,0) {}
 
     	virtual ~TCPHeader() {}
 
-	uint16_t getSourcePort() const { return ntohs(tcphdr_.source); }	
-	uint16_t getDestinationPort() const { return ntohs(tcphdr_.dest); }	
+#if defined(__FREEBSD__) || (__OPENBSD__) || defined(__DARWIN__)
+        uint16_t getSourcePort() const { return ntohs(tcphdr_.th_sport); }
+        uint16_t getDestinationPort() const { return ntohs(tcphdr_.th_dport); }
+        uint32_t getSequence() const  { return ntohl(tcphdr_.th_seq); }
+        uint32_t getAckSequence() const  { return ntohl(tcphdr_.th_ack); }
 
-	void setSourcePort(uint16_t port) { tcphdr_.source = htons(port); }
-	void setDestinationPort(uint16_t port) { tcphdr_.dest = htons(port); }
-
+	void setSrcPort(uint16_t port) { tcphdr_.th_sport = htons(port); }
+	
+	void setSequenceNumber(uint32_t seq) { tcphdr_.th_seq = htonl(seq); }
+	void setAcknoledgementNumber(uint32_t ack) { tcphdr_.th_ack = htonl(ack); }
+	void setWindowSize(uint16_t window) { tcphdr_.th_win = htons(window); }
+	void setFlagRst(bool rst) { tcphdr_.th_flags = (rst) ? TH_RST : 0; }
+#else
+        uint32_t getSequence() const  { return ntohl(tcphdr_.seq); }
+        uint32_t getAckSequence() const  { return ntohl(tcphdr_.ack_seq); }
+        uint16_t getSourcePort() const { return ntohs(tcphdr_.source); }
+        uint16_t getDestinationPort() const { return ntohs(tcphdr_.dest); }
+	
+	void setSrcPort(uint16_t port) { tcphdr_.source = htons(port); }
+	void setFlagRst(bool rst) { tcphdr_.rst = (rst) ? 1 : 0; }
+	
 	void setSequenceNumber(uint32_t seq) { tcphdr_.seq = htonl(seq); }
 	void setAcknoledgementNumber(uint32_t ack) { tcphdr_.ack_seq = htonl(ack); }
-
+	
 	void setWindowSize(uint16_t window) { tcphdr_.window = htons(window); }
 	void setDoff(uint16_t doff) { tcphdr_.doff = doff; }
-
-	void setFlagRst(bool rst) { tcphdr_.rst = (rst) ? 1 : 0; }
+#endif
 
         friend std::ostream& operator<<(std::ostream &os, TCPHeader &hdr) {
 
@@ -95,7 +137,11 @@ public:
         }
 
     void compute_checksum(uint32_t srcaddr, uint32_t destaddr) {
-        tcphdr_.check = 0;
+#if defined(__FREEBSD__) || (__OPENBSD__) || defined(__DARWIN__)
+        tcphdr_.th_sum = 0;
+#else
+	tcphdr_.check = 0;
+#endif
         tcp_checksum tc = {{0}, {0}};
         tc.pseudo.ip_src   = htonl(srcaddr);
         tc.pseudo.ip_dst   = htonl(destaddr);
@@ -103,7 +149,11 @@ public:
         tc.pseudo.protocol = IPPROTO_TCP;
         tc.pseudo.length   = htons(sizeof(tcphdr));
         tc.tcp = tcphdr_;
+#if defined(__FREEBSD__) || (__OPENBSD__) || defined(__DARWIN__)
+        tcphdr_.th_sum = ((checksum(reinterpret_cast<uint16_t*>(&tc), sizeof(struct tcp_checksum))));
+#else
         tcphdr_.check = ((checksum(reinterpret_cast<uint16_t*>(&tc), sizeof(struct tcp_checksum))));
+#endif
     }
 
 private:

@@ -42,32 +42,23 @@ public:
     	
 	virtual ~ICMPHeader() {}
 
-	uint8_t getType() const { return icmphdr_.type; }
-	uint8_t getCode() const { return icmphdr_.code; }
-	uint16_t getId() const { return icmphdr_.un.echo.id; }
-	uint16_t getSequenceNumber() const { return icmphdr_.un.echo.sequence; }
-
+#if defined(__FREEBSD__) || defined(__OPENBSD__) || defined(__DARWIN__)
+        uint8_t getType() const { return icmphdr_.icmp_type; }
+        uint8_t getCode() const { return icmphdr_.icmp_code; }
+        uint16_t getId() const { return ntohs(icmphdr_.icmp_id); }
+        uint16_t getSequence() const { return ntohs(icmphdr_.icmp_seq); }
+	
+	void setChecksum(uint16_t check) { icmphdr_.icmp_cksum = htons(check); }
+	uint16_t getChecksum() const { return ntohs(icmphdr_.icmp_cksum); }
+#else
+        uint8_t getType() const { return icmphdr_.type; }
+        uint8_t getCode() const { return icmphdr_.code; }
+        uint16_t getId() const { return ntohs(icmphdr_.un.echo.id); }
+        uint16_t getSequence() const { return ntohs(icmphdr_.un.echo.sequence); }
+	
 	void setChecksum(uint16_t check) { icmphdr_.checksum = htons(check); }
 	uint16_t getChecksum() const { return ntohs(icmphdr_.checksum); }
-/* 
-	uint8_t getVersion() const { return iphdr_.version; }
-	uint8_t getIhl() const { return iphdr_.ihl; }
-	uint8_t getTypeOfService() const { return iphdr_.tos; }
-	uint16_t getTotalLength() const { return ntohs(iphdr_.tot_len); }
-	uint16_t getId() const { return ntohs(iphdr_.id); }
-	uint16_t getFragmentOffset() const { return ntohs(iphdr_.frag_off); }
-	uint8_t getTimeToLive() const { return iphdr_.ttl; }
-	uint8_t getProtocol() const { return iphdr_.protocol; }	
-	uint32_t getSourceAddress() const { return ntohl(iphdr_.saddr); } 
-	uint32_t getDestinationAddress() const { return ntohl(iphdr_.daddr); } 
-
-	void setSourceAddress(uint32_t src) { iphdr_.saddr = htonl(src); }	
-	void setDestinationAddress(uint32_t dst) { iphdr_.daddr = htonl(dst); }	
-	void setVersion(uint8_t version) { iphdr_.version = version; }
-	void setIhl(uint8_t ihl) { iphdr_.ihl = ihl; }
-	void setTypeOfService(uint8_t tos) { iphdr_.tos = tos; }
-	void setTotalLength(uint16_t len) { iphdr_.tot_len = htons(len); }
-*/
+#endif
 
 	friend std::ostream& operator<<(std::ostream &os, ICMPHeader &hdr) {
 
@@ -104,8 +95,11 @@ private:
         	sum = (sum & 0xffff) + (sum >> 16);
         	return ~sum;
     	}
-
-	struct icmphdr icmphdr_;
+#if defined(__FREEBSD__) || defined(__OPENBSD__) || defined(__DARWIN__)
+        struct icmp icmphdr_;
+#else
+        struct icmphdr icmphdr_;
+#endif
 };
 
 template <typename Iterator>
@@ -113,7 +107,7 @@ void compute_checksum(ICMPHeader& header,
     Iterator body_begin, Iterator body_end)
 {
   unsigned int sum = (header.getType() << 8) + header.getCode()
-    + header.getId() + header.getSequenceNumber();
+    + header.getId() + header.getSequence();
 
   Iterator body_iter = body_begin;
   while (body_iter != body_end)

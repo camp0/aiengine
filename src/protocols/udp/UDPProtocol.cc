@@ -75,8 +75,8 @@ SharedPointer<Flow> UDPProtocol::getFlow(const Packet& packet) {
 		MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();	
 		MultiplexerPtr ipmux = downmux.lock();
 
-                unsigned long h1 = ipmux->address.getHash(getSrcPort(),IPPROTO_UDP,getDstPort());
-                unsigned long h2 = ipmux->address.getHash(getDstPort(),IPPROTO_UDP,getSrcPort());
+                unsigned long h1 = ipmux->address.getHash(getSourcePort(),IPPROTO_UDP,getDestinationPort());
+                unsigned long h2 = ipmux->address.getHash(getDestinationPort(),IPPROTO_UDP,getSourcePort());
 
 		if (packet.haveTag() == true) {
 			h1 = h1 ^ packet.getTag();
@@ -101,14 +101,14 @@ SharedPointer<Flow> UDPProtocol::getFlow(const Packet& packet) {
 
                                         if (ipmux->address.getType() == 4) {
                                                 flow->setFiveTuple(ipmux->address.getSourceAddress(),
-                                                        getSrcPort(),IPPROTO_UDP,
+                                                        getSourcePort(),IPPROTO_UDP,
                                                         ipmux->address.getDestinationAddress(),
-                                                        getDstPort());
+                                                        getDestinationPort());
                                         } else {
                                                 flow->setFiveTuple6(ipmux->address.getSourceAddress6(),
-                                                        getSrcPort(),IPPROTO_UDP,
+                                                        getSourcePort(),IPPROTO_UDP,
                                                         ipmux->address.getDestinationAddress6(),
-                                                        getDstPort());
+                                                        getDestinationPort());
                                         }
 					flow_table_->addFlow(flow);		
 #if (defined(PYTHON_BINDING) || defined(RUBY_BINDING)) && defined(HAVE_ADAPTOR)
@@ -121,7 +121,7 @@ SharedPointer<Flow> UDPProtocol::getFlow(const Packet& packet) {
                 } else {
                         /* In order to identificate the flow direction we use the port */
                         /* May be there is another way to do it, but this way consume low CPU */
-                        if (getSrcPort() == flow->getSourcePort()) {
+                        if (getSourcePort() == flow->getSourcePort()) {
                                 flow->setFlowDirection(FlowDirection::FORWARD);
                         } else {
                                 flow->setFlowDirection(FlowDirection::BACKWARD);
@@ -173,8 +173,8 @@ bool UDPProtocol::processPacket(Packet& packet) {
                         packet.setPayload(&packet.getPayload()[getHeaderLength()]);
                         packet.setPrevHeaderSize(getHeaderLength());
                         packet.setPayloadLength(packet.getLength() - getHeaderLength());
-                        packet.setDestinationPort(getDstPort());
-                        packet.setSourcePort(getSrcPort());
+                        packet.setDestinationPort(getDestinationPort());
+                        packet.setSourcePort(getSourcePort());
 
                         flow->packet = const_cast<Packet*>(&packet);
                         ff->forwardFlow(flow.get());

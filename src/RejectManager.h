@@ -46,11 +46,13 @@ namespace aiengine {
 class StackLan;
 
 template <class Stack_Type>
-class RejectManager: public boost::enable_shared_from_this<RejectManager<Stack_Type>>
+class RejectManager // : public boost::enable_shared_from_this<RejectManager<Stack_Type>>
 {
 public:
 
-	RejectManager(boost::asio::io_service& io_service):total_tcp_rejects_(0),total_udp_rejects_(0),
+	RejectManager(boost::asio::io_service& io_service):
+		total_tcp_rejects_(0),total_udp_rejects_(0),
+		total_tcp_bytes_(0),total_udp_bytes_(0),
 		tcp_socket_(io_service, TCPRawSocket::v4()), 
 		icmp_socket_(io_service, ICMPRawSocket::v4())
 	{
@@ -72,6 +74,8 @@ public:
 private:
 	int32_t total_tcp_rejects_;
 	int32_t total_udp_rejects_;
+	int32_t total_tcp_bytes_;
+	int32_t total_udp_bytes_;
 	TCPRawSocket::socket tcp_socket_;
 	ICMPRawSocket::socket icmp_socket_;
 };

@@ -28,42 +28,14 @@ namespace aiengine {
 template <>
 void RejectManager<StackLan>::rejectTCPFlow(Flow *flow) {
 
-	std::cout << "Rejecting TCP flow:" << *flow << std::endl;
+	int payload_length = flow->packet->getLength();
+	std::cout << "Rejecting TCP flow:" << *flow << " dir:" << static_cast<int>(flow->getFlowDirection());
+	std::cout << " prevdir:" << static_cast<int>(flow->getPrevFlowDirection()) << " len:" << payload_length << std::endl; 
 	if (tcp_socket_.is_open()) {
 		boost::asio::streambuf up_buffer,down_buffer;
 		std::ostream packet_up(&up_buffer);
-		IPv4Header ip_up(IPPROTO_TCP,flow->getSourceAddress(),flow->getDestinationAddress());
-
-		ip_up.setTotalLength(40);
-
-		TCPHeader tcp_up(flow->getSourcePort(),flow->getDestinationPort());
-
-		tcp_up.setWindowSize(0);
-		tcp_up.setFlagRst(true);
-
-		if (!flow->tcp_info.expired()) {
-			SharedPointer<TCPInfo> info = flow->tcp_info.lock();
-
-			tcp_up.setSequenceNumber(info->seq_num[0]);
-		}
-
-		tcp_up.compute_checksum(flow->getSourceAddress(),flow->getDestinationAddress());
-
-		TCPRawSocket::endpoint end_up(boost::asio::ip::address_v4(flow->getDestinationAddress()),flow->getDestinationPort());
-
-		packet_up << ip_up << tcp_up;
-		std::cout << "Ready to write on socket" << std::endl;
-		std::size_t ret = 0;
-		// Write the packet on the socket
-		try {
-			ret = tcp_socket_.send_to(boost::asio::buffer(up_buffer.data(),40),end_up);
-		} catch(std::exception& e) {
-        		std::cerr << "ERROR:" << e.what() << std::endl;
-    		}
-		std::cout << "Write on socket " << ret << " bytes flow" << std::endl;
-		++total_tcp_rejects_;
-
 		std::ostream packet_down(&down_buffer);
+		
 		IPv4Header ip_down(IPPROTO_TCP,flow->getDestinationAddress(),flow->getSourceAddress());
 
 		ip_down.setTotalLength(40);
@@ -73,11 +45,19 @@ void RejectManager<StackLan>::rejectTCPFlow(Flow *flow) {
 
 		tcp_down.setWindowSize(0);
 		tcp_down.setFlagRst(true);
-		
+	
+		// Probably there is no need to check this	
 		if (!flow->tcp_info.expired()) {
 			SharedPointer<TCPInfo> info = flow->tcp_info.lock();
 
-			tcp_down.setSequenceNumber(info->seq_num[1]);
+			// TODO: verify the sequence numbers
+			// NOT WORKING tcp_down.setSequenceNumber(info->seq_num[0] + 1);
+			// NOT WORKING tcp_down.setSequenceNumber(info->seq_num[0]);
+			// NOT WORKING tcp_down.setSequenceNumber(info->seq_num[1]);
+			// NOT WORKING tcp_down.setSequenceNumber(info->seq_num[1] + payload_length );
+			// NOT WORKING tcp_down.setSequenceNumber(info->seq_num[1] + payload_length + 1);
+			// tcp_down.setSequenceNumber(info->seq_num[0] + payload_length);
+			tcp_down.setSequenceNumber(info->seq_num[0] + payload_length + 1);
 		}
 
 		tcp_down.compute_checksum(flow->getDestinationAddress(),flow->getSourceAddress());
@@ -85,6 +65,7 @@ void RejectManager<StackLan>::rejectTCPFlow(Flow *flow) {
 
 		packet_down << ip_down << tcp_down;
 		std::cout << "Ready to write on socket" << std::endl;
+                std::size_t ret = 0;
 
 		try {
 			ret = tcp_socket_.send_to(boost::asio::buffer(down_buffer.data(),40),end_down);
@@ -93,6 +74,38 @@ void RejectManager<StackLan>::rejectTCPFlow(Flow *flow) {
     		}
 		std::cout << "Write on socket " << ret << " bytes flow" << std::endl;
 		++total_tcp_rejects_;
+		total_tcp_bytes_ += ret;
+
+                IPv4Header ip_up(IPPROTO_TCP,flow->getSourceAddress(),flow->getDestinationAddress());
+
+                ip_up.setTotalLength(40);
+
+                TCPHeader tcp_up(flow->getSourcePort(),flow->getDestinationPort());
+
+                tcp_up.setWindowSize(0);
+                tcp_up.setFlagRst(true);
+
+                if (!flow->tcp_info.expired()) {
+                        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+
+                        tcp_up.setSequenceNumber(info->seq_num[1] + 1);
+                }
+
+                tcp_up.compute_checksum(flow->getSourceAddress(),flow->getDestinationAddress());
+
+                TCPRawSocket::endpoint end_up(boost::asio::ip::address_v4(flow->getDestinationAddress()),flow->getDestinationPort());
+
+                packet_up << ip_up << tcp_up;
+                std::cout << "Ready to write on socket" << std::endl;
+                // Write the packet on the socket
+                try {
+                        ret = tcp_socket_.send_to(boost::asio::buffer(up_buffer.data(),40),end_up);
+                } catch(std::exception& e) {
+                        std::cerr << "ERROR:" << e.what() << std::endl;
+                }
+                std::cout << "Write on socket " << ret << " bytes flow" << std::endl;
+                ++total_tcp_rejects_;
+		total_tcp_bytes_ += ret;
         }
 }
 
@@ -141,6 +154,7 @@ void RejectManager<StackLan>::rejectUDPFlow(Flow *flow) {
 		// sendmsg will return EPERM
 		compute_checksum(icmphdr,payload.begin(),payload.end());
 
+		// TOOD
 		icmphdr.checksum1(payload);
 		std::cout << "Checsum:" << icmphdr.getChecksum() << std::endl;
 

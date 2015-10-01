@@ -80,8 +80,8 @@ BOOST_AUTO_TEST_CASE (test2_tcpgeneric)
 	BOOST_CHECK(tcp6->getTotalPackets() == 1);
 	BOOST_CHECK(tcp6->getTotalBytes() == 63);
 	BOOST_CHECK(tcp6->getTotalValidatedPackets() == 1);
-	BOOST_CHECK(tcp6->getSrcPort() == 40667);
-	BOOST_CHECK(tcp6->getDstPort() == 6941);
+	BOOST_CHECK(tcp6->getSourcePort() == 40667);
+	BOOST_CHECK(tcp6->getDestinationPort() == 6941);
 
 	BOOST_CHECK(gtcp6->getTotalPackets() == 1);
 	BOOST_CHECK(gtcp6->getTotalBytes() == 31);
@@ -238,8 +238,8 @@ BOOST_AUTO_TEST_CASE (test5_tcpgeneric)
         BOOST_CHECK(tcp6->getTotalPackets() == 1);
         BOOST_CHECK(tcp6->getTotalBytes() == 63);
         BOOST_CHECK(tcp6->getTotalValidatedPackets() == 1);
-        BOOST_CHECK(tcp6->getSrcPort() == 40667);
-        BOOST_CHECK(tcp6->getDstPort() == 6941);
+        BOOST_CHECK(tcp6->getSourcePort() == 40667);
+        BOOST_CHECK(tcp6->getDestinationPort() == 6941);
 
         BOOST_CHECK(gtcp6->getTotalPackets() == 0);
         BOOST_CHECK(gtcp6->getTotalBytes() == 0);
@@ -447,8 +447,8 @@ BOOST_AUTO_TEST_CASE (test9_tcpgeneric) // IPv6 with auth header
         BOOST_CHECK(tcp6->getTotalBytes() == 35);
         BOOST_CHECK(tcp6->getTotalValidatedPackets() == 1);
 
-	BOOST_CHECK(tcp6->getSrcPort() == 36951);
-	BOOST_CHECK(tcp6->getDstPort() == 80);
+	BOOST_CHECK(tcp6->getSourcePort() == 36951);
+	BOOST_CHECK(tcp6->getDestinationPort() == 80);
 	BOOST_CHECK(tcp6->isSyn() == false);
 	BOOST_CHECK(tcp6->isAck() == true);
 	BOOST_CHECK(tcp6->isFin() == false);

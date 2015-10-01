@@ -46,8 +46,8 @@ BOOST_AUTO_TEST_CASE (test1_udpgeneric)
 
 	BOOST_CHECK(ip->getPacketLength() == 86);
 
-	BOOST_CHECK(udp->getSrcPort() == 51413);
-	BOOST_CHECK(udp->getDstPort() == 6881);
+	BOOST_CHECK(udp->getSourcePort() == 51413);
+	BOOST_CHECK(udp->getDestinationPort() == 6881);
 	BOOST_CHECK(udp->getPayloadLength()== 58);
 	BOOST_CHECK(gudp->getTotalPackets() == 1);
 	BOOST_CHECK(gudp->getTotalValidatedPackets() == 1);

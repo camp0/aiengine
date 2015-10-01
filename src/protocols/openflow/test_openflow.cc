@@ -148,8 +148,8 @@ BOOST_AUTO_TEST_CASE (test3_openflow)
 	
 	BOOST_CHECK(udp_vir->getTotalPackets() == 1);
 	BOOST_CHECK(udp_vir->getTotalBytes() == 94);
-	BOOST_CHECK(udp_vir->getSrcPort() == 1044);
-	BOOST_CHECK(udp_vir->getDstPort() == 8082);
+	BOOST_CHECK(udp_vir->getSourcePort() == 1044);
+	BOOST_CHECK(udp_vir->getDestinationPort() == 8082);
         
 	BOOST_CHECK(udpg_vir->getTotalPackets() == 1);
 	BOOST_CHECK(udpg_vir->getTotalBytes() == 86);
@@ -223,8 +223,8 @@ BOOST_AUTO_TEST_CASE (test4_openflow)
 
         BOOST_CHECK(tcp_vir->getTotalPackets() == 1);
         BOOST_CHECK(tcp_vir->getTotalBytes() == 48 + 32);
-        BOOST_CHECK(tcp_vir->getSrcPort() == 46926);
-        BOOST_CHECK(tcp_vir->getDstPort() == 22);
+        BOOST_CHECK(tcp_vir->getSourcePort() == 46926);
+        BOOST_CHECK(tcp_vir->getDestinationPort() == 22);
 
         BOOST_CHECK(tcpg_vir->getTotalPackets() == 1);
         BOOST_CHECK(tcpg_vir->getTotalBytes() == 48);
@@ -274,8 +274,8 @@ BOOST_AUTO_TEST_CASE (test4_openflow)
 
         BOOST_CHECK(tcp_vir->getTotalPackets() == 2);
         BOOST_CHECK(tcp_vir->getTotalBytes() == (48 + 32) * 2);
-        BOOST_CHECK(tcp_vir->getSrcPort() == 22);
-        BOOST_CHECK(tcp_vir->getDstPort() == 46926);
+        BOOST_CHECK(tcp_vir->getSourcePort() == 22);
+        BOOST_CHECK(tcp_vir->getDestinationPort() == 46926);
 
         BOOST_CHECK(tcpg_vir->getTotalPackets() == 2);
         BOOST_CHECK(tcpg_vir->getTotalBytes() == 48 + 48);

@@ -56,7 +56,21 @@ class IPv4Header
 {
 public:
 
-	IPv4Header(uint8_t protocol,uint32_t src, uint32_t dst):iphdr_{5,4,0x10,0,0,0x40,default_ttl,protocol,0,src,dst} {}
+	IPv4Header(uint8_t protocol,uint32_t src, uint32_t dst):
+                iphdr_{
+                        .ip_hl = 5,
+                        .ip_v =4,
+                        .ip_tos = 0x10,
+                        .ip_len = 0,
+                        .ip_id = 0,
+                        .ip_off = 0x40,
+                        .ip_ttl = default_ttl,
+                        .ip_p = protocol,
+                        .ip_sum = 0,
+			src,dst
+                        //.ip_src { src } ,
+                        //.ip_dst.s_addr = dst 
+                } {}
 	IPv4Header(uint8_t protocol,const char *src, const char*dst):
 		IPv4Header(protocol,inet_addr(src),inet_addr(dst)) {}
 	IPv4Header(uint8_t protocol):IPv4Header(protocol,(uint32_t)0,(uint32_t)0) {}
@@ -66,24 +80,22 @@ public:
  
 	static const uint8_t default_ttl = 64;
  
-	uint8_t getVersion() const { return iphdr_.version; }
-	uint8_t getIhl() const { return iphdr_.ihl; }
-	uint8_t getTypeOfService() const { return iphdr_.tos; }
-	uint16_t getTotalLength() const { return ntohs(iphdr_.tot_len); }
-	uint16_t getId() const { return ntohs(iphdr_.id); }
-	uint16_t getFragmentOffset() const { return ntohs(iphdr_.frag_off); }
-	uint8_t getTimeToLive() const { return iphdr_.ttl; }
-	uint8_t getProtocol() const { return iphdr_.protocol; }	
-	uint32_t getSourceAddress() const { return ntohl(iphdr_.saddr); } 
-	uint32_t getDestinationAddress() const { return ntohl(iphdr_.daddr); } 
+	uint8_t getVersion() const { return iphdr_.ip_v; }
+	uint8_t getIhl() const { return iphdr_.ip_hl; }
+	uint8_t getTypeOfService() const { return iphdr_.ip_tos; }
+	uint16_t getTotalLength() const { return ntohs(iphdr_.ip_len); }
+	uint16_t getId() const { return ntohs(iphdr_.ip_id); }
+	uint8_t getProtocol() const { return iphdr_.ip_p; }	
+	uint32_t getSourceAddress() const { return ntohl(iphdr_.ip_src.s_addr); } 
+	uint32_t getDestinationAddress() const { return ntohl(iphdr_.ip_dst.s_addr); } 
 
-	void setId(uint16_t id) { iphdr_.id = htons(id); }
-	void setSourceAddress(uint32_t src) { iphdr_.saddr = src; }	
-	void setDestinationAddress(uint32_t dst) { iphdr_.daddr = dst; }	
-	void setVersion(uint8_t version) { iphdr_.version = version; }
-	void setIhl(uint8_t ihl) { iphdr_.ihl = ihl; }
-	void setTypeOfService(uint8_t tos) { iphdr_.tos = tos; }
-	void setTotalLength(uint16_t len) { iphdr_.tot_len = htons(len); }
+	void setId(uint16_t id) { iphdr_.ip_id = htons(id); }
+	void setSourceAddress(uint32_t src) { iphdr_.ip_src.s_addr = src; }	
+	void setDestinationAddress(uint32_t dst) { iphdr_.ip_dst.s_addr = dst; }	
+	void setVersion(uint8_t version) { iphdr_.ip_v = version; }
+	void setIhl(uint8_t ihl) { iphdr_.ip_hl = ihl; }
+	void setTypeOfService(uint8_t tos) { iphdr_.ip_tos = tos; }
+	void setTotalLength(uint16_t len) { iphdr_.ip_len = htons(len); }
 
 	friend std::ostream& operator<<(std::ostream &os, IPv4Header &hdr) {
 
@@ -114,7 +126,7 @@ private:
         	return ~sum;
     	}
 
-	struct iphdr iphdr_;
+	struct ip iphdr_;
 };
 
 } // namespace aiengine

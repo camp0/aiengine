@@ -113,8 +113,8 @@ public:
 
 
 #if defined(__FREEBSD__) || (__OPENBSD__) || defined(__DARWIN__)
-    	uint16_t getSrcPort() const { return ntohs(tcp_header_->th_sport); }
-    	uint16_t getDstPort() const { return ntohs(tcp_header_->th_dport); }
+    	uint16_t getSourcePort() const { return ntohs(tcp_header_->th_sport); }
+    	uint16_t getDestinationPort() const { return ntohs(tcp_header_->th_dport); }
     	uint32_t getSequence() const  { return ntohl(tcp_header_->th_seq); }
     	uint32_t getAckSequence() const  { return ntohl(tcp_header_->th_ack); }
     	// uint16_t getWindow() const { return tcp_header_->window; }
@@ -135,8 +135,8 @@ public:
     	bool isPushSet() const { return tcp_header_->psh == 1; }
     	uint32_t getSequence() const  { return ntohl(tcp_header_->seq); }
     	uint32_t getAckSequence() const  { return ntohl(tcp_header_->ack_seq); }
-    	uint16_t getSrcPort() const { return ntohs(tcp_header_->source); }
-    	uint16_t getDstPort() const { return ntohs(tcp_header_->dest); }
+    	uint16_t getSourcePort() const { return ntohs(tcp_header_->source); }
+    	uint16_t getDestinationPort() const { return ntohs(tcp_header_->dest); }
     	uint16_t getTcpHdrLength() const { return tcp_header_->doff * 4; }
     	unsigned char* getPayload() const { return (unsigned char*)tcp_header_ +getTcpHdrLength(); }
 #endif

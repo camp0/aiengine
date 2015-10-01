@@ -46,8 +46,8 @@ BOOST_AUTO_TEST_CASE (test1_tcp)
         mux_eth->forwardPacket(packet);
 
         // Check the TCP integrity
-        BOOST_CHECK(tcp->getSrcPort() == 53637);
-        BOOST_CHECK(tcp->getDstPort() == 80);
+        BOOST_CHECK(tcp->getSourcePort() == 53637);
+        BOOST_CHECK(tcp->getDestinationPort() == 80);
 	BOOST_CHECK(tcp->getTotalBytes() == 809);
 }
 
@@ -65,8 +65,8 @@ BOOST_AUTO_TEST_CASE (test2_tcp)
         mux_eth->forwardPacket(packet);
                 
         // Check the TCP integrity
-        BOOST_CHECK(tcp->getSrcPort() == 44265);
-        BOOST_CHECK(tcp->getDstPort() == 443);
+        BOOST_CHECK(tcp->getSourcePort() == 44265);
+        BOOST_CHECK(tcp->getDestinationPort() == 443);
         BOOST_CHECK(tcp->getTotalBytes() == 225);
 }
 
@@ -368,8 +368,8 @@ BOOST_AUTO_TEST_CASE (test1_tcp)
         mux_eth->forwardPacket(packet);
 
         // Check the TCP integrity
-        BOOST_CHECK(tcp->getSrcPort() == 1287);
-        BOOST_CHECK(tcp->getDstPort() == 80);
+        BOOST_CHECK(tcp->getSourcePort() == 1287);
+        BOOST_CHECK(tcp->getDestinationPort() == 80);
         BOOST_CHECK(tcp->getTotalBytes() == 797+20);
 }
 
@@ -387,8 +387,8 @@ BOOST_AUTO_TEST_CASE (test2_tcp)
         mux_eth->forwardPacket(packet);
 
         // Check the TCP integrity
-        BOOST_CHECK(tcp->getSrcPort() == 36951);
-        BOOST_CHECK(tcp->getDstPort() == 80);
+        BOOST_CHECK(tcp->getSourcePort() == 36951);
+        BOOST_CHECK(tcp->getDestinationPort() == 80);
         BOOST_CHECK(tcp->getTotalBytes() == 15+20);
 }
 
@@ -406,8 +406,8 @@ BOOST_AUTO_TEST_CASE (test3_tcp)
         mux_eth->forwardPacket(packet1);
 
         // Check the TCP integrity
-        BOOST_CHECK(tcp->getSrcPort() == 17257);
-        BOOST_CHECK(tcp->getDstPort() == 80);
+        BOOST_CHECK(tcp->getSourcePort() == 17257);
+        BOOST_CHECK(tcp->getDestinationPort() == 80);
 	BOOST_CHECK(tcp->isSyn() == true);
 	BOOST_CHECK(tcp->isFin() == false);
 	BOOST_CHECK(tcp->isRst() == false);
@@ -430,8 +430,8 @@ BOOST_AUTO_TEST_CASE (test4_tcp)
         mux_eth->forwardPacket(packet);
 
         // Check the TCP integrity
-        BOOST_CHECK(tcp->getSrcPort() == 55617);
-        BOOST_CHECK(tcp->getDstPort() == 80);
+        BOOST_CHECK(tcp->getSourcePort() == 55617);
+        BOOST_CHECK(tcp->getDestinationPort() == 80);
         BOOST_CHECK(tcp->isSyn() == true);
         BOOST_CHECK(tcp->isFin() == false);
         BOOST_CHECK(tcp->isRst() == false);

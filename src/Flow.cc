@@ -268,7 +268,7 @@ void Flow::showFlowInfo(std::ostream& out) {
 
         if (!regex.expired()) out << " Regex:" << regex.lock()->getName();
 
-	if (isReject()) out << " Rejected";
+	if (isPartialReject()) out << " Rejected";
 
 	if (!frequencies.expired()) {
 		SharedPointer<Frequencies> f = frequencies.lock();

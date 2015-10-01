@@ -96,13 +96,13 @@ public:
 	}
 
 #if defined(__FREEBSD__) || defined(__OPENBSD__) || defined(__DARWIN__)
-	uint16_t getSrcPort() const { return ntohs(udp_header_->uh_sport); }
-    	uint16_t getDstPort() const { return ntohs(udp_header_->uh_dport); }
+	uint16_t getSourcePort() const { return ntohs(udp_header_->uh_sport); }
+    	uint16_t getDestinationPort() const { return ntohs(udp_header_->uh_dport); }
     	uint16_t getLength() const { return ntohs(udp_header_->uh_ulen); }
     	unsigned int getPayloadLength() const { return ntohs(udp_header_->uh_ulen) - sizeof(struct udphdr); }
 #else
-	uint16_t getSrcPort() const { return ntohs(udp_header_->source); }
-    	uint16_t getDstPort() const { return ntohs(udp_header_->dest); }
+	uint16_t getSourcePort() const { return ntohs(udp_header_->source); }
+    	uint16_t getDestinationPort() const { return ntohs(udp_header_->dest); }
     	uint16_t getLength() const { return ntohs(udp_header_->len); }
     	unsigned int getPayloadLength() const { return ntohs(udp_header_->len) - sizeof(udphdr); }
 #endif

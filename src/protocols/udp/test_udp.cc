@@ -57,8 +57,8 @@ BOOST_AUTO_TEST_CASE (test2_udp)
         mux_eth->forwardPacket(packet);
 
 	// Check the udp integrity
-	BOOST_CHECK(udp->getSrcPort() == 67);
-	BOOST_CHECK(udp->getDstPort() == 68);
+	BOOST_CHECK(udp->getSourcePort() == 67);
+	BOOST_CHECK(udp->getDestinationPort() == 68);
 	BOOST_CHECK(udp->getPayloadLength() == 300);
 }
 
@@ -268,8 +268,8 @@ BOOST_AUTO_TEST_CASE (test1_udp)
         BOOST_CHECK(ip6->getTotalMalformedPackets() == 0);
 
         // Check the udp integrity
-        BOOST_CHECK(udp->getSrcPort() == 2415);
-        BOOST_CHECK(udp->getDstPort() == 53);
+        BOOST_CHECK(udp->getSourcePort() == 2415);
+        BOOST_CHECK(udp->getDestinationPort() == 53);
 
 }
 
