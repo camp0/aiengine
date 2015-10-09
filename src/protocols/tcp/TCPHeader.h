@@ -62,31 +62,33 @@ public:
     	TCPHeader(uint16_t src,uint16_t dst,uint32_t seq, uint32_t ack):
 		tcphdr_{
 #if defined(__FREEBSD__) || (__OPENBSD__) || defined(__DARWIN__)
-			.th_sport = htons(src),
-			.th_dport = htons(dst),
-			.th_seq = htonl(seq),
-			.th_ack = htonl(ack),
-			.th_flags = 0x00,
-			.th_win = 4016,
-			.th_sum = 0,
-			.th_urp = 0
+			htons(src),	// th_sport
+			htons(dst),	// th_dport
+			htonl(seq),	// th_seq
+			htonl(ack),	// th_ack
+			0x00,		// th_tx2
+			0x00,		// th_off
+			0x00,		// th_flags
+			4016,		// th_win
+			0,		// th_sum
+			0		// th_urg
 #else
-                        .source = htons(src),
-                        .dest = htons(dst),
-                        .seq = htonl(seq),
-                        .ack_seq = htonl(ack),
-                        .res1 = 0,
-                        .doff = 5,
-                        .fin = 0,
-                        .syn = 0,
-                        .rst = 0,
-                        .psh = 0,
-                        .ack = 0,
-                        .urg = 0,
-                        .res2 = 0,
-                        .window = 4016,
-                        .check = 0,
-                        .urg_ptr = 0 
+                        htons(src),	// source
+                        htons(dst),	// destination
+                        htonl(seq),	// seq
+                        htonl(ack),	// ack_seq
+                        0,		// res1
+                        5,		// doff
+                        0,		// fin
+                        0,		// syn
+                        0,		// rst
+                        0,		// psh
+                        0,		// ack
+                        0,		// urg
+			0,		// res2
+                        4016,		// window
+                        0,		// check
+                        0		// urg_ptr 
 #endif
 		}{}
 	TCPHeader(uint16_t src, uint16_t dst): TCPHeader(src,dst,0,0) {}

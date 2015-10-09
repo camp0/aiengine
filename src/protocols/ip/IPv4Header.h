@@ -58,18 +58,17 @@ public:
 
 	IPv4Header(uint8_t protocol,uint32_t src, uint32_t dst):
                 iphdr_{
-                        .ip_hl = 5,
-                        .ip_v =4,
-                        .ip_tos = 0x10,
-                        .ip_len = 0,
-                        .ip_id = 0,
-                        .ip_off = 0x40,
-                        .ip_ttl = default_ttl,
-                        .ip_p = protocol,
-                        .ip_sum = 0,
-			src,dst
-                        //.ip_src { src } ,
-                        //.ip_dst.s_addr = dst 
+                        5,              // ip_hl
+                        4,              // ip_v
+                        0x10,           // ip_tos
+                        0,              // ip_len
+                        0,              // ip_id
+                        0x40,           // ip_off
+                        default_ttl,    // ip_ttl
+                        protocol,       // ip_p
+                        0,              // ip_sum
+                        { src },	// ip_src.s_addr
+                        { dst }		// ip_dst.s_addr
                 } {}
 	IPv4Header(uint8_t protocol,const char *src, const char*dst):
 		IPv4Header(protocol,inet_addr(src),inet_addr(dst)) {}
