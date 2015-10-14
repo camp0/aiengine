@@ -65,9 +65,9 @@ public:
 	virtual void showFlows(std::basic_ostream<char>& out) = 0;
 	virtual void showFlows() = 0;
 
-        void statistics(std::basic_ostream<char>& out) { out << *this; }
-        void statistics() { statistics(std::cout);}
-	void statistics(const std::string &name);
+        virtual void statistics(std::basic_ostream<char>& out) const; //  { out << *this; }
+        virtual void statistics() { statistics(std::cout);}
+	virtual void statistics(const std::string &name);
 
 	const char* getName() const { return name_.c_str(); }
 	void setName(const std::string& name) { name_ = name; }

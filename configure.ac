@@ -289,6 +289,9 @@ fi
 # Swig ruby support
 ##########################################################################
 
+AM_CONDITIONAL([HAVE_RUBY_SUPPORT],false)
+
+have_ruby_support=no
 AC_PATH_PROGS([SWIG],[swig swig2.0])
 if test -z "$SWIG" ; then
     enable_swig=no
@@ -297,6 +300,11 @@ else
     AX_PKG_SWIG(3.0.0, , AC_MSG_ERROR("Swig is required."))
     AX_SWIG_ENABLE_CXX
     AX_SWIG_MULTI_MODULE_SUPPORT
+    AC_CHECK_HEADER(ruby.h,[have_ruby_support=yes],[have_ruby_support=no])
+
+    if test x"$have_ruby_support" = x"yes"; then
+        AM_CONDITIONAL([HAVE_RUBY_SUPPORT],true)
+    fi
 fi
 
 ##########################################################################
@@ -392,7 +400,7 @@ echo "
   Database support......: $adaptor_support
   Bloom filter support..: $bloom_support
   Flow sc support.......: $fscompress_support
-  Swig support..........: $enable_swig
+  Swig/Ruby support.....: $have_ruby_support
   TCP Qos support.......: $tcpqos
   TCP/UDP reject support: $reject_support
 "

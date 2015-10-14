@@ -215,6 +215,11 @@ std::ostream& operator<< (std::ostream& out, const NetworkStack& ns) {
         return out;
 }
 
+void NetworkStack::statistics(std::basic_ostream<char>& out) const { 
+
+	out << *this; 
+}
+
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
 void NetworkStack::setDomainNameManager(DomainNameManager& dnm, const std::string& name) {

@@ -28,7 +28,6 @@ import sys
 import pyaiengine
 import unittest
 
-
 """ For python compatibility """
 try:
     xrange
@@ -765,7 +764,7 @@ class StackLanTests(unittest.TestCase):
         self.dis.stack = None
 
         self.assertEqual(self.dis.stack, None)
-        
+       
 class StackLanIPv6Tests(unittest.TestCase):
 
     def setUp(self):

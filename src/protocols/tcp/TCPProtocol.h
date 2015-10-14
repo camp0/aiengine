@@ -180,8 +180,8 @@ private:
 	int32_t total_flags_ack_;
 	int32_t total_flags_rst_;
 	int32_t total_flags_fin_;
-       	time_t last_timeout_;
-       	time_t packet_time_;
+       	std::time_t last_timeout_;
+       	std::time_t packet_time_;
 	std::function <void (Flow*)> reject_func_;
 };
 

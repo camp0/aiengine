@@ -60,10 +60,10 @@ public:
                 iphdr_{
                         5,              // ip_hl
                         4,              // ip_v
-                        0x10,           // ip_tos
+                        0,           // ip_tos
                         0,              // ip_len
                         0,              // ip_id
-                        0x40,           // ip_off
+                        0x40,         // ip_off
                         default_ttl,    // ip_ttl
                         protocol,       // ip_p
                         0,              // ip_sum

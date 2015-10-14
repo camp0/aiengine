@@ -46,7 +46,7 @@ namespace aiengine {
 class StackLan;
 
 template <class Stack_Type>
-class RejectManager // : public boost::enable_shared_from_this<RejectManager<Stack_Type>>
+class RejectManager 
 {
 public:
 
@@ -63,8 +63,16 @@ public:
 
     	virtual ~RejectManager() { tcp_socket_.close(); icmp_socket_.close(); }
 
-	void statistics(std::basic_ostream<char>& out);
-	void statistics() { statistics(std::cout);};	
+	void statistics(std::basic_ostream<char>& out) const {
+
+        	out << "Reject Manager statistics" << std::dec <<  std::endl;
+        	out << "\t" << "Total TCP rejects:           " << std::setw(5) << total_tcp_rejects_ <<std::endl;
+        	out << "\t" << "Total TCP bytes:             " << std::setw(5) << total_tcp_bytes_ <<std::endl;
+        	out << "\t" << "Total UDP rejects:           " << std::setw(5) << total_udp_rejects_ <<std::endl;
+        	out << "\t" << "Total UDP bytes:             " << std::setw(5) << total_udp_bytes_ <<std::endl;
+	}
+
+	void statistics() const { statistics(std::cout);};	
 
 	bool ready() const { return (tcp_socket_.is_open() and icmp_socket_.is_open()); }
 

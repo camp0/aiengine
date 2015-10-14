@@ -89,6 +89,10 @@ public:
 
         void setLinkLayerMultiplexer(MultiplexerPtrWeak mux) { }
         MultiplexerPtrWeak getLinkLayerMultiplexer() { return mux_eth;}
+
+        void statistics(std::basic_ostream<char>& out) const;
+        void statistics() { statistics(std::cout);}
+	void statistics(const std::string &name) { super_::statistics(name); }
 	
 	void showFlows(std::basic_ostream<char>& out);
 	void showFlows() { showFlows(std::cout);}
@@ -127,6 +131,8 @@ public:
 #endif
 
 	void setAsioService(boost::asio::io_service& io_service);
+
+	friend std::ostream& operator<< (std::ostream& out, const StackLan& s);
 
 private:
 	typedef NetworkStack super_;

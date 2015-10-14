@@ -201,7 +201,7 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		IPSetManager.o IPSet.o HTTPUriSet.o \
 		DomainNameManager.o DomainName.o RejectManager.o
 
-tests_CPPFLAGS = $(BOOST_CPPFLAGS) 
+tests_CPPFLAGS = $(BOOST_CPPFLAGS) -g 
 # Dont forget to put -lgcov if need on test_LDADD
 tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread 
 
@@ -228,6 +228,7 @@ python:
 		$(LOG4CXX_FLAGS) $(PCRE_LIB) -o pyaiengine.so -shared
 
 ruby:
+if HAVE_RUBY_SUPPORT
 	@echo "**************************************************************************************"
 	@echo "* Compiling Ruby extension.                                                          *"
 	@echo "**************************************************************************************"
@@ -240,3 +241,4 @@ ruby:
 	@echo "Linking ruby interface"
 	$(CXX) -g -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DRUBY_BINDING -I.. \
 		-shared -std=c++11 $(ruby_objects) ruby_wrapper_wrap.o -o ruaiengine.so -lpcap -lruby -lboost_system -lpcre
+endif

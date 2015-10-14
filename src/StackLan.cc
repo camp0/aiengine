@@ -325,4 +325,26 @@ void StackLan::setAsioService(boost::asio::io_service& io_service) {
 
 }
 
+void StackLan::statistics(std::basic_ostream<char>& out) const {
+
+	super_::statistics(out);
+
+#ifdef HAVE_REJECT_FLOW
+	if (geteuid() == 0) { // The process have rights on raw sockets
+		if (rj_mng_) {
+			rj_mng_->statistics(out);
+			out << std::endl;
+		}
+	}
+#endif
+}
+
+std::ostream& operator<< (std::ostream& out, const StackLan& s) {
+
+	s.statistics(out);
+
+        return out;
+}
+
+
 } // namespace aiengine

@@ -145,7 +145,6 @@ void FlowManager::updateTimers(std::time_t current_time) {
 		}
 	} 
 
-
 #if defined(RUBY_BINDING) && defined(HAVE_ADAPTOR)
 
 	// We put the flows that are gonna be remove on a list in order to prevent
@@ -171,7 +170,8 @@ void FlowManager::updateTimers(std::time_t current_time) {
 
 #ifdef DEBUG
         std::cout << __FILE__ << ":" << __func__ << ":Total expire flows " << expire_flows <<std::endl;
- #endif
+#endif
+	return;
 }
 
 std::ostream& operator<< (std::ostream& out, const FlowManager& fm) {
