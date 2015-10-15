@@ -129,10 +129,11 @@ public:
 
 	void setNextRegexManager(RegexManager& regex_mng) {
 
-/*        SharedPointer<RegexManager> rm = SharedPointer<RegexManager>(new RegexManager());
-        rm.reset(&regex_mng);
+/*        	TODO:
+		SharedPointer<RegexManager> rm = SharedPointer<RegexManager>(new RegexManager());
+        	rm.reset(&regex_mng);
 
-        setNextRegexManager(rm);
+        	setNextRegexManager(rm);
 */
 }
 

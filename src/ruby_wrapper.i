@@ -316,6 +316,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("dst_port")			aiengine::Flow::getDestinationPort;
 %rename("src_ip")			aiengine::Flow::getSrcAddrDotNotation;
 %rename("dst_ip")			aiengine::Flow::getDstAddrDotNotation;
+%rename("reject=")			aiengine::Flow::setRejectConnection;
 %rename("stack_name")			aiengine::PacketDispatcher::getStackName;
 %rename("pcap_filter=")			aiengine::PacketDispatcher::setPcapFilter;
 %rename("pcap_filter")			aiengine::PacketDispatcher::getPcapFilter;

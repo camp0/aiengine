@@ -79,6 +79,7 @@ public:
 #endif
 
 	bool getRejectConnection() const { return reject_connection_; }
+	void setRejectConnection(bool value) { reject_connection_ = value; }
 
 	int32_t total_matchs_;
 	int32_t total_evaluates_;

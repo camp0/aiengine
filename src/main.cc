@@ -89,6 +89,7 @@ bool option_enable_learner = false;
 bool option_show_pstatistics = false;
 bool option_release_caches = false;
 bool option_generate_yara = false;
+bool option_reject_flows_regex = false;
 int tcp_flows_cache;
 int udp_flows_cache;
 int option_statistics_level = 0;
@@ -341,6 +342,7 @@ int main(int argc, char* argv[]) {
                 ("flow-class,c",  	po::value<std::string>(&option_regex_type_flows)->default_value("all"),
 					"Uses tcp, udp or all for matches the signature on the flows.") 
                 ("matched-flows,m",  	"Shows the flows that matchs with the regex.")
+                ("reject-flows,j",  	"Rejects the flows that matchs with the regex.")
 		;
 
         po::options_description optional_ops_freq("Frequencies optional arguments");
@@ -415,6 +417,7 @@ int main(int argc, char* argv[]) {
 		if (var_map.count("release")) option_release_caches = true;
 		if (var_map.count("enable-yara")) option_generate_yara = true; 
 		if (var_map.count("matched-flows")) option_show_matched_regex = true;
+		if (var_map.count("reject-flows")) option_reject_flows_regex = true;
 
         	po::notify(var_map);
     	
@@ -481,7 +484,8 @@ int main(int argc, char* argv[]) {
 				prevr->setNextRegex(r);
 				prevr = r;
 			}
-			topr->setShowMatch(option_show_matched_regex);	
+			topr->setShowMatch(option_show_matched_regex);
+			topr->setRejectConnection(option_reject_flows_regex);	
 			sm->addRegex(topr);	
         	}
 

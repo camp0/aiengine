@@ -77,9 +77,14 @@ AM_CXXFLAGS="$AM_CXXFLAGS -Wno-write-strings"
 ##########################################################################
 #AC_CHECK_HEADER([pcap.h])
 #AC_CHECK_LIB(pcap,main,,AC_MSG_ERROR([Pcap support is an essential dependency for AIEngine, install it.]))
+have_libpcap=no
 AC_CHECK_HEADER(pcap.h,
       AC_CHECK_LIB(pcap, main,
       [have_libpcap=yes LIBS="-lpcap $LIBS"]))
+
+if test "$have_libpcap" = no; then
+    AC_MSG_ERROR([Libpcap support is an essential dependency for AIEngine, install it.])
+fi
 
 ##########################################################################
 # Boost support
