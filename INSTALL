@@ -164,3 +164,30 @@ Some configure output from supported systems
   TCP Qos support.......: yes
   TCP/UDP reject support: yes
 
+  // Tested with c++14! with compiler 5.1.1
+  aiengine
+  (aiengine) version 1.3
+  Host..................: x86_64-unknown-linux-gnu
+  Prefix................: /usr/local
+  Debug Build...........: no
+  C++ version...........: g++ (GCC) 5.1.1 20150618 (Red Hat 5.1.1-4)
+  C++ compiler..........: g++ -O3  -std=c++14 -Wno-write-strings   
+  C++11 support.........: yes
+  Linker................: /usr/bin/ld -m elf_x86_64  -lpcap 
+  Boost include.........: -I/usr/include/boost
+  Boost.................: 1.50.0
+  Boost unit tests......: no
+  Boost python lib......: boost_python
+  Python................: 2.7 
+  Python include path...: -I/usr/include/python2.7
+  Log4cxx...............: no
+  Libpcap...............: yes
+  Pcre..................: yes
+  Pcre JIT..............: yes
+  Database support......: no
+  Bloom filter support..: no
+  Flow sc support.......: no
+  Swig/Ruby support.....: no
+  TCP Qos support.......: no
+  TCP/UDP reject support: no
+

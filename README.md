@@ -23,6 +23,7 @@ The main functionalities of AIEngine are:
 - Easy integration with other packet engines (Netfilter).
 - Support memory clean caches for refresh stored memory information.
 - Support for detect DDoS at network/application layer.
+- Support for rejecting TCP/UDP connections.
 
 Using AIEngine 
 ---------------
@@ -50,6 +51,9 @@ To use AIEngine(reduce version) just execute the binary aiengine or use the pyth
 	  -c [ --flow-class ] arg (=all) Uses tcp, udp or all for matches the signature
 					 on the flows.
 	  -m [ --matched-flows ]         Shows the flows that matchs with the regex.
+	  -j [ --reject-flows ]          Rejects the flows that matchs with the 
+                                         regex.
+
 
 	Frequencies optional arguments:
 	  -F [ --enable-frequencies ]       Enables the Frequency engine.

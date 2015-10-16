@@ -56,6 +56,11 @@
 
 namespace aiengine {
 
+// Compilers > that 5 have a improvement on the list initializations
+#define GCC_VERSION (__GNUG__ * 10000 \
+	+ __GNUC_MINOR__ * 100 \
+        + __GNUC_PATCHLEVEL__)
+
 class TCPHeader {
 public:
  
@@ -73,22 +78,24 @@ public:
 			0,		// th_sum
 			0		// th_urg
 #else
-                        htons(src),	// source
-                        htons(dst),	// destination
-                        htonl(seq),	// seq
-                        htonl(ack),	// ack_seq
-                        0,		// res1
-                        5,		// doff
-                        0,		// fin
-                        0,		// syn
-                        0,		// rst
-                        0,		// psh
-                        0,		// ack
-                        0,		// urg
-			0,		// res2
-                        4016,		// window
-                        0,		// check
-                        0		// urg_ptr 
+                        htons(src),     // source
+                        htons(dst),     // destination
+                        htonl(seq),     // seq
+                        htonl(ack),     // ack_seq
+                        0,              // res1
+                        5,              // doff
+#if GCC_VERSION < 50000
+                        0,              // fin
+                        0,              // syn
+                        0,              // rst
+                        0,              // psh
+                        0,              // ack
+                        0,              // urg
+#endif
+                        0,
+                        4016,           // window
+                        0,              // check
+                        0               // urg_ptr
 #endif
 		}{}
 	TCPHeader(uint16_t src, uint16_t dst): TCPHeader(src,dst,0,0) {}
