@@ -78,6 +78,7 @@
 #include "flow/FlowManager.h"
 #include "flow/FlowCache.h"
 #include "NetworkStack.h"
+#include "RejectManager.h"
 
 namespace aiengine {
 
@@ -89,6 +90,10 @@ public:
 
         void setLinkLayerMultiplexer(MultiplexerPtrWeak mux) { }
         MultiplexerPtrWeak getLinkLayerMultiplexer() { return mux_eth;}
+
+        void statistics(std::basic_ostream<char>& out) const;
+        void statistics() { statistics(std::cout);}
+        void statistics(const std::string &name) { super_::statistics(name); }
 	
 	void showFlows(std::basic_ostream<char>& out);
 	void showFlows() { showFlows(std::cout);}
@@ -126,6 +131,10 @@ public:
         void setUDPIPSetManager(IPSetManager& ipset_mng) { setUDPIPSetManager(std::make_shared<IPSetManager>(ipset_mng)); }
 #endif
 
+        void setAsioService(boost::asio::io_service& io_service);
+
+        friend std::ostream& operator<< (std::ostream& out, const StackLanIPv6& s);
+
 private:
 	typedef NetworkStack super_;
 #ifdef HAVE_LIBLOG4CXX
@@ -154,6 +163,8 @@ private:
         // FlowForwarders
         FlowForwarderPtr ff_tcp_;
         FlowForwarderPtr ff_udp_;
+
+	SharedPointer<RejectManager<StackLanIPv6>> rj_mng_;
 };
 
 typedef std::shared_ptr<StackLanIPv6> StackLanIPv6Ptr;

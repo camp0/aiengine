@@ -60,11 +60,12 @@ bool IPv6Protocol::processPacket(Packet& packet) {
 	int extension_length = 0;
 	bool have_extension_hdr = false;
 	int iter = 0;
+        int bytes = packet.getLength();
 
         ++total_packets_;
 
-        mux->total_length = packet.getLength();
-        total_bytes_ += packet.getLength();
+        mux->total_length = bytes;
+        total_bytes_ += bytes; 
 
 	mux->address.setSourceAddress6(getSourceAddress());
 	mux->address.setDestinationAddress6(getDestinationAddress());
@@ -109,6 +110,10 @@ bool IPv6Protocol::processPacket(Packet& packet) {
 			case IPPROTO_UDP: 
 			case IPPROTO_TCP:
 			case IPPROTO_ICMPV6: {
+
+                                packet.net_packet.setPayload(packet.getPayload());
+                                packet.net_packet.setLength(bytes);
+
         			mux->setHeaderSize(header_size + extension_length);
        				mux->setNextProtocolIdentifier(next_proto);
        				packet.setPrevHeaderSize(header_size + extension_length);

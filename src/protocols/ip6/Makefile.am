@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS = test_ip6.h
+noinst_HEADERS = 	IPv6HdrIncl.h IPv6Header.h test_ip6.h
 
 TEST = test_ip6
 

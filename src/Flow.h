@@ -100,6 +100,9 @@ public:
         const char* getSrcAddrDotNotation() const { return address_.getSrcAddrDotNotation();}
         const char* getDstAddrDotNotation() const { return address_.getDstAddrDotNotation();}
 
+	struct in6_addr *getSourceAddress6() { return  address_.getSourceAddress6();}
+	struct in6_addr *getDestinationAddress6() { return address_.getDestinationAddress6();}
+
 	const char* getL7ProtocolName() const;
 
 	// Methods for flow time management

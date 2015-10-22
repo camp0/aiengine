@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS =	test_icmp6.h
+noinst_HEADERS =	ICMPv6Header.h test_icmp6.h
 
 TEST = test_icmp
 
