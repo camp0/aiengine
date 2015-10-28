@@ -302,4 +302,40 @@ void StackLanIPv6::setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_m
 	super_::setUDPIPSetManager(ipset_mng);
 }
 
+void StackLanIPv6::setAsioService(boost::asio::io_service& io_service) {
+
+        // Create a new RejectManager with their corresponding sockets
+#ifdef HAVE_REJECT_FLOW
+        if (geteuid() == 0) { // The process have rights on raw sockets
+                rj_mng_ = SharedPointer<RejectManager<StackLanIPv6>>(new RejectManager<StackLanIPv6>(io_service));
+                if (rj_mng_->ready()) {
+                        // Attach the reject function to the corresponding protocols tcp/udp
+                        tcp_->addRejectFunction(std::bind(&RejectManager<StackLanIPv6>::rejectTCPFlow,rj_mng_,std::placeholders::_1));
+                        udp_->addRejectFunction(std::bind(&RejectManager<StackLanIPv6>::rejectUDPFlow,rj_mng_,std::placeholders::_1));
+                }
+        }
+#endif
+
+}
+
+void StackLanIPv6::statistics(std::basic_ostream<char>& out) const {
+
+        super_::statistics(out);
+#ifdef HAVE_REJECT_FLOW
+        if (geteuid() == 0) { // The process have rights on raw sockets
+                if (rj_mng_) {
+                        rj_mng_->statistics(out);
+                        out << std::endl;
+                }
+        }
+#endif
+}
+
+std::ostream& operator<< (std::ostream& out, const StackLanIPv6& s) {
+
+        s.statistics(out);
+
+        return out;
+}
+
 } // namespace aiengine

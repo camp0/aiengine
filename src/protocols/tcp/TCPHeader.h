@@ -145,55 +145,130 @@ public:
                 return is.read(raw,sizeof(hdr.tcphdr_));
         }
 
-    void compute_checksum(uint32_t srcaddr, uint32_t destaddr) {
+    	void compute_checksum(uint32_t srcaddr, uint32_t destaddr) {
 #if defined(__FREEBSD__) || (__OPENBSD__) || defined(__DARWIN__)
-        tcphdr_.th_sum = 0;
+        	tcphdr_.th_sum = 0;
 #else
-	tcphdr_.check = 0;
+		tcphdr_.check = 0;
 #endif
-        tcp_checksum tc = {{0}, {0}};
-        tc.pseudo.ip_src   = htonl(srcaddr);
-        tc.pseudo.ip_dst   = htonl(destaddr);
-        tc.pseudo.zero     = 0;
-        tc.pseudo.protocol = IPPROTO_TCP;
-        tc.pseudo.length   = htons(sizeof(tcphdr));
-        tc.tcp = tcphdr_;
+        	tcp_checksum tc = {{0}, {0}};
+        	tc.pseudo.ip_src   = htonl(srcaddr);
+        	tc.pseudo.ip_dst   = htonl(destaddr);
+        	tc.pseudo.zero     = 0;
+        	tc.pseudo.protocol = IPPROTO_TCP;
+        	tc.pseudo.length   = htons(sizeof(tcphdr));
+        	tc.tcp = tcphdr_;
 #if defined(__FREEBSD__) || (__OPENBSD__) || defined(__DARWIN__)
-        tcphdr_.th_sum = ((checksum(reinterpret_cast<uint16_t*>(&tc), sizeof(struct tcp_checksum))));
+        	tcphdr_.th_sum = ((checksum(reinterpret_cast<uint16_t*>(&tc), sizeof(struct tcp_checksum))));
 #else
-        tcphdr_.check = ((checksum(reinterpret_cast<uint16_t*>(&tc), sizeof(struct tcp_checksum))));
+        	tcphdr_.check = ((checksum(reinterpret_cast<uint16_t*>(&tc), sizeof(struct tcp_checksum))));
 #endif
-    }
+    	}
+
+	void compute_checksum6(struct ip6_hdr *ip6) {
+#if defined(__FREEBSD__) || (__OPENBSD__) || defined(__DARWIN__)
+        	tcphdr_.th_sum = 0;
+#else
+		tcphdr_.check = 0;
+#endif
+		uint32_t cksum;
+        	uint32_t l4_len;
+
+        	//l4_len = (ipv6_hdr->ip6_plen);
+
+        	cksum = get_16b_sum(reinterpret_cast<uint16_t*>(&tcphdr_), sizeof(struct tcphdr));
+        	cksum += get_ipv6_psd_sum(ip6);
+
+        	cksum = ((cksum & 0xffff0000) >> 16) + (cksum & 0xffff);
+        	cksum = (~cksum) & 0xffff;
+        	if (cksum == 0)
+                	cksum = 0xffff;
+
+#if defined(__FREEBSD__) || (__OPENBSD__) || defined(__DARWIN__)
+        	tcphdr_.th_sum = cksum;
+#else
+        	tcphdr_.check = cksum;
+#endif
+	}
+
+	std::size_t size() const { return sizeof(struct tcphdr); }
 
 private:
 	struct tcphdr tcphdr_;
 
-    static unsigned short checksum(unsigned short *buf, int bufsz) {
-      unsigned long sum = 0;
-        while( bufsz > 1 ) {
-            sum += *buf++;
-            bufsz -= 2;
+uint16_t
+get_16b_sum(uint16_t *ptr16, uint32_t nr)
+{
+        uint32_t sum = 0;
+        while (nr > 1)
+        {
+                sum +=*ptr16;
+                nr -= sizeof(uint16_t);
+                ptr16++;
+                if (sum > UINT16_MAX)
+                        sum -= UINT16_MAX;
         }
-        if( bufsz == 1 )
-            sum += *(unsigned char *)buf;
-        sum = (sum & 0xffff) + (sum >> 16);
-        sum = (sum & 0xffff) + (sum >> 16);
-        return ~sum;
-    }
 
-    struct tcph_pseudo {    // TCP pseudo header for header checksum
-            uint32_t ip_src;    // Source IP address
-            uint32_t ip_dst;    // Destination IP address
-            uint8_t zero;      // Always 0
-            uint8_t  protocol;  // IPPROTO_TCP
-            uint16_t length;    // tcp header length + payload length (Not contained pseudo header)
-    };
+        /* If length is in odd bytes */
+        if (nr)
+                sum += *((uint8_t*)ptr16);
 
-    struct tcp_checksum {
-            struct tcph_pseudo pseudo;
-            struct tcphdr tcp;
-    };
+        sum = ((sum & 0xffff0000) >> 16) + (sum & 0xffff);
+        sum &= 0x0ffff;
+        return (uint16_t)sum;
+}
 
+uint16_t
+get_ipv6_psd_sum (struct ip6_hdr * ip_hdr)
+{
+        /* Pseudo Header for IPv6/UDP/TCP checksum */
+        union ipv6_psd_header {
+                struct {
+                        uint8_t src_addr[16]; /* IP address of source host. */
+                        uint8_t dst_addr[16]; /* IP address of destination host(s). */
+                        uint32_t len;         /* L4 length. */
+                        uint32_t proto;       /* L4 protocol - top 3 bytes must be zero */
+                } __attribute__((__packed__));
+
+                uint16_t u16_arr[0]; /* allow use as 16-bit values with safe aliasing */
+        } psd_hdr;
+
+        memcpy(&psd_hdr.src_addr, &ip_hdr->ip6_src,
+                        (sizeof(ip_hdr->ip6_src) + sizeof(ip_hdr->ip6_dst)));
+        //psd_hdr.len       = ip_hdr->payload_len;
+        psd_hdr.len       = ip_hdr->ip6_plen;
+        psd_hdr.proto     = IPPROTO_TCP;//(ip_hdr->proto << 24);
+
+        return get_16b_sum(psd_hdr.u16_arr, sizeof(psd_hdr));
+}
+
+
+    	unsigned short checksum(unsigned short *buf, int bufsz) {
+      		unsigned long sum = 0;
+        
+		while( bufsz > 1 ) {
+            		sum += *buf++;
+            		bufsz -= 2;
+        	}
+        	if( bufsz == 1 )
+            		sum += *(unsigned char *)buf;
+        	sum = (sum & 0xffff) + (sum >> 16);
+        	sum = (sum & 0xffff) + (sum >> 16);
+        	return ~sum;
+    	}
+
+    	struct tcph_pseudo {    // TCP pseudo header for header checksum
+        	uint32_t ip_src;    // Source IP address
+            	uint32_t ip_dst;    // Destination IP address
+            	uint8_t zero;      // Always 0
+            	uint8_t  protocol;  // IPPROTO_TCP
+            	uint16_t length;    // tcp header length + payload length (Not contained pseudo header)
+    	};
+
+    	struct tcp_checksum {
+        	struct tcph_pseudo pseudo;
+            	struct tcphdr tcp;
+    	};
 };
 
 } // namespace aiengine 

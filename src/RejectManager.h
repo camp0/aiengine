@@ -35,8 +35,11 @@
 #include <boost/enable_shared_from_this.hpp>
 #include "Flow.h"
 #include "protocols/ip/IPv4Header.h"
+#include "protocols/ip6/IPv6Header.h"
 #include "protocols/icmp/ICMPHeader.h"
+#include "protocols/icmp6/ICMPv6Header.h"
 #include "protocols/ip/IPv4HdrIncl.h"
+#include "protocols/ip6/IPv6HdrIncl.h"
 #include "protocols/tcp/TCPHeader.h"
 #include "protocols/tcp/TCPRawSocket.h"
 #include "protocols/icmp/ICMPRawSocket.h"
@@ -44,22 +47,14 @@
 namespace aiengine {
 
 class StackLan;
+class StackLanIPv6;
 
 template <class Stack_Type>
 class RejectManager 
 {
 public:
 
-	RejectManager(boost::asio::io_service& io_service):
-		total_tcp_rejects_(0),total_udp_rejects_(0),
-		total_tcp_bytes_(0),total_udp_bytes_(0),
-		tcp_socket_(io_service, TCPRawSocket::v4()), 
-		icmp_socket_(io_service, ICMPRawSocket::v4())
-	{
-		std::srand(std::time(NULL));
-		tcp_socket_.set_option(IPv4HdrIncl(true));
-		icmp_socket_.set_option(IPv4HdrIncl(true));
-	}
+	RejectManager(boost::asio::io_service& io_service);
 
     	virtual ~RejectManager() { tcp_socket_.close(); icmp_socket_.close(); }
 

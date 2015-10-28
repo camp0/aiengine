@@ -41,7 +41,7 @@ public:
   	typedef boost::asio::ip::basic_endpoint<TCPRawSocket> endpoint;
 
   	static TCPRawSocket v4() { return TCPRawSocket(IPPROTO_TCP, AF_INET); }
-  	static TCPRawSocket v6() { return TCPRawSocket(IPPROTO_TCP, AF_INET6); }
+  	static TCPRawSocket v6() { return TCPRawSocket(IPPROTO_RAW, AF_INET6); }
 
   	int type() const { return SOCK_RAW; }
   	int protocol() const { return protocol_; }
