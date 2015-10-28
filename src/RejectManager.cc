@@ -22,6 +22,7 @@
  *
  */
 #include "RejectManager.h"
+#include <iomanip>
 
 namespace aiengine {
 
@@ -137,6 +138,7 @@ void RejectManager<StackLan>::rejectUDPFlow(Flow *flow) {
 
 		std::string payload(reinterpret_cast<const char*>(raw_packet), length);
 		// Create IP and ICMP headers
+
 		IPv4Header iphdr(IPPROTO_ICMP);
 		ICMPRawSocket::endpoint end;
 
@@ -203,15 +205,14 @@ void RejectManager<StackLanIPv6>::rejectTCPFlow(Flow *flow) {
                 std::ostream packet_down(&down_buffer);
 
                 IPv6Header ip_down(IPPROTO_TCP);
+                TCPHeader tcp_down(flow->getDestinationPort(),flow->getSourcePort());
 
 		ip_down.setSourceAddress(flow->getDestinationAddress6());
 		ip_down.setDestinationAddress(flow->getSourceAddress6());
 
-		int length = 40 + sizeof(struct tcphdr);
+		int length = ip_down.size() + tcp_down.size();
 
-                ip_down.setTotalLength(length);
-
-                TCPHeader tcp_down(flow->getDestinationPort(),flow->getSourcePort());
+                ip_down.setTotalLength(tcp_down.size());
 
                 tcp_down.setWindowSize(0);
                 tcp_down.setFlagRst(true);
@@ -245,13 +246,12 @@ void RejectManager<StackLanIPv6>::rejectTCPFlow(Flow *flow) {
                 total_tcp_bytes_ += ret;
 
                 IPv6Header ip_up(IPPROTO_TCP);
+                TCPHeader tcp_up(flow->getSourcePort(),flow->getDestinationPort());
 
 		ip_up.setSourceAddress(flow->getSourceAddress6());
 		ip_up.setDestinationAddress(flow->getDestinationAddress6());
 
-                ip_up.setTotalLength(length);
-
-                TCPHeader tcp_up(flow->getSourcePort(),flow->getDestinationPort());
+                ip_up.setTotalLength(tcp_up.size());
 
                 tcp_up.setWindowSize(0);
                 tcp_up.setFlagRst(true);
@@ -302,43 +302,36 @@ void RejectManager<StackLanIPv6>::rejectUDPFlow(Flow *flow) {
                 }
 
                 std::string payload(reinterpret_cast<const char*>(raw_packet), length);
+
                 // Create IPv6 and ICMPv6 headers
                 IPv6Header iphdr(IPPROTO_ICMPV6);
+                ICMPv6Header icmphdr(ICMP6_DST_UNREACH,ICMP6_DST_UNREACH_NOPORT);
                 ICMPRawSocket::endpoint end;
+		boost::asio::ip::address_v6::bytes_type raw_addr;
+		char address_6[INET6_ADDRSTRLEN];
 
                 if (flow->getFlowDirection() == FlowDirection::BACKWARD) {
                         iphdr.setDestinationAddress(flow->getDestinationAddress6());
                         iphdr.setSourceAddress(flow->getSourceAddress6());
 
-			boost::asio::ip::address_v6::bytes_type raw_addr;
-
-			std::memcpy(&raw_addr[0],flow->getDestinationAddress6(),raw_addr.size());
-
-                        end.address(boost::asio::ip::address_v6(raw_addr));
+                	inet_ntop(AF_INET6,flow->getDestinationAddress6(),address_6,INET6_ADDRSTRLEN);
                 } else {
                         iphdr.setDestinationAddress(flow->getSourceAddress6());
                         iphdr.setSourceAddress(flow->getDestinationAddress6());
-
-			boost::asio::ip::address_v6::bytes_type raw_addr;
-
-			std::memcpy(&raw_addr[0],flow->getSourceAddress6(),raw_addr.size());
-
-                        end.address(boost::asio::ip::address_v6(raw_addr));
+                	
+			inet_ntop(AF_INET6,flow->getSourceAddress6(),address_6,INET6_ADDRSTRLEN);
                 }
-                ICMPv6Header icmphdr(0x03,0x03);
 
-                int total_length = iphdr.size() + icmphdr.size() + length;
+		raw_addr = boost::asio::ip::address_v6::from_string(address_6).to_bytes();
+                end.address(boost::asio::ip::address_v6(raw_addr));
 
-                iphdr.setTotalLength(total_length);
+		icmphdr.setChecksum(0);
+		icmphdr.setId(0);
+                iphdr.setTotalLength(icmphdr.size() + length);
 
-                // WARNING: The kernel needs to have the icmp checksum computed if not the syscall
+		// WARNING: The kernel needs to have the icmp checksum computed if not the syscall
                 // sendmsg will return EPERM
-                // compute_checksum(icmphdr,payload.begin(),payload.end());
-		//icmphdr.checksum(iphdr.getHeader());
-
-		uint16_t cksum = icmp6_checksum(iphdr.getHeader(),icmphdr.getHeader(),reinterpret_cast<uint8_t*>(&raw_packet),length);
-
-		icmphdr.setChecksum(cksum);
+		icmphdr.computeChecksum(iphdr.getHeader(),raw_packet,length);
 
                 packet << iphdr << icmphdr << payload;
 

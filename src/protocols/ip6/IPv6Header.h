@@ -107,6 +107,8 @@ public:
 	void setTotalLength(uint16_t len) { iphdr_.ip6_plen = htons(len); }
 	void setProtocol(uint8_t protocol) { iphdr_.ip6_nxt = protocol; }
 
+	uint16_t getTotalLength() const { return ntohs(iphdr_.ip6_plen); }
+
 	struct ip6_hdr *getHeader() { return &iphdr_; }
 
 	std::size_t size() const { return sizeof(struct ip6_hdr); }

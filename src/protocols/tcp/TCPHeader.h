@@ -191,6 +191,8 @@ public:
 #endif
 	}
 
+	std::size_t size() const { return sizeof(struct tcphdr); }
+
 private:
 	struct tcphdr tcphdr_;
 

@@ -9,7 +9,7 @@ check_PROGRAMS = test_icmp6
 test_icmp6_SOURCES = 	../../Multiplexer.cc \
 			../../AnomalyManager.cc \
 			../ethernet/EthernetProtocol.cc \
-			../ip6/IPv6Protocol.cc \
+			../ip6/IPv6Protocol.cc ICMPv6Header.cc \
 			ICMPv6Protocol.cc test_icmp6.cc
 
 test_icmp6_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
