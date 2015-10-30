@@ -1,7 +1,7 @@
 AIEngine (Artificial Inteligent Engine)
 =========
 
-AIEngine is a next generation interactive/programmable Pythonn/Ruby packet inspection engine with capabilities of learning
+AIEngine is a next generation interactive/programmable Python/Ruby packet inspection engine with capabilities of learning
 without any human intervention, NIDS(Network Intrusion Detection System) functionality, DNS domain classification, network collector and many others. 
 
 AIEngine also helps network/security professionals to identify traffic and develop
@@ -180,7 +180,7 @@ The ruby library is still on develop phase.
 Contributing to AIEngine 
 -------------------------
 
-AIEngine is under the terms of GPLv2 and is under develop.
+AIEngine is develop with c++11/14 standard and is under the terms of GPLv2.
 
 Check out the AIEngine source with 
 

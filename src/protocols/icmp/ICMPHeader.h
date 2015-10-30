@@ -74,13 +74,6 @@ public:
                 return is.read(raw,sizeof(hdr.icmphdr_));
         }
 
-	void checksum1(const std::string& payload) {
-
-		const unsigned short *buffer = reinterpret_cast<const unsigned short*>(payload.c_str());
-		std::cout << "Checksum1:" << checksum(buffer,payload.length()) << " " << ntohs(checksum(buffer,payload.length())) << std::endl;
-
-	}
-
 private:
     	unsigned short checksum(const unsigned short *buf, int bufsz) {
       		unsigned long sum = 0;

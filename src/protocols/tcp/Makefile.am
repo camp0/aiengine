@@ -18,7 +18,7 @@ test_tcp_SOURCES = 	../../Multiplexer.cc  \
 			../../ipset/IPSetManager.cc \
 			../../ipset/IPSet.cc \
 			../ip6/IPv6Protocol.cc \
-			TCPProtocol.cc \
+			TCPHeader.cc TCPProtocol.cc \
 			test_tcp.cc
 
 test_tcp_CPPFLAGS = -I../../  $(BOOST_CPPFLAGS) -DSTAND_ALONE

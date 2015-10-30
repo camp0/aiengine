@@ -31,6 +31,7 @@
 #include <istream>
 #include <netinet/ip6.h>
 #include <netinet/icmp6.h>
+#include <cstring> // for std::memcpy
 
 namespace aiengine {
 

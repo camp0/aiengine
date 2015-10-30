@@ -43,6 +43,7 @@ noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			protocols/icmp6/ICMPv6Header.h \
 			protocols/icmp6/ICMPv6Protocol.h \
 			protocols/udp/UDPProtocol.h \
+			protocols/tcp/TCPHeader.h \
 			protocols/tcp/TCPProtocol.h \
 			protocols/tcpgeneric/TCPGenericProtocol.h \
 			protocols/udpgeneric/UDPGenericProtocol.h \
@@ -88,6 +89,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/icmp6/ICMPv6Header.cc \
 			protocols/icmp6/ICMPv6Protocol.cc \
 			protocols/udp/UDPProtocol.cc \
+			protocols/tcp/TCPHeader.cc \
 			protocols/tcp/TCPProtocol.cc \
 			protocols/tcpgeneric/TCPGenericProtocol.cc \
 			protocols/udpgeneric/UDPGenericProtocol.cc \
@@ -187,7 +189,7 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		Flow.o Callback.o \
 		RegexManager.o Regex.o \
 		VLanProtocol.o MPLSProtocol.o \
-		IPProtocol.o IPv6Protocol.o TCPProtocol.o UDPProtocol.o \
+		IPProtocol.o IPv6Protocol.o TCPHeader.o TCPProtocol.o UDPProtocol.o \
 		TCPGenericProtocol.o UDPGenericProtocol.o \
 		HTTPProtocol.o SSLProtocol.o \
 		DNSProtocol.o GPRSProtocol.o \

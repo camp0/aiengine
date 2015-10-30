@@ -69,7 +69,7 @@ void RejectManager<StackLan>::rejectTCPFlow(Flow *flow) {
 			tcp_down.setSequenceNumber(info->seq_num[0]);
 		}
 
-		tcp_down.compute_checksum(flow->getDestinationAddress(),flow->getSourceAddress());
+		tcp_down.computeChecksum(flow->getDestinationAddress(),flow->getSourceAddress());
 		TCPRawSocket::endpoint end_down(boost::asio::ip::address_v4(flow->getSourceAddress()),flow->getSourcePort());
 
 		packet_down << ip_down << tcp_down;
@@ -99,7 +99,7 @@ void RejectManager<StackLan>::rejectTCPFlow(Flow *flow) {
                         tcp_up.setSequenceNumber(info->seq_num[0]);
                 }
 
-                tcp_up.compute_checksum(flow->getSourceAddress(),flow->getDestinationAddress());
+                tcp_up.computeChecksum(flow->getSourceAddress(),flow->getDestinationAddress());
 
                 TCPRawSocket::endpoint end_up(boost::asio::ip::address_v4(flow->getDestinationAddress()),flow->getDestinationPort());
 
@@ -225,7 +225,7 @@ void RejectManager<StackLanIPv6>::rejectTCPFlow(Flow *flow) {
                         tcp_down.setSequenceNumber(info->seq_num[0]);
                 }
 
-                tcp_down.compute_checksum6(ip_down.getHeader());
+                tcp_down.computeChecksum(ip_down.getHeader());
 
 		// WARNING: The source port must be 0
 		boost::asio::ip::address_v6::bytes_type raw_addr;
@@ -262,7 +262,7 @@ void RejectManager<StackLanIPv6>::rejectTCPFlow(Flow *flow) {
                         tcp_up.setSequenceNumber(info->seq_num[0]);
                 }
 
-                tcp_up.compute_checksum6(ip_up.getHeader());
+                tcp_up.computeChecksum(ip_up.getHeader());
 
 		std::memcpy(&raw_addr[0],flow->getDestinationAddress6(),raw_addr.size());
                 TCPRawSocket::endpoint end_up(boost::asio::ip::address_v6(raw_addr),0);
@@ -325,8 +325,8 @@ void RejectManager<StackLanIPv6>::rejectUDPFlow(Flow *flow) {
 		raw_addr = boost::asio::ip::address_v6::from_string(address_6).to_bytes();
                 end.address(boost::asio::ip::address_v6(raw_addr));
 
-		icmphdr.setChecksum(0);
-		icmphdr.setId(0);
+		// icmphdr.setChecksum(0);
+		// icmphdr.setId(0);
                 iphdr.setTotalLength(icmphdr.size() + length);
 
 		// WARNING: The kernel needs to have the icmp checksum computed if not the syscall

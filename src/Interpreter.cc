@@ -109,7 +109,7 @@ void Interpreter::handle_read_user_input(boost::system::error_code error) {
 			PyErr_Print();
 		}
 #elif defined(RUBY_BINDING)
-		// TODO: Execute the string with rb_eval_string_protect
+	
 		int state = 0;
 		rb_eval_string_protect(cmd.c_str(),&state);
 		if (state) {

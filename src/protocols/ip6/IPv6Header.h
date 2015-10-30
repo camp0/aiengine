@@ -64,17 +64,6 @@ class IPv6Header
 {
 public:
 
-	IPv6Header(uint8_t protocol,struct in6_addr src, struct in6_addr dst):
-                iphdr_{
-                        //0x60,           // ip6_flow
-                        htonl ((6 << 28) | (0 << 20) | 0),           // ip6_flow
-                        0,              // ip6_plen
-                        protocol,       // ip6_nxt
-                        default_ttl,    // ip6_hops 
-                        { src }, 	// ip6_src  
-			{ dst }		// ip6_dst
-                } {}
-
 	IPv6Header(uint8_t protocol):
 		iphdr_{
                         htonl ((6 << 28) | (0 << 20) | 0),           // ip6_flow
@@ -113,24 +102,6 @@ public:
 
 	std::size_t size() const { return sizeof(struct ip6_hdr); }
 
-/*	uint8_t getVersion() const { return iphdr_.ip_v; }
-	uint8_t getIhl() const { return iphdr_.ip_hl; }
-	uint8_t getTypeOfService() const { return iphdr_.ip_tos; }
-	uint16_t getTotalLength() const { return ntohs(iphdr_.ip_len); }
-	uint16_t getId() const { return ntohs(iphdr_.ip_id); }
-	uint8_t getProtocol() const { return iphdr_.ip_p; }	
-	uint32_t getSourceAddress() const { return ntohl(iphdr_.ip_src.s_addr); } 
-	uint32_t getDestinationAddress() const { return ntohl(iphdr_.ip_dst.s_addr); } 
-
-	void setId(uint16_t id) { iphdr_.ip_id = htons(id); }
-	void setSourceAddress(uint32_t src) { iphdr_.ip_src.s_addr = src; }	
-	void setDestinationAddress(uint32_t dst) { iphdr_.ip_dst.s_addr = dst; }	
-	void setVersion(uint8_t version) { iphdr_.ip_v = version; }
-	void setIhl(uint8_t ihl) { iphdr_.ip_hl = ihl; }
-	void setTypeOfService(uint8_t tos) { iphdr_.ip_tos = tos; }
-	void setTotalLength(uint16_t len) { iphdr_.ip_len = htons(len); }
-*/
-
 	friend std::ostream& operator<<(std::ostream &os, IPv6Header &hdr) {
 
 		char *raw = reinterpret_cast<char*>(&hdr.iphdr_);
@@ -146,20 +117,6 @@ public:
         }
 
 private:
-    	unsigned short checksum(unsigned short *buf, int bufsz) {
-      		unsigned long sum = 0;
-        
-		while( bufsz > 1 ) {
-            		sum += *buf++;
-            		bufsz -= 2;
-        	}
-        	if( bufsz == 1 )
-            		sum += *(unsigned char *)buf;
-        	sum = (sum & 0xffff) + (sum >> 16);
-        	sum = (sum & 0xffff) + (sum >> 16);
-        	return ~sum;
-    	}
-
 	struct ip6_hdr iphdr_;
 };
 

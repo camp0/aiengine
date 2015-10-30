@@ -36,22 +36,23 @@ uint16_t ICMPv6Header::checksum (uint16_t *addr, int len) {
                 count -= 2;
         }
 
-                // Add left-over byte, if any.
-                if (count > 0) {
-                        sum += *(uint8_t *) addr;
-                }
-
-                // Fold 32-bit sum into 16 bits; we lose information by doing this,
-                // increasing the chances of a collision.
-                // sum = (lower 16 bits) + (upper 16 bits shifted right 16 bits)
-                while (sum >> 16) {
-                        sum = (sum & 0xffff) + (sum >> 16);
-                }
-
-                // Checksum is one's compliment of sum.
-                answer = ~sum;
-                return answer;
+       	// Add left-over byte, if any.
+	if (count > 0) {
+        	sum += *(uint8_t *) addr;
         }
+
+        // Fold 32-bit sum into 16 bits; we lose information by doing this,
+        // increasing the chances of a collision.
+        // sum = (lower 16 bits) + (upper 16 bits shifted right 16 bits)
+        while (sum >> 16) {
+        	sum = (sum & 0xffff) + (sum >> 16);
+        }
+
+        // Checksum is one's compliment of sum.
+        answer = ~sum;
+        return answer;
+}
+
 #define IP_MAXPACKET 2048
 
 void ICMPv6Header::computeChecksum (struct ip6_hdr *iphdr, const u_char *payload, int payloadlen)
@@ -61,78 +62,77 @@ void ICMPv6Header::computeChecksum (struct ip6_hdr *iphdr, const u_char *payload
   	int chksumlen = 0;
   	int i;
 
-  bzero(&buf,IP_MAXPACKET);
-  ptr = &buf[0];  // ptr points to beginning of buffer buf
+	bzero(&buf,IP_MAXPACKET);
+  	ptr = &buf[0];  // ptr points to beginning of buffer buf
 
-  // Copy source IP address into buf (128 bits)
-  memcpy (ptr, &iphdr->ip6_src.s6_addr, sizeof (iphdr->ip6_src.s6_addr));
-  ptr += sizeof (iphdr->ip6_src);
-  chksumlen += sizeof (iphdr->ip6_src);
+  	// Copy source IP address into buf (128 bits)
+  	std::memcpy (ptr, &iphdr->ip6_src.s6_addr, sizeof (iphdr->ip6_src.s6_addr));
+  	ptr += sizeof (iphdr->ip6_src);
+  	chksumlen += sizeof (iphdr->ip6_src);
 
-  // Copy destination IP address into buf (128 bits)
-  memcpy (ptr, &iphdr->ip6_dst.s6_addr, sizeof (iphdr->ip6_dst.s6_addr));
-  ptr += sizeof (iphdr->ip6_dst.s6_addr);
-  chksumlen += sizeof (iphdr->ip6_dst.s6_addr);
+  	// Copy destination IP address into buf (128 bits)
+  	std::memcpy (ptr, &iphdr->ip6_dst.s6_addr, sizeof (iphdr->ip6_dst.s6_addr));
+  	ptr += sizeof (iphdr->ip6_dst.s6_addr);
+  	chksumlen += sizeof (iphdr->ip6_dst.s6_addr);
 
-  // Copy Upper Layer Packet length into buf (32 bits).
-  // Should not be greater than 65535 (i.e., 2 bytes).
-  *ptr = 0; ptr++;
-  *ptr = 0; ptr++;
-  *ptr = (sizeof(struct icmp6_hdr) + payloadlen) / 256;
-   ptr++;
-  *ptr = (sizeof(struct icmp6_hdr) + payloadlen) % 256;
-   ptr++;
-   chksumlen += 4;
+  	// Copy Upper Layer Packet length into buf (32 bits).
+  	// Should not be greater than 65535 (i.e., 2 bytes).
+  	*ptr = 0; ptr++;
+  	*ptr = 0; ptr++;
+  	*ptr = (sizeof(struct icmp6_hdr) + payloadlen) / 256;
+   	ptr++;
+  	*ptr = (sizeof(struct icmp6_hdr) + payloadlen) % 256;
+   	ptr++;
+   	chksumlen += 4;
 
-  // Copy zero field to buf (24 bits)
-  *ptr = 0; ptr++;
-  *ptr = 0; ptr++;
-  *ptr = 0; ptr++;
-  chksumlen += 3;
+  	// Copy zero field to buf (24 bits)
+  	*ptr = 0; ptr++;
+  	*ptr = 0; ptr++;
+  	*ptr = 0; ptr++;
+  	chksumlen += 3;
 
-  // Copy next header field to buf (8 bits)
-  memcpy (ptr, &iphdr->ip6_nxt, sizeof (iphdr->ip6_nxt));
-  ptr += sizeof (iphdr->ip6_nxt);
-  chksumlen += sizeof (iphdr->ip6_nxt);
+  	// Copy next header field to buf (8 bits)
+  	std::memcpy (ptr, &iphdr->ip6_nxt, sizeof (iphdr->ip6_nxt));
+  	ptr += sizeof (iphdr->ip6_nxt);
+  	chksumlen += sizeof (iphdr->ip6_nxt);
 
-  // Copy ICMPv6 type to buf (8 bits)
-  memcpy (ptr, &icmphdr_.icmp6_type, sizeof (icmphdr_.icmp6_type));
-  ptr += sizeof (icmphdr_.icmp6_type);
-  chksumlen += sizeof (icmphdr_.icmp6_type);
+  	// Copy ICMPv6 type to buf (8 bits)
+  	std::memcpy (ptr, &icmphdr_.icmp6_type, sizeof (icmphdr_.icmp6_type));
+  	ptr += sizeof (icmphdr_.icmp6_type);
+  	chksumlen += sizeof (icmphdr_.icmp6_type);
 
-  // Copy ICMPv6 code to buf (8 bits)
-  memcpy (ptr, &icmphdr_.icmp6_code, sizeof (icmphdr_.icmp6_code));
-  ptr += sizeof (icmphdr_.icmp6_code);
-  chksumlen += sizeof (icmphdr_.icmp6_code);
+  	// Copy ICMPv6 code to buf (8 bits)
+  	std::memcpy (ptr, &icmphdr_.icmp6_code, sizeof (icmphdr_.icmp6_code));
+  	ptr += sizeof (icmphdr_.icmp6_code);
+  	chksumlen += sizeof (icmphdr_.icmp6_code);
 
-  // Copy ICMPv6 ID to buf (16 bits)
-  memcpy (ptr, &icmphdr_.icmp6_id, sizeof (icmphdr_.icmp6_id));
-  ptr += sizeof (icmphdr_.icmp6_id);
-  chksumlen += sizeof (icmphdr_.icmp6_id);
+  	// Copy ICMPv6 ID to buf (16 bits)
+  	std::memcpy (ptr, &icmphdr_.icmp6_id, sizeof (icmphdr_.icmp6_id));
+  	ptr += sizeof (icmphdr_.icmp6_id);
+  	chksumlen += sizeof (icmphdr_.icmp6_id);
 
-  // Copy ICMPv6 sequence number to buff (16 bits)
-  memcpy (ptr, &icmphdr_.icmp6_seq, sizeof (icmphdr_.icmp6_seq));
-  ptr += sizeof (icmphdr_.icmp6_seq);
-  chksumlen += sizeof (icmphdr_.icmp6_seq);
+  	// Copy ICMPv6 sequence number to buff (16 bits)
+  	std::memcpy (ptr, &icmphdr_.icmp6_seq, sizeof (icmphdr_.icmp6_seq));
+  	ptr += sizeof (icmphdr_.icmp6_seq);
+  	chksumlen += sizeof (icmphdr_.icmp6_seq);
 
-  // Copy ICMPv6 checksum to buf (16 bits)
-  // Zero, since we don't know it yet.
-  *ptr = 0; ptr++;
-  *ptr = 0; ptr++;
-  chksumlen += 2;
+  	// Copy ICMPv6 checksum to buf (16 bits)
+  	// Zero, since we don't know it yet.
+  	*ptr = 0; ptr++;
+  	*ptr = 0; ptr++;
+  	chksumlen += 2;
 
-  // Copy ICMPv6 payload to buf
-  memcpy (ptr, payload, payloadlen * sizeof (uint8_t));
-  ptr += payloadlen;
-  chksumlen += payloadlen;
+  	// Copy ICMPv6 payload to buf
+  	std::memcpy (ptr, payload, payloadlen * sizeof (uint8_t));
+  	ptr += payloadlen;
+  	chksumlen += payloadlen;
 
-  // Pad to the next 16-bit boundary
-  for (i=0; i<payloadlen%2; i++, ptr++) {
-    *ptr = 0;
-    ptr += 1;
-    chksumlen += 1;
-  }
-
+  	// Pad to the next 16-bit boundary
+  	for (i=0; i<payloadlen%2; i++, ptr++) {
+    		*ptr = 0;
+    		ptr += 1;
+    		chksumlen += 1;
+  	}
   	setChecksum(checksum ((uint16_t *) buf, chksumlen));
 }
 
