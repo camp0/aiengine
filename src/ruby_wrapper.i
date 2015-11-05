@@ -121,6 +121,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::Flow::sip_info;
 %ignore aiengine::Flow::imap_info;
 %ignore aiengine::Flow::pop_info;
+%ignore aiengine::Flow::ssdp_info;
 %ignore aiengine::Flow::packet;
 %ignore aiengine::Flow::regex;
 %ignore aiengine::Flow::frequencies;
@@ -248,6 +249,16 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::POPInfo::user_name;
 %ignore aiengine::POPInfo::resetStrings;
 
+%ignore aiengine::SSDPInfo::reset;
+%ignore aiengine::SSDPInfo::resetStrings;
+%ignore aiengine::SSDPInfo::incTotalRequests;
+%ignore aiengine::SSDPInfo::incTotalResponses;
+%ignore aiengine::SSDPInfo::setResponseCode;
+%ignore aiengine::SSDPInfo::uri;
+%ignore aiengine::SSDPInfo::host;
+%ignore aiengine::SSDPInfo::getTotalRequests;
+%ignore aiengine::SSDPInfo::getTotalResponses;
+
 %ignore aiengine::LearnerEngine::agregatePacketFlow;
 %ignore aiengine::LearnerEngine::setFrequencyGroup;
 %ignore aiengine::LearnerEngine::agregateFlows;
@@ -307,6 +318,8 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("host_name")			aiengine::HTTPInfo::getHostName;
 %rename("uri")				aiengine::HTTPInfo::getUri;
 %rename("banned")			aiengine::HTTPInfo::getIsBanned;
+%rename("host_name")			aiengine::SSDPPInfo::getHostName;
+%rename("uri")				aiengine::SSDPInfo::getUri;
 %rename("http_uri_set=")		aiengine::DomainName::setHTTPUriSet;
 %rename("http_info")			aiengine::Flow::getHTTPInfo;
 %rename("tag")				aiengine::Flow::getTag;
@@ -420,6 +433,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %include "protocols/smtp/SMTPInfo.h"
 %include "protocols/imap/IMAPInfo.h"
 %include "protocols/pop/POPInfo.h"
+%include "protocols/ssdp/SSDPInfo.h"
 %include "Flow.h"
 %include "learner/LearnerEngine.h"
 %include "protocols/frequency/FrequencyGroup.h"

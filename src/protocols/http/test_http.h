@@ -43,6 +43,7 @@
 #include "../ip6/IPv6Protocol.h"
 #include "../tcp/TCPProtocol.h"
 #include "HTTPProtocol.h"
+#include "regex/RegexManager.h"
 
 using namespace aiengine;
 

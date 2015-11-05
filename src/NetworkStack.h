@@ -43,6 +43,7 @@
 #include "protocols/dhcp/DHCPProtocol.h"
 #include "protocols/ntp/NTPProtocol.h"
 #include "protocols/snmp/SNMPProtocol.h"
+#include "protocols/ssdp/SSDPProtocol.h"
 #include "protocols/ssl/SSLProtocol.h"
 #include "protocols/http/HTTPProtocol.h"
 #include "protocols/smtp/SMTPProtocol.h"
@@ -170,6 +171,7 @@ protected:
         DHCPProtocolPtr dhcp;
         NTPProtocolPtr ntp;
         SNMPProtocolPtr snmp;
+        SSDPProtocolPtr ssdp;
         SMTPProtocolPtr smtp;
         IMAPProtocolPtr imap;
         POPProtocolPtr pop;
@@ -183,7 +185,7 @@ protected:
         FlowForwarderPtr ff_dns;
         FlowForwarderPtr ff_sip;
         FlowForwarderPtr ff_dhcp;
-        FlowForwarderPtr ff_ntp,ff_snmp;
+        FlowForwarderPtr ff_ntp,ff_snmp,ff_ssdp;
         FlowForwarderPtr ff_smtp;
         FlowForwarderPtr ff_imap;
         FlowForwarderPtr ff_pop;

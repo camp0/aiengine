@@ -1226,6 +1226,55 @@ BOOST_AUTO_TEST_CASE (test24_http)
         BOOST_CHECK(uset->getTotalLookupsOut() == 1);
 }
 
+// Verify the regex on the payload of http
+BOOST_AUTO_TEST_CASE (test25_http)
+{
+        char *request = "POST /open/1 HTTP/1.1\r\n"
+                        "Content-Type: application/x-fcs\r\n"
+                        "User-Agent: Shockwave Flash\r\n"
+                        "Host: somedomain.com\r\n"
+                        "Content-Length: 290\r\n"
+                        "Connection: Keep-Alive\r\n"
+                        "Cache-Control: no-cache\r\n"
+                        "\r\n"
+                        "BEEFAAAAAAAAAAAAAAAA"
+                        "AAAAAAAAAAAAAAAAAAAA"
+                        "AAAAAAAAAAAAAAAAAAAA"
+                        "AAAAAAAAAAAAAAAAAAAA"
+                        "AAAAAAAAAAAAAAAAAAAA";
+
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (request);
+        int length1 = strlen(request);
+        Packet packet1(pkt1,length1);
+
+	SharedPointer<DomainNameManager> host_mng = SharedPointer<DomainNameManager>(new DomainNameManager());
+	WeakPointer<DomainNameManager> host_mng_weak = host_mng;
+        SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("One domain",".somedomain.com"));
+
+	SharedPointer<RegexManager> rmng = SharedPointer<RegexManager>(new RegexManager());
+	SharedPointer<Regex> re = SharedPointer<Regex>(new Regex("payload regex","^BEEFAAAA.*$"));
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+	http->setDomainNameManager(host_mng_weak);
+
+	host_mng->addDomainName(host_name);
+	host_name->setRegexManager(rmng);
+
+	rmng->addRegex(re);
+	
+        http->createHTTPInfos(1);
+
+        flow->packet = const_cast<Packet*>(&packet1);
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+
+        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+
+	BOOST_CHECK(host_name->getMatchs() == 1);
+	BOOST_CHECK(host_name->getTotalEvaluates() == 0);
+	BOOST_CHECK(re->getMatchs() == 1);
+	BOOST_CHECK(re->getTotalEvaluates() == 1);
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 

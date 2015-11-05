@@ -520,6 +520,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Gets the DNS info name if the flow is a DNS.")
 		.add_property("sslinfo",make_function(&Flow::getSSLInfo,return_internal_reference<>()),
 			"Gets the SSL info if the flow is SSL.")
+		.add_property("ssdpinfo",make_function(&Flow::getSSDPInfo,return_internal_reference<>()),
+			"Gets the SSDP info if the flow is SSDP.")
 		.add_property("regex",make_function(&Flow::getRegex,return_internal_reference<>()),
 			"Gets the regex if the flow have been matched with the associated regex.")
 		.add_property("payload",&Flow::getPayload,
@@ -609,6 +611,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .add_property("username",&POPInfo::getUserName,
                         "Gets the user name of the IMAP session if the flow is IMAP.")
 		.def(self_ns::str(self_ns::self))
+        ;
+
+        boost::python::class_<SSDPInfo, SharedPointer<SSDPInfo>, boost::noncopyable>("SSDPInfo")
+                .add_property("uri",&SSDPInfo::getUri,
+                        "Gets the SSDP URI of the flow if the flow is SSDP.")
+                .add_property("hostname",&SSDPInfo::getHostName,
+                        "Gets the SSDP Host of the flow if the flow is SSDP.")
+                .def(self_ns::str(self_ns::self))
         ;
 
 	boost::python::class_<Frequencies, SharedPointer<Frequencies>, boost::noncopyable>("Frequencies")

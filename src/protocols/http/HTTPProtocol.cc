@@ -486,6 +486,53 @@ void HTTPProtocol::parse_header(HTTPInfo *info, const char *parameters) {
 	http_header_size_ += i;
 }
 
+// This method is similar to the one on the TCPGenericProtocol/UDPGenericProtocol
+void HTTPProtocol::process_payloadl7(Flow * flow, HTTPInfo *info, boost::string_ref &payloadl7) {
+
+	// The Flow have attached a mached DomainName
+        if (!info->matched_host.expired()) {
+                bool result = false;
+		SharedPointer<Regex> regex = flow->regex.lock();
+
+		// The flow dont have a regex attached
+		if (flow->regex.expired()) {
+                	SharedPointer<DomainName> mhost = info->matched_host.lock();
+                        if (mhost->haveRegexManager()) {
+                                SharedPointer<RegexManager> rmng = mhost->getRegexManager();
+                                rmng->evaluate(payloadl7,&result);
+				regex = rmng->getMatchedRegex();
+			}
+		} else {
+			// The flow have attached a previous Regex
+			if (regex->isTerminal() == false) {
+				regex = regex->getNextRegex();
+				if (regex)
+					result = regex->evaluate(payloadl7);
+			}
+		}
+		if ((result)and(regex)) {
+                        if (regex->getShowMatch()) {
+                                std::cout << "HTTP Flow:" << *flow << " matchs with (" << std::addressof(*regex.get()) << ")Regex " << regex->getName() << std::endl;
+                        }
+#ifdef HAVE_LIBLOG4CXX
+                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << regex->getName());
+#endif
+                        flow->regex = regex;
+                        SharedPointer<RegexManager> rmng = regex->getNextRegexManager();
+                        if (rmng) {
+                                // Now the flow should evaluate a different RegexManager
+                                flow->regex_mng = rmng;
+                                flow->regex.reset();
+                        }
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+                        if(regex->call.haveCallback()) {
+                                regex->call.executeCallback(flow);
+                        }
+#endif
+                }
+	}
+}
+
 
 void HTTPProtocol::processFlow(Flow *flow) {
 
@@ -598,8 +645,12 @@ void HTTPProtocol::processFlow(Flow *flow) {
 
 		total_l7_bytes_ += data_size;
 
+		// std::cout << "datasize:" << data_size << " data_chunk:" << data_chunk << " delta:" << delta << std::endl;
 		if (delta > 0) {
 			info->setDataChunkLength(delta);
+			boost::string_ref payloadl7(&header[http_header_size_],data_size);
+	
+			process_payloadl7(flow,info.get(),payloadl7);	
 		} else {
 			info->setDataChunkLength(0);
 			info->setHaveData(false);

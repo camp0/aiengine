@@ -86,6 +86,7 @@ StackMobile::StackMobile():
 	addProtocol(sip);
 	addProtocol(ntp);
 	addProtocol(snmp);
+	addProtocol(ssdp);
 	addProtocol(udp_generic);
 	addProtocol(freqs_udp);
 
@@ -214,6 +215,7 @@ StackMobile::StackMobile():
         pop->setFlowManager(flow_table_tcp_);
         dns->setFlowManager(flow_table_udp_high_);
         sip->setFlowManager(flow_table_udp_high_);
+        ssdp->setFlowManager(flow_table_udp_high_);
         gprs_->setFlowManager(flow_table_udp_low_);
 
 	// The low FlowManager have a 24 hours timeout to keep the Context on memory
@@ -227,7 +229,7 @@ StackMobile::StackMobile():
 	udp_high_->setFlowForwarder(ff_udp_high_);	
 
 	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
-        enableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_udp_generic});
+        enableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
 
         std::ostringstream msg;
         msg << getName() << " ready.";
@@ -270,6 +272,7 @@ void StackMobile::setTotalUDPFlows(int value) {
 
         // SIP values
         sip->createSIPInfos(value * 0.2);
+        ssdp->createSSDPInfos(value * 0.2);
 }
 
 int StackMobile::getTotalTCPFlows() const { return flow_cache_tcp_->getTotalFlows(); }
@@ -315,7 +318,7 @@ void StackMobile::enableNIDSEngine(bool enable) {
 
         if (enable) {
 		disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop});
-        	disableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp});
+        	disableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp});
 
 	        std::ostringstream msg;
         	msg << "Enable NIDSEngine on " << getName(); 
@@ -326,7 +329,7 @@ void StackMobile::enableNIDSEngine(bool enable) {
         	disableFlowForwarders(ff_udp_high_,{ff_udp_generic});
 
 		enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
-        	enableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_udp_generic});
+        	enableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
         }
 }
 

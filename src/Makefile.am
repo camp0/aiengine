@@ -61,6 +61,7 @@ noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			protocols/dhcp/DHCPProtocol.h \
 			protocols/ntp/NTPProtocol.h \
 			protocols/snmp/SNMPProtocol.h \
+			protocols/ssdp/SSDPProtocol.h \
 			protocols/frequency/Frequencies.h \
 			protocols/frequency/PacketFrequencies.h \
 			protocols/frequency/FrequencyProtocol.h \
@@ -108,6 +109,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/dhcp/DHCPProtocol.cc \
 			protocols/ntp/NTPProtocol.cc \
 			protocols/snmp/SNMPProtocol.cc \
+			protocols/ssdp/SSDPProtocol.cc \
 			regex/Regex.cc \
 			regex/RegexManager.cc RejectManager.cc \
 			protocols/frequency/FrequencyProtocol.cc \
@@ -173,6 +175,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		protocols/dhcp/test_dhcp.cc \
 		protocols/ntp/test_ntp.cc \
 		protocols/snmp/test_snmp.cc \
+		protocols/ssdp/test_ssdp.cc \
 		regex/test_regex.cc \
 		user/test_users.cc \
 		learner/test_learner.cc \
@@ -195,7 +198,7 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		DNSProtocol.o GPRSProtocol.o \
 		NTPProtocol.o SNMPProtocol.o \
 		SMTPProtocol.o IMAPProtocol.o \
-		DHCPProtocol.o SIPProtocol.o \
+		DHCPProtocol.o SIPProtocol.o SSDPProtocol.o \
 		POPProtocol.o GREProtocol.o \
 		OpenFlowProtocol.o VxLanProtocol.o \
 		FrequencyProtocol.o LearnerEngine.o \

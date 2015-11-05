@@ -34,6 +34,7 @@
 #include "../Signature.h"
 #include <boost/format.hpp>
 #include "../protocols/http/HTTPUriSet.h"
+#include "../regex/RegexManager.h"
 
 namespace aiengine {
 
@@ -41,9 +42,12 @@ class DomainName: public Signature
 { 
 public:
     	explicit DomainName(const std::string &name,const std::string &expression):Signature(name,expression),
-		uris_()
+		uris_(),
+		regexs_(),
+		have_regex_manager_(false)
 #ifdef PYTHON_BINDING
 		,uriobj_()
+		,rmngobj_()
 #endif
  	{}
 
@@ -56,6 +60,10 @@ public:
 #if defined(PYTHON_BINDING)
         void setPyHTTPUriSet(boost::python::object& obj); 
         boost::python::object getPyHTTPUriSet() { return uriobj_; }
+
+	void setPyRegexManager(boost::python::object& obj);
+	boost::python::object getPyRegexManager() { return rmngobj_; }
+
 #elif defined(RUBY_BINDING)
        	void setHTTPUriSet(const HTTPUriSet& uset) { setHTTPUriSet(std::make_shared<HTTPUriSet>(uset)); }
 #endif
@@ -63,11 +71,19 @@ public:
         void setHTTPUriSet(const SharedPointer<HTTPUriSet>& uset) { uris_ = uset; }
         SharedPointer<HTTPUriSet> &getHTTPUriSet() { return uris_; }
 
+	void setRegexManager(const SharedPointer<RegexManager>& rmng) { regexs_ = rmng; have_regex_manager_ = true; }
+	SharedPointer<RegexManager> getRegexManager() const { return regexs_; }
+
+	bool haveRegexManager() const { return have_regex_manager_; }
+
 	// The rest from the base class
 private:
 	SharedPointer<HTTPUriSet> uris_;
+	SharedPointer<RegexManager> regexs_;
+	bool have_regex_manager_;
 #if defined(PYTHON_BINDING)
 	boost::python::object uriobj_;
+	boost::python::object rmngobj_;
 #endif
 };
 

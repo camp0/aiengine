@@ -764,6 +764,23 @@ class StackLanTests(unittest.TestCase):
         self.dis.stack = None
 
         self.assertEqual(self.dis.stack, None)
+
+    def test25(self):
+        """ Verify the functionatliy of the SSDP Protocol """
+   
+        with pyaiengine.PacketDispatcher("../pcapfiles/ssdp_flow.pcap") as pd:
+            pd.stack = self.s
+            pd.run();
+
+        fu = self.s.udpflowmanager
+        for flow in fu:
+            s = flow.ssdpinfo
+            if (s):
+                self.assertEqual(s.uri,"*")
+                self.assertEqual(s.hostname,"239.255.255.250:1900")
+            else:
+                self.assertFalse(False) 
+
        
 class StackLanIPv6Tests(unittest.TestCase):
 

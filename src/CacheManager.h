@@ -86,6 +86,7 @@ public:
 	void setCache(Cache<IMAPInfo>::CachePtr cache) { imap_info_cache_ = cache; }
 	void setCache(Cache<POPInfo>::CachePtr cache) { pop_info_cache_ = cache; }
 	void setCache(Cache<DNSInfo>::CachePtr cache) { dns_info_cache_ = cache; }
+	void setCache(Cache<SSDPInfo>::CachePtr cache) { ssdp_info_cache_ = cache; }
 
 	void releaseFlow(Flow *flow);
         
@@ -102,6 +103,7 @@ private:
 	Cache<IMAPInfo>::CachePtr imap_info_cache_;
 	Cache<POPInfo>::CachePtr pop_info_cache_;
 	Cache<DNSInfo>::CachePtr dns_info_cache_;
+	Cache<SSDPInfo>::CachePtr ssdp_info_cache_;
 };
 
 

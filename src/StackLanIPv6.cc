@@ -73,6 +73,7 @@ StackLanIPv6::StackLanIPv6():
         addProtocol(sip);
         addProtocol(ntp);
         addProtocol(snmp);
+        addProtocol(ssdp);
         addProtocol(udp_generic);
         addProtocol(freqs_udp);
  
@@ -164,13 +165,14 @@ StackLanIPv6::StackLanIPv6():
         pop->setFlowManager(flow_table_tcp_);
         dns->setFlowManager(flow_table_udp_);
         sip->setFlowManager(flow_table_udp_);
+        ssdp->setFlowManager(flow_table_udp_);
 	
 	// Configure the FlowForwarders
 	tcp_->setFlowForwarder(ff_tcp_);	
 	udp_->setFlowForwarder(ff_udp_);	
 
 	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
-        enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_udp_generic});
+        enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
 
         std::ostringstream msg;
         msg << getName() << " ready.";
@@ -224,7 +226,7 @@ void StackLanIPv6::enableNIDSEngine(bool enable) {
 
 	if (enable) {
         	disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop});
-        	disableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp});
+        	disableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp});
 
 	        std::ostringstream msg;
        		msg << "Enable NIDSEngine on " << getName(); 
@@ -235,7 +237,7 @@ void StackLanIPv6::enableNIDSEngine(bool enable) {
         	disableFlowForwarders(ff_udp_,{ff_udp_generic});
 
         	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
-        	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_udp_generic});
+        	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
 	}
 }
 
@@ -264,6 +266,7 @@ void StackLanIPv6::setTotalUDPFlows(int value) {
 
         // SIP values
         sip->createSIPInfos(value * 0.2);
+        ssdp->createSSDPInfos(value * 0.2);
 }
 
 int StackLanIPv6::getTotalTCPFlows() const { return flow_cache_tcp_->getTotalFlows(); }

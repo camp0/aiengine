@@ -12,7 +12,7 @@ EXTRA_DIST = 	4udppackets.pcap sslflow.pcap \
 		ipv6_google_dns.pcap ipv6_ah.pcap \
 		icq.pcapng vxlan_ftp.pcap gre_ssh.pcap \
 		openflow.pcap \
-		smtp.pcap
+		smtp.pcap ssdp_flow.pcap
 
 MAINTAINERCLEANFILES = Makefile.in 
 

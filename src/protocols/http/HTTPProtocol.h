@@ -50,14 +50,6 @@ typedef std::tuple<const char*,int,const char*,int32_t> HttpMethodType;
 typedef std::tuple<const char*,int32_t> HttpResponseType;
 typedef std::function <bool (HTTPInfo*,boost::string_ref &parameter)> HttpParameterHandler;
 
-struct string_hasher
-{
-	size_t operator()(boost::string_ref const& s) const
-    	{
-        	return boost::hash_range(s.begin(), s.end());
-    	}
-};
-
 class HTTPProtocol: public Protocol 
 {
 public:
@@ -91,6 +83,14 @@ public:
 	}	
 
     	virtual ~HTTPProtocol() {}
+
+	struct string_hasher
+	{
+        	size_t operator()(boost::string_ref const& s) const
+        	{
+                	return boost::hash_range(s.begin(), s.end());
+        	}
+	};
 
 	static constexpr char *default_name = "HTTPProtocol";
 	static const uint16_t id = 0;
@@ -164,6 +164,7 @@ public:
 
 private:
 
+	void process_payloadl7(Flow * flow, HTTPInfo *info, boost::string_ref &payloadl7);
 	void attach_uri(HTTPInfo *info, boost::string_ref &uri);
 	void attach_host(HTTPInfo *info, boost::string_ref &host);
 	void attach_useragent(HTTPInfo *info, boost::string_ref &ua);

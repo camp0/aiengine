@@ -92,6 +92,7 @@ StackVirtual::StackVirtual():
         addProtocol(dhcp);
         addProtocol(ntp);
         addProtocol(snmp);
+        addProtocol(ssdp);
         addProtocol(udp_generic);
         addProtocol(freqs_udp);
 
@@ -255,6 +256,7 @@ StackVirtual::StackVirtual():
         pop->setFlowManager(flow_table_tcp_vir_);
         dns->setFlowManager(flow_table_udp_vir_);
         sip->setFlowManager(flow_table_udp_vir_);
+        ssdp->setFlowManager(flow_table_udp_vir_);
 
 	// Configure the FlowForwarders
 	udp_->setFlowForwarder(ff_udp_);
@@ -264,7 +266,7 @@ StackVirtual::StackVirtual():
 	udp_vir_->setFlowForwarder(ff_udp_vir_);	
 
         enableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
-        enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_udp_generic});
+        enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
 
         std::ostringstream msg;
         msg << getName() << " ready.";
@@ -319,7 +321,7 @@ void StackVirtual::enableNIDSEngine(bool enable) {
 
 	if (enable) {
         	disableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop});
-        	disableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp});
+        	disableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp});
 
                 std::ostringstream msg;
                 msg << "Enable NIDSEngine on " << getName();
@@ -330,7 +332,7 @@ void StackVirtual::enableNIDSEngine(bool enable) {
         	disableFlowForwarders(ff_udp_vir_,{ff_udp_generic});
 
         	enableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
-        	enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_udp_generic});
+        	enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
 	}
 }
 
@@ -360,6 +362,7 @@ void StackVirtual::setTotalUDPFlows(int value) {
 
         // SIP values
         sip->createSIPInfos(value * 0.2);
+        ssdp->createSSDPInfos(value * 0.2);
 }
 
 int StackVirtual::getTotalTCPFlows() const { return flow_cache_tcp_vir_->getTotalFlows(); }

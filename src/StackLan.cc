@@ -75,6 +75,7 @@ StackLan::StackLan():
         addProtocol(dhcp);
         addProtocol(ntp);
         addProtocol(snmp);
+        addProtocol(ssdp);
         addProtocol(udp_generic);
         addProtocol(freqs_udp);
 
@@ -166,13 +167,14 @@ StackLan::StackLan():
 	pop->setFlowManager(flow_table_tcp_);
 	dns->setFlowManager(flow_table_udp_);
 	sip->setFlowManager(flow_table_udp_);
+	ssdp->setFlowManager(flow_table_udp_);
 	
 	// Configure the FlowForwarders
 	tcp_->setFlowForwarder(ff_tcp_);	
 	udp_->setFlowForwarder(ff_udp_);	
 
 	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
-	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_udp_generic});
+	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
 
 	std::ostringstream msg;
         msg << getName() << " ready.";
@@ -227,7 +229,7 @@ void StackLan::enableNIDSEngine(bool enable) {
 	if (enable) {
 
 		disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop}); // we dont remove the ff_tcp_generic
-		disableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp}); // we dont remove the ff_udp_generic
+		disableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp}); // we dont remove the ff_udp_generic
 
                 std::ostringstream msg;
                 msg << "Enable NIDSEngine on " << getName();
@@ -238,7 +240,7 @@ void StackLan::enableNIDSEngine(bool enable) {
 		disableFlowForwarders(ff_udp_,{ff_udp_generic}); 
 	
 		enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
-        	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_udp_generic});	
+        	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});	
 	}
 }
 
@@ -267,6 +269,7 @@ void StackLan::setTotalUDPFlows(int value) {
 
 	// SIP values
 	sip->createSIPInfos(value * 0.2);
+	ssdp->createSSDPInfos(value * 0.2);
 }
 
 int StackLan::getTotalTCPFlows() const { return flow_cache_tcp_->getTotalFlows(); }

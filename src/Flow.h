@@ -48,6 +48,7 @@
 #include "protocols/imap/IMAPInfo.h"
 #include "protocols/pop/POPInfo.h"
 #include "protocols/sip/SIPInfo.h"
+#include "protocols/ssdp/SSDPInfo.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -118,11 +119,13 @@ public:
 	int32_t total_packets_l7;
 	int32_t total_packets;
 
+	// TODO: Optimize this in order to dont affect udp to tcp and viceversa	
 	// Objects that links with the Flow
 	WeakPointer<IPAbstractSet> ipset;
 	WeakPointer<TCPInfo> tcp_info;
 	WeakPointer<GPRSInfo> gprs_info;
 	WeakPointer<DNSInfo> dns_info;
+	WeakPointer<SSDPInfo> ssdp_info;
 	WeakPointer<Regex> regex;
 	WeakPointer<HTTPInfo> http_info;
 	WeakPointer<SSLInfo> ssl_info;
@@ -169,6 +172,7 @@ public:
         SMTPInfo& getSMTPInfo() const { return *smtp_info.lock().get();}
         POPInfo& getPOPInfo() const { return *pop_info.lock().get();}
         IMAPInfo& getIMAPInfo() const { return *imap_info.lock().get();}
+        SSDPInfo& getSSDPInfo() const { return *ssdp_info.lock().get();}
         const char *getFlowAnomaly() const { return AnomalyManager::getInstance()->getName(pa_); }
 #endif
 

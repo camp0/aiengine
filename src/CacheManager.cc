@@ -74,6 +74,11 @@ void CacheManager::releaseFlow(Flow *flow) {
 			if (!flow->sip_info.expired()) {
 				SharedPointer<SIPInfo> sipinfo = flow->sip_info.lock();
 				if (sip_info_cache_) sip_info_cache_->release(sipinfo);
+			} else {
+				if (!flow->ssdp_info.expired()) {
+					SharedPointer<SSDPInfo> ssdpinfo = flow->ssdp_info.lock();
+					if (ssdp_info_cache_) ssdp_info_cache_->release(ssdpinfo);
+				}
 			}
 		}
 	}

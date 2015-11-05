@@ -16,13 +16,13 @@ The main functionalities of AIEngine are:
 - Support Sets and Bloom filters for IP searches.
 - Support Linux, FreeBSD and MacOS operating systems.
 - Support for HTTP,DNS and SSL Domains matching.
-- Support for banned domains and hosts for HTTP, DNS, SMTP and SSL.
+- Support for banned domains and hosts for HTTP, DNS, SSDP, SMTP and SSL.
 - Frequency analysis for unknown traffic and auto-regex generation.
 - Generation of Yara signatures.
 - Easy integration with databases (MySQL, Redis, Cassandra, Hadoop, etc...) for data correlation.
 - Easy integration with other packet engines (Netfilter).
 - Support memory clean caches for refresh stored memory information.
-- Support for detect DDoS at network/application layer.
+- Support for detect DDoS at network/application layer (HTTP, SSL, DNS, NTP, SSDP, etc...).
 - Support for rejecting TCP/UDP connections.
 
 Using AIEngine 

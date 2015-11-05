@@ -1644,5 +1644,35 @@ BOOST_AUTO_TEST_CASE ( test_case_19 )
         }
 }
 
+// Test the functionality of the SSDPProtocol
+BOOST_AUTO_TEST_CASE ( test_case_20 )
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        StackLanPtr stack = StackLanPtr(new StackLan());
+
+        stack->setTotalUDPFlows(5);
+        pd->setStack(stack);
+        pd->open("../pcapfiles/ssdp_flow.pcap");
+        pd->run();
+        pd->close();
+
+        FlowManagerPtr fm = stack->getUDPFlowManager().lock();
+
+        bool called = false;
+        // Check the relaseCache functionality 
+        for (auto &flow: fm->getFlowTable()) {
+                BOOST_CHECK(flow->ssdp_info.lock() != nullptr);
+                called = true;
+        }
+
+        stack->releaseCaches();
+
+        for (auto &flow: fm->getFlowTable()) {
+                BOOST_CHECK(flow->ssdp_info.lock() == nullptr);
+                called = true;
+        }
+	BOOST_CHECK(called == true);
+}
+
 BOOST_AUTO_TEST_SUITE_END( )
 

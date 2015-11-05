@@ -268,6 +268,12 @@ void showStackStatistics() {
        	}
 }
 
+void shortProtocolName(std::string &protoname) {
+
+
+
+
+}
 
 void aiengineExit() {
 

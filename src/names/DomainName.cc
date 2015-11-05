@@ -51,6 +51,24 @@ void DomainName::setPyHTTPUriSet(boost::python::object& obj) {
                 }
         }
 }
+
+void DomainName::setPyRegexManager(boost::python::object& obj) {
+
+        if (obj.is_none()) {
+                // The user sends a Py_None
+                regexs_.reset();
+                rmngobj_ = boost::python::object();
+        } else {
+                boost::python::extract<SharedPointer<RegexManager>> extractor(obj);
+
+                if (extractor.check()) {
+                        SharedPointer<RegexManager> r = extractor();
+                        regexs_ = r;
+                        rmngobj_ = obj;
+                }
+        }
+}
+
 #endif
 
 } // namespace aiengine

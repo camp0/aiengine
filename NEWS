@@ -122,3 +122,4 @@ Features/Changes of 1.4
 - (TODO) Support for Java Language.
 - (TODO) Enable rejecting for StackLanIPv6.
 - (TODO) SSDP protocol support.
+- (TODO) Support for regex on HTTP l7 payloads (DomainNames with RegexManagers).
