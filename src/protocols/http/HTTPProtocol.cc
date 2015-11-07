@@ -489,20 +489,43 @@ void HTTPProtocol::parse_header(HTTPInfo *info, const char *parameters) {
 // This method is similar to the one on the TCPGenericProtocol/UDPGenericProtocol
 void HTTPProtocol::process_payloadl7(Flow * flow, HTTPInfo *info, boost::string_ref &payloadl7) {
 
+	/*************
+	int line = 1;
+	std::cout << "======================= PAYLOAD START ========================" << std::endl;
+   	std::cout.setf(std::ios::hex, std::ios::basefield);
+	for (int i = 0; i < payloadl7.length(); ++i) {
+
+		std::cout << std::hex << (int)payloadl7.data()[i] << " ";
+                if ((line % 16) == 0) {
+                	std::cout << std::endl;
+     			line = 0;
+		}
+		++line;
+		
+	}
+    	std::cout.unsetf(std::ios::hex);
+	std::cout << std::endl <<  "======================= PAYLOAD END =========================" << std::endl;
+	*/
+
 	// The Flow have attached a mached DomainName
         if (!info->matched_host.expired()) {
                 bool result = false;
 		SharedPointer<Regex> regex = flow->regex.lock();
 
+		// std::cout << "Flow with attached domain:" << info->matched_host.lock()->getName() << " rmng:" << info->matched_host.lock()->haveRegexManager() << std::endl;
 		// The flow dont have a regex attached
 		if (flow->regex.expired()) {
+			//std::cout << "Flow dont have regex attached" << std::endl;
                 	SharedPointer<DomainName> mhost = info->matched_host.lock();
+			//std::cout << " have regex manager:" << mhost->haveRegexManager() << std::endl;
                         if (mhost->haveRegexManager()) {
                                 SharedPointer<RegexManager> rmng = mhost->getRegexManager();
                                 rmng->evaluate(payloadl7,&result);
+				//std::cout << "First execution returns:" << result << std::endl;
 				regex = rmng->getMatchedRegex();
 			}
 		} else {
+			// std::cout << "Flow have regex:" << regex->getName() << std::endl;
 			// The flow have attached a previous Regex
 			if (regex->isTerminal() == false) {
 				regex = regex->getNextRegex();
@@ -510,6 +533,7 @@ void HTTPProtocol::process_payloadl7(Flow * flow, HTTPInfo *info, boost::string_
 					result = regex->evaluate(payloadl7);
 			}
 		}
+		// std::cout << "result=" << result << " regex=" << regex << std::endl;
 		if ((result)and(regex)) {
                         if (regex->getShowMatch()) {
                                 std::cout << "HTTP Flow:" << *flow << " matchs with (" << std::addressof(*regex.get()) << ")Regex " << regex->getName() << std::endl;
@@ -567,6 +591,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
 	}
 
 	current_flow_ = flow;
+	const char *header = reinterpret_cast <const char*> (flow->packet->getPayload());
 
 	if (info->getHaveData() == true) {
 		total_l7_bytes_ += flow_bytes;
@@ -578,10 +603,12 @@ void HTTPProtocol::processFlow(Flow *flow) {
 			info->setDataChunkLength(0);
 			info->setHaveData(false);
 		}
+		boost::string_ref payloadl7(&header[0],flow_bytes);
+	
+		process_payloadl7(flow,info.get(),payloadl7);	
 		return;
 	}
 
-	const char *header = reinterpret_cast <const char*> (flow->packet->getPayload());
 	// Requests
 	if (flow->getFlowDirection() == FlowDirection::FORWARD) {
 

@@ -644,6 +644,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Gets/Sets the callback of the domain.")
 		.add_property("httpuriset", &DomainName::getPyHTTPUriSet, &DomainName::setPyHTTPUriSet,
 			"Gets/Sets the HTTPUriSet used on this DomainName (only works on HTTP).")
+		.add_property("regexmanager", &DomainName::getPyHTTPRegexManager, &DomainName::setPyHTTPRegexManager,
+			"Gets/Sets the HTTP RegexManager used on this DomainName (only works on HTTP).")
 		.def(self_ns::str(self_ns::self))
         ;
 

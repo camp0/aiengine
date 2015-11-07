@@ -167,6 +167,8 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 
 %ignore aiengine::DomainName::setHTTPUriSet(const SharedPointer<HTTPUriSet>& uset);
 %ignore aiengine::DomainName::getHTTPUriSet;
+%ignore aiengine::DomainName::setRegexManager;
+%ignore aiengine::DomainName::getRegexManager;
 
 %ignore aiengine::HTTPUriSet::lookupURI;
 %ignore aiengine::HTTPUriSet::getFalsePositiveRate;

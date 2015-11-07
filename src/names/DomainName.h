@@ -61,8 +61,8 @@ public:
         void setPyHTTPUriSet(boost::python::object& obj); 
         boost::python::object getPyHTTPUriSet() { return uriobj_; }
 
-	void setPyRegexManager(boost::python::object& obj);
-	boost::python::object getPyRegexManager() { return rmngobj_; }
+	void setPyHTTPRegexManager(boost::python::object& obj);
+	boost::python::object getPyHTTPRegexManager() { return rmngobj_; }
 
 #elif defined(RUBY_BINDING)
        	void setHTTPUriSet(const HTTPUriSet& uset) { setHTTPUriSet(std::make_shared<HTTPUriSet>(uset)); }

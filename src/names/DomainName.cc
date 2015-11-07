@@ -52,18 +52,20 @@ void DomainName::setPyHTTPUriSet(boost::python::object& obj) {
         }
 }
 
-void DomainName::setPyRegexManager(boost::python::object& obj) {
+void DomainName::setPyHTTPRegexManager(boost::python::object& obj) {
 
         if (obj.is_none()) {
                 // The user sends a Py_None
                 regexs_.reset();
                 rmngobj_ = boost::python::object();
+		have_regex_manager_ = false;
         } else {
                 boost::python::extract<SharedPointer<RegexManager>> extractor(obj);
 
                 if (extractor.check()) {
                         SharedPointer<RegexManager> r = extractor();
-                        regexs_ = r;
+
+			setRegexManager(r);
                         rmngobj_ = obj;
                 }
         }

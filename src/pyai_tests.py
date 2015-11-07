@@ -781,6 +781,49 @@ class StackLanTests(unittest.TestCase):
             else:
                 self.assertFalse(False) 
 
+    def test26(self):
+        """ Verify the functionatliy of the RegexManager on the HTTP Protocol for analise
+            inside the l7 payload of HTTP """
+
+        def callback_domain(flow):
+            self.called_callback += 1
+            pass
+
+        def callback_regex(flow):
+            self.called_callback += 1
+            self.assertEqual(flow.packets, 11)
+            self.assertEqual(flow.packetslayer7, 4)
+ 
+        d = pyaiengine.DomainName("Wired domain",".wired.com")
+
+        rm = pyaiengine.RegexManager()
+        r1 = pyaiengine.Regex("Regex for analysing the content of HTTP",b"^\x1f\x8b\x08\x00\x00\x00\x00.*$")
+        r2 = pyaiengine.Regex("Regex for analysing the content of HTTP",b"^.{3}\xcd\x9c\xc0\x0a\x34.*$")
+        r3 = pyaiengine.Regex("Regex for analysing the content of HTTP",b"^.*\x44\x75\x57\x0c\x22\x7b\xa7\x6d$")
+
+	r2.nextregex = r3
+	r1.nextregex = r2
+        rm.addRegex(r1)
+        r3.callback = callback_regex
+
+        """ So the flows from wired.com will be analise the regexmanager attached """
+        d.regexmanager = rm
+
+        dm = pyaiengine.DomainNameManager()
+        d.callback = callback_domain
+        dm.addDomainName(d)
+
+        self.s.setDomainNameManager(dm,"HTTPProtocol")
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
+            pd.stack = self.s
+            pd.run();
+
+        self.assertEqual(self.called_callback, 2)
+        self.assertEqual(r1.matchs, 1)
+        self.assertEqual(r2.matchs, 1)
+        self.assertEqual(r3.matchs, 1)
+        self.assertEqual(d.matchs, 1)
        
 class StackLanIPv6Tests(unittest.TestCase):
 

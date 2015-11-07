@@ -6,7 +6,7 @@ python_PYTHON = pyai_tests.py __init__.py
 
 # EXTRA_FLAGS = -flto not supported on the freebsd compiler
 # EXTRA_FLAGS = -O3 '-fprofile-arcs -ftest-coverage -g' For enable gcov tool
-EXTRA_FLAGS = -O3
+EXTRA_FLAGS = -g -O0
 
 EXTRA_DIST = python_wrapper.cc ruby_wrapper.i setup.py MANIFEST.in ruai_test.rb
 
@@ -224,7 +224,7 @@ python:
 	@echo "* Depending on your machine this compilation could take some time, please be patient.*"
 	@echo "* You can use alternatively the setup.py script (python setup.py build_ext -i).      *"
 	@echo "**************************************************************************************"
-	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DPYTHON_BINDING \
+	$(CXX) -g -O0 -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DPYTHON_BINDING \
 		-I. -I.. $(BOOST_CPPFLAGS) $(BOOST_CPPFLAGS)/boost/python \
 		`pkg-config --cflags python-$(PYTHON_VERSION)` \
 		$(aiengine_core_sources) python_wrapper.cc \
@@ -242,7 +242,7 @@ if HAVE_RUBY_SUPPORT
 	@echo "Generating interface" $(SWIG)	
 	swig -DRUBY_BINDING -globalmodule -c++ -ruby ruby_wrapper.i 	
 	@echo "Compiling ruby interface"
-	$(CXX) -g -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DRUBY_BINDING -I.. -I. \
+	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DRUBY_BINDING -I.. -I. \
 		-std=c++11 -c $(aiengine_core_sources) ruby_wrapper_wrap.cxx \
 		-I/usr/include/ruby -I/usr/local/lib/ruby/1.6/i686-linux 
 	@echo "Linking ruby interface"

@@ -1276,6 +1276,144 @@ BOOST_AUTO_TEST_CASE (test25_http)
 	BOOST_CHECK(re->getTotalEvaluates() == 1);
 }
 
+
+// Verify the regex on the payload of http by using linked regexs
+BOOST_AUTO_TEST_CASE (test26_http)
+{
+        char *request = "POST /open/1 HTTP/1.1\r\n"
+                        "Content-Type: application/x-fcs\r\n"
+                        "User-Agent: Shockwave Flash\r\n"
+                        "Host: somedomain.com\r\n"
+                        "Content-Length: 300\r\n"
+                        "Connection: Keep-Alive\r\n"
+                        "Cache-Control: no-cache\r\n"
+                        "\r\n"
+                        "BEEFAAAAAAAAAAAAAAAA"
+                        "AAAAAAAAAAAAAAAAAAAA"
+                        "AAAAAAAAAAAAAAAAAAAA"
+                        "AAAAAAAAAAAAAAAAAAAA"
+                        "AAAAAAAAAAAAAAAAAAAA";
+
+        char *pdu1 =    "HELLAAAAAAAAAAAAAAAA"
+                        "AAAAAAAAAAAAAAAAAAAA"
+                        "AAAAAAAAAAAAAAAAAAAA"
+                        "AAAAAAAAAAAAAAAAAAAA"
+                        "AAAAAAAAAAAAAAAAAAAA";
+
+        char *pdu2 =    "BYEBYEAAAAAAAAAAAAAA"
+                        "AAAAAAAAAAAAAAAAAAAA"
+                        "AAAAAAAAAAAAAAAAAAAA"
+                        "AAAAAAAAAAAAAAAAAAAA"
+                        "AAAAAAAAAAAAAAAAAAAA";
+
+        Packet packet1(reinterpret_cast <unsigned char*> (request),strlen(request));
+        Packet packet2(reinterpret_cast <unsigned char*> (pdu1),strlen(pdu1));
+        Packet packet3(reinterpret_cast <unsigned char*> (pdu2),strlen(pdu2));
+
+        SharedPointer<DomainNameManager> host_mng = SharedPointer<DomainNameManager>(new DomainNameManager());
+        WeakPointer<DomainNameManager> host_mng_weak = host_mng;
+        SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("One domain",".somedomain.com"));
+
+        SharedPointer<RegexManager> rmng = SharedPointer<RegexManager>(new RegexManager());
+        SharedPointer<Regex> re1 = SharedPointer<Regex>(new Regex("payload regex","^BEEFAAAA.*$"));
+        SharedPointer<Regex> re2 = SharedPointer<Regex>(new Regex("payload regex","^HELLAAAA.*$"));
+        SharedPointer<Regex> re3 = SharedPointer<Regex>(new Regex("payload regex","^BYEBYEAA.*$"));
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+	re1->setNextRegex(re2);
+	re2->setNextRegex(re3);
+
+        http->setDomainNameManager(host_mng_weak);
+
+        host_mng->addDomainName(host_name);
+        host_name->setRegexManager(rmng);
+
+        rmng->addRegex(re1);
+
+        http->createHTTPInfos(1);
+
+	// Inject the first request
+        flow->packet = const_cast<Packet*>(&packet1);
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+        
+	flow->packet = const_cast<Packet*>(&packet2);
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+
+	flow->packet = const_cast<Packet*>(&packet3);
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+
+        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+
+        BOOST_CHECK(host_name->getMatchs() == 1);
+        BOOST_CHECK(host_name->getTotalEvaluates() == 0);
+        BOOST_CHECK(re1->getMatchs() == 1);
+        BOOST_CHECK(re1->getTotalEvaluates() == 1);
+        BOOST_CHECK(re2->getMatchs() == 1);
+        BOOST_CHECK(re2->getTotalEvaluates() == 1);
+        BOOST_CHECK(re3->getMatchs() == 1);
+        BOOST_CHECK(re3->getTotalEvaluates() == 1);
+}
+
+// Verify the regex on the payload of http by using linked regexs
+BOOST_AUTO_TEST_CASE (test27_http)
+{
+        char *request = "GET /open/file.xml HTTP/1.1\r\n"
+                        "User-Agent: Shockwave Flash\r\n"
+                        "Host: somedomain.com\r\n"
+                        "Connection: Keep-Alive\r\n"
+                        "Cache-Control: no-cache\r\n"
+                        "\r\n";
+
+        char *response = "HTTP/1.1 200 OK\r\n"
+                        "Cache-Control: no-cache\r\n"
+                        "Connection: Keep-Alive\r\n"
+                        "Content-Length: 37\r\n"
+                        "Server: FlashCom/3.5.7\r\n"
+                        "Content-Type:  application/x-fcs\r\n"
+                        "\r\n"
+                        "Cuomdz02wSLGeYbI.";
+
+        Packet packet1(reinterpret_cast <unsigned char*> (request),strlen(request));
+        Packet packet2(reinterpret_cast <unsigned char*> (response),strlen(response));
+
+        SharedPointer<DomainNameManager> host_mng = SharedPointer<DomainNameManager>(new DomainNameManager());
+        WeakPointer<DomainNameManager> host_mng_weak = host_mng;
+        SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("One domain",".somedomain.com"));
+
+        SharedPointer<RegexManager> rmng = SharedPointer<RegexManager>(new RegexManager());
+        SharedPointer<Regex> re1 = SharedPointer<Regex>(new Regex("payload regex","^Cuomdz02wSLGeYbI.$"));
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->setDomainNameManager(host_mng_weak);
+
+        host_mng->addDomainName(host_name);
+        host_name->setRegexManager(rmng);
+
+        rmng->addRegex(re1);
+
+        http->createHTTPInfos(1);
+
+        // Inject the first request
+        flow->packet = const_cast<Packet*>(&packet1);
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+
+        flow->packet = const_cast<Packet*>(&packet2);
+        flow->setFlowDirection(FlowDirection::BACKWARD);
+        http->processFlow(flow.get());
+
+        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        
+	BOOST_CHECK(host_name->getMatchs() == 1);
+        BOOST_CHECK(host_name->getTotalEvaluates() == 0);
+        BOOST_CHECK(re1->getMatchs() == 1);
+        BOOST_CHECK(re1->getTotalEvaluates() == 1);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END( )
 
 BOOST_FIXTURE_TEST_SUITE(http_suite2,StackIPv6HTTPtest)
