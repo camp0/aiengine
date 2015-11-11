@@ -32,6 +32,7 @@
 #include <vector> 
 #include "StringCache.h"
 #include "names/DomainName.h"
+#include "FlowDirection.h"
 
 namespace aiengine {
 
@@ -41,7 +42,8 @@ public:
     	explicit HTTPInfo() { reset(); }
     	virtual ~HTTPInfo() {}
 
-	void reset() { 
+	void reset() {
+		direction_ = FlowDirection::NONE; 
 		content_length_ = 0; 
 		data_chunk_length_ = 0; 
 		have_data_ = false; 
@@ -79,6 +81,9 @@ public:
 	void setResponseCode(int16_t code) { response_code_ = code; }
 	int16_t getResponseCode() const { return response_code_; }
 
+	void setHTTPDataDirection(FlowDirection dir) { direction_ = dir; }
+	FlowDirection getHTTPDataDirection() const { return direction_; }
+
         WeakPointer<StringCache> uri;
         WeakPointer<StringCache> host;
         WeakPointer<StringCache> ua;
@@ -112,6 +117,7 @@ private:
 	int16_t total_requests_;
 	int16_t total_responses_;	
 	int16_t response_code_;
+        FlowDirection direction_;
 };
 
 } // namespace aiengine

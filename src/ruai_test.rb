@@ -34,6 +34,8 @@ class StackLanUnitTests < Test::Unit::TestCase
   end
 
   def teardown
+    @pd = nil
+    @s = nil
   end
 
   def test_1
@@ -171,7 +173,7 @@ class StackLanUnitTests < Test::Unit::TestCase
       assert_equal(flow.l7_protocol_name,"HTTPProtocol")
       h = flow.http_info
       if (h)
-        assert_equal(h.uri,"/images_blogs/gadgetlab/2013/08/AP090714043057-60x60.jpg")
+        assert_equal(h.uri,"/js/jquery.hoverIntent.js")
       end
       @have_been_call_uri = true
     end
@@ -190,7 +192,8 @@ class StackLanUnitTests < Test::Unit::TestCase
     dmng.add_domain_name(d)
 
     u = HTTPUriSet.new()
-    u.add_uri("/images_blogs/gadgetlab/2013/08/AP090714043057-60x60.jpg")
+    u.add_uri("/js/jquery.hoverIntent.js")
+    # u.add_uri("/images_blogs/gadgetlab/2013/08/AP090714043057-60x60.jpg")
     u.callback = method(:callback_uri)
 
     d.http_uri_set = u
@@ -334,7 +337,7 @@ class StackLanUnitTests < Test::Unit::TestCase
     assert_equal( c , nil)
 
     c = @s.get_counters("HTTPProtocol")
-    assert_equal( c["gets"], 34)
+    assert_equal( c["gets"], 42)
   end
 
   def test_10
@@ -356,6 +359,19 @@ class StackLanUnitTests < Test::Unit::TestCase
     # www.2crtm25flad.com:4
   end
 
+  def test_11
+    @pd.open("../pcapfiles/tor_4flows.pcap")
+    @pd.run()
+    @pd.close()
+
+  end
+  def test_12
+    # @pd.open("../pcapfiles/tor_4flows.pcap")
+    @pd.open("../pcapfiles/two_http_flows_noending.pcap")
+    @pd.run()
+    @pd.close()
+
+  end
 end
 
 class StackMobileUnitTests < Test::Unit::TestCase

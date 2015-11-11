@@ -626,6 +626,15 @@ BOOST_AUTO_TEST_CASE (test14_http)
                         "Accept: */*\r\n"
                         "User-Agent: LuisAgent\r\n\r\n";
 
+        char *response ="HTTP/1.1 200 OK\r\n"
+                        "Server: Pepe\r\n"
+                        "Date: Fri, 07 Nov 2015 11:18:45 GMT\r\n"
+                        "Content-Type: text/plain;charset=UTF-8\r\n"
+                        "Content-Length: 4\r\n"
+                        "Connection: keep-alive\r\n"
+                        "Accept-Charset: utf-8\r\n"
+                        "\r\nBUBU";
+
         char *header2 =  "GET /VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB/oonnnnn-a-/otherfile.html HTTP/1.0\r\n"
                         "Host: www.bu.com\r\n"
                         "Connection: close\r\n"
@@ -634,16 +643,16 @@ BOOST_AUTO_TEST_CASE (test14_http)
                         "Accept: */*\r\n"
                         "User-Agent: LuisAgent\r\n\r\n"; 
 
-        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header1);
-        int length1 = strlen(header1);
-        Packet packet1(pkt1,length1);
-        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (header2);
-        int length2 = strlen(header2);
-        Packet packet2(pkt2,length2);
+	
+        Packet packet1(reinterpret_cast <unsigned char*> (header1),strlen(header1));
+        Packet packet2(reinterpret_cast <unsigned char*> (header2),strlen(header2));
+        Packet packet3(reinterpret_cast <unsigned char*> (response),strlen(response));
+
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
         http->createHTTPInfos(1);
 
+	flow->setFlowDirection(FlowDirection::FORWARD);
         flow->packet = const_cast<Packet*>(&packet1);
         http->processFlow(flow.get());
 
@@ -659,7 +668,14 @@ BOOST_AUTO_TEST_CASE (test14_http)
         BOOST_CHECK(info->uri.lock() != nullptr);
         BOOST_CHECK(cad_uri1.compare(info->uri.lock()->getName()) == 0);
 
+	flow->setFlowDirection(FlowDirection::BACKWARD);
+        flow->packet = const_cast<Packet*>(&packet3);
+        http->processFlow(flow.get());
+
+	// TODO: Verify the response
+
 	// Inject the next header
+	flow->setFlowDirection(FlowDirection::FORWARD);
         flow->packet = const_cast<Packet*>(&packet2);
         http->processFlow(flow.get());
 
@@ -668,17 +684,6 @@ BOOST_AUTO_TEST_CASE (test14_http)
 	
 	// There is no uris on the cache so the flow keeps the last uri seen
         BOOST_CHECK(cad_uri1.compare(info->uri.lock()->getName()) == 0);
-
-	// Now create a uri on the cache 
-        http->createHTTPInfos(1);
-        
-	http->processFlow(flow.get());
-
-        BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2));
-	SharedPointer<HTTPInfo> info2 = flow->http_info.lock();
-
-	// There is no uris on the cache so the flow keeps the last uri seen
-        BOOST_CHECK(cad_uri2.compare(info2->uri.lock()->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test15_http)

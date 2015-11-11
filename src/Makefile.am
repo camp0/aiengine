@@ -25,7 +25,7 @@ noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			Interpreter.h \
                         flow/FlowCache.h \
                         flow/FlowManager.h \
-                        Flow.h StringCache.h \
+                        Flow.h FlowDirection.h StringCache.h \
 			ipset/IPAbstractSet.h \
 			ipset/IPBloomSet.h \
 			ipset/IPSet.h \

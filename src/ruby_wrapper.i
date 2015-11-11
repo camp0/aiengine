@@ -198,6 +198,8 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::HTTPInfo::setBanAndRelease;
 %ignore aiengine::HTTPInfo::setIsRelease;
 %ignore aiengine::HTTPInfo::getIsRelease;
+%ignore aiengine::HTTPInfo::setHTTPDataDirection;
+%ignore aiengine::HTTPInfo::getHTTPDataDirection;
 
 %ignore aiengine::SIPInfo::reset;
 %ignore aiengine::SIPInfo::resetStrings;

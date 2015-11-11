@@ -684,9 +684,9 @@ class StackLanTests(unittest.TestCase):
 
         def uri_callback(flow):
             self.assertEqual(self.uset.uris, 1)
-            self.assertEqual(self.uset.lookups, 15)
+            self.assertEqual(self.uset.lookups, 39)
             self.assertEqual(self.uset.lookupsin, 1)
-            self.assertEqual(self.uset.lookupsout, 14)
+            self.assertEqual(self.uset.lookupsout, 38)
             self.called_callback += 1
 
         d = pyaiengine.DomainName("Wired domain",".wired.com")
@@ -709,9 +709,9 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(d.httpuriset, self.uset)
         self.assertEqual(self.uset.uris, 1)
-        self.assertEqual(self.uset.lookups, 15)
+        self.assertEqual(self.uset.lookups, 39)
         self.assertEqual(self.uset.lookupsin, 1)
-        self.assertEqual(self.uset.lookupsout, 14)
+        self.assertEqual(self.uset.lookupsout, 38)
 
         self.assertEqual(self.called_callback,2)
 
@@ -724,9 +724,9 @@ class StackLanTests(unittest.TestCase):
 
         def uri_callback(flow):
             self.assertEqual(self.uset.uris, 1)
-            self.assertEqual(self.uset.lookups, 2)
+            self.assertEqual(self.uset.lookups, 4)
             self.assertEqual(self.uset.lookupsin, 1)
-            self.assertEqual(self.uset.lookupsout, 1)
+            self.assertEqual(self.uset.lookupsout, 3)
             self.called_callback += 1
 
         d = pyaiengine.DomainName("Wired domain",".wired.com")
@@ -748,9 +748,9 @@ class StackLanTests(unittest.TestCase):
             pd.run();
 
         self.assertEqual(self.uset.uris, 1)
-        self.assertEqual(self.uset.lookups, 15)
+        self.assertEqual(self.uset.lookups, 39)
         self.assertEqual(self.uset.lookupsin, 1)
-        self.assertEqual(self.uset.lookupsout, 14)
+        self.assertEqual(self.uset.lookupsout, 38)
         self.assertEqual(self.called_callback,2)
 
     def test24(self):
@@ -824,7 +824,37 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(r2.matchs, 1)
         self.assertEqual(r3.matchs, 1)
         self.assertEqual(d.matchs, 1)
-       
+    
+    def test27(self):
+        """ Verify the correctness of the HTTP Protocol """ 
+
+        """ The filter tcp and port 55354 will filter just one HTTP flow
+            that contains exactly 39 requests and 38 responses """
+        with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
+            pd.pcapfilter = "tcp and port 55354"
+            pd.stack = self.s
+            pd.run();
+
+        c = self.s.getCounters("HTTPProtocol")
+        self.assertEqual(c["requests"], 39)
+        self.assertEqual(c["responses"], 38)
+
+    def test28(self):
+        """ Verify the correctness of the HTTP Protocol """
+
+        """ The filter tcp and port 49503 will filter just one HTTP flow
+            that contains exactly 39 requests and 38 responses """
+        with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
+            pd.pcapfilter = "tcp and port 49503"
+            pd.stack = self.s
+            pd.run();
+
+        c = self.s.getCounters("HTTPProtocol")
+        self.assertEqual(c["requests"], 3)
+        self.assertEqual(c["responses"], 3)
+
+
+   
 class StackLanIPv6Tests(unittest.TestCase):
 
     def setUp(self):
@@ -1067,13 +1097,62 @@ class StackLanIPv6Tests(unittest.TestCase):
         with pyaiengine.PacketDispatcher("../pcapfiles/ipv6_google_dns.pcap") as pd:
             pd.stack = self.s
             pd.run()
-            d = self.s.getCache("DNSProtocol")
-            self.assertEqual(len(self.s.getCache("DNSProtocol")),1)
-            self.assertEqual(len(self.s.getCache("DNSProtocolNoExists")),0)
-            self.s.releaseCache("DNSProtocol")
-            self.assertEqual(len(self.s.getCache("DNSProtocol")),0)
-            self.assertEqual(len(self.s.getCache("HTTPProtocol")),0)
-            self.assertEqual(len(self.s.getCache("SSLProtocol")),0)
+
+        d = self.s.getCache("DNSProtocol")
+        self.assertEqual(len(self.s.getCache("DNSProtocol")),1)
+        self.assertEqual(len(self.s.getCache("DNSProtocolNoExists")),0)
+        self.s.releaseCache("DNSProtocol")
+        self.assertEqual(len(self.s.getCache("DNSProtocol")),0)
+        self.assertEqual(len(self.s.getCache("HTTPProtocol")),0)
+        self.assertEqual(len(self.s.getCache("SSLProtocol")),0)
+
+    def test11(self):
+        """ Verify the correctness of the HTTP Protocol on IPv6 """
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/http_over_ipv6.pcap") as pd:
+            pd.stack = self.s
+            pd.run();
+
+        c = self.s.getCounters("HTTPProtocol")
+        self.assertEqual(c["requests"], 11)
+        self.assertEqual(c["responses"], 11)
+
+    def test12(self):
+        """ Verify the functionatliy of the RegexManager on the HTTP Protocol for analise
+            inside the l7 payload of HTTP on IPv6 traffic """
+
+        def callback_domain(flow):
+            self.called_callback += 1
+
+        def callback_regex(flow):
+            self.called_callback += 1
+            self.assertEqual(flow.regex.name,"Regex for analysing the content of HTTP")
+            self.assertEqual(flow.httpinfo.hostname,"media.us.listen.com")
+
+        d = pyaiengine.DomainName("Music domain",".us.listen.com")
+
+        rm = pyaiengine.RegexManager()
+        r1 = pyaiengine.Regex("Regex for analysing the content of HTTP",b"^\x89\x50\x4e\x47\x0d\x0a\x1a\x0a.*$")
+
+        rm.addRegex(r1)
+        r1.callback = callback_regex
+
+        """ So the flows from listen.com will be analise the regexmanager attached """
+        d.regexmanager = rm
+
+        dm = pyaiengine.DomainNameManager()
+        d.callback = callback_domain
+        dm.addDomainName(d)
+
+        self.s.setDomainNameManager(dm,"HTTPProtocol")
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/http_over_ipv6.pcap") as pd:
+            pd.stack = self.s
+            pd.run();
+
+        self.assertEqual(self.called_callback, 2)
+        self.assertEqual(r1.matchs, 1)
+        self.assertEqual(d.matchs, 1)
  
 class StackLanLearningTests(unittest.TestCase):
 

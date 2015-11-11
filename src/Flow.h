@@ -29,6 +29,7 @@
 #include <config.h>
 #endif
 
+#include "FlowDirection.h"
 #include <boost/format.hpp>
 #include "Pointer.h"
 #include "Packet.h"
@@ -56,11 +57,6 @@ namespace aiengine {
 
 class FlowForwarder;
 typedef std::weak_ptr<FlowForwarder> FlowForwarderPtrWeak;
-
-enum class FlowDirection : std::int8_t {
-	FORWARD = 0, 
-	BACKWARD = 1 
-};
 
 class Flow : public Serializable {
 public:

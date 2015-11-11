@@ -164,6 +164,10 @@ public:
 
 private:
 
+	void debugHTTPInfo(Flow *flow, HTTPInfo *info,const char *payload);
+
+	int process_requests_and_responses(HTTPInfo *info, const char *header);
+
 	void process_payloadl7(Flow * flow, HTTPInfo *info, boost::string_ref &payloadl7);
 	void attach_uri(HTTPInfo *info, boost::string_ref &uri);
 	void attach_host(HTTPInfo *info, boost::string_ref &host);
