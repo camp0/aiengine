@@ -8,7 +8,7 @@ python_PYTHON = pyai_tests.py __init__.py
 # EXTRA_FLAGS = -O3 '-fprofile-arcs -ftest-coverage -g' For enable gcov tool
 EXTRA_FLAGS = -g -O0
 
-EXTRA_DIST = python_wrapper.cc ruby_wrapper.i setup.py MANIFEST.in ruai_test.rb
+EXTRA_DIST = python_wrapper.cc ruby_wrapper.i setup.py MANIFEST.in ruai_test.rb java_wrapper.i
 
 noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			Protocol.h AnomalyManager.h RejectManager.h \
@@ -208,11 +208,13 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		IPSetManager.o IPSet.o HTTPUriSet.o \
 		DomainNameManager.o DomainName.o RejectManager.o
 
+java_objects = 	Callback.o RegexManager.o Regex.o
+
 tests_CPPFLAGS = $(BOOST_CPPFLAGS) -g 
 # Dont forget to put -lgcov if need on test_LDADD
 tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread 
 
-CLEANFILES = *.o *.lo *.so
+CLEANFILES = *.o *.lo *.so *.java
 
 MAINTAINERCLEANFILES = \
         $(srcdir)/Makefile \
@@ -248,4 +250,18 @@ if HAVE_RUBY_SUPPORT
 	@echo "Linking ruby interface"
 	$(CXX) -g -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DRUBY_BINDING -I.. \
 		-shared -std=c++11 $(ruby_objects) ruby_wrapper_wrap.o -o ruaiengine.so -lpcap -lruby -lboost_system -lpcre
+endif
+java:
+if HAVE_JAVA_SUPPORT
+	@echo "**************************************************************************************"
+	@echo "* Compiling Java extension.                                                          *"
+	@echo "**************************************************************************************"
+	@echo "Generating Java interface" 
+	swig -DJAVA_BINDING -c++ -java java_wrapper.i 	
+	@echo "Compiling Java interface"
+	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DJAVA_BINDING -I.. -I. $(CPPFLAGS) \
+		-std=c++11 -c $(aiengine_core_sources) java_wrapper_wrap.cxx 
+	@echo "Linking Java interface"
+	$(CXX) -g -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DJAVA_BINDING -I.. \
+		-shared -std=c++11 $(java_objects) java_wrapper_wrap.o -o jaaiengine.so -lpcap -lboost_system -lpcre 
 endif
