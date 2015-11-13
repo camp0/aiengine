@@ -426,4 +426,31 @@ void NetworkStack::enableLinkLayerTagging(const std::string& type) {
         }
 }
 
+
+#if defined(JAVA_BINDING)
+
+void NetworkStack::setTCPRegexManager(RegexManager *sig) { 
+
+	if (sig == nullptr) {
+		tcp_regex_mng_.reset();
+	} else {
+		SharedPointer<RegexManager> rm(sig);
+
+		setTCPRegexManager(rm); 
+	}
+}
+
+void NetworkStack::setUDPRegexManager(RegexManager *sig) { 
+	
+	if (sig == nullptr) {
+		udp_regex_mng_.reset();
+	} else {
+		SharedPointer<RegexManager> rm(sig);
+
+		setUDPRegexManager(rm); 
+	}
+}
+
+#endif
+
 } // namespace aiengine

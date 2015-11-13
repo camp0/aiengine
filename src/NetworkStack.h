@@ -107,9 +107,12 @@ public:
 	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;
 #endif
 
-#ifdef RUBY_BINDING
+#if defined(RUBY_BINDING) // || defined(JAVA_BINDING)
 	virtual void setTCPRegexManager(RegexManager &sig) { setTCPRegexManager(std::make_shared<RegexManager>(sig)); } 
 	virtual void setUDPRegexManager(RegexManager &sig) { setUDPRegexManager(std::make_shared<RegexManager>(sig)); } 
+#elif defined(JAVA_BINDING)
+	virtual void setTCPRegexManager(RegexManager *sig);// { setTCPRegexManager(std::make_shared<RegexManager>(sig)); } 
+	virtual void setUDPRegexManager(RegexManager *sig); // { setUDPRegexManager(std::make_shared<RegexManager>(sig)); } 
 #endif
 	// The Python API sends an empty shared_ptr for the None assignment
 	virtual void setTCPRegexManager(const SharedPointer<RegexManager>& sig) { tcp_regex_mng_ = sig; } 

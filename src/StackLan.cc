@@ -349,5 +349,23 @@ std::ostream& operator<< (std::ostream& out, const StackLan& s) {
         return out;
 }
 
+#if defined(JAVA_BINDING)
+void StackLan::setTCPRegexManager(RegexManager *sig) { 
+
+//setTCPRegexManager(std::make_shared<RegexManager>(sig)); 
+
+}
+void StackLan::setUDPRegexManager(RegexManager *sig) { 
+
+	SharedPointer<RegexManager> rm;
+	if (sig != nullptr) {
+		rm.reset(sig);
+	}
+       	udp_->setRegexManager(rm);
+       	udp_generic->setRegexManager(rm);
+       	super_::setUDPRegexManager(rm);
+}
+#endif
+
 
 } // namespace aiengine

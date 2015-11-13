@@ -108,7 +108,7 @@ public:
 	void setFlowsTimeout(int timeout);
 	int getFlowsTimeout() const { return flow_table_tcp_->getTimeout(); }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) 
         FlowManager &getTCPFlowManager() { return *flow_table_tcp_.get();}
         FlowManager &getUDPFlowManager() { return *flow_table_udp_.get();}
 #else
@@ -122,13 +122,27 @@ public:
         void setTCPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng);
         void setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng);
 
-#ifdef RUBY_BINDING
+#if defined(RUBY_BINDING) // || defined(JAVA_BINDING)
         void setTCPRegexManager(RegexManager& sig) { setTCPRegexManager(std::make_shared<RegexManager>(sig)); }
         void setUDPRegexManager(RegexManager& sig) { setUDPRegexManager(std::make_shared<RegexManager>(sig)); }
 
         void setTCPIPSetManager(IPSetManager& ipset_mng) { setTCPIPSetManager(std::make_shared<IPSetManager>(ipset_mng)); }
         void setUDPIPSetManager(IPSetManager& ipset_mng) { setUDPIPSetManager(std::make_shared<IPSetManager>(ipset_mng)); }
+#elif defined(JAVA_BINDING)
+        void setTCPRegexManager(RegexManager *sig); // { setTCPRegexManager(sig); }
+        void setUDPRegexManager(RegexManager *sig); // { setUDPRegexManager(sig); }
 #endif
+
+	void pepe(RegexManager *sig) {
+		if (sig == nullptr) {
+			std::cout << "pepe is null" << std::endl;
+
+		} else {
+			std::cout << "pepe is not null" << std::endl;
+
+		}
+
+	}
 
 	void setAsioService(boost::asio::io_service& io_service);
 
