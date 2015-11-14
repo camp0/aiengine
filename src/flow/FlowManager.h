@@ -98,7 +98,7 @@ public:
 	FlowTable getFlowTable() const { return flowTable_;}	
 	SharedPointer<Flow> getLastProcessFlow() const { return (*flow_it_); }
 	
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
 	// Methods for exposing the class to python iterable methods
 	FlowTable::iterator begin() { return flowTable_.begin(); }
 	FlowTable::iterator end() { return flowTable_.end(); }

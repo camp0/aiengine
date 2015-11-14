@@ -365,4 +365,28 @@ void StackMobile::setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mn
         super_::setUDPIPSetManager(ipset_mng);
 }
 
+#if defined(JAVA_BINDING)
+
+void StackMobile::setTCPRegexManager(RegexManager *sig) {
+
+        SharedPointer<RegexManager> rm;
+
+        if (sig != nullptr) {
+                rm.reset(sig);
+        }
+        setTCPRegexManager(rm);
+}
+
+void StackMobile::setUDPRegexManager(RegexManager *sig) {
+
+        SharedPointer<RegexManager> rm;
+
+        if (sig != nullptr) {
+                rm.reset(sig);
+        }
+        setUDPRegexManager(rm);
+}
+
+#endif
+
 } // namespace aiengine

@@ -350,22 +350,27 @@ std::ostream& operator<< (std::ostream& out, const StackLan& s) {
 }
 
 #if defined(JAVA_BINDING)
+
 void StackLan::setTCPRegexManager(RegexManager *sig) { 
 
-//setTCPRegexManager(std::make_shared<RegexManager>(sig)); 
-
-}
-void StackLan::setUDPRegexManager(RegexManager *sig) { 
-
 	SharedPointer<RegexManager> rm;
+
 	if (sig != nullptr) {
 		rm.reset(sig);
 	}
-       	udp_->setRegexManager(rm);
-       	udp_generic->setRegexManager(rm);
-       	super_::setUDPRegexManager(rm);
+	setTCPRegexManager(rm);
 }
-#endif
 
+void StackLan::setUDPRegexManager(RegexManager *sig) { 
+
+	SharedPointer<RegexManager> rm;
+
+	if (sig != nullptr) {
+		rm.reset(sig);
+	}
+	setUDPRegexManager(rm);
+}
+
+#endif
 
 } // namespace aiengine

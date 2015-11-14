@@ -96,7 +96,7 @@ public:
 	void enableFlowForwarders(const FlowForwarderPtr& ff, std::initializer_list<FlowForwarderPtr> fps);
 	void disableFlowForwarders(const FlowForwarderPtr& ff, std::initializer_list<FlowForwarderPtr> fps);
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) 
 	void setDomainNameManager(DomainNameManager& dnm, const std::string& name);
 	void setDomainNameManager(DomainNameManager& dnm, const std::string& name, bool allow);
 	
@@ -111,8 +111,8 @@ public:
 	virtual void setTCPRegexManager(RegexManager &sig) { setTCPRegexManager(std::make_shared<RegexManager>(sig)); } 
 	virtual void setUDPRegexManager(RegexManager &sig) { setUDPRegexManager(std::make_shared<RegexManager>(sig)); } 
 #elif defined(JAVA_BINDING)
-	virtual void setTCPRegexManager(RegexManager *sig);// { setTCPRegexManager(std::make_shared<RegexManager>(sig)); } 
-	virtual void setUDPRegexManager(RegexManager *sig); // { setUDPRegexManager(std::make_shared<RegexManager>(sig)); } 
+	virtual void setTCPRegexManager(RegexManager *sig);
+	virtual void setUDPRegexManager(RegexManager *sig); 
 #endif
 	// The Python API sends an empty shared_ptr for the None assignment
 	virtual void setTCPRegexManager(const SharedPointer<RegexManager>& sig) { tcp_regex_mng_ = sig; } 

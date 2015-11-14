@@ -63,4 +63,21 @@ public class JavaAiengineTests {
         Assert.assertEquals(r.getTotalEvaluates(), 0);
     }
 
+
+    @Test
+    public void test03() {
+  	DomainNameManager dm = new DomainNameManager();
+        DomainName d = new DomainName("Google Drive Cert",".drive.google.com");
+
+	dm.addDomainName(d);
+
+	this.s.setDomainNameManager(dm,"SSLProtocol");
+
+	this.pd.open("../pcapfiles/sslflow.pcap");
+        this.pd.run();
+        this.pd.close();
+
+        FlowManager fm = this.s.getTCPFlowManager();
+
+    }
 }
