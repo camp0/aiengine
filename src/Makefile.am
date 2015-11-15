@@ -22,7 +22,7 @@ noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			StackOpenFlow.h \
 			Multiplexer.h \
 			FlowForwarder.h \
-			Signature.h Callback.h \
+			Signature.h Callback.h JaiCallback.h \
 			Interpreter.h \
                         flow/FlowCache.h \
                         flow/FlowManager.h \

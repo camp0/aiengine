@@ -10,6 +10,7 @@
 #include "ipset/IPSetManager.h"
 #include "ipset/IPSet.h"
 #include "NetworkStack.h"
+#include "JaiCallback.h"
 #include "Flow.h"
 #include "StackLan.h"
 #include "StackMobile.h"
@@ -244,7 +245,10 @@
 
 //%apply int32_t { Integer }; 
 
+%feature("director") JaiCallback;
+
 %include "Callback.h"
+%include "JaiCallback.h"
 %include "Signature.h"
 %include "regex/Regex.h"
 %include "regex/RegexManager.h"
@@ -276,3 +280,14 @@
 //%include "learner/LearnerEngine.h"
 //%include "protocols/frequency/FrequencyGroup.h"
 
+%pragma(java) jniclasscode=%{
+  static {
+    try {
+      System.load("/home/luis/c++/aiengine/src/jaaiengine.so");  
+      //System.loadLibrary("example");
+    } catch (UnsatisfiedLinkError e) {
+      System.err.println("Native code library failed to load. \n" + e);
+      System.exit(1);
+    }
+  }
+%}

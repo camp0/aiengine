@@ -34,9 +34,11 @@
 #include "IPAbstractSet.h"
 #include <unordered_set>
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
 #include <boost/python.hpp>
 #include <boost/function.hpp>
+#elif defined(JAVA_BINDING)
+#include "JaiCallback.h"
 #endif
 
 namespace aiengine {
@@ -58,13 +60,13 @@ public:
 
 	friend std::ostream& operator<< (std::ostream& out, const IPSet& is);
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
         void setCallback(PyObject *callback) { call.setCallback(callback); }
 	PyObject *getCallback() const { return call.getCallback(); }
-#endif
-
-#ifdef RUBY_BINDING
+#elif defined(RUBY_BINDING)
         void setCallback(VALUE callback) { call.setCallback(callback); }
+#elif defined(JAVA_BINDING)
+        void setCallback(JaiCallback *callback) { call.setCallback(callback); }
 #endif
 
 private:
