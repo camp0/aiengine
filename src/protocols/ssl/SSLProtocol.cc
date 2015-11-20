@@ -166,23 +166,47 @@ void SSLProtocol::handle_client_hello(SSLInfo *info,int length,int offset, u_cha
 			block_offset += cipher_length  + 2;
 			u_char *compression_pointer = &data[block_offset];
 			short compression_length = compression_pointer[0];
-			
+		
 			if(compression_length > 0) {
-				block_offset += compression_length + 2;
+				block_offset += (compression_length + 1);
 			}
 			if (block_offset < length) {
+				// ++block_offset;
 				u_char *extensions = &data[block_offset];
-				uint16_t extensions_length = ((extensions[1] << 8) + extensions[0]);
+				// uint16_t extensions_length = ((extensions[1] << 8) + extensions[0]);
+				uint16_t extensions_length = ((extensions[0] << 8) + extensions[1]);
+
+			//	std::cout << std::hex << "----ext[0]:" << (short)extensions[0] << " ext[1]:" << (short)extensions[1] << std::dec << std::endl;
+			//	std::cout << "Extensionslenght:" << extensions_length << std::endl; //" pepe:" << pepe_length << std::endl;
+			//	std::cout << " block_offset:" << block_offset << " length:" << length << std::endl;
 				if (extensions_length + block_offset < length) {
 					block_offset += 2;
 					extensions = &data[block_offset];
 					uint16_t extension_type = ((extensions[1] << 8) + extensions[0]);
 					short extension_length __attribute__((unused)) = extensions[2];
+					//std::cout << "ext[0]:" << (short)extensions[0] << " ext[1]:" << (short)extensions[1] << std::endl;
+					//std::cout << "extensiontype::" << extension_type << std::endl;
 
+					// TODO: there is a extension struct for manage the extensions!
+
+					if (extension_type == 0x01ff) {
+						block_offset += 2;
+						extensions = &data[block_offset];
+						uint16_t renegotiation_length = ((extensions[0] << 8) + extensions[1]); 
+						// std::cout << "Renegociationi length:"<< renegotiation_length << std::endl;
+						block_offset += renegotiation_length + 2;
+						// TODO: CHECK limits
+						extensions = &data[block_offset];
+						extension_type = ((extensions[1] << 8) + extensions[0]);
+					}
 					if (extension_type == 0x0000) { // Server name
-						//block_offset += 2;
-						ssl_server_name *server = reinterpret_cast<ssl_server_name*>(&extensions[3]);
+						block_offset += 2;
+						extensions = &data[block_offset];
+						ssl_server_name *server = reinterpret_cast<ssl_server_name*>(&extensions[2]);
+						// ssl_server_name *server = reinterpret_cast<ssl_server_name*>(&extensions[3]);
 						int server_length = ntohs(server->length);
+						//std::cout << "server lenght:" << server->length << " listlengt:" << server->list_length << std::endl;
+						//std::cout << "block_offset:" << block_offset << " server_length:" << server_length << " length:" << length << std::endl;
 						if ((block_offset + server_length < length )and(server_length > 0)) {
 							boost::string_ref servername((char*)server->data,server_length);
 					
@@ -297,7 +321,7 @@ void SSLProtocol::processFlow(Flow *flow) {
 
 						SharedPointer<DomainName> host_candidate = host_mng->getDomainName(host_name->getName());
 						if (host_candidate) {
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 #ifdef HAVE_LIBLOG4CXX
 							LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
 #endif  

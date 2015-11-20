@@ -33,7 +33,7 @@
 #include <iostream>
 #include <unordered_set>
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) 
 #include "Callback.h"
 #if defined(HAVE_BLOOMFILTER)
 #include <boost/bloom_filter/dynamic_bloom_filter.hpp>
@@ -46,7 +46,7 @@ class HTTPUriSet
 {
 public:
     	explicit HTTPUriSet(const std::string &name):
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) 
 		call(),
 #endif
 		name_(name),
@@ -84,9 +84,11 @@ public:
 	PyObject *getCallback() const { return call.getCallback(); }
 #elif defined(RUBY_BINDING)
 	void setCallback(VALUE callback) { call.setCallback(callback); }
+#elif defined(JAVA_BINDING)
+	void setCallback(JaiCallback *callback) { call.setCallback(callback); }
 #endif	
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) 
 	Callback call;	
 #endif
 private:

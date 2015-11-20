@@ -46,6 +46,12 @@ Using a different python version (Experimental).
 
 PYTHON=/usr/bin/python3.3 PYTHON_VERSION=3.3 ./configure
 
+Java support
+------------
+
+Some usefull commands for develop.
+
+java -cp ".:/usr/share/java/junit.jar:/usr/share/java/hamcrest/core.jar:./buildjava" org.junit.runner.JUnitCore JunitTestSuite
 
 Some configure output from supported systems
 --------------------------------------------

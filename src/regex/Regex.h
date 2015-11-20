@@ -112,7 +112,7 @@ public:
 	void setNextRegexManager(const SharedPointer<RegexManager>& regex_mng) { regex_mng_ = regex_mng; is_terminal_ = false; }
 	SharedPointer<RegexManager> getNextRegexManager() const { return regex_mng_; }
 
-#ifdef RUBY_BINDING
+#if defined(RUBY_BINDING)
 
 	void setNextRegex(Regex& reg) {
 
@@ -128,14 +128,20 @@ public:
 	}
 
 	void setNextRegexManager(RegexManager& regex_mng) {
-
+		
+		SharedPointer<RegexManager> rm;
 /*        	TODO:
 		SharedPointer<RegexManager> rm = SharedPointer<RegexManager>(new RegexManager());
         	rm.reset(&regex_mng);
 
         	setNextRegexManager(rm);
 */
-}
+	}
+
+#elif defined(JAVA_BINDING)
+
+	void setNextRegex(Regex *reg);
+	void setNextRegexManager(RegexManager *regex_mng); 
 
 #endif
 	bool matchAndExtract(const std::string& data);

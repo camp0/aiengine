@@ -18,6 +18,8 @@ m4_include([m4/ac_c++11.m4])
 m4_include([m4/ax_pkg_swig.m4])
 m4_include([m4/ax_swig_enable_cxx.m4])
 m4_include([m4/ax_swig_multi_module_support.m4])
+m4_include([m4/ax_prog_javah.m4])
+m4_include([m4/ax_prog_java_cc.m4])
 
 AC_PREREQ(2.59)
 
@@ -312,6 +314,36 @@ else
     fi
 fi
 
+
+##########################################################################
+# Swig Java support
+##########################################################################
+
+AM_CONDITIONAL([HAVE_JAVA_SUPPORT],false)
+
+AC_SUBST([AM_JAVAFLAGS],[hola])
+
+# The m4 macros of java modify the variable CPPFLAGS
+# and the project shares this variable so we modify to the previous value
+temp_cpp_flags="$CPPFLAGS"
+
+have_java_support=no
+AX_PROG_JAVA_CC(javac, gcj)
+
+if test -z "$JAVA_CC" ; then
+    enable_swig_java=no
+else
+    enable_swig_java=yes
+    AX_PROG_JAVAH 
+    AC_CHECK_HEADER(jni.h,[have_java_support=yes],[have_java_support=no])
+
+    if test x"$have_java_support" = x"yes"; then
+        AM_CONDITIONAL([HAVE_JAVA_SUPPORT],true)
+    fi
+fi
+AM_JAVAFLAGS="$CPPFLAGS"
+CPPFLAGS="$temp_cpp_flags"
+
 ##########################################################################
 # TCP/UDP reject connection support
 ##########################################################################
@@ -407,6 +439,7 @@ echo "
   Bloom filter support..: $bloom_support
   Flow sc support.......: $fscompress_support
   Swig/Ruby support.....: $have_ruby_support
+  Swig/Java support.....: $have_java_support
   TCP Qos support.......: $tcpqos
   TCP/UDP reject support: $reject_support
 "

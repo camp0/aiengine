@@ -36,6 +36,8 @@
 #include <boost/function.hpp>
 #elif defined(RUBY_BINDING)
 #include <ruby.h>
+#elif defined(JAVA_BINDING)
+#include "JaiCallback.h"
 #endif
 
 namespace aiengine {
@@ -44,7 +46,7 @@ class Flow;
 // http://www.lysator.liu.se/~norling/ruby_callbacks.html
 class Callback 
 {
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
 public:
 	Callback():callback_set_(false),callback_(nullptr) {}
 	virtual ~Callback() {}
@@ -83,6 +85,19 @@ private:
 	bool callback_set_;
 	VALUE callback_;
 	VALUE memory_wrapper_;
+#elif defined(JAVA_BINDING)
+public:
+	Callback():callback_set_(false),callback_(nullptr) {}
+	virtual ~Callback() {}
+
+	bool haveCallback() const { return callback_set_;}
+
+	void setCallback(JaiCallback *callback); 
+	void executeCallback(Flow *flow);
+	
+private:
+	bool callback_set_;
+	JaiCallback *callback_;
 #endif
 };
 

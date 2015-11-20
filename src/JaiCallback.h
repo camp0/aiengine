@@ -21,51 +21,33 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#ifndef SRC_PROTOCOLS_DNS_DNSINFO_H_
-#define SRC_PROTOCOLS_DNS_DNSINFO_H_
+#ifndef SRC_JAICALLBACK_H_
+#define SRC_JAICALLBACK_H_
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
 #include <iostream>
-#include <vector> 
-#include "StringCache.h"
 
 namespace aiengine {
 
-class DNSInfo 
+#if defined(JAVA_BINDING)
+
+class Flow;
+
+class JaiCallback 
 {
 public:
-    	explicit DNSInfo() { reset(); }
-    	virtual ~DNSInfo() {}
+        JaiCallback() {}
+        virtual ~JaiCallback() {}
 
-	void reset() { name.reset() ; qtype_ = 0; ips_.clear(); }
-
-	uint16_t getQueryType() const { return qtype_; }
-	void setQueryType(uint16_t qtype) { qtype_ = qtype; }
-
-	WeakPointer<StringCache> name;
-
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
-	friend std::ostream& operator<< (std::ostream& out, const DNSInfo& domain) {
-	
-		out << domain.name.lock()->getName();
-        	return out;
-	}
-
-	const char *getDomainName() const { return (*name.lock()).getName();}
-#endif
-	void addIPAddress(const char* ipstr) { ips_.push_back(ipstr); }
-
-	std::vector<std::string>::const_iterator begin() { return ips_.begin(); }
-	std::vector<std::string>::const_iterator end() { return ips_.end(); }
-
-private:
-	uint16_t qtype_;
-	std::vector<std::string> ips_;
+	virtual void call(Flow *flow) = 0;
 };
+
+#endif
 
 } // namespace aiengine
 
-#endif  // SRC_PROTOCOLS_DNS_DNSINFO_H_
+#endif  // SRC_JAICALLBACK_H_
+

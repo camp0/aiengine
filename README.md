@@ -1,7 +1,7 @@
 AIEngine (Artificial Inteligent Engine)
 =========
 
-AIEngine is a next generation interactive/programmable Python/Ruby packet inspection engine with capabilities of learning
+AIEngine is a next generation interactive/programmable Python/Ruby/Java packet inspection engine with capabilities of learning
 without any human intervention, NIDS(Network Intrusion Detection System) functionality, DNS domain classification, network collector and many others. 
 
 AIEngine also helps network/security professionals to identify traffic and develop
@@ -16,13 +16,13 @@ The main functionalities of AIEngine are:
 - Support Sets and Bloom filters for IP searches.
 - Support Linux, FreeBSD and MacOS operating systems.
 - Support for HTTP,DNS and SSL Domains matching.
-- Support for banned domains and hosts for HTTP, DNS, SSDP, SMTP and SSL.
+- Support for banned domains and hosts for HTTP, DNS, SMTP and SSL.
 - Frequency analysis for unknown traffic and auto-regex generation.
 - Generation of Yara signatures.
 - Easy integration with databases (MySQL, Redis, Cassandra, Hadoop, etc...) for data correlation.
 - Easy integration with other packet engines (Netfilter).
 - Support memory clean caches for refresh stored memory information.
-- Support for detect DDoS at network/application layer (HTTP, SSL, DNS, NTP, SSDP, etc...).
+- Support for detect DDoS at network/application layer.
 - Support for rejecting TCP/UDP connections.
 
 Using AIEngine 
@@ -31,7 +31,7 @@ Using AIEngine
 To use AIEngine(reduce version) just execute the binary aiengine or use the python/ruby binding.
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
-	aiengine 1.3
+	aiengine 1.4
 	Mandatory arguments:
 	  -I [ --input ] arg                Sets the network interface ,pcap file or 
 	                                    directory with pcap files.
@@ -176,6 +176,18 @@ The ruby library is still on develop phase.
     $ ./configure
     $ cd src
     $ make ruby
+
+Compile AIEngine Java library
+------------------------------
+
+The ruby library is still on develop phase.
+
+    $ git clone https://bitbucket.com/camp0/aiengine
+    $ ./autogen.sh
+    $ ./configure
+    $ cd src
+    $ make java
+    $ java -cp .:/usr/share/java/junit.jar:/usr/share/java/hamcrest/core.jar org.junit.runner.JUnitCore JavaAiengineTests
 
 Contributing to AIEngine 
 -------------------------

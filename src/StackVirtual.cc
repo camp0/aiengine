@@ -401,4 +401,48 @@ void StackVirtual::setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_m
 	super_::setUDPIPSetManager(ipset_mng);
 }
 
+#if defined(JAVA_BINDING)
+
+void StackVirtual::setTCPRegexManager(RegexManager *sig) {
+
+        SharedPointer<RegexManager> rm;
+
+        if (sig != nullptr) {
+                rm.reset(sig);
+        }
+        setTCPRegexManager(rm);
+}
+
+void StackVirtual::setUDPRegexManager(RegexManager *sig) {
+
+        SharedPointer<RegexManager> rm;
+
+        if (sig != nullptr) {
+                rm.reset(sig);
+        }
+        setUDPRegexManager(rm);
+}
+
+void StackVirtual::setTCPIPSetManager(IPSetManager *ipset_mng) {
+
+        SharedPointer<IPSetManager> im;
+
+        if (ipset_mng != nullptr) {
+                im.reset(ipset_mng);
+        }
+        setTCPIPSetManager(im);
+}
+
+void StackVirtual::setUDPIPSetManager(IPSetManager *ipset_mng) {
+
+        SharedPointer<IPSetManager> im;
+
+        if (ipset_mng != nullptr) {
+                im.reset(ipset_mng);
+        }
+        setUDPIPSetManager(im);
+}
+
+#endif
+
 } // namespace aiengine

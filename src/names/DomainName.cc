@@ -71,6 +71,27 @@ void DomainName::setPyHTTPRegexManager(boost::python::object& obj) {
         }
 }
 
+#elif defined(JAVA_BINDING)
+
+void DomainName::setHTTPUriSet(HTTPUriSet *uset) {
+
+	SharedPointer<HTTPUriSet> us;
+
+	if (uset != nullptr) {
+		us.reset(uset);
+	}
+	setHTTPUriSet(us);
+}
+
+void DomainName::setRegexManager(RegexManager *regex_mng) {
+	SharedPointer<RegexManager> rm;
+
+	if (regex_mng != nullptr) {
+		rm.reset(regex_mng);
+	}
+	setRegexManager(rm);
+}
+
 #endif
 
 } // namespace aiengine

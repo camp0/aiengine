@@ -317,6 +317,27 @@ BOOST_AUTO_TEST_CASE (test11_ssl)
 	}
 }
 
+// have a renegotitaion header on the ssl hello
+BOOST_AUTO_TEST_CASE (test12_ssl)
+{
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (&(raw_packet_ethernet_ip_tcp_ssl_renegotiation[54]));
+        int length1 = raw_packet_ethernet_ip_tcp_ssl_renegotiation_length - 54;
+        Packet packet1(pkt1,length1);
+
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        ssl->createSSLInfos(1);
+
+        flow->packet = const_cast<Packet*>(&packet1);
+        ssl->processFlow(flow.get());
+
+        BOOST_CHECK(flow->ssl_info.lock() != nullptr);
+        std::string cad("ipv4_1-aaag0-c001.1.000001.xx.aaaavideo.net");
+
+        // The host is valid
+        SharedPointer<SSLInfo> info = flow->ssl_info.lock();
+        BOOST_CHECK(cad.compare(info->host.lock()->getName()) == 0);
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 

@@ -108,6 +108,26 @@ void Callback::mark() {
         }
 }
 
+#elif defined(JAVA_BINDING)
+
+void Callback::setCallback(JaiCallback *callback) {
+
+        if (callback != nullptr) {
+                callback_ = callback;
+                callback_set_ = true;
+        } else {
+                callback_ = nullptr;
+                callback_set_ = false;
+        }
+}
+
+void Callback::executeCallback(Flow *flow) {
+
+	if (callback_ != nullptr) {
+		callback_->call(flow);
+	}
+}
+
 #endif
 
 } // namespace aiengine

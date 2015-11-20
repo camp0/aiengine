@@ -40,9 +40,9 @@ public:
     	virtual ~DatabaseAdaptor() {}
 
 	virtual void connect(std::string &connection_str) = 0;
-	virtual void insert(std::string &key) = 0;
-	virtual void update(std::string &key,std::string &data) = 0;
-	virtual void remove(std::string &key) = 0;
+	virtual void insert(const std::string &key) = 0;
+	virtual void update(const std::string &key,const std::string &data) = 0;
+	virtual void remove(const std::string &key) = 0;
 };
 
 typedef std::shared_ptr <DatabaseAdaptor> DatabaseAdaptorPtr;

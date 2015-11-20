@@ -116,7 +116,7 @@ void FlowManager::updateTimers(std::time_t current_time) {
         		std::cout << __FILE__ << ":" << __func__ << ":Flow Expires: " << *flow.get() <<  " total on table:" << flowTable_.size()  <<std::endl;
 #endif
 
-#if defined(PYTHON_BINDING) && defined(HAVE_ADAPTOR)
+#if (defined(PYTHON_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
 
                         if (!protocol_.expired()) {
                                 ProtocolPtr proto = protocol_.lock();

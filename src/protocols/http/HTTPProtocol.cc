@@ -524,7 +524,7 @@ void HTTPProtocol::process_payloadl7(Flow * flow, HTTPInfo *info, boost::string_
                                 flow->regex_mng = rmng;
                                 flow->regex.reset();
                         }
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
                         if(regex->call.haveCallback()) {
                                 regex->call.executeCallback(flow);
                         }
@@ -595,7 +595,6 @@ void HTTPProtocol::processFlow(Flow *flow) {
 	// debugHTTPInfo(flow,info.get(),header);
 
 	if (info->getHTTPDataDirection() == flow->getFlowDirection()) {
-	// if (static_cast<int>(info->getHTTPDataDirection()) == static_cast<int>(flow->getFlowDirection())) {
 
 		// The HTTPInfo says that the pdu have data
         	if (info->getHaveData() == true) {
@@ -631,7 +630,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
 						SharedPointer<StringCache> host_name = info->host.lock();
                 				SharedPointer<DomainName> host_candidate = host_mng->getDomainName(host_name->getName());
 						if (host_candidate) {
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 #ifdef HAVE_LIBLOG4CXX
 							LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
 #endif	
@@ -650,7 +649,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
 				SharedPointer<HTTPUriSet> uset = mhost->getHTTPUriSet();
 				if((uset) and (offset >0)) {
 					if (uset->lookupURI(info->uri.lock()->getName())) {
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 						if (uset->call.haveCallback()) {
 							uset->call.executeCallback(flow);	
 						}
@@ -769,7 +768,9 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 }
 
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+
+#if !defined(JAVA_BINDING)
 
 #if defined(PYTHON_BINDING)
 boost::python::dict HTTPProtocol::getCache() const {
@@ -779,12 +780,18 @@ VALUE HTTPProtocol::getCache() const {
         return addMapToHash(host_map_);
 }
 
+#endif
+
+
 #if defined(PYTHON_BINDING)
 boost::python::dict HTTPProtocol::getCounters() const {
 	boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE HTTPProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(JAVA_BINDING)
+JavaCounters HTTPProtocol::getCounters() const {
+	JavaCounters counters;
 #endif
 
         addValueToCounter(counters,"packets", total_packets_);

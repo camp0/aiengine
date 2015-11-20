@@ -152,7 +152,7 @@ public:
 
 	void showFlowInfo(std::ostream& out);
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 
         int32_t getTotalBytes() const { return total_bytes;}
         int32_t getTotalPacketsLayer7() const { return total_packets_l7;}
@@ -200,6 +200,8 @@ public:
 	/* 
 	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
 	*/	
+#elif defined(JAVA_BINDING)
+	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
 #endif
 
 private:

@@ -349,5 +349,49 @@ std::ostream& operator<< (std::ostream& out, const StackLan& s) {
         return out;
 }
 
+#if defined(JAVA_BINDING)
+
+void StackLan::setTCPRegexManager(RegexManager *sig) { 
+
+	SharedPointer<RegexManager> rm;
+
+	if (sig != nullptr) {
+		rm.reset(sig);
+	}
+	setTCPRegexManager(rm);
+}
+
+void StackLan::setUDPRegexManager(RegexManager *sig) { 
+
+	SharedPointer<RegexManager> rm;
+
+	if (sig != nullptr) {
+		rm.reset(sig);
+	}
+	setUDPRegexManager(rm);
+}
+
+void StackLan::setTCPIPSetManager(IPSetManager *ipset_mng) {
+
+	SharedPointer<IPSetManager> im;
+
+	if (ipset_mng != nullptr) {
+		im.reset(ipset_mng);
+	}
+	setTCPIPSetManager(im);
+}
+
+void StackLan::setUDPIPSetManager(IPSetManager *ipset_mng) {
+
+	SharedPointer<IPSetManager> im;
+
+	if (ipset_mng != nullptr) {
+		im.reset(ipset_mng);
+	}
+	setUDPIPSetManager(im);
+}
+
+
+#endif
 
 } // namespace aiengine

@@ -70,9 +70,14 @@ static std::function <void(int&,std::string&)> unitConverter = [](int &bytes,std
 	if (bytes >1024) { bytes = bytes / 1024; unit = "GBytes"; } 
 };
 
-#if defined(PYTHON_BINDING)
+#if defined(PYTHON_BINDING) 
 
 #define addValueToCounter(h,key,value) h[key] = value;
+
+#elif defined(JAVA_BINDING)
+
+#define addValueToCounter(h,key,value) h[key] = value;
+typedef std::map<std::string,int32_t> JavaCounters;
 
 #elif defined(RUBY_BINDING)
 
@@ -99,6 +104,8 @@ public:
 		,dbptr_(),is_set_db_(false),packet_sampling_(32)
 #elif defined(RUBY_BINDING)
 		,dbptr_(Qnil),is_set_db_(false),packet_sampling_(32)
+#elif defined(JAVA_BINDING)
+		,dbptr_(nullptr),is_set_db_(false),packet_sampling_(32)
 #endif
 		{}
 
@@ -132,7 +139,7 @@ public:
 
 	virtual void addRejectFunction(std::function <void (Flow*)> reject) {}
 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING)
         virtual boost::python::dict getCounters() const = 0;
 	virtual boost::python::dict getCache() const { return boost::python::dict(); }
 
@@ -146,9 +153,13 @@ public:
 	void setDatabaseAdaptor(VALUE dbptr, int packet_sampling);  
 	
 	VALUE addMapToHash(const GenericMapType &mt) const;
+#elif defined(JAVA_BINDING)
+
+	void setDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling);
+	virtual JavaCounters getCounters() const = 0;
 #endif
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 
 	bool getDatabaseObjectIsSet() const { return is_set_db_;}
 	int getPacketSampling() const { return packet_sampling_;}
@@ -180,6 +191,10 @@ private:
 	int packet_sampling_;
 #elif defined(RUBY_BINDING)
 	VALUE dbptr_;
+	bool is_set_db_;
+	int packet_sampling_;
+#elif defined(JAVA_BINDING)
+	DatabaseAdaptor *dbptr_;
 	bool is_set_db_;
 	int packet_sampling_;
 #endif

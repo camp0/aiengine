@@ -96,7 +96,7 @@ public:
 	void enableFlowForwarders(const FlowForwarderPtr& ff, std::initializer_list<FlowForwarderPtr> fps);
 	void disableFlowForwarders(const FlowForwarderPtr& ff, std::initializer_list<FlowForwarderPtr> fps);
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) 
 	void setDomainNameManager(DomainNameManager& dnm, const std::string& name);
 	void setDomainNameManager(DomainNameManager& dnm, const std::string& name, bool allow);
 	
@@ -107,9 +107,12 @@ public:
 	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;
 #endif
 
-#ifdef RUBY_BINDING
+#if defined(RUBY_BINDING) // || defined(JAVA_BINDING)
 	virtual void setTCPRegexManager(RegexManager &sig) { setTCPRegexManager(std::make_shared<RegexManager>(sig)); } 
 	virtual void setUDPRegexManager(RegexManager &sig) { setUDPRegexManager(std::make_shared<RegexManager>(sig)); } 
+#elif defined(JAVA_BINDING)
+	virtual void setTCPRegexManager(RegexManager *sig);
+	virtual void setUDPRegexManager(RegexManager *sig); 
 #endif
 	// The Python API sends an empty shared_ptr for the None assignment
 	virtual void setTCPRegexManager(const SharedPointer<RegexManager>& sig) { tcp_regex_mng_ = sig; } 
@@ -135,9 +138,8 @@ public:
 	SharedPointer<IPSetManager> getUDPIPSetManager() const { return udp_ipset_mng_; }
 
 	const char *getLinkLayerTag() const { return link_layer_tag_name_.c_str(); } 
-#endif
 
-#ifdef RUBY_BINDING
+#elif defined(RUBY_BINDING)
 	void setTCPDatabaseAdaptor(VALUE dbptr); 
 	void setTCPDatabaseAdaptor(VALUE dbptr, int packet_sampling); 
 	void setUDPDatabaseAdaptor(VALUE dbptr);
@@ -145,6 +147,13 @@ public:
 
 	VALUE getCounters(const std::string& name);
 	VALUE getCache(const std::string& name);
+#elif defined(JAVA_BINDING)
+	void setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr);
+	void setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr,int packet_sampling);
+	void setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr);
+	void setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr,int packet_sampling);
+	
+	std::map<std::string,int> getCounters(const std::string& name);
 #endif
 	void addProtocol(ProtocolPtr proto); 
 	void setStatisticsLevel(int level); 
