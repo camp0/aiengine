@@ -55,7 +55,7 @@ public:
         WeakPointer<StringCache> from;
         WeakPointer<StringCache> to;
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 
 	friend std::ostream& operator<< (std::ostream& out, const SMTPInfo& sinfo) {
 

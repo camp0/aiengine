@@ -160,6 +160,8 @@ public:
 #elif defined(RUBY_BINDING)
         VALUE getCounters() const;
 	VALUE getCache() const; 
+#elif defined(JAVA_BINDING)
+        JavaCounters getCounters() const;
 #endif
 
 private:

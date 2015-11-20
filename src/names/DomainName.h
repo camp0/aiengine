@@ -66,6 +66,9 @@ public:
 
 #elif defined(RUBY_BINDING)
        	void setHTTPUriSet(const HTTPUriSet& uset) { setHTTPUriSet(std::make_shared<HTTPUriSet>(uset)); }
+#elif defined(JAVA_BINDING)
+	void setHTTPUriSet(HTTPUriSet *uset); 
+	void setRegexManager(RegexManager *regex_mng);
 #endif
 
         void setHTTPUriSet(const SharedPointer<HTTPUriSet>& uset) { uris_ = uset; }

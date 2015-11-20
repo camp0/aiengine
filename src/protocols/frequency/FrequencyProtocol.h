@@ -102,19 +102,11 @@ public:
 	int64_t getAllocatedMemory() const; 
 
 #if defined(PYTHON_BINDING)
-
-        boost::python::dict getCounters() const {
-                boost::python::dict counters;
-
-                return counters;
-        }
-
+        boost::python::dict getCounters() const { boost::python::dict counters; return counters; }
 #elif defined(RUBY_BINDING)
-        VALUE getCounters() const {
-		VALUE counters = Qnil;
-
-		return counters;
-	}
+        VALUE getCounters() const { VALUE counters = Qnil; return counters; }
+#elif defined(JAVA_BINDING)
+        JavaCounters getCounters() const  { JavaCounters counters; return counters; }
 #endif
 
 private:

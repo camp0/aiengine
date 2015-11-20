@@ -51,7 +51,7 @@ public:
 		total_requests_ = 0;
 		total_responses_ = 0;
 		response_code_ = 0; 
-#ifdef PYTHON_BINDING
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 		needs_release_ = false; 
 #endif
 		matched_host.reset();
@@ -89,7 +89,7 @@ public:
         WeakPointer<StringCache> ua;
 	WeakPointer<DomainName> matched_host;
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 
 	void setBanAndRelease(bool value) { needs_release_ = value; is_banned_ = value; }
 	void setIsRelease(bool value) { needs_release_ = value; }
@@ -109,7 +109,7 @@ public:
 private:
 	bool have_data_;
 	bool is_banned_;
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 	bool needs_release_;
 #endif
 	int32_t content_length_;	

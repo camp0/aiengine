@@ -138,9 +138,8 @@ public:
 	SharedPointer<IPSetManager> getUDPIPSetManager() const { return udp_ipset_mng_; }
 
 	const char *getLinkLayerTag() const { return link_layer_tag_name_.c_str(); } 
-#endif
 
-#ifdef RUBY_BINDING
+#elif defined(RUBY_BINDING)
 	void setTCPDatabaseAdaptor(VALUE dbptr); 
 	void setTCPDatabaseAdaptor(VALUE dbptr, int packet_sampling); 
 	void setUDPDatabaseAdaptor(VALUE dbptr);
@@ -148,6 +147,13 @@ public:
 
 	VALUE getCounters(const std::string& name);
 	VALUE getCache(const std::string& name);
+#elif defined(JAVA_BINDING)
+	void setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr);
+	void setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr,int packet_sampling);
+	void setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr);
+	void setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr,int packet_sampling);
+	
+	std::map<std::string,int> getCounters(const std::string& name);
 #endif
 	void addProtocol(ProtocolPtr proto); 
 	void setStatisticsLevel(int level); 

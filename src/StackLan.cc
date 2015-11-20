@@ -371,6 +371,27 @@ void StackLan::setUDPRegexManager(RegexManager *sig) {
 	setUDPRegexManager(rm);
 }
 
+void StackLan::setTCPIPSetManager(IPSetManager *ipset_mng) {
+
+	SharedPointer<IPSetManager> im;
+
+	if (ipset_mng != nullptr) {
+		im.reset(ipset_mng);
+	}
+	setTCPIPSetManager(im);
+}
+
+void StackLan::setUDPIPSetManager(IPSetManager *ipset_mng) {
+
+	SharedPointer<IPSetManager> im;
+
+	if (ipset_mng != nullptr) {
+		im.reset(ipset_mng);
+	}
+	setUDPIPSetManager(im);
+}
+
+
 #endif
 
 } // namespace aiengine

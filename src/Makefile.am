@@ -4,12 +4,14 @@ all: aiengine
 
 python_PYTHON = pyai_tests.py __init__.py
 
+AM_JAVAFLAGS=@AM_JAVAFLAGS@
 # EXTRA_FLAGS = -flto not supported on the freebsd compiler
 # EXTRA_FLAGS = -O3 '-fprofile-arcs -ftest-coverage -g' For enable gcov tool
-EXTRA_FLAGS = -g -O0
+EXTRA_FLAGS = -O3
 
 EXTRA_DIST = 	python_wrapper.cc ruby_wrapper.i setup.py MANIFEST.in \
-		ruai_test.rb java_wrapper.i JavaAiengineTests.java
+		ruai_test.rb java_wrapper.i JavaAiengineTestsStackLan.java JavaAiengineTestsStackLanIPv6.java \
+		JavaAiengineTestsStackVirtual.java JunitTestSuite.java 	
 
 noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			Protocol.h AnomalyManager.h RejectManager.h \
@@ -234,7 +236,7 @@ tests_CPPFLAGS = $(BOOST_CPPFLAGS) -g
 # Dont forget to put -lgcov if need on test_LDADD
 tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread 
 
-CLEANFILES = *.o *.lo *.so *.class
+CLEANFILES = *.o *.lo *.so *.class *_wrap.cxx *_wrap.h
 
 MAINTAINERCLEANFILES = \
         $(srcdir)/Makefile \
@@ -279,11 +281,12 @@ if HAVE_JAVA_SUPPORT
 	@echo "Generating Java interface" 
 	swig -DJAVA_BINDING -c++ -java java_wrapper.i 	
 	@echo "Compiling Java interface"
-	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DJAVA_BINDING -I.. -I. $(CPPFLAGS) \
+	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DJAVA_BINDING -I.. -I. $(CPPFLAGS) $(AM_JAVAFLAGS) \
 		-std=c++11 -c $(aiengine_core_sources) java_wrapper_wrap.cxx 
 	@echo "Linking Java interface"
 	$(CXX) -g -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DJAVA_BINDING -I.. \
 		-shared -std=c++11 $(java_objects) java_wrapper_wrap.o -o jaaiengine.so -lpcap -lboost_system -lpcre 
 	@echo "Compiling Java Unit tests"
-	$(JAVA_CC) -cp /usr/share/java/junit.jar  *.java
+	$(MKDIR_P) buildjava 2>/dev/null
+	$(JAVA_CC) -d buildjava/ -cp /usr/share/java/junit.jar  *.java
 endif

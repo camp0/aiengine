@@ -387,6 +387,26 @@ void StackMobile::setUDPRegexManager(RegexManager *sig) {
         setUDPRegexManager(rm);
 }
 
+void StackMobile::setTCPIPSetManager(IPSetManager *ipset_mng) {
+
+        SharedPointer<IPSetManager> im;
+
+        if (ipset_mng != nullptr) {
+                im.reset(ipset_mng);
+        }
+        setTCPIPSetManager(im);
+}
+
+void StackMobile::setUDPIPSetManager(IPSetManager *ipset_mng) {
+
+        SharedPointer<IPSetManager> im;
+
+        if (ipset_mng != nullptr) {
+                im.reset(ipset_mng);
+        }
+        setUDPIPSetManager(im);
+}
+
 #endif
 
 } // namespace aiengine

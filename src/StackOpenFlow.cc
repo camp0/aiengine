@@ -385,4 +385,48 @@ void StackOpenFlow::setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_
 	super_::setUDPIPSetManager(ipset_mng);
 }
 
+#if defined(JAVA_BINDING)
+
+void StackOpenFlow::setTCPRegexManager(RegexManager *sig) {
+
+        SharedPointer<RegexManager> rm;
+
+        if (sig != nullptr) {
+                rm.reset(sig);
+        }
+        setTCPRegexManager(rm);
+}
+
+void StackOpenFlow::setUDPRegexManager(RegexManager *sig) {
+
+        SharedPointer<RegexManager> rm;
+
+        if (sig != nullptr) {
+                rm.reset(sig);
+        }
+        setUDPRegexManager(rm);
+}
+
+void StackOpenFlow::setTCPIPSetManager(IPSetManager *ipset_mng) {
+
+        SharedPointer<IPSetManager> im;
+
+        if (ipset_mng != nullptr) {
+                im.reset(ipset_mng);
+        }
+        setTCPIPSetManager(im);
+}
+
+void StackOpenFlow::setUDPIPSetManager(IPSetManager *ipset_mng) {
+
+        SharedPointer<IPSetManager> im;
+
+        if (ipset_mng != nullptr) {
+                im.reset(ipset_mng);
+        }
+        setUDPIPSetManager(im);
+}
+
+#endif
+
 } // namespace aiengine

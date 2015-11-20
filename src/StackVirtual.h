@@ -137,12 +137,18 @@ public:
         void setTCPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng);
         void setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng);
 
-#ifdef RUBY_BINDING
+#if defined(RUBY_BINDING) 
         void setTCPRegexManager(RegexManager& sig) { setTCPRegexManager(std::make_shared<RegexManager>(sig)); }
         void setUDPRegexManager(RegexManager& sig) { setUDPRegexManager(std::make_shared<RegexManager>(sig)); }
 
         void setTCPIPSetManager(IPSetManager& ipset_mng) { setTCPIPSetManager(std::make_shared<IPSetManager>(ipset_mng)); }
         void setUDPIPSetManager(IPSetManager& ipset_mng) { setUDPIPSetManager(std::make_shared<IPSetManager>(ipset_mng)); }
+#elif defined(JAVA_BINDING)
+        void setTCPRegexManager(RegexManager *sig);
+        void setUDPRegexManager(RegexManager *sig);
+
+        void setTCPIPSetManager(IPSetManager *ipset_mng);
+        void setUDPIPSetManager(IPSetManager *ipset_mng);
 #endif
 
 private:

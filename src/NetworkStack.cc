@@ -253,12 +253,14 @@ void NetworkStack::setDomainNameManager(DomainNameManager& dnm, const std::strin
 
 #endif
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 
 #if defined(PYTHON_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(boost::python::object &dbptr) {
 #elif defined(RUBY_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(VALUE dbptr) {
+#elif defined(JAVA_BINDING)
+void NetworkStack::setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr) {
 #endif
 	setUDPDatabaseAdaptor(dbptr,32);
 }
@@ -267,6 +269,8 @@ void NetworkStack::setUDPDatabaseAdaptor(VALUE dbptr) {
 void NetworkStack::setTCPDatabaseAdaptor(boost::python::object &dbptr) {
 #elif defined(RUBY_BINDING)
 void NetworkStack::setTCPDatabaseAdaptor(VALUE dbptr) {
+#elif defined(JAVA_BINDING)
+void NetworkStack::setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr) {
 #endif
 	setTCPDatabaseAdaptor(dbptr,32);
 }
@@ -275,6 +279,8 @@ void NetworkStack::setTCPDatabaseAdaptor(VALUE dbptr) {
 void NetworkStack::setUDPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
 #elif defined(RUBY_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
+#elif defined(JAVA_BINDING)
+void NetworkStack::setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
 #endif
         ProtocolPtr pp = get_protocol(UDPProtocol::default_name);
         if (pp) {
@@ -289,6 +295,8 @@ void NetworkStack::setUDPDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
 void NetworkStack::setTCPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
 #elif defined(RUBY_BINDING)
 void NetworkStack::setTCPDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
+#elif defined(JAVA_BINDING)
+void NetworkStack::setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
 #endif
         ProtocolPtr pp = get_protocol(TCPProtocol::default_name);
         if (pp) {
@@ -347,6 +355,20 @@ VALUE NetworkStack::getCache(const std::string& name) {
 	}
 
 	return cache;
+}
+
+#elif defined(JAVA_BINDING)
+
+std::map<std::string,int> NetworkStack::getCounters(const std::string& name) {
+	std::map<std::string,int> counters;
+
+        ProtocolPtr pp = get_protocol(name);
+
+        if (pp) {
+                counters = pp->getCounters();
+        }
+
+	return counters;
 }
 
 #endif

@@ -22,6 +22,7 @@
  *
  */
 #include "Regex.h"
+#include "RegexManager.h"
 
 namespace aiengine {
 
@@ -61,5 +62,27 @@ std::ostream& operator<< (std::ostream& out, const Regex& sig) {
 	out << " evaluates:" << sig.total_evaluates_ << std::endl;	
 	return out;
 }
+
+#if defined(JAVA_BINDING)
+
+void Regex::setNextRegexManager(RegexManager *regex_mng) {
+	SharedPointer<RegexManager> rm;
+
+        if (regex_mng != nullptr) {
+        	rm.reset(regex_mng);
+        }
+        setNextRegexManager(rm);
+}
+
+void Regex::setNextRegex(Regex *regex) {
+	SharedPointer<Regex> r;
+
+        if (regex != nullptr) {
+        	r.reset(regex);
+        }
+	setNextRegex(r);
+}
+
+#endif
 
 } // namespace aiengine

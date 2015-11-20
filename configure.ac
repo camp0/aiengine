@@ -321,6 +321,12 @@ fi
 
 AM_CONDITIONAL([HAVE_JAVA_SUPPORT],false)
 
+AC_SUBST([AM_JAVAFLAGS],[hola])
+
+# The m4 macros of java modify the variable CPPFLAGS
+# and the project shares this variable so we modify to the previous value
+temp_cpp_flags="$CPPFLAGS"
+
 have_java_support=no
 AX_PROG_JAVA_CC(javac, gcj)
 
@@ -335,6 +341,8 @@ else
         AM_CONDITIONAL([HAVE_JAVA_SUPPORT],true)
     fi
 fi
+AM_JAVAFLAGS="$CPPFLAGS"
+CPPFLAGS="$temp_cpp_flags"
 
 ##########################################################################
 # TCP/UDP reject connection support

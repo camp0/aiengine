@@ -111,7 +111,7 @@ SharedPointer<Flow> UDPProtocol::getFlow(const Packet& packet) {
                                                         getDestinationPort());
                                         }
 					flow_table_->addFlow(flow);		
-#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING)) && defined(HAVE_ADAPTOR)
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
                         		if (getDatabaseObjectIsSet()) { // There is attached a database object
 						databaseAdaptorInsertHandler(flow.get()); 
                         		}
@@ -188,7 +188,7 @@ bool UDPProtocol::processPacket(Packet& packet) {
 #ifdef DEBUG
                                         std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":Lookup positive on IPSet:" << ipset->getName() << std::endl;
 #endif
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
                                         if (ipset->call.haveCallback()) {
 						ipset->call.executeCallback(flow.get());
                                        	}
@@ -197,7 +197,7 @@ bool UDPProtocol::processPacket(Packet& packet) {
 			}	
 		}
 
-#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING)) && defined(HAVE_ADAPTOR)
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
 		if (((flow->total_packets - 1) % getPacketSampling()) == 0 ) {
 			if (getDatabaseObjectIsSet()) { // There is attached a database object
 				databaseAdaptorUpdateHandler(flow.get());

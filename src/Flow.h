@@ -200,6 +200,8 @@ public:
 	/* 
 	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
 	*/	
+#elif defined(JAVA_BINDING)
+	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
 #endif
 
 private:

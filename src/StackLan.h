@@ -122,7 +122,7 @@ public:
         void setTCPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng);
         void setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng);
 
-#if defined(RUBY_BINDING) // || defined(JAVA_BINDING)
+#if defined(RUBY_BINDING) 
         void setTCPRegexManager(RegexManager& sig) { setTCPRegexManager(std::make_shared<RegexManager>(sig)); }
         void setUDPRegexManager(RegexManager& sig) { setUDPRegexManager(std::make_shared<RegexManager>(sig)); }
 
@@ -131,6 +131,9 @@ public:
 #elif defined(JAVA_BINDING)
         void setTCPRegexManager(RegexManager *sig);
         void setUDPRegexManager(RegexManager *sig);
+        
+	void setTCPIPSetManager(IPSetManager *ipset_mng); 
+        void setUDPIPSetManager(IPSetManager *ipset_mng);
 #endif
 
 	void setAsioService(boost::asio::io_service& io_service);

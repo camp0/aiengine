@@ -595,7 +595,6 @@ void HTTPProtocol::processFlow(Flow *flow) {
 	// debugHTTPInfo(flow,info.get(),header);
 
 	if (info->getHTTPDataDirection() == flow->getFlowDirection()) {
-	// if (static_cast<int>(info->getHTTPDataDirection()) == static_cast<int>(flow->getFlowDirection())) {
 
 		// The HTTPInfo says that the pdu have data
         	if (info->getHaveData() == true) {
@@ -769,7 +768,9 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 }
 
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+
+#if !defined(JAVA_BINDING)
 
 #if defined(PYTHON_BINDING)
 boost::python::dict HTTPProtocol::getCache() const {
@@ -779,12 +780,18 @@ VALUE HTTPProtocol::getCache() const {
         return addMapToHash(host_map_);
 }
 
+#endif
+
+
 #if defined(PYTHON_BINDING)
 boost::python::dict HTTPProtocol::getCounters() const {
 	boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE HTTPProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(JAVA_BINDING)
+JavaCounters HTTPProtocol::getCounters() const {
+	JavaCounters counters;
 #endif
 
         addValueToCounter(counters,"packets", total_packets_);

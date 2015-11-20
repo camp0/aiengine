@@ -140,6 +140,9 @@ public:
 #elif defined(JAVA_BINDING)
         void setTCPRegexManager(RegexManager *sig);
         void setUDPRegexManager(RegexManager *sig); 
+        
+	void setTCPIPSetManager(IPSetManager *ipset_mng); 
+        void setUDPIPSetManager(IPSetManager *ipset_mng);
 #endif
 
 private:

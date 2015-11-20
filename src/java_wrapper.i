@@ -1,5 +1,6 @@
 %module(directors="1") jaaiengine 
 %include <std_string.i>
+%include <std_map.i>
 %include <stdint.i>
 
 %{
@@ -21,6 +22,14 @@
 #include "names/DomainName.h"
 #include "learner/LearnerEngine.h"
 %}
+
+%template(Counters) std::map<std::string,int32_t>;
+
+%ignore operator+;
+%ignore operator[];
+%ignore operator==;
+%ignore operator!=;
+%ignore operator/;
 
 %ignore aiengine::FlowTable;
 %ignore aiengine::free_list;
@@ -46,7 +55,7 @@
 %ignore aiengine::Regex::setShowMatch;
 %ignore aiengine::Regex::setNextRegex(const SharedPointer<Regex>& reg);
 %ignore aiengine::Regex::getNextRegex;
-%ignore aiengine::Regex::setNextRegexManager;
+%ignore aiengine::Regex::setNextRegexManager(const SharedPointer<RegexManager>& regex_mng);
 %ignore aiengine::Regex::getNextRegexManager;
 
 %ignore aiengine::PacketDispatcher::setStack(const SharedPointer<NetworkStack>& stack);
@@ -110,7 +119,7 @@
 
 %ignore aiengine::DomainName::setHTTPUriSet(const SharedPointer<HTTPUriSet>& uset);
 %ignore aiengine::DomainName::getHTTPUriSet;
-%ignore aiengine::DomainName::setRegexManager;
+%ignore aiengine::DomainName::setRegexManager(const SharedPointer<RegexManager>& rmng);
 %ignore aiengine::DomainName::getRegexManager;
 
 %ignore aiengine::Flow::setPacketAnomaly;
@@ -246,6 +255,7 @@
 //%apply int32_t { Integer }; 
 
 %feature("director") JaiCallback;
+%feature("director") DatabaseAdaptor;
 
 %include "Callback.h"
 %include "JaiCallback.h"
@@ -255,6 +265,7 @@
 %include "protocols/http/HTTPUriSet.h"
 %include "names/DomainName.h"
 %include "names/DomainNameManager.h"
+%include "ipset/IPAbstractSet.h"
 %include "ipset/IPSet.h"
 %include "ipset/IPSetManager.h"
 %include "DatabaseAdaptor.h"

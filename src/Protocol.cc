@@ -65,9 +65,23 @@ void Protocol::setDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
                 is_set_db_ = false;
         }
 }
+#elif defined(JAVA_BINDING)
+void Protocol::setDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
+
+	if (dbptr == nullptr) {
+		dbptr_ = nullptr;
+		is_set_db_ = false;
+		packet_sampling_ = 0;
+	} else {
+		dbptr_ = dbptr;
+		is_set_db_ = true;
+		packet_sampling_ = packet_sampling;
+	}	
+}
+
 #endif
 
-#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING)) && defined(HAVE_ADAPTOR)
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
 
 #if defined(RUBY_BINDING)
 
@@ -108,6 +122,10 @@ void Protocol::databaseAdaptorInsertHandler(Flow *flow) {
 	if (error)
 		throw "Ruby exception on insert";	
 
+#elif defined(JAVA_BINDING)
+	if (dbptr_ != nullptr) { 
+		dbptr_->insert(key.str());
+	}
 #endif
 }
 
@@ -141,6 +159,10 @@ void Protocol::databaseAdaptorUpdateHandler(Flow *flow) {
 
         if (error)
                 throw "Ruby exception on update";
+#elif defined(JAVA_BINDING)
+	if (dbptr_ != nullptr) { 
+		dbptr_->update(key.str(),data.str());
+	}
 #endif
 }
 
@@ -171,7 +193,10 @@ void Protocol::databaseAdaptorRemoveHandler(Flow *flow) {
 
         if (error)
                 throw "Ruby exception on remove";
-
+#elif defined(JAVA_BINDING)
+	if (dbptr_ != nullptr) { 
+		dbptr_->remove(key.str());
+	}
 #endif
 }
 

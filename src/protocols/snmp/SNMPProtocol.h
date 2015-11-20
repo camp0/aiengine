@@ -113,6 +113,8 @@ public:
         boost::python::dict getCounters() const;
 #elif defined(RUBY_BINDING)
         VALUE getCounters() const;
+#elif defined(JAVA_BINDING)
+        std::map<std::string,int> getCounters() const  { std::map<std::string,int> counters; return counters;};
 #endif	
 
 private:
