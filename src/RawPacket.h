@@ -36,7 +36,7 @@ public:
 	
     	explicit RawPacket():RawPacket(nullptr,0) {}
 
-	RawPacket(const RawPacket& p):length_(p.length_),packet_(p.packet_) {}
+	RawPacket(const RawPacket& p):packet_(p.packet_),length_(p.length_) {}
 
     	virtual ~RawPacket() {}
 

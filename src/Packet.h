@@ -40,7 +40,8 @@ public:
 		trans_packet(packet,length),
 		prev_header_size_(prev_header_size),
 		source_port_(0),dest_port_(0),pa_(pa),packet_time_(packet_time),
-		have_tag_(false),tag_(0xffffffff) {}
+		have_tag_(false),have_evidence_(false),
+		tag_(0xffffffff) {}
 	
 	explicit Packet(unsigned char *packet, int length, int prev_header_size,
 		PacketAnomalyType pa): Packet(packet,length,prev_header_size,pa,0) {}
@@ -59,13 +60,17 @@ public:
 		source_port_(p.source_port_),
 		dest_port_(p.dest_port_),
 		pa_(p.pa_),packet_time_(p.packet_time_),
-		have_tag_(p.have_tag_),tag_(p.tag_) {}
+		have_tag_(p.have_tag_),have_evidence_(p.have_evidence_),
+		tag_(p.tag_) {}
 
     	virtual ~Packet() {}
 
 	void setTag(uint32_t tag) { have_tag_ = true; tag_ = tag; }
 	bool haveTag() const { return have_tag_; }
 	uint32_t getTag() const { return tag_; }
+
+        bool haveEvidence() const { return have_evidence_; }
+        void setEvidence(bool value) { have_evidence_ = value; }
 
 	void setPacketTime(time_t packet_time) { packet_time_ = packet_time; }
 	time_t getPacketTime() const { return packet_time_; }
@@ -96,7 +101,7 @@ public:
 	
 		os << "Begin packet(" << &p << ") length:" << p.curr_packet.getLength() << " prev header size:" << p.prev_header_size_;
 		os << " anomaly:" << " " /* PacketAnomalies[static_cast<int8_t>(p.pa_)].name */ << " time:" << p.packet_time_;
-		os << " sport:" << p.source_port_ << " dport:" << p.dest_port_ << std::endl;
+		os << " sport:" << p.source_port_ << " dport:" << p.dest_port_ << " evi:" << p.have_evidence_ << std::endl;
 		for (int i = 0;i< p.curr_packet.getLength(); ++i) {
 			os << std::hex << (int)p.curr_packet.getPayload()[i] << " ";
 		}
@@ -116,6 +121,7 @@ private:
 	PacketAnomalyType pa_;
 	time_t packet_time_;
 	bool have_tag_;
+	bool have_evidence_;
 	uint32_t tag_;
 };
 

@@ -64,7 +64,8 @@ public:
 		Signature(name,exp)
 		,extract_buffer_()
 		,next_regex_(),is_terminal_(true),have_jit_(false),
-		show_match_(false),regex_mng_()
+		show_match_(false),
+		have_evidence_(false),regex_mng_()
 	{
 		study_exp_ = NULL;
 		const char *errorstr;
@@ -111,6 +112,9 @@ public:
 	// Reference to the next RegexManager for use on the flow
 	void setNextRegexManager(const SharedPointer<RegexManager>& regex_mng) { regex_mng_ = regex_mng; is_terminal_ = false; }
 	SharedPointer<RegexManager> getNextRegexManager() const { return regex_mng_; }
+
+	void setEvidence(bool value) { have_evidence_ = value; }
+	bool haveEvidence() const { return have_evidence_; }
 
 #if defined(RUBY_BINDING)
 
@@ -161,6 +165,7 @@ private:
 	bool is_terminal_;
 	bool have_jit_;
 	bool show_match_;
+	bool have_evidence_;
 	SharedPointer<RegexManager> regex_mng_;
 };
 

@@ -432,12 +432,18 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def(init<const std::string&>()) // Constructor for using with the 'with' statement
 		.def_readonly("status",&PacketDispatcher::getStatus,
 			"Gets the status of the PacketDispatcher")
+		.def_readonly("packets",&PacketDispatcher::getTotalPackets,
+			"Gets the total number of packets process by the PacketDispatcher")
+		.def_readonly("bytes",&PacketDispatcher::getTotalBytes,
+			"Gets the total number of bytes process by the PacketDispatcher")
 		.add_property("stack", &PacketDispatcher::getStack, setStackPtr,
 			"Gets/Sets the Network stack on the PacketDispatcher.")
 		.add_property("enableshell", &PacketDispatcher::getShell, &PacketDispatcher::setShell,
 			"Gets/Sets a python shell in order to interact with the system on real time")
 		.add_property("pcapfilter", &PacketDispatcher::getPcapFilter, &PacketDispatcher::setPcapFilter,
 			"Gets/Sets a pcap filter on the PacketDispatcher")
+		.add_property("evidences", &PacketDispatcher::getEvidences, &PacketDispatcher::setEvidences,
+			"Gets/Sets the evidences for make forensic analysis.")
 		.def("open",&PacketDispatcher::open,
 			"Opens a network device or a pcap file")
 		.def("close",&PacketDispatcher::close,
@@ -502,6 +508,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         "Gets/Sets the reject of the connection.")
 		.add_property("tag",&Flow::getTag,
 			"Gets the tag from lower network layers.")
+		.add_property("evidence",&Flow::haveEvidence,&Flow::setEvidence,
+			"Gets/Sets the evidence of the flow for make forensic analysis.")
 		.add_property("httpinfo",make_function(&Flow::getHTTPInfo,return_internal_reference<>()),
 			"Returns the HTTP Info of the flow if the flow is HTTP.")
 		.add_property("sipinfo",make_function(&Flow::getSIPInfo,return_internal_reference<>()),

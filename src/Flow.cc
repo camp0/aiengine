@@ -57,6 +57,7 @@ void Flow::reset() {
 	have_tag_ = false;
 	reject_ = false;
 	partial_reject_ = false;
+	have_evidence_ = false;
 	tag_ = 0xffffffff;	
 	ipset.reset();	
 	forwarder.reset();

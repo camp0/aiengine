@@ -70,6 +70,9 @@ public:
 	bool isReject() const { return reject_; }
 	void setReject(bool reject) { reject_ = reject; }
 
+	bool haveEvidence() const { return have_evidence_; }
+	void setEvidence(bool value) { have_evidence_ = value; }
+
 	bool isPartialReject() const { return partial_reject_; }
 	void setPartialReject(bool reject) { partial_reject_ = reject; }
 
@@ -214,6 +217,7 @@ private:
 	bool have_tag_;
 	bool reject_; // The flow can be reject from the ruby/python side
 	bool partial_reject_; // For UDP flows
+	bool have_evidence_;
 	FlowDirection direction_; 
 	FlowDirection prev_direction_; 
 	PacketAnomalyType pa_;

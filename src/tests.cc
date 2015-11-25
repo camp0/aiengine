@@ -44,6 +44,7 @@
 #include "StackOpenFlow.h"
 #include "ipset/IPSet.h"
 #include "ipset/IPBloomSet.h"
+#include "EvidenceManager.h"
 
 #ifdef HAVE_REDIS
 #include "RedisAdaptor.h"

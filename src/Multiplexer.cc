@@ -77,6 +77,11 @@ void Multiplexer::forwardPacket(Packet &packet) {
     			if (mux->packet_func_(pkt_candidate)) { // Forward the packet to upper layers
                        		++total_forward_packets_;
                        		mux->forwardPacket(pkt_candidate);
+			
+				// Verify if the packet have been label for write on disk	
+				if (pkt_candidate.haveEvidence()) {
+					packet.setEvidence(pkt_candidate.haveEvidence());
+				}
 			}
 #ifdef DEBUG
 		} else {

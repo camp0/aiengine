@@ -180,14 +180,14 @@ The ruby library is still on develop phase.
 Compile AIEngine Java library
 ------------------------------
 
-The ruby library is still on develop phase.
+The java library is still on develop phase.
 
     $ git clone https://bitbucket.com/camp0/aiengine
     $ ./autogen.sh
     $ ./configure
     $ cd src
     $ make java
-    $ java -cp .:/usr/share/java/junit.jar:/usr/share/java/hamcrest/core.jar org.junit.runner.JUnitCore JavaAiengineTests
+    $ java -cp ".:/usr/share/java/junit.jar:/usr/share/java/hamcrest/core.jar:./buildjava" org.junit.runner.JUnitCore JunitTestSuite
 
 Contributing to AIEngine 
 -------------------------

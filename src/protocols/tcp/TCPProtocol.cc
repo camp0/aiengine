@@ -192,7 +192,7 @@ bool TCPProtocol::processPacket(Packet &packet) {
 				packet.setDestinationPort(getDestinationPort());
 				packet.setSourcePort(getSourcePort());
 
-				flow->packet = const_cast<Packet*>(&packet);
+				flow->packet = static_cast<Packet*>(&packet);
 				ff->forwardFlow(flow.get());
 			} else {
 				// Retrieve the flow to the flow cache if the flow have been closed	
@@ -238,6 +238,11 @@ bool TCPProtocol::processPacket(Packet &packet) {
                         	}
                 	}
 #endif
+
+			// Verify if the flow have been label for forensic analysis
+			if (flow->haveEvidence()) {
+                        	packet.setEvidence(flow->haveEvidence());
+                        }
 
 			// Check if the flow have been rejected by the external login in python/ruby
 			if (flow->isReject()) {

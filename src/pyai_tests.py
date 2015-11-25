@@ -27,6 +27,7 @@ import signal
 import sys
 import pyaiengine
 import unittest
+import glob
 
 """ For python compatibility """
 try:
@@ -853,8 +854,33 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(c["requests"], 3)
         self.assertEqual(c["responses"], 3)
 
+    def test29(self):
+        """ Verify the functionatliy of the Evidence manager """
 
-   
+        def domain_callback(flow):
+            self.called_callback += 1
+            flow.evidence = True
+
+        d = pyaiengine.DomainName("Wired domain",".wired.com")
+
+        dm = pyaiengine.DomainNameManager()
+        d.callback = domain_callback
+        dm.addDomainName(d)
+
+        self.s.setDomainNameManager(dm,"HTTPProtocol")
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
+            pd.evidences = True
+            pd.stack = self.s
+            pd.run()
+
+        self.assertEqual(self.called_callback,1)
+        self.assertEqual(d.matchs, 1)
+
+        """ verify the integrity of the new file created """
+        files = glob.glob("evidences.*.pcap")
+        os.remove(files[0])
+ 
 class StackLanIPv6Tests(unittest.TestCase):
 
     def setUp(self):
@@ -1153,6 +1179,33 @@ class StackLanIPv6Tests(unittest.TestCase):
         self.assertEqual(self.called_callback, 2)
         self.assertEqual(r1.matchs, 1)
         self.assertEqual(d.matchs, 1)
+
+    def test13(self):
+        """ Verify the functionatliy of the Evidence manager with IPv6 and UDP """
+
+        def domain_callback(flow):
+            self.called_callback += 1
+            flow.evidence = True
+
+        d = pyaiengine.DomainName("Google domain",".google.com")
+
+        dm = pyaiengine.DomainNameManager()
+        d.callback = domain_callback
+        dm.addDomainName(d)
+
+        self.s.setDomainNameManager(dm,"DNSProtocol")
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/ipv6_google_dns.pcap") as pd:
+            pd.evidences = True
+            pd.stack = self.s
+            pd.run()
+
+        self.assertEqual(self.called_callback,1)
+        self.assertEqual(d.matchs, 1)
+
+        """ verify the integrity of the new file created """
+        files = glob.glob("evidences.*.pcap")
+        os.remove(files[0])
  
 class StackLanLearningTests(unittest.TestCase):
 

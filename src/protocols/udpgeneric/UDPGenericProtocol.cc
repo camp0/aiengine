@@ -74,6 +74,7 @@ void UDPGenericProtocol::processFlow(Flow *flow) {
                         }
 #endif
 			if (regex->getRejectConnection()) flow->setReject(true);
+			if (regex->haveEvidence()) flow->setEvidence(true);
                 }
         }
 }

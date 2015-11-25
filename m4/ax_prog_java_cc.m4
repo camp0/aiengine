@@ -100,6 +100,6 @@ if test "$JAVA_CC" = "gcj"; then
    AC_SUBST(JAVA_CC_OPTS, @GCJ_OPTS@,
         [Define the compilation options for GCJ])
 fi
-test -z "$JAVA_CC" && AC_MSG_ERROR([no acceptable java compiler found in \$PATH])
+# test -z "$JAVA_CC" && AC_MSG_ERROR([no acceptable java compiler found in \$PATH])
 ])# AX_PROG_JAVA_CC
 

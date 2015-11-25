@@ -91,6 +91,7 @@ bool option_show_pstatistics = false;
 bool option_release_caches = false;
 bool option_generate_yara = false;
 bool option_reject_flows_regex = false;
+bool option_enable_regex_evidence = false;
 int tcp_flows_cache;
 int udp_flows_cache;
 int option_statistics_level = 0;
@@ -356,6 +357,7 @@ int main(int argc, char* argv[]) {
 					"Uses tcp, udp or all for matches the signature on the flows.") 
                 ("matched-flows,m",  	"Shows the flows that matchs with the regex.")
                 ("reject-flows,j",  	"Rejects the flows that matchs with the regex.")
+                ("evidence,w",  	"Generates a pcap file with the matching regex for forensic analysis.")
 		;
 
         po::options_description optional_ops_freq("Frequencies optional arguments");
@@ -431,6 +433,7 @@ int main(int argc, char* argv[]) {
 		if (var_map.count("enable-yara")) option_generate_yara = true; 
 		if (var_map.count("matched-flows")) option_show_matched_regex = true;
 		if (var_map.count("reject-flows")) option_reject_flows_regex = true;
+		if (var_map.count("evidence")) option_enable_regex_evidence = true;
 
         	po::notify(var_map);
     	
@@ -503,6 +506,7 @@ int main(int argc, char* argv[]) {
 			}
 			topr->setShowMatch(option_show_matched_regex);
 			topr->setRejectConnection(option_reject_flows_regex);	
+			topr->setEvidence(option_enable_regex_evidence);
 			sm->addRegex(topr);	
         	}
 
@@ -515,6 +519,9 @@ int main(int argc, char* argv[]) {
 		}
 		stack->enableNIDSEngine(true);
 		option_enable_regex = true;
+		if (option_enable_regex_evidence) {
+			pktdis->setEvidences(true);
+		}
 	}
 
 	if ((var_map.count("enable-frequencies") == 1)&&(option_enable_regex == false)) {

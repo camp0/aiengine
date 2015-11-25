@@ -12,7 +12,7 @@ from distutils.extension import Extension
 
 """ List of the files of the lib """
 src_files =  ["Multiplexer.cc","FlowForwarder.cc","PacketDispatcher.cc","Flow.cc","Protocol.cc"]
-src_files += ["Callback.cc","Interpreter.cc","NetworkStack.cc","CacheManager.cc","AnomalyManager.cc"]
+src_files += ["Callback.cc","Interpreter.cc","NetworkStack.cc","EvidenceManager.cc","CacheManager.cc","AnomalyManager.cc"]
 src_files += ["flow/FlowManager.cc"] 
 src_files += ["protocols/ethernet/EthernetProtocol.cc"]
 src_files += ["protocols/vlan/VLanProtocol.cc"]
@@ -37,11 +37,12 @@ src_files += ["protocols/sip/SIPProtocol.cc"]
 src_files += ["protocols/dhcp/DHCPProtocol.cc"]
 src_files += ["protocols/ntp/NTPProtocol.cc"]
 src_files += ["protocols/snmp/SNMPProtocol.cc"]
+src_files += ["protocols/ssdp/SSDPProtocol.cc"]
 src_files += ["regex/Regex.cc","regex/RegexManager.cc","protocols/frequency/FrequencyProtocol.cc"]
 src_files += ["protocols/frequency/FrequencyCounter.cc","learner/LearnerEngine.cc"]
 src_files += ["names/DomainName.cc","names/DomainNameManager.cc"]
 src_files += ["System.cc","StackMobile.cc","StackLan.cc","StackLanIPv6.cc","StackVirtual.cc","StackOpenFlow.cc"]
-src_files += ["py_wrapper.cc"]
+src_files += ["python_wrapper.cc"]
 
 class SetupBuildCommand(Command):
     """
@@ -135,7 +136,7 @@ def setup_compiler():
 
 aiengine_module = Extension("pyaiengine",
     sources = src_files,
-    libraries = ["boost_system","boost_python","pcap","pcre"],
+    libraries = ["boost_system","boost_python","pcap","pcre","boost_iostreams"],
 #    define_macros = [('__OPENBSD__','1'),('PYTHON_BINDING','1'),('HAVE_LIBPCRE','1')],
     # define_macros = [('PYTHON_BINDING','1'),('HAVE_LIBPCRE','1')],
     extra_compile_args = ["-O3","-Wreorder","-std=c++11","-lpthread","-lstdc++"],

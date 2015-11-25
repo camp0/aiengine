@@ -47,6 +47,12 @@ void PacketDispatcher::info_message(const std::string &msg) {
 #endif
 }
 
+void PacketDispatcher::setStack(const SharedPointer<NetworkStack>& stack) {
+
+	stack_name_ = stack->getName();
+        setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());
+        stack->setAsioService(io_service_);
+}
 
 void PacketDispatcher::setDefaultMultiplexer(MultiplexerPtr mux) {
 
@@ -156,11 +162,15 @@ void PacketDispatcher::forward_raw_packet(unsigned char *packet,int length, time
 		current_packet_.setPayloadLength(length);
 		current_packet_.setPrevHeaderSize(0);
 		current_packet_.setPacketTime(packet_time);
+		current_packet_.setEvidence(false);
 
 		if (defMux_->acceptPacket(current_packet_)) {
 			defMux_->setPacket(&current_packet_);
 			defMux_->setNextProtocolIdentifier(eth_->getEthernetType());
 			defMux_->forwardPacket(current_packet_);
+			if ((have_evidences_)and(current_packet_.haveEvidence())) {
+				em_->write(current_packet_);
+			}
                 }
 	}
 }
@@ -277,6 +287,18 @@ void PacketDispatcher::setPcapFilter(const std::string &filter) {
 			}
 		}
 	}
+}
+
+
+void PacketDispatcher::setEvidences(bool value) {
+
+        if ((!have_evidences_)and(value)) {
+                have_evidences_ = true;
+                em_->enable();
+        } else if ((have_evidences_)and(!value)) {
+                have_evidences_ = false;
+                em_->disable();
+        }
 }
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)

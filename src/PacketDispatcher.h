@@ -53,6 +53,7 @@
 #include "Interpreter.h"
 #endif
 #include <sys/resource.h>
+#include "EvidenceManager.h"
 
 #if !defined(PCAP_NETMASK_UNKNOWN)
 /*
@@ -97,16 +98,18 @@ public:
 
     	explicit PacketDispatcher(const std::string& source):status_(PacketDispatcherStatus::STOP),
 		stream_(),pcap_file_ready_(false),read_in_progress_(false),
-		device_is_ready_(false),total_packets_(0),total_bytes_(0),pcap_(nullptr),
+		device_is_ready_(false),have_evidences_(false),
+		total_packets_(0),total_bytes_(0),pcap_(nullptr),
 		io_service_(),
 		signals_(io_service_, SIGINT, SIGTERM),
 		stats_(),header_(nullptr),pkt_data_(nullptr),
 		eth_(),current_packet_(),defMux_(),stack_name_(),input_name_(source),
-		pcap_filter_()
+		pcap_filter_(),
+		em_(SharedPointer<EvidenceManager>(new EvidenceManager()))
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 		,timer_(SharedPointer<boost::asio::deadline_timer>(new boost::asio::deadline_timer(io_service_))),
-		user_shell_(SharedPointer<Interpreter>(new Interpreter(io_service_)))
-        	,scheduler_set_(false),
+		user_shell_(SharedPointer<Interpreter>(new Interpreter(io_service_))),
+        	scheduler_set_(false),
         	scheduler_seconds_(0),
 #if defined(PYTHON_BINDING)
         	scheduler_callback_(nullptr),
@@ -134,6 +137,9 @@ public:
 	void status(void);
 	const char *getStackName() const { return stack_name_.c_str(); }
 
+	void setEvidences(bool value);
+	bool getEvidences() const { return have_evidences_; }
+
 #if defined(PYTHON_BINDING)
 
 	// For implement the 'with' statement in python needs the methods __enter__ and __exit__
@@ -158,11 +164,7 @@ public:
 	int64_t getTotalBytes(void) const { return total_bytes_;}
 	int64_t getTotalPackets(void) const { return total_packets_;}
 
-	void setStack(const SharedPointer<NetworkStack>& stack) { 
-		stack_name_ = stack->getName(); 
-		setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());
-		stack->setAsioService(io_service_);
-	}
+	void setStack(const SharedPointer<NetworkStack>& stack);  
 
 	void setDefaultMultiplexer(MultiplexerPtr mux); // just use for the unit tests
 	void setIdleFunction(std::function <void ()> idle_function) { idle_function_ = idle_function;}
@@ -204,6 +206,7 @@ private:
 	bool pcap_file_ready_;
 	bool read_in_progress_;
 	bool device_is_ready_;
+	bool have_evidences_;
 
 	int64_t total_packets_;	
 	int64_t total_bytes_;	
@@ -222,6 +225,7 @@ private:
 	std::string input_name_;
 	std::string pcap_filter_;
 
+	SharedPointer<EvidenceManager> em_;
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 	SharedPointer<boost::asio::deadline_timer> timer_;
 	SharedPointer<Interpreter> user_shell_;
