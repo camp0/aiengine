@@ -260,7 +260,7 @@ void learnerCallback() {
 
 void showStackStatistics() {
 
-	std::cout << *pktdis;
+	pktdis->statistics();
        	if (option_statistics_level > 0) {
         	if (option_selected_protocol.length() > 0) {
                 	stack->statistics(option_selected_protocol);

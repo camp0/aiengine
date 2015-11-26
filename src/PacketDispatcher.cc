@@ -47,6 +47,15 @@ void PacketDispatcher::info_message(const std::string &msg) {
 #endif
 }
 
+void PacketDispatcher::statistics() {
+
+	std::cout << *this;
+	if (have_evidences_) {
+		em_->statistics(); 
+	}
+}
+
+
 void PacketDispatcher::setStack(const SharedPointer<NetworkStack>& stack) {
 
 	stack_name_ = stack->getName();

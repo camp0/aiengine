@@ -29,8 +29,8 @@ class StackLanUnitTests < Test::Unit::TestCase
     @s = StackLan.new
     @pd = PacketDispatcher.new
     @pd.stack = @s
-    @s.total_tcp_flows = 32
-    @s.total_udp_flows = 32
+    @s.total_tcp_flows = 2048
+    @s.total_udp_flows = 1024
   end
 
   def teardown
@@ -337,7 +337,7 @@ class StackLanUnitTests < Test::Unit::TestCase
     assert_equal( c , nil)
 
     c = @s.get_counters("HTTPProtocol")
-    assert_equal( c["gets"], 42)
+    assert_equal( c["requests"], 42)
   end
 
   def test_10

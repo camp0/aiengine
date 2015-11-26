@@ -140,6 +140,8 @@ public:
 	void setEvidences(bool value);
 	bool getEvidences() const { return have_evidences_; }
 
+	void statistics();
+
 #if defined(PYTHON_BINDING)
 
 	// For implement the 'with' statement in python needs the methods __enter__ and __exit__

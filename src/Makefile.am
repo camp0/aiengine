@@ -272,7 +272,7 @@ if HAVE_RUBY_SUPPORT
 		-I/usr/include/ruby -I/usr/local/lib/ruby/1.6/i686-linux 
 	@echo "Linking ruby interface"
 	$(CXX) -g -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DRUBY_BINDING -I.. \
-		-shared -std=c++11 $(ruby_objects) ruby_wrapper_wrap.o -o ruaiengine.so -lpcap -lruby -lboost_system -lpcre
+		-shared -std=c++11 $(ruby_objects) ruby_wrapper_wrap.o -o ruaiengine.so $(BOOST_LINK_CORE) -lpcap -lruby -lpcre
 endif
 java:
 if HAVE_JAVA_SUPPORT

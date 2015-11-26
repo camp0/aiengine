@@ -42,8 +42,11 @@ void EvidenceManager::enable() {
 		params.path = name.str();
 		params.new_file_size = total_size_;
 		params.offset = 0;
+		params.length = 0;
 		params.length = total_size_;
 		evidence_file_.open(params);		
+
+		filename_ = name.str();
 
 		struct pcap_file_header pheader;	
 
@@ -66,9 +69,19 @@ void EvidenceManager::enable() {
 void EvidenceManager::disable() {
 
 	if (evidence_file_.is_open()) {
+		evidence_file_.close();
+#if defined(__LINUX__)
+		// Truncate the file to the exact memory on it
+		int fd = open(filename_.c_str(), O_WRONLY, 0777);
+		if (fd > 0) {
+			// std::cout << "Realocating file:" << filename_ << " from offset:" << evidence_offset_ << " total:" << total_size_ - evidence_offset_ << std::endl;
+			int ret = fallocate(fd,FALLOC_FL_PUNCH_HOLE,evidence_offset_, total_size_ - evidence_offset_);
+			// td::cout << "ret=" << ret << std::endl;perror("fallocate:");	
+		}
+		close(fd);
+#endif
 		evidence_data_ = nullptr;
 		evidence_offset_ = 0;
-		evidence_file_.close();
 	}
 }
 

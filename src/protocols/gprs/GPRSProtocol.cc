@@ -157,6 +157,10 @@ void GPRSProtocol::processFlow(Flow *flow) {
 			mux->setNextProtocolIdentifier(ETHERTYPE_IP); 
 			mux->forwardPacket(gpacket);
 
+			if (gpacket.haveEvidence()) {
+				flow->packet->setEvidence(gpacket.haveEvidence());	
+			}
+
 			++total_tpdus_;
 		} else if (type == CREATE_PDP_CONTEXT_REQUEST) {
 			process_create_pdp_context(flow);

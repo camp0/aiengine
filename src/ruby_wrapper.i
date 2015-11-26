@@ -306,6 +306,8 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("mail_to")			aiengine::SMTPInfo::getTo;
 %rename("mail_from")			aiengine::SMTPInfo::getFrom;
 %rename("server_name")			aiengine::SSLInfo::getServerName;
+%rename("evidence=")			aiengine::Flow::setEvidence;
+%rename("evidence")			aiengine::Flow::getEvidence;
 %rename("pop_info")			aiengine::Flow::getPOPInfo;
 %rename("imap_info")			aiengine::Flow::getIMAPInfo;
 %rename("smtp_info")			aiengine::Flow::getSMTPInfo;

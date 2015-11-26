@@ -46,6 +46,10 @@ void VxLanProtocol::processFlow(Flow *flow) {
 
                 mux->setNextProtocolIdentifier(0);
                 mux->forwardPacket(gpacket);
+
+		if (gpacket.haveEvidence()) {
+			flow->setEvidence(gpacket.haveEvidence());
+		}
          }
 }
 

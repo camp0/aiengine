@@ -28,6 +28,10 @@
 #include <config.h>
 #endif
 
+#ifdef __LINUX__
+#include <fcntl.h>
+#endif
+
 #include <iostream>
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -50,6 +54,7 @@ public:
 
 	explicit EvidenceManager(int32_t size):
 		evidence_file_(),
+		filename_(),
 		total_size_(size),
 		total_files_(0),
 		total_write_packets_(0),
@@ -63,7 +68,7 @@ public:
 
 	static constexpr int32_t default_size = 1024 * 1024 * 128;
 
-	void statistics() const { std::cout << this; };	
+	void statistics() { std::cout << *this; };	
 
 	void enable();
 	void disable();
@@ -73,6 +78,7 @@ public:
 
 private:
 	boost::iostreams::mapped_file_sink evidence_file_;
+	std::string filename_;
 	int32_t total_size_;
 	int32_t total_files_;
 	int32_t total_write_packets_;
