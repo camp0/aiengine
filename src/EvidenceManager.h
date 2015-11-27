@@ -28,13 +28,9 @@
 #include <config.h>
 #endif
 
-#ifdef __LINUX__
 #include <fcntl.h>
-#endif
-
 #include <iostream>
 #include <boost/iostreams/device/mapped_file.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <pcap.h>
 #include "Packet.h" 
 #include "Protocol.h" // for unit converter
@@ -66,6 +62,9 @@ public:
 
     	virtual ~EvidenceManager() { disable(); }
 
+	// By default the system creates a mmap of 128 MBs
+	// Depending on the use of this functionality may be a small
+	// size of a bigger size is required.
 	static constexpr int32_t default_size = 1024 * 1024 * 128;
 
 	void statistics() { std::cout << *this; };	

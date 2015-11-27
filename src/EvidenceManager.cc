@@ -29,13 +29,12 @@ void EvidenceManager::enable() {
 
 	if (!evidence_file_.is_open()) {
 		// Enable the mmap and the mmsync syscalls of the kernel
-		boost::posix_time::ptime now = boost::posix_time::second_clock::universal_time();
-       		static std::locale loc(std::cout.getloc(), new boost::posix_time::time_facet("%Y%m%d_%H%M%S"));
-        
+		std::time_t t = std::time(nullptr);
+    		std::tm tm = *std::localtime(&t);
 		std::basic_stringstream<char> name;
 
-        	name.imbue(loc);
-        	name << "evidences." << getpid() << "." << now << ".pcap";
+        	name.imbue(std::locale());
+        	name << "evidences." << getpid() << "." << std::put_time(&tm, "%Y%m%d_%H%M%S") << ".pcap";
 
 		boost::iostreams::mapped_file_params params;
 
@@ -70,16 +69,8 @@ void EvidenceManager::disable() {
 
 	if (evidence_file_.is_open()) {
 		evidence_file_.close();
-#if defined(__LINUX__)
-		// Truncate the file to the exact memory on it
-		int fd = open(filename_.c_str(), O_WRONLY, 0777);
-		if (fd > 0) {
-			// std::cout << "Realocating file:" << filename_ << " from offset:" << evidence_offset_ << " total:" << total_size_ - evidence_offset_ << std::endl;
-			int ret = fallocate(fd,FALLOC_FL_PUNCH_HOLE,evidence_offset_, total_size_ - evidence_offset_);
-			// td::cout << "ret=" << ret << std::endl;perror("fallocate:");	
-		}
-		close(fd);
-#endif
+		// Truncate the file to the exact size of it
+		int ret = truncate(filename_.c_str(),evidence_offset_);
 		evidence_data_ = nullptr;
 		evidence_offset_ = 0;
 	}

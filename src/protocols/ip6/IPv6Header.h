@@ -65,13 +65,13 @@ class IPv6Header
 public:
 
 	IPv6Header(uint8_t protocol):
-		iphdr_{
+		iphdr_{ { {
                         htonl ((6 << 28) | (0 << 20) | 0),           // ip6_flow
                         //0x60,           // ip6_flow
                         0,              // ip6_plen
                         protocol,       // ip6_nxt
                         default_ttl    // ip6_hops 
-		} {}
+		} } } {}
 
 	virtual ~IPv6Header() {}
  
