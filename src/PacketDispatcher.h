@@ -179,7 +179,6 @@ public:
 #endif
 
 #ifdef RUBY_BINDING
-	void statistics() { std::cout << *this; }
 	void setScheduler(VALUE callback, int seconds);
 #endif
 
