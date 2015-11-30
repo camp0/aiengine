@@ -85,6 +85,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/vlan/VLanProtocol.cc \
 			protocols/mpls/MPLSProtocol.cc \
 			protocols/ip/IPProtocol.cc \
+			ipset/IPAbstractSet.cc \
 			ipset/IPSet.cc \
 			ipset/IPBloomSet.cc \
 			ipset/IPSetManager.cc \
@@ -209,7 +210,7 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \
 		StackLan.o StackMobile.o StackLanIPv6.o StackVirtual.o StackOpenFlow.o \
 		FlowManager.o Interpreter.o \
-		IPSetManager.o IPSet.o HTTPUriSet.o \
+		IPSetManager.o IPAbstractSet.o IPSet.o HTTPUriSet.o \
 		DomainNameManager.o DomainName.o RejectManager.o EvidenceManager.o
 
 java_objects = 	RegexManager.o Regex.o \
@@ -230,7 +231,7 @@ java_objects = 	RegexManager.o Regex.o \
                 ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \
                 StackLan.o StackMobile.o StackLanIPv6.o StackVirtual.o StackOpenFlow.o \
                 Interpreter.o \
-                IPSetManager.o IPSet.o HTTPUriSet.o \
+                IPSetManager.o IPAbstractSet.o IPSet.o HTTPUriSet.o \
                 DomainNameManager.o DomainName.o RejectManager.o EvidenceManager.o
 
 tests_CPPFLAGS = $(BOOST_CPPFLAGS) -g 

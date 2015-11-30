@@ -180,6 +180,27 @@ bool TCPProtocol::processPacket(Packet &packet) {
                 	std::cout << __FILE__ << ":" << __func__ << ": flow(" << current_flow_ << ")[" << mbstr << "] pkts:" << flow->total_packets;
 			std::cout << " bytes:" << bytes << " " << *tcp_info.get() << std::endl;
 #endif
+
+                        if (flow->total_packets == 1) { // Just need to check once per flow
+                                if(ipset_mng_) {
+                                        if (ipset_mng_->lookupIPAddress(flow->getDstAddrDotNotation())) {
+                                                SharedPointer<IPAbstractSet> ipset = ipset_mng_->getMatchedIPSet();
+                                                flow->ipset = ipset;
+#ifdef DEBUG
+                                                std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << ":Lookup positive on IPSet:" << ipset->getName() << std::endl;
+#endif
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+                                                if (ipset->call.haveCallback()) {
+                                                        ipset->call.executeCallback(flow.get());
+                                                }
+#endif
+						if (ipset->haveRegexManager()) {
+							flow->regex_mng = ipset->getRegexManager();
+						}
+                                        }
+                                }
+                        }
+
 			if (!flow_forwarder_.expired()&&(bytes > 0)) {
 			
 				FlowForwarderPtr ff = flow_forwarder_.lock();
@@ -213,23 +234,6 @@ bool TCPProtocol::processPacket(Packet &packet) {
 					return true; // I dont like but sometimes.....
 				}
 			}
-
-                	if (flow->total_packets == 1) { // Just need to check once per flow
-                        	if(ipset_mng_) { 
-                                	if (ipset_mng_->lookupIPAddress(flow->getDstAddrDotNotation())) {
-						SharedPointer<IPAbstractSet> ipset = ipset_mng_->getMatchedIPSet();
-                                        	flow->ipset = ipset;
-#ifdef DEBUG
-						std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << ":Lookup positive on IPSet:" << ipset->getName() << std::endl;
-#endif
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
-                                        	if (ipset->call.haveCallback()) {
-							ipset->call.executeCallback(flow.get());
-                        			}
-#endif
-                                	}
-                        	}
-                	}
 
 #if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
                 	if ((flow->total_packets % getPacketSampling()) == 0) {

@@ -120,6 +120,7 @@ Features/Changes of 1.3
 Features/Changes of 1.4
 - (TODO) Update on real time the setScheduler functionality (TODO multiple setScheduler, for having more functions).
 - (TODO) Support for Java Language.
+- (TODO) Support for RegexManagers on IPSets.
 - Enable rejecting for StackLanIPv6.
 - SSDP protocol support.
 - Support for regex on HTTP l7 payloads (DomainNames with RegexManagers).

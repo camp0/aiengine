@@ -15,12 +15,17 @@ test_ipset_SOURCES = 	../Multiplexer.cc  \
 			../protocols/vlan/VLanProtocol.cc \
 			../protocols/ip/IPProtocol.cc \
 			../protocols/tcp/TCPProtocol.cc \
-			IPSet.cc \
+			../protocols/udp/UDPProtocol.cc \
+			../protocols/udpgeneric/UDPGenericProtocol.cc \
+			../protocols/tcpgeneric/TCPGenericProtocol.cc \
+			../regex/RegexManager.cc \
+			../regex/Regex.cc \
+			IPAbstractSet.cc IPSet.cc \
 			IPBloomSet.cc \
 			IPSetManager.cc test_ipset.cc 
 
 test_ipset_CPPFLAGS = -I../ $(BOOST_CPPFLAGS) -DSTAND_ALONE
-test_ipset_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
+test_ipset_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework -lpcre
 
 CLEANFILES = *.o *.lo *.so
 

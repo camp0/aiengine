@@ -696,6 +696,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def(init<const std::string&>())
 		.add_property("callback",&IPSet::getCallback, &IPSet::setCallback,
 			"Gets/Sets a function callback for the IPSet.")
+		.add_property("regexmanager",&IPSet::getRegexManager, &IPSet::setRegexManager,
+			"Gets/Sets the RegexManager for this group of IP addresses.")
 		.def("addIPAddress",&IPSet::addIPAddress,
 			"Add a IP address to the IPSet.")
 		.def("__len__",&IPSet::getTotalIPs)

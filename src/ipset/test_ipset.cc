@@ -181,6 +181,80 @@ BOOST_AUTO_TEST_CASE ( test2_ip )
         BOOST_CHECK(ipset->getTotalLookupsOut() == 1);
 }
 
+// Test the addition of a RegexManager on the IPSet functionality with TCP traffic
+BOOST_AUTO_TEST_CASE ( test3_ip )
+{
+        Packet packet(reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello_2),raw_packet_ethernet_ip_tcp_ssl_client_hello_2_length);
+
+	RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
+	SharedPointer<Regex> r = SharedPointer<Regex>(new Regex("ssl regex", "^\x16\x03.*$"));
+
+	rmng->addRegex(r);
+
+        IPSetManagerPtr ipset_mng = IPSetManagerPtr(new IPSetManager());
+        IPSetPtr ipset = IPSetPtr(new IPSet("new ipset"));
+
+        ipset_mng->addIPSet(ipset);
+        ipset->addIPAddress("72.21.211.223");
+
+	ipset->setRegexManager(rmng);
+
+        tcp->setIPSetManager(ipset_mng);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        BOOST_CHECK(ipset->getTotalIPs() == 1);
+        BOOST_CHECK(ipset->getTotalLookups() == 1);
+        BOOST_CHECK(ipset->getTotalLookupsIn() == 1);
+        BOOST_CHECK(ipset->getTotalLookupsOut() == 0);
+
+	// Checks on the Regex that should match
+	BOOST_CHECK(r->getMatchs() == 1);
+}
+
+
+// Test the addition of a RegexManager on the IPSet functionality on UDP traffic
+BOOST_AUTO_TEST_CASE ( test4_ip )
+{
+        Packet packet(reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dns),raw_packet_ethernet_ip_udp_dns_length);
+
+        RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
+        SharedPointer<Regex> r = SharedPointer<Regex>(new Regex("other regex", "^\x84.*$"));
+
+        rmng->addRegex(r);
+
+        IPSetManagerPtr ipset_mng = IPSetManagerPtr(new IPSetManager());
+        IPSetPtr ipset = IPSetPtr(new IPSet("new ipset"));
+
+        ipset_mng->addIPSet(ipset);
+        ipset->addIPAddress("80.58.61.250");
+
+        ipset->setRegexManager(rmng);
+
+        udp->setIPSetManager(ipset_mng);
+
+        // executing the packet
+        // forward the packet through the multiplexers
+        mux_eth->setPacket(&packet);
+        eth->setHeader(packet.getPayload());
+        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+        mux_eth->forwardPacket(packet);
+
+        BOOST_CHECK(ipset->getTotalIPs() == 1);
+        BOOST_CHECK(ipset->getTotalLookups() == 1);
+        BOOST_CHECK(ipset->getTotalLookupsIn() == 1);
+        BOOST_CHECK(ipset->getTotalLookupsOut() == 0);
+
+        // Checks on the Regex that should match
+        BOOST_CHECK(r->getMatchs() == 1);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END( )
 
 #ifdef HAVE_BLOOMFILTER

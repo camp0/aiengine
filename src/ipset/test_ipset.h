@@ -35,6 +35,10 @@
 #include "../protocols/ip/IPProtocol.h"
 #include "../protocols/ip6/IPv6Protocol.h"
 #include "../protocols/tcp/TCPProtocol.h"
+#include "../protocols/udp/UDPProtocol.h"
+#include "../protocols/tcpgeneric/TCPGenericProtocol.h"
+#include "../protocols/udpgeneric/UDPGenericProtocol.h"
+#include "../regex/RegexManager.h"
 
 #ifdef HAVE_BLOOMFILTER
 #include <boost/bloom_filter/basic_bloom_filter.hpp>
@@ -48,11 +52,18 @@ struct StackTCPIPSetTest
         EthernetProtocolPtr eth;
         IPProtocolPtr ip;
         TCPProtocolPtr tcp;
+        UDPProtocolPtr udp;
+        TCPGenericProtocolPtr gtcp;
+        UDPGenericProtocolPtr gudp;
         MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
         MultiplexerPtr mux_tcp;
+        MultiplexerPtr mux_udp;
 
 	FlowForwarderPtr ff_tcp;
+	FlowForwarderPtr ff_gtcp;
+	FlowForwarderPtr ff_udp;
+	FlowForwarderPtr ff_gudp;
        // FlowManager and FlowCache
         FlowManagerPtr flow_mng;
         FlowCachePtr flow_cache;
@@ -60,12 +71,19 @@ struct StackTCPIPSetTest
         StackTCPIPSetTest()
         {
                 tcp = TCPProtocolPtr(new TCPProtocol());
+                udp = UDPProtocolPtr(new UDPProtocol());
+                gtcp = TCPGenericProtocolPtr(new TCPGenericProtocol());
+                gudp = UDPGenericProtocolPtr(new UDPGenericProtocol());
                 ip = IPProtocolPtr(new IPProtocol());
                 eth = EthernetProtocolPtr(new EthernetProtocol());
                 mux_eth = MultiplexerPtr(new Multiplexer());
                 mux_ip = MultiplexerPtr(new Multiplexer());
                 mux_tcp = MultiplexerPtr(new Multiplexer());
+                mux_udp = MultiplexerPtr(new Multiplexer());
 		ff_tcp = FlowForwarderPtr(new FlowForwarder());
+		ff_udp = FlowForwarderPtr(new FlowForwarder());
+		ff_gtcp = FlowForwarderPtr(new FlowForwarder());
+		ff_gudp = FlowForwarderPtr(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);
@@ -89,16 +107,42 @@ struct StackTCPIPSetTest
                 mux_tcp->setHeaderSize(tcp->getHeaderSize());
                 mux_tcp->addChecker(std::bind(&TCPProtocol::tcpChecker,tcp,std::placeholders::_1));
                 mux_tcp->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp,std::placeholders::_1));
+		ff_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
+
+                udp->setMultiplexer(mux_udp);
+                mux_udp->setProtocol(static_cast<ProtocolPtr>(udp));
+                mux_udp->setProtocolIdentifier(IPPROTO_UDP);
+                mux_udp->setHeaderSize(udp->getHeaderSize());
+                mux_udp->addChecker(std::bind(&UDPProtocol::udpChecker,udp,std::placeholders::_1));
+                mux_udp->addPacketFunction(std::bind(&UDPProtocol::processPacket,udp,std::placeholders::_1));
+                ff_udp->setProtocol(static_cast<ProtocolPtr>(udp));
+
+                // configure the generic tcp
+                gtcp->setFlowForwarder(ff_gtcp);
+                ff_gtcp->setProtocol(static_cast<ProtocolPtr>(gtcp));
+                ff_gtcp->addChecker(std::bind(&TCPGenericProtocol::tcpGenericChecker,gtcp,std::placeholders::_1));
+                ff_gtcp->addFlowFunction(std::bind(&TCPGenericProtocol::processFlow,gtcp,std::placeholders::_1));
+
+                gudp->setFlowForwarder(ff_gudp);
+                ff_gudp->setProtocol(static_cast<ProtocolPtr>(udp));
+                ff_gudp->addChecker(std::bind(&UDPGenericProtocol::udpGenericChecker,gudp,std::placeholders::_1));
+                ff_gudp->addFlowFunction(std::bind(&UDPGenericProtocol::processFlow,gudp,std::placeholders::_1));
 
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
                 mux_ip->addDownMultiplexer(mux_eth);
                 mux_ip->addUpMultiplexer(mux_tcp,IPPROTO_TCP);
                 mux_tcp->addDownMultiplexer(mux_ip);
+                mux_ip->addUpMultiplexer(mux_udp,IPPROTO_UDP);
+                mux_udp->addDownMultiplexer(mux_ip);
 
 		tcp->setFlowForwarder(ff_tcp);	
                 mux_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
         	ff_tcp->setProtocol(static_cast<ProtocolPtr>(tcp));
+
+		udp->setFlowForwarder(ff_udp);	
+                mux_udp->setProtocol(static_cast<ProtocolPtr>(udp));
+        	ff_udp->setProtocol(static_cast<ProtocolPtr>(udp));
 
                 // Allocate the flow caches and tables
                 flow_mng = FlowManagerPtr(new FlowManager());
@@ -107,9 +151,28 @@ struct StackTCPIPSetTest
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(2);
                 tcp->createTCPInfos(2);
+                // udp->createUDPInfos(2);
 
                 tcp->setFlowCache(flow_cache);
                 tcp->setFlowManager(flow_mng);
+                udp->setFlowCache(flow_cache);
+                udp->setFlowManager(flow_mng);
+
+                // Configure the FlowForwarders
+                tcp->setFlowForwarder(ff_tcp);
+                ff_tcp->addUpFlowForwarder(ff_gtcp);
+
+                udp->setFlowForwarder(ff_udp);
+                ff_udp->addUpFlowForwarder(ff_gudp);
+        }
+
+        void show() {
+                udp->setStatisticsLevel(5);
+                ip->setStatisticsLevel(5);
+                gudp->setStatisticsLevel(5);
+		ip->statistics();
+                udp->statistics();
+                gudp->statistics();
         }
 
         ~StackTCPIPSetTest() {

@@ -21,33 +21,30 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#ifndef SRC_JAICALLBACK_H_
-#define SRC_JAICALLBACK_H_
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <iostream>
+#include "IPAbstractSet.h"
 
 namespace aiengine {
 
-#if defined(JAVA_BINDING)
+#if defined(RUBY_BINDING)
 
-class Flow;
-// Abstract class for inherit for Callbacks in Java
-class JaiCallback 
-{
-public:
-        JaiCallback() {}
-        virtual ~JaiCallback() {}
+void IPAbstractSet::setNextRegexManager(RegexManager& regex_mng) {
 
-	virtual void call(Flow *flow) = 0;
-};
+	//SharedPointer<RegexManager> rm;
+        SharedPointer<RegexManager> rm = SharedPointer<RegexManager>(new RegexManager());
+        rm.reset(&regex_mng);
 
+        setNextRegexManager(rm);
+}
+
+#elif defined(JAVA_BINDING)
+void IPAbstractSet::setNextRegexManager(RegexManager *regex_mng) {
+
+	if (regex_mng != nullptr) {
+		
+	}
+}
+ 
 #endif
 
 } // namespace aiengine
-
-#endif  // SRC_JAICALLBACK_H_
 

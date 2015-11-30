@@ -31,6 +31,7 @@
 #include <memory>
 #include <string>
 #include <iostream>
+#include "../regex/RegexManager.h"
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 #include "Callback.h"
@@ -48,7 +49,9 @@ public:
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 		call(),
 #endif
-		name_(name) 
+		name_(name),
+		rmng_(),
+		have_regex_mng_(false) 
 	{}
     	
     	explicit IPAbstractSet():IPAbstractSet("Generic IPAbstractSet") {}
@@ -77,8 +80,22 @@ public:
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 	Callback call;	
 #endif
+
+	void setRegexManager(const SharedPointer<RegexManager>& rmng) { rmng_ = rmng; have_regex_mng_ = true; }
+	SharedPointer<RegexManager> getRegexManager() const { return rmng_; }
+
+	bool haveRegexManager() const { return have_regex_mng_; }
+
+#if defined(RUBY_BINDING)
+        void setNextRegexManager(RegexManager& regex_mng); 
+#elif defined(JAVA_BINDING)
+        void setNextRegexManager(RegexManager *regex_mng); 
+#endif
+
 private:
 	std::string name_;
+	SharedPointer<RegexManager> rmng_;
+	bool have_regex_mng_;
 };
 
 typedef std::shared_ptr<IPAbstractSet> IPAbstractSetPtr;
