@@ -87,9 +87,9 @@ public:
 	bool haveRegexManager() const { return have_regex_mng_; }
 
 #if defined(RUBY_BINDING)
-        void setNextRegexManager(RegexManager& regex_mng); 
+        void setRegexManager(RegexManager& regex_mng); 
 #elif defined(JAVA_BINDING)
-        void setNextRegexManager(RegexManager *regex_mng); 
+        void setRegexManager(RegexManager *regex_mng); 
 #endif
 
 private:

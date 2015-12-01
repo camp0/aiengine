@@ -33,6 +33,12 @@
 std::cout << "Ruby AIengine BETA init." << std::endl;
 %}
 
+%ignore operator+;
+%ignore operator[];
+%ignore operator==;
+%ignore operator!=;
+%ignore operator/;
+
 %ignore aiengine::free_list;
 
 %ignore aiengine::FlowDirection;

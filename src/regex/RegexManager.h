@@ -63,7 +63,6 @@ public:
 		SharedPointer<Regex> re(new Regex());
 		re.reset(&sig);
 
-	//	free_list.push_back(re);
 		addRegex(re); 
 	}
 #endif

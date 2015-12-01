@@ -25,22 +25,26 @@
 
 namespace aiengine {
 
-#if defined(RUBY_BINDING)
+#if defined(RUBY_BINDING) 
 
-void IPAbstractSet::setNextRegexManager(RegexManager& regex_mng) {
+void IPAbstractSet::setRegexManager(RegexManager& regex_mng) {
 
-	//SharedPointer<RegexManager> rm;
         SharedPointer<RegexManager> rm = SharedPointer<RegexManager>(new RegexManager());
         rm.reset(&regex_mng);
 
-        setNextRegexManager(rm);
+        setRegexManager(rm);
 }
 
 #elif defined(JAVA_BINDING)
-void IPAbstractSet::setNextRegexManager(RegexManager *regex_mng) {
+void IPAbstractSet::setRegexManager(RegexManager *regex_mng) {
 
 	if (regex_mng != nullptr) {
-		
+        	SharedPointer<RegexManager> rm(regex_mng); 
+			
+		setRegexManager(rm);
+	} else {
+		rmng_.reset();
+		have_regex_mng_ = false;		
 	}
 }
  

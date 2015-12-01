@@ -22,8 +22,15 @@
  *
  */
 #include "EvidenceManager.h"
+#include <iomanip>
 
 namespace aiengine {
+
+// Compilers >= that 5 have the put_time function on std
+#define GCC_VERSION (__GNUG__ * 10000 \
+        + __GNUC_MINOR__ * 100 \
+        + __GNUC_PATCHLEVEL__)
+
 
 void EvidenceManager::enable() {
 
@@ -34,8 +41,14 @@ void EvidenceManager::enable() {
 		std::basic_stringstream<char> name;
 
         	name.imbue(std::locale());
-        	name << "evidences." << getpid() << "." << std::put_time(&tm, "%Y%m%d_%H%M%S") << ".pcap";
+#if GCC_VERSION < 50000
+		char buff[32];
+		strftime(buff, 32, "%Y%m%d_%H%M%S", std::localtime(&t));
 
+		name << "evidences." << getpid() << "." << buff << ".pcap";
+#else
+        	name << "evidences." << getpid() << "." << std::put_time(&tm, "%Y%m%d_%H%M%S") << ".pcap";
+#endif
 		boost::iostreams::mapped_file_params params;
 
 		params.path = name.str();
