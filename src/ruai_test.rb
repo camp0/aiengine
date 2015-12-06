@@ -360,9 +360,46 @@ class StackLanUnitTests < Test::Unit::TestCase
   end
 
   def test_11
-    @pd.open("../pcapfiles/tor_4flows.pcap")
+    # Verify the link bettwen IPSets and RegexManagers for complex logic
+    @have_been_call_ipset = false 
+    @have_been_call_regex = false
+
+    def callback_regex(flow)
+      @r = flow.regex 
+      if (@r)
+        assert_equal(@r.matchs, 1)
+        assert_equal(@r.name,"generic http")
+        @have_been_call_regex = true
+      end
+    end
+
+    def callback_ipset(flow)
+      @have_been_call_ipset = true
+      # TODO: Verify the integrity of the values of the flow
+    end
+
+    rm = RegexManager.new
+    r = Regex.new("generic http","^GET.*HTTP.*$")
+    r.callback = method(:callback_regex)
+    rm.add_regex(r)
+
+    ip = IPSet.new("Some IPSet")
+    ip.add_ip_address("95.100.96.10")
+    ip.callback = method(:callback_ipset)
+    ip.regexmanager = rm
+
+    ipmng = IPSetManager.new()
+    ipmng.add_ip_set(ip)
+   
+    @s.tcpip_set_manager = ipmng 
+    @s.enable_nids_engine = true
+
+    @pd.open("../pcapfiles/two_http_flows_noending.pcap")
     @pd.run()
     @pd.close()
+
+    assert_equal( @have_been_call_ipset , true)
+    assert_equal( @have_been_call_regex , true)
 
   end
   def test_12

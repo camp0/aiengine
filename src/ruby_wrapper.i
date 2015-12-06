@@ -26,6 +26,7 @@
 %apply SWIGTYPE *DISOWN { IPSet* ipset };
 
 %feature("director") DatabaseAdaptor;
+//%feature("director") IPAbstractSet; 
 
 %trackobjects;
 
@@ -165,6 +166,9 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::IPSetManager::getMatchedIPSet;
 %ignore aiengine::IPSetManager::lookupIPAddress;
 
+%ignore aiengine::IPAbstractSet::setRegexManager(const SharedPointer<RegexManager>& rmng);
+%ignore aiengine::IPAbstractSet::getRegexManager;
+
 %ignore aiengine::IPSet::getFalsePositiveRate;
 %ignore aiengine::IPSet::lookupIPAddress;
 
@@ -297,6 +301,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::FlowManager::getLastProcessFlow;
 %ignore aiengine::FlowManager::setProtocol;
 
+%rename("regexmanager=")		aiengine::IPAbstractSet::setRegexManager;
 %rename("timeout=")			aiengine::FlowManager::setTimeout;
 %rename("timeout")			aiengine::FlowManager::getTimeout;
 %rename("total_flows")			aiengine::FlowManager::getTotalFlows;
@@ -425,6 +430,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %include "protocols/http/HTTPUriSet.h"
 %include "names/DomainName.h"
 %include "names/DomainNameManager.h"
+%include "ipset/IPAbstractSet.h"
 %include "ipset/IPSet.h"
 %include "ipset/IPSetManager.h"
 %include "DatabaseAdaptor.h"
