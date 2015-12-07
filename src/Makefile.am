@@ -287,7 +287,7 @@ if HAVE_JAVA_SUPPORT
 		-std=c++11 -c $(aiengine_core_sources) java_wrapper_wrap.cxx 
 	@echo "Linking Java interface"
 	$(CXX) -g -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DJAVA_BINDING -I.. \
-		-shared -std=c++11 $(java_objects) java_wrapper_wrap.o -o jaaiengine.so -lpcap -lboost_system -lpcre 
+		-shared -std=c++11 $(java_objects) java_wrapper_wrap.o -o jaaiengine.so -lpcap $(BOOST_LINK_CORE) -lpcre 
 	@echo "Compiling Java Unit tests"
 	$(MKDIR_P) buildjava 2>/dev/null
 	$(JAVA_CC) -d buildjava/ -cp /usr/share/java/junit.jar  *.java

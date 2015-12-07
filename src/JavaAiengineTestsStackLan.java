@@ -468,5 +468,54 @@ public class JavaAiengineTestsStackLan {
         assertEquals(c.get("requests"), 3);
         assertEquals(c.get("responses"), 3);
     }
+
+    public void test14() {
+        // Verify the functionatliy of the RegexManager attach on a IPSet
+
+        class ExternalCallbackIPSet extends JaiCallback{
+            public boolean called = false;
+            public void call(Flow flow) {
+                // TODO: IPSet not retrieve
+                called = true;
+            }
+        }
+
+        class ExternalCallbackRegex extends JaiCallback{
+            public boolean called = false;
+            public void call(Flow flow) {
+                Regex r = flow.getRegex();
+                called = true;
+            }
+        }
+
+        ExternalCallbackIPSet eci = new ExternalCallbackIPSet();
+        ExternalCallbackRegex ecr = new ExternalCallbackRegex();
+        RegexManager rm = new RegexManager();
+
+        IPSet ip = new IPSet("IPSet address");
+        ip.addIPAddress("95.100.96.10");
+        ip.setCallback(eci);
+        ip.setRegexManager(rm);
+
+        IPSetManager ipm = new IPSetManager();
+        ipm.addIPSet(ip);
+
+        Regex r = new Regex("generic http","^GET.*HTTP.*$");
+
+        r.setCallback(ecr);
+        rm.addRegex(r);
+       
+        this.s.setTCPIPSetManager(ipm);
+        this.s.enableNIDSEngine(true);
+ 
+        this.pd.open("../pcapfiles/two_http_flows_noending.pcap");
+        this.pd.run();
+        this.pd.close();
+
+        assertEquals(eci.called, true);
+        assertEquals(ecr.called, true);
+        assertEquals(ip.getTotalLookupsIn() , 1);
+        assertEquals(r.getMatchs() , 1);
+    }
 }
 

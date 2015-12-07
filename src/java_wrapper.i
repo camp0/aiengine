@@ -104,7 +104,7 @@
 %ignore aiengine::IPSetManager::getMatchedIPSet;
 %ignore aiengine::IPSetManager::lookupIPAddress;
 
-%ignore aiengine::IPAbstractSet::setRegexManager;
+%ignore aiengine::IPAbstractSet::setRegexManager(const SharedPointer<RegexManager>& rmng);
 %ignore aiengine::IPAbstractSet::getRegexManager;
 
 %ignore aiengine::FlowManager::addFlow;
@@ -259,6 +259,7 @@
 
 %feature("director") JaiCallback;
 %feature("director") DatabaseAdaptor;
+// %feature("director") IPAbstractSet;
 
 %include "Callback.h"
 %include "JaiCallback.h"
