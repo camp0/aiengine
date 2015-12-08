@@ -2,7 +2,7 @@ AIEngine (Artificial Inteligent Engine)
 =========
 
 AIEngine is a next generation interactive/programmable Python/Ruby/Java packet inspection engine with capabilities of learning
-without any human intervention, NIDS(Network Intrusion Detection System) functionality, DNS domain classification, network collector and many others. 
+without any human intervention, NIDS(Network Intrusion Detection System) functionality, DNS domain classification, network collector, network forensics and many others. 
 
 AIEngine also helps network/security professionals to identify traffic and develop
 signatures for use them on NIDS, Firewalls, Traffic classifiers and so on.
@@ -24,6 +24,7 @@ The main functionalities of AIEngine are:
 - Support memory clean caches for refresh stored memory information.
 - Support for detect DDoS at network/application layer.
 - Support for rejecting TCP/UDP connections.
+- Support for network forensics on real time.
 
 Using AIEngine 
 ---------------
@@ -53,6 +54,8 @@ To use AIEngine(reduce version) just execute the binary aiengine or use the pyth
 	  -m [ --matched-flows ]         Shows the flows that matchs with the regex.
 	  -j [ --reject-flows ]          Rejects the flows that matchs with the 
                                          regex.
+          -w [ --evidence ]              Generates a pcap file with the matching 
+                                         regex for forensic analysis.
 
 
 	Frequencies optional arguments:
