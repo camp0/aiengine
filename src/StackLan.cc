@@ -184,9 +184,18 @@ StackLan::StackLan():
 
 void StackLan::showFlows(std::basic_ostream<char>& out) {
 
-	out << "Flows on memory" << std::endl;
+	int total = flow_table_tcp_->getTotalFlows() + flow_table_udp_->getTotalFlows();
+	out << "Flows on memory " << total << std::endl;
 	flow_table_tcp_->showFlows(out);
 	flow_table_udp_->showFlows(out);
+}
+
+void StackLan::showFlows(const std::string& protoname) {
+
+	int total = flow_table_tcp_->getTotalFlows() + flow_table_udp_->getTotalFlows();
+	std::cout << "Flows on memory " << total << std::endl;
+	flow_table_tcp_->showFlows(protoname);
+	flow_table_udp_->showFlows(protoname);
 }
 
 void StackLan::enableFrequencyEngine(bool enable) {
@@ -357,6 +366,8 @@ void StackLan::setTCPRegexManager(RegexManager *sig) {
 
 	if (sig != nullptr) {
 		rm.reset(sig);
+	} else {
+		rm.reset();
 	}
 	setTCPRegexManager(rm);
 }
@@ -365,8 +376,11 @@ void StackLan::setUDPRegexManager(RegexManager *sig) {
 
 	SharedPointer<RegexManager> rm;
 
+	// std::cout << __FILE__ << ":Java:setUDPRegexManager:" << sig << std::endl;
 	if (sig != nullptr) {
 		rm.reset(sig);
+	} else {
+		rm.reset();
 	}
 	setUDPRegexManager(rm);
 }
@@ -377,6 +391,8 @@ void StackLan::setTCPIPSetManager(IPSetManager *ipset_mng) {
 
 	if (ipset_mng != nullptr) {
 		im.reset(ipset_mng);
+	} else {
+		im.reset();
 	}
 	setTCPIPSetManager(im);
 }
@@ -387,10 +403,11 @@ void StackLan::setUDPIPSetManager(IPSetManager *ipset_mng) {
 
 	if (ipset_mng != nullptr) {
 		im.reset(ipset_mng);
+	} else {
+		im.reset();
 	}
 	setUDPIPSetManager(im);
 }
-
 
 #endif
 

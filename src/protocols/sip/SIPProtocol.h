@@ -21,7 +21,6 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#pragma GCC diagnostic ignored "-Wwrite-strings"
 #ifndef SRC_PROTOCOLS_SIP_SIPPROTOCOL_H_
 #define SRC_PROTOCOLS_SIP_SIPPROTOCOL_H_
 
@@ -52,7 +51,8 @@ typedef std::tuple<const char*,int,const char*,int32_t> SipMethodType;
 class SIPProtocol: public Protocol 
 {
 public:
-    	explicit SIPProtocol():Protocol(SIPProtocol::default_name),stats_level_(0),
+    	explicit SIPProtocol():Protocol("SIPProtocol","sip"),
+		stats_level_(0),
                 sip_regex_(new Regex("Main SIP expression","^(REGISTER|INVITE|OPTIONS).*SIP/2.")),
                 sip_from_(new Regex("From expression","From: .*?\r\n")),
                 sip_to_(new Regex("To expression","To: .*?\r\n")),
@@ -74,7 +74,6 @@ public:
 
     	virtual ~SIPProtocol() {}
 
-	static constexpr char *default_name = "SIPProtocol";
 	static const uint16_t id = 0;
 	static const int header_size = 0;
 	int getHeaderSize() const { return header_size;}

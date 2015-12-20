@@ -81,7 +81,7 @@ public:
 	Callback call;	
 #endif
 
-	void setRegexManager(const SharedPointer<RegexManager>& rmng) { rmng_ = rmng; have_regex_mng_ = true; }
+	void setRegexManager(const SharedPointer<RegexManager>& rmng); 
 	SharedPointer<RegexManager> getRegexManager() const { return rmng_; }
 
 	bool haveRegexManager() const { return have_regex_mng_; }

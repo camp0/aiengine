@@ -239,10 +239,24 @@ StackMobile::StackMobile():
 
 void StackMobile::showFlows(std::basic_ostream<char>& out) {
 
-	out << "Flows on memory" << std::endl;
+        int total = flow_table_tcp_->getTotalFlows() + flow_table_udp_low_->getTotalFlows();
+	total += flow_table_udp_high_->getTotalFlows();
+
+        out << "Flows on memory " << total << std::endl;
 	flow_table_udp_low_->showFlows(out);
 	flow_table_tcp_->showFlows(out);
 	flow_table_udp_high_->showFlows(out);
+}
+
+void StackMobile::showFlows(const std::string& protoname) {
+
+        int total = flow_table_tcp_->getTotalFlows() + flow_table_udp_low_->getTotalFlows();
+	total += flow_table_udp_high_->getTotalFlows();
+        std::cout << "Flows on memory " << total << std::endl;
+
+	flow_table_udp_low_->showFlows(protoname);
+	flow_table_tcp_->showFlows(protoname);
+	flow_table_udp_high_->showFlows(protoname);
 }
 
 void StackMobile::setTotalTCPFlows(int value) {

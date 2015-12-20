@@ -21,7 +21,6 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#pragma GCC diagnostic ignored "-Wwrite-strings"
 #ifndef SRC_PROTOCOLS_SMTP_SMTPPROTOCOL_H_ 
 #define SRC_PROTOCOLS_SMTP_SMTPPROTOCOL_H_
 
@@ -66,7 +65,8 @@ typedef std::tuple<const char*,int,const char*,int32_t, int8_t> SmtpCommandType;
 class SMTPProtocol: public Protocol 
 {
 public:
-    	explicit SMTPProtocol():Protocol(SMTPProtocol::default_name),stats_level_(0),
+    	explicit SMTPProtocol():Protocol("SMTPProtocol","smtp"),
+		stats_level_(0),
 		smtp_header_(nullptr),total_bytes_(0),
 		total_allow_domains_(0),total_ban_domains_(0),
 		total_smtp_client_commands_(0),
@@ -83,7 +83,6 @@ public:
 
     	virtual ~SMTPProtocol() {}
 
-	static constexpr char *default_name = "SMTPProtocol";	
 	static const uint16_t id = 0;
 	static const int header_size = 6; // Minimum header 220 \r\n;
 	int getHeaderSize() const { return header_size;}

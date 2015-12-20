@@ -48,8 +48,8 @@ NetworkStack::NetworkStack():
         pop(POPProtocolPtr(new POPProtocol())),
         tcp_generic(TCPGenericProtocolPtr(new TCPGenericProtocol())),
         udp_generic(UDPGenericProtocolPtr(new UDPGenericProtocol())),
-        freqs_tcp(FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol"))),
-        freqs_udp(FrequencyProtocolPtr(new FrequencyProtocol("UDPFrequencyProtocol"))),
+        freqs_tcp(FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol","tcpfrequency"))),
+        freqs_udp(FrequencyProtocolPtr(new FrequencyProtocol("UDPFrequencyProtocol","udpfrequency"))),
 	// Common FlowForwarders
         ff_http(FlowForwarderPtr(new FlowForwarder())),
         ff_ssl(FlowForwarderPtr(new FlowForwarder())),

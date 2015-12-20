@@ -889,23 +889,25 @@ class StackLanTests(unittest.TestCase):
             i = flow.ipset
             self.assertEqual(flow.dstip,"95.100.96.10") 
             self.assertEqual(r.name,"generic http") 
+            self.assertEqual(i.name,"Generic set") 
             self.called_callback += 1
 
         def ipset_callback(flow):
             r = flow.regex
             i = flow.ipset
             self.assertNotEqual(i,None) 
+            self.assertEqual(i.name,"Generic set") 
             self.assertEqual(r,None) 
             self.called_callback += 1
 
         rm = pyaiengine.RegexManager()
-        ipset = pyaiengine.IPSet("Generic set")
-        ipset.addIPAddress("95.100.96.10")
-        ipset.regexmanager = rm
-        ipset.callback = ipset_callback
+        i = pyaiengine.IPSet("Generic set")
+        i.addIPAddress("95.100.96.10")
+        i.regexmanager = rm
+        i.callback = ipset_callback
         im = pyaiengine.IPSetManager()
 
-        im.addIPSet(ipset)
+        im.addIPSet(i)
         self.s.tcpipsetmanager = im
 
         r = pyaiengine.Regex("generic http","^GET.*HTTP")
@@ -919,8 +921,52 @@ class StackLanTests(unittest.TestCase):
             pd.run();
  
         self.assertEqual(self.called_callback,2)
-        # self.assertEqual(ipset.matchs, 1)
+        self.assertEqual(i.lookupsin, 1)
         self.assertEqual(r.matchs, 1)
+
+    def test31(self):
+        """ Verify the functionatliy of the RegexManager on the IPSets """
+
+        def regex_callback(flow):
+            r = flow.regex
+            i = flow.ipset
+            self.assertEqual(flow.dstip,"95.100.96.10")
+            self.assertEqual(r.name,"generic http")
+            self.assertEqual(i.name,"Generic set")
+            self.called_callback += 1
+
+        def ipset_callback(flow):
+            r = flow.regex
+            i = flow.ipset
+            self.assertNotEqual(i,None)
+            self.assertEqual(i.name,"Generic set")
+            self.assertEqual(r,None)
+            self.called_callback += 1
+
+        rm = pyaiengine.RegexManager()
+        i = pyaiengine.IPSet("Generic set")
+        i.addIPAddress("95.100.96.10")
+        i.regexmanager = None 
+        i.callback = ipset_callback
+        im = pyaiengine.IPSetManager()
+
+        im.addIPSet(i)
+        self.s.tcpipsetmanager = im
+
+        r = pyaiengine.Regex("generic http","^GET.*HTTP")
+        r.callback = regex_callback
+        rm.addRegex(r)
+
+        self.s.enableNIDSEngine(True)
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
+            pd.stack = self.s
+            pd.run();
+
+        self.assertEqual(self.called_callback,1)
+        self.assertEqual(i.lookupsin, 1)
+        self.assertEqual(r.matchs, 0)
+
 
 class StackLanIPv6Tests(unittest.TestCase):
 

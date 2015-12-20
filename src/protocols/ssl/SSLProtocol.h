@@ -21,7 +21,6 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#pragma GCC diagnostic ignored "-Wwrite-strings"
 #ifndef SRC_PROTOCOLS_SSL_SSLPROTOCOL_H_
 #define SRC_PROTOCOLS_SSL_SSLPROTOCOL_H_
 
@@ -103,7 +102,8 @@ typedef struct {
 class SSLProtocol: public Protocol 
 {
 public:
-    	explicit SSLProtocol():Protocol(SSLProtocol::default_name),stats_level_(0),
+    	explicit SSLProtocol():Protocol("SSLProtocol","ssl"),
+		stats_level_(0),
 		ssl_header_(nullptr),total_bytes_(0),
 		total_client_hellos_(0),total_server_hellos_(0),
 		total_certificates_(0),total_records_(0),total_ban_hosts_(0),
@@ -120,7 +120,6 @@ public:
 
     	virtual ~SSLProtocol() {}
 
-	static constexpr char *default_name = "SSLProtocol";	
 	static const uint16_t id = 0;
 	static const int header_size = 2;
 	int getHeaderSize() const { return header_size;}

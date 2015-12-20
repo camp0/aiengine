@@ -47,12 +47,13 @@ bool IPSetManager::lookupIPAddress(const std::string &ip) {
 
 std::ostream& operator<< (std::ostream& out, const IPSetManager& im) {
 
-	out << "IPSetManager" << std::endl;
+	out << "IPSetManager (" << im.name_ << ")"<< std::endl;
 	out << "\tTotal IPSets:           " << std::setw(10) << im.sets_.size() <<std::endl;
 	for(auto it = im.sets_.begin(); it != im.sets_.end(); ++it) {
-		SharedPointer<IPAbstractSet> ipset = (*it);
+		SharedPointer<IPAbstractSet> ipa = (*it);
+		IPSet *ipset = dynamic_cast<IPSet*>(ipa.get());
 
-		//ipset->statistics(out);
+		ipset->statistics(out);
 	}
 
 	return out;

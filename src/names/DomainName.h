@@ -74,7 +74,7 @@ public:
         void setHTTPUriSet(const SharedPointer<HTTPUriSet>& uset) { uris_ = uset; }
         SharedPointer<HTTPUriSet> &getHTTPUriSet() { return uris_; }
 
-	void setRegexManager(const SharedPointer<RegexManager>& rmng) { regexs_ = rmng; have_regex_manager_ = true; }
+	void setRegexManager(const SharedPointer<RegexManager>& rmng); 
 	SharedPointer<RegexManager> getRegexManager() const { return regexs_; }
 
 	bool haveRegexManager() const { return have_regex_manager_; }

@@ -45,7 +45,9 @@ namespace aiengine {
 class TCPProtocol: public Protocol 
 {
 public:
-    	explicit TCPProtocol(const std::string& name):Protocol(name),stats_level_(0),
+    	explicit TCPProtocol(const std::string& name, const std::string& short_name):
+		Protocol(name,short_name),
+		stats_level_(0),
                 flow_table_(),flow_cache_(),sigs_(),
                 tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")), 
                 tcp_header_(nullptr),current_flow_(nullptr),
@@ -61,11 +63,12 @@ public:
 		CacheManager::getInstance()->setCache(tcp_info_cache_);
 	}
 
-    	explicit TCPProtocol():TCPProtocol(TCPProtocol::default_name) {}
+    	explicit TCPProtocol():TCPProtocol(TCPProtocol::default_name,TCPProtocol::default_short_name) {}
 
     	virtual ~TCPProtocol() {}
 
 	static constexpr char *default_name = "TCPProtocol";
+	static constexpr char *default_short_name = "tcp";
 	static const uint16_t id = IPPROTO_TCP;
 	static const int header_size = 20;
 	int getHeaderSize() const { return header_size;}

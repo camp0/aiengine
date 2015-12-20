@@ -94,7 +94,9 @@ typedef struct {
 class GPRSProtocol: public Protocol 
 {
 public:
-    	explicit GPRSProtocol():Protocol("GPRSProtocol"),stats_level_(0),
+    	explicit GPRSProtocol():
+		Protocol("GPRSProtocol","gprs"),
+		stats_level_(0),
 		gprs_info_cache_(new Cache<GPRSInfo>("GPRS info cache")),
 		gprs_header_(nullptr),total_bytes_(0),
         	total_create_pdp_ctx_requests_(0),

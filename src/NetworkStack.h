@@ -65,6 +65,7 @@ public:
 
 	virtual void showFlows(std::basic_ostream<char>& out) = 0;
 	virtual void showFlows() = 0;
+	virtual void showFlows(const std::string& protoname) = 0;
 
         virtual void statistics(std::basic_ostream<char>& out) const; //  { out << *this; }
         virtual void statistics() { statistics(std::cout);}

@@ -43,14 +43,16 @@ namespace aiengine {
 class FrequencyProtocol: public Protocol 
 {
 public:
-    	explicit FrequencyProtocol(std::string name):Protocol(name),stats_level_(0),
+    	explicit FrequencyProtocol(const std::string& name, const std::string& short_name):
+		Protocol(name,short_name),
+		stats_level_(0),
 		freq_header_(nullptr),total_bytes_(0),
 		inspection_limit_(100),
 		freqs_cache_(new Cache<Frequencies>),
 		packet_freqs_cache_(new Cache<PacketFrequencies>),
 		flow_mng_() {}
 
-	explicit FrequencyProtocol():FrequencyProtocol("FrequencyProtocol") {}
+	explicit FrequencyProtocol():FrequencyProtocol("FrequencyProtocol","frequency") {}
 
     	virtual ~FrequencyProtocol() {}
 	

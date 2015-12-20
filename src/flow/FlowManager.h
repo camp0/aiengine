@@ -89,6 +89,9 @@ public:
 
 	void showFlows(std::basic_ostream<char>& out);
 	void showFlows() { showFlows(std::cout);}      
+	void showFlows(std::basic_ostream<char>& out,const std::string& protoname);
+	void showFlows(const std::string& protoname) { showFlows(std::cout, protoname); }     
+	void showFlows(std::basic_ostream<char>& out,std::function<bool (const Flow&)> condition); 
 
 	void statistics(std::basic_ostream<char>& out) { out << *this;} 
         void statistics() { statistics(std::cout);}
@@ -107,6 +110,8 @@ public:
 	void setProtocol(ProtocolPtrWeak proto) { protocol_ = proto; }
 
 private:
+	void print_pretty_flow(std::basic_ostream<char>& out, Flow *flow, const char *proto_name);
+
 	std::string name_;
     	timeval now_;
 	int32_t total_process_flows_;

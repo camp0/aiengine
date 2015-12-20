@@ -52,7 +52,8 @@ enum snmp_ber_types {
 class SNMPProtocol: public Protocol 
 {
 public:
-    	explicit SNMPProtocol():Protocol("SNMPProtocol"),stats_level_(0),
+    	explicit SNMPProtocol():Protocol("SNMPProtocol","snmp"),
+		stats_level_(0),
 		snmp_header_(nullptr),total_bytes_(0),
                 total_snmp_get_requests_(0),
         	total_snmp_get_next_requests_(0),

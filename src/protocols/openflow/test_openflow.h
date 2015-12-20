@@ -82,9 +82,9 @@ struct StackTestOpenFlow
                 log4cxx::BasicConfigurator::configure();
 #endif
                 eth = EthernetProtocolPtr(new EthernetProtocol());
-                eth_vir = EthernetProtocolPtr(new EthernetProtocol("Virtual EthernetProtocol"));
+                eth_vir = EthernetProtocolPtr(new EthernetProtocol("Virtual EthernetProtocol","virtethernet"));
                 ip = IPProtocolPtr(new IPProtocol());
-                ip_vir = IPProtocolPtr(new IPProtocol("Virtual IPProtocol"));
+                ip_vir = IPProtocolPtr(new IPProtocol("Virtual IPProtocol","virtip"));
                 tcp = TCPProtocolPtr(new TCPProtocol());
                 udp_vir = UDPProtocolPtr(new UDPProtocol());
                 udpg_vir = UDPGenericProtocolPtr(new UDPGenericProtocol());

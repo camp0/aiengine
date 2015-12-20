@@ -258,10 +258,24 @@ StackOpenFlow::StackOpenFlow():
 
 void StackOpenFlow::showFlows(std::basic_ostream<char>& out) {
 
-	out << "Flows on memory" << std::endl;
-	flow_table_tcp_->showFlows(out);
-	flow_table_tcp_vir_->showFlows(out);
-	flow_table_udp_vir_->showFlows(out);
+        int total = flow_table_tcp_vir_->getTotalFlows() + flow_table_udp_vir_->getTotalFlows();
+        total += flow_table_tcp_->getTotalFlows();
+        out << "Flows on memory " << total << std::endl;
+
+        flow_table_tcp_->showFlows(out);
+        flow_table_tcp_vir_->showFlows(out);
+        flow_table_udp_vir_->showFlows(out);
+}
+
+void StackOpenFlow::showFlows(const std::string& protoname) {
+
+        int total = flow_table_tcp_vir_->getTotalFlows() + flow_table_udp_vir_->getTotalFlows();
+        total += flow_table_tcp_->getTotalFlows();
+        std::cout << "Flows on memory " << total << std::endl;
+
+        flow_table_tcp_->showFlows(protoname);
+        flow_table_tcp_vir_->showFlows(protoname);
+        flow_table_udp_vir_->showFlows(protoname);
 }
 
 void StackOpenFlow::setTotalTCPFlows(int value) {

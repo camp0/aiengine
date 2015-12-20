@@ -82,6 +82,7 @@ std::string option_regex_type_flows;
 std::vector<std::string> vector_regex;
 std::string option_selected_protocol;
 std::string option_release_cache_protocol;
+std::string option_show_flows_name;
 bool option_show_flows = false;
 bool option_show_matched_regex = false;
 bool option_enable_frequencies = false;
@@ -290,8 +291,12 @@ void aiengineExit() {
 
 		showStackStatistics();
 
-		if (option_show_flows)
-              		stack->showFlows();
+		if (option_show_flows) {
+			if (option_show_flows_name.length() > 0)
+				stack->showFlows(option_show_flows_name);
+			else
+              			stack->showFlows();
+		}
 
 		if (option_enable_frequencies) {
 			showFrequencyResults();
@@ -320,6 +325,8 @@ void aiengineExit() {
 
 
 int main(int argc, char* argv[]) {
+
+	std::ios_base::sync_with_stdio(false);
 
 	namespace po = boost::program_options;
 	po::variables_map var_map;
@@ -372,7 +379,7 @@ int main(int argc, char* argv[]) {
 					"Sets the key for the Learner engine.") 
                 ("buffer-size,b",  	po::value<int>(&learner_buffer_size)->default_value(64),
 					"Sets the size of the internal buffer for generate the regex.") 
-                ("enable-yara,y",  		"Generates a yara signature.") 
+                ("enable-yara,y",  	"Generates a yara signature.") 
                 ;
 
 	mandatory_ops.add(optional_ops_tag);
@@ -385,7 +392,8 @@ int main(int argc, char* argv[]) {
 	optional_ops.add_options()
 		("stack,n",		po::value<std::string>(&option_stack_name)->default_value("lan"),
 				      	"Sets the network stack (lan,mobile,lan6,virtual,oflow).")
-		("dumpflows,d",      	"Dump the flows to stdout.")
+		("dumpflows,d",      	po::value<std::string>(&option_show_flows_name)->implicit_value(""),
+					"Dumps the specific flow type to stdout.")
 		("statistics,s",	po::value<int>(&option_statistics_level)->default_value(0),
 					"Show statistics of the network stack (5 levels).")
 		("timeout,T",		po::value<int>(&option_flows_timeout)->default_value(180),

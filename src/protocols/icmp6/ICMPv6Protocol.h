@@ -39,7 +39,8 @@ namespace aiengine {
 class ICMPv6Protocol: public Protocol 
 {
 public:
-    	explicit ICMPv6Protocol():Protocol("ICMPv6Protocol"),stats_level_(0),
+    	explicit ICMPv6Protocol():Protocol("ICMPv6Protocol","icmp6"),
+		stats_level_(0),
 		icmp_header_(nullptr),
                 total_echo_request_(0),
                 total_echo_replay_(0),

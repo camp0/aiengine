@@ -39,7 +39,8 @@ namespace aiengine {
 class IPv6Protocol: public Protocol 
 {
 public:
-    	explicit IPv6Protocol():Protocol("IPv6Protocol"),stats_level_(0),
+    	explicit IPv6Protocol():Protocol("IPv6Protocol","ip6"),
+		stats_level_(0),
 		ip6_header_(nullptr),total_bytes_(0),total_frag_packets_(0),
 		total_no_header_packets_(0),
 		total_extension_header_packets_(0),

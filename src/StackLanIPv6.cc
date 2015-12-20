@@ -187,6 +187,14 @@ void StackLanIPv6::showFlows(std::basic_ostream<char>& out) {
 	flow_table_udp_->showFlows(out);
 }
 
+void StackLanIPv6::showFlows(const std::string& protoname) {
+
+        std::cout << "Flows on memory" << std::endl;
+	flow_table_tcp_->showFlows(protoname);
+	flow_table_udp_->showFlows(protoname);
+	std::cout.flush();
+}
+
 void StackLanIPv6::enableFrequencyEngine(bool enable) {
 
 	int tcp_flows_created = flow_cache_tcp_->getTotalFlows();

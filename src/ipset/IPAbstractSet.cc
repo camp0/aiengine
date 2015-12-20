@@ -25,6 +25,17 @@
 
 namespace aiengine {
 
+void IPAbstractSet::setRegexManager(const SharedPointer<RegexManager>& rmng) {
+
+	if (rmng) {
+		rmng_ = rmng; 
+		have_regex_mng_ = true; 
+	} else {
+		rmng_.reset();
+		have_regex_mng_ = false;
+	}
+}
+
 #if defined(RUBY_BINDING) 
 
 void IPAbstractSet::setRegexManager(RegexManager& regex_mng) {

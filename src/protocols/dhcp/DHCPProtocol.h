@@ -68,7 +68,9 @@ enum dhcp_type_code {
 class DHCPProtocol: public Protocol 
 {
 public:
-    	explicit DHCPProtocol():Protocol("DHCPProtocol"),stats_level_(0),
+    	explicit DHCPProtocol():
+		Protocol("DHCPProtocol","dhcp"),
+		stats_level_(0),
 		dhcp_header_(nullptr),total_bytes_(0),
         	total_dhcp_discover_(0),
         	total_dhcp_offer_(0),

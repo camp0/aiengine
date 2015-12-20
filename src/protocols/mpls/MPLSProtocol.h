@@ -56,7 +56,8 @@ namespace aiengine {
 class MPLSProtocol: public Protocol 
 {
 public:
-    	explicit MPLSProtocol():Protocol("MPLSProtocol"),stats_level_(0),
+    	explicit MPLSProtocol():Protocol("MPLSProtocol","mpls"),
+		stats_level_(0),
 		mpls_header_(nullptr),total_bytes_(0) {}
 
     	virtual ~MPLSProtocol() {}

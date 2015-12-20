@@ -51,7 +51,8 @@ struct gre_hdr {
 class GREProtocol: public Protocol 
 {
 public:
-    	explicit GREProtocol():Protocol("GREProtocol"),stats_level_(0),
+    	explicit GREProtocol():Protocol("GREProtocol","gre"),
+		stats_level_(0),
 		gre_header_(nullptr),total_bytes_(0) {}
 
     	virtual ~GREProtocol() {}

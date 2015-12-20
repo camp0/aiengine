@@ -47,7 +47,8 @@ struct vxlan_hdr {
 class VxLanProtocol: public Protocol 
 {
 public:
-    	explicit VxLanProtocol():Protocol("VxLanProtocol"),stats_level_(0),
+    	explicit VxLanProtocol():Protocol("VxLanProtocol","vxlan"),
+		stats_level_(0),
 		vxlan_header_(nullptr),total_bytes_(0) {}
     	virtual ~VxLanProtocol() {}
 

@@ -33,6 +33,17 @@ std::ostream& operator<< (std::ostream& out, const DomainName& dom) {
        	return out;
 }
 
+void DomainName::setRegexManager(const SharedPointer<RegexManager>& rmng) { 
+
+	if (rmng) {
+		regexs_ = rmng;
+		have_regex_manager_ = true;
+	} else {
+		regexs_.reset();
+		have_regex_manager_ = false;
+	}
+}
+
 #ifdef PYTHON_BINDING
 
 void DomainName::setPyHTTPUriSet(boost::python::object& obj) { 

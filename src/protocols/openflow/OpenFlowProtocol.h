@@ -68,7 +68,8 @@ typedef struct {
 class OpenFlowProtocol: public Protocol 
 {
 public:
-    	explicit OpenFlowProtocol():Protocol("OpenFlowProtocol"),stats_level_(0),
+    	explicit OpenFlowProtocol():Protocol("OpenFlowProtocol","openflow"),
+		stats_level_(0),
 		of_header_(nullptr),total_bytes_(0),
         	total_ofp_hellos_(0),
         	total_ofp_feature_requests_(0),

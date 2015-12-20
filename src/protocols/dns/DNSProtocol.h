@@ -21,7 +21,7 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#pragma GCC diagnostic ignored "-Wwrite-strings"
+//#pragma GCC diagnostic ignored "-Wwrite-strings"
 #ifndef SRC_PROTOCOLS_DNS_DNSPROTOCOL_H_ 
 #define SRC_PROTOCOLS_DNS_DNSPROTOCOL_H_
 
@@ -68,7 +68,9 @@ struct dns_address {
 class DNSProtocol: public Protocol 
 {
 public:
-    	explicit DNSProtocol():Protocol(DNSProtocol::default_name),stats_level_(0),
+    	explicit DNSProtocol():
+		Protocol("DNSProtocol","dns"),
+		stats_level_(0),
 		dns_header_(nullptr),total_bytes_(0),
 		total_allow_queries_(0),total_ban_queries_(0),
 		total_queries_(0),total_responses_(0),
@@ -96,7 +98,6 @@ public:
 
     	virtual ~DNSProtocol() {}
 
-	static constexpr char *default_name = "DNSProtocol";	
 	static const uint16_t id = 0;
 	static const int header_size = sizeof(struct dns_header);
 	static const int MAX_DNS_BUFFER_NAME = 128;

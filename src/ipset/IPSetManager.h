@@ -40,8 +40,12 @@ namespace aiengine {
 class IPSetManager 
 {
 public:
-    	explicit IPSetManager():sets_(),matched_set_() {}
+    	explicit IPSetManager(const std::string &name):name_(name),sets_(),matched_set_() {}
+    	explicit IPSetManager(): IPSetManager("Generic IPSetManager") {}
     	virtual ~IPSetManager() {}
+
+        const char* getName() const { return name_.c_str(); }
+        void setName(const std::string& name) { name_ = name; }
 
 	void addIPSet(const SharedPointer<IPAbstractSet> ipset);
 	bool lookupIPAddress(const std::string &ip); 
@@ -71,6 +75,7 @@ public:
 
 	SharedPointer<IPAbstractSet> getMatchedIPSet() { return matched_set_;}
 private:
+	std::string name_;
 	std::vector<SharedPointer<IPAbstractSet>> sets_;
 	SharedPointer<IPAbstractSet> matched_set_;
 };

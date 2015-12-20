@@ -276,10 +276,24 @@ StackVirtual::StackVirtual():
 
 void StackVirtual::showFlows(std::basic_ostream<char>& out) {
 
-	out << "Flows on memory" << std::endl;
+        int total = flow_table_tcp_vir_->getTotalFlows() + flow_table_udp_vir_->getTotalFlows();
+	total += flow_table_udp_->getTotalFlows();
+        out << "Flows on memory " << total << std::endl;
+
 	flow_table_udp_->showFlows(out);
 	flow_table_tcp_vir_->showFlows(out);
 	flow_table_udp_vir_->showFlows(out);
+}
+
+void StackVirtual::showFlows(const std::string& protoname) {
+
+        int total = flow_table_tcp_vir_->getTotalFlows() + flow_table_udp_vir_->getTotalFlows();
+        total += flow_table_udp_->getTotalFlows();
+        std::cout << "Flows on memory " << total << std::endl;
+
+        flow_table_udp_->showFlows(protoname);
+        flow_table_tcp_vir_->showFlows(protoname);
+        flow_table_udp_vir_->showFlows(protoname);
 }
 
 void StackVirtual::enableFrequencyEngine(bool enable) {

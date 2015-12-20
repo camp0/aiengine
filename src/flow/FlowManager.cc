@@ -184,32 +184,62 @@ std::ostream& operator<< (std::ostream& out, const FlowManager& fm) {
 	return out;
 }
 
+
+void FlowManager::print_pretty_flow(std::basic_ostream<char>& out, Flow *flow, const char *proto_name) {
+
+	std::ostringstream fivetuple;
+
+	fivetuple << "[" << flow->getSrcAddrDotNotation() << ":" << flow->getSourcePort() << "]:" << flow->getProtocol();
+	fivetuple << ":[" << flow->getDstAddrDotNotation() << ":" << flow->getDestinationPort() <<"]";
+
+	out << boost::format("%-64s %-10d %-10d %-18s") % fivetuple.str() % flow->total_bytes % flow->total_packets % proto_name;
+
+	flow->showFlowInfo(out);
+}
+
 void FlowManager::showFlows(std::basic_ostream<char>& out) {
 
-	// Print a header
+	showFlows(out, [&] (const Flow& f) { return true; });
+}
+
+void FlowManager::showFlows(std::basic_ostream<char>& out, const std::string& protoname) {
+
+	showFlows(out, [&] (const Flow& f) {
+		if (!f.forwarder.expired()) {
+			FlowForwarderPtr ff = f.forwarder.lock();	
+			ProtocolPtr proto = ff->getProtocol();
+			const char *name = proto->getName();
+
+			if (protoname.compare(name) == 0) {
+				return true;
+			}
+		}
+		return false; 
+	});
+}
+
+void FlowManager::showFlows(std::basic_ostream<char>& out,std::function<bool (const Flow&)> condition) {
+
 	out << std::endl;
 	out << boost::format("%-64s %-10s %-10s %-18s %-12s") % "Flow" % "Bytes" % "Packets" % "FlowForwarder" % "Info";
 	out << std::endl;	
-	for(auto it = flowTable_.begin(); it!=flowTable_.end(); ++it) {
-		SharedPointer<Flow> flow = *it;
-		FlowForwarderPtr ff = flow->forwarder.lock();	
-		const char *proto_name = "None";
-		if (ff) { // Some flows could be not attached to a Protocol, for example syn packets, syn/ack packets and so on
-			ProtocolPtr proto = ff->getProtocol();
-			if (proto) proto_name = proto->getName();	
+
+	for (auto &flow: flowTable_) {
+		const Flow& cflow = *flow.get();
+
+		if (condition(cflow)) {
+			const char *proto_name = "None";
+			if (!flow->forwarder.expired()) {
+				// Some flows could be not attached to a Protocol, for example syn packets, syn/ack packets and so on
+				FlowForwarderPtr ff = flow->forwarder.lock();	
+				ProtocolPtr proto = ff->getProtocol();
+				proto_name = proto->getName();
+			}
+			print_pretty_flow(out,flow.get(),proto_name);	
+			out << std::endl;
 		}
-	
-		std::ostringstream fivetuple;
-
-		fivetuple << "[" << flow->getSrcAddrDotNotation() << ":" << flow->getSourcePort() << "]:" << flow->getProtocol();
-		fivetuple << ":[" << flow->getDstAddrDotNotation() << ":" << flow->getDestinationPort() <<"]";
-
-		out << boost::format("%-64s %-10d %-10d %-18s") % fivetuple.str() % flow->total_bytes % flow->total_packets % proto_name;
-
-		flow->showFlowInfo(out);
-
-		out << std::endl;
 	}
+	out << std::flush;
 }
 
 } // namespace aiengine 

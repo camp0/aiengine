@@ -50,8 +50,8 @@ public class JavaAiengineTestsStackLan {
 
         rm.addRegex(r);
 
-	// TODO this.s.setUDPRegexManager(rm);
-	// TODO this.s.setUDPRegexManager(null);
+	// TODO: this.s.setUDPRegexManager(rm);
+	this.s.setUDPRegexManager(null);
 
         this.s.enableLinkLayerTagging("vlan");
 

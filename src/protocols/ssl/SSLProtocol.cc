@@ -174,7 +174,6 @@ void SSLProtocol::handle_client_hello(SSLInfo *info,int length,int offset, u_cha
 				u_char *extensions = &data[block_offset];
 				uint16_t extensions_length = ((extensions[0] << 8) + extensions[1]);
 
-			//	std::cout << "ExtensionsLenght:" << extensions_length << std::endl; //" pepe:" << pepe_length << std::endl;
 				if (extensions_length + block_offset < length) {
 					block_offset += 2;
 					ssl_extension *extension = reinterpret_cast<ssl_extension*>(&data[block_offset]);

@@ -105,6 +105,7 @@ public:
 	
 	void showFlows(std::basic_ostream<char>& out);
 	void showFlows() { showFlows(std::cout);}
+	void showFlows(const std::string& protoname); 
 
 	void setTotalTCPFlows(int value);
 	void setTotalUDPFlows(int value);

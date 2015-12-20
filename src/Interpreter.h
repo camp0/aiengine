@@ -44,7 +44,7 @@ namespace aiengine {
 
 // TODO
 #ifndef VERSION
-#define VERSION "1.2"
+#define VERSION "1.4"
 #endif
 
 class Interpreter 
@@ -57,7 +57,9 @@ public:
 		user_input_(io_service_,::dup(fd)),
 		user_input_buffer_(64),
 		shell_enable_(false),
-		want_exit_(false) {}
+		want_exit_(false) {
+		std::ios_base::sync_with_stdio(false);
+	}
 
 
     	virtual ~Interpreter() { user_input_.close(); }

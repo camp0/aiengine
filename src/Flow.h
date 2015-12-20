@@ -36,6 +36,7 @@
 #include "Serializable.h"
 #include "IPAddress.h"
 #include "ipset/IPAbstractSet.h"
+#include "ipset/IPSet.h"
 #include "regex/RegexManager.h"
 #include "StringCache.h"
 #include "protocols/frequency/Frequencies.h"
@@ -172,6 +173,7 @@ public:
         POPInfo& getPOPInfo() const { return *pop_info.lock().get();}
         IMAPInfo& getIMAPInfo() const { return *imap_info.lock().get();}
         SSDPInfo& getSSDPInfo() const { return *ssdp_info.lock().get();}
+	IPSet& getIPSetInfo() const { return dynamic_cast<IPSet&>(*ipset.lock().get()); }
         const char *getFlowAnomaly() const { return AnomalyManager::getInstance()->getName(pa_); }
 #endif
 
@@ -186,7 +188,7 @@ public:
 		return l;
 	} 
 
-	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
+	// IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
 
 #elif defined(RUBY_BINDING)
 

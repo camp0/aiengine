@@ -75,7 +75,8 @@ enum ntp_mode_types {
 class NTPProtocol: public Protocol 
 {
 public:
-    	explicit NTPProtocol():Protocol("NTPProtocol"),stats_level_(0),
+    	explicit NTPProtocol():Protocol("NTPProtocol","ntp"),
+		stats_level_(0),
 		ntp_header_(nullptr),total_bytes_(0),
         	total_ntp_unspecified_(0),
         	total_ntp_sym_active_(0),

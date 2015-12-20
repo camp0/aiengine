@@ -86,7 +86,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	boost::python::class_< std::ostream, boost::noncopyable >( "std_ostream",no_init); 
 
         // for overload the methods with the class
-      	void (NetworkStack::*showFlowsNetworkStack)() = 				&NetworkStack::showFlows;
+      	void (NetworkStack::*showFlowsNetworkStack1)() = 				&NetworkStack::showFlows;
+      	void (NetworkStack::*showFlowsNetworkStack2)(const std::string &protoname) = 	&NetworkStack::showFlows;
 	void (NetworkStack::*setDomainNameManager1)(DomainNameManager&,const std::string&) = 		&NetworkStack::setDomainNameManager;
 	void (NetworkStack::*setDomainNameManager2)(DomainNameManager&,const std::string&, bool) = 	&NetworkStack::setDomainNameManager;
 	void (NetworkStack::*setTCPDatabaseAdaptor1)(boost::python::object&) = 		&NetworkStack::setTCPDatabaseAdaptor;
@@ -103,8 +104,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setDomainNameManager",pure_virtual(setDomainNameManager1),
 			"Sets a DomainNameManager on the protocol given.")
                 .def("setDomainNameManager",pure_virtual(setDomainNameManager2))
-              	.def("showFlows",pure_virtual(showFlowsNetworkStack),
+              	.def("showFlows",pure_virtual(showFlowsNetworkStack1),
 			"Shows the active flows of the stack.")
+              	.def("showFlows",pure_virtual(showFlowsNetworkStack2),
+			"Shows the active flows of the stack filter by name.")
 		.def("enableFrequencyEngine",pure_virtual(&NetworkStack::enableFrequencyEngine),
 			"Enable or disable the frequency engine on the stack.")
 		.def("enableNIDSEngine",pure_virtual(&NetworkStack::enableNIDSEngine),
@@ -126,7 +129,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         ;
 
 	// Definitions for the StackLan class
-	void (StackLan::*showFlowsLan)() = 						&StackLan::showFlows;
+	void (StackLan::*showFlowsLan1)() = 						&StackLan::showFlows;
+	void (StackLan::*showFlowsLan2)(const std::string& protoname) = 		&StackLan::showFlows;
         void (StackLan::*setDomainNameManagerLan1)(DomainNameManager&,const std::string&) = 		&StackLan::setDomainNameManager;
         void (StackLan::*setDomainNameManagerLan2)(DomainNameManager&,const std::string&, bool) = 	&StackLan::setDomainNameManager;
 	void (StackLan::*setTCPDatabaseAdaptorLan1)(boost::python::object&) = 		&StackLan::setTCPDatabaseAdaptor;
@@ -168,7 +172,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setDomainNameManager",setDomainNameManagerLan2)
 		.def(self_ns::str(self_ns::self))
 		.def("getStatistics",statisticsByProtocolLan)
-		.def("showFlows",showFlowsLan)
+		.def("showFlows",showFlowsLan1)
+		.def("showFlows",showFlowsLan2)
 		.def("enableFrequencyEngine",&StackLan::enableFrequencyEngine)
 		.def("enableNIDSEngine",&StackLan::enableNIDSEngine)
 		.def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorLan1)
@@ -182,7 +187,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
 	// Definitions for the StackMobile class
-       	void (StackMobile::*showFlowsMobile)() = 						&StackMobile::showFlows;
+       	void (StackMobile::*showFlowsMobile1)() = 						&StackMobile::showFlows;
+       	void (StackMobile::*showFlowsMobile2)(const std::string& protoname) = 			&StackMobile::showFlows;
         void (StackMobile::*setDomainNameManagerMobile1)(DomainNameManager&,const std::string&) = 		&StackMobile::setDomainNameManager;
         void (StackMobile::*setDomainNameManagerMobile2)(DomainNameManager&,const std::string&, bool) = 	&StackMobile::setDomainNameManager;
         void (StackMobile::*setTCPDatabaseAdaptorMobile1)(boost::python::object&) =     	&StackMobile::setTCPDatabaseAdaptor;
@@ -224,7 +230,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setDomainNameManager",setDomainNameManagerMobile2)
 		.def(self_ns::str(self_ns::self))
 		.def("getStatistics",statisticsByProtocolMobile)
-                .def("showFlows",showFlowsMobile)
+                .def("showFlows",showFlowsMobile1)
+                .def("showFlows",showFlowsMobile2)
 		.def("enableFrequencyEngine",&StackMobile::enableFrequencyEngine)
 		.def("enableNIDSEngine",&StackMobile::enableNIDSEngine)
 		.def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorMobile1)
@@ -239,7 +246,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 
 	// Definitions for the StackLanIPv6 class
-     	void (StackLanIPv6::*showFlowsLanIPv6)() = 						&StackLanIPv6::showFlows;
+     	void (StackLanIPv6::*showFlowsLanIPv61)() = 						&StackLanIPv6::showFlows;
+     	void (StackLanIPv6::*showFlowsLanIPv62)(const std::string& protoname) = 		&StackLanIPv6::showFlows;
         void (StackLanIPv6::*setDomainNameManagerLanIPv61)(DomainNameManager&,const std::string&) = 		&StackLanIPv6::setDomainNameManager;
         void (StackLanIPv6::*setDomainNameManagerLanIPv62)(DomainNameManager&,const std::string&, bool) = 	&StackLanIPv6::setDomainNameManager;
         void (StackLanIPv6::*setTCPDatabaseAdaptorLanIPv61)(boost::python::object&) = 		&StackLanIPv6::setTCPDatabaseAdaptor;
@@ -281,7 +289,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setDomainNameManager",setDomainNameManagerLanIPv62)
                 .def(self_ns::str(self_ns::self))
 		.def("getStatistics",statisticsByProtocolLanIPv6)
-                .def("showFlows",showFlowsLanIPv6)
+                .def("showFlows",showFlowsLanIPv61)
+                .def("showFlows",showFlowsLanIPv62)
                 .def("enableFrequencyEngine",&StackLanIPv6::enableFrequencyEngine)
                 .def("enableNIDSEngine",&StackLanIPv6::enableNIDSEngine)
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorLanIPv61)
@@ -295,7 +304,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         ;
 
         // Definitions for the StackVirtual class
-        void (StackVirtual::*showFlowsVirtual)() =                                             	&StackVirtual::showFlows;
+        void (StackVirtual::*showFlowsVirtual1)() =                                            	&StackVirtual::showFlows;
+        void (StackVirtual::*showFlowsVirtual2)(const std::string& protoname) =                 &StackVirtual::showFlows;
         void (StackVirtual::*setDomainNameManagerVirt1)(DomainNameManager&,const std::string&) =              	&StackVirtual::setDomainNameManager;
         void (StackVirtual::*setDomainNameManagerVirt2)(DomainNameManager&,const std::string&, bool) =         	&StackVirtual::setDomainNameManager;
         void (StackVirtual::*setTCPDatabaseAdaptorVirt1)(boost::python::object&) =            	&StackVirtual::setTCPDatabaseAdaptor;
@@ -337,7 +347,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setDomainNameManager",setDomainNameManagerVirt2)
                 .def(self_ns::str(self_ns::self))
                 .def("getStatistics",statisticsByProtocolVirt)
-                .def("showFlows",showFlowsVirtual)
+                .def("showFlows",showFlowsVirtual1)
+                .def("showFlows",showFlowsVirtual2)
                 .def("enableFrequencyEngine",&StackVirtual::enableFrequencyEngine)
                 .def("enableLinkLayerTagging",&StackVirtual::enableLinkLayerTagging)
                 .def("enableNIDSEngine",&StackVirtual::enableNIDSEngine)
@@ -352,7 +363,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
         ;
 
         // Definitions for the StackOpenFlow class
-       	void (StackOpenFlow::*showFlowsOpenFlow)() =                                            &StackOpenFlow::showFlows;
+       	void (StackOpenFlow::*showFlowsOpenFlow1)() =                                           &StackOpenFlow::showFlows;
+       	void (StackOpenFlow::*showFlowsOpenFlow2)(const std::string& protoname) =               &StackOpenFlow::showFlows;
         void (StackOpenFlow::*setDomainNameManagerOF1)(DomainNameManager&,const std::string&) =    		&StackOpenFlow::setDomainNameManager;
         void (StackOpenFlow::*setDomainNameManagerOF2)(DomainNameManager&,const std::string&, bool) =      	&StackOpenFlow::setDomainNameManager;
         void (StackOpenFlow::*setTCPDatabaseAdaptorOF1)(boost::python::object&) =              	&StackOpenFlow::setTCPDatabaseAdaptor;
@@ -394,7 +406,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("setDomainNameManager",setDomainNameManagerOF2)
                 .def(self_ns::str(self_ns::self))
                 .def("getStatistics",statisticsByProtocolOF)
-                .def("showFlows",showFlowsOpenFlow)
+                .def("showFlows",showFlowsOpenFlow1)
+                .def("showFlows",showFlowsOpenFlow2)
                 .def("enableFrequencyEngine",&StackOpenFlow::enableFrequencyEngine)
                 .def("enableNIDSEngine",&StackOpenFlow::enableNIDSEngine)
                 .def("setTCPDatabaseAdaptor",setTCPDatabaseAdaptorOF1)
@@ -510,6 +523,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Gets the tag from lower network layers.")
 		.add_property("evidence",&Flow::haveEvidence,&Flow::setEvidence,
 			"Gets/Sets the evidence of the flow for make forensic analysis.")
+		.add_property("ipset",make_function(&Flow::getIPSetInfo,return_internal_reference<>()),
+			"Returns the IPSet Info of the flow if the flow is part of an IPSet.")
 		.add_property("httpinfo",make_function(&Flow::getHTTPInfo,return_internal_reference<>()),
 			"Returns the HTTP Info of the flow if the flow is HTTP.")
 		.add_property("sipinfo",make_function(&Flow::getSIPInfo,return_internal_reference<>()),
@@ -534,8 +549,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Gets the regex if the flow have been matched with the associated regex.")
 		.add_property("payload",&Flow::getPayload,
 			"Gets a list of the bytes of the payload of the flow.")
-		.add_property("ipset",make_function(&Flow::getIPSet,return_internal_reference<>()),
-			"Gets the IPset attached to the flow if they IPs matchs.")
+		//.add_property("ipset",make_function(&Flow::getIPSet,return_internal_reference<>()),
+	//		"Gets the IPset attached to the flow if they IPs matchs.")
 		.add_property("anomaly",make_function(&Flow::getFlowAnomaly,return_value_policy<return_by_value>()),
 			"Gets the attached anomaly of the flow.")
 		.add_property("l7protocolname",make_function(&Flow::getL7ProtocolName,return_value_policy<return_by_value>()),
@@ -694,6 +709,14 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	boost::python::class_<IPSet, bases<IPAbstractSet>, SharedPointer<IPSet>>("IPSet")
 		.def(init<>())
 		.def(init<const std::string&>())
+                .add_property("name",&IPSet::getName,
+			"Gets the name of the IPSet.")
+                .add_property("lookups",&IPSet::getTotalLookups,
+                        "Gets the total number of lookups of the IPSet.")
+                .add_property("lookupsin",&IPSet::getTotalLookupsIn,
+                        "Gets the total number of matched lookups of the IPSet.")
+                .add_property("lookupsout",&IPSet::getTotalLookupsOut,
+                        "Gets the total number of non matched lookups of the IPSet.")
 		.add_property("callback",&IPSet::getCallback, &IPSet::setCallback,
 			"Gets/Sets a function callback for the IPSet.")
 		.add_property("regexmanager",&IPSet::getRegexManager, &IPSet::setRegexManager,
@@ -718,7 +741,11 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	void (IPSetManager::*addIPSet)(const SharedPointer<IPAbstractSet>) = &IPSetManager::addIPSet;
         boost::python::class_<IPSetManager, SharedPointer<IPSetManager>, boost::noncopyable>("IPSetManager")
+		.def(init<>())
+		.def(init<const std::string&>())
 		.def("__iter__",boost::python::range(&IPSetManager::begin,&IPSetManager::end))
+                .add_property("name",&IPSetManager::getName,&IPSetManager::setName,
+                        "Gets/Sets the name of the IPSetManager object.")
                 .def("addIPSet",addIPSet,
 			"Adds a IPSet.")
 		.def("__len__",&IPSetManager::getTotalSets)

@@ -47,10 +47,12 @@ namespace aiengine {
 class EthernetProtocol: public Protocol 
 {
 public:
-    	explicit EthernetProtocol(std::string name):Protocol(name),stats_level_(0),
+    	explicit EthernetProtocol(const std::string& name, const std::string& short_name):
+		Protocol(name,short_name),
+		stats_level_(0),
 		eth_header_(nullptr),total_bytes_(0) {}
 
-	explicit EthernetProtocol():EthernetProtocol("EthernetProtocol") {}
+	explicit EthernetProtocol():EthernetProtocol("EthernetProtocol","ethernet") {}
 
     	virtual ~EthernetProtocol() {}
 

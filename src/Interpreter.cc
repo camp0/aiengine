@@ -68,17 +68,20 @@ void Interpreter::handle_read_user_input(boost::system::error_code error) {
 
 	if ((!error)and(shell_enable_)) {
 		std::istream user_stream(&user_input_buffer_);
-                std::ostringstream buffer;
+                // std::ostringstream buffer;
                 std::string header;
 
-                user_stream >> header;
-                buffer << header;
-        
-	        while (std::getline(user_stream, header) && header != "\r") {
-                        buffer << header;
-                }
+                // user_stream >> header;
+                // buffer << header;
 
-		std::string cmd(buffer.str());
+		std::getline(user_stream, header);
+
+	        //while (std::getline(user_stream, header) && header != "\r") {
+                //        buffer << header;
+                //}
+		//std::cout << __FILE__ << ":cmd:" << header << std::endl;
+		std::string cmd(header);
+		// std::string cmd(buffer.str());
 
 		if (want_exit_) {
 			if (cmd.compare("yes") == 0) {
@@ -116,9 +119,10 @@ void Interpreter::handle_read_user_input(boost::system::error_code error) {
 			rb_raise(rb_eRuntimeError, "Error");
 		}
 #endif
-                user_input_buffer_.consume(64);
-		
+               	user_input_buffer_.consume(64);
+	
 		std::cout << "==> " << std::flush;
+		std::cout.flush();
 	} 
 }
 

@@ -21,7 +21,6 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#pragma GCC diagnostic ignored "-Wwrite-strings"
 #ifndef SRC_PROTOCOLS_SSDP_SSDPPROTOCOL_H_ 
 #define SRC_PROTOCOLS_SSDP_SSDPPROTOCOL_H_
 
@@ -53,7 +52,8 @@ typedef std::function <bool (SSDPInfo*,boost::string_ref &parameter)> SsdpParame
 class SSDPProtocol: public Protocol 
 {
 public:
-    	explicit SSDPProtocol():Protocol(SSDPProtocol::default_name),stats_level_(0),
+    	explicit SSDPProtocol():Protocol("SSDPProtocol","ssdp"),
+		stats_level_(0),
 		ssdp_header_(nullptr),ssdp_header_size_(0),
 		total_bytes_(0),
 		total_ban_hosts_(0),total_allow_hosts_(0),
@@ -89,7 +89,6 @@ public:
         	}
 	};
 
-	static constexpr char *default_name = "SSDPProtocol";	
 	static const uint16_t id = 0;
 	static const int header_size = 0; // sizeof(struct dns_header);
 	static const int MAX_SSDP_BUFFER_NAME = 128;

@@ -80,9 +80,9 @@ struct StackTestVxlan
                 log4cxx::BasicConfigurator::configure();
 #endif
                 eth = EthernetProtocolPtr(new EthernetProtocol());
-                eth_vir = EthernetProtocolPtr(new EthernetProtocol("Virtual EthernetProtocol"));
+                eth_vir = EthernetProtocolPtr(new EthernetProtocol("Virtual EthernetProtocol","virtethernet"));
                 ip = IPProtocolPtr(new IPProtocol());
-                ip_vir = IPProtocolPtr(new IPProtocol("Virtual IPProtocol"));
+                ip_vir = IPProtocolPtr(new IPProtocol("Virtual IPProtocol","virtip"));
                 udp = UDPProtocolPtr(new UDPProtocol());
                 udp_vir = UDPProtocolPtr(new UDPProtocol());
                 tcp_vir = TCPProtocolPtr(new TCPProtocol());

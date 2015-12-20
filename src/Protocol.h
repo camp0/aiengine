@@ -95,11 +95,13 @@ typedef struct ruby_shared_data {
 class Protocol 
 {
 public:
-    	explicit Protocol(const std::string& name):ipset_mng_(),
+    	explicit Protocol(const std::string& name, const std::string& short_name):
+		ipset_mng_(),
 		total_malformed_packets_(0),total_validated_packets_(0),
 		total_packets_(0),
 		mux_(), flow_forwarder_(),
-		name_(name),protocol_id_(0)
+		name_(name),short_name_(short_name),
+		protocol_id_(0)
 #ifdef PYTHON_BINDING
 		,dbptr_(),is_set_db_(false),packet_sampling_(32)
 #elif defined(RUBY_BINDING)
@@ -115,7 +117,9 @@ public:
 	virtual void setStatisticsLevel(int level) = 0;
 	virtual void statistics(std::basic_ostream<char>& out) = 0;
 	virtual void statistics() = 0;
+
 	const char* getName() { return name_.c_str();} 
+	const char* getShortName() { return short_name_.c_str();} 
 
 	virtual void processFlow(Flow *flow) = 0;
 	virtual bool processPacket(Packet &packet) = 0;
@@ -184,6 +188,7 @@ public:
         FlowForwarderPtrWeak flow_forwarder_;
 private:
 	std::string name_;
+	std::string short_name_;
 	uint16_t protocol_id_;
 #ifdef PYTHON_BINDING
         boost::python::object dbptr_;
