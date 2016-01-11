@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -32,8 +32,8 @@
 
 class IPv4HdrIncl {
 public:
-    	IPv4HdrIncl() : optval(1) {}
-    	IPv4HdrIncl(bool ov) : optval(ov ? 1 : 0) {}
+    	explicit IPv4HdrIncl(bool ov) : optval(ov ? 1 : 0) {}
+    	IPv4HdrIncl() : IPv4HdrIncl(true) {}
     	virtual ~IPv4HdrIncl() {}
 
     	template<typename Protocol>

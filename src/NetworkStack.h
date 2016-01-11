@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -215,7 +215,6 @@ private:
 
 	int stats_level_;
 	std::string name_;
-	ProtocolMap proto_map_;
 	ProtocolVector proto_vector_;
 	std::vector<DomainNameManagerPtr> domain_mng_list_;
 

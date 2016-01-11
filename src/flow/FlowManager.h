@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -110,7 +110,7 @@ public:
 	void setProtocol(ProtocolPtrWeak proto) { protocol_ = proto; }
 
 private:
-	void print_pretty_flow(std::basic_ostream<char>& out, Flow *flow, const char *proto_name);
+	void print_pretty_flow(std::basic_ostream<char>& out,const Flow& flow, const char *proto_name);
 
 	std::string name_;
     	timeval now_;

@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -37,21 +37,28 @@ FlowManager::~FlowManager() {
 
 void FlowManager::addFlow(const SharedPointer<Flow>& flow) {
 
+#ifdef DEBUG
+	std::cout << __FILE__ << "(" << this << "):" << __func__ << ":flow:" << flow << " total flows:" << flowTable_.size() << std::endl;
+#endif
 	++total_process_flows_;
 	flowTable_.insert(flow);
 }
 
 void FlowManager::removeFlow(const SharedPointer<Flow>& flow) {
 	
-
+#ifdef DEBUG
+	std::cout << __FILE__ << "(" << this << "):" << __func__ << ":flow:" << flow << " total flows:" << flowTable_.size() << std::endl;
+#endif
 	FlowByID::iterator it = flowTable_.get<flow_table_tag_unique>().find(flow->getId());
 	
 	flowTable_.erase(it);
-	// flow.reset();
 }
 
 SharedPointer<Flow>& FlowManager::findFlow(unsigned long hash1,unsigned long hash2) {
 
+#ifdef DEBUG
+	std::cout << __FILE__ << "(" << this << "):" << __func__ << " total flows:" << flowTable_.size() << std::endl;
+#endif
 	flow_it_ = flowTable_.get<flow_table_tag_unique>().find(hash1);
 	lookup_flow_.reset();
 
@@ -65,26 +72,6 @@ SharedPointer<Flow>& FlowManager::findFlow(unsigned long hash1,unsigned long has
 	lookup_flow_ = (*flow_it_);
 	return lookup_flow_;
 }
-
-/*
-void FlowManager::__print() {
-
-        FlowByDuration::reverse_iterator end = flowTable_.get<flow_table_tag_duration>().rend();
-        FlowByDuration::reverse_iterator begin = flowTable_.get<flow_table_tag_duration>().rbegin();
-
-        std::cout << __FILE__ << ":flows on table:" << flowTable_.size() << std::endl;
-        for (FlowByDuration::reverse_iterator it = begin ; it != end;++it) {
-                SharedPointer<Flow> flow = (*it);
-                time_t t = flow->getLastPacketTime();
-
-               	char mbstr[100];
-                std::strftime(mbstr, 100, "%D %X", std::localtime(&t));
-	
-		std::cout << __FILE__ << ":Reverse flow:" << *flow.get() << " lastPacketTime:" << mbstr <<std::endl;
-	}
-
-}
-*/
 
 void FlowManager::updateTimers(std::time_t current_time) {
 
@@ -185,16 +172,16 @@ std::ostream& operator<< (std::ostream& out, const FlowManager& fm) {
 }
 
 
-void FlowManager::print_pretty_flow(std::basic_ostream<char>& out, Flow *flow, const char *proto_name) {
+void FlowManager::print_pretty_flow(std::basic_ostream<char>& out,const Flow& flow, const char *proto_name) {
 
 	std::ostringstream fivetuple;
 
-	fivetuple << "[" << flow->getSrcAddrDotNotation() << ":" << flow->getSourcePort() << "]:" << flow->getProtocol();
-	fivetuple << ":[" << flow->getDstAddrDotNotation() << ":" << flow->getDestinationPort() <<"]";
+	fivetuple << "[" << flow.getSrcAddrDotNotation() << ":" << flow.getSourcePort() << "]:" << flow.getProtocol();
+	fivetuple << ":[" << flow.getDstAddrDotNotation() << ":" << flow.getDestinationPort() <<"]";
 
-	out << boost::format("%-64s %-10d %-10d %-18s") % fivetuple.str() % flow->total_bytes % flow->total_packets % proto_name;
+	out << boost::format("%-64s %-10d %-10d %-18s") % fivetuple.str() % flow.total_bytes % flow.total_packets % proto_name;
 
-	flow->showFlowInfo(out);
+	flow.showFlowInfo(out);
 }
 
 void FlowManager::showFlows(std::basic_ostream<char>& out) {
@@ -209,8 +196,9 @@ void FlowManager::showFlows(std::basic_ostream<char>& out, const std::string& pr
 			FlowForwarderPtr ff = f.forwarder.lock();	
 			ProtocolPtr proto = ff->getProtocol();
 			const char *name = proto->getName();
+			const char *short_name = proto->getShortName();
 
-			if (protoname.compare(name) == 0) {
+			if ((protoname.compare(name) == 0)or(protoname.compare(short_name) == 0)) {
 				return true;
 			}
 		}
@@ -235,11 +223,11 @@ void FlowManager::showFlows(std::basic_ostream<char>& out,std::function<bool (co
 				ProtocolPtr proto = ff->getProtocol();
 				proto_name = proto->getName();
 			}
-			print_pretty_flow(out,flow.get(),proto_name);	
+			print_pretty_flow(out,cflow,proto_name);	
 			out << std::endl;
 		}
 	}
-	out << std::flush;
+	out.flush();
 }
 
 } // namespace aiengine 

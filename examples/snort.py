@@ -4,7 +4,7 @@
     interact with the engine on real time """
 
 __author__ = "Luis Campo Giralte"
-__copyright__ = "Copyright (C) 2013-2015 by Luis Campo Giralte"
+__copyright__ = "Copyright (C) 2013-2016 by Luis Campo Giralte"
 __revision__ = "$Id$"
 __version__ = "0.1"
 import sys

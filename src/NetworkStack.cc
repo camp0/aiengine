@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -68,7 +68,7 @@ NetworkStack::NetworkStack():
         ff_udp_freqs(FlowForwarderPtr(new FlowForwarder())),
 
 	stats_level_(0),name_(""),
-	proto_map_(),proto_vector_(),
+	proto_vector_(),
 	domain_mng_list_(),
 	tcp_regex_mng_(),udp_regex_mng_(),
 	tcp_ipset_mng_(),udp_ipset_mng_(),
@@ -168,20 +168,23 @@ NetworkStack::NetworkStack():
 
 ProtocolPtr NetworkStack::get_protocol(const std::string &name) {
 
-	ProtocolPtr proto;
-        auto it = proto_map_.find(name);
+	ProtocolPtr pp;
 
-        if(it != proto_map_.end()) { 
-                proto = (*it).second;
-        }
-	return proto;
+	for (auto &p: proto_vector_) {
+		ProtocolPtr proto = p.second;
+
+		if ((name.compare(proto->getName()) == 0)or(name.compare(proto->getShortName()) == 0)) {
+			pp = proto;
+			break;
+		}
+       	} 
+	return pp;
 }
 
 void NetworkStack::addProtocol(ProtocolPtr proto) { 
 
 	ProtocolPair pp(proto->getName(),proto);
 
-	proto_map_.insert(pp); 
 	proto_vector_.push_back(pp);
 }
 

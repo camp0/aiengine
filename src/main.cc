@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -418,7 +418,7 @@ int main(int argc, char* argv[]) {
             		std::cout << PACKAGE " " VERSION << std::endl;
             		std::cout << mandatory_ops << std::endl;
 			std::cout << "Please report bugs to <" << PACKAGE_BUGREPORT << ">" << std::endl;
-			std::cout << "Copyright (C) 2009-2015 Luis Campo Giralte <" PACKAGE_BUGREPORT <<">" << std::endl;
+			std::cout << "Copyright (C) 2013-2016 Luis Campo Giralte <" PACKAGE_BUGREPORT <<">" << std::endl;
 			std::cout << "License: GNU GPL version 2" << std::endl;
 			std::cout << "This is free software: you are free to change and redistribute it." << std::endl;
 			std::cout << "There is NO WARRANTY, to the extent permitted by law." << std::endl;

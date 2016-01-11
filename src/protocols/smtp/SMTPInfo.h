@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -67,8 +67,8 @@ public:
         	return out;
 	}
 
-	const char *getFrom() const { return (from.lock() ? from.lock()->getName() : ""); }	
-	const char *getTo() const { return (to.lock() ? to.lock()->getName() : ""); }	
+	const char *getFrom() const { return (!from.expired() ? from.lock()->getName() : ""); }	
+	const char *getTo() const { return (!to.expired() ? to.lock()->getName() : ""); }	
 #endif
 
 private:

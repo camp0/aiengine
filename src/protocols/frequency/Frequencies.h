@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -147,10 +147,10 @@ public:
 
 	double getEnthropy() {
 	
-		double h = 0, x;
+		double h = 0;
 
 		for (auto& value: freqs_) {
-			x = value / 255;
+			double x = value / 255;
 			if (x>0) h += - x * std::log2(x);	
 		}
 		return h;

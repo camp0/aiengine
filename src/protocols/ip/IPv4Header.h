@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -56,7 +56,7 @@ class IPv4Header
 {
 public:
 
-	IPv4Header(uint8_t protocol,uint32_t src, uint32_t dst):
+	explicit IPv4Header(uint8_t protocol,uint32_t src, uint32_t dst):
                 iphdr_{
                         5,              // ip_hl
                         4,              // ip_v
@@ -70,9 +70,9 @@ public:
                         { src },	// ip_src.s_addr
                         { dst }		// ip_dst.s_addr
                 } {}
-	IPv4Header(uint8_t protocol,const char *src, const char*dst):
+	explicit IPv4Header(uint8_t protocol,const char *src, const char*dst):
 		IPv4Header(protocol,inet_addr(src),inet_addr(dst)) {}
-	IPv4Header(uint8_t protocol):IPv4Header(protocol,(uint32_t)0,(uint32_t)0) {}
+	explicit IPv4Header(uint8_t protocol):IPv4Header(protocol,(uint32_t)0,(uint32_t)0) {}
 	IPv4Header():IPv4Header((uint8_t)0,(uint32_t)0,(uint32_t)0) {}
     	
 	virtual ~IPv4Header() {}

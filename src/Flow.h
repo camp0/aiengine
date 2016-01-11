@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -154,7 +154,7 @@ public:
     	void serialize(std::ostream& stream);
     	void deserialize(std::istream& stream) {} 
 
-	void showFlowInfo(std::ostream& out);
+	void showFlowInfo(std::ostream& out) const;
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 
@@ -188,8 +188,6 @@ public:
 		return l;
 	} 
 
-	// IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
-
 #elif defined(RUBY_BINDING)
 
 	VALUE getPayload() {
@@ -202,9 +200,6 @@ public:
 		return arr;
 	}
 
-	/* 
-	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
-	*/	
 #elif defined(JAVA_BINDING)
 	IPAbstractSet& getIPSet() const { return *ipset.lock().get();}
 #endif

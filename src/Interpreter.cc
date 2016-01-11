@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -68,20 +68,11 @@ void Interpreter::handle_read_user_input(boost::system::error_code error) {
 
 	if ((!error)and(shell_enable_)) {
 		std::istream user_stream(&user_input_buffer_);
-                // std::ostringstream buffer;
                 std::string header;
-
-                // user_stream >> header;
-                // buffer << header;
 
 		std::getline(user_stream, header);
 
-	        //while (std::getline(user_stream, header) && header != "\r") {
-                //        buffer << header;
-                //}
-		//std::cout << __FILE__ << ":cmd:" << header << std::endl;
 		std::string cmd(header);
-		// std::string cmd(buffer.str());
 
 		if (want_exit_) {
 			if (cmd.compare("yes") == 0) {
@@ -101,6 +92,7 @@ void Interpreter::handle_read_user_input(boost::system::error_code error) {
 			return;
 		}
 #if defined(PYTHON_BINDING)
+
 		try {
 			// Retrieve the main module.
 			boost::python::object main = boost::python::import("__main__");

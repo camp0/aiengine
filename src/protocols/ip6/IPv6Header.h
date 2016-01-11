@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -64,7 +64,7 @@ class IPv6Header
 {
 public:
 
-	IPv6Header(uint8_t protocol):
+	explicit IPv6Header(uint8_t protocol):
 		iphdr_{ { {
                         htonl ((6 << 28) | (0 << 20) | 0),           // ip6_flow
                         //0x60,           // ip6_flow

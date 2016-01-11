@@ -116,6 +116,8 @@ def setup_compiler():
     includes.append("..")
     includes.append("../..")
 
+    # os.environ["CC"] = "g++-4.7" os.environ["CXX"] = "g++-4.7"
+
     if (sys.platform == 'sunos5'):
         config_vars['LDSHARED'] = "gcc -G"
         config_vars['CCSHARED'] = ""
@@ -131,6 +133,7 @@ def setup_compiler():
         os.environ["CC"] = "g++"
     else:
         os.environ["CC"] = "g++"
+        os.environ["CXX"] = "g++"
 
     return includes,macros
 
@@ -154,7 +157,7 @@ if __name__ == "__main__":
     aiengine_module.define_macros = macros
 
     setup(name="aiengine",
-        version = "1.2",
+        version = "1.4",
         author = "Luis Campo Giralte",
         author_email = "luis.camp0.2009 at gmail.com",
         url = "https://bitbucket.org/camp0/aiengine",

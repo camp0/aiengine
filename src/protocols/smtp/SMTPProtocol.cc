@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -58,7 +58,7 @@ int64_t SMTPProtocol::getAllocatedMemory() const {
 }
 
 // Removes or decrements the hits of the maps.
-void SMTPProtocol::release_smtp_info_cache(SMTPInfo *info) {
+__attribute__ ((unused)) void SMTPProtocol::release_smtp_info_cache(SMTPInfo *info) {
 
         SharedPointer<StringCache> from_ptr = info->from.lock();
 

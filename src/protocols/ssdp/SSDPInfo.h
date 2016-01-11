@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -68,8 +68,8 @@ public:
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
-        const char *getUri() const { return  (uri.lock() ? uri.lock()->getName() : ""); }
-        const char *getHostName() const { return (host.lock() ? host.lock()->getName() : ""); }
+        const char *getUri() const { return  (!uri.expired() ? uri.lock()->getName() : ""); }
+        const char *getHostName() const { return (!host.expired() ? host.lock()->getName() : ""); }
 #endif
 	friend std::ostream& operator<< (std::ostream& out, const SSDPInfo& info) {
 	

@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -50,7 +50,7 @@ namespace aiengine {
 class Interpreter 
 {
 public:
-	Interpreter(boost::asio::io_service &io_service_):Interpreter(io_service_,STDIN_FILENO) {}
+	explicit Interpreter(boost::asio::io_service &io_service_):Interpreter(io_service_,STDIN_FILENO) {}
 
 	// Constructor for remote python shell
 	Interpreter(boost::asio::io_service &io_service_, int fd):

@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -198,7 +198,7 @@ private:
 	DomainNameManagerPtrWeak ban_domain_mng_;
 
 	FlowManagerPtrWeak flow_mng_;	
-	char dns_buffer_name_[MAX_DNS_BUFFER_NAME];
+	char dns_buffer_name_[MAX_DNS_BUFFER_NAME] = {0};
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
 #endif

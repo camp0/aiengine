@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -319,11 +319,9 @@ void StackLan::setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng) 
 	super_::setUDPIPSetManager(ipset_mng);
 }
 
-
 void StackLan::setAsioService(boost::asio::io_service& io_service) {
 
 	// Create a new RejectManager with their corresponding sockets
-
 #ifdef HAVE_REJECT_FLOW
 	if (geteuid() == 0) { // The process have rights on raw sockets
 		rj_mng_ = SharedPointer<RejectManager<StackLan>>(new RejectManager<StackLan>(io_service));
@@ -334,7 +332,6 @@ void StackLan::setAsioService(boost::asio::io_service& io_service) {
 		}
 	}
 #endif 
-
 }
 
 void StackLan::statistics(std::basic_ostream<char>& out) const {

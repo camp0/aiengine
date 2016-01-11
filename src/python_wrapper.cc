@@ -1,7 +1,7 @@
 /*
  * AIEngine a deep packet inspector reverse engineering engine.
  *
- * Copyright (C) 2013-2015  Luis Campo Giralte
+ * Copyright (C) 2013-2016  Luis Campo Giralte
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -549,8 +549,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Gets the regex if the flow have been matched with the associated regex.")
 		.add_property("payload",&Flow::getPayload,
 			"Gets a list of the bytes of the payload of the flow.")
-		//.add_property("ipset",make_function(&Flow::getIPSet,return_internal_reference<>()),
-	//		"Gets the IPset attached to the flow if they IPs matchs.")
 		.add_property("anomaly",make_function(&Flow::getFlowAnomaly,return_value_policy<return_by_value>()),
 			"Gets the attached anomaly of the flow.")
 		.add_property("l7protocolname",make_function(&Flow::getL7ProtocolName,return_value_policy<return_by_value>()),
