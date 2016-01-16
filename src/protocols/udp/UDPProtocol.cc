@@ -227,8 +227,13 @@ bool UDPProtocol::processPacket(Packet& packet) {
 		if ((packet_time_ - flow_table_->getTimeout()) > last_timeout_ ) {
 			last_timeout_ = packet_time_;
 			flow_table_->updateTimers(packet_time_);
+		} else { 
+			if (flow->getLastPacketTime() + FlowManager::flowTimeRefreshRate > packet_time_ ) {
+				flow_table_->updateFlowTime(flow,packet_time_);
+			} else {
+				flow->setLastPacketTime(packet_time_);
+			}
 		}
-		flow->setLastPacketTime(packet_time_);
 	}
 	return true;
 }

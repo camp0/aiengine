@@ -53,7 +53,7 @@ typedef boost::multi_index::multi_index_container<
                 boost::multi_index::ordered_non_unique<
                         boost::multi_index::tag<flow_table_tag_duration>,
                         boost::multi_index::const_mem_fun<Flow,int,&Flow::getLastPacketTime>,
-                        std::greater<int> // The multiset is order by the most recent activity on the flow!!! 
+                        std::less<int> // The multiset is order by the most recent activity on the flow!!! 
                 > 
 	>
 >FlowTable;
@@ -72,10 +72,14 @@ public:
 
     	virtual ~FlowManager();
 
+	static const int flowTimeRefreshRate = 8;
+
 	void addFlow(const SharedPointer<Flow>& flow);
 	void removeFlow(const SharedPointer<Flow>& flow);
 	SharedPointer<Flow>& findFlow(unsigned long hash1,unsigned long hash2);
 	void updateTimers(std::time_t current_time); 
+
+	void updateFlowTime(const SharedPointer<Flow>& flow, time_t time);
 
 	void setFlowCache(FlowCachePtr cache) { flow_cache_ = cache; }
 	void setTCPInfoCache(Cache<TCPInfo>::CachePtr cache) { tcp_info_cache_ = cache; }
@@ -92,6 +96,10 @@ public:
 	void showFlows(std::basic_ostream<char>& out,const std::string& protoname);
 	void showFlows(const std::string& protoname) { showFlows(std::cout, protoname); }     
 	void showFlows(std::basic_ostream<char>& out,std::function<bool (const Flow&)> condition); 
+
+#if defined(STAND_ALONE)
+	void showFlowsByTime(); 
+#endif
 
 	void statistics(std::basic_ostream<char>& out) { out << *this;} 
         void statistics() { statistics(std::cout);}

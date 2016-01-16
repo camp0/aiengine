@@ -28,12 +28,15 @@
 #include <arpa/inet.h>
 #include <boost/format.hpp>
 
+// http://lynxline.com/about-boost-multi-index-containers/
+
 namespace aiengine {
 
 FlowManager::~FlowManager() {
 
 	flowTable_.clear();
 }
+// #define DEBUG 1
 
 void FlowManager::addFlow(const SharedPointer<Flow>& flow) {
 
@@ -73,11 +76,35 @@ SharedPointer<Flow>& FlowManager::findFlow(unsigned long hash1,unsigned long has
 	return lookup_flow_;
 }
 
+#if defined(STAND_ALONE)
+void FlowManager::showFlowsByTime() {
+
+	auto begin = flowTable_.get<flow_table_tag_duration>().begin();
+	auto end = flowTable_.get<flow_table_tag_duration>().end();
+
+	for (auto it = begin ; it != end; ++it) {
+		SharedPointer<Flow> flow = (*it);
+
+      		std::cout << __FILE__ << ":" << __func__ << ":Checking: " << *flow.get() <<  " lastPacketTime:" << flow->getLastPacketTime() << std::endl;
+	}
+}
+
+#endif
+
+void FlowManager::updateFlowTime(const SharedPointer<Flow>& flow, time_t time) {
+
+	auto &finxd = flowTable_.get<flow_table_tag_duration>();
+	auto &finxu = flowTable_.get<flow_table_tag_unique>();
+
+	FlowByID::const_iterator it = finxu.find(flow->getId());
+
+	FlowByDuration::const_iterator itd = flowTable_.project<flow_table_tag_duration>(it);
+	finxd.modify(itd, Flow::updateTime(time));	
+}
+
 void FlowManager::updateTimers(std::time_t current_time) {
 
-	FlowByDuration::reverse_iterator end = flowTable_.get<flow_table_tag_duration>().rend();
-	FlowByDuration::reverse_iterator begin = flowTable_.get<flow_table_tag_duration>().rbegin();
-	FlowByDuration& finx = flowTable_.get<flow_table_tag_duration>();
+	auto &finx = flowTable_.get<flow_table_tag_duration>();
 
 #if defined(RUBY_BINDING) && defined(HAVE_ADAPTOR)
 	std::list<SharedPointer<Flow>> flow_list;
@@ -91,10 +118,19 @@ void FlowManager::updateTimers(std::time_t current_time) {
         std::cout << __FILE__ << ":" << __func__ << ":Checking Timers at " << mbstr << " total flows:" << flowTable_.size() << std::endl;
 #endif
 
+	//std::cout << "************************" << std::endl;
+	//showFlowsByTime();
+	//std::cout << "************************" << std::endl;
+
 	// We check the iterator backwards because the old flows will be at the end
-	for (FlowByDuration::reverse_iterator it = begin ; it != end;) {
+	for (auto it = flowTable_.get<flow_table_tag_duration>().begin() ; it != flowTable_.get<flow_table_tag_duration>().end(); ) {
 		SharedPointer<Flow> flow = (*it);
 
+#ifdef DEBUG
+      		std::cout << __FILE__ << ":" << __func__ << ":Checking: " << *flow.get() <<  " lastPacketTime:" << flow->getLastPacketTime();
+		std::cout << " timeout:" << timeout_ << " currentTime:" << current_time;
+		std::cout << " [ " << flow->getLastPacketTime() << " + " << timeout_ << " <= " << current_time << " ]" << std::endl; 
+#endif
 		if (flow->getLastPacketTime() + timeout_ <= current_time ) {
 			Flow *tmpflow = flow.get();
 			++expire_flows;
@@ -103,6 +139,7 @@ void FlowManager::updateTimers(std::time_t current_time) {
         		std::cout << __FILE__ << ":" << __func__ << ":Flow Expires: " << *flow.get() <<  " total on table:" << flowTable_.size()  <<std::endl;
 #endif
 
+			
 #if (defined(PYTHON_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
 
                         if (!protocol_.expired()) {
@@ -113,10 +150,9 @@ void FlowManager::updateTimers(std::time_t current_time) {
                                 }
                         }
 #endif
-
-			// Remove from the multiindex
-			finx.erase((++it).base());
-
+			// Remove the flow from the multiindex
+			it = finx.erase(it);
+			
 #if defined(RUBY_BINDING) && defined(HAVE_ADAPTOR)
 			flow_list.push_front(flow);
 #else
@@ -127,7 +163,7 @@ void FlowManager::updateTimers(std::time_t current_time) {
 				flow_cache_->releaseFlow(flow);
 #endif
 		} else {
-			// the multiset is ordered and there is no needd to check more flows
+			// the multiset is ordered and there is no need to check more flows
 			break;
 		}
 	} 
@@ -156,7 +192,7 @@ void FlowManager::updateTimers(std::time_t current_time) {
 #endif
 
 #ifdef DEBUG
-        std::cout << __FILE__ << ":" << __func__ << ":Total expire flows " << expire_flows <<std::endl;
+        std::cout << __FILE__ << ":" << __func__ << ":Total expire flows " << expire_flows << " on table:" << flowTable_.size() << std::endl;
 #endif
 	return;
 }
@@ -212,7 +248,13 @@ void FlowManager::showFlows(std::basic_ostream<char>& out,std::function<bool (co
 	out << boost::format("%-64s %-10s %-10s %-18s %-12s") % "Flow" % "Bytes" % "Packets" % "FlowForwarder" % "Info";
 	out << std::endl;	
 
-	for (auto &flow: flowTable_) {
+	auto begin = flowTable_.get<flow_table_tag_duration>().rbegin();
+	auto end = flowTable_.get<flow_table_tag_duration>().rend();
+
+	// We check the iterator backwards because the old flows will be at the end
+	// and the ones with activity will be the first to shown
+	for (auto it = begin ; it != end; ++it ) {
+		SharedPointer<Flow> flow = (*it);	
 		const Flow& cflow = *flow.get();
 
 		if (condition(cflow)) {

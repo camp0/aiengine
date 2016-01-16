@@ -4,7 +4,7 @@ TEST = test_flows
 
 check_PROGRAMS = test_flows 
 
-test_flows_CPPFLAGS = -I../ $(BOOST_CPPFLAGS) -DSTAND_ALONE
+test_flows_CPPFLAGS = -g -I../ $(BOOST_CPPFLAGS) -DSTAND_ALONE
 test_flows_SOURCES = ../Flow.cc ../CacheManager.cc ../AnomalyManager.cc FlowManager.cc test_flows.cc
 test_flows_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
 

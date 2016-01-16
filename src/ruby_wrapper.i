@@ -300,6 +300,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::FlowManager::getFlowTable;
 %ignore aiengine::FlowManager::getLastProcessFlow;
 %ignore aiengine::FlowManager::setProtocol;
+%ignore aiengine::FlowManager::updateFlowTime;
 
 %rename("regexmanager=")		aiengine::IPAbstractSet::setRegexManager;
 %rename("timeout=")			aiengine::FlowManager::setTimeout;

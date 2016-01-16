@@ -112,6 +112,16 @@ public:
 	void setArriveTime(time_t t) { arrive_time_ = t; }
 	void setLastPacketTime(time_t t) { current_time_ = t; } 
 
+	// For update the flow time on the FlowManager
+	struct updateTime {
+		updateTime(time_t t): t_(t) {}
+		void operator()(const SharedPointer<Flow>& f) {
+			f->setLastPacketTime(t_);
+		}
+		private:
+			time_t t_;
+	};
+	
 	int getLastPacketTime() const { return (int)current_time_; } 
 	int getDuration() const { return (int)(current_time_ - arrive_time_); }
 
