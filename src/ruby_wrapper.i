@@ -161,6 +161,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::Flow::getFlowAnomaly;
 %ignore aiengine::Flow::getTotalPackets;
 %ignore aiengine::Flow::getTotalPacketsLayer7;
+%ignore aiengine::Flow::updateTime;
 
 %ignore aiengine::IPSetManager::addIPSet(const SharedPointer<IPAbstractSet> ipset);
 %ignore aiengine::IPSetManager::getMatchedIPSet;
@@ -301,6 +302,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::FlowManager::getLastProcessFlow;
 %ignore aiengine::FlowManager::setProtocol;
 %ignore aiengine::FlowManager::updateFlowTime;
+%ignore aiengine::FlowManager::FlowTimeRefreshRate;
 
 %rename("regexmanager=")		aiengine::IPAbstractSet::setRegexManager;
 %rename("timeout=")			aiengine::FlowManager::setTimeout;

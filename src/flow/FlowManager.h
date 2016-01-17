@@ -72,7 +72,7 @@ public:
 
     	virtual ~FlowManager();
 
-	static const int flowTimeRefreshRate = 8;
+	static const int flowTimeRefreshRate = 64;
 
 	void addFlow(const SharedPointer<Flow>& flow);
 	void removeFlow(const SharedPointer<Flow>& flow);
