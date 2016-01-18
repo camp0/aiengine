@@ -188,6 +188,17 @@ void NetworkStack::addProtocol(ProtocolPtr proto) {
 	proto_vector_.push_back(pp);
 }
 
+int64_t NetworkStack::getAllocatedMemory() const {
+
+	int64_t value = 0;
+
+	for (auto &p: proto_vector_) {
+		value += (p.second)->getAllocatedMemory();
+	}
+
+	return value;
+} 
+
 void NetworkStack::statistics(const std::string &name) {
 
 	if (stats_level_ > 0) {

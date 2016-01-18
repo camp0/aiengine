@@ -165,14 +165,12 @@ void POPProtocol::attach_user_name(POPInfo *info, boost::string_ref &name) {
 }
 
 
-void POPProtocol::handle_cmd_user(Flow *flow,POPInfo *info, const char *header) {
+void POPProtocol::handle_cmd_user(Flow *flow,POPInfo *info, boost::string_ref &header) {
 
-        boost::string_ref h(header);
-	
-        size_t token = h.find("@");
-        size_t end = h.find("\x0d\x0a") - 5;
+        size_t token = header.find("@");
+        size_t end = header.find("\x0d\x0a") - 5;
 
-	if ((token > h.length())or(end > h.length())) {
+	if ((token > header.length())or(end > header.length())) {
                 if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
                         flow->setPacketAnomaly(PacketAnomalyType::POP_BOGUS_HEADER);
                 }
@@ -180,9 +178,9 @@ void POPProtocol::handle_cmd_user(Flow *flow,POPInfo *info, const char *header) 
 		return;
 	}
 
-	boost::string_ref user_name(h.substr(5,end));
+	boost::string_ref user_name(header.substr(5,end));
 
-        boost::string_ref domain(h.substr(token + 1,h.size()-2));
+        boost::string_ref domain(header.substr(token + 1,header.size()-2));
 
 	if (!ban_domain_mng_.expired()) {
         	DomainNameManagerPtr ban_hosts = ban_domain_mng_.lock();
@@ -255,7 +253,7 @@ void POPProtocol::processFlow(Flow *flow) {
 				pinfo->incClientCommands();	
                 
 				if ( cmd == static_cast<int8_t>(POPCommandTypes::POP_CMD_USER)) {
-					const char *header = reinterpret_cast<const char*>(pop_header_);
+					boost::string_ref header(reinterpret_cast<const char*>(pop_header_),length);
 					handle_cmd_user(flow,pinfo.get(),header);
 				}
 		                return;

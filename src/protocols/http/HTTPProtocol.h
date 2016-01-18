@@ -169,16 +169,16 @@ private:
 
 	void debugHTTPInfo(Flow *flow, HTTPInfo *info,const char *payload);
 
-	int process_requests_and_responses(HTTPInfo *info, const char *header);
+	int process_requests_and_responses(HTTPInfo *info, boost::string_ref &header);
 
 	void process_payloadl7(Flow * flow, HTTPInfo *info, boost::string_ref &payloadl7);
 	void attach_uri(HTTPInfo *info, boost::string_ref &uri);
 	void attach_host(HTTPInfo *info, boost::string_ref &host);
 	void attach_useragent(HTTPInfo *info, boost::string_ref &ua);
 
-	int extract_uri(HTTPInfo *info, const char *header);
+	int extract_uri(HTTPInfo *info, boost::string_ref &header);
 
-	void parse_header(HTTPInfo *info, const char *parameters);
+	void parse_header(HTTPInfo *info, boost::string_ref &header);
 	bool process_host_parameter(HTTPInfo *info,boost::string_ref &host);
 	bool process_ua_parameter(HTTPInfo *info,boost::string_ref &ua);
 	bool process_content_length_parameter(HTTPInfo *info,boost::string_ref &parameter);

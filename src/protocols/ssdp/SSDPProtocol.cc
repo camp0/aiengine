@@ -271,11 +271,11 @@ bool SSDPProtocol::process_host_parameter(SSDPInfo *info,boost::string_ref &host
         return true;
 }
 
-int SSDPProtocol::extract_uri(SSDPInfo *info, const char *header) {
+int SSDPProtocol::extract_uri(SSDPInfo *info, boost::string_ref &header) {
 
         int offset = 0;
         bool found = false;
-        boost::string_ref ssdp_header(header);
+        // boost::string_ref ssdp_header(header,length);
         int method_size = 0;
 
         // Check if is a response
@@ -283,7 +283,7 @@ int SSDPProtocol::extract_uri(SSDPInfo *info, const char *header) {
                 ++total_responses_;
                 info->incTotalResponses();
 
-                int end = ssdp_header.find("\r\n");
+                int end = header.find("\r\n");
                 if (end > 0) {
                         method_size = end + 2;
                 }
@@ -317,9 +317,9 @@ int SSDPProtocol::extract_uri(SSDPInfo *info, const char *header) {
         }
 
         if ((found)and(offset > 0)) {
-                int end = ssdp_header.find("HTTP/1.");
+                int end = header.find("HTTP/1.");
                 if (end > 0) {
-                        boost::string_ref uri(ssdp_header.substr(offset,(end-offset)-1));
+                        boost::string_ref uri(header.substr(offset,(end-offset)-1));
 
                         info->incTotalRequests();
                         ++total_requests_;
@@ -332,30 +332,29 @@ int SSDPProtocol::extract_uri(SSDPInfo *info, const char *header) {
         return method_size;
 }
 
-void SSDPProtocol::parse_header(SSDPInfo *info, const char *parameters) {
+void SSDPProtocol::parse_header(SSDPInfo *info, boost::string_ref &header ) {
 
-        boost::string_ref http_header(parameters);
         bool have_token = false;
         size_t i = 0;
 
         // Process the HTTP header
-        const char *ptr = parameters;
+        // const char *ptr = parameters;
         int field_index = 0;
         int parameter_index = 0;
 
         header_field_.clear();
         header_parameter_.clear();
 
-        for (i = 0; i< http_header.length(); ++i) {
+        for (i = 0; i< header.length(); ++i) {
                 // Check if is end off line
-                if (std::memcmp(&ptr[i],"\r\n",2) == 0 ) {
+                if (std::memcmp(&header[i],"\r\n",2) == 0 ) {
 
                         if(header_field_.length()) {
                                 auto it = parameters_.find(header_field_);
                                 if (it != parameters_.end()) {
                                         auto callback = (*it).second;
 
-                                        header_parameter_ = http_header.substr(parameter_index, i - parameter_index);
+                                        header_parameter_ = header.substr(parameter_index, i - parameter_index);
 
                                         bool sw = callback(info,header_parameter_);
                                         if (!sw) { // The flow have been marked as banned
@@ -369,7 +368,7 @@ void SSDPProtocol::parse_header(SSDPInfo *info, const char *parameters) {
                                 field_index = i + 2;
                         }
 
-                        if(std::memcmp(&ptr[i+2],"\r\n",2) == 0) {
+                        if(std::memcmp(&header[i+2],"\r\n",2) == 0) {
                                 // end of the header
                                 ssdp_header_size_ += 4;
                                 break;
@@ -377,8 +376,8 @@ void SSDPProtocol::parse_header(SSDPInfo *info, const char *parameters) {
                         have_token = false;
                         ++i;
                 } else {
-                        if ((ptr[i] == ':')and(have_token == false)) {
-                                header_field_ = http_header.substr(field_index, i - field_index);
+                        if ((header[i] == ':')and(have_token == false)) {
+                                header_field_ = header.substr(field_index, i - field_index);
                                 parameter_index = i + 2;
                                 field_index = i + 1;
                                 have_token = true;
@@ -412,12 +411,15 @@ void SSDPProtocol::processFlow(Flow *flow) {
                 return;
         }
 
-	const char *header = reinterpret_cast <const char*> (flow->packet->getPayload());
+	// const char *header = reinterpret_cast <const char*> (flow->packet->getPayload());
+
+	boost::string_ref header(reinterpret_cast <const char*> (flow->packet->getPayload()),length);
 
         int offset = extract_uri(info.get(),header);
         if (offset > 0) {
         	ssdp_header_size_ = offset;
-                parse_header(info.get(),&header[offset]);
+		boost::string_ref newheader(header.substr(offset,length - offset));
+                parse_header(info.get(),newheader);
         }
 
         // Just verify the Host on the first request

@@ -151,8 +151,8 @@ public:
 #endif
 
 private:
-	void parse_header(SSDPInfo *info, const char *parameters);
-	int extract_uri(SSDPInfo *info, const char *header);
+	void parse_header(SSDPInfo *info, boost::string_ref &header);
+	int extract_uri(SSDPInfo *info, boost::string_ref &header);
 
 	void attach_uri(SSDPInfo *info, boost::string_ref &host);
 	void attach_host(SSDPInfo *info, boost::string_ref &host);

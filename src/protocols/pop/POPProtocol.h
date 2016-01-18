@@ -143,7 +143,7 @@ private:
 	void release_pop_info_cache(POPInfo *info);
         int32_t release_pop_info(POPInfo *info);
 
-	void handle_cmd_user(Flow *flow,POPInfo *info, const char *header);
+	void handle_cmd_user(Flow *flow,POPInfo *info, boost::string_ref &header);
 	void attach_user_name(POPInfo *info, boost::string_ref &name);
 
 	int stats_level_;

@@ -156,7 +156,7 @@ private:
         void release_imap_info_cache(IMAPInfo *info);
         int32_t release_imap_info(IMAPInfo *info);
 
-        void handle_cmd_login(Flow *flow,IMAPInfo *info, const char *header);
+        void handle_cmd_login(Flow *flow,IMAPInfo *info, boost::string_ref &header);
         void attach_user_name(IMAPInfo *info, boost::string_ref &name);
 
 	int stats_level_;

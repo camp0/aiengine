@@ -148,8 +148,8 @@ private:
 	void release_smtp_info_cache(SMTPInfo *info);
 	int32_t release_smtp_info(SMTPInfo *info);
 
-	void handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header);
-	void handle_cmd_rcpt(SMTPInfo *info, const char *header);
+	void handle_cmd_mail(Flow *flow,SMTPInfo *info, boost::string_ref &header);
+	void handle_cmd_rcpt(SMTPInfo *info, boost::string_ref &header);
 	void attach_from(SMTPInfo *info, boost::string_ref &from);	
 
 	int stats_level_;

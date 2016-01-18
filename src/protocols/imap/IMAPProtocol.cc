@@ -173,18 +173,17 @@ void IMAPProtocol::attach_user_name(IMAPInfo *info, boost::string_ref &name) {
         }
 }
 
-void IMAPProtocol::handle_cmd_login(Flow *flow,IMAPInfo *info, const char *header) {
+void IMAPProtocol::handle_cmd_login(Flow *flow,IMAPInfo *info, boost::string_ref &header) {
 
-        boost::string_ref h(header);
 	boost::string_ref domain;
 	boost::string_ref user_name;
 
-        size_t token = h.find("@");
-   	size_t end = h.find(" "); 
+        size_t token = header.find("@");
+   	size_t end = header.find(" "); 
 
-	if (end < h.length()) {
-		domain = h.substr(0,end);
-		user_name = h.substr(0,end);
+	if (end < header.length()) {
+		domain = header.substr(0,end);
+		user_name = header.substr(0,end);
 	} else {
 	       	if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
                         flow->setPacketAnomaly(PacketAnomalyType::IMAP_BOGUS_HEADER);
@@ -192,10 +191,10 @@ void IMAPProtocol::handle_cmd_login(Flow *flow,IMAPInfo *info, const char *heade
 		AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::IMAP_BOGUS_HEADER);
 	}
 
-	if (token < h.length()) {
+	if (token < header.length()) {
 		// The name have the domain
-		if (end < h.length()) {
-			domain = h.substr(token + 1,end-token);
+		if (end < header.length()) {
+			domain = header.substr(token + 1,end-token);
 		}	
 	} 
 
@@ -256,7 +255,7 @@ void IMAPProtocol::processFlow(Flow *flow) {
         }
 
 	if (flow->getFlowDirection() == FlowDirection::FORWARD) {
-		const char *header = reinterpret_cast<const char*>(imap_header_);
+		boost::string_ref header(reinterpret_cast<const char*>(imap_header_),length);
 		// bypass the tag
 		boost::string_ref client_cmd(header);
 		size_t endtag = client_cmd.find(" ");
@@ -276,7 +275,8 @@ void IMAPProtocol::processFlow(Flow *flow) {
                                 ++total_imap_client_commands_;
 
 				if ( cmd == static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_LOGIN)) {
-                                        const char *header_cmd = reinterpret_cast<const char*>(&imap_header_[offset + endtag + 2]);
+					int cmdoff = offset + endtag + 2;
+                                        boost::string_ref header_cmd(header.substr(cmdoff, length - cmdoff ));
                                         handle_cmd_login(flow,iinfo.get(),header_cmd);
                                 }
 				iinfo->incClientCommands();	

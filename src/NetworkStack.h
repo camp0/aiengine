@@ -160,6 +160,8 @@ public:
 	void setStatisticsLevel(int level); 
 	int getStatisticsLevel() const { return stats_level_; }
 
+	int64_t getAllocatedMemory() const;
+
 	virtual void setAsioService(boost::asio::io_service& io_service) {}
 
 	void infoMessage(const std::string& msg);

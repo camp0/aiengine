@@ -368,11 +368,10 @@ void HTTPProtocol::attach_uri(HTTPInfo *info, boost::string_ref &uri) {
 }
 
 
-int HTTPProtocol::extract_uri(HTTPInfo *info, const char *header) {
+int HTTPProtocol::extract_uri(HTTPInfo *info, boost::string_ref &header) {
 
         int offset = 0;
         bool found = false;
-        boost::string_ref http_header(header);
 	int method_size = 0;
 
         // Check if is a response
@@ -380,7 +379,7 @@ int HTTPProtocol::extract_uri(HTTPInfo *info, const char *header) {
                 ++total_responses_;
 		info->incTotalResponses();
 
-		int end = http_header.find("\r\n");
+		int end = header.find("\r\n");
 		if (end > 0) {
 			method_size = end + 2;
 		}
@@ -414,9 +413,9 @@ int HTTPProtocol::extract_uri(HTTPInfo *info, const char *header) {
         }
 
         if ((found)and(offset > 0)) {
-                int end = http_header.find("HTTP/1.");
+                int end = header.find("HTTP/1.");
                 if (end > 0) {
-                        boost::string_ref uri(http_header.substr(offset,(end-offset)-1));
+                        boost::string_ref uri(header.substr(offset,(end-offset)-1));
 			
 			info->incTotalRequests();
                         // ++total_requests_;
@@ -429,30 +428,28 @@ int HTTPProtocol::extract_uri(HTTPInfo *info, const char *header) {
 	return method_size;
 }
 
-void HTTPProtocol::parse_header(HTTPInfo *info, const char *parameters) {
+void HTTPProtocol::parse_header(HTTPInfo *info, boost::string_ref &header) {
 
-	boost::string_ref http_header(parameters);
         bool have_token = false;
         size_t i = 0;
         
 	// Process the HTTP header
-        const char *ptr = parameters;
 	int field_index = 0;
 	int parameter_index = 0;
 
 	header_field_.clear();
 	header_parameter_.clear(); 
 
-	for (i = 0; i< http_header.length(); ++i) {
+	for (i = 0; i< header.length(); ++i) {
        		// Check if is end off line
-                if (std::memcmp(&ptr[i],"\r\n",2) == 0 ) {
+                if (std::memcmp(&header[i],"\r\n",2) == 0 ) {
 
                 	if(header_field_.length()) {
                         	auto it = parameters_.find(header_field_);
                                 if (it != parameters_.end()) {
                                 	auto callback = (*it).second;
 					
-					header_parameter_ = http_header.substr(parameter_index, i - parameter_index);
+					header_parameter_ = header.substr(parameter_index, i - parameter_index);
 
                                         bool sw = callback(info,header_parameter_);
 					if (!sw) { // The flow have been marked as banned
@@ -466,7 +463,7 @@ void HTTPProtocol::parse_header(HTTPInfo *info, const char *parameters) {
 				field_index = i + 2;
 			}
 
-			if(std::memcmp(&ptr[i+2],"\r\n",2) == 0) {
+			if(std::memcmp(&header[i+2],"\r\n",2) == 0) {
 				// end of the header
 				http_header_size_ += 4;
 				break;
@@ -474,8 +471,8 @@ void HTTPProtocol::parse_header(HTTPInfo *info, const char *parameters) {
                        	have_token = false;
                        	++i;
 		} else {
-			if ((ptr[i] == ':')and(have_token == false)) {
-				header_field_ = http_header.substr(field_index, i - field_index);
+			if ((header[i] == ':')and(have_token == false)) {
+				header_field_ = header.substr(field_index, i - field_index);
 				parameter_index = i + 2;
 				field_index = i + 1;
                                 have_token = true;
@@ -545,12 +542,13 @@ void HTTPProtocol::debugHTTPInfo(Flow *flow, HTTPInfo *info,const char *header) 
         std::cout << "------------------------------------------------------------" << std::endl;
 }
 
-int HTTPProtocol::process_requests_and_responses(HTTPInfo *info, const char *header) {
+int HTTPProtocol::process_requests_and_responses(HTTPInfo *info, boost::string_ref &header) {
 
 	int offset = extract_uri(info,header);
         if (offset > 0) {
         	http_header_size_ = offset;
-                parse_header(info,&header[offset]);
+		boost::string_ref newheader(header.substr(offset, header.length() - offset));
+                parse_header(info, newheader);
         }
 
 	return offset;
@@ -560,9 +558,9 @@ int HTTPProtocol::process_requests_and_responses(HTTPInfo *info, const char *hea
 void HTTPProtocol::processFlow(Flow *flow) {
 
 	http_header_size_ = 0;
-	int16_t flow_bytes = flow->packet->getLength();
+	int length = flow->packet->getLength();
 	++total_packets_;	
-	total_bytes_ += flow_bytes;
+	total_bytes_ += length;
 	++flow->total_packets_l7;
 
 	SharedPointer<HTTPInfo> info = flow->http_info.lock();
@@ -590,16 +588,14 @@ void HTTPProtocol::processFlow(Flow *flow) {
 	}
 
 	current_flow_ = flow;
-	const char *header = reinterpret_cast <const char*> (flow->packet->getPayload());
-
-	// debugHTTPInfo(flow,info.get(),header);
+	boost::string_ref header(reinterpret_cast <const char*> (flow->packet->getPayload()), length);
 
 	if (info->getHTTPDataDirection() == flow->getFlowDirection()) {
 
 		// The HTTPInfo says that the pdu have data
         	if (info->getHaveData() == true) {
-                	total_l7_bytes_ += flow_bytes;
-                	int32_t left_length = info->getDataChunkLength() - flow_bytes;
+                	total_l7_bytes_ += length;
+                	int32_t left_length = info->getDataChunkLength() - length;
 
                 	if (left_length > 0) {
                         	info->setDataChunkLength(left_length);
@@ -607,7 +603,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
                         	info->setDataChunkLength(0);
                         	info->setHaveData(false);
                 	}
-                	boost::string_ref payloadl7(&header[0],flow_bytes);
+                	boost::string_ref payloadl7(&header[0],length);
 
                 	process_payloadl7(flow,info.get(),payloadl7);
 	
@@ -663,7 +659,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
 
         if(info->getHaveData() == true) {
 
-		int32_t data_size = flow_bytes - http_header_size_;
+		int32_t data_size = length - http_header_size_;
 		int32_t data_chunk = info->getDataChunkLength();
 		int32_t delta = data_chunk - data_size;
 

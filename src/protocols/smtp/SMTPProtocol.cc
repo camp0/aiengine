@@ -189,16 +189,14 @@ void SMTPProtocol::attach_from(SMTPInfo *info, boost::string_ref &from) {
         }
 }
 
-void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header) {
+void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, boost::string_ref &header) {
 
 	SharedPointer<StringCache> from_ptr = info->from.lock();
 
-	boost::string_ref h(header);
+	size_t start = header.find("<");
+	size_t end = header.rfind(">");
 
-	size_t start = h.find("<");
-	size_t end = h.rfind(">");
-
-	if ((start > h.length())or(end > h.length())) {
+	if ((start > header.length())or(end > header.length())) {
                 if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
                         flow->setPacketAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
                 }
@@ -206,7 +204,7 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header
 		return;
 	}
 
-	boost::string_ref from(h.substr(start + 1, end - start - 1));
+	boost::string_ref from(header.substr(start + 1, end - start - 1));
 	size_t token = from.find("@");
 
 	if (token > from.length()) {
@@ -250,15 +248,13 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, const char *header
 	}
 }
 
-void SMTPProtocol::handle_cmd_rcpt(SMTPInfo *info, const char *header) {
+void SMTPProtocol::handle_cmd_rcpt(SMTPInfo *info, boost::string_ref &header) {
 
 	if (info->to.expired()) {
-        	boost::string_ref h(header);
+        	size_t start = header.find("<");
+        	size_t end = header.rfind(">");
 
-        	size_t start = h.find("<");
-        	size_t end = h.rfind(">");
-
-		boost::string_ref to(h.substr(start + 1,end - start - 1));
+		boost::string_ref to(header.substr(start + 1,end - start - 1));
                 GenericMapType::iterator it = to_map_.find(to);
                 if (it == to_map_.end()) {
                         SharedPointer<StringCache> to_ptr = to_cache_->acquire().lock();
@@ -315,10 +311,10 @@ void SMTPProtocol::processFlow(Flow *flow) {
 
 				// Check if the commands are MAIL or RCPT
 				if ( cmd == static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_MAIL)) {
-					const char *header = reinterpret_cast<const char*>(smtp_header_);
+					boost::string_ref header(reinterpret_cast<const char*>(smtp_header_),length);
 					handle_cmd_mail(flow,sinfo.get(),header);
 				} else if ( cmd == static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_RCPT)) {
-					const char *header = reinterpret_cast<const char*>(smtp_header_);
+					boost::string_ref header(reinterpret_cast<const char*>(smtp_header_),length);
 					handle_cmd_rcpt(sinfo.get(),header);
 				}	
 				sinfo->setCommand(cmd);

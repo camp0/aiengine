@@ -177,6 +177,7 @@ StackLan::StackLan():
 	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
 
 	std::ostringstream msg;
+
         msg << getName() << " ready.";
 
         infoMessage(msg.str());

@@ -12,7 +12,7 @@ The main functionalities of AIEngine are:
 - Support for interacting/programing with the user while the engine is running.
 - Support for PCRE JIT for regex matching.
 - Support for regex graphs.
-- Support five types of NetworkStacks (lan,mobile,ipv6,virtual and oflow).
+- Support five types of NetworkStacks (lan,mobile,lan6,virtual and oflow).
 - Support Sets and Bloom filters for IP searches.
 - Support Linux, FreeBSD and MacOS operating systems.
 - Support for HTTP,DNS and SSL Domains matching.
@@ -29,7 +29,7 @@ The main functionalities of AIEngine are:
 Using AIEngine 
 ---------------
 
-To use AIEngine(reduce version) just execute the binary aiengine or use the python/ruby binding.
+To use AIEngine(reduce version) just execute the binary aiengine or use the python/ruby/java binding.
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
 	aiengine 1.4
@@ -54,9 +54,8 @@ To use AIEngine(reduce version) just execute the binary aiengine or use the pyth
 	  -m [ --matched-flows ]         Shows the flows that matchs with the regex.
 	  -j [ --reject-flows ]          Rejects the flows that matchs with the 
                                          regex.
-          -w [ --evidence ]              Generates a pcap file with the matching 
+	  -w [ --evidence ]              Generates a pcap file with the matching 
                                          regex for forensic analysis.
-
 
 	Frequencies optional arguments:
 	  -F [ --enable-frequencies ]       Enables the Frequency engine.
@@ -100,7 +99,7 @@ AIEngine supports five types of Network stacks depending on the network topology
 Integrating/Program AIEngine with other systems 
 ------------------------------------------------
 
-AIEngine is a python/ruby module also that allows to be more flexible in terms of integration with other systems and functionalities.
+AIEngine is a python/ruby/java module also that allows to be more flexible in terms of integration with other systems and functionalities.
 The main objects that the python module provide export are the following ones.
 
         DNSInfo
