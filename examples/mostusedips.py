@@ -15,7 +15,7 @@ top_ips = dict()
 
 def callback_host(flow):
 
-    ip = flow.srcip
+    ip = flow.src_ip
     if(top_ips.has_key(ip)):
         top_ips[ip] += 1
     else:
@@ -31,12 +31,12 @@ if __name__ == '__main__':
     dom = pyaiengine.DomainName("Service to analyze",
         "marca.com")
     dom.callback = callback_host
-    dm.addDomainName(dom)
+    dm.add_domain_name(dom)
 
-    st.setDomainNameManager(dm,"HTTPProtocol")
+    st.set_domain_name_manager(dm,"HTTPProtocol")
 
-    st.tcpflows = 327680
-    st.udpflows = 163840
+    st.tcp_flows = 327680
+    st.udp_flows = 163840
 
     with pyaiengine.PacketDispatcher("eth0") as pd:
         # Plug the stack on the PacketDispatcher
@@ -44,7 +44,7 @@ if __name__ == '__main__':
         pd.run()
 
     # Dump on file the statistics of the stack
-    st.statslevel = 5
+    st.stats_level = 5
     f = open("statistics.log","w")
     f.write(str(st))
     f.close()

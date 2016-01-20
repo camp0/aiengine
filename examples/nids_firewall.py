@@ -12,10 +12,9 @@ import os
 sys.path.append("../src/")
 import pyaiengine
 
-def callback_drop_packets(flow_name):
+def callback_drop_packets(flow):
     """ Send a command to the Iptables in other to drop the packets """
-    source_ip = str(flow_name).split(":")[0]
-#    os.system("iptables -A INPUT -i eth0 -s %s -j DROP" % source_ip)
+#    os.system("iptables -A INPUT -i eth0 -s %s -j DROP" % flow.src_ip)
 
 def loadSignaturesForTcp():
      """ Load the signatures from source, Snort, Suricata, etc. """
@@ -26,7 +25,7 @@ def loadSignaturesForTcp():
 
      """ Sets a specific callback to the signature created """
      sig.callback = callback_drop_packets
-     sm.addRegex(sig)
+     sm.add_regex(sig)
 
      return sm
 
@@ -37,19 +36,19 @@ if __name__ == '__main__':
 
      # Load Signatures/Rules in order to detect the traffic
      s_tcp = loadSignaturesForTcp()
-     st.tcpregexmanager = s_tcp
+     st.tcp_regex_manager = s_tcp
 
-     st.enableNIDSEngine(True)
+     st.enable_nids_engine(True)
 
-     st.tcpflows = 327680
-     st.udpflows = 163840
+     st.tcp_flows = 327680
+     st.udp_flows = 163840
 
      with pyaiengine.PacketDispatcher("eth0") as pd:
          pd.stack = st
          pd.run()
 
      # Dump on file the statistics of the stack
-     st.statslevel = 5
+     st.stats_level = 5
      f = open("statistics.log","w")
      f.write(str(st))
      f.close()

@@ -24,7 +24,7 @@ def netfilter_callback(packet):
 
     """ Use the forwardPacket method from the PacketDispatcher object
     in order to forward the packets from netfilter """
-    pdis.forwardPacket(payload,length)
+    pdis.forward_packet(payload,length)
     packet.accept()
 
 if __name__ == '__main__':
@@ -35,8 +35,8 @@ if __name__ == '__main__':
     # Plug the stack on the PacketDispatcher
     pdis.stack = st
 
-    st.tcpflows = 327680
-    st.udpflows = 163840
+    st.tcp_flows = 327680
+    st.udp_flows = 163840
 
     """ Create a NetfilterQueue object """
     nfqueue = NetfilterQueue()
@@ -49,7 +49,7 @@ if __name__ == '__main__':
         print("Exit netfilter queue")
 
     # Dump on file the statistics of the stack
-    st.statslevel = 5
+    st.stats_level = 5
     f = open("statistics.log","w")
     f.write(str(st))
     f.close()

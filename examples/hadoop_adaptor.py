@@ -101,11 +101,11 @@ class hadoopAdaptor(pyaiengine.DatabaseAdaptor):
 
 if __name__ == '__main__':
 
-    # Load an instance of a Network Stack on Lan Network
+    # Load an instance of Lan Network
     st = pyaiengine.StackLan()
 
-    st.tcpflows = 327680
-    st.udpflows = 163840
+    st.tcp_flows = 327680
+    st.udp_flows = 163840
  
     """
      Create a hadoopAdaptor object. 
@@ -122,8 +122,8 @@ if __name__ == '__main__':
         the method "update" will be called.
         Fix this value depending on your software/hardware requirments.
     """
-    st.setUDPDatabaseAdaptor(db,16)
-    st.setTCPDatabaseAdaptor(db,16)
+    st.set_udp_database_adaptor(db,16)
+    st.set_tcp_database_adaptor(db,16)
 
     # Create a PacketDispathcer context and plug the stack and run
     with pyaiengine.PacketDispatcher("eth0") as pd:

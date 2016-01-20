@@ -16,7 +16,7 @@ st = None
 def scheduler_handler_tcp():
 
     print("TCP DoS Checker")
-    c = st.getCounters("TCPProtocol")
+    c = st.get_counters("TCPProtocol")
     # Code the intelligence for detect DDoS based on 
     # combination flags, bytes, packets and so on. 
     syns = int(c["syns"])
@@ -28,30 +28,30 @@ def scheduler_handler_ntp():
 
     total_ips = dict()
     print("NTP DDoS Checker")
-    c = st.getCounters("NTPProtocol")
+    c = st.get_counters("NTPProtocol")
 
     # Count the number different ips of the NTP flows
-    for flow in st.udpflowmanager:
-        if (flow.l7protoconame == "NTPProtocol"):
-            total_ips[flow.srcip] = 1
+    for flow in st.udp_flow_manager:
+        if (flow.l7_protocol_name == "NTPProtocol"):
+            total_ips[flow.src_ip] = 1
 
     if (total_ips.len() == len(fu)):
         print("System under a NTP DDoS attack")
  
 if __name__ == '__main__':
 
-    # Load an instance of a Network Stack 
+    # Load an instance of a Network Stack Lan 
     st = pyaiengine.StackLan()
 
-    st.tcpflows = 327680
-    st.udpflows = 163840
+    st.tcp_flows = 327680
+    st.udp_flows = 163840
 
     # Create a instace of a PacketDispatcher
     with pyaiengine.PacketDispatcher("ens7") as pd:
         pd.stack = st
         # Sets a handler method that will be call
         # every 5 seconds for check the values
-        pd.setScheduler(scheduler_handler_tcp,5)
+        pd.set_scheduler(scheduler_handler_tcp,5)
         pd.run()
 
     sys.exit(0)

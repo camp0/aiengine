@@ -23,7 +23,7 @@ def callback_heartbeat(flow):
 
 if __name__ == '__main__':
 
-    # Load an instance of a Network Stack
+    # Load an instance of a StackLan
     st = pyaiengine.StackLan()
 
     sm = pyaiengine.RegexManager()
@@ -41,16 +41,16 @@ if __name__ == '__main__':
     sig = pyaiengine.Regex("SSL Heartbeat","^.*\x18\x03(\x01|\x02|\x03).*$")
     sig.callback = callback_heartbeat
 
-    ssl_sig.nextregex = sig
+    ssl_sig.next_regex = sig
 
-    sm.addRegex(ssl_sig)
+    sm.add_regex(ssl_sig)
 
-    st.tcpregexmanager = sm
+    st.tcp_regex_manager = sm
 
-    st.tcpflows = 327680
-    st.udpflows = 163840
+    st.tcp_flows = 327680
+    st.udp_flows = 163840
 
-    st.enableNIDSEngine(True)
+    st.enable_nids_engine(True)
 
     with pyaiengine.PacketDispatcher("eth0") as pd:
         pd.stack = st
