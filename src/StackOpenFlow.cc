@@ -60,7 +60,9 @@ StackOpenFlow::StackOpenFlow():
 	ff_of_(FlowForwarderPtr(new FlowForwarder())),
 	ff_tcp_(FlowForwarderPtr(new FlowForwarder())),
 	ff_tcp_vir_(FlowForwarderPtr(new FlowForwarder())),
-	ff_udp_vir_(FlowForwarderPtr(new FlowForwarder())) {
+	ff_udp_vir_(FlowForwarderPtr(new FlowForwarder())),
+        enable_frequency_engine_(false),
+        enable_nids_engine_(false) {
  
 	setName("OpenFlow Network Stack");
 
@@ -346,6 +348,7 @@ void StackOpenFlow::enableFrequencyEngine(bool enable) {
                 freqs_tcp->setFlowManager(FlowManagerPtrWeak());
                 freqs_udp->setFlowManager(FlowManagerPtrWeak());
         }
+	enable_frequency_engine_ = enable;
 }
 
 void StackOpenFlow::enableNIDSEngine(bool enable) {
@@ -365,6 +368,7 @@ void StackOpenFlow::enableNIDSEngine(bool enable) {
         	enableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
         	enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
         }
+	enable_nids_engine_ = enable;
 }
 
 void StackOpenFlow::setFlowsTimeout(int timeout) {

@@ -317,7 +317,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(self.s.tcp_regex_manager, None) 
       
         self.s.tcp_regex_manager = rm 
-        self.s.enable_nids_engine(True)	
+        self.s.enable_nids_engine = True
 
         self.dis.open("../pcapfiles/sslflow.pcap")
         self.dis.run()
@@ -629,7 +629,7 @@ class StackLanTests(unittest.TestCase):
 	rm3.add_regex(r6)
 
         self.s.tcp_regex_manager = rmbase
-        self.s.enable_nids_engine(True)
+        self.s.enable_nids_engine = True
 
         with pyaiengine.PacketDispatcher("../pcapfiles/smtp.pcap") as pd:
             pd.stack = self.s
@@ -913,7 +913,7 @@ class StackLanTests(unittest.TestCase):
         r.callback = regex_callback
         rm.add_regex(r)
 
-        self.s.enable_nids_engine(True)
+        self.s.enable_nids_engine = True
 
         with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
             pd.stack = self.s
@@ -956,7 +956,7 @@ class StackLanTests(unittest.TestCase):
         r.callback = regex_callback
         rm.add_regex(r)
 
-        self.s.enable_nids_engine(True)
+        self.s.enable_nids_engine = True
 
         with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
             pd.stack = self.s
@@ -1311,7 +1311,7 @@ class StackLanLearningTests(unittest.TestCase):
     def test1(self):
 
         self.f.reset()
-        self.s.enable_frequency_engine(True)
+        self.s.enable_frequency_engine = True
 
         self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
         self.dis.run()
@@ -1330,7 +1330,7 @@ class StackLanLearningTests(unittest.TestCase):
     def test2(self):
         
         self.f.reset()
-        self.s.enable_frequency_engine(True)
+        self.s.enable_frequency_engine = True
         
         self.dis.open("../pcapfiles/tor_4flows.pcap")
         self.dis.run()
@@ -1354,7 +1354,7 @@ class StackLanLearningTests(unittest.TestCase):
         learn = pyaiengine.LearnerEngine()
 
         self.f.reset()
-        self.s.enable_frequency_engine(True)
+        self.s.enable_frequency_engine = True
         
         self.dis.open("../pcapfiles/tor_4flows.pcap")
         self.dis.run()
@@ -1433,7 +1433,7 @@ class StackVirtualTests(unittest.TestCase):
         rm.add_regex(r)
         self.s.tcp_regex_manager = rm
 
-        self.s.enable_nids_engine(True)	
+        self.s.enable_nids_engine = True	
 
         # The first packet of the pcapfile is from 18 sep 2014
         self.dis.open("../pcapfiles/vxlan_ftp.pcap")
@@ -1480,7 +1480,7 @@ class StackVirtualTests(unittest.TestCase):
         rm.add_regex(r)
         self.s.tcp_regex_manager = rm
 
-        self.s.enable_nids_engine(True)
+        self.s.enable_nids_engine = True
 
         self.dis.open("../pcapfiles/vxlan_ftp.pcap")
         self.dis.run()

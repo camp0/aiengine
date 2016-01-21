@@ -34,21 +34,21 @@ if __name__ == '__main__':
     # Load an instance of a Network Stack on Mobile network (GN interface)
     st = pyaiengine.StackLan()
 
-    st.tcpflows = 327680
-    st.udpflows = 163840
+    st.tcp_flows = 327680
+    st.udp_flows = 163840
 
-    flows_tcp = st.tcpflowmanager
-    flows_udp = st.udpflowmanager    
+    flows_tcp = st.tcp_flow_manager
+    flows_udp = st.udp_flow_manager    
 
     # Some query examples
-    # query = "('google.com' in str(flow.getSSLHost())) or ('google.com' in str(flow.getHTTPHost()))"
-    # query = "('mybogusdomain' in str(flow.getDNSDomain()))"
+    # query = "('google.com' in str(flow.ssl_info.server_name)) or ('google.com' in str(flow.http_info.host_name))"
+    # query = "('mybogusdomain' in str(flow.dns_info.domain_name))"
     # query = "('Shellcode' in str(flow.regex.name))"
     # queryFlows(flows_tcp,query)
 
     with pyaiengine.PacketDispatcher("eth0") as pd:
         pd.stack = st
-        pd.enableshell = True 
+        pd.enable_shell = True 
         pd.run()
      
     sys.exit(0)

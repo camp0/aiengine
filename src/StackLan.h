@@ -105,6 +105,8 @@ public:
 
 	void enableNIDSEngine(bool enable);
 	void enableFrequencyEngine(bool enable);
+        bool isEnableFrequencyEngine() const { return enable_frequency_engine_; }
+        bool isEnableNIDSEngine() const { return enable_nids_engine_; }
 
 	void setFlowsTimeout(int timeout);
 	int getFlowsTimeout() const { return flow_table_tcp_->getTimeout(); }
@@ -171,6 +173,9 @@ private:
         FlowForwarderPtr ff_udp_;
 
 	SharedPointer<RejectManager<StackLan>> rj_mng_;
+
+	bool enable_frequency_engine_;
+	bool enable_nids_engine_;
 };
 
 typedef std::shared_ptr<StackLan> StackLanPtr;

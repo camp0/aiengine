@@ -49,7 +49,9 @@ StackLan::StackLan():
 	// FlowForwarders
 	ff_tcp_(FlowForwarderPtr(new FlowForwarder())),
 	ff_udp_(FlowForwarderPtr(new FlowForwarder())),
-	rj_mng_() {
+	rj_mng_(),
+	enable_frequency_engine_(false),
+	enable_nids_engine_(false) {
 
 	setName("Lan network stack");
 
@@ -220,7 +222,7 @@ void StackLan::enableFrequencyEngine(bool enable) {
 
 		// Link the FlowManagers so the caches will be released if called 
 		freqs_tcp->setFlowManager(flow_table_tcp_);	
-		freqs_udp->setFlowManager(flow_table_udp_);	
+		freqs_udp->setFlowManager(flow_table_udp_);
 	} else {
 		freqs_tcp->destroyFrequencies(tcp_flows_created);	
 		freqs_udp->destroyFrequencies(udp_flows_created);	
@@ -232,6 +234,7 @@ void StackLan::enableFrequencyEngine(bool enable) {
 		freqs_tcp->setFlowManager(FlowManagerPtrWeak());	
 		freqs_udp->setFlowManager(FlowManagerPtrWeak());	
 	}
+	enable_frequency_engine_ = enable;
 }
 
 void StackLan::enableNIDSEngine(bool enable) {
@@ -252,6 +255,7 @@ void StackLan::enableNIDSEngine(bool enable) {
 		enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
         	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});	
 	}
+	enable_nids_engine_ = enable;
 }
 
 void StackLan::setTotalTCPFlows(int value) {

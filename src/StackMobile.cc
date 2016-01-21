@@ -58,7 +58,9 @@ StackMobile::StackMobile():
         ff_udp_low_(FlowForwarderPtr(new FlowForwarder())),
         ff_gprs_(FlowForwarderPtr(new FlowForwarder())), 
         ff_tcp_(FlowForwarderPtr(new FlowForwarder())), 
-        ff_udp_high_(FlowForwarderPtr(new FlowForwarder())) { 
+        ff_udp_high_(FlowForwarderPtr(new FlowForwarder())),
+        enable_frequency_engine_(false),
+        enable_nids_engine_(false) { 
 
 	setName("Mobile Network Stack");
 
@@ -326,6 +328,7 @@ void StackMobile::enableFrequencyEngine(bool enable) {
                 freqs_tcp->setFlowManager(FlowManagerPtrWeak());
                 freqs_udp->setFlowManager(FlowManagerPtrWeak());
         }
+	enable_frequency_engine_ = enable;
 }
 
 void StackMobile::enableNIDSEngine(bool enable) {
@@ -345,6 +348,7 @@ void StackMobile::enableNIDSEngine(bool enable) {
 		enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
         	enableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
         }
+	enable_nids_engine_ = enable;
 }
 
 void StackMobile::setFlowsTimeout(int timeout) {

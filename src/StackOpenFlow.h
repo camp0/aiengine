@@ -118,6 +118,8 @@ public:
 
 	void enableNIDSEngine(bool value);
 	void enableFrequencyEngine(bool value);
+        bool isEnableFrequencyEngine() const { return enable_frequency_engine_; }
+        bool isEnableNIDSEngine() const { return enable_nids_engine_; }
 
 	void setFlowsTimeout(int timeout);
 	int getFlowsTimeout() const { return flow_table_tcp_vir_->getTimeout(); }
@@ -190,6 +192,9 @@ private:
         FlowForwarderPtr ff_tcp_;
         FlowForwarderPtr ff_tcp_vir_;
         FlowForwarderPtr ff_udp_vir_;
+
+       	bool enable_frequency_engine_;
+       	bool enable_nids_engine_;
 };
 
 typedef std::shared_ptr<StackOpenFlow> StackOpenFlowPtr;

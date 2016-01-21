@@ -25,7 +25,7 @@ if __name__ == '__main__':
     ipset.callback = callback_tor
 
     ipset_mng = pyaiengine.IPSetManager()
-    ipset_mng.addIPSet(ipset)
+    ipset_mng.add_ip_set(ipset)
 
     """ Take a big list of IP address that belongs to ToR """
     req = urllib2.Request("https://www.dan.me.uk/torlist/")
@@ -37,14 +37,14 @@ if __name__ == '__main__':
     	        socket.inet_aton(ip)
             except:
     	        continue
-            ipset.addIPAddress(ip)
+            ipset.add_ip_address(ip)
     except urllib2.URLError as e:
         print("Error:",e)
 
-    st.tcpipsetmanager = ipset_mng
+    st.tcp_ip_set_manager = ipset_mng
 
-    st.tcpflows = 327680
-    st.udpflows = 163840
+    st.tcp_flows = 327680
+    st.udp_flows = 163840
 
     with pyaiengine.PacketDispatcher("eth0") as pd:
         pd.stack = st 

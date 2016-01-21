@@ -84,6 +84,8 @@ public:
 
 	virtual void enableFrequencyEngine(bool enable) = 0;
 	virtual void enableNIDSEngine(bool enable) = 0;
+	virtual bool isEnableFrequencyEngine() const = 0;
+	virtual bool isEnableNIDSEngine() const = 0;
 
 	void enableLinkLayerTagging(const std::string& type); 
 

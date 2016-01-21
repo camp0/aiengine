@@ -12,7 +12,7 @@ sys.path.append("../src/")
 import pyaiengine
 
 def callback_troyan_activity(flow):
-    ip = flow.srcip
+    ip = flow.src_ip
 
     print("Detected OSX_DocksterTrojan on ip:",ip)
 
@@ -27,11 +27,11 @@ def callback_domain(flow):
             "^\xff\xff\xff\xff\xc2\x1f\x96\x9b\x5f\x03\xd3\x3d\x43\xe0\x4f\x8f")
 
         reg.callback = callback_troyan_activity
-        r_mng.addRegex(reg)
+        r_mng.add_regex(reg)
 
         # Something of the references of python are wrong
         # do not remove this call, fix on future.
-        st.tcpregexmanager = r_mng
+        st.tcp_regex_manager = r_mng
 
 
 if __name__ == '__main__':
@@ -44,22 +44,22 @@ if __name__ == '__main__':
     dom = pyaiengine.DomainName("OSX_DocksterTrojan suspicious domain",
         "itsec.eicp.net")
     dom.callback = callback_domain
-    dm.addDomainName(dom)
+    dm.add_domain_name(dom)
 
     r_mng = pyaiengine.RegexManager()
 
-    st.setDomainNameManager(dm,"DNSProtocol")
-    st.tcpregexmanager = r_mng
+    st.set_domain_name_manager(dm,"DNSProtocol")
+    st.tcp_regex_manager = r_mng
 
-    st.tcpflows = 327680
-    st.udpflows = 163840
+    st.tcp_flows = 327680
+    st.udp_flows = 163840
 
     with pyaiengine.PacketDispatcher("/home/luis/pcapfiles/troyan/OSX_DocksterTrojan.pcap") as pd:
         pd.stack = st
         pd.run()
 
     # Dump on file the statistics of the stack
-    st.statslevel = 5
+    st.stats_level = 5
     f = open("statistics.log","w")
     f.write(str(st))
     f.close()

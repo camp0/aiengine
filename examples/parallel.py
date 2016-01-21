@@ -17,15 +17,15 @@ def threadHandler(netmask):
     # Load an instance of a Network Stack on Lan Network
     st = pyaiengine.StackLan()
 
-    st.tcpflows = 327680
-    st.udpflows = 163840
+    st.tcp_flows = 327680
+    st.udp_flows = 163840
  
     with pyaiengine.PacketDispatcher("re0") as pd:
         pd.stack = st
-        pd.pcapfilter = netmask 
+        pd.pcap_filter = netmask 
         pd.run()
 
-    st.statslevel = 5
+    st.stats_level = 5
     f = open("statistics.log.%d" % os.getpid(),"w")
     f.write(str(st))
     f.close()

@@ -16,7 +16,7 @@ def callback(flow):
 
     r = flow.regex
     if(r):
-        print("Detection of ", r.name, " on ",flow.srcip) 
+        print("Detection of ", r.name, " on ",flow.src_ip) 
 
 
 def parseSnortLine(line):
@@ -50,7 +50,7 @@ def loadRegexFromSnort():
                 try:
                     r = pyaiengine.Regex(name,pcre)
                     r.callback = callback
-                    dm_tcp.addRegex(r) 
+                    dm_tcp.add_regex(r) 
                 except:
                     print("Can not add %s %s" % (name, pcre))
 
@@ -60,7 +60,7 @@ def loadRegexFromSnort():
                 try:
                     r = pyaiengine.Regex(name,pcre)
                     r.callback = callback
-                    dm_udp.addRegex(r) 
+                    dm_udp.add_regex(r) 
                 except:
                     print("Can not add %s %s" % (name, pcre))
 
@@ -77,19 +77,19 @@ if __name__ == '__main__':
 
      r_tcp,r_udp = loadRegexFromSnort()
 
-     st.tcpflows = 327680
-     st.udpflows = 163840
+     st.tcp_flows = 327680
+     st.udp_flows = 163840
 
-     st.tcpregexmanager = r_tcp
-     st.udpregexmanager = r_udp
+     st.tcp_regex_manager = r_tcp
+     st.udp_regex_manager = r_udp
 
-     st.enableNIDSEngine(True)
+     st.enable_nids_engine(True)
 
      with pyaiengine.PacketDispatcher("eth0") as pd:
          pd.stack = st
          """ Enable the shell so the user can take under control
          the all system """
-         pd.enableshell = True
+         pd.enable_shell = True
          pd.run()
      
      print(r_tcp)

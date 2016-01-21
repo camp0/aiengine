@@ -48,7 +48,10 @@ StackLanIPv6::StackLanIPv6():
         flow_cache_tcp_(FlowCachePtr(new FlowCache())),
         // FlowForwarders
         ff_tcp_(FlowForwarderPtr(new FlowForwarder())),
-        ff_udp_(FlowForwarderPtr(new FlowForwarder())) {
+        ff_udp_(FlowForwarderPtr(new FlowForwarder())),
+        rj_mng_(),
+        enable_frequency_engine_(false),
+        enable_nids_engine_(false) {
 
 	setName("Lan IPv6 network stack");
 
@@ -228,6 +231,7 @@ void StackLanIPv6::enableFrequencyEngine(bool enable) {
                 freqs_tcp->setFlowManager(FlowManagerPtrWeak());
                 freqs_udp->setFlowManager(FlowManagerPtrWeak());
 	}
+	enable_frequency_engine_ = enable;
 }
 
 void StackLanIPv6::enableNIDSEngine(bool enable) {
@@ -247,6 +251,7 @@ void StackLanIPv6::enableNIDSEngine(bool enable) {
         	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
         	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
 	}
+	enable_nids_engine_ = enable;
 }
 
 void StackLanIPv6::setTotalTCPFlows(int value) {
