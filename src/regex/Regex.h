@@ -149,6 +149,7 @@ public:
 
 #endif
 	bool matchAndExtract(const std::string& data);
+	bool matchAndExtract(const boost::string_ref& data);
 
 	const char *getExtract() const { return extract_buffer_;} 
 

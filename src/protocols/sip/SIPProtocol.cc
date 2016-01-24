@@ -154,7 +154,7 @@ void SIPProtocol::releaseCache() {
         }
 }
 
-void SIPProtocol::extract_via_value(SIPInfo *info, const char *header) {
+void SIPProtocol::extract_via_value(SIPInfo *info, boost::string_ref &header) {
 
         if (sip_via_->matchAndExtract(header)) {
 
@@ -165,7 +165,7 @@ void SIPProtocol::extract_via_value(SIPInfo *info, const char *header) {
         }
 }
 
-void SIPProtocol::extract_from_value(SIPInfo *info, const char *header) {
+void SIPProtocol::extract_from_value(SIPInfo *info, boost::string_ref &header) {
 
 	if (sip_from_->matchAndExtract(header)) {
 
@@ -197,7 +197,7 @@ void SIPProtocol::attach_from_to_flow(SIPInfo *info, boost::string_ref &from) {
 	}
 }
 
-void SIPProtocol::extract_to_value(SIPInfo *info, const char *header) {
+void SIPProtocol::extract_to_value(SIPInfo *info, boost::string_ref &header) {
 
 	if (sip_to_->matchAndExtract(header)) {
 
@@ -270,11 +270,10 @@ void SIPProtocol::attach_uri_to_flow(SIPInfo *info, boost::string_ref &uri) {
 }
 
 
-void SIPProtocol::extract_uri_value(SIPInfo *info, const char *header) {
+void SIPProtocol::extract_uri_value(SIPInfo *info, boost::string_ref &header) {
 
 	int offset = 0;
 	bool found = false;
-	boost::string_ref sip_header(header);
 
 	// Check if is a response 
         if (std::memcmp("SIP/2.",&header[0],6) == 0) {
@@ -299,9 +298,9 @@ void SIPProtocol::extract_uri_value(SIPInfo *info, const char *header) {
 	}
 
 	if ((found)and(offset > 0)) {
-		int end = sip_header.find("SIP/2.");
+		int end = header.find("SIP/2.");
 		if (end > 0) {
-			boost::string_ref uri(sip_header.substr(offset,(end-offset)-1));
+			boost::string_ref uri(header.substr(offset,(end-offset)-1));
 	
 			++total_requests_;	
 			attach_uri_to_flow(info,uri);	
@@ -314,10 +313,9 @@ void SIPProtocol::extract_uri_value(SIPInfo *info, const char *header) {
 void SIPProtocol::processFlow(Flow *flow) {
 
 	++total_packets_;	
-	total_bytes_ += flow->packet->getLength();
+	int length = flow->packet->getLength();
+	total_bytes_ += length;
 	++flow->total_packets_l7;
-
-	const char *header = reinterpret_cast <const char*> (flow->packet->getPayload());
 
 	SharedPointer<SIPInfo> sinfo = flow->sip_info.lock();
 
@@ -328,6 +326,10 @@ void SIPProtocol::processFlow(Flow *flow) {
                 }
                 flow->sip_info = sinfo;
         }
+
+	boost::string_ref header(reinterpret_cast <const char*> (flow->packet->getPayload()),length);
+
+	// std::cout << __FILE__ << ":" << __func__ << ":header:" << header << std::endl;
 
 	extract_uri_value(sinfo.get(),header);
 	

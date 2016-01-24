@@ -56,6 +56,22 @@ bool Regex::matchAndExtract(const std::string &data) {
         return result;
 }
 
+bool Regex::matchAndExtract(const boost::string_ref &data) {
+
+        bool result = false;
+
+        int ret = pcre_exec(exp_,NULL,data.data(),data.length(),0,0,ovecount_,32);
+        if (ret == 1)
+                result = true;
+
+        ret = pcre_copy_substring(data.data(),ovecount_,ret,0,extract_buffer_,256);
+
+        if (result)
+                ++total_matchs_;
+        ++total_evaluates_;
+        return result;
+}
+
 std::ostream& operator<< (std::ostream& out, const Regex& sig) {
 
 	out << "\t" << "Regex:" << sig.getName() << " matches:" << sig.total_matchs_;	

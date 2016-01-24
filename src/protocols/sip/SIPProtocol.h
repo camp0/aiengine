@@ -135,10 +135,10 @@ private:
 	void attach_from_to_flow(SIPInfo *info, boost::string_ref &from);
 	void attach_to_to_flow(SIPInfo *info, boost::string_ref &to);
 	void attach_via_to_flow(SIPInfo *info, boost::string_ref &via);
-	void extract_uri_value(SIPInfo *info, const char *header);
-	void extract_from_value(SIPInfo *info, const char *header);
-	void extract_to_value(SIPInfo *info, const char *header);
-	void extract_via_value(SIPInfo *info, const char *header);
+	void extract_uri_value(SIPInfo *info, boost::string_ref &header);
+	void extract_from_value(SIPInfo *info, boost::string_ref &header);
+	void extract_to_value(SIPInfo *info, boost::string_ref &header);
+	void extract_via_value(SIPInfo *info, boost::string_ref &header);
 
 	static std::vector<SipMethodType> methods_;
 	static std::vector<SipMethodType> responses_;

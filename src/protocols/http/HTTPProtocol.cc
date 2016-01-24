@@ -440,18 +440,19 @@ void HTTPProtocol::parse_header(HTTPInfo *info, boost::string_ref &header) {
 	header_field_.clear();
 	header_parameter_.clear(); 
 
-	for (i = 0; i< header.length(); ++i) {
+	for (i = 0; i <= header.length() - 4 ; ++i) {
        		// Check if is end off line
                 if (std::memcmp(&header[i],"\r\n",2) == 0 ) {
 
+			// std::cout << "HEADER PARAMETER:i(" << i << ")" << &header[i] << std::endl;
                 	if(header_field_.length()) {
                         	auto it = parameters_.find(header_field_);
                                 if (it != parameters_.end()) {
                                 	auto callback = (*it).second;
 					
 					header_parameter_ = header.substr(parameter_index, i - parameter_index);
-
-                                        bool sw = callback(info,header_parameter_);
+                                        
+					bool sw = callback(info,header_parameter_);
 					if (!sw) { // The flow have been marked as banned
                                                 info->setIsBanned(true);
 						release_http_info_cache(info); 
@@ -547,8 +548,14 @@ int HTTPProtocol::process_requests_and_responses(HTTPInfo *info, boost::string_r
 	int offset = extract_uri(info,header);
         if (offset > 0) {
         	http_header_size_ = offset;
-		boost::string_ref newheader(header.substr(offset, header.length() - offset));
-                parse_header(info, newheader);
+		int length = header.length() - offset;
+	
+		// We expect a minimun of a header, bigger than \r\n\r\n for example	
+		if (length > 4) {
+			boost::string_ref newheader(header.substr(offset, length));
+			// std::cout << __FILE__ << ":" << __func__ << ":length:" << length << " header:" << newheader << std::endl;
+                	parse_header(info, newheader);
+		}
         }
 
 	return offset;
