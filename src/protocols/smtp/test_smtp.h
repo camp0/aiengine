@@ -62,8 +62,8 @@ struct StackSMTPtest
         FlowCachePtr flow_cache;
 
         // FlowForwarders
-        FlowForwarderPtr ff_tcp;
-        FlowForwarderPtr ff_smtp;
+        SharedPointer<FlowForwarder> ff_tcp;
+        SharedPointer<FlowForwarder> ff_smtp;
 
         StackSMTPtest()
         {
@@ -85,8 +85,8 @@ struct StackSMTPtest
                 flow_mng = FlowManagerPtr(new FlowManager());
                 flow_cache = FlowCachePtr(new FlowCache());
 
-                ff_tcp = FlowForwarderPtr(new FlowForwarder());
-                ff_smtp = FlowForwarderPtr(new FlowForwarder());
+                ff_tcp = SharedPointer<FlowForwarder>(new FlowForwarder());
+                ff_smtp = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);

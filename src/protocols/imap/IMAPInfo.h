@@ -52,7 +52,7 @@ public:
 	void incClientCommands() { ++client_commands_; }
 	void incServerCommands() { ++server_commands_; }
 
-	WeakPointer<StringCache> user_name;
+	SharedPointer<StringCache> user_name;
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
@@ -62,7 +62,7 @@ public:
         	return out;
 	}
 
-	const char *getUserName() const { return (!user_name.expired() ? user_name.lock()->getName() : ""); }
+	const char *getUserName() const { return (user_name ? user_name->getName() : ""); }
 #endif
 
 private:

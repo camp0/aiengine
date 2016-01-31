@@ -55,7 +55,7 @@ struct StackSNMPtest
         FlowCachePtr flow_cache;
 
         // FlowForwarders
-        FlowForwarderPtr ff_udp,ff_snmp;
+        SharedPointer<FlowForwarder> ff_udp,ff_snmp;
 
         StackSNMPtest()
         {
@@ -74,8 +74,8 @@ struct StackSNMPtest
                 flow_mng = FlowManagerPtr(new FlowManager());
                 flow_cache = FlowCachePtr(new FlowCache());
 
-                ff_udp = FlowForwarderPtr(new FlowForwarder());
-                ff_snmp = FlowForwarderPtr(new FlowForwarder());
+                ff_udp = SharedPointer<FlowForwarder>(new FlowForwarder());
+                ff_snmp = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);

@@ -60,7 +60,7 @@ int64_t SMTPProtocol::getAllocatedMemory() const {
 // Removes or decrements the hits of the maps.
 __attribute__ ((unused)) void SMTPProtocol::release_smtp_info_cache(SMTPInfo *info) {
 
-        SharedPointer<StringCache> from_ptr = info->from.lock();
+        SharedPointer<StringCache> from_ptr = info->from;
 
         if (from_ptr) { // There is no from attached
                 GenericMapType::iterator it = from_map_.find(from_ptr->getName());
@@ -74,7 +74,7 @@ __attribute__ ((unused)) void SMTPProtocol::release_smtp_info_cache(SMTPInfo *in
                 }
         }
 
-        SharedPointer<StringCache> to_ptr = info->to.lock();
+        SharedPointer<StringCache> to_ptr = info->to;
 
         if (to_ptr) { // There is a to attached 
                 GenericMapType::iterator it = to_map_.find(to_ptr->getName());
@@ -95,14 +95,14 @@ int32_t SMTPProtocol::release_smtp_info(SMTPInfo *info) {
 
         int32_t bytes_released = 0;
 
-        SharedPointer<StringCache> from = info->from.lock();
+        SharedPointer<StringCache> from = info->from;
 
         if (from) { // The flow have a from attached
                 bytes_released += from->getNameSize();
                 from_cache_->release(from);
         }
 
-        SharedPointer<StringCache> to = info->to.lock();
+        SharedPointer<StringCache> to = info->to;
         if (to) {
                 bytes_released += to->getNameSize();
                 to_cache_->release(to);
@@ -140,9 +140,8 @@ void SMTPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-			if (!flow->smtp_info.expired()) {
-                        	SharedPointer<SMTPInfo> sinfo = flow->smtp_info.lock();
-
+                       	SharedPointer<SMTPInfo> sinfo = flow->smtp_info;
+			if (sinfo) {
                                 total_bytes_released_by_flows += release_smtp_info(sinfo.get());
                                 total_bytes_released_by_flows += sizeof(sinfo);
                                 sinfo.reset();
@@ -171,10 +170,10 @@ void SMTPProtocol::releaseCache() {
 
 void SMTPProtocol::attach_from(SMTPInfo *info, boost::string_ref &from) {
 
-	if (info->from.expired()) {
+	if (!info->from) {
                 GenericMapType::iterator it = from_map_.find(from);
                 if (it == from_map_.end()) {
-                        SharedPointer<StringCache> from_ptr = from_cache_->acquire().lock();
+                        SharedPointer<StringCache> from_ptr = from_cache_->acquire();
                         if (from_ptr) {
                                 from_ptr->setName(from.data(),from.length());
                                 info->from = from_ptr;
@@ -191,7 +190,7 @@ void SMTPProtocol::attach_from(SMTPInfo *info, boost::string_ref &from) {
 
 void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, boost::string_ref &header) {
 
-	SharedPointer<StringCache> from_ptr = info->from.lock();
+	SharedPointer<StringCache> from_ptr = info->from;
 
 	size_t start = header.find("<");
 	size_t end = header.rfind(">");
@@ -250,14 +249,14 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, boost::string_ref 
 
 void SMTPProtocol::handle_cmd_rcpt(SMTPInfo *info, boost::string_ref &header) {
 
-	if (info->to.expired()) {
+	if (!info->to) {
         	size_t start = header.find("<");
         	size_t end = header.rfind(">");
 
 		boost::string_ref to(header.substr(start + 1,end - start - 1));
                 GenericMapType::iterator it = to_map_.find(to);
                 if (it == to_map_.end()) {
-                        SharedPointer<StringCache> to_ptr = to_cache_->acquire().lock();
+                        SharedPointer<StringCache> to_ptr = to_cache_->acquire();
                         if (to_ptr) {
                                 to_ptr->setName(to.data(),to.length());
                                 info->to = to_ptr;
@@ -280,10 +279,10 @@ void SMTPProtocol::processFlow(Flow *flow) {
 
 	setHeader(flow->packet->getPayload());
 
-       	SharedPointer<SMTPInfo> sinfo = flow->smtp_info.lock();
+       	SharedPointer<SMTPInfo> sinfo = flow->smtp_info;
 
        	if(!sinfo) {
-               	sinfo = info_cache_->acquire().lock();
+               	sinfo = info_cache_->acquire();
                	if (!sinfo) {
                        	return;
                	}

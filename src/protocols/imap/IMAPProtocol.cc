@@ -73,7 +73,7 @@ int64_t IMAPProtocol::getAllocatedMemory() const {
 // Removes or decrements the hits of the maps.
 void IMAPProtocol::release_imap_info_cache(IMAPInfo *info) {
 
-        SharedPointer<StringCache> user_ptr = info->user_name.lock();
+        SharedPointer<StringCache> user_ptr = info->user_name;
 
         if (user_ptr) { // There is no from attached
                 GenericMapType::iterator it = user_map_.find(user_ptr->getName());
@@ -93,7 +93,7 @@ int32_t IMAPProtocol::release_imap_info(IMAPInfo *info) {
 
         int32_t bytes_released = 0;
 
-        SharedPointer<StringCache> user = info->user_name.lock();
+        SharedPointer<StringCache> user = info->user_name;
 
         if (user) { // The flow have a user name attached
                 bytes_released += user->getNameSize();
@@ -127,9 +127,8 @@ void IMAPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-			if (!flow->imap_info.expired()) {
-                        	SharedPointer<IMAPInfo> iinfo = flow->imap_info.lock();
-                    
+                       	SharedPointer<IMAPInfo> iinfo = flow->imap_info;
+			if (iinfo) {
 				total_bytes_released_by_flows = release_imap_info(iinfo.get()); 
                                 total_bytes_released_by_flows += sizeof(iinfo);
                                 iinfo.reset();
@@ -155,10 +154,10 @@ void IMAPProtocol::releaseCache() {
 
 void IMAPProtocol::attach_user_name(IMAPInfo *info, boost::string_ref &name) {
 
-	if (info->user_name.expired()) {
+	if (!info->user_name) {
                 GenericMapType::iterator it = user_map_.find(name);
                 if (it == user_map_.end()) {
-                        SharedPointer<StringCache> user_ptr = user_cache_->acquire().lock();
+                        SharedPointer<StringCache> user_ptr = user_cache_->acquire();
                         if (user_ptr) {
                                 user_ptr->setName(name.data(),name.length());
                                 info->user_name = user_ptr;
@@ -239,10 +238,10 @@ void IMAPProtocol::processFlow(Flow *flow) {
 
 	setHeader(flow->packet->getPayload());
 
-        SharedPointer<IMAPInfo> iinfo = flow->imap_info.lock();
+        SharedPointer<IMAPInfo> iinfo = flow->imap_info;
 
         if(!iinfo) {
-                iinfo = info_cache_->acquire().lock();
+                iinfo = info_cache_->acquire();
                 if (!iinfo) {
                         return;
                 }

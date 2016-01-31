@@ -62,8 +62,8 @@ struct StackSSDPtest
         FlowCachePtr flow_cache;
 
         // FlowForwarders
-        FlowForwarderPtr ff_udp;
-        FlowForwarderPtr ff_ssdp;
+        SharedPointer<FlowForwarder> ff_udp;
+        SharedPointer<FlowForwarder> ff_ssdp;
 
         StackSSDPtest()
         {
@@ -85,8 +85,8 @@ struct StackSSDPtest
                 flow_mng = FlowManagerPtr(new FlowManager());
                 flow_cache = FlowCachePtr(new FlowCache());
 
-                ff_udp = FlowForwarderPtr(new FlowForwarder());
-                ff_ssdp = FlowForwarderPtr(new FlowForwarder());
+                ff_udp = SharedPointer<FlowForwarder>(new FlowForwarder());
+                ff_ssdp = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);

@@ -96,35 +96,28 @@ void SIPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-			if (!flow->sip_info.expired()) {
-				SharedPointer<SIPInfo> sinfo = flow->sip_info.lock();
-
-				if (!sinfo->uri.expired()) {	
-                        		SharedPointer<StringCache> sc = sinfo->uri.lock();
-		
+			SharedPointer<SIPInfo> sinfo = flow->sip_info;
+			if (sinfo) {
+                        	SharedPointer<StringCache> sc = sinfo->uri;
+				if (sc) {	
 					sinfo->uri.reset();
 					total_bytes_released_by_flows += sc->getNameSize();
 					uri_cache_->release(sc);
 				}
-
-				if (!sinfo->from.expired()) {	
-                        		SharedPointer<StringCache> sc = sinfo->from.lock();
-                        
+                        	sc = sinfo->from;
+				if (sc) {	
                                 	sinfo->from.reset();
                                 	total_bytes_released_by_flows += sc->getNameSize();
                                 	from_cache_->release(sc);
                         	}
-
-				if (!sinfo->to.expired()) {	
-                        		SharedPointer<StringCache> sc = sinfo->to.lock();
-                        	
+                        	sc = sinfo->to;
+				if (sc) {	
                                 	sinfo->to.reset();
                                 	total_bytes_released_by_flows += sc->getNameSize();
                                 	to_cache_->release(sc);
                         	}
-				if (!sinfo->via.expired()) {	
-                        		SharedPointer<StringCache> sc = sinfo->via.lock();
-                        	
+                        	sc = sinfo->via;
+				if (sc) {	
                                 	sinfo->via.reset();
                                 	total_bytes_released_by_flows += sc->getNameSize();
                                 	to_cache_->release(sc);
@@ -179,10 +172,10 @@ void SIPProtocol::extract_from_value(SIPInfo *info, boost::string_ref &header) {
 
 void SIPProtocol::attach_from_to_flow(SIPInfo *info, boost::string_ref &from) {
 
-	if (info->from.expired()) {
+	if (!info->from) {
 		GenericMapType::iterator it = from_map_.find(from);
 		if (it == from_map_.end()) {
-			SharedPointer<StringCache> from_ptr = from_cache_->acquire().lock();
+			SharedPointer<StringCache> from_ptr = from_cache_->acquire();
 			if (from_ptr) {
 				from_ptr->setName(from.data(),from.length());
 				info->from = from_ptr;
@@ -210,10 +203,10 @@ void SIPProtocol::extract_to_value(SIPInfo *info, boost::string_ref &header) {
 
 void SIPProtocol::attach_to_to_flow(SIPInfo *info, boost::string_ref &to) {
 
-	if (info->to.expired()) {
+	if (!info->to) {
 		GenericMapType::iterator it = to_map_.find(to);
 		if (it == to_map_.end()) {
-			SharedPointer<StringCache> to_ptr = to_cache_->acquire().lock();
+			SharedPointer<StringCache> to_ptr = to_cache_->acquire();
 			if (to_ptr) {
 				to_ptr->setName(to.data(),to.length());
 				info->to = to_ptr;
@@ -231,10 +224,10 @@ void SIPProtocol::attach_to_to_flow(SIPInfo *info, boost::string_ref &to) {
 
 void SIPProtocol::attach_via_to_flow(SIPInfo *info, boost::string_ref &via) {
 
-	if (info->via.expired()) {
+	if (!info->via) {
                 GenericMapType::iterator it = via_map_.find(via);
                 if (it == via_map_.end()) {
-                        SharedPointer<StringCache> via_ptr = via_cache_->acquire().lock();
+                        SharedPointer<StringCache> via_ptr = via_cache_->acquire();
                         if (via_ptr) {
                                 via_ptr->setName(via.data(),via.length());
                                 info->via = via_ptr;
@@ -254,7 +247,7 @@ void SIPProtocol::attach_uri_to_flow(SIPInfo *info, boost::string_ref &uri) {
 
 	GenericMapType::iterator it = uri_map_.find(uri);
         if (it == uri_map_.end()) {
-        	SharedPointer<StringCache> uri_ptr = uri_cache_->acquire().lock();
+        	SharedPointer<StringCache> uri_ptr = uri_cache_->acquire();
                 if (uri_ptr) {
                 	uri_ptr->setName(uri.data(),uri.length());
                         info->uri = uri_ptr;
@@ -317,10 +310,10 @@ void SIPProtocol::processFlow(Flow *flow) {
 	total_bytes_ += length;
 	++flow->total_packets_l7;
 
-	SharedPointer<SIPInfo> sinfo = flow->sip_info.lock();
+	SharedPointer<SIPInfo> sinfo = flow->sip_info;
 
         if(!sinfo) {
-                sinfo = info_cache_->acquire().lock();
+                sinfo = info_cache_->acquire();
                 if (!sinfo) {
                         return;
                 }

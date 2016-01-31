@@ -54,7 +54,7 @@ public:
         void setIsBanned(bool value) { is_banned_ = value; }
         bool getIsBanned() const { return is_banned_; }
 
-	WeakPointer<StringCache> user_name;
+	SharedPointer<StringCache> user_name;
 	
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
@@ -64,7 +64,7 @@ public:
         	return out;
 	}
 
-	const char *getUserName() const { return (!user_name.expired() ? user_name.lock()->getName() : ""); }
+	const char *getUserName() const { return (user_name ? user_name->getName() : ""); }
 #endif
 
 private:

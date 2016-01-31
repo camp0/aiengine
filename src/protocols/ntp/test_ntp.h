@@ -55,7 +55,7 @@ struct StackNTPtest
         FlowCachePtr flow_cache;
 
         // FlowForwarders
-        FlowForwarderPtr ff_udp,ff_ntp;
+        SharedPointer<FlowForwarder> ff_udp,ff_ntp;
 
         StackNTPtest()
         {
@@ -74,8 +74,8 @@ struct StackNTPtest
                 flow_mng = FlowManagerPtr(new FlowManager());
                 flow_cache = FlowCachePtr(new FlowCache());
 
-                ff_udp = FlowForwarderPtr(new FlowForwarder());
-                ff_ntp = FlowForwarderPtr(new FlowForwarder());
+                ff_udp = SharedPointer<FlowForwarder>(new FlowForwarder());
+                ff_ntp = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);

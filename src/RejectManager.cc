@@ -62,11 +62,9 @@ void RejectManager<StackLan>::rejectTCPFlow(Flow *flow) {
 		tcp_down.setFlagRst(true);
 	
 		// Probably there is no need to check this	
-		if (!flow->tcp_info.expired()) {
-			SharedPointer<TCPInfo> info = flow->tcp_info.lock();
-
+		if (flow->tcp_info) {
 			// TODO: verify the sequence numbers
-			tcp_down.setSequenceNumber(info->seq_num[0]);
+			tcp_down.setSequenceNumber(flow->tcp_info->seq_num[0]);
 		}
 
 		tcp_down.computeChecksum(flow->getDestinationAddress(),flow->getSourceAddress());
@@ -93,10 +91,9 @@ void RejectManager<StackLan>::rejectTCPFlow(Flow *flow) {
                 tcp_up.setWindowSize(0);
                 tcp_up.setFlagRst(true);
 
-                if (!flow->tcp_info.expired()) {
-                        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+                if (flow->tcp_info) {
 
-                        tcp_up.setSequenceNumber(info->seq_num[0]);
+                        tcp_up.setSequenceNumber(flow->tcp_info->seq_num[0]);
                 }
 
                 tcp_up.computeChecksum(flow->getSourceAddress(),flow->getDestinationAddress());
@@ -218,11 +215,9 @@ void RejectManager<StackLanIPv6>::rejectTCPFlow(Flow *flow) {
                 tcp_down.setFlagRst(true);
 
                 // Probably there is no need to check this
-                if (!flow->tcp_info.expired()) {
-                        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
-
+                if (flow->tcp_info) {
                         // TODO: verify the sequence numbers
-                        tcp_down.setSequenceNumber(info->seq_num[0]);
+                        tcp_down.setSequenceNumber(flow->tcp_info->seq_num[0]);
                 }
 
                 tcp_down.computeChecksum(ip_down.getHeader());
@@ -256,10 +251,9 @@ void RejectManager<StackLanIPv6>::rejectTCPFlow(Flow *flow) {
                 tcp_up.setWindowSize(0);
                 tcp_up.setFlagRst(true);
 
-                if (!flow->tcp_info.expired()) {
-                        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+                if (flow->tcp_info) {
 
-                        tcp_up.setSequenceNumber(info->seq_num[0]);
+                        tcp_up.setSequenceNumber(flow->tcp_info->seq_num[0]);
                 }
 
                 tcp_up.computeChecksum(ip_up.getHeader());

@@ -73,9 +73,9 @@ BOOST_AUTO_TEST_CASE (test2_tcp)
 // Test case for verify tcp flags
 BOOST_AUTO_TEST_CASE (test3_tcp)
 {
-        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
-        int length1 = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
-        Packet packet(pkt1,length1);
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
+        int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
+        Packet packet(pkt,length);
 
         mux_eth->setPacket(&packet);
         eth->setHeader(packet.getPayload());
@@ -85,9 +85,9 @@ BOOST_AUTO_TEST_CASE (test3_tcp)
 	Flow *flow = tcp->getCurrentFlow();
 
 	BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
+        BOOST_CHECK(flow->tcp_info != nullptr);
 	BOOST_CHECK(flow->regex_mng.lock() == nullptr);
-	SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+	SharedPointer<TCPInfo> info = flow->tcp_info;
 
 	BOOST_CHECK(info->syn == 0);
 	BOOST_CHECK(info->fin == 0);
@@ -110,8 +110,8 @@ BOOST_AUTO_TEST_CASE (test4_tcp)
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
-        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+        BOOST_CHECK(flow->tcp_info != nullptr);
+        SharedPointer<TCPInfo> info = flow->tcp_info;
 
         BOOST_CHECK(info->syn == 1);
         BOOST_CHECK(info->fin == 0);
@@ -134,8 +134,8 @@ BOOST_AUTO_TEST_CASE (test5_tcp)
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
-        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+        BOOST_CHECK(flow->tcp_info != nullptr);
+        SharedPointer<TCPInfo> info = flow->tcp_info;
 
         BOOST_CHECK(info->syn == 0);
         BOOST_CHECK(info->fin == 0);
@@ -166,8 +166,8 @@ BOOST_AUTO_TEST_CASE (test6_tcp)
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
-        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+        BOOST_CHECK(flow->tcp_info != nullptr);
+        SharedPointer<TCPInfo> info = flow->tcp_info;
 
         BOOST_CHECK(info->syn == 1);
         BOOST_CHECK(info->fin == 0);
@@ -191,8 +191,8 @@ BOOST_AUTO_TEST_CASE (test7_tcp)
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
-        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+        BOOST_CHECK(flow->tcp_info != nullptr);
+        SharedPointer<TCPInfo> info = flow->tcp_info;
 	PacketAnomalyType pa = flow->getPacketAnomaly();
 
         BOOST_CHECK(info->syn == 0);
@@ -220,7 +220,7 @@ BOOST_AUTO_TEST_CASE (test8_tcp)
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
+        BOOST_CHECK(flow->tcp_info != nullptr);
 	PacketAnomalyType pa = flow->getPacketAnomaly();
 	BOOST_CHECK(pa == PacketAnomalyType::TCP_BOGUS_HEADER);
 }
@@ -279,8 +279,8 @@ BOOST_AUTO_TEST_CASE (test9_tcp)
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
-        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+        BOOST_CHECK(flow->tcp_info != nullptr);
+        SharedPointer<TCPInfo> info = flow->tcp_info;
 
 	BOOST_CHECK(info->state_curr == static_cast<int>(TcpState::ESTABLISHED));
 	BOOST_CHECK(info->state_prev == static_cast<int>(TcpState::ESTABLISHED));
@@ -339,8 +339,8 @@ BOOST_AUTO_TEST_CASE (test10_tcp)
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
-        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+        BOOST_CHECK(flow->tcp_info != nullptr);
+        SharedPointer<TCPInfo> info = flow->tcp_info;
 
         BOOST_CHECK(info->state_curr == static_cast<int>(TcpState::ESTABLISHED));
         BOOST_CHECK(info->state_prev == static_cast<int>(TcpState::ESTABLISHED));
@@ -580,7 +580,7 @@ BOOST_AUTO_TEST_CASE (test1_tcp) // Two flows, the first expires
         BOOST_CHECK(flow_mng->getTotalFlows() == 1);
         BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 0);
 
-        BOOST_CHECK(flow_cache->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 1);
         BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
         BOOST_CHECK(flow_cache->getTotalReleases() == 0);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);
@@ -594,7 +594,7 @@ BOOST_AUTO_TEST_CASE (test1_tcp) // Two flows, the first expires
 	BOOST_CHECK(flow_mng->getTotalFlows() == 1);
         BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 1);
 
-        BOOST_CHECK(flow_cache->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 1);
         BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
         BOOST_CHECK(flow_cache->getTotalReleases() == 1);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);
@@ -620,7 +620,7 @@ BOOST_AUTO_TEST_CASE (test2_tcp) // Two flows, none of them expires due to the t
         BOOST_CHECK(flow_mng->getTotalFlows() == 1);
         BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 0);
 
-        BOOST_CHECK(flow_cache->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 1);
         BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
         BOOST_CHECK(flow_cache->getTotalReleases() == 0);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);
@@ -634,7 +634,7 @@ BOOST_AUTO_TEST_CASE (test2_tcp) // Two flows, none of them expires due to the t
         BOOST_CHECK(flow_mng->getTotalFlows() == 2);
         BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 0);
 
-        BOOST_CHECK(flow_cache->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 0);
         BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
         BOOST_CHECK(flow_cache->getTotalReleases() == 0);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);

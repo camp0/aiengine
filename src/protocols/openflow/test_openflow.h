@@ -70,11 +70,11 @@ struct StackTestOpenFlow
         MultiplexerPtr mux_icmp_vir;
 	FlowCachePtr flow_cache;
 	FlowManagerPtr flow_mng;
-	FlowForwarderPtr ff_tcp;
-	FlowForwarderPtr ff_udp_vir,ff_udpg_vir;
-	FlowForwarderPtr ff_tcp_vir,ff_tcpg_vir;
-	FlowForwarderPtr ff_of;
-	FlowForwarderPtr ff_dns_vir;
+	SharedPointer<FlowForwarder> ff_tcp;
+	SharedPointer<FlowForwarder> ff_udp_vir,ff_udpg_vir;
+	SharedPointer<FlowForwarder> ff_tcp_vir,ff_tcpg_vir;
+	SharedPointer<FlowForwarder> ff_of;
+	SharedPointer<FlowForwarder> ff_dns_vir;
 
         StackTestOpenFlow()
         {
@@ -104,13 +104,13 @@ struct StackTestOpenFlow
 		mux_udp_vir = MultiplexerPtr(new Multiplexer());
 		mux_tcp_vir = MultiplexerPtr(new Multiplexer());
 
-		ff_tcp = FlowForwarderPtr(new FlowForwarder());
-		ff_udp_vir = FlowForwarderPtr(new FlowForwarder());
-		ff_udpg_vir = FlowForwarderPtr(new FlowForwarder());
-		ff_tcpg_vir = FlowForwarderPtr(new FlowForwarder());
-		ff_tcp_vir = FlowForwarderPtr(new FlowForwarder());
-		ff_of = FlowForwarderPtr(new FlowForwarder());
-		ff_dns_vir = FlowForwarderPtr(new FlowForwarder());
+		ff_tcp = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_udp_vir = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_udpg_vir = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_tcpg_vir = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_tcp_vir = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_of = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_dns_vir = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 flow_cache = FlowCachePtr(new FlowCache());
                 flow_mng = FlowManagerPtr(new FlowManager());

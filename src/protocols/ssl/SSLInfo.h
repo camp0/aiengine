@@ -45,7 +45,7 @@ public:
 		data_pdus_ = 0;
         }
 
-        WeakPointer<StringCache> host;
+        SharedPointer<StringCache> host;
 
         void setIsBanned(bool value) { is_banned_ = value; }
         bool getIsBanned() const { return is_banned_; }
@@ -58,13 +58,12 @@ public:
         friend std::ostream& operator<< (std::ostream& out, const SSLInfo& sinfo) {
 
 		out << " DataPdus:" << sinfo.data_pdus_;
-                if (sinfo.host.lock())
-                        out << " Host:" << sinfo.getServerName() << " ";
+                out << " Host:" << sinfo.getServerName() << " ";
 
                 return out;
         }
 
-        const char *getServerName() const { return (!host.expired() ? host.lock()->getName() : ""); }
+        const char *getServerName() const { return (host ? host->getName() : ""); }
 #endif
 
 private:

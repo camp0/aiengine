@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE (test1_http)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_http_barrapunto_get);
         int length = raw_packet_ethernet_ip_tcp_http_barrapunto_get_length;
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
         mux_eth->setPacket(&packet);
         eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE (test1_http)
 	BOOST_CHECK(tcp->getTotalBytes() == 351);
 
 	BOOST_CHECK(flow_mng->getTotalFlows() == 1);
-	BOOST_CHECK(flow_cache->getTotalFlows() == 1);	
+	BOOST_CHECK(flow_cache->getTotalFlows() == 0);	
 	BOOST_CHECK(flow_cache->getTotalAcquires() == 1);	
 	BOOST_CHECK(flow_cache->getTotalReleases() == 0);	
 	
@@ -80,14 +80,14 @@ BOOST_AUTO_TEST_CASE (test2_http)
 			"Connection: close\r\n\r\n";
         unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
         int length = strlen(header);
-        
-	Packet packet(pkt,length,0);
-	SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+	Packet packet(pkt,length);
+	
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
 	flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
-	BOOST_CHECK(flow->http_info.lock() == nullptr);
+	BOOST_CHECK(flow->http_info == nullptr);
 }
 
 
@@ -111,21 +111,21 @@ BOOST_AUTO_TEST_CASE (test3_http)
 	// Verify the size of the Header
 	BOOST_CHECK(http->getHTTPHeaderSize() == 59);
 
-	BOOST_CHECK(flow->http_info.lock() != nullptr);
-	SharedPointer<HTTPInfo> info = flow->http_info.lock();
+	BOOST_CHECK(flow->http_info != nullptr);
+	SharedPointer<HTTPInfo> info = flow->http_info;
 
-        BOOST_CHECK(info->uri.lock() != nullptr);
-        BOOST_CHECK(info->host.lock() != nullptr);
+        BOOST_CHECK(info->uri != nullptr);
+        BOOST_CHECK(info->host != nullptr);
 
 	std::string cad("www.google.com");
 	std::string uri("/");
 
 	// The host is valid
-	BOOST_CHECK(cad.compare(info->host.lock()->getName()) == 0);
-	BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+	BOOST_CHECK(cad.compare(info->host->getName()) == 0);
+	BOOST_CHECK(uri.compare(info->uri->getName()) == 0);
 	BOOST_CHECK(info->getTotalRequests()  == 1);
 	BOOST_CHECK(info->getTotalResponses()  == 0);
-	BOOST_CHECK(info->ua.lock() == nullptr);
+	BOOST_CHECK(info->ua == nullptr);
 }
 
 BOOST_AUTO_TEST_CASE (test4_http)
@@ -150,17 +150,17 @@ BOOST_AUTO_TEST_CASE (test4_http)
 	std::string cad_host("www.g00gle.com");
         std::string cad_ua("LuisAgent");
 
-	BOOST_CHECK(flow->http_info.lock() != nullptr);
-	SharedPointer<HTTPInfo> info = flow->http_info.lock();
+	BOOST_CHECK(flow->http_info != nullptr);
+	SharedPointer<HTTPInfo> info = flow->http_info;
 
-        BOOST_CHECK(info->ua.lock() != nullptr);
-        BOOST_CHECK(info->host.lock() != nullptr);
+        BOOST_CHECK(info->ua != nullptr);
+        BOOST_CHECK(info->host != nullptr);
 
 	BOOST_CHECK(info->getResponseCode() == 0); // There is no response
 
         // The host is valid
-        BOOST_CHECK(cad_host.compare(info->host.lock()->getName()) == 0);
-        BOOST_CHECK(cad_ua.compare(info->ua.lock()->getName()) == 0);
+        BOOST_CHECK(cad_host.compare(info->host->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(info->ua->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test5_http)
@@ -189,15 +189,15 @@ BOOST_AUTO_TEST_CASE (test5_http)
         std::string cad_host("www.g00gle.com");
         std::string cad_ua("LuisAgent");
 
-	BOOST_CHECK(flow->http_info.lock() != nullptr);
-	SharedPointer<HTTPInfo> info = flow->http_info.lock();
-        BOOST_CHECK(info->ua.lock() != nullptr);
-        BOOST_CHECK(info->host.lock() != nullptr);
-        BOOST_CHECK(info->uri.lock() != nullptr);
+	BOOST_CHECK(flow->http_info != nullptr);
+	SharedPointer<HTTPInfo> info = flow->http_info;
+        BOOST_CHECK(info->ua != nullptr);
+        BOOST_CHECK(info->host != nullptr);
+        BOOST_CHECK(info->uri != nullptr);
 
-        BOOST_CHECK(cad_uri.compare(info->uri.lock()->getName()) == 0);
-        BOOST_CHECK(cad_host.compare(info->host.lock()->getName()) == 0);
-        BOOST_CHECK(cad_ua.compare(info->ua.lock()->getName()) == 0);
+        BOOST_CHECK(cad_uri.compare(info->uri->getName()) == 0);
+        BOOST_CHECK(cad_host.compare(info->host->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(info->ua->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test6_http)
@@ -228,15 +228,15 @@ BOOST_AUTO_TEST_CASE (test6_http)
         std::string cad_host("www.g00gle.com");
         std::string cad_ua("LuisAgent CFNetwork/609 Darwin/13.0.0");
 
-        BOOST_CHECK(flow->http_info.lock() != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info.lock();
-        BOOST_CHECK(info->ua.lock() != nullptr);
-        BOOST_CHECK(info->host.lock() != nullptr);
-        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(flow->http_info != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info;
+        BOOST_CHECK(info->ua != nullptr);
+        BOOST_CHECK(info->host != nullptr);
+        BOOST_CHECK(info->uri != nullptr);
 
         // The host is valid
-        BOOST_CHECK(cad_host.compare(info->host.lock()->getName()) == 0);
-        BOOST_CHECK(cad_ua.compare(info->ua.lock()->getName()) == 0);
+        BOOST_CHECK(cad_host.compare(info->host->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(info->ua->getName()) == 0);
 }
 
 
@@ -271,15 +271,15 @@ BOOST_AUTO_TEST_CASE (test7_http)
         std::string cad_host("onedomain.com");
         std::string cad_ua("LuisAgent CFNetwork/609 Darwin/13.0.0");
 
-        BOOST_CHECK(flow->http_info.lock() != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info.lock();
-        BOOST_CHECK(info->ua.lock() != nullptr);
-        BOOST_CHECK(info->host.lock() != nullptr);
-        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(flow->http_info != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info;
+        BOOST_CHECK(info->ua != nullptr);
+        BOOST_CHECK(info->host != nullptr);
+        BOOST_CHECK(info->uri != nullptr);
 
         // The host is valid
-        BOOST_CHECK(cad_host.compare(info->host.lock()->getName()) == 0);
-        BOOST_CHECK(cad_ua.compare(info->ua.lock()->getName()) == 0);
+        BOOST_CHECK(cad_host.compare(info->host->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(info->ua->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test8_http)
@@ -312,15 +312,15 @@ BOOST_AUTO_TEST_CASE (test8_http)
         std::string cad_host("onedomain.com");
         std::string cad_ua("LuisAgent CFNetwork/609 Darwin/13.0.0");
 
-        BOOST_CHECK(flow1->http_info.lock() != nullptr);
-        SharedPointer<HTTPInfo> info1 = flow1->http_info.lock();
-        BOOST_CHECK(info1->ua.lock() != nullptr);
-        BOOST_CHECK(info1->host.lock() != nullptr);
-        BOOST_CHECK(info1->uri.lock() != nullptr);
+        BOOST_CHECK(flow1->http_info != nullptr);
+        SharedPointer<HTTPInfo> info1 = flow1->http_info;
+        BOOST_CHECK(info1->ua != nullptr);
+        BOOST_CHECK(info1->host != nullptr);
+        BOOST_CHECK(info1->uri != nullptr);
 
         // The host is valid
-        BOOST_CHECK(cad_host.compare(info1->host.lock()->getName()) == 0);
-        BOOST_CHECK(cad_ua.compare(info1->ua.lock()->getName()) == 0);
+        BOOST_CHECK(cad_host.compare(info1->host->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(info1->ua->getName()) == 0);
 
         char *header2 =  "GET /access/megustaelfary.mp4?version=4&lid=1187884873&token=JJz8QucMbPrjzSq4y7ffuLUTFO2Etiqu"
                         "Evd4Y34WVkhvAPWJK1%2F7nJlhnAkhXOPT9GCuPlZLgLnIxANviI%2FgtwRfJ9qh9QWwUS2WvW2JAOlS7bvHoIL9JbgA8"
@@ -344,16 +344,16 @@ BOOST_AUTO_TEST_CASE (test8_http)
 	// Verify the size of the Header
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2));
 
-        BOOST_CHECK(flow2->http_info.lock() != nullptr);
-        SharedPointer<HTTPInfo> info2 = flow2->http_info.lock();
-        BOOST_CHECK(info2->ua.lock() != nullptr);
-        BOOST_CHECK(info2->host.lock() != nullptr);
-        BOOST_CHECK(info2->uri.lock() != nullptr);
+        BOOST_CHECK(flow2->http_info != nullptr);
+        SharedPointer<HTTPInfo> info2 = flow2->http_info;
+        BOOST_CHECK(info2->ua != nullptr);
+        BOOST_CHECK(info2->host != nullptr);
+        BOOST_CHECK(info2->uri != nullptr);
 
 	BOOST_CHECK(info2->getTotalRequests()  == 1);
         BOOST_CHECK(info2->getTotalResponses()  == 0);
 
-	BOOST_CHECK(info1->ua.lock() == info2->ua.lock());
+	BOOST_CHECK(info1->ua == info2->ua);
 
 	// http->setStatisticsLevel(5);
 	// http->statistics();
@@ -390,18 +390,18 @@ BOOST_AUTO_TEST_CASE (test9_http)
         std::string cad_host("onedomain.com");
         std::string cad_ua("LuisAgent CFNetwork/609 Darwin/13.0.0");
 
-        BOOST_CHECK(flow1->http_info.lock() != nullptr);
-        SharedPointer<HTTPInfo> info1 = flow1->http_info.lock();
-        BOOST_CHECK(info1->ua.lock() != nullptr);
-        BOOST_CHECK(info1->host.lock() != nullptr);
-        BOOST_CHECK(info1->uri.lock() != nullptr);
+        BOOST_CHECK(flow1->http_info != nullptr);
+        SharedPointer<HTTPInfo> info1 = flow1->http_info;
+        BOOST_CHECK(info1->ua != nullptr);
+        BOOST_CHECK(info1->host != nullptr);
+        BOOST_CHECK(info1->uri != nullptr);
 
-        BOOST_CHECK(info1->ua.lock() != nullptr);
-        BOOST_CHECK(info1->host.lock() != nullptr);
+        BOOST_CHECK(info1->ua != nullptr);
+        BOOST_CHECK(info1->host != nullptr);
 
         // The host is valid
-        BOOST_CHECK(cad_host.compare(info1->host.lock()->getName()) == 0);
-        BOOST_CHECK(cad_ua.compare(info1->ua.lock()->getName()) == 0);
+        BOOST_CHECK(cad_host.compare(info1->host->getName()) == 0);
+        BOOST_CHECK(cad_ua.compare(info1->ua->getName()) == 0);
 
         char *header2 =  "GET /access/megustaelfary.mp4?version=4&lid=1187884873&token=JJz8QucMbPrjzSq4y7ffuLUTFO2Etiqu"
                         "Evd4Y34WVkhvAPWJK1%2F7nJlhnAkhXOPT9GCuPlZLgLnIxANviI%2FgtwRfJ9qh9QWwUS2WvW2JAOlS7bvHoIL9JbgA8"
@@ -427,17 +427,17 @@ BOOST_AUTO_TEST_CASE (test9_http)
 
         std::string cad_ua2("LuisAgent CFNetwork/609 Darwin/13.2.0");
 
-        BOOST_CHECK(flow2->http_info.lock() != nullptr);
-        SharedPointer<HTTPInfo> info2 = flow2->http_info.lock();
-        BOOST_CHECK(info2->ua.lock() != nullptr);
-        BOOST_CHECK(info2->host.lock() != nullptr);
-        BOOST_CHECK(info2->uri.lock() != nullptr);
+        BOOST_CHECK(flow2->http_info != nullptr);
+        SharedPointer<HTTPInfo> info2 = flow2->http_info;
+        BOOST_CHECK(info2->ua != nullptr);
+        BOOST_CHECK(info2->host != nullptr);
+        BOOST_CHECK(info2->uri != nullptr);
 
         // The host is valid
-        BOOST_CHECK(cad_host.compare(info2->host.lock()->getName()) == 0);
-        BOOST_CHECK(cad_ua2.compare(info2->ua.lock()->getName()) == 0);
+        BOOST_CHECK(cad_host.compare(info2->host->getName()) == 0);
+        BOOST_CHECK(cad_ua2.compare(info2->ua->getName()) == 0);
 
-	BOOST_CHECK(info1->host.lock() == info2->host.lock());
+	BOOST_CHECK(info1->host == info2->host);
 }
 
 // Test the HTTPProtocol with the DomainNameManager attached
@@ -477,7 +477,7 @@ BOOST_AUTO_TEST_CASE (test10_http)
         // Size of the header equals 0 
         BOOST_CHECK(http->getHTTPHeaderSize() == 0);
 
-	BOOST_CHECK(flow->http_info.lock() == nullptr);
+	BOOST_CHECK(flow->http_info == nullptr);
 	BOOST_CHECK(host_name->getMatchs() == 0);
 }
 
@@ -518,7 +518,7 @@ BOOST_AUTO_TEST_CASE (test11_http)
         // Verify the size of the Header
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header));
 
-        BOOST_CHECK(flow->http_info.lock() != nullptr);
+        BOOST_CHECK(flow->http_info != nullptr);
         BOOST_CHECK(host_name->getMatchs() == 0);
 }
 
@@ -556,13 +556,13 @@ BOOST_AUTO_TEST_CASE (test12_http)
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
-        BOOST_CHECK(flow->http_info.lock() != nullptr);
-	SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        BOOST_CHECK(flow->http_info != nullptr);
+	SharedPointer<HTTPInfo> info = flow->http_info;
 
 	BOOST_CHECK(info->getIsBanned() == false);
-	BOOST_CHECK(info->uri.lock() != nullptr);
-	BOOST_CHECK(info->host.lock() != nullptr);
-	BOOST_CHECK(info->ua.lock() != nullptr);
+	BOOST_CHECK(info->uri != nullptr);
+	BOOST_CHECK(info->host != nullptr);
+	BOOST_CHECK(info->ua != nullptr);
 
         BOOST_CHECK(host_name->getMatchs() == 1);
 }
@@ -603,12 +603,12 @@ BOOST_AUTO_TEST_CASE (test13_http)
 	BOOST_CHECK( http->getTotalBanHosts() == 1);
 
 	// Verify that the flow dont have references in order to save memory
-	SharedPointer<HTTPInfo> info = flow->http_info.lock();
+	SharedPointer<HTTPInfo> info = flow->http_info;
 
 	BOOST_CHECK(info->getIsBanned() == true);
-	BOOST_CHECK(info->uri.lock() == nullptr);
-	BOOST_CHECK(info->ua.lock() == nullptr);
-	BOOST_CHECK(info->host.lock() == nullptr);
+	BOOST_CHECK(info->uri == nullptr);
+	BOOST_CHECK(info->ua == nullptr);
+	BOOST_CHECK(info->host == nullptr);
 
 	// TODO: The caches also should contain no entries
 	//http->setStatisticsLevel(5);
@@ -662,11 +662,11 @@ BOOST_AUTO_TEST_CASE (test14_http)
         std::string cad_uri1("/someur-oonnnnn-a-/somefile.php");
         std::string cad_uri2("/VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB/oonnnnn-a-/otherfile.html");
 
-	BOOST_CHECK(flow->http_info.lock() != nullptr);
-	SharedPointer<HTTPInfo> info = flow->http_info.lock();
+	BOOST_CHECK(flow->http_info != nullptr);
+	SharedPointer<HTTPInfo> info = flow->http_info;
  
-        BOOST_CHECK(info->uri.lock() != nullptr);
-        BOOST_CHECK(cad_uri1.compare(info->uri.lock()->getName()) == 0);
+        BOOST_CHECK(info->uri != nullptr);
+        BOOST_CHECK(cad_uri1.compare(info->uri->getName()) == 0);
 
 	flow->setFlowDirection(FlowDirection::BACKWARD);
         flow->packet = const_cast<Packet*>(&packet3);
@@ -683,7 +683,7 @@ BOOST_AUTO_TEST_CASE (test14_http)
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2));
 	
 	// There is no uris on the cache so the flow keeps the last uri seen
-        BOOST_CHECK(cad_uri1.compare(info->uri.lock()->getName()) == 0);
+        BOOST_CHECK(cad_uri1.compare(info->uri->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test15_http)
@@ -717,8 +717,8 @@ BOOST_AUTO_TEST_CASE (test15_http)
 	// std::cout << "http header size:" << http->getHTTPHeaderSize() << " h:" << strlen(header) << " he:" << strlen(header_ext) << std::endl;
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header)-strlen(header_ext)) ;
 
-        BOOST_CHECK(flow->http_info.lock() != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        BOOST_CHECK(flow->http_info != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info;
 
 	BOOST_CHECK(info->getResponseCode() == 200);
 
@@ -763,13 +763,13 @@ BOOST_AUTO_TEST_CASE (test16_http)
         std::string host("www.bu.com");
         std::string ua("LuisAgent");
 
-        BOOST_CHECK(flow->http_info.lock() != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        BOOST_CHECK(flow->http_info != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info;
 
-        BOOST_CHECK(info->host.lock() != nullptr);
-        BOOST_CHECK(info->ua.lock() != nullptr);
-        BOOST_CHECK(host.compare(info->host.lock()->getName()) == 0);
-        BOOST_CHECK(ua.compare(info->ua.lock()->getName()) == 0);
+        BOOST_CHECK(info->host != nullptr);
+        BOOST_CHECK(info->ua != nullptr);
+        BOOST_CHECK(host.compare(info->host->getName()) == 0);
+        BOOST_CHECK(ua.compare(info->ua->getName()) == 0);
 }
 
 
@@ -816,14 +816,14 @@ BOOST_AUTO_TEST_CASE (test17_http)
         flow->packet = const_cast<Packet*>(&packet2);
         http->processFlow(flow.get());
 
-        BOOST_CHECK(flow->http_info.lock() != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        BOOST_CHECK(flow->http_info != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info;
 
 	BOOST_CHECK(host_name->getMatchs() == 1);
 	BOOST_CHECK(info->getIsBanned() == true);
-        BOOST_CHECK(info->host.lock() == nullptr);
-        BOOST_CHECK(info->uri.lock() == nullptr);
-        BOOST_CHECK(info->ua.lock() == nullptr);
+        BOOST_CHECK(info->host == nullptr);
+        BOOST_CHECK(info->uri == nullptr);
+        BOOST_CHECK(info->ua == nullptr);
 }
 
 BOOST_AUTO_TEST_CASE (test18_http) 
@@ -856,14 +856,14 @@ BOOST_AUTO_TEST_CASE (test18_http)
         std::string ua("Shockwave Flash");
 	std::string uri("/open/1");
 
-        BOOST_CHECK(flow->http_info.lock() != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        BOOST_CHECK(flow->http_info != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info;
 
-        BOOST_CHECK(info->host.lock() != nullptr);
-        BOOST_CHECK(info->ua.lock() != nullptr);
-        BOOST_CHECK(host.compare(info->host.lock()->getName()) == 0);
-        BOOST_CHECK(ua.compare(info->ua.lock()->getName()) == 0);
-        BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+        BOOST_CHECK(info->host != nullptr);
+        BOOST_CHECK(info->ua != nullptr);
+        BOOST_CHECK(host.compare(info->host->getName()) == 0);
+        BOOST_CHECK(ua.compare(info->ua->getName()) == 0);
+        BOOST_CHECK(uri.compare(info->uri->getName()) == 0);
 
 	BOOST_CHECK(info->getContentLength() == 1);
 }
@@ -893,13 +893,13 @@ BOOST_AUTO_TEST_CASE (test19_http)
         // Verify the size of the Header
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header) - 17);
 
-        BOOST_CHECK(flow->http_info.lock() != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        BOOST_CHECK(flow->http_info != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info;
 
 	BOOST_CHECK(info->getResponseCode() == 200);
-        BOOST_CHECK(info->host.lock() == nullptr);
-        BOOST_CHECK(info->ua.lock() == nullptr);
-        BOOST_CHECK(info->uri.lock() == nullptr);
+        BOOST_CHECK(info->host == nullptr);
+        BOOST_CHECK(info->ua == nullptr);
+        BOOST_CHECK(info->uri == nullptr);
 
         BOOST_CHECK(info->getContentLength() == 17);
 }
@@ -943,8 +943,8 @@ BOOST_AUTO_TEST_CASE (test20_http)
         http->processFlow(flow.get());
 
 	// Some checks
-        BOOST_CHECK(flow->http_info.lock() != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        BOOST_CHECK(flow->http_info != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info;
 
 	// Should be false because the data is still on the packet
 	BOOST_CHECK(info->getHaveData() == false);
@@ -963,12 +963,12 @@ BOOST_AUTO_TEST_CASE (test20_http)
         std::string ua("Shockwave Flash");
         std::string uri("/open/1");
 
-        BOOST_CHECK(info->host.lock() != nullptr);
-        BOOST_CHECK(info->ua.lock() != nullptr);
-        BOOST_CHECK(info->uri.lock() != nullptr);
-        BOOST_CHECK(host.compare(info->host.lock()->getName()) == 0);
-        BOOST_CHECK(ua.compare(info->ua.lock()->getName()) == 0);
-        BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+        BOOST_CHECK(info->host != nullptr);
+        BOOST_CHECK(info->ua != nullptr);
+        BOOST_CHECK(info->uri != nullptr);
+        BOOST_CHECK(host.compare(info->host->getName()) == 0);
+        BOOST_CHECK(ua.compare(info->ua->getName()) == 0);
+        BOOST_CHECK(uri.compare(info->uri->getName()) == 0);
 
         BOOST_CHECK(info->getContentLength() == 17);
 }
@@ -1012,7 +1012,7 @@ BOOST_AUTO_TEST_CASE (test21_http)
         flow->setFlowDirection(FlowDirection::FORWARD);
         http->processFlow(flow.get());
 
-        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        SharedPointer<HTTPInfo> info = flow->http_info;
 
         // Should be false because the data is still on the packet
         BOOST_CHECK(info->getHaveData() == false);
@@ -1087,7 +1087,7 @@ BOOST_AUTO_TEST_CASE (test22_http)
         flow->setFlowDirection(FlowDirection::FORWARD);
         http->processFlow(flow.get());
 
-        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        SharedPointer<HTTPInfo> info = flow->http_info;
 	
 	// Verify values of the first packet
         BOOST_CHECK(http->getTotalL7Bytes() == 100);
@@ -1157,15 +1157,15 @@ BOOST_AUTO_TEST_CASE (test23_http)
         flow->packet = const_cast<Packet*>(&packet1);
         http->processFlow(flow.get());
 
-        BOOST_CHECK(flow->http_info.lock() != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        BOOST_CHECK(flow->http_info != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info;
 
         BOOST_CHECK(host_name->getMatchs() == 1);
         BOOST_CHECK(info->getIsBanned() == false);
 
-        BOOST_CHECK(info->host.lock() != nullptr);
-        BOOST_CHECK(info->uri.lock() != nullptr);
-        BOOST_CHECK(info->ua.lock() != nullptr);
+        BOOST_CHECK(info->host != nullptr);
+        BOOST_CHECK(info->uri != nullptr);
+        BOOST_CHECK(info->ua != nullptr);
 	
 	BOOST_CHECK(uset->getTotalURIs() == 1);
 	BOOST_CHECK(uset->getTotalLookups() == 1);
@@ -1215,15 +1215,15 @@ BOOST_AUTO_TEST_CASE (test24_http)
         flow->packet = const_cast<Packet*>(&packet1);
         http->processFlow(flow.get());
 
-        BOOST_CHECK(flow->http_info.lock() != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        BOOST_CHECK(flow->http_info != nullptr);
+        SharedPointer<HTTPInfo> info = flow->http_info;
 
         BOOST_CHECK(host_name->getMatchs() == 1);
         BOOST_CHECK(info->getIsBanned() == false);
 
-        BOOST_CHECK(info->host.lock() != nullptr);
-        BOOST_CHECK(info->uri.lock() != nullptr);
-        BOOST_CHECK(info->ua.lock() != nullptr);
+        BOOST_CHECK(info->host != nullptr);
+        BOOST_CHECK(info->uri != nullptr);
+        BOOST_CHECK(info->ua != nullptr);
 
         BOOST_CHECK(uset->getTotalURIs() == 3);
         BOOST_CHECK(uset->getTotalLookups() == 1);
@@ -1273,7 +1273,7 @@ BOOST_AUTO_TEST_CASE (test25_http)
         flow->setFlowDirection(FlowDirection::FORWARD);
         http->processFlow(flow.get());
 
-        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        SharedPointer<HTTPInfo> info = flow->http_info;
 
 	BOOST_CHECK(host_name->getMatchs() == 1);
 	BOOST_CHECK(host_name->getTotalEvaluates() == 0);
@@ -1350,7 +1350,7 @@ BOOST_AUTO_TEST_CASE (test26_http)
         flow->setFlowDirection(FlowDirection::FORWARD);
         http->processFlow(flow.get());
 
-        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        SharedPointer<HTTPInfo> info = flow->http_info;
 
         BOOST_CHECK(host_name->getMatchs() == 1);
         BOOST_CHECK(host_name->getTotalEvaluates() == 0);
@@ -1410,7 +1410,7 @@ BOOST_AUTO_TEST_CASE (test27_http)
         flow->setFlowDirection(FlowDirection::BACKWARD);
         http->processFlow(flow.get());
 
-        SharedPointer<HTTPInfo> info = flow->http_info.lock();
+        SharedPointer<HTTPInfo> info = flow->http_info;
         
 	BOOST_CHECK(host_name->getMatchs() == 1);
         BOOST_CHECK(host_name->getTotalEvaluates() == 0);
@@ -1449,7 +1449,7 @@ BOOST_AUTO_TEST_CASE (test1_http)
         BOOST_CHECK(tcp->getTotalBytes() == 797 + 20);
 
         BOOST_CHECK(flow_mng->getTotalFlows() == 1);
-        BOOST_CHECK(flow_cache->getTotalFlows() == 1);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 0);
         BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
         BOOST_CHECK(flow_cache->getTotalReleases() == 0);
 
@@ -1498,7 +1498,7 @@ BOOST_AUTO_TEST_CASE (test2_http)
         BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
 
         BOOST_CHECK(flow_mng->getTotalFlows() == 1);
-        BOOST_CHECK(flow_cache->getTotalFlows() == 1);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 0);
         BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
         BOOST_CHECK(flow_cache->getTotalReleases() == 0);
 
@@ -1517,7 +1517,7 @@ BOOST_AUTO_TEST_CASE (test3_http)
         mux_eth->forwardPacket(packet);
 
         BOOST_CHECK(flow_mng->getTotalFlows() == 1);
-        BOOST_CHECK(flow_cache->getTotalFlows() == 1);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 0);
         BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
         BOOST_CHECK(flow_cache->getTotalReleases() == 0);
 
@@ -1548,13 +1548,13 @@ BOOST_AUTO_TEST_CASE (test4_http)
 	auto fm = tcp->getFlowManager();
 
 	for (auto &f: fm->getFlowTable()) {
-		BOOST_CHECK(f->http_info.lock() == nullptr);
+		BOOST_CHECK(f->http_info == nullptr);
 	}
 
 	http->releaseCache(); // Nothing to release
 
         for (auto &f: fm->getFlowTable()) {
-                BOOST_CHECK(f->http_info.lock() == nullptr);
+                BOOST_CHECK(f->http_info == nullptr);
         }
 }
 
@@ -1576,14 +1576,14 @@ BOOST_AUTO_TEST_CASE (test5_http)
         auto fm = tcp->getFlowManager();
 
         for (auto &f: fm->getFlowTable()) {
-                BOOST_CHECK(f->http_info.lock() != nullptr);
-                BOOST_CHECK(f->http_info.lock()->uri.lock() != nullptr);
-                BOOST_CHECK(f->http_info.lock()->ua.lock() != nullptr);
+                BOOST_CHECK(f->http_info != nullptr);
+                BOOST_CHECK(f->http_info->uri != nullptr);
+                BOOST_CHECK(f->http_info->ua != nullptr);
         }
         http->releaseCache(); 
 
         for (auto &f: fm->getFlowTable()) {
-                BOOST_CHECK(f->http_info.lock() == nullptr);
+                BOOST_CHECK(f->http_info == nullptr);
         }
 }
 
@@ -1609,7 +1609,7 @@ BOOST_AUTO_TEST_CASE (test6_http)
         BOOST_CHECK(tcp->getTotalBytes() == 155 + 32);
 
         BOOST_CHECK(flow_mng->getTotalFlows() == 1);
-        BOOST_CHECK(flow_cache->getTotalFlows() == 1);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 0);
         BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
         BOOST_CHECK(flow_cache->getTotalReleases() == 0);
 

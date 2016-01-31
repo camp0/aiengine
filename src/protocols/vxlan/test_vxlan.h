@@ -68,11 +68,11 @@ struct StackTestVxlan
         MultiplexerPtr mux_icmp_vir;
 	FlowCachePtr flow_cache;
 	FlowManagerPtr flow_mng;
-	FlowForwarderPtr ff_udp;
-	FlowForwarderPtr ff_udp_vir;
-	FlowForwarderPtr ff_tcp_vir;
-	FlowForwarderPtr ff_vxlan;
-	FlowForwarderPtr ff_dns_vir;
+	SharedPointer<FlowForwarder> ff_udp;
+	SharedPointer<FlowForwarder> ff_udp_vir;
+	SharedPointer<FlowForwarder> ff_tcp_vir;
+	SharedPointer<FlowForwarder> ff_vxlan;
+	SharedPointer<FlowForwarder> ff_dns_vir;
 
         StackTestVxlan()
         {
@@ -100,11 +100,11 @@ struct StackTestVxlan
 		mux_udp_vir = MultiplexerPtr(new Multiplexer());
 		mux_tcp_vir = MultiplexerPtr(new Multiplexer());
 
-		ff_udp = FlowForwarderPtr(new FlowForwarder());
-		ff_udp_vir = FlowForwarderPtr(new FlowForwarder());
-		ff_tcp_vir = FlowForwarderPtr(new FlowForwarder());
-		ff_vxlan = FlowForwarderPtr(new FlowForwarder());
-		ff_dns_vir = FlowForwarderPtr(new FlowForwarder());
+		ff_udp = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_udp_vir = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_tcp_vir = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_vxlan = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_dns_vir = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 flow_cache = FlowCachePtr(new FlowCache());
                 flow_mng = FlowManagerPtr(new FlowManager());

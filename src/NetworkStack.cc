@@ -51,21 +51,21 @@ NetworkStack::NetworkStack():
         freqs_tcp(FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol","tcpfrequency"))),
         freqs_udp(FrequencyProtocolPtr(new FrequencyProtocol("UDPFrequencyProtocol","udpfrequency"))),
 	// Common FlowForwarders
-        ff_http(FlowForwarderPtr(new FlowForwarder())),
-        ff_ssl(FlowForwarderPtr(new FlowForwarder())),
-        ff_dns(FlowForwarderPtr(new FlowForwarder())),
-        ff_sip(FlowForwarderPtr(new FlowForwarder())),
-        ff_dhcp(FlowForwarderPtr(new FlowForwarder())),
-        ff_ntp(FlowForwarderPtr(new FlowForwarder())),
-        ff_snmp(FlowForwarderPtr(new FlowForwarder())),
-        ff_ssdp(FlowForwarderPtr(new FlowForwarder())),
-        ff_smtp(FlowForwarderPtr(new FlowForwarder())),
-        ff_imap(FlowForwarderPtr(new FlowForwarder())),
-        ff_pop(FlowForwarderPtr(new FlowForwarder())),
-        ff_tcp_generic(FlowForwarderPtr(new FlowForwarder())),
-        ff_udp_generic(FlowForwarderPtr(new FlowForwarder())),
-        ff_tcp_freqs(FlowForwarderPtr(new FlowForwarder())),
-        ff_udp_freqs(FlowForwarderPtr(new FlowForwarder())),
+        ff_http(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_ssl(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_dns(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_sip(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_dhcp(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_ntp(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_snmp(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_ssdp(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_smtp(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_imap(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_pop(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_tcp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_udp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_tcp_freqs(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_udp_freqs(SharedPointer<FlowForwarder>(new FlowForwarder())),
 
 	stats_level_(0),name_(""),
 	proto_vector_(),
@@ -405,14 +405,14 @@ void NetworkStack::releaseCaches() {
         });
 }
 
-void NetworkStack::enableFlowForwarders(const FlowForwarderPtr& ff, std::initializer_list<FlowForwarderPtr> fps) {
+void NetworkStack::enableFlowForwarders(const SharedPointer<FlowForwarder>& ff, std::initializer_list<SharedPointer<FlowForwarder>> fps) {
 
 	for (auto &f: fps) {
 		ff->addUpFlowForwarder(f);
 	}
 }
 
-void NetworkStack::disableFlowForwarders(const FlowForwarderPtr& ff, std::initializer_list<FlowForwarderPtr> fps) {
+void NetworkStack::disableFlowForwarders(const SharedPointer<FlowForwarder>& ff, std::initializer_list<SharedPointer<FlowForwarder>> fps) {
 
 	for (auto &f: fps) {
 		ff->removeUpFlowForwarder(f);

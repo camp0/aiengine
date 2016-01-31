@@ -60,10 +60,10 @@ struct StackTCPIPSetTest
         MultiplexerPtr mux_tcp;
         MultiplexerPtr mux_udp;
 
-	FlowForwarderPtr ff_tcp;
-	FlowForwarderPtr ff_gtcp;
-	FlowForwarderPtr ff_udp;
-	FlowForwarderPtr ff_gudp;
+	SharedPointer<FlowForwarder> ff_tcp;
+	SharedPointer<FlowForwarder> ff_gtcp;
+	SharedPointer<FlowForwarder> ff_udp;
+	SharedPointer<FlowForwarder> ff_gudp;
        // FlowManager and FlowCache
         FlowManagerPtr flow_mng;
         FlowCachePtr flow_cache;
@@ -80,10 +80,10 @@ struct StackTCPIPSetTest
                 mux_ip = MultiplexerPtr(new Multiplexer());
                 mux_tcp = MultiplexerPtr(new Multiplexer());
                 mux_udp = MultiplexerPtr(new Multiplexer());
-		ff_tcp = FlowForwarderPtr(new FlowForwarder());
-		ff_udp = FlowForwarderPtr(new FlowForwarder());
-		ff_gtcp = FlowForwarderPtr(new FlowForwarder());
-		ff_gudp = FlowForwarderPtr(new FlowForwarder());
+		ff_tcp = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_udp = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_gtcp = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_gudp = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);

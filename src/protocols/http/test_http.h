@@ -65,8 +65,8 @@ struct StackHTTPtest
         FlowCachePtr flow_cache;
 
         // FlowForwarders
-        FlowForwarderPtr ff_tcp;
-        FlowForwarderPtr ff_http;
+        SharedPointer<FlowForwarder> ff_tcp;
+        SharedPointer<FlowForwarder> ff_http;
 
         StackHTTPtest()
         {
@@ -88,8 +88,8 @@ struct StackHTTPtest
                 flow_mng = FlowManagerPtr(new FlowManager());
                 flow_cache = FlowCachePtr(new FlowCache());
 
-                ff_tcp = FlowForwarderPtr(new FlowForwarder());
-                ff_http = FlowForwarderPtr(new FlowForwarder());
+                ff_tcp = SharedPointer<FlowForwarder>(new FlowForwarder());
+                ff_http = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);
@@ -165,8 +165,8 @@ struct StackIPv6HTTPtest
         FlowCachePtr flow_cache;
 
         // FlowForwarders
-        FlowForwarderPtr ff_tcp;
-        FlowForwarderPtr ff_http;
+        SharedPointer<FlowForwarder> ff_tcp;
+        SharedPointer<FlowForwarder> ff_http;
 
         StackIPv6HTTPtest()
         {
@@ -188,8 +188,8 @@ struct StackIPv6HTTPtest
                 flow_mng = FlowManagerPtr(new FlowManager());
                 flow_cache = FlowCachePtr(new FlowCache());
 
-                ff_tcp = FlowForwarderPtr(new FlowForwarder());
-                ff_http = FlowForwarderPtr(new FlowForwarder());
+                ff_tcp = SharedPointer<FlowForwarder>(new FlowForwarder());
+                ff_http = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);

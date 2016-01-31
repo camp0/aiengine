@@ -64,8 +64,8 @@ struct StackUDPGenericTest
         FlowCachePtr flow_cache;
 
         // FlowForwarders
-        FlowForwarderPtr ff_udp;
-        FlowForwarderPtr ff_gudp;
+        SharedPointer<FlowForwarder> ff_udp;
+        SharedPointer<FlowForwarder> ff_gudp;
 
         StackUDPGenericTest()
         {
@@ -79,8 +79,8 @@ struct StackUDPGenericTest
                 mux_ip = MultiplexerPtr(new Multiplexer());
                 mux_udp = MultiplexerPtr(new Multiplexer());
                 mux_eth = MultiplexerPtr(new Multiplexer());
-                ff_udp = FlowForwarderPtr(new FlowForwarder());
-                ff_gudp = FlowForwarderPtr(new FlowForwarder());
+                ff_udp = SharedPointer<FlowForwarder>(new FlowForwarder());
+                ff_gudp = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 // Allocate the flow caches and tables
                 flow_mng = FlowManagerPtr(new FlowManager());

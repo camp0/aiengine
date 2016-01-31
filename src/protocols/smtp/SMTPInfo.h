@@ -52,23 +52,20 @@ public:
         void setIsBanned(bool value) { is_banned_ = value; }
         bool getIsBanned() const { return is_banned_; }
 
-        WeakPointer<StringCache> from;
-        WeakPointer<StringCache> to;
+        SharedPointer<StringCache> from;
+        SharedPointer<StringCache> to;
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 
 	friend std::ostream& operator<< (std::ostream& out, const SMTPInfo& sinfo) {
 
-		if (sinfo.from.lock())
-			out << "From:" << sinfo.getFrom() << " ";
-	
-		if (sinfo.to.lock())
-			out << "To:" << sinfo.getTo() << " ";
+		out << "From:" << sinfo.getFrom() << " ";
+		out << "To:" << sinfo.getTo() << " ";
         	return out;
 	}
 
-	const char *getFrom() const { return (!from.expired() ? from.lock()->getName() : ""); }	
-	const char *getTo() const { return (!to.expired() ? to.lock()->getName() : ""); }	
+	const char *getFrom() const { return (from ? from->getName() : ""); }	
+	const char *getTo() const { return (to ? to->getName() : ""); }	
 #endif
 
 private:

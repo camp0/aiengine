@@ -55,10 +55,10 @@ StackMobile::StackMobile():
         flow_cache_udp_low_(FlowCachePtr(new FlowCache())),
         flow_cache_udp_high_(FlowCachePtr(new FlowCache())),
 	// FlowForwarders
-        ff_udp_low_(FlowForwarderPtr(new FlowForwarder())),
-        ff_gprs_(FlowForwarderPtr(new FlowForwarder())), 
-        ff_tcp_(FlowForwarderPtr(new FlowForwarder())), 
-        ff_udp_high_(FlowForwarderPtr(new FlowForwarder())),
+        ff_udp_low_(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_gprs_(SharedPointer<FlowForwarder>(new FlowForwarder())), 
+        ff_tcp_(SharedPointer<FlowForwarder>(new FlowForwarder())), 
+        ff_udp_high_(SharedPointer<FlowForwarder>(new FlowForwarder())),
         enable_frequency_engine_(false),
         enable_nids_engine_(false) { 
 

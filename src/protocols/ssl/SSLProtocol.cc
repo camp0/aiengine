@@ -44,7 +44,7 @@ int32_t SSLProtocol::release_ssl_info(SSLInfo *info) {
 
         int32_t bytes_released = 0;
 
-        SharedPointer<StringCache> host = info->host.lock();
+        SharedPointer<StringCache> host = info->host;
 
         if (host) { // The flow have a ssl host attached
                 bytes_released += host->getNameSize();
@@ -57,7 +57,7 @@ int32_t SSLProtocol::release_ssl_info(SSLInfo *info) {
 // Removes or decrements the hits of the maps.
 void SSLProtocol::release_ssl_info_cache(SSLInfo *info) {
 
-        SharedPointer<StringCache> host_ptr = info->host.lock();
+        SharedPointer<StringCache> host_ptr = info->host;
 
         if (host_ptr) { // There is no host attached
                 GenericMapType::iterator it = host_map_.find(host_ptr->getName());
@@ -98,9 +98,8 @@ void SSLProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-               		if (!flow->ssl_info.expired()) { 
-		        	SharedPointer<SSLInfo> sinfo = flow->ssl_info.lock();
-
+		       	SharedPointer<SSLInfo> sinfo = flow->ssl_info;
+               		if (sinfo) { 
                                 total_bytes_released_by_flows += release_ssl_info(sinfo.get());
                                 total_bytes_released_by_flows += sizeof(sinfo);
 				sinfo.reset();	
@@ -126,10 +125,10 @@ void SSLProtocol::releaseCache() {
 
 void SSLProtocol::attach_host(SSLInfo *info, boost::string_ref &host) {
 
-	if (info->host.expired()) {
+	if (!info->host) {
                 GenericMapType::iterator it = host_map_.find(host);
                 if (it == host_map_.end()) {
-                        SharedPointer<StringCache> host_ptr = host_cache_->acquire().lock();
+                        SharedPointer<StringCache> host_ptr = host_cache_->acquire();
                         if (host_ptr) {
                                 host_ptr->setName(host.data(),host.length());
                                 info->host = host_ptr;
@@ -233,10 +232,10 @@ void SSLProtocol::processFlow(Flow *flow) {
 	total_bytes_ += flow->packet->getLength();
 	++flow->total_packets_l7;
 
-        SharedPointer<SSLInfo> sinfo = flow->ssl_info.lock();
+        SharedPointer<SSLInfo> sinfo = flow->ssl_info;
 
         if(!sinfo) {
-                sinfo = info_cache_->acquire().lock();
+                sinfo = info_cache_->acquire();
                 if (!sinfo) {
                         return;
                 }
@@ -268,9 +267,11 @@ void SSLProtocol::processFlow(Flow *flow) {
 				if((version >= SSL3_VERSION)and(version <= TLS1_2_VERSION)) {
 					// This is a valid SSL header that we could extract some usefulll information.
 					// SSL Records are group by blocks
+					// std::cout << __FILE__ << ":" << __func__ << ":length:" << flow->packet->getLength();
+					// std::cout << " offset:" << offset << " type:" << type <<  std::endl;
 					u_char *ssl_data = record->data;
 					bool have_data = false;
-
+	
 					if (type == SSL3_MT_CLIENT_HELLO)  {
 						handle_client_hello(sinfo.get(),flow->packet->getLength(),offset,ssl_data);
 						have_data = true;
@@ -289,21 +290,23 @@ void SSLProtocol::processFlow(Flow *flow) {
 						block_length = ntohs(record->length);
 					}
 
+					if (offset + (2 * sizeof(ssl_record)) > flow->packet->getLength()) {
+						// The record is split in two packets
+						break;
+					}
 					record = reinterpret_cast<ssl_record*>(ssl_data);
-					offset += 5;	
+					offset += sizeof(ssl_record);	
 				} else {
 					break;
 				}
 				if (maxattemps == 4 ) break;
-			}while(offset < flow->packet->getLength());
+			} while (offset < flow->packet->getLength());
 
 			if (!domain_mng_.expired()) {
-				if(!sinfo->host.expired()) {
+				if(sinfo->host) {
 					if (flow->total_packets_l7 == 1) {
 						DomainNameManagerPtr host_mng = domain_mng_.lock();
-						SharedPointer<StringCache> host_name = sinfo->host.lock();
-
-						SharedPointer<DomainName> host_candidate = host_mng->getDomainName(host_name->getName());
+						SharedPointer<DomainName> host_candidate = host_mng->getDomainName(sinfo->host->getName());
 						if (host_candidate) {
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 #ifdef HAVE_LIBLOG4CXX

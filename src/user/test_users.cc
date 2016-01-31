@@ -31,11 +31,13 @@
 #endif
 #include <boost/test/unit_test.hpp>
 
+using namespace aiengine;
+
 BOOST_AUTO_TEST_SUITE (usercache) // name of the test suite is stringtest
 
 BOOST_AUTO_TEST_CASE (test1_usercache)
 {
-	Cache<User>::CachePtr uc(new Cache<User>);
+	aiengine::Cache<User>::CachePtr uc(new Cache<User>);
 
 	BOOST_CHECK(uc->getTotal() == 0);
 	BOOST_CHECK(uc->getTotalReleases() == 0);
@@ -73,14 +75,14 @@ BOOST_AUTO_TEST_CASE (test2_usercache)
         BOOST_CHECK(uc->getTotalAcquires() == 0);
 
         uc->create(1);
-        UserPtr u1 = uc->acquire().lock();
-        BOOST_CHECK(uc->getTotal() == 1);
+        UserPtr u1 = uc->acquire();
+        BOOST_CHECK(uc->getTotal() == 0);
         BOOST_CHECK(uc->getTotalReleases() == 0);
         BOOST_CHECK(uc->getTotalAcquires() == 1);
         BOOST_CHECK(uc->getTotalFails() == 0);
 
-        UserPtr u2 = uc->acquire().lock();
-        BOOST_CHECK(uc->getTotal() == 1);
+        UserPtr u2 = uc->acquire();
+        BOOST_CHECK(uc->getTotal() == 0);
         BOOST_CHECK(uc->getTotalReleases() == 0);
         BOOST_CHECK(uc->getTotalAcquires() == 1);
         BOOST_CHECK(uc->getTotalFails() == 1);
@@ -96,12 +98,11 @@ BOOST_AUTO_TEST_CASE (test3_usercache)
 
         uc->create(10);
 
-        UserPtr u1 = uc->acquire().lock();
-        UserPtr u2 = uc->acquire().lock();
-        UserPtr u3 = uc->acquire().lock();
+        UserPtr u1 = uc->acquire();
+        UserPtr u2 = uc->acquire();
+        UserPtr u3 = uc->acquire();
 
-        BOOST_CHECK(uc->getTotalOnCache() == 7);
-        BOOST_CHECK(uc->getTotal() == 10);
+        BOOST_CHECK(uc->getTotal() == 7);
         BOOST_CHECK(uc->getTotalReleases() == 0);
         BOOST_CHECK(uc->getTotalAcquires() == 3);
         BOOST_CHECK(uc->getTotalFails() == 0);
@@ -132,10 +133,9 @@ BOOST_AUTO_TEST_CASE (test4_usercache)
 
         uc->create(1);
 
-        UserPtr u1 = uc->acquire().lock();
+        UserPtr u1 = uc->acquire();
 
-        BOOST_CHECK(uc->getTotalOnCache() == 0);
-        BOOST_CHECK(uc->getTotal() == 1);
+        BOOST_CHECK(uc->getTotal() == 0);
         BOOST_CHECK(uc->getTotalReleases() == 0);
         BOOST_CHECK(uc->getTotalAcquires() == 1);
         BOOST_CHECK(uc->getTotalFails() == 0);
@@ -144,7 +144,7 @@ BOOST_AUTO_TEST_CASE (test4_usercache)
         uc->release(u1);
         BOOST_CHECK(uc->getTotalReleases() == 1);
 
-	UserPtr u2 = uc->acquire().lock();
+	UserPtr u2 = uc->acquire();
 	BOOST_CHECK(u2->getId() == 0);
 	BOOST_CHECK(u1 == u2);
 	uc->release(u2);

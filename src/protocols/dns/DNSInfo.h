@@ -45,16 +45,18 @@ public:
 	uint16_t getQueryType() const { return qtype_; }
 	void setQueryType(uint16_t qtype) { qtype_ = qtype; }
 
-	WeakPointer<StringCache> name;
+	SharedPointer<StringCache> name;
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 	friend std::ostream& operator<< (std::ostream& out, const DNSInfo& domain) {
-	
-		out << domain.name.lock()->getName();
+
+		if (!domain.name) {	
+			out << domain.name->getName();
+		}
         	return out;
 	}
 
-	const char *getDomainName() const { return (!name.expired() ? name.lock()->getName() : ""); }
+	const char *getDomainName() const { return (name ? name->getName() : ""); }
 #endif
 	void addIPAddress(const char* ipstr) { ips_.push_back(ipstr); }
 

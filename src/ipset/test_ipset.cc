@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE ( test1_ip )
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello_2);
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_2_length;
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
         SharedPointer<IPSet> ipset = SharedPointer<IPSet>(new IPSet("new ipset"));
 	IPSetManagerPtr ipset_mng = IPSetManagerPtr(new IPSetManager());

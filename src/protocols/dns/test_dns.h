@@ -62,8 +62,8 @@ struct StackDNStest
         FlowCachePtr flow_cache;
 
         // FlowForwarders
-        FlowForwarderPtr ff_udp;
-        FlowForwarderPtr ff_dns;
+        SharedPointer<FlowForwarder> ff_udp;
+        SharedPointer<FlowForwarder> ff_dns;
 
         StackDNStest()
         {
@@ -85,8 +85,8 @@ struct StackDNStest
                 flow_mng = FlowManagerPtr(new FlowManager());
                 flow_cache = FlowCachePtr(new FlowCache());
 
-                ff_udp = FlowForwarderPtr(new FlowForwarder());
-                ff_dns = FlowForwarderPtr(new FlowForwarder());
+                ff_udp = SharedPointer<FlowForwarder>(new FlowForwarder());
+                ff_dns = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);

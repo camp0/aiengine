@@ -29,83 +29,71 @@
 #endif
 
 #include <iostream>
+#include "Pointer.h"
 
+/*
 #ifdef PYTHON_BINDING
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #endif
-
-#include <boost/ptr_container/ptr_vector.hpp>
+*/
+#include "Pointer.h"
+// #include <boost/ptr_container/ptr_vector.hpp>
 #include <iomanip>
+#include <stack>
+
+namespace aiengine {
 
 template <class A_Type> class Cache
 {
 public:
 
-#ifdef PYTHON_BINDING
-	typedef boost::shared_ptr <Cache<A_Type>> CachePtr;
-	typedef boost::shared_ptr <A_Type> A_TypePtr;
-	typedef boost::weak_ptr <A_Type> A_TypePtrWeak;
-#else
-	typedef std::shared_ptr <Cache<A_Type>> CachePtr;
-	typedef std::shared_ptr <A_Type> A_TypePtr;
-	typedef std::weak_ptr <A_Type> A_TypePtrWeak;
-#endif
-    	explicit Cache(std::string name):total_(0),total_acquires_(0),total_releases_(0),total_fails_(0),name_(name) {}
+	typedef aiengine::SharedPointer<Cache<A_Type>> CachePtr;
+
+    	explicit Cache(std::string name):total_acquires_(0),total_releases_(0),total_fails_(0),name_(name),empty_() {}
     	explicit Cache():Cache("") {}
-    	virtual ~Cache() { items_.clear();}
+    	virtual ~Cache() { /* items_.clear(); */ }
 
 	static constexpr int classSize = sizeof(A_Type);
 
-	void release(const A_TypePtr& a) {  
-	         
-		if(total_ < items_.size()) {
-		       	++total_releases_;
-                	++total_;
-                	items_[total_-1] = a;
-		}
+	void release(const SharedPointer<A_Type>& a) {  
+	
+		++total_releases_;
+                items_.push(a);
 	}
 
-	A_TypePtrWeak acquire() {
+	// A_TypePtrWeak acquire() {
+	SharedPointer<A_Type> acquire() {
 	
-		A_TypePtrWeak a;
-
-		if(total_ > 0) {
-			a = items_[total_-1];
-			a.lock()->reset();
+		if(!items_.empty()) {
+			SharedPointer<A_Type> a = items_.top();
+                        items_.pop();
+			a->reset();
 			++total_acquires_;
-			--total_;
-		} else {
-			++total_fails_;
+			return a;
 		}
-        	return a;
+		++total_fails_;
+		return empty_;
 	}
 
 	void create(int number ) {
 	
-		for (int i = 0; i<number; ++i) {
-			items_.push_back(A_TypePtr(new A_Type()));
-			++total_;
+		for (int i = 0; i< number; ++i) {
+			items_.push(SharedPointer<A_Type>(new A_Type()));
 		}
 	}
 
 	void destroy(int number) {
 	
-		int real_items = 0;
-
-		if((std::size_t)number > total_)
-			real_items = total_;
-		else
-			real_items = number;
-
-		for (int i = 0;i<real_items ;++i) {
-			items_[total_-1].reset();
-			items_.erase(items_.begin()+total_-1);
-                        --total_;
+		for (int i = 0;i< number ;++i) {
+			if (!items_.empty()) {
+				items_.pop();
+                       	} else {
+				break;
+			} 
 		}
         }
 
-	int32_t getTotalOnCache() const { return total_;}
 	int32_t getTotal() const { return items_.size();}
 	int32_t getTotalAcquires() const { return total_acquires_;}
 	int32_t getTotalReleases() const { return total_releases_;}
@@ -136,13 +124,15 @@ public:
         void statistics() { statistics(std::cout);}
 
 private:
-	std::size_t total_;
 	int32_t total_acquires_;
 	int32_t total_releases_;
 	int32_t total_fails_;
 	std::string name_;
 	// a vector of pointers to the created Flows
-	std::vector<A_TypePtr> items_;
+	std::stack<SharedPointer<A_Type>> items_;
+	SharedPointer<A_Type> empty_;
 };
+
+} // namespace aiengine
 
 #endif  // SRC_CACHE_H_

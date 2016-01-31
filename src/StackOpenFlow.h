@@ -188,10 +188,10 @@ private:
         FlowCachePtr flow_cache_tcp_vir_;
 
         // FlowForwarders
-        FlowForwarderPtr ff_of_;
-        FlowForwarderPtr ff_tcp_;
-        FlowForwarderPtr ff_tcp_vir_;
-        FlowForwarderPtr ff_udp_vir_;
+        SharedPointer<FlowForwarder> ff_of_;
+        SharedPointer<FlowForwarder> ff_tcp_;
+        SharedPointer<FlowForwarder> ff_tcp_vir_;
+        SharedPointer<FlowForwarder> ff_udp_vir_;
 
        	bool enable_frequency_engine_;
        	bool enable_nids_engine_;

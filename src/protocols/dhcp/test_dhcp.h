@@ -55,7 +55,7 @@ struct StackDHCPtest
         FlowCachePtr flow_cache;
 
         // FlowForwarders
-        FlowForwarderPtr ff_udp,ff_dhcp;
+        SharedPointer<FlowForwarder> ff_udp,ff_dhcp;
 
         StackDHCPtest()
         {
@@ -74,8 +74,8 @@ struct StackDHCPtest
                 flow_mng = FlowManagerPtr(new FlowManager());
                 flow_cache = FlowCachePtr(new FlowCache());
 
-                ff_udp = FlowForwarderPtr(new FlowForwarder());
-                ff_dhcp = FlowForwarderPtr(new FlowForwarder());
+                ff_udp = SharedPointer<FlowForwarder>(new FlowForwarder());
+                ff_dhcp = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);

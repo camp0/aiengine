@@ -108,6 +108,11 @@ struct StackTCPTest
                 tcp->setFlowManager(flow_mng);
         }
 
+	void statistics() {
+		tcp->setStatisticsLevel(5);
+		tcp->statistics();
+	}
+
         ~StackTCPTest() {
         }
 };

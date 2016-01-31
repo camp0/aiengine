@@ -142,11 +142,16 @@ int64_t HTTPProtocol::getAllocatedMemory() const {
 
 
 // Removes or decrements the hits of the maps.
+// This method just decrements the uris and the useragents, the host map is not change
+// because we want to keep a reference on the map of the host that have been processed.
+//
+// Notice that the call release_http_info frees all the values of the HTTPInfo but not 
+// the references of the host_map_
+//
 void HTTPProtocol::release_http_info_cache(HTTPInfo *info) {
 
-	if (!info->ua.expired()) {
-        	SharedPointer<StringCache> ua_ptr = info->ua.lock();
-                GenericMapType::iterator it = ua_map_.find(ua_ptr->getName());
+	if (info->ua) {
+                GenericMapType::iterator it = ua_map_.find(info->ua->getName());
 		if (it != ua_map_.end()) {
 			int *counter = &std::get<1>(it->second);
 			--(*counter);
@@ -157,9 +162,8 @@ void HTTPProtocol::release_http_info_cache(HTTPInfo *info) {
 		}
 	}
 
-	if (!info->uri.expired()) {
-        	SharedPointer<StringCache> uri_ptr = info->uri.lock();
-                GenericMapType::iterator it = uri_map_.find(uri_ptr->getName());
+	if (info->uri) {
+                GenericMapType::iterator it = uri_map_.find(info->uri->getName());
                 if (it != uri_map_.end()) {
                         int *counter = &std::get<1>(it->second);
                         --(*counter);
@@ -178,21 +182,20 @@ int32_t HTTPProtocol::release_http_info(HTTPInfo *info) {
 
 	int32_t bytes_released = 0;
 
-	SharedPointer<StringCache> host = info->host.lock();
-
-        if (host) { // The flow have a host attatched and uri and uas
-        	bytes_released += host->getNameSize();
+	if (info->host) {
+		SharedPointer<StringCache> host = info->host;
+        	bytes_released += info->host->getNameSize();
                 host_cache_->release(host);
 	}
 
-        SharedPointer<StringCache> ua = info->ua.lock();
-        if (ua) {
+	if (info->ua) {
+        	SharedPointer<StringCache> ua = info->ua;
 		bytes_released += ua->getNameSize();
                 ua_cache_->release(ua);
 	}
 
-        SharedPointer<StringCache> uri = info->uri.lock();
-        if (uri) {
+	if (info->uri) {
+        	SharedPointer<StringCache> uri = info->uri;
         	bytes_released += uri->getNameSize();
                 uri_cache_->release(uri);
         }
@@ -233,15 +236,13 @@ void HTTPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-			if (!flow->http_info.expired()) {
-				SharedPointer<HTTPInfo> info = flow->http_info.lock();
-
+			SharedPointer<HTTPInfo> info = flow->http_info;
+			if (info) {
 				total_bytes_released_by_flows += release_http_info(info.get());
 				total_bytes_released_by_flows += sizeof(info);
-				info.reset();
+				
 				flow->http_info.reset();
 				++ release_flows;
-
 				info_cache_->release(info);	
                         }
                 } 
@@ -267,10 +268,10 @@ void HTTPProtocol::releaseCache() {
 void HTTPProtocol::attach_host(HTTPInfo *info, boost::string_ref &host) {
 
 	// There is no host attached to the HTTPInfo
-	if (info->host.expired()) {
+	if (!info->host) {
 		GenericMapType::iterator it = host_map_.find(host);
 		if (it == host_map_.end()) {
-			SharedPointer<StringCache> host_ptr = host_cache_->acquire().lock();
+			SharedPointer<StringCache> host_ptr = host_cache_->acquire();
 			if (host_ptr) {
 				host_ptr->setName(host.data(),host.size());
 				info->host = host_ptr;
@@ -329,10 +330,10 @@ bool HTTPProtocol::process_content_length_parameter(HTTPInfo *info, boost::strin
 
 void HTTPProtocol::attach_useragent(HTTPInfo *info, boost::string_ref &ua) {
 
-	if (info->ua.expired()) {
+	if (!info->ua) {
 		GenericMapType::iterator it = ua_map_.find(ua);
 		if (it == ua_map_.end()) {
-			SharedPointer<StringCache> ua_ptr = ua_cache_->acquire().lock();
+			SharedPointer<StringCache> ua_ptr = ua_cache_->acquire();
 			if (ua_ptr) {
 				ua_ptr->setName(ua.data(),ua.length());
 				info->ua = ua_ptr;
@@ -352,7 +353,7 @@ void HTTPProtocol::attach_uri(HTTPInfo *info, boost::string_ref &uri) {
 
 	GenericMapType::iterator it = uri_map_.find(uri);
         if (it == uri_map_.end()) {
-        	SharedPointer<StringCache> uri_ptr = uri_cache_->acquire().lock();
+        	SharedPointer<StringCache> uri_ptr = uri_cache_->acquire();
                 if (uri_ptr) {
                 	uri_ptr->setName(uri.data(),uri.length());
                         info->uri = uri_ptr;
@@ -570,10 +571,10 @@ void HTTPProtocol::processFlow(Flow *flow) {
 	total_bytes_ += length;
 	++flow->total_packets_l7;
 
-	SharedPointer<HTTPInfo> info = flow->http_info.lock();
+	SharedPointer<HTTPInfo> info = flow->http_info;
 
 	if(!info) {
-		info = info_cache_->acquire().lock();
+		info = info_cache_->acquire();
                 if (!info) {
 			return;
 		}
@@ -628,10 +629,9 @@ void HTTPProtocol::processFlow(Flow *flow) {
 			// Just verify the Host on the first request
 			if (info->getTotalRequests() == 1) {
 				if (!domain_mng_.expired()) {
-					if (!info->host.expired()) {
+					if (info->host) {
                 				DomainNameManagerPtr host_mng = domain_mng_.lock();
-						SharedPointer<StringCache> host_name = info->host.lock();
-                				SharedPointer<DomainName> host_candidate = host_mng->getDomainName(host_name->getName());
+                				SharedPointer<DomainName> host_candidate = host_mng->getDomainName(info->host->getName());
 						if (host_candidate) {
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 #ifdef HAVE_LIBLOG4CXX
@@ -651,7 +651,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
 				SharedPointer<DomainName> mhost = info->matched_host.lock();
 				SharedPointer<HTTPUriSet> uset = mhost->getHTTPUriSet();
 				if((uset) and (offset >0)) {
-					if (uset->lookupURI(info->uri.lock()->getName())) {
+					if (uset->lookupURI(info->uri->getName())) {
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 						if (uset->call.haveCallback()) {
 							uset->call.executeCallback(flow);	

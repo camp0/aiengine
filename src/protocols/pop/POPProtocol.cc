@@ -60,7 +60,7 @@ int64_t POPProtocol::getAllocatedMemory() const {
 // Removes or decrements the hits of the maps.
 void POPProtocol::release_pop_info_cache(POPInfo *info) {
 
-        SharedPointer<StringCache> user_ptr = info->user_name.lock();
+        SharedPointer<StringCache> user_ptr = info->user_name;
 
         if (user_ptr) { // There is no from attached
                 GenericMapType::iterator it = user_map_.find(user_ptr->getName());
@@ -82,7 +82,7 @@ int32_t POPProtocol::release_pop_info(POPInfo *info) {
 
         int32_t bytes_released = 0;
 
-        SharedPointer<StringCache> user = info->user_name.lock();
+        SharedPointer<StringCache> user = info->user_name;
 
         if (user) { // The flow have a user attached
                 bytes_released += user->getNameSize();
@@ -118,9 +118,8 @@ void POPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-			if (!flow->pop_info.expired()) {
-                        	SharedPointer<POPInfo> pinfo = flow->pop_info.lock();
-                      
+                       	SharedPointer<POPInfo> pinfo = flow->pop_info;
+			if (pinfo) {
 				total_bytes_released_by_flows += release_pop_info(pinfo.get());
                                 total_bytes_released_by_flows += sizeof(pinfo);
                                 pinfo.reset();
@@ -146,10 +145,10 @@ void POPProtocol::releaseCache() {
 
 void POPProtocol::attach_user_name(POPInfo *info, boost::string_ref &name) {
 
-	if (info->user_name.expired()) {
+	if (!info->user_name) {
                 GenericMapType::iterator it = user_map_.find(name);
                 if (it == user_map_.end()) {
-                        SharedPointer<StringCache> user_ptr = user_cache_->acquire().lock();
+                        SharedPointer<StringCache> user_ptr = user_cache_->acquire();
                         if (user_ptr) {
                                 user_ptr->setName(name.data(),name.length());
                                 info->user_name = user_ptr;
@@ -222,10 +221,10 @@ void POPProtocol::processFlow(Flow *flow) {
 
 	setHeader(flow->packet->getPayload());
 
-        SharedPointer<POPInfo> pinfo = flow->pop_info.lock();
+        SharedPointer<POPInfo> pinfo = flow->pop_info;
 
         if(!pinfo) {
-                pinfo = info_cache_->acquire().lock();
+                pinfo = info_cache_->acquire();
                 if (!pinfo) {
                         return;
                 }

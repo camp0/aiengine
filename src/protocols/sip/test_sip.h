@@ -64,8 +64,8 @@ struct StackSIPtest
         FlowCachePtr flow_cache;
 
         // FlowForwarders
-        FlowForwarderPtr ff_udp;
-        FlowForwarderPtr ff_sip;
+        SharedPointer<FlowForwarder> ff_udp;
+        SharedPointer<FlowForwarder> ff_sip;
 
         StackSIPtest()
         {
@@ -87,8 +87,8 @@ struct StackSIPtest
                 flow_mng = FlowManagerPtr(new FlowManager());
                 flow_cache = FlowCachePtr(new FlowCache());
 
-                ff_udp = FlowForwarderPtr(new FlowForwarder());
-                ff_sip = FlowForwarderPtr(new FlowForwarder());
+                ff_udp = SharedPointer<FlowForwarder>(new FlowForwarder());
+                ff_sip = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);

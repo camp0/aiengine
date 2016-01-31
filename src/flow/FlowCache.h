@@ -46,7 +46,7 @@ public:
 	static constexpr int flowSize = sizeof(Flow);
 
 	void releaseFlow(const SharedPointer<Flow>& flow) { fc_->release(flow);}
-	WeakPointer<Flow> acquireFlow() { return fc_->acquire();}
+	SharedPointer<Flow> acquireFlow() { return fc_->acquire();}
 
 	void createFlows(int number) { fc_->create(number);}
 	void destroyFlows(int number) { fc_->destroy(number);}
@@ -75,7 +75,6 @@ public:
 
         void statistics() { statistics(std::cout);}
 
-	int32_t getTotalFlowsOnCache() const { return fc_->getTotalOnCache();}
 	int32_t getTotalFlows() const { return fc_->getTotal();}
 	int32_t getTotalAcquires() const { return fc_->getTotalAcquires();}
 	int32_t getTotalReleases() const { return fc_->getTotalReleases();}

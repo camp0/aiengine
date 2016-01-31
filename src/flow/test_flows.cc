@@ -52,6 +52,73 @@ BOOST_AUTO_TEST_CASE (test1_flowcache)
 
 BOOST_AUTO_TEST_CASE (test2_flowcache)
 {
+        FlowCache *fc = new FlowCache();
+        BOOST_CHECK(fc->getTotalFlows() == 0);
+        BOOST_CHECK(fc->getTotalReleases() == 0);
+        BOOST_CHECK(fc->getTotalAcquires() == 0);
+        BOOST_CHECK(fc->getTotalFails() == 0);
+
+        fc->createFlows(2);
+
+        BOOST_CHECK(fc->getTotalFlows() == 2);
+        BOOST_CHECK(fc->getTotalReleases() == 0);
+        BOOST_CHECK(fc->getTotalAcquires() == 0);
+        BOOST_CHECK(fc->getTotalFails() == 0);
+
+	SharedPointer<Flow> f1 = fc->acquireFlow();
+	SharedPointer<Flow> f2 = fc->acquireFlow();
+	SharedPointer<Flow> f3 = fc->acquireFlow();
+
+        BOOST_CHECK(fc->getTotalFlows() == 0);
+        BOOST_CHECK(fc->getTotalReleases() == 0);
+        BOOST_CHECK(fc->getTotalAcquires() == 2);
+        BOOST_CHECK(fc->getTotalFails() == 1);
+
+	BOOST_CHECK(f1 !=  nullptr);
+	BOOST_CHECK(f2 !=  nullptr);
+	BOOST_CHECK(f3 ==  nullptr);
+
+	fc->releaseFlow(f2);
+	fc->releaseFlow(f1);
+        
+	BOOST_CHECK(fc->getTotalFlows() == 2);
+        BOOST_CHECK(fc->getTotalReleases() == 2);
+        BOOST_CHECK(fc->getTotalAcquires() == 2);
+        BOOST_CHECK(fc->getTotalFails() == 1);
+
+	delete fc;
+}
+
+BOOST_AUTO_TEST_CASE (test3_flowcache)
+{
+        FlowCache *fc = new FlowCache();
+
+	SharedPointer<Flow> f1 = SharedPointer<Flow>(new Flow());
+	SharedPointer<Flow> f2 = SharedPointer<Flow>(new Flow());
+	SharedPointer<Flow> f3 = SharedPointer<Flow>(new Flow());
+
+        BOOST_CHECK(fc->getTotalFlows() == 0);
+        BOOST_CHECK(fc->getTotalReleases() == 0);
+        BOOST_CHECK(fc->getTotalAcquires() == 0);
+        BOOST_CHECK(fc->getTotalFails() == 0);
+
+	fc->releaseFlow(f1);
+
+	BOOST_CHECK(f1.use_count() == 2);
+        BOOST_CHECK(fc->getTotalFlows() == 1);
+        BOOST_CHECK(fc->getTotalReleases() == 1);
+        BOOST_CHECK(fc->getTotalAcquires() == 0);
+        BOOST_CHECK(fc->getTotalFails() == 0);
+
+	SharedPointer<Flow> f4 = fc->acquireFlow();
+
+	BOOST_CHECK(f1 == f4);
+
+	delete fc;
+}
+
+BOOST_AUTO_TEST_CASE (test22_flowcache)
+{
 	FlowCache *fc = new FlowCache(); 
 	BOOST_CHECK(fc->getTotalFlows() == 0);
 	BOOST_CHECK(fc->getTotalReleases() == 0);
@@ -60,39 +127,38 @@ BOOST_AUTO_TEST_CASE (test2_flowcache)
 
 	fc->createFlows(10);
 	BOOST_CHECK(fc->getTotalFlows() == 10);
-	BOOST_CHECK(fc->getTotalFlowsOnCache() == 10);
 	BOOST_CHECK(fc->getTotalReleases() == 0);
 	BOOST_CHECK(fc->getTotalAcquires() == 0);
 	BOOST_CHECK(fc->getTotalFails() == 0);
 
 	fc->destroyFlows(9);
-	BOOST_CHECK(fc->getTotalFlowsOnCache() == 1);
+
 	BOOST_CHECK(fc->getTotalFlows() == 1);
 	BOOST_CHECK(fc->getTotalFails() == 0);
 
 	fc->destroyFlows(9);
+
 	BOOST_CHECK(fc->getTotalFlows() == 0);
 	BOOST_CHECK(fc->getTotalReleases() == 0);
 	BOOST_CHECK(fc->getTotalAcquires() == 0);
 
 	fc->createFlows(1);
-	BOOST_CHECK(fc->getTotalFlowsOnCache() == 1);
+
 	BOOST_CHECK(fc->getTotalFlows() == 1);
 
-	SharedPointer<Flow> f1 = fc->acquireFlow().lock();
+	SharedPointer<Flow> f1 = fc->acquireFlow();
 
-	BOOST_CHECK(fc->getTotalFlowsOnCache() == 0);
-	BOOST_CHECK(fc->getTotalFlows() == 1);
+	BOOST_CHECK(fc->getTotalFlows() == 0);
 	BOOST_CHECK(fc->getTotalReleases() == 0);
 	BOOST_CHECK(fc->getTotalAcquires() == 1);
 	BOOST_CHECK(fc->getTotalFails() == 0);
 
-	SharedPointer<Flow> f2 = fc->acquireFlow().lock();
-	BOOST_CHECK(fc->getTotalFlows() == 1);
+	SharedPointer<Flow> f2 = fc->acquireFlow();
+
+	BOOST_CHECK(fc->getTotalFlows() == 0);
 	BOOST_CHECK(fc->getTotalReleases() == 0);
 	BOOST_CHECK(fc->getTotalAcquires() == 1);
 	BOOST_CHECK(fc->getTotalFails() == 1);
-	BOOST_CHECK(fc->getTotalFlowsOnCache() == 0);
 	BOOST_CHECK(f2 == nullptr);
 
 	fc->releaseFlow(f1);
@@ -101,17 +167,16 @@ BOOST_AUTO_TEST_CASE (test2_flowcache)
 
 }
 
-BOOST_AUTO_TEST_CASE (test3_flowcache)
+BOOST_AUTO_TEST_CASE (test23_flowcache)
 {
         FlowCache *fc = new FlowCache();
         fc->createFlows(10);
 
-	SharedPointer<Flow> f1 = fc->acquireFlow().lock();
-	SharedPointer<Flow> f2 = fc->acquireFlow().lock();
-	SharedPointer<Flow> f3 = fc->acquireFlow().lock();
+	SharedPointer<Flow> f1 = fc->acquireFlow();
+	SharedPointer<Flow> f2 = fc->acquireFlow();
+	SharedPointer<Flow> f3 = fc->acquireFlow();
 	
-	BOOST_CHECK(fc->getTotalFlowsOnCache() == 7);
-	BOOST_CHECK(fc->getTotalFlows() == 10);
+	BOOST_CHECK(fc->getTotalFlows() == 7);
 	BOOST_CHECK(fc->getTotalReleases() == 0);
 	BOOST_CHECK(fc->getTotalAcquires() == 3);
 	BOOST_CHECK(fc->getTotalFails() == 0);
@@ -122,38 +187,40 @@ BOOST_AUTO_TEST_CASE (test3_flowcache)
 	fc->releaseFlow(f2);
 	fc->releaseFlow(f3);
 	BOOST_CHECK(fc->getTotalReleases() == 3);
+	BOOST_CHECK(fc->getTotalFlows() == 10);
 
 	fc->destroyFlows(fc->getTotalFlows());
 	delete fc;
 }
 
-BOOST_AUTO_TEST_CASE (test4_flowcache)
+BOOST_AUTO_TEST_CASE (test24_flowcache)
 {
         FlowCache *fc = new FlowCache();
         fc->createFlows(1);
 
-        SharedPointer<Flow> f1 = fc->acquireFlow().lock();
+        SharedPointer<Flow> f1 = fc->acquireFlow();
 
-	BOOST_CHECK(fc->getTotalFlowsOnCache() == 0);
+	BOOST_CHECK(fc->getTotalFlows() == 0);
+
 	f1->setId(10);
 	f1->total_bytes = 10;
 	f1->total_packets = 10;
 
         fc->releaseFlow(f1);
-	BOOST_CHECK(fc->getTotalFlowsOnCache() == 1);
+	BOOST_CHECK(fc->getTotalFlows() == 1);
         BOOST_CHECK(fc->getTotalReleases() == 1);
 
-	SharedPointer<Flow> f2 = fc->acquireFlow().lock();
+	SharedPointer<Flow> f2 = fc->acquireFlow();
         fc->destroyFlows(fc->getTotalFlows());
         delete fc;
 }
 
-BOOST_AUTO_TEST_CASE (test5_flow_serialize)
+BOOST_AUTO_TEST_CASE (test25_flow_serialize)
 {
         FlowCache *fc = new FlowCache();
         fc->createFlows(1);
 
-        SharedPointer<Flow> f1 = fc->acquireFlow().lock();
+        SharedPointer<Flow> f1 = fc->acquireFlow();
 
 	f1->setFiveTuple(inet_addr("192.168.1.1"),2345,6,inet_addr("54.12.5.1"),80);
 
@@ -168,7 +235,7 @@ BOOST_AUTO_TEST_CASE (test5_flow_serialize)
 	BOOST_CHECK(output.compare(os.str()) == 0);
 
         fc->releaseFlow(f1);
-        BOOST_CHECK(fc->getTotalFlowsOnCache() == 1);
+        BOOST_CHECK(fc->getTotalFlows() == 1);
         BOOST_CHECK(fc->getTotalReleases() == 1);
 
         fc->destroyFlows(fc->getTotalFlows());
@@ -241,8 +308,9 @@ BOOST_AUTO_TEST_CASE (test1_flowcache_flowmanager)
 	FlowManager *fm = new FlowManager();
 
 	fc->createFlows(10);
-	SharedPointer<Flow> f1 = fc->acquireFlow().lock();
-	BOOST_CHECK(f1.use_count() == 2); // one is the cache and the other f1
+	SharedPointer<Flow> f1 = fc->acquireFlow();
+
+	BOOST_CHECK(f1.use_count() == 1); // one is the cache and the other f1
         BOOST_CHECK(fm->getTotalFlows() == 0);
         
 	unsigned long h1 = 1^2^3^4^5;
@@ -271,7 +339,7 @@ BOOST_AUTO_TEST_CASE (test2_flowcache_flowmanager)
 
 	for (int i = 0;i< 66; ++i)
 	{
-        	SharedPointer<Flow> f1 = fc->acquireFlow().lock();
+        	SharedPointer<Flow> f1 = fc->acquireFlow();
 
 		if(f1)
 		{
@@ -285,7 +353,7 @@ BOOST_AUTO_TEST_CASE (test2_flowcache_flowmanager)
 	}
 
 	BOOST_CHECK(fm->getTotalFlows() == 64);
-	BOOST_CHECK(fc->getTotalFlows() == 64);
+	BOOST_CHECK(fc->getTotalFlows() == 0);
 	BOOST_CHECK(fc->getTotalAcquires() == 64);
 	BOOST_CHECK(fc->getTotalReleases() == 0);
 	BOOST_CHECK(fc->getTotalFails() == 2);
@@ -321,7 +389,7 @@ BOOST_AUTO_TEST_CASE (test3_flowcache_flowmanager)
         fc->createFlows(254);
 
         for (int i = 0;i< 254; ++i) {
-                SharedPointer<Flow> f1 = fc->acquireFlow().lock();
+                SharedPointer<Flow> f1 = fc->acquireFlow();
 
                 if(f1) {
 			uint32_t ipsrc = 1;
@@ -343,7 +411,7 @@ BOOST_AUTO_TEST_CASE (test3_flowcache_flowmanager)
         }
 
         BOOST_CHECK(fm->getTotalFlows() == 254);
-        BOOST_CHECK(fc->getTotalFlows() == 254);
+        BOOST_CHECK(fc->getTotalFlows() == 0);
         BOOST_CHECK(fc->getTotalAcquires() == 254);
         BOOST_CHECK(fc->getTotalReleases() == 0);
         BOOST_CHECK(fc->getTotalFails() == 0);
@@ -370,7 +438,7 @@ BOOST_AUTO_TEST_CASE (test3_flowcache_flowmanager)
 		}
         }
         BOOST_CHECK(fm->getTotalFlows() == 254);
-        BOOST_CHECK(fc->getTotalFlows() == 254);
+        BOOST_CHECK(fc->getTotalFlows() == 0);
         BOOST_CHECK(fc->getTotalAcquires() == 254);
         BOOST_CHECK(fc->getTotalReleases() == 0);
         BOOST_CHECK(fc->getTotalFails() == 0);
@@ -385,7 +453,7 @@ BOOST_AUTO_TEST_CASE (test4_flowcache_flowmanager)
         fc->createFlows(254);
 
         for (int i = 0;i< 254; ++i) {
-                SharedPointer<Flow> f1 = fc->acquireFlow().lock();
+                SharedPointer<Flow> f1 = fc->acquireFlow();
 
                 if(f1) {
 			std::ostringstream os;
@@ -732,7 +800,7 @@ BOOST_AUTO_TEST_CASE (test24_flowmanager_with_flowcache_timeout)
         fc->createFlows(64);
 
         for (int i = 0;i< 66; ++i) {
-                SharedPointer<Flow> f = fc->acquireFlow().lock();
+                SharedPointer<Flow> f = fc->acquireFlow();
                 if (f) {
                         unsigned long h1 = 1^2^3^4^i;
                         unsigned long h2 = 4^i^3^1^2;
@@ -770,7 +838,7 @@ BOOST_AUTO_TEST_CASE (test24_flowmanager_with_flowcache_timeout)
         BOOST_CHECK(fm->getTotalProcessFlows() == 64);
         BOOST_CHECK(fm->getTotalTimeoutFlows() == 31);
 
-        BOOST_CHECK(fc->getTotalFlows() == 64);
+        BOOST_CHECK(fc->getTotalFlows() == 31);
         BOOST_CHECK(fc->getTotalAcquires() == 64);
         BOOST_CHECK(fc->getTotalReleases() == 31);
         BOOST_CHECK(fc->getTotalFails() == 2);

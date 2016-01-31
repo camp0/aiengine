@@ -38,7 +38,7 @@ void FlowForwarder::statistics(std::basic_ostream<char>& out) {
 
 void FlowForwarder::forwardFlow(Flow *flow) {
 
-	FlowForwarderPtr ff = flow->forwarder.lock();
+	SharedPointer<FlowForwarder> ff = flow->forwarder.lock();
 
 #ifdef DEBUG
 	std::cout << __PRETTY_FUNCTION__ << ":" << this << ":forwardFlow(" << *flow << ")" << std::endl;

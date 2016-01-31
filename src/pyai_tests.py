@@ -538,6 +538,8 @@ class StackLanTests(unittest.TestCase):
             self.assertEqual(inf.host_name, '')
             break
 
+        self.s.release_caches()
+
     def test18(self):
         """ Verify the getCounters functionatly """
 

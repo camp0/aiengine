@@ -62,8 +62,8 @@ struct StackPOPtest
         FlowCachePtr flow_cache;
 
         // FlowForwarders
-        FlowForwarderPtr ff_tcp;
-        FlowForwarderPtr ff_pop;
+        SharedPointer<FlowForwarder> ff_tcp;
+        SharedPointer<FlowForwarder> ff_pop;
 
         StackPOPtest()
         {
@@ -85,8 +85,8 @@ struct StackPOPtest
                 flow_mng = FlowManagerPtr(new FlowManager());
                 flow_cache = FlowCachePtr(new FlowCache());
 
-                ff_tcp = FlowForwarderPtr(new FlowForwarder());
-                ff_pop = FlowForwarderPtr(new FlowForwarder());
+                ff_tcp = SharedPointer<FlowForwarder>(new FlowForwarder());
+                ff_pop = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);

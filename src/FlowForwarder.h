@@ -41,9 +41,7 @@ namespace aiengine {
 class Protocol;
 typedef std::shared_ptr<Protocol> ProtocolPtr;
 
-class FlowForwarder;
-typedef std::shared_ptr<FlowForwarder> FlowForwarderPtr; 
-typedef std::weak_ptr<FlowForwarder> FlowForwarderPtrWeak; 
+// class FlowForwarder;
 
 class FlowForwarder 
 {
@@ -59,13 +57,13 @@ public:
 	}
     	virtual ~FlowForwarder() {}
 
-    	void virtual insertUpFlowForwarder(FlowForwarderPtrWeak mux) { flowForwarderVector_.insert(flowForwarderVector_.begin(),mux); }
-    	void virtual addUpFlowForwarder(FlowForwarderPtrWeak mux) { flowForwarderVector_.push_back(mux); }
+    	void virtual insertUpFlowForwarder(WeakPointer<FlowForwarder> mux) { flowForwarderVector_.insert(flowForwarderVector_.begin(),mux); }
+    	void virtual addUpFlowForwarder(WeakPointer<FlowForwarder> mux) { flowForwarderVector_.push_back(mux); }
     	void virtual removeUpFlowForwarder() { flowForwarderVector_.pop_back(); }
-    	void virtual removeUpFlowForwarder(FlowForwarderPtrWeak mux) { 
+    	void virtual removeUpFlowForwarder(WeakPointer<FlowForwarder> mux) { 
 	
 		auto it = std::find_if(flowForwarderVector_.begin(),flowForwarderVector_.end(),
-			[&] (FlowForwarderPtrWeak &p) {
+			[&] (WeakPointer<FlowForwarder> &p) {
 				return p.lock() == mux.lock(); 
 			}
 		);
@@ -97,9 +95,9 @@ private:
 	int64_t total_received_flows_;
 	int64_t total_forward_flows_;
 	int64_t total_fail_flows_;
-	FlowForwarderPtrWeak muxDown_;
+	WeakPointer<FlowForwarder> muxDown_;
 	uint16_t protocol_id_; // the protocol analiyzer owned by the multiplexer
-    	std::vector<FlowForwarderPtrWeak> flowForwarderVector_;
+    	std::vector<WeakPointer<FlowForwarder>> flowForwarderVector_;
 	std::function <void (Flow*)> flow_func_;
 	std::function <bool (Packet&)> check_func_;	
 };

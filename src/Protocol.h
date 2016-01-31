@@ -111,7 +111,7 @@ public:
 #endif
 		{}
 
-    	virtual ~Protocol() { ipset_mng_.reset(); }
+    	virtual ~Protocol() { ipset_mng_.reset(); name_.clear(); short_name_.clear(); }
 
 	virtual void setHeader(unsigned char *raw_packet) = 0;
 	virtual void setStatisticsLevel(int level) = 0;
@@ -127,8 +127,8 @@ public:
 	void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
 	MultiplexerPtrWeak getMultiplexer() { return mux_; } 
 
-	void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_ = ff; }
-	FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_; } 
+	void setFlowForwarder(WeakPointer<FlowForwarder> ff) { flow_forwarder_ = ff; }
+	WeakPointer<FlowForwarder> getFlowForwarder() { return flow_forwarder_; } 
 
 	void infoMessage(const std::string& msg);
 
@@ -185,7 +185,7 @@ public:
 	mutable int64_t total_validated_packets_;
 	mutable int64_t total_packets_;
         MultiplexerPtrWeak mux_;
-        FlowForwarderPtrWeak flow_forwarder_;
+        WeakPointer<FlowForwarder> flow_forwarder_;
 private:
 	std::string name_;
 	std::string short_name_;

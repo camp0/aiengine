@@ -84,9 +84,9 @@ public:
 	void setHTTPDataDirection(FlowDirection dir) { direction_ = dir; }
 	FlowDirection getHTTPDataDirection() const { return direction_; }
 
-        WeakPointer<StringCache> uri;
-        WeakPointer<StringCache> host;
-        WeakPointer<StringCache> ua;
+        SharedPointer<StringCache> uri;
+        SharedPointer<StringCache> host;
+        SharedPointer<StringCache> ua;
 	WeakPointer<DomainName> matched_host;
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
@@ -101,9 +101,9 @@ public:
         	return out;
 	}
 
-	const char *getUri() const { return  (uri.lock() ? uri.lock()->getName() : ""); }	
-	const char *getHostName() const { return (host.lock() ? host.lock()->getName() : ""); }	
-	const char *getUserAgent() const { return (ua.lock() ? ua.lock()->getName() : ""); }	
+	const char *getUri() const { return  (uri ? uri->getName() : ""); }	
+	const char *getHostName() const { return (host ? host->getName() : ""); }	
+	const char *getUserAgent() const { return (ua ? ua->getName() : ""); }	
 #endif
 
 private:

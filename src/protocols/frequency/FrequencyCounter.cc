@@ -51,12 +51,9 @@ void FrequencyCounter::filterFrequencyComponent(FlowManagerPtr flow_t, std::func
 
 	for (auto it = ft.begin(); it!=ft.end();++it) {
 		SharedPointer<Flow> flow = *it;
-		if (flow->frequencies.lock()) {
+		if (flow->frequencies) {
 			if (checker(flow)) {
-				SharedPointer<Frequencies> freq = flow->frequencies.lock();
-
-				if(freq)
-					addFrequencyComponent(freq);
+				addFrequencyComponent(flow->frequencies);
 			}
 		}
 	}

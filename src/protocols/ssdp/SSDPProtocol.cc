@@ -140,14 +140,14 @@ int32_t SSDPProtocol::release_ssdp_info(SSDPInfo *info) {
 
         int32_t bytes_released = 0;
 
-        SharedPointer<StringCache> host = info->host.lock();
+        SharedPointer<StringCache> host = info->host;
 
         if (host) { // The flow have a host attatched and uri and uas
                 bytes_released += host->getNameSize();
                 host_cache_->release(host);
         }
 
-        SharedPointer<StringCache> uri = info->uri.lock();
+        SharedPointer<StringCache> uri = info->uri;
         if (uri) {
                 bytes_released += uri->getNameSize();
                 uri_cache_->release(uri);
@@ -184,9 +184,8 @@ void SSDPProtocol::releaseCache() {
 		});
 
 		for (auto &flow: ft) {
-			if (!flow->ssdp_info.expired()) {
-				SharedPointer<SSDPInfo> info = flow->ssdp_info.lock();
-
+			SharedPointer<SSDPInfo> info = flow->ssdp_info;
+			if (info) {
                                 total_bytes_released_by_flows += release_ssdp_info(info.get());
                                 total_bytes_released_by_flows += sizeof(info);
                                 info.reset();
@@ -215,10 +214,10 @@ void SSDPProtocol::releaseCache() {
 void SSDPProtocol::attach_host(SSDPInfo *info, boost::string_ref &host) {
 
         // There is no host attached to the SSDPInfo
-        if (info->host.expired()) {
+        if (!info->host) {
                 GenericMapType::iterator it = host_map_.find(host);
                 if (it == host_map_.end()) {
-                        SharedPointer<StringCache> host_ptr = host_cache_->acquire().lock();
+                        SharedPointer<StringCache> host_ptr = host_cache_->acquire();
                         if (host_ptr) {
                                 host_ptr->setName(host.data(),host.size());
                                 info->host = host_ptr;
@@ -237,7 +236,7 @@ void SSDPProtocol::attach_uri(SSDPInfo *info, boost::string_ref &uri) {
 
         GenericMapType::iterator it = uri_map_.find(uri);
         if (it == uri_map_.end()) {
-                SharedPointer<StringCache> uri_ptr = uri_cache_->acquire().lock();
+                SharedPointer<StringCache> uri_ptr = uri_cache_->acquire();
                 if (uri_ptr) {
                         uri_ptr->setName(uri.data(),uri.length());
                         info->uri = uri_ptr;
@@ -395,10 +394,10 @@ void SSDPProtocol::processFlow(Flow *flow) {
 	total_bytes_ += length;
 	++total_packets_;
 
-       	SharedPointer<SSDPInfo> info = flow->ssdp_info.lock();
+       	SharedPointer<SSDPInfo> info = flow->ssdp_info;
 
        	if(!info) {
-               	info = info_cache_->acquire().lock();
+               	info = info_cache_->acquire();
                	if (!info) {
                        	return;
                	}
@@ -425,10 +424,9 @@ void SSDPProtocol::processFlow(Flow *flow) {
         // Just verify the Host on the first request
         if (info->getTotalRequests() == 1) {
         	if (!host_mng_.expired()) {
-                	if (!info->host.expired()) {
+                	if (info->host) {
                         	DomainNameManagerPtr host_mng = host_mng_.lock();
-                                SharedPointer<StringCache> host_name = info->host.lock();
-                                SharedPointer<DomainName> host_candidate = host_mng->getDomainName(host_name->getName());
+                                SharedPointer<DomainName> host_candidate = host_mng->getDomainName(info->host->getName());
                                 if (host_candidate) {
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 #ifdef HAVE_LIBLOG4CXX

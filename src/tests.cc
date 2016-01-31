@@ -239,7 +239,6 @@ BOOST_FIXTURE_TEST_CASE(test_case_7,StackLanTest)
         pd->close();
 	
 	//Checkers
-        BOOST_CHECK(flowcache1->getTotalFlowsOnCache() == 0);
         BOOST_CHECK(flowcache1->getTotalFlows() == 0);
         BOOST_CHECK(flowcache1->getTotalAcquires() == 0);
         BOOST_CHECK(flowcache1->getTotalReleases() == 0);
@@ -255,8 +254,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_7,StackLanTest)
         pd->close();
 
 	//Checkers
-        BOOST_CHECK(flowcache2->getTotalFlowsOnCache() == 0);
-        BOOST_CHECK(flowcache2->getTotalFlows() == 1);
+        BOOST_CHECK(flowcache2->getTotalFlows() == 0);
         BOOST_CHECK(flowcache2->getTotalAcquires() == 1);
         BOOST_CHECK(flowcache2->getTotalReleases() == 0);
         BOOST_CHECK(flowcache2->getTotalFails() == 0);
@@ -273,12 +271,11 @@ BOOST_FIXTURE_TEST_CASE(test_case_7,StackLanTest)
         pd->close();
 
         //Checkers
-        BOOST_CHECK(flowcache2->getTotalFlowsOnCache() == 0);
-        BOOST_CHECK(flowcache2->getTotalFlows() == 2);
+        BOOST_CHECK(flowcache2->getTotalFlows() == 0);
         BOOST_CHECK(flowcache2->getTotalAcquires() == 2);
         BOOST_CHECK(flowcache2->getTotalReleases() == 0);
         BOOST_CHECK(flowcache2->getTotalFails() == 0);
-        BOOST_CHECK(flowmgr->getTotalFlows() == 2);
+        BOOST_CHECK(flowmgr->getTotalFlows() == 1);
 
 }
 
@@ -287,8 +284,8 @@ BOOST_FIXTURE_TEST_CASE(test_case_8,StackLanTest)
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         FlowManagerPtr flowmgr = FlowManagerPtr(new FlowManager());
         FlowCachePtr flowcache = FlowCachePtr(new FlowCache());
-	FlowForwarderPtr ff_tcp_aux = FlowForwarderPtr(new FlowForwarder());	
-	FlowForwarderPtr ff_ssl_aux = FlowForwarderPtr(new FlowForwarder());	
+	SharedPointer<FlowForwarder> ff_tcp_aux = SharedPointer<FlowForwarder>(new FlowForwarder());	
+	SharedPointer<FlowForwarder> ff_ssl_aux = SharedPointer<FlowForwarder>(new FlowForwarder());	
 	SSLProtocolPtr ssl_aux = SSLProtocolPtr(new SSLProtocol());
 
         // connect with the stack
@@ -319,8 +316,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_8,StackLanTest)
         pd->close();
 
         //Checkers
-        BOOST_CHECK(flowcache->getTotalFlowsOnCache() == 0);
-        BOOST_CHECK(flowcache->getTotalFlows() == 1);
+        BOOST_CHECK(flowcache->getTotalFlows() == 0);
         BOOST_CHECK(flowcache->getTotalAcquires() == 1);
         BOOST_CHECK(flowcache->getTotalReleases() == 0);
         BOOST_CHECK(flowcache->getTotalFails() == 0);
@@ -343,9 +339,9 @@ BOOST_FIXTURE_TEST_CASE(test_case_9,StackLanTest)
 {
 
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
-        FlowForwarderPtr ff_tcp_aux = FlowForwarderPtr(new FlowForwarder());
-        FlowForwarderPtr ff_ssl_aux = FlowForwarderPtr(new FlowForwarder());
-        FlowForwarderPtr ff_http_aux = FlowForwarderPtr(new FlowForwarder());
+        SharedPointer<FlowForwarder> ff_tcp_aux = SharedPointer<FlowForwarder>(new FlowForwarder());
+        SharedPointer<FlowForwarder> ff_ssl_aux = SharedPointer<FlowForwarder>(new FlowForwarder());
+        SharedPointer<FlowForwarder> ff_http_aux = SharedPointer<FlowForwarder>(new FlowForwarder());
         HTTPProtocolPtr http_aux = HTTPProtocolPtr(new HTTPProtocol());
         SSLProtocolPtr ssl_aux = SSLProtocolPtr(new SSLProtocol());
 
@@ -851,7 +847,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_20,StackLanTest) // Tests for release the cach
 	releaseCaches();
 
 	for (auto &f: flow_table_tcp->getFlowTable()) {
-		BOOST_CHECK(f->ssl_info.lock() == nullptr);
+		BOOST_CHECK(f->ssl_info == nullptr);
 	}
 }
 
@@ -915,17 +911,17 @@ BOOST_FIXTURE_TEST_CASE(test_case_22,StackLanTest) // Tests for release the cach
 	// there is only one flow	
 	SharedPointer<Flow> f = *flow_table_tcp->getFlowTable().begin();
  
-        BOOST_CHECK(f->smtp_info.lock() != nullptr);
-       	SharedPointer<SMTPInfo> info = f->smtp_info.lock();
+        BOOST_CHECK(f->smtp_info != nullptr);
+       	SharedPointer<SMTPInfo> info = f->smtp_info;
 	BOOST_CHECK(info != nullptr); 
-        BOOST_CHECK(f->http_info.lock() == nullptr);
-        BOOST_CHECK(f->ssl_info.lock() == nullptr);
+        BOOST_CHECK(f->http_info == nullptr);
+        BOOST_CHECK(f->ssl_info == nullptr);
 
         releaseCaches();
 
-        BOOST_CHECK(f->smtp_info.lock() == nullptr);
-        BOOST_CHECK(f->http_info.lock() == nullptr);
-        BOOST_CHECK(f->ssl_info.lock() == nullptr);
+        BOOST_CHECK(f->smtp_info == nullptr);
+        BOOST_CHECK(f->http_info == nullptr);
+        BOOST_CHECK(f->ssl_info == nullptr);
 }
 
 
@@ -969,13 +965,13 @@ BOOST_AUTO_TEST_CASE ( test_case_1 )
 	// Check the relaseCache functionality with the frequencies
 
 	for (auto &flow: fm->getFlowTable()) {
-		BOOST_CHECK(flow->frequencies.lock() != nullptr);
-		BOOST_CHECK(flow->packet_frequencies.lock() != nullptr);
+		BOOST_CHECK(flow->frequencies != nullptr);
+		BOOST_CHECK(flow->packet_frequencies != nullptr);
 	} 
 	stack->releaseCaches();
 	for (auto &flow: fm->getFlowTable()) {
-		BOOST_CHECK(flow->frequencies.lock() == nullptr);
-		BOOST_CHECK(flow->packet_frequencies.lock() == nullptr);
+		BOOST_CHECK(flow->frequencies == nullptr);
+		BOOST_CHECK(flow->packet_frequencies == nullptr);
 	} 
 }
 
@@ -1504,27 +1500,27 @@ BOOST_AUTO_TEST_CASE ( test_case_17 )
 
         BOOST_CHECK(flows_tcp->getTotalFlows() == 1);
         for (auto &flow: flows_tcp->getFlowTable()) {
-                BOOST_CHECK(flow->http_info.lock() != nullptr);
-                BOOST_CHECK(flow->http_info.lock()->ua.lock() != nullptr);
-                BOOST_CHECK(flow->http_info.lock()->uri.lock() != nullptr);
+                BOOST_CHECK(flow->http_info != nullptr);
+                BOOST_CHECK(flow->http_info->ua != nullptr);
+                BOOST_CHECK(flow->http_info->uri != nullptr);
         }
         FlowManagerPtr flows_udp = stack->getUDPFlowManager().lock();
 
         BOOST_CHECK(flows_udp->getTotalFlows() == 1);
         for (auto &flow: flows_udp->getFlowTable()) {
-                BOOST_CHECK(flow->dns_info.lock() != nullptr);
+                BOOST_CHECK(flow->dns_info != nullptr);
         }
 
 	stack->releaseCaches();
 
         BOOST_CHECK(flows_tcp->getTotalFlows() == 1);
         for (auto &flow: flows_tcp->getFlowTable()) {
-                BOOST_CHECK(flow->http_info.lock() == nullptr);
+                BOOST_CHECK(flow->http_info == nullptr);
         }
 
         BOOST_CHECK(flows_udp->getTotalFlows() == 1);
         for (auto &flow: flows_udp->getFlowTable()) {
-                BOOST_CHECK(flow->dns_info.lock() == nullptr);
+                BOOST_CHECK(flow->dns_info == nullptr);
         }
 }
 
@@ -1662,14 +1658,14 @@ BOOST_AUTO_TEST_CASE ( test_case_20 )
         bool called = false;
         // Check the relaseCache functionality 
         for (auto &flow: fm->getFlowTable()) {
-                BOOST_CHECK(flow->ssdp_info.lock() != nullptr);
+                BOOST_CHECK(flow->ssdp_info != nullptr);
                 called = true;
         }
 
         stack->releaseCaches();
 
         for (auto &flow: fm->getFlowTable()) {
-                BOOST_CHECK(flow->ssdp_info.lock() == nullptr);
+                BOOST_CHECK(flow->ssdp_info == nullptr);
                 called = true;
         }
 	BOOST_CHECK(called == true);

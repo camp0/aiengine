@@ -82,15 +82,15 @@ struct StackLanTest
 	FlowCachePtr flow_cache_tcp;
 
 	// FlowForwarders
-	FlowForwarderPtr ff_tcp;
-	FlowForwarderPtr ff_tcp6;
-	FlowForwarderPtr ff_udp;
-	FlowForwarderPtr ff_tcp_generic6;
-	FlowForwarderPtr ff_tcp_generic;
-	FlowForwarderPtr ff_udp_generic;
-	FlowForwarderPtr ff_http;
-	FlowForwarderPtr ff_ssl;
-	FlowForwarderPtr ff_smtp;
+	SharedPointer<FlowForwarder> ff_tcp;
+	SharedPointer<FlowForwarder> ff_tcp6;
+	SharedPointer<FlowForwarder> ff_udp;
+	SharedPointer<FlowForwarder> ff_tcp_generic6;
+	SharedPointer<FlowForwarder> ff_tcp_generic;
+	SharedPointer<FlowForwarder> ff_udp_generic;
+	SharedPointer<FlowForwarder> ff_http;
+	SharedPointer<FlowForwarder> ff_ssl;
+	SharedPointer<FlowForwarder> ff_smtp;
 
         StackLanTest()
         {
@@ -131,15 +131,15 @@ struct StackLanTest
 		flow_table_udp->setFlowCache(flow_cache_udp);
 		flow_table_tcp->setFlowCache(flow_cache_tcp);
 
-		ff_tcp = FlowForwarderPtr(new FlowForwarder());
-		ff_tcp6 = FlowForwarderPtr(new FlowForwarder());
-		ff_udp = FlowForwarderPtr(new FlowForwarder());
-		ff_http = FlowForwarderPtr(new FlowForwarder());
-		ff_ssl = FlowForwarderPtr(new FlowForwarder());
-		ff_smtp = FlowForwarderPtr(new FlowForwarder());
-		ff_tcp_generic = FlowForwarderPtr(new FlowForwarder());
-		ff_tcp_generic6 = FlowForwarderPtr(new FlowForwarder());
-		ff_udp_generic = FlowForwarderPtr(new FlowForwarder());
+		ff_tcp = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_tcp6 = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_udp = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_http = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_ssl = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_smtp = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_tcp_generic = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_tcp_generic6 = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_udp_generic = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);

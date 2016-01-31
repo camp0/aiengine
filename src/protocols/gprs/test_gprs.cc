@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE (test2_gprs)
 	// Allocate the UDP high part
         MultiplexerPtr mux_udp_high = MultiplexerPtr(new Multiplexer());
 	UDPProtocolPtr udp_high = UDPProtocolPtr(new UDPProtocol());
-	FlowForwarderPtr ff_udp_high = FlowForwarderPtr(new FlowForwarder());
+	SharedPointer<FlowForwarder> ff_udp_high = SharedPointer<FlowForwarder>(new FlowForwarder());
 
 	// Create the new UDP 
         udp_high->setMultiplexer(mux_udp_high);
@@ -180,7 +180,7 @@ BOOST_AUTO_TEST_CASE (test3_gprs)
         // Allocate the UDP high part
         MultiplexerPtr mux_udp_high = MultiplexerPtr(new Multiplexer());
         UDPProtocolPtr udp_high = UDPProtocolPtr(new UDPProtocol());
-        FlowForwarderPtr ff_udp_high = FlowForwarderPtr(new FlowForwarder());
+        SharedPointer<FlowForwarder> ff_udp_high = SharedPointer<FlowForwarder>(new FlowForwarder());
 
         // Create the new UDP
         udp_high->setMultiplexer(mux_udp_high);
@@ -247,8 +247,8 @@ BOOST_AUTO_TEST_CASE (test4_gprs) // with the DNSProtocol
         // Allocate the UDP high part
         MultiplexerPtr mux_udp_high = MultiplexerPtr(new Multiplexer());
         UDPProtocolPtr udp_high = UDPProtocolPtr(new UDPProtocol());
-        FlowForwarderPtr ff_udp_high = FlowForwarderPtr(new FlowForwarder());
-        FlowForwarderPtr ff_dns_ = FlowForwarderPtr(new FlowForwarder());
+        SharedPointer<FlowForwarder> ff_udp_high = SharedPointer<FlowForwarder>(new FlowForwarder());
+        SharedPointer<FlowForwarder> ff_dns_ = SharedPointer<FlowForwarder>(new FlowForwarder());
 
         // Create the new UDP
         udp_high->setMultiplexer(mux_udp_high);
@@ -337,8 +337,8 @@ BOOST_AUTO_TEST_CASE (test5_gprs) // Process a pdp context creation
         Flow *flow = udp_low->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->gprs_info.lock() != nullptr);
-        SharedPointer<GPRSInfo> info = flow->gprs_info.lock();
+        BOOST_CHECK(flow->gprs_info != nullptr);
+        SharedPointer<GPRSInfo> info = flow->gprs_info;
 
 	std::string imsi("234308256005467");
 	BOOST_CHECK(imsi.compare(info->getIMSIString()) == 0);
@@ -365,8 +365,8 @@ BOOST_AUTO_TEST_CASE (test6_gprs) // Process a pdp context creation
         Flow *flow = udp_low->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->gprs_info.lock() != nullptr);
-        SharedPointer<GPRSInfo> info = flow->gprs_info.lock();
+        BOOST_CHECK(flow->gprs_info != nullptr);
+        SharedPointer<GPRSInfo> info = flow->gprs_info;
 
         std::string imsi("460004100000101");
         BOOST_CHECK(imsi.compare(info->getIMSIString()) == 0);
@@ -393,8 +393,8 @@ BOOST_AUTO_TEST_CASE (test7_gprs) // Process a pdp context creation
         Flow *flow = udp_low->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->gprs_info.lock() != nullptr);
-        SharedPointer<GPRSInfo> info = flow->gprs_info.lock();
+        BOOST_CHECK(flow->gprs_info != nullptr);
+        SharedPointer<GPRSInfo> info = flow->gprs_info;
 
         BOOST_CHECK(info->getPdpTypeNumber() == PDP_END_USER_TYPE_IPV6); // IPv6
 }
@@ -419,8 +419,8 @@ BOOST_AUTO_TEST_CASE (test8_gprs) // Process a pdp context creation with ipv6 an
         Flow *flow = udp_low->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->gprs_info.lock() != nullptr);
-        SharedPointer<GPRSInfo> info = flow->gprs_info.lock();
+        BOOST_CHECK(flow->gprs_info != nullptr);
+        SharedPointer<GPRSInfo> info = flow->gprs_info;
 
         std::string imsi("262026201608297");
         BOOST_CHECK(imsi.compare(info->getIMSIString()) == 0);
@@ -428,7 +428,7 @@ BOOST_AUTO_TEST_CASE (test8_gprs) // Process a pdp context creation with ipv6 an
 
 	gprs->releaseCache();
 
-        BOOST_CHECK(flow->gprs_info.lock() == nullptr);
+        BOOST_CHECK(flow->gprs_info == nullptr);
 
 }
 

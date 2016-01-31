@@ -86,7 +86,7 @@ SharedPointer<Flow> UDPProtocol::getFlow(const Packet& packet) {
 		flow = flow_table_->findFlow(h1,h2);
 		if (!flow){
 			if (flow_cache_){
-				flow = flow_cache_->acquireFlow().lock();
+				flow = flow_cache_->acquireFlow();
 				if (flow) {
 					flow->setId(h1);
 					flow->regex_mng = sigs_;
@@ -187,7 +187,7 @@ bool UDPProtocol::processPacket(Packet& packet) {
                 }
 
 		if(!flow_forwarder_.expired() and (bytes>0)) {
-			FlowForwarderPtr ff = flow_forwarder_.lock();
+			SharedPointer<FlowForwarder> ff = flow_forwarder_.lock();
 
                         // Modify the packet for the next level
                         packet.setPayload(&packet.getPayload()[getHeaderLength()]);

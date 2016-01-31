@@ -229,7 +229,7 @@ void FlowManager::showFlows(std::basic_ostream<char>& out, const std::string& pr
 
 	showFlows(out, [&] (const Flow& f) {
 		if (!f.forwarder.expired()) {
-			FlowForwarderPtr ff = f.forwarder.lock();	
+			SharedPointer<FlowForwarder> ff = f.forwarder.lock();	
 			ProtocolPtr proto = ff->getProtocol();
 			const char *name = proto->getName();
 			const char *short_name = proto->getShortName();
@@ -261,7 +261,7 @@ void FlowManager::showFlows(std::basic_ostream<char>& out,std::function<bool (co
 			const char *proto_name = "None";
 			if (!flow->forwarder.expired()) {
 				// Some flows could be not attached to a Protocol, for example syn packets, syn/ack packets and so on
-				FlowForwarderPtr ff = flow->forwarder.lock();	
+				SharedPointer<FlowForwarder> ff = flow->forwarder.lock();	
 				ProtocolPtr proto = ff->getProtocol();
 				proto_name = proto->getName();
 			}

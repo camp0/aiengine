@@ -57,11 +57,10 @@
 namespace aiengine {
 
 class FlowForwarder;
-typedef std::weak_ptr<FlowForwarder> FlowForwarderPtrWeak;
 
 class Flow : public Serializable {
 public:
-    	Flow() { reset(); }
+    	explicit Flow() { reset(); }
     	virtual ~Flow() {}
 	
 	// Common fields of the Flow
@@ -132,21 +131,22 @@ public:
 	// TODO: Optimize this in order to dont affect udp to tcp and viceversa	
 	// Objects that links with the Flow
 	WeakPointer<IPAbstractSet> ipset;
-	WeakPointer<TCPInfo> tcp_info;
-	WeakPointer<GPRSInfo> gprs_info;
-	WeakPointer<DNSInfo> dns_info;
-	WeakPointer<SSDPInfo> ssdp_info;
 	WeakPointer<Regex> regex;
-	WeakPointer<HTTPInfo> http_info;
-	WeakPointer<SSLInfo> ssl_info;
-	WeakPointer<SIPInfo> sip_info;
-	WeakPointer<SMTPInfo> smtp_info;
-	WeakPointer<IMAPInfo> imap_info;
-	WeakPointer<POPInfo> pop_info;
-	WeakPointer<Frequencies> frequencies;
-	WeakPointer<PacketFrequencies> packet_frequencies;
-	FlowForwarderPtrWeak forwarder;
+	WeakPointer<FlowForwarder> forwarder;
 	WeakPointer<RegexManager> regex_mng;
+	
+	SharedPointer<TCPInfo> tcp_info;
+	SharedPointer<GPRSInfo> gprs_info;
+	SharedPointer<DNSInfo> dns_info;
+	SharedPointer<SSDPInfo> ssdp_info;
+	SharedPointer<HTTPInfo> http_info;
+	SharedPointer<SSLInfo> ssl_info;
+	SharedPointer<SIPInfo> sip_info;
+	SharedPointer<SMTPInfo> smtp_info;
+	SharedPointer<IMAPInfo> imap_info;
+	SharedPointer<POPInfo> pop_info;
+	SharedPointer<Frequencies> frequencies;
+	SharedPointer<PacketFrequencies> packet_frequencies;
 	Packet *packet;
 
 	// specific values for a specific Engine
@@ -172,17 +172,17 @@ public:
         int32_t getTotalPacketsLayer7() const { return total_packets_l7;}
         int32_t getTotalPackets() const { return total_packets;}
 
-        HTTPInfo& getHTTPInfo() const { return *http_info.lock().get();}
-        SIPInfo& getSIPInfo() const { return *sip_info.lock().get();}
-        Frequencies& getFrequencies() const { return *frequencies.lock().get();}
-        PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.lock().get();}
+        HTTPInfo& getHTTPInfo() const { return *http_info.get();}
+        SIPInfo& getSIPInfo() const { return *sip_info.get();}
+        Frequencies& getFrequencies() const { return *frequencies.get();}
+        PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.get();}
         Regex& getRegex() const { return *regex.lock().get();}
-        DNSInfo& getDNSInfo() const { return *dns_info.lock().get();}
-        SSLInfo& getSSLInfo() const { return *ssl_info.lock().get();}
-        SMTPInfo& getSMTPInfo() const { return *smtp_info.lock().get();}
-        POPInfo& getPOPInfo() const { return *pop_info.lock().get();}
-        IMAPInfo& getIMAPInfo() const { return *imap_info.lock().get();}
-        SSDPInfo& getSSDPInfo() const { return *ssdp_info.lock().get();}
+        DNSInfo& getDNSInfo() const { return *dns_info.get();}
+        SSLInfo& getSSLInfo() const { return *ssl_info.get();}
+        SMTPInfo& getSMTPInfo() const { return *smtp_info.get();}
+        POPInfo& getPOPInfo() const { return *pop_info.get();}
+        IMAPInfo& getIMAPInfo() const { return *imap_info.get();}
+        SSDPInfo& getSSDPInfo() const { return *ssdp_info.get();}
 	IPSet& getIPSetInfo() const { return dynamic_cast<IPSet&>(*ipset.lock().get()); }
         const char *getFlowAnomaly() const { return AnomalyManager::getInstance()->getName(pa_); }
 #endif

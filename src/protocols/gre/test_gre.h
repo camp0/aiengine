@@ -55,8 +55,8 @@ struct StackTestGre
         MultiplexerPtr mux_icmp_vir;
 	FlowCachePtr flow_cache;
 	FlowManagerPtr flow_mng;
-	FlowForwarderPtr ff_udp_vir;
-	FlowForwarderPtr ff_gre;
+	SharedPointer<FlowForwarder> ff_udp_vir;
+	SharedPointer<FlowForwarder> ff_gre;
 
         StackTestGre()
         {
@@ -77,7 +77,7 @@ struct StackTestGre
 		mux_ip_vir = MultiplexerPtr(new Multiplexer());
 		mux_udp_vir = MultiplexerPtr(new Multiplexer());
 
-		ff_udp_vir = FlowForwarderPtr(new FlowForwarder());
+		ff_udp_vir = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 flow_cache = FlowCachePtr(new FlowCache());
                 flow_mng = FlowManagerPtr(new FlowManager());

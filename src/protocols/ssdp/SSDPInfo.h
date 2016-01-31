@@ -51,8 +51,8 @@ public:
 
 	void resetStrings() { uri.reset(); host.reset(); }
 
-	WeakPointer<StringCache> uri;
-	WeakPointer<StringCache> host;
+	SharedPointer<StringCache> uri;
+	SharedPointer<StringCache> host;
 
         void incTotalRequests() { ++total_requests_; }
         void incTotalResponses() { ++total_responses_; }
@@ -68,12 +68,12 @@ public:
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
-        const char *getUri() const { return  (!uri.expired() ? uri.lock()->getName() : ""); }
-        const char *getHostName() const { return (!host.expired() ? host.lock()->getName() : ""); }
+        const char *getUri() const { return  (uri ? uri->getName() : ""); }
+        const char *getHostName() const { return (host ? host->getName() : ""); }
 #endif
 	friend std::ostream& operator<< (std::ostream& out, const SSDPInfo& info) {
-	
-		out << info.host.lock()->getName();
+
+		if (info.host) out << info.host->getName();	
         	return out;
 	}
 

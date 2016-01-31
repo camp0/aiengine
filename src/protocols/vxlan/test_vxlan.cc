@@ -159,13 +159,13 @@ BOOST_AUTO_TEST_CASE (test4_vxlan)
 	BOOST_CHECK(flow_vir->getSourcePort() == 47864);
 	BOOST_CHECK(flow_vir->getDestinationPort() == 53);
 
-	BOOST_CHECK(flow_vir->dns_info.lock() != nullptr);
-        SharedPointer<DNSInfo> dns_info = flow_vir->dns_info.lock();
+	BOOST_CHECK(flow_vir->dns_info != nullptr);
+        SharedPointer<DNSInfo> dns_info = flow_vir->dns_info;
 
 	std::string domain("github.com");
 
-	BOOST_CHECK(dns_info->name.lock() != nullptr);
-	BOOST_CHECK(domain.compare(dns_info->name.lock()->getName()) == 0);
+	BOOST_CHECK(dns_info->name != nullptr);
+	BOOST_CHECK(domain.compare(dns_info->name->getName()) == 0);
 }
 
 // Test the Tag functionatliy with two identical udp flows but in different vni networks
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE (test5_vxlan)
         mux_eth->forwardPacket(packet1);
 
 	// Verify the number of flows that should be on the cache and table
-	BOOST_CHECK(flow_cache->getTotalFlows() == 3);
+	BOOST_CHECK(flow_cache->getTotalFlows() == 1);
 	BOOST_CHECK(flow_cache->getTotalAcquires() == 2); // One at physical layer and one virtual
 	BOOST_CHECK(flow_cache->getTotalReleases() == 0); 
 	BOOST_CHECK(flow_cache->getTotalFails() == 0);
@@ -208,25 +208,25 @@ BOOST_AUTO_TEST_CASE (test5_vxlan)
 	
 	Flow *flow_udp2 = udp_vir->getCurrentFlow();
 
-	BOOST_CHECK(flow_udp1->dns_info.lock() != nullptr);
-        SharedPointer<DNSInfo> dns_info = flow_udp1->dns_info.lock();
+	BOOST_CHECK(flow_udp1->dns_info != nullptr);
+        SharedPointer<DNSInfo> dns_info = flow_udp1->dns_info;
 
 	std::string domain("github.com");
 
-	BOOST_CHECK(dns_info->name.lock() != nullptr);
-	BOOST_CHECK(domain.compare(dns_info->name.lock()->getName()) == 0);
+	BOOST_CHECK(dns_info->name != nullptr);
+	BOOST_CHECK(domain.compare(dns_info->name->getName()) == 0);
 	
-	BOOST_CHECK(flow_udp2->dns_info.lock() != nullptr);
-        dns_info = flow_udp2->dns_info.lock();
+	BOOST_CHECK(flow_udp2->dns_info != nullptr);
+        dns_info = flow_udp2->dns_info;
 
 	domain = "gitgit.com";
-	BOOST_CHECK(dns_info->name.lock() != nullptr);
-	BOOST_CHECK(domain.compare(dns_info->name.lock()->getName()) == 0);
+	BOOST_CHECK(dns_info->name != nullptr);
+	BOOST_CHECK(domain.compare(dns_info->name->getName()) == 0);
 
 	BOOST_CHECK(flow_udp1 != flow_udp2);
 
         // Verify again the number of flows that should be on the cache and table
-        BOOST_CHECK(flow_cache->getTotalFlows() == 3);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 0);
         BOOST_CHECK(flow_cache->getTotalAcquires() == 3); // One at physical layer and one virtual
         BOOST_CHECK(flow_cache->getTotalReleases() == 0);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE (test6_vxlan)
 	BOOST_CHECK(flow_mng->getTotalProcessFlows() == 2);
 	BOOST_CHECK(flow_mng->getTotalFlows() == 2);
 
-	BOOST_CHECK(flow_cache->getTotalFlows() == 3);
+	BOOST_CHECK(flow_cache->getTotalFlows() == 1);
 	BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
 	BOOST_CHECK(flow_cache->getTotalReleases() == 0);
 	BOOST_CHECK(flow_cache->getTotalFails() == 0);
@@ -281,7 +281,7 @@ BOOST_AUTO_TEST_CASE (test6_vxlan)
         BOOST_CHECK(flow_mng->getTotalProcessFlows() == 2);
         BOOST_CHECK(flow_mng->getTotalFlows() == 2);
 
-        BOOST_CHECK(flow_cache->getTotalFlows() == 3);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 1);
         BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
         BOOST_CHECK(flow_cache->getTotalReleases() == 0);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);
@@ -289,8 +289,8 @@ BOOST_AUTO_TEST_CASE (test6_vxlan)
         Flow *flow = tcp_vir->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info.lock() != nullptr);
-        SharedPointer<TCPInfo> info = flow->tcp_info.lock();
+        BOOST_CHECK(flow->tcp_info != nullptr);
+        SharedPointer<TCPInfo> info = flow->tcp_info;
 
         BOOST_CHECK(info->syn == 1);
         BOOST_CHECK(info->fin == 0);

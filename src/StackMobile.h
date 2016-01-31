@@ -182,10 +182,10 @@ private:
         FlowCachePtr flow_cache_udp_high_;
 
         // FlowForwarders
-        FlowForwarderPtr ff_udp_low_;
-        FlowForwarderPtr ff_gprs_;
-        FlowForwarderPtr ff_tcp_;
-        FlowForwarderPtr ff_udp_high_;
+        SharedPointer<FlowForwarder> ff_udp_low_;
+        SharedPointer<FlowForwarder> ff_gprs_;
+        SharedPointer<FlowForwarder> ff_tcp_;
+        SharedPointer<FlowForwarder> ff_udp_high_;
 
        	bool enable_frequency_engine_;
        	bool enable_nids_engine_;

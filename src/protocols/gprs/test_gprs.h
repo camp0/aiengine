@@ -59,8 +59,8 @@ struct Stack3Gtest
         MultiplexerPtr mux_eth,mux_vlan;
         MultiplexerPtr mux_ip_low;
         MultiplexerPtr mux_udp_low;
-	FlowForwarderPtr ff_udp_low;
-	FlowForwarderPtr ff_gprs;
+	SharedPointer<FlowForwarder> ff_udp_low;
+	SharedPointer<FlowForwarder> ff_gprs;
 	FlowCachePtr flow_cache;
 	FlowManagerPtr flow_mng;
         MultiplexerPtr mux_gprs;
@@ -87,8 +87,8 @@ struct Stack3Gtest
 		mux_ip_high = MultiplexerPtr(new Multiplexer());
 		mux_icmp_high = MultiplexerPtr(new Multiplexer());
 
-		ff_udp_low = FlowForwarderPtr(new FlowForwarder());
-		ff_gprs = FlowForwarderPtr(new FlowForwarder());
+		ff_udp_low = SharedPointer<FlowForwarder>(new FlowForwarder());
+		ff_gprs = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 flow_cache = FlowCachePtr(new FlowCache());
                 flow_mng = FlowManagerPtr(new FlowManager());

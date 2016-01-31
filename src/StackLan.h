@@ -169,8 +169,8 @@ private:
         FlowCachePtr flow_cache_tcp_;
 
         // FlowForwarders
-        FlowForwarderPtr ff_tcp_;
-        FlowForwarderPtr ff_udp_;
+        SharedPointer<FlowForwarder> ff_tcp_;
+        SharedPointer<FlowForwarder> ff_udp_;
 
 	SharedPointer<RejectManager<StackLan>> rj_mng_;
 

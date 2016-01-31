@@ -106,11 +106,11 @@ BOOST_AUTO_TEST_CASE (test4_frequencies)
 	std::string data(reinterpret_cast<const char*>(raw_packet_ethernet_ip_tcp_ssl_client_hello),length);
 	Cache<Frequencies>::CachePtr freqs_cache_(new Cache<Frequencies>);
 
-        SharedPointer<Frequencies> freqs = freqs_cache_->acquire().lock();
+        SharedPointer<Frequencies> freqs = freqs_cache_->acquire();
 	BOOST_CHECK( freqs == nullptr);
 	
 	freqs_cache_->create(1);
-        freqs = freqs_cache_->acquire().lock();
+        freqs = freqs_cache_->acquire();
 	BOOST_CHECK( freqs != nullptr);
 }
 
@@ -176,11 +176,9 @@ BOOST_AUTO_TEST_CASE ( test6_frequencies )
 	for (auto it = ft.begin(); it!=ft.end();++it)
 	{
 		SharedPointer<Flow> flow = *it;
-		if(flow->frequencies.lock())
+		if(flow->frequencies)
 		{
-			SharedPointer<Frequencies> freq = flow->frequencies.lock();
-
-			fcount->addFrequencyComponent(freq);
+			fcount->addFrequencyComponent(flow->frequencies);
 		}
 	}
 	// nothing to compute on this case

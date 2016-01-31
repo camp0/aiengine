@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(test4_udp)
 
 	FlowCachePtr flow_cache = FlowCachePtr(new FlowCache());
 	FlowManagerPtr flow_mng = FlowManagerPtr(new FlowManager());
-	FlowForwarderPtr ff_udp = FlowForwarderPtr(new FlowForwarder());
+	SharedPointer<FlowForwarder> ff_udp = SharedPointer<FlowForwarder>(new FlowForwarder());
 
 	udp->setFlowCache(flow_cache);
 	udp->setFlowManager(flow_mng);
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(test5_udp) // Test timeout on UDP traffic
 	BOOST_CHECK(flow_mng->getTotalFlows() == 1);
 	BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 0);
 
-	BOOST_CHECK(flow_cache->getTotalFlows() == 2);
+	BOOST_CHECK(flow_cache->getTotalFlows() == 1);
 	BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
 	BOOST_CHECK(flow_cache->getTotalReleases() == 0);
 	BOOST_CHECK(flow_cache->getTotalFails() == 0);
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE(test5_udp) // Test timeout on UDP traffic
         BOOST_CHECK(flow_mng->getTotalFlows() == 1);
         BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 1);
 
-        BOOST_CHECK(flow_cache->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 1);
         BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
         BOOST_CHECK(flow_cache->getTotalReleases() == 1);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE(test6_udp) // Test timeout on UDP traffic, no expire flows
         BOOST_CHECK(flow_mng->getTotalFlows() == 1);
         BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 0);
 
-        BOOST_CHECK(flow_cache->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 1);
         BOOST_CHECK(flow_cache->getTotalAcquires() == 1);
         BOOST_CHECK(flow_cache->getTotalReleases() == 0);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(test6_udp) // Test timeout on UDP traffic, no expire flows
         BOOST_CHECK(flow_mng->getTotalFlows() == 2);
         BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 0);
 
-        BOOST_CHECK(flow_cache->getTotalFlows() == 2);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 0);
         BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
         BOOST_CHECK(flow_cache->getTotalReleases() == 0);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_CASE (test1_udp)
 
         FlowCachePtr flow_cache = FlowCachePtr(new FlowCache());
         FlowManagerPtr flow_mng = FlowManagerPtr(new FlowManager());
-        FlowForwarderPtr ff_udp = FlowForwarderPtr(new FlowForwarder());
+        SharedPointer<FlowForwarder> ff_udp = SharedPointer<FlowForwarder>(new FlowForwarder());
 
         udp->setFlowCache(flow_cache);
         udp->setFlowManager(flow_mng);

@@ -94,8 +94,8 @@ void FrequencyGroup<A_Type>::agregateFlows(const SharedPointer<FlowManager>& flo
 	for (auto it = ft.begin(); it!=ft.end();++it) {
 
 		SharedPointer<Flow> flow = *it;
-		if ((flow->frequency_engine_inspected == false)and(flow->frequencies.lock())) {
-			SharedPointer<Frequencies> freq = flow->frequencies.lock();
+		if ((flow->frequency_engine_inspected == false)and(flow->frequencies)) {
+			SharedPointer<Frequencies> freq = flow->frequencies;
 			if(freq) {
 				auto key = condition(flow);
 				auto it2 = group_map_.find(key);

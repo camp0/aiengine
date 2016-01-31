@@ -97,7 +97,7 @@ SharedPointer<Flow> TCPProtocol::getFlow(const Packet& packet) {
 		flow = flow_table_->findFlow(h1,h2);
                 if (!flow) {
                         if (flow_cache_) {
-                                flow = flow_cache_->acquireFlow().lock();
+                                flow = flow_cache_->acquireFlow();
                                 if (flow) {
                                         flow->setId(h1);
 					flow->regex_mng = sigs_; // Sets the default regex set
@@ -121,13 +121,15 @@ SharedPointer<Flow> TCPProtocol::getFlow(const Packet& packet) {
                                                 	ipmux->address.getDestinationAddress6(),
                                                 	getDestinationPort());
 					}
-                                        flow_table_->addFlow(flow);
+					
+					flow_table_->addFlow(flow);
 
 					// Now attach a TCPInfo to the TCP Flow
-					SharedPointer<TCPInfo> tcp_info_ptr = tcp_info_cache_->acquire().lock();
-					if (tcp_info_ptr) { 
+					SharedPointer<TCPInfo> tcp_info_ptr = tcp_info_cache_->acquire();
+					if (tcp_info_ptr) {
 						flow->tcp_info = tcp_info_ptr;
 					}
+                                        
 #if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
                                         if (getDatabaseObjectIsSet()) { // There is attached a database object
 						databaseAdaptorInsertHandler(flow.get());
@@ -158,8 +160,8 @@ bool TCPProtocol::processPacket(Packet &packet) {
 	++total_packets_;
 
         if (flow) {
-		if (!flow->tcp_info.expired()) {
-			SharedPointer<TCPInfo> tcp_info = flow->tcp_info.lock();
+		SharedPointer<TCPInfo> tcp_info = flow->tcp_info;
+		if (tcp_info) {
         		MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();
         		MultiplexerPtr ipmux = downmux.lock();
 
@@ -167,7 +169,6 @@ bool TCPProtocol::processPacket(Packet &packet) {
 			
 			flow->total_bytes += bytes;
 			++flow->total_packets;
-               		// flow->setLastPacketTime(packet_time_);
 
 			if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
 				flow->setPacketAnomaly(packet.getPacketAnomaly());
@@ -202,8 +203,7 @@ bool TCPProtocol::processPacket(Packet &packet) {
                         }
 
 			if (!flow_forwarder_.expired()&&(bytes > 0)) {
-			
-				FlowForwarderPtr ff = flow_forwarder_.lock();
+				SharedPointer<FlowForwarder> ff = flow_forwarder_.lock();
 
 				// Modify the packet for the next level
 				packet.setPayload(&packet.getPayload()[getTcpHdrLength()]);

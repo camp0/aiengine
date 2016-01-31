@@ -47,10 +47,10 @@ public:
 
 	void resetStrings() { uri.reset(); from.reset(); to.reset(); via.reset(); }
 
-        WeakPointer<StringCache> uri;
-        WeakPointer<StringCache> from;
-        WeakPointer<StringCache> to;
-        WeakPointer<StringCache> via;
+        SharedPointer<StringCache> uri;
+        SharedPointer<StringCache> from;
+        SharedPointer<StringCache> to;
+        SharedPointer<StringCache> via;
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 
@@ -60,10 +60,10 @@ public:
         	return out;
 	}
 
-	const char *getUri() const { return (!uri.expired() ? uri.lock()->getName() : "");}	
-	const char *getFrom() const { return (!from.expired() ? from.lock()->getName() : "");}	
-	const char *getTo() const { return (!to.expired() ? to.lock()->getName() : "");}	
-	const char *getVia() const { return (!via.expired() ? via.lock()->getName() : "");}	
+	const char *getUri() const { return (uri ? uri->getName() : "");}	
+	const char *getFrom() const { return (from ? from->getName() : "");}	
+	const char *getTo() const { return (to ? to->getName() : "");}	
+	const char *getVia() const { return (via ? via->getName() : "");}	
 #endif
 
 private:

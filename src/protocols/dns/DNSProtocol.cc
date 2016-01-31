@@ -64,19 +64,18 @@ void DNSProtocol::releaseCache() {
 		});
 
 		for (auto &flow: ft) {
-			if (!flow->dns_info.expired()) {
-				SharedPointer<DNSInfo> info = flow->dns_info.lock();
-
-				SharedPointer<StringCache> name = info->name.lock();		
-
-				if (name) {
+			SharedPointer<DNSInfo> info = flow->dns_info;
+			if (info) {
+				if (info->name) {
+					SharedPointer<StringCache> name = info->name;		
+					
 					info->name.reset();
 					total_bytes_released_by_flows += name->getNameSize();
 					name_cache_->release(name);
 				}
 				++release_flows;
-				info.reset();
 				flow->dns_info.reset();
+				//inforeset();
 				info_cache_->release(info);
 			}
 		} 
@@ -98,12 +97,12 @@ void DNSProtocol::releaseCache() {
 
 void DNSProtocol::attach_dns_to_flow(DNSInfo *info, boost::string_ref &domain, uint16_t qtype) {
 
-	SharedPointer<StringCache> name = info->name.lock();
+	SharedPointer<StringCache> name = info->name;
 
         if (!name) { // There is no DNS attached
 		GenericMapType::iterator it = domain_map_.find(domain);
                 if (it == domain_map_.end()) {
-                       	name = name_cache_->acquire().lock();
+                       	name = name_cache_->acquire();
                         if (name) {
                         	name->setName(domain.data(),domain.length());
 				info->setQueryType(qtype);
@@ -130,10 +129,9 @@ void DNSProtocol::processFlow(Flow *flow) {
 		setHeader(flow->packet->getPayload());
 		uint16_t flags = ntohs(dns_header_->flags);
 
-        	SharedPointer<DNSInfo> info = flow->dns_info.lock();
-
+        	SharedPointer<DNSInfo> info = flow->dns_info;
         	if(!info) {
-                	info = info_cache_->acquire().lock();
+                	info = info_cache_->acquire();
                 	if (!info) {
                         	return;
                 	}
@@ -234,7 +232,7 @@ void DNSProtocol::handle_standard_response(Flow *flow, DNSInfo *info, int length
 
 	++total_responses_;
 
-       	SharedPointer<StringCache> name = info->name.lock();
+       	SharedPointer<StringCache> name = info->name;
        	if (!name) {
 		// There is no name attached so lets try to extract from the response
         	int offset = extract_domain_name(flow);

@@ -425,7 +425,9 @@ int main(int argc, char* argv[]) {
             		return false;
         	}
         	if (var_map.count("version")) {
-            		std::cout << PACKAGE " " VERSION << std::endl;
+			std::cout << PACKAGE " version:" VERSION; 
+			std::cout << " pcre version:" << PCRE_MAJOR << "." << PCRE_MINOR ;
+        		std::cout << " boost version:" << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << std::endl;
             		return false;
         	}
 		if (var_map.count("input") == 0) {
@@ -469,6 +471,8 @@ int main(int argc, char* argv[]) {
         std::cout << " " << system_stats->getVersionName();
         std::cout << " " << system_stats->getMachineName();
         std::cout << std::endl;
+	std::cout << "\tPcre version:" << PCRE_MAJOR << "." << PCRE_MINOR ;
+	std::cout << " Boost version:" << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << std::endl;
 
 #ifdef HAVE_LIBLOG4CXX
 	BasicConfigurator::configure();

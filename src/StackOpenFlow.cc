@@ -57,10 +57,10 @@ StackOpenFlow::StackOpenFlow():
 	flow_cache_udp_vir_(FlowCachePtr(new FlowCache())),
 	flow_cache_tcp_vir_(FlowCachePtr(new FlowCache())),
 	// FlowForwarders
-	ff_of_(FlowForwarderPtr(new FlowForwarder())),
-	ff_tcp_(FlowForwarderPtr(new FlowForwarder())),
-	ff_tcp_vir_(FlowForwarderPtr(new FlowForwarder())),
-	ff_udp_vir_(FlowForwarderPtr(new FlowForwarder())),
+	ff_of_(SharedPointer<FlowForwarder>(new FlowForwarder())),
+	ff_tcp_(SharedPointer<FlowForwarder>(new FlowForwarder())),
+	ff_tcp_vir_(SharedPointer<FlowForwarder>(new FlowForwarder())),
+	ff_udp_vir_(SharedPointer<FlowForwarder>(new FlowForwarder())),
         enable_frequency_engine_(false),
         enable_nids_engine_(false) {
  

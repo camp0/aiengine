@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE (test4_openflow)
         BOOST_CHECK(flow_mng->getTotalFlows() == 2);
         BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 0);
 
-        BOOST_CHECK(flow_cache->getTotalFlows() == 3);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 1);
         BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
         BOOST_CHECK(flow_cache->getTotalReleases() == 0);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);
@@ -245,7 +245,7 @@ BOOST_AUTO_TEST_CASE (test4_openflow)
         BOOST_CHECK(flow_mng->getTotalFlows() == 2);
         BOOST_CHECK(flow_mng->getTotalTimeoutFlows() == 0);
 
-        BOOST_CHECK(flow_cache->getTotalFlows() == 3);
+        BOOST_CHECK(flow_cache->getTotalFlows() == 1);
         BOOST_CHECK(flow_cache->getTotalAcquires() == 2);
         BOOST_CHECK(flow_cache->getTotalReleases() == 0);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);

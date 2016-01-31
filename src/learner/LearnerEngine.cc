@@ -186,10 +186,8 @@ void LearnerEngine::agregateFlows(const std::vector<WeakPointer<Flow>>& flows) {
 #endif
 		if (flow) {
 		
-                	if (flow->packet_frequencies.lock()) {
-                                SharedPointer<PacketFrequencies> pkt_freq = flow->packet_frequencies.lock();
-                                if (pkt_freq)
-                                        agregatePacketFlow(pkt_freq);
+                	if (flow->packet_frequencies) {
+                        	agregatePacketFlow(flow->packet_frequencies);
                         }
                 }
 	}

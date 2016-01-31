@@ -59,10 +59,10 @@ StackVirtual::StackVirtual():
 	flow_cache_udp_vir_(FlowCachePtr(new FlowCache())),
 	flow_cache_tcp_vir_(FlowCachePtr(new FlowCache())),
 	// FlowForwarders
-	ff_vxlan_(FlowForwarderPtr(new FlowForwarder())),
-	ff_udp_(FlowForwarderPtr(new FlowForwarder())),
-	ff_tcp_vir_(FlowForwarderPtr(new FlowForwarder())),
-	ff_udp_vir_(FlowForwarderPtr(new FlowForwarder())),
+	ff_vxlan_(SharedPointer<FlowForwarder>(new FlowForwarder())),
+	ff_udp_(SharedPointer<FlowForwarder>(new FlowForwarder())),
+	ff_tcp_vir_(SharedPointer<FlowForwarder>(new FlowForwarder())),
+	ff_udp_vir_(SharedPointer<FlowForwarder>(new FlowForwarder())),
         enable_frequency_engine_(false),
         enable_nids_engine_(false) {
 
@@ -104,11 +104,6 @@ StackVirtual::StackVirtual():
 	flow_table_udp_->setFlowCache(flow_cache_udp_);
 	flow_table_udp_vir_->setFlowCache(flow_cache_udp_vir_);
 	flow_table_tcp_vir_->setFlowCache(flow_cache_tcp_vir_);
-
-	ff_udp_ = FlowForwarderPtr(new FlowForwarder());
-	ff_vxlan_ = FlowForwarderPtr(new FlowForwarder());
-	ff_tcp_vir_ = FlowForwarderPtr(new FlowForwarder());
-	ff_udp_vir_ = FlowForwarderPtr(new FlowForwarder());
 
 	// Configure the lower Ethernet Layer 
 	eth_->setMultiplexer(mux_eth);

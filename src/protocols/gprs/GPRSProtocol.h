@@ -132,8 +132,8 @@ public:
         void setMultiplexer(MultiplexerPtrWeak mux) { mux_ = mux; }
         MultiplexerPtrWeak getMultiplexer() { return mux_;}
 
-        void setFlowForwarder(FlowForwarderPtrWeak ff) { flow_forwarder_= ff; }
-        FlowForwarderPtrWeak getFlowForwarder() { return flow_forwarder_;}
+        void setFlowForwarder(WeakPointer<FlowForwarder> ff) { flow_forwarder_= ff; }
+        WeakPointer<FlowForwarder> getFlowForwarder() { return flow_forwarder_;}
 
 	void releaseCache(); // Release the objets attached to the flows 
 

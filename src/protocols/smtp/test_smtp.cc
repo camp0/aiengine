@@ -95,11 +95,11 @@ BOOST_AUTO_TEST_CASE (test3_smtp)
         smtp->processFlow(flow.get());
 
         BOOST_CHECK(smtp->getTotalBytes() == length);
-	BOOST_CHECK(flow->smtp_info.lock() != nullptr);
+	BOOST_CHECK(flow->smtp_info != nullptr);
 
-	SharedPointer<SMTPInfo> info = flow->smtp_info.lock();
-	SharedPointer<StringCache> from = info->from.lock();
-	SharedPointer<StringCache> to = info->to.lock();
+	SharedPointer<SMTPInfo> info = flow->smtp_info;
+	SharedPointer<StringCache> from = info->from;
+	SharedPointer<StringCache> to = info->to;
 
 	BOOST_CHECK( info != nullptr);
 	BOOST_CHECK(from != nullptr);
@@ -126,11 +126,11 @@ BOOST_AUTO_TEST_CASE (test4_smtp)
         smtp->processFlow(flow.get());
 
         BOOST_CHECK(smtp->getTotalBytes() == length);
-        BOOST_CHECK(flow->smtp_info.lock() != nullptr);
+        BOOST_CHECK(flow->smtp_info != nullptr);
 
-        SharedPointer<SMTPInfo> info = flow->smtp_info.lock();
-        SharedPointer<StringCache> from = info->from.lock();
-        SharedPointer<StringCache> to = info->to.lock();
+        SharedPointer<SMTPInfo> info = flow->smtp_info;
+        SharedPointer<StringCache> from = info->from;
+        SharedPointer<StringCache> to = info->to;
 
         BOOST_CHECK(from == nullptr);
         BOOST_CHECK(to != nullptr);
@@ -162,11 +162,11 @@ BOOST_AUTO_TEST_CASE (test5_smtp)
         flow->packet = const_cast<Packet*>(&packet);
         smtp->processFlow(flow.get());
 
-        BOOST_CHECK(flow->smtp_info.lock() != nullptr);
+        BOOST_CHECK(flow->smtp_info != nullptr);
 
-        SharedPointer<SMTPInfo> info = flow->smtp_info.lock();
-        SharedPointer<StringCache> from = info->from.lock();
-        SharedPointer<StringCache> to = info->to.lock();
+        SharedPointer<SMTPInfo> info = flow->smtp_info;
+        SharedPointer<StringCache> from = info->from;
+        SharedPointer<StringCache> to = info->to;
 
 	BOOST_CHECK(domain_name->getMatchs() == 1);
         BOOST_CHECK( info != nullptr);
@@ -200,11 +200,11 @@ BOOST_AUTO_TEST_CASE (test6_smtp)
         flow->packet = const_cast<Packet*>(&packet);
         smtp->processFlow(flow.get());
 
-        BOOST_CHECK(flow->smtp_info.lock() != nullptr);
+        BOOST_CHECK(flow->smtp_info != nullptr);
 
-        SharedPointer<SMTPInfo> info = flow->smtp_info.lock();
-        SharedPointer<StringCache> from = info->from.lock();
-        SharedPointer<StringCache> to = info->to.lock();
+        SharedPointer<SMTPInfo> info = flow->smtp_info;
+        SharedPointer<StringCache> from = info->from;
+        SharedPointer<StringCache> to = info->to;
 
         BOOST_CHECK(domain_name_ban->getMatchs() == 0);
         BOOST_CHECK(domain_name->getMatchs() == 1);

@@ -61,7 +61,7 @@ class NetworkStack
 {
 public:
     	NetworkStack();
-    	virtual ~NetworkStack() {}
+    	virtual ~NetworkStack() { name_.clear(); }
 
 	virtual void showFlows(std::basic_ostream<char>& out) = 0;
 	virtual void showFlows() = 0;
@@ -96,8 +96,8 @@ public:
 	void releaseCache(const std::string &name);
 	void releaseCaches();
 
-	void enableFlowForwarders(const FlowForwarderPtr& ff, std::initializer_list<FlowForwarderPtr> fps);
-	void disableFlowForwarders(const FlowForwarderPtr& ff, std::initializer_list<FlowForwarderPtr> fps);
+	void enableFlowForwarders(const SharedPointer<FlowForwarder>& ff, std::initializer_list<SharedPointer<FlowForwarder>> fps);
+	void disableFlowForwarders(const SharedPointer<FlowForwarder>& ff, std::initializer_list<SharedPointer<FlowForwarder>> fps);
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) 
 	void setDomainNameManager(DomainNameManager& dnm, const std::string& name);
@@ -194,19 +194,19 @@ protected:
         FrequencyProtocolPtr freqs_tcp;
         FrequencyProtocolPtr freqs_udp;
 
-        FlowForwarderPtr ff_http;
-        FlowForwarderPtr ff_ssl;
-        FlowForwarderPtr ff_dns;
-        FlowForwarderPtr ff_sip;
-        FlowForwarderPtr ff_dhcp;
-        FlowForwarderPtr ff_ntp,ff_snmp,ff_ssdp;
-        FlowForwarderPtr ff_smtp;
-        FlowForwarderPtr ff_imap;
-        FlowForwarderPtr ff_pop;
-        FlowForwarderPtr ff_tcp_generic;
-        FlowForwarderPtr ff_udp_generic;
-        FlowForwarderPtr ff_tcp_freqs;
-        FlowForwarderPtr ff_udp_freqs;
+        SharedPointer<FlowForwarder> ff_http;
+        SharedPointer<FlowForwarder> ff_ssl;
+        SharedPointer<FlowForwarder> ff_dns;
+        SharedPointer<FlowForwarder> ff_sip;
+        SharedPointer<FlowForwarder> ff_dhcp;
+        SharedPointer<FlowForwarder> ff_ntp,ff_snmp,ff_ssdp;
+        SharedPointer<FlowForwarder> ff_smtp;
+        SharedPointer<FlowForwarder> ff_imap;
+        SharedPointer<FlowForwarder> ff_pop;
+        SharedPointer<FlowForwarder> ff_tcp_generic;
+        SharedPointer<FlowForwarder> ff_udp_generic;
+        SharedPointer<FlowForwarder> ff_tcp_freqs;
+        SharedPointer<FlowForwarder> ff_udp_freqs;
 
 private:
 #ifdef HAVE_LIBLOG4CXX

@@ -47,8 +47,8 @@ StackLanIPv6::StackLanIPv6():
         flow_cache_udp_(FlowCachePtr(new FlowCache())),
         flow_cache_tcp_(FlowCachePtr(new FlowCache())),
         // FlowForwarders
-        ff_tcp_(FlowForwarderPtr(new FlowForwarder())),
-        ff_udp_(FlowForwarderPtr(new FlowForwarder())),
+        ff_tcp_(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_udp_(SharedPointer<FlowForwarder>(new FlowForwarder())),
         rj_mng_(),
         enable_frequency_engine_(false),
         enable_nids_engine_(false) {

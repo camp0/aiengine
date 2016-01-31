@@ -53,8 +53,8 @@ void FrequencyProtocol::releaseCache() {
                 int32_t release_flows = 0;
 
                 for (auto &flow: ft) {
-                        SharedPointer<Frequencies> freq = flow->frequencies.lock();
-                	SharedPointer<PacketFrequencies> pkt_freq = flow->packet_frequencies.lock();
+                        SharedPointer<Frequencies> freq = flow->frequencies;
+                	SharedPointer<PacketFrequencies> pkt_freq = flow->packet_frequencies;
 
                         if (freq) { // The flow have frequencies attached
                                 flow->frequencies.reset();
@@ -85,10 +85,10 @@ void FrequencyProtocol::processFlow(Flow *flow) {
 
 	if (flow->total_packets < inspection_limit_) {
 
-		SharedPointer<Frequencies> freq = flow->frequencies.lock();
+		SharedPointer<Frequencies> freq = flow->frequencies;
 
 		if (!freq) { // There is no Frequency object attached to the flow
-			freq = freqs_cache_->acquire().lock();
+			freq = freqs_cache_->acquire();
 			if (freq)
 				flow->frequencies = freq;
 		} 
@@ -96,10 +96,10 @@ void FrequencyProtocol::processFlow(Flow *flow) {
 		if (freq) 
 			freq->addPayload(flow->packet->getPayload(),flow->packet->getLength());		
 
-                SharedPointer<PacketFrequencies> pkt_freq = flow->packet_frequencies.lock();
+                SharedPointer<PacketFrequencies> pkt_freq = flow->packet_frequencies;
 
                 if (!pkt_freq) { // There is no Frequency object attached to the flow
-                        pkt_freq = packet_freqs_cache_->acquire().lock();
+                        pkt_freq = packet_freqs_cache_->acquire();
                         if (pkt_freq)
                                 flow->packet_frequencies = pkt_freq;
                 }

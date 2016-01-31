@@ -61,8 +61,8 @@ public:
 		ip6_dst_.s6_addr32[2] = 0;
 		ip6_dst_.s6_addr32[3] = 0;
 		// Review: maybe there is no need to store
-		std::memset(src_address_6_,0,INET6_ADDRSTRLEN); 
-		std::memset(dst_address_6_,0,INET6_ADDRSTRLEN);
+		// std::memset(src_address_6_,0,INET6_ADDRSTRLEN); 
+		// std::memset(dst_address_6_,0,INET6_ADDRSTRLEN);
 	}
 
 	short getType() const { return type_;} // 4 and 6 values

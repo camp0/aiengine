@@ -52,17 +52,17 @@ BOOST_AUTO_TEST_CASE (test1_ssdp)
         flow->packet = const_cast<Packet*>(&packet);
         ssdp->processFlow(flow.get());
 
-        SharedPointer<SSDPInfo> info = flow->ssdp_info.lock();
+        SharedPointer<SSDPInfo> info = flow->ssdp_info;
 
         BOOST_CHECK(info != nullptr);
-        BOOST_CHECK(info->host.lock() != nullptr);
-        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(info->host != nullptr);
+        BOOST_CHECK(info->uri != nullptr);
 
         std::string host("239.255.255.250:1900");
         std::string uri("*");
 
-        BOOST_CHECK(host.compare(info->host.lock()->getName()) == 0);
-        BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+        BOOST_CHECK(host.compare(info->host->getName()) == 0);
+        BOOST_CHECK(uri.compare(info->uri->getName()) == 0);
 
 	BOOST_CHECK(info->getTotalRequests() == 1);
 	BOOST_CHECK(info->getTotalResponses() == 0);
@@ -90,17 +90,17 @@ BOOST_AUTO_TEST_CASE (test2_ssdp)
         flow->packet = const_cast<Packet*>(&packet);
         ssdp->processFlow(flow.get());
 
-        SharedPointer<SSDPInfo> info = flow->ssdp_info.lock();
+        SharedPointer<SSDPInfo> info = flow->ssdp_info;
 
         BOOST_CHECK(info != nullptr);
-        BOOST_CHECK(info->host.lock() != nullptr);
-        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(info->host != nullptr);
+        BOOST_CHECK(info->uri != nullptr);
 
         std::string host("239.255.255.250:1900");
         std::string uri("*");
 
-        BOOST_CHECK(host.compare(info->host.lock()->getName()) == 0);
-        BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+        BOOST_CHECK(host.compare(info->host->getName()) == 0);
+        BOOST_CHECK(uri.compare(info->uri->getName()) == 0);
 
         BOOST_CHECK(info->getTotalRequests() == 1);
         BOOST_CHECK(info->getTotalResponses() == 0);
@@ -141,17 +141,17 @@ BOOST_AUTO_TEST_CASE (test3_ssdp)
         flow->packet = const_cast<Packet*>(&packet_res);
         ssdp->processFlow(flow.get());
 
-        SharedPointer<SSDPInfo> info = flow->ssdp_info.lock();
+        SharedPointer<SSDPInfo> info = flow->ssdp_info;
 
         BOOST_CHECK(info != nullptr);
-        BOOST_CHECK(info->host.lock() != nullptr);
-        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(info->host != nullptr);
+        BOOST_CHECK(info->uri != nullptr);
 
         std::string host("239.255.255.250:1900");
         std::string uri("*");
 
-        BOOST_CHECK(host.compare(info->host.lock()->getName()) == 0);
-        BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+        BOOST_CHECK(host.compare(info->host->getName()) == 0);
+        BOOST_CHECK(uri.compare(info->uri->getName()) == 0);
 
         BOOST_CHECK(info->getTotalRequests() == 1);
         BOOST_CHECK(info->getTotalResponses() == 1);
@@ -177,17 +177,17 @@ BOOST_AUTO_TEST_CASE (test4_ssdp)
         flow->packet = const_cast<Packet*>(&packet);
         ssdp->processFlow(flow.get());
 
-        SharedPointer<SSDPInfo> info = flow->ssdp_info.lock();
+        SharedPointer<SSDPInfo> info = flow->ssdp_info;
 
         BOOST_CHECK(info != nullptr);
-        BOOST_CHECK(info->host.lock() != nullptr);
-        BOOST_CHECK(info->uri.lock() != nullptr);
+        BOOST_CHECK(info->host != nullptr);
+        BOOST_CHECK(info->uri != nullptr);
 
         std::string host("iamthedude:203");
         std::string uri("dude");
 
-        BOOST_CHECK(host.compare(info->host.lock()->getName()) == 0);
-        BOOST_CHECK(uri.compare(info->uri.lock()->getName()) == 0);
+        BOOST_CHECK(host.compare(info->host->getName()) == 0);
+        BOOST_CHECK(uri.compare(info->uri->getName()) == 0);
 
         BOOST_CHECK(info->getTotalRequests() == 1);
         BOOST_CHECK(info->getTotalResponses() == 0);
