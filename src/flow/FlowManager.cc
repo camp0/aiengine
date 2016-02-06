@@ -36,7 +36,6 @@ FlowManager::~FlowManager() {
 
 	flowTable_.clear();
 }
-// #define DEBUG 1
 
 void FlowManager::addFlow(const SharedPointer<Flow>& flow) {
 
@@ -118,10 +117,6 @@ void FlowManager::updateTimers(std::time_t current_time) {
         std::cout << __FILE__ << ":" << __func__ << ":Checking Timers at " << mbstr << " total flows:" << flowTable_.size() << std::endl;
 #endif
 
-	//std::cout << "************************" << std::endl;
-	//showFlowsByTime();
-	//std::cout << "************************" << std::endl;
-
 	// We check the iterator backwards because the old flows will be at the end
 	for (auto it = flowTable_.get<flow_table_tag_duration>().begin() ; it != flowTable_.get<flow_table_tag_duration>().end(); ) {
 		SharedPointer<Flow> flow = (*it);
@@ -152,7 +147,7 @@ void FlowManager::updateTimers(std::time_t current_time) {
 #endif
 			// Remove the flow from the multiindex
 			it = finx.erase(it);
-			
+		
 #if defined(RUBY_BINDING) && defined(HAVE_ADAPTOR)
 			flow_list.push_front(flow);
 #else
@@ -248,8 +243,8 @@ void FlowManager::showFlows(std::basic_ostream<char>& out,std::function<bool (co
 	out << boost::format("%-64s %-10s %-10s %-18s %-12s") % "Flow" % "Bytes" % "Packets" % "FlowForwarder" % "Info";
 	out << std::endl;	
 
-	auto begin = flowTable_.get<flow_table_tag_duration>().rbegin();
-	auto end = flowTable_.get<flow_table_tag_duration>().rend();
+	FlowByDuration::reverse_iterator begin = flowTable_.get<flow_table_tag_duration>().rbegin();
+	FlowByDuration::reverse_iterator end = flowTable_.get<flow_table_tag_duration>().rend();
 
 	// We check the iterator backwards because the old flows will be at the end
 	// and the ones with activity will be the first to shown

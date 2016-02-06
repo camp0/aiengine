@@ -122,7 +122,7 @@ void POPProtocol::releaseCache() {
 			if (pinfo) {
 				total_bytes_released_by_flows += release_pop_info(pinfo.get());
                                 total_bytes_released_by_flows += sizeof(pinfo);
-                                pinfo.reset();
+                              
                                 flow->pop_info.reset();
                                 ++ release_flows;
                                 info_cache_->release(pinfo);

@@ -123,7 +123,7 @@ void SIPProtocol::releaseCache() {
                                 	to_cache_->release(sc);
                         	}
                         	++release_flows;
-				sinfo.reset();
+	
 				flow->sip_info.reset();
 				info_cache_->release(sinfo);
 			}

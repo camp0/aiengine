@@ -93,7 +93,10 @@ void Interpreter::handle_read_user_input(boost::system::error_code error) {
 		}
 #if defined(PYTHON_BINDING)
 
+		// PyGILState_STATE gstate = PyGILState_Ensure();
 		try {
+			PyGilContext gil_lock();
+
 			// Retrieve the main module.
 			boost::python::object main = boost::python::import("__main__");
   			// Retrieve the main module's namespace
@@ -103,6 +106,7 @@ void Interpreter::handle_read_user_input(boost::system::error_code error) {
 		} catch (boost::python::error_already_set const &) {	
 			PyErr_Print();
 		}
+		// PyGILState_Release(gstate);
 #elif defined(RUBY_BINDING)
 	
 		int state = 0;

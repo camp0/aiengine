@@ -401,13 +401,13 @@ void PacketDispatcher::scheduler_handler(boost::system::error_code error) {
                 boost::asio::placeholders::error));
 
 #if defined(PYTHON_BINDING)
-        PyGILState_STATE state(PyGILState_Ensure());
         try {
+		PyGilContext gil_lock();
+
                 boost::python::call<void>(scheduler_callback_);
         } catch (std::exception &e) {
                 std::cout << "ERROR:" << e.what() << std::endl;
         }
-        PyGILState_Release(state);
 #elif defined(RUBY_BINDING)
         ruby_shared_data rbdata;
 

@@ -144,7 +144,7 @@ void SMTPProtocol::releaseCache() {
 			if (sinfo) {
                                 total_bytes_released_by_flows += release_smtp_info(sinfo.get());
                                 total_bytes_released_by_flows += sizeof(sinfo);
-                                sinfo.reset();
+                               
                                 flow->smtp_info.reset();
                                 ++ release_flows;
                                 info_cache_->release(sinfo);

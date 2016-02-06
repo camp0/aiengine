@@ -247,6 +247,25 @@ BOOST_AUTO_TEST_SUITE_END( )
 
 BOOST_AUTO_TEST_SUITE (flowmanager) // name of the test suite is stringtest
 
+BOOST_AUTO_TEST_CASE (test0_flowmanager_lookups)
+{
+        FlowManager *fm = new FlowManager();
+        SharedPointer<Flow> f1 = SharedPointer<Flow>(new Flow());
+        SharedPointer<Flow> f2 = SharedPointer<Flow>(new Flow());
+
+        unsigned long h1 = 1^2^3^4^5;
+        unsigned long h2 = 4^5^3^1^2;
+        unsigned long hfail = 10^10^10^10^10; // for fails
+
+	f2->setId(h1);
+        f1->setId(hfail);
+        fm->addFlow(f1);
+	fm->addFlow(f2);
+
+        BOOST_CHECK(fm->getTotalFlows() == 2);
+
+        delete fm;
+}
 
 BOOST_AUTO_TEST_CASE (test1_flowmanager_lookups)
 {
@@ -703,6 +722,86 @@ BOOST_AUTO_TEST_CASE (test4_flowmanager)
         BOOST_CHECK(f4.use_count() == 1);
         BOOST_CHECK(f5.use_count() == 2);
 }
+
+BOOST_AUTO_TEST_CASE (test5_flowmanager)
+{
+        FlowManagerPtr fm = FlowManagerPtr(new FlowManager());
+	FlowCachePtr fc = FlowCachePtr(new FlowCache());
+        SharedPointer<Flow> f1 = SharedPointer<Flow>(new Flow());
+        SharedPointer<Flow> f2 = SharedPointer<Flow>(new Flow());
+        SharedPointer<Flow> f3 = SharedPointer<Flow>(new Flow());
+        SharedPointer<Flow> f4 = SharedPointer<Flow>(new Flow());
+        SharedPointer<Flow> f5 = SharedPointer<Flow>(new Flow());
+
+	fm->setFlowCache(fc);
+
+        f1->setId(1^2^3^4^5);f1->setFiveTuple(1,1000,6,2,80);
+        f2->setId(1^2^3^4^6);f2->setFiveTuple(1,1000,6,3,80);
+        f3->setId(1^2^3^4^7);f3->setFiveTuple(1,1000,6,4,80);
+        f4->setId(10^2^3^4^7);f4->setFiveTuple(111,1000,6,4,80);
+        f5->setId(10^20^3^4^7);f5->setFiveTuple(111,13,6,4,80);
+
+        f1->setArriveTime(0);
+        f2->setArriveTime(0);
+        f3->setArriveTime(0);
+        f4->setArriveTime(0);
+        f5->setArriveTime(0);
+
+        BOOST_CHECK(f1.use_count() == 1);
+        BOOST_CHECK(f2.use_count() == 1);
+        BOOST_CHECK(f3.use_count() == 1);
+        BOOST_CHECK(f4.use_count() == 1);
+        BOOST_CHECK(f5.use_count() == 1);
+
+        fm->addFlow(f1);
+        fm->addFlow(f2);
+        fm->addFlow(f3);
+        fm->addFlow(f4);
+        fm->addFlow(f5);
+
+        BOOST_CHECK(f1.use_count() == 2);
+        BOOST_CHECK(f2.use_count() == 2);
+        BOOST_CHECK(f3.use_count() == 2);
+        BOOST_CHECK(f4.use_count() == 2);
+        BOOST_CHECK(f5.use_count() == 2);
+
+        // The flows are not sorted on the multi_index
+        f1->setLastPacketTime(150);
+        f2->setLastPacketTime(110);
+        f3->setLastPacketTime(12); // comatose flow
+        f4->setLastPacketTime(17); // comatose flow
+        f5->setLastPacketTime(140);
+
+        // Just update two flows
+        fm->updateFlowTime(f1,151);
+        fm->updateFlowTime(f2,110);
+
+	// remove two flows
+	fm->removeFlow(f3);
+	fm->removeFlow(f5);
+
+	// fm->showFlows();
+
+        BOOST_CHECK(f1.use_count() == 2);
+        BOOST_CHECK(f2.use_count() == 2);
+        BOOST_CHECK(f3.use_count() == 1);
+        BOOST_CHECK(f4.use_count() == 2);
+        BOOST_CHECK(f5.use_count() == 1);
+
+        BOOST_CHECK(fm->getTotalFlows() == 3);
+
+        fm->updateTimers(200);
+	
+        BOOST_CHECK(fc->getTotalFlows() == 1);
+        BOOST_CHECK(fm->getTotalFlows() == 2);
+
+        BOOST_CHECK(f1.use_count() == 2);
+        BOOST_CHECK(f2.use_count() == 2);
+        BOOST_CHECK(f3.use_count() == 1);
+        BOOST_CHECK(f4.use_count() == 2);
+        BOOST_CHECK(f5.use_count() == 1);
+}
+
 
 BOOST_AUTO_TEST_CASE (test22_flowmanager)
 {

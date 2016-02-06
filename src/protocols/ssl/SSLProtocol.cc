@@ -95,20 +95,20 @@ void SSLProtocol::releaseCache() {
                 // Compute the size of the strings used as keys on the map
                 std::for_each (host_map_.begin(), host_map_.end(), [&total_bytes_released] (PairStringCacheHits const &ht) {
                         total_bytes_released += ht.first.size();
-                });
+		});
 
                 for (auto &flow: ft) {
 		       	SharedPointer<SSLInfo> sinfo = flow->ssl_info;
                		if (sinfo) { 
                                 total_bytes_released_by_flows += release_ssl_info(sinfo.get());
                                 total_bytes_released_by_flows += sizeof(sinfo);
-				sinfo.reset();	
+
                                 flow->ssl_info.reset();
                                 info_cache_->release(sinfo);
 				++release_flows;
                         }
                 } 
-                host_map_.clear();
+	        host_map_.clear();
 
                 double cache_compression_rate = 0;
 

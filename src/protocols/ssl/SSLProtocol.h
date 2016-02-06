@@ -183,6 +183,11 @@ public:
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
 #endif
 
+#if defined(STAND_ALONE)
+	// Just for testing purposes on the unit test
+	Cache<StringCache>::CachePtr getHostCache() const { return host_cache_; }
+#endif
+
 private:
         void release_ssl_info_cache(SSLInfo *info);
         int32_t release_ssl_info(SSLInfo *info);

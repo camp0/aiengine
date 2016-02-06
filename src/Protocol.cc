@@ -100,13 +100,13 @@ void Protocol::databaseAdaptorInsertHandler(Flow *flow) {
 
         key << *flow;
 #if defined(PYTHON_BINDING)
-        PyGILState_STATE state(PyGILState_Ensure());
        	try {
+		PyGilContext gil_lock();
+
                	boost::python::call_method<void>(dbptr_.ptr(),"insert",key.str());
         } catch(std::exception &e) {
               	std::cout << "ERROR:" << e.what() << std::endl;
         } 
-        PyGILState_Release(state);
 #elif defined(RUBY_BINDING)
 
 	ruby_shared_data rbdata;
@@ -137,13 +137,13 @@ void Protocol::databaseAdaptorUpdateHandler(Flow *flow) {
         flow->serialize(data);
 
 #if defined(PYTHON_BINDING)
-        PyGILState_STATE state(PyGILState_Ensure());
         try {
+		PyGilContext gil_lock();
+
               	boost::python::call_method<void>(dbptr_.ptr(),"update",key.str(),data.str());
         } catch(std::exception &e) {
                 std::cout << "ERROR:" << e.what() << std::endl;
         }
-        PyGILState_Release(state);
 #elif defined(RUBY_BINDING)
 
         ruby_shared_data rbdata;
@@ -172,13 +172,13 @@ void Protocol::databaseAdaptorRemoveHandler(Flow *flow) {
         key << *flow;
 
 #if defined(PYTHON_BINDING)
-        PyGILState_STATE state(PyGILState_Ensure());
         try {
+		PyGilContext gil_lock();
+
                	boost::python::call_method<void>(dbptr_.ptr(),"remove",key.str());
         } catch(std::exception &e) {
                 std::cout << "ERROR:" << e.what() << std::endl;
         }
-        PyGILState_Release(state);
 #elif defined(RUBY_BINDING)
 
         ruby_shared_data rbdata;

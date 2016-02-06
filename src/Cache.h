@@ -59,6 +59,7 @@ public:
 	void release(const SharedPointer<A_Type>& a) {  
 	
 		++total_releases_;
+		a->reset();
                 items_.push(a);
 	}
 
@@ -68,7 +69,6 @@ public:
 		if(!items_.empty()) {
 			SharedPointer<A_Type> a = items_.top();
                         items_.pop();
-			a->reset();
 			++total_acquires_;
 			return a;
 		}

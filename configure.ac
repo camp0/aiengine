@@ -362,6 +362,22 @@ if test x"$reject_support" = x"yes"; then
 #    AC_DEFINE([HAVE_REJECT_FLOW],[0],[TCP/UDP reject flow support])
 fi
 
+##########################################################################
+# Python GIL lock support for multithread enviroments
+##########################################################################
+
+AC_MSG_CHECKING([whether to build with python threads support (GIL lock)])
+AC_ARG_ENABLE([pythongil],
+    [AS_HELP_STRING([--enable-pythongil],
+        [enable Python Gil support for multithreading environtments (def=no)])],
+    [pythongil_support=yes],
+    [pythongil_support=no])
+AC_MSG_RESULT([$pythongil_support])
+
+if test x"$pythongil_support" = x"yes"; then
+    AC_DEFINE([HAVE_PYTHON_GIL],[1],[Python GIL support])
+fi
+
 
 ##########################################################################
 
@@ -442,5 +458,6 @@ echo "
   Swig/Java support.....: $have_java_support
   TCP Qos support.......: $tcpqos
   TCP/UDP reject support: $reject_support
+  Python GIL support....: $pythongil_support
 "
 

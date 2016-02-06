@@ -75,7 +75,6 @@ void DNSProtocol::releaseCache() {
 				}
 				++release_flows;
 				flow->dns_info.reset();
-				//inforeset();
 				info_cache_->release(info);
 			}
 		} 

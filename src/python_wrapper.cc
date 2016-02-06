@@ -73,9 +73,13 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	using namespace boost::asio;
 	using self_ns::str;
 
+#if defined(HAVE_PYTHON_GIL)
 	if (! PyEval_ThreadsInitialized()) {
     		PyEval_InitThreads();
+		PyEval_ReleaseLock();
 	}
+#endif
+
 #ifdef HAVE_LIBLOG4CXX	
 	BasicConfigurator::configure();
 #endif
@@ -86,8 +90,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	boost::python::class_< std::ostream, boost::noncopyable >( "std_ostream",no_init); 
 
         // for overload the methods with the class
-      	void (NetworkStack::*showFlowsNetworkStack1)() = 				&NetworkStack::showFlows;
-      	void (NetworkStack::*showFlowsNetworkStack2)(const std::string &protoname) = 	&NetworkStack::showFlows;
 	void (NetworkStack::*setDomainNameManager1)(DomainNameManager&,const std::string&) = 		&NetworkStack::setDomainNameManager;
 	void (NetworkStack::*setDomainNameManager2)(DomainNameManager&,const std::string&, bool) = 	&NetworkStack::setDomainNameManager;
 	void (NetworkStack::*setTCPDatabaseAdaptor1)(boost::python::object&) = 		&NetworkStack::setTCPDatabaseAdaptor;
@@ -104,14 +106,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("set_domain_name_manager",pure_virtual(setDomainNameManager1),
 			"Sets a DomainNameManager on the protocol given.")
                 .def("set_domain_name_manager",pure_virtual(setDomainNameManager2))
-              	.def("show_flows",pure_virtual(showFlowsNetworkStack1),
-			"Shows the active flows of the stack.")
-              	.def("show_flows",pure_virtual(showFlowsNetworkStack2),
-			"Shows the active flows of the stack filter by name.")
-		//.def("enable_frequency_engine",pure_virtual(&NetworkStack::enableFrequencyEngine),
-		//	"Enable or disable the frequency engine on the stack.")
-		//.def("enable_nids_engine",pure_virtual(&NetworkStack::enableNIDSEngine),
-		//	"Enable or disable the NIDS engine.")
 		.def("get_statistics",pure_virtual(statisticsByProtocol),
 			"Shows statistics given a protocol name.")
 		.def("set_tcp_database_adaptor",pure_virtual(setTCPDatabaseAdaptor1))
@@ -129,8 +123,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
         ;
 
 	// Definitions for the StackLan class
-	void (StackLan::*showFlowsLan1)() = 						&StackLan::showFlows;
-	void (StackLan::*showFlowsLan2)(const std::string& protoname) = 		&StackLan::showFlows;
         void (StackLan::*setDomainNameManagerLan1)(DomainNameManager&,const std::string&) = 		&StackLan::setDomainNameManager;
         void (StackLan::*setDomainNameManagerLan2)(DomainNameManager&,const std::string&, bool) = 	&StackLan::setDomainNameManager;
 	void (StackLan::*setTCPDatabaseAdaptorLan1)(boost::python::object&) = 		&StackLan::setTCPDatabaseAdaptor;
@@ -176,8 +168,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("set_domain_name_manager",setDomainNameManagerLan2)
 		.def(self_ns::str(self_ns::self))
 		.def("get_statistics",statisticsByProtocolLan)
-		.def("show_flows",showFlowsLan1)
-		.def("show_flows",showFlowsLan2)
 		.def("set_tcp_database_adaptor",setTCPDatabaseAdaptorLan1)
 		.def("set_tcp_database_adaptor",setTCPDatabaseAdaptorLan2)
 		.def("set_udp_database_adaptor",setUDPDatabaseAdaptorLan1)
@@ -189,8 +179,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	;
 
 	// Definitions for the StackMobile class
-       	void (StackMobile::*showFlowsMobile1)() = 						&StackMobile::showFlows;
-       	void (StackMobile::*showFlowsMobile2)(const std::string& protoname) = 			&StackMobile::showFlows;
         void (StackMobile::*setDomainNameManagerMobile1)(DomainNameManager&,const std::string&) = 		&StackMobile::setDomainNameManager;
         void (StackMobile::*setDomainNameManagerMobile2)(DomainNameManager&,const std::string&, bool) = 	&StackMobile::setDomainNameManager;
         void (StackMobile::*setTCPDatabaseAdaptorMobile1)(boost::python::object&) =     	&StackMobile::setTCPDatabaseAdaptor;
@@ -236,8 +224,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("set_domain_name_manager",setDomainNameManagerMobile2)
 		.def(self_ns::str(self_ns::self))
 		.def("get_statistics",statisticsByProtocolMobile)
-                .def("show_flows",showFlowsMobile1)
-                .def("show_flows",showFlowsMobile2)
 		.def("set_tcp_database_adaptor",setTCPDatabaseAdaptorMobile1)
 		.def("set_tcp_database_adaptor",setTCPDatabaseAdaptorMobile2)
 		.def("set_udp_database_adaptor",setUDPDatabaseAdaptorMobile1)
@@ -250,8 +236,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 
 	// Definitions for the StackLanIPv6 class
-     	void (StackLanIPv6::*showFlowsLanIPv61)() = 						&StackLanIPv6::showFlows;
-     	void (StackLanIPv6::*showFlowsLanIPv62)(const std::string& protoname) = 		&StackLanIPv6::showFlows;
         void (StackLanIPv6::*setDomainNameManagerLanIPv61)(DomainNameManager&,const std::string&) = 		&StackLanIPv6::setDomainNameManager;
         void (StackLanIPv6::*setDomainNameManagerLanIPv62)(DomainNameManager&,const std::string&, bool) = 	&StackLanIPv6::setDomainNameManager;
         void (StackLanIPv6::*setTCPDatabaseAdaptorLanIPv61)(boost::python::object&) = 		&StackLanIPv6::setTCPDatabaseAdaptor;
@@ -297,8 +281,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("set_domain_name_manager",setDomainNameManagerLanIPv62)
                 .def(self_ns::str(self_ns::self))
 		.def("get_statistics",statisticsByProtocolLanIPv6)
-                .def("show_flows",showFlowsLanIPv61)
-                .def("show_flows",showFlowsLanIPv62)
                 .def("set_tcp_database_adaptor",setTCPDatabaseAdaptorLanIPv61)
                 .def("set_tcp_database_adaptor",setTCPDatabaseAdaptorLanIPv62)
                 .def("set_udp_database_adaptor",setUDPDatabaseAdaptorLanIPv61)
@@ -310,8 +292,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
         ;
 
         // Definitions for the StackVirtual class
-        void (StackVirtual::*showFlowsVirtual1)() =                                            	&StackVirtual::showFlows;
-        void (StackVirtual::*showFlowsVirtual2)(const std::string& protoname) =                 &StackVirtual::showFlows;
         void (StackVirtual::*setDomainNameManagerVirt1)(DomainNameManager&,const std::string&) =              	&StackVirtual::setDomainNameManager;
         void (StackVirtual::*setDomainNameManagerVirt2)(DomainNameManager&,const std::string&, bool) =         	&StackVirtual::setDomainNameManager;
         void (StackVirtual::*setTCPDatabaseAdaptorVirt1)(boost::python::object&) =            	&StackVirtual::setTCPDatabaseAdaptor;
@@ -357,8 +337,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("set_domain_name_manager",setDomainNameManagerVirt2)
                 .def(self_ns::str(self_ns::self))
                 .def("get_statistics",statisticsByProtocolVirt)
-                .def("show_flows",showFlowsVirtual1)
-                .def("show_flows",showFlowsVirtual2)
                 .def("set_tcp_database_adaptor",setTCPDatabaseAdaptorVirt1)
                 .def("set_tcp_database_adaptor",setTCPDatabaseAdaptorVirt2)
                 .def("set_udp_database_adaptor",setUDPDatabaseAdaptorVirt1)
@@ -370,8 +348,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
         ;
 
         // Definitions for the StackOpenFlow class
-       	void (StackOpenFlow::*showFlowsOpenFlow1)() =                                           &StackOpenFlow::showFlows;
-       	void (StackOpenFlow::*showFlowsOpenFlow2)(const std::string& protoname) =               &StackOpenFlow::showFlows;
         void (StackOpenFlow::*setDomainNameManagerOF1)(DomainNameManager&,const std::string&) =    		&StackOpenFlow::setDomainNameManager;
         void (StackOpenFlow::*setDomainNameManagerOF2)(DomainNameManager&,const std::string&, bool) =      	&StackOpenFlow::setDomainNameManager;
         void (StackOpenFlow::*setTCPDatabaseAdaptorOF1)(boost::python::object&) =              	&StackOpenFlow::setTCPDatabaseAdaptor;
@@ -417,8 +393,6 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("set_domain_name_manager",setDomainNameManagerOF2)
                 .def(self_ns::str(self_ns::self))
                 .def("get_statistics",statisticsByProtocolOF)
-                .def("show_flows",showFlowsOpenFlow1)
-                .def("show_flows",showFlowsOpenFlow2)
                 .def("set_tcp_database_adaptor",setTCPDatabaseAdaptorOF1)
                 .def("set_tcp_database_adaptor",setTCPDatabaseAdaptorOF2)
                 .def("set_udp_database_adaptor",setUDPDatabaseAdaptorOF1)

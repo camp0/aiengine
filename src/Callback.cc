@@ -57,13 +57,13 @@ void Callback::setCallback(PyObject *callback) {
 
 void Callback::executeCallback(Flow *flow) {
 
-	PyGILState_STATE state(PyGILState_Ensure());
         try {
+		PyGilContext gil_lock();
+
         	boost::python::call<void>(callback_,boost::python::ptr(flow));
         } catch (std::exception &e) {
         	std::cout << "ERROR:" << e.what() << std::endl;
         }
-        PyGILState_Release(state);
 }
 
 #elif defined(RUBY_BINDING)

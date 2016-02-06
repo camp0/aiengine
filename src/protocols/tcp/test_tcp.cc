@@ -85,15 +85,15 @@ BOOST_AUTO_TEST_CASE (test3_tcp)
 	Flow *flow = tcp->getCurrentFlow();
 
 	BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info != nullptr);
+        BOOST_CHECK(flow->tcp_info == nullptr);
 	BOOST_CHECK(flow->regex_mng.lock() == nullptr);
-	SharedPointer<TCPInfo> info = flow->tcp_info;
-
-	BOOST_CHECK(info->syn == 0);
-	BOOST_CHECK(info->fin == 0);
-	BOOST_CHECK(info->syn_ack == 0);
-	BOOST_CHECK(info->ack == 1);
-	BOOST_CHECK(info->push == 1);
+	
+	// Process the packet but no syn or syn ack so the info have been released
+	// BOOST_CHECK(info->syn == 0);
+	// BOOST_CHECK(info->fin == 0);
+	// BOOST_CHECK(info->syn_ack == 0);
+	// BOOST_CHECK(info->ack == 1);
+	// BOOST_CHECK(info->push == 1);
 }
 
 BOOST_AUTO_TEST_CASE (test4_tcp)
@@ -134,14 +134,14 @@ BOOST_AUTO_TEST_CASE (test5_tcp)
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info != nullptr);
-        SharedPointer<TCPInfo> info = flow->tcp_info;
+        BOOST_CHECK(flow->tcp_info == nullptr);
 
-        BOOST_CHECK(info->syn == 0);
-        BOOST_CHECK(info->fin == 0);
-        BOOST_CHECK(info->syn_ack == 1);
-        BOOST_CHECK(info->ack == 0);
-        BOOST_CHECK(info->push == 0);
+	// no syn packet so nothing to process
+	BOOST_CHECK(tcp->isSyn() == true);
+	BOOST_CHECK(tcp->isFin() == false);
+	BOOST_CHECK(tcp->isAck() == true);
+	BOOST_CHECK(tcp->isRst() == false);
+	BOOST_CHECK(tcp->isPushSet() == false);
 }
 
 BOOST_AUTO_TEST_CASE (test6_tcp)
@@ -191,18 +191,13 @@ BOOST_AUTO_TEST_CASE (test7_tcp)
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info != nullptr);
-        SharedPointer<TCPInfo> info = flow->tcp_info;
-	PacketAnomalyType pa = flow->getPacketAnomaly();
+        BOOST_CHECK(flow->tcp_info == nullptr);
 
-        BOOST_CHECK(info->syn == 0);
-        BOOST_CHECK(info->fin == 1);
-        BOOST_CHECK(info->syn_ack == 1);
-        BOOST_CHECK(info->ack == 0);
-        BOOST_CHECK(info->push == 0);
-
-	// Verfiy that the packet is bad :D
-	BOOST_CHECK(pa == PacketAnomalyType::TCP_BAD_FLAGS);
+	BOOST_CHECK(tcp->isSyn() == true);
+	BOOST_CHECK(tcp->isFin() == true);
+	BOOST_CHECK(tcp->isAck() == true);
+	BOOST_CHECK(tcp->isRst() == false);
+	BOOST_CHECK(tcp->isPushSet() == false);
 }
 
 // The TCP header is corrupted on terms of length

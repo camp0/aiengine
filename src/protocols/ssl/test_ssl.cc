@@ -306,11 +306,23 @@ BOOST_AUTO_TEST_CASE (test11_ssl)
 
 	auto fm = tcp->getFlowManager();
 
+#if defined(STAND_ALONE)
+        Cache<StringCache>::CachePtr c = ssl->getHostCache();
+
+	BOOST_CHECK(c->getTotal() == 0);
+	BOOST_CHECK(c->getTotalAcquires() == 2);
+	BOOST_CHECK(c->getTotalReleases() == 0);
+#endif
 	for (auto &f: fm->getFlowTable()) {
 		BOOST_CHECK(f->ssl_info != nullptr);
 	}
-
 	ssl->releaseCache();
+
+#if defined(STAND_ALONE)
+	BOOST_CHECK(c->getTotal() == 2);
+	BOOST_CHECK(c->getTotalAcquires() == 2);
+	BOOST_CHECK(c->getTotalReleases() == 2);
+#endif
 
 	for (auto &f: fm->getFlowTable()) {
 		BOOST_CHECK(f->ssl_info == nullptr);

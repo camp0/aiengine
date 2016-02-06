@@ -25,7 +25,7 @@ noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			Multiplexer.h \
 			FlowForwarder.h \
 			Signature.h Callback.h JaiCallback.h \
-			Interpreter.h \
+			Interpreter.h PyGilContext.h \
                         flow/FlowCache.h \
                         flow/FlowManager.h \
                         Flow.h FlowDirection.h StringCache.h \

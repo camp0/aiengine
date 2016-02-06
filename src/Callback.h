@@ -34,6 +34,7 @@
 #ifdef PYTHON_BINDING
 #include <boost/python.hpp>
 #include <boost/function.hpp>
+#include "PyGilContext.h"
 #elif defined(RUBY_BINDING)
 #include <ruby.h>
 #elif defined(JAVA_BINDING)

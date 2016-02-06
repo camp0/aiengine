@@ -188,7 +188,7 @@ void SSDPProtocol::releaseCache() {
 			if (info) {
                                 total_bytes_released_by_flows += release_ssdp_info(info.get());
                                 total_bytes_released_by_flows += sizeof(info);
-                                info.reset();
+                                
                                 flow->ssdp_info.reset();
                                 ++ release_flows;
                                 info_cache_->release(info);

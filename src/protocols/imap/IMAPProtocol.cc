@@ -131,7 +131,7 @@ void IMAPProtocol::releaseCache() {
 			if (iinfo) {
 				total_bytes_released_by_flows = release_imap_info(iinfo.get()); 
                                 total_bytes_released_by_flows += sizeof(iinfo);
-                                iinfo.reset();
+                               
                                 flow->imap_info.reset();
                                 ++ release_flows;
                                 info_cache_->release(iinfo);
