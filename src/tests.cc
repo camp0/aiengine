@@ -924,6 +924,99 @@ BOOST_FIXTURE_TEST_CASE(test_case_22,StackLanTest) // Tests for release the cach
         BOOST_CHECK(f->ssl_info == nullptr);
 }
 
+BOOST_FIXTURE_TEST_CASE(test_case_23,StackLanTest) // Tests for release the caches and with ssl traffic 
+{
+	// The pcap contains 4 ssl flows with the same cert name
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        // connect with the stack
+        pd->setDefaultMultiplexer(mux_eth);
+
+        ssl->createSSLInfos(4);
+
+        pd->open("../pcapfiles/amazon_4ssl_flows.pcap");
+        pd->setPcapFilter("port 57077");
+        pd->run();
+        pd->close();
+
+        BOOST_CHECK(flow_table_tcp->getTotalProcessFlows() == 1);
+        BOOST_CHECK(flow_table_tcp->getTotalFlows() == 1);
+        BOOST_CHECK(flow_table_tcp->getTotalTimeoutFlows() == 0);
+
+        // there is only one flow
+        SharedPointer<Flow> f = *flow_table_tcp->getFlowTable().begin();
+
+        BOOST_CHECK(f->ssl_info != nullptr);
+        BOOST_CHECK(f->ssl_info->host != nullptr);
+	SharedPointer<StringCache> str = f->ssl_info->host;
+        SharedPointer<SSLInfo> info = f->ssl_info;
+
+	std::string cnname("images-na.ssl-images-amazon.com");
+	BOOST_CHECK(cnname.compare(str->getName()) == 0);
+
+        releaseCaches();
+
+        BOOST_CHECK(f->ssl_info == nullptr);
+	// The str should be empty
+	BOOST_CHECK(str->getNameSize() == 0);
+
+	// Inject two flows 	
+        pd->open("../pcapfiles/amazon_4ssl_flows.pcap");
+        pd->setPcapFilter("port 57078 or port 57079");
+	pd->run();
+	pd->close();
+
+        BOOST_CHECK(flow_table_tcp->getTotalProcessFlows() == 3);
+        BOOST_CHECK(flow_table_tcp->getTotalFlows() == 3);
+        BOOST_CHECK(flow_table_tcp->getTotalTimeoutFlows() == 0);
+
+        f = *flow_table_tcp->getFlowTable().begin();
+	BOOST_CHECK(f->ssl_info == nullptr);
+
+	// Both flows points to ptr and now ptr contains the name
+	BOOST_CHECK(cnname.compare(str->getName()) == 0);
+	int process_flows = 0;
+	for (auto &ff: flow_table_tcp->getFlowTable()) {
+		if (ff != f) { 
+			BOOST_CHECK(ff->ssl_info != nullptr);
+			BOOST_CHECK(ff->ssl_info->host != nullptr);
+			BOOST_CHECK(ff->ssl_info->host == str);
+			BOOST_CHECK(cnname.compare(str->getName()) == 0);
+			++process_flows;
+		}
+	}	
+	BOOST_CHECK(process_flows == 2);
+        
+	releaseCaches();
+	
+	for (auto &ff: flow_table_tcp->getFlowTable()) {
+		BOOST_CHECK(ff->ssl_info == nullptr);
+	}
+	BOOST_CHECK(str->getNameSize() == 0);
+       
+	// Inject the last flow 
+	pd->open("../pcapfiles/amazon_4ssl_flows.pcap");
+        pd->setPcapFilter("port 57080");
+	pd->run();
+	pd->close();
+
+        BOOST_CHECK(flow_table_tcp->getTotalProcessFlows() == 4);
+        BOOST_CHECK(flow_table_tcp->getTotalFlows() == 4);
+        BOOST_CHECK(flow_table_tcp->getTotalTimeoutFlows() == 0);
+
+	BOOST_CHECK(cnname.compare(str->getName()) == 0);
+
+	for (auto &ff: flow_table_tcp->getFlowTable()) {
+		if (ff->getSourcePort() == 57080) { 
+			BOOST_CHECK(ff->ssl_info != nullptr);
+			BOOST_CHECK(ff->ssl_info->host != nullptr);
+			BOOST_CHECK(ff->ssl_info->host == str);
+			BOOST_CHECK(cnname.compare(str->getName()) == 0);
+		} else {
+			BOOST_CHECK(ff->ssl_info == nullptr);
+		}
+	}	
+}
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 
