@@ -132,7 +132,7 @@ void Flow::serialize(std::ostream& stream) {
                 if(tcp_info)
                         stream << ",\"t\":\"" << *tcp_info.get() << "\"";
 
-		if (http_info)) {
+		if (http_info) {
 			if (http_info->host)	
                         	stream << ",\"h\":\"" << http_info->host->getName() << "\"";
 		} else {

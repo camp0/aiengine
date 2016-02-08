@@ -279,8 +279,8 @@ BOOST_AUTO_TEST_CASE (test9_tcp)
 
 	BOOST_CHECK(info->state_curr == static_cast<int>(TcpState::ESTABLISHED));
 	BOOST_CHECK(info->state_prev == static_cast<int>(TcpState::ESTABLISHED));
-	BOOST_CHECK(info->connection_setup_time == 9);
-	BOOST_CHECK(info->application_response_time == 6);
+	BOOST_CHECK(info->connection_setup_time == 4);
+	BOOST_CHECK(info->application_response_time == 1);
 }
 
 // Similar test case but with different value results
@@ -340,7 +340,7 @@ BOOST_AUTO_TEST_CASE (test10_tcp)
         BOOST_CHECK(info->state_curr == static_cast<int>(TcpState::ESTABLISHED));
         BOOST_CHECK(info->state_prev == static_cast<int>(TcpState::ESTABLISHED));
         BOOST_CHECK(info->connection_setup_time == 0);
-        BOOST_CHECK(info->application_response_time == 0);
+        BOOST_CHECK(info->application_response_time == 1);
 }
 
 #endif
