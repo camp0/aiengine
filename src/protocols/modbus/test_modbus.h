@@ -25,7 +25,7 @@
 #define _test_modbus_H_
 
 #include <string>
-#include "../test/tests_packets.h"
+#include "../test/modbus_test_packets.h"
 #include "Protocol.h"
 #include "Multiplexer.h"
 #include "../ethernet/EthernetProtocol.h"
