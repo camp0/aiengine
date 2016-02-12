@@ -417,6 +417,7 @@ src/protocols/ssl/Makefile
 src/protocols/smtp/Makefile
 src/protocols/imap/Makefile
 src/protocols/pop/Makefile
+src/protocols/modbus/Makefile
 src/protocols/dns/Makefile
 src/protocols/sip/Makefile
 src/protocols/dhcp/Makefile
