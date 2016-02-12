@@ -202,7 +202,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::HTTPInfo::uri;
 %ignore aiengine::HTTPInfo::host;
 %ignore aiengine::HTTPInfo::ua;
-%ignore aiengine::HTTPInfo::matched_host;
+%ignore aiengine::HTTPInfo::matched_domain_name;
 %ignore aiengine::HTTPInfo::getTotalRequests;
 %ignore aiengine::HTTPInfo::getTotalResponses;
 %ignore aiengine::HTTPInfo::getResponseCode;
@@ -233,6 +233,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::DNSInfo::resetStrings;
 %ignore aiengine::DNSInfo::getQueryType;
 %ignore aiengine::DNSInfo::setQueryType;
+%ignore aiengine::DNSInfo::matched_domain_name;
 
 %ignore aiengine::SSLInfo::reset;
 %ignore aiengine::SSLInfo::host;
@@ -240,6 +241,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::SSLInfo::getIsBanned;
 %ignore aiengine::SSLInfo::incDataPdus;
 %ignore aiengine::SSLInfo::getTotalDataPdus;
+%ignore aiengine::SSLInfo::matched_domain_name;
 
 %ignore aiengine::SMTPInfo::reset;
 %ignore aiengine::SMTPInfo::resetStrings;

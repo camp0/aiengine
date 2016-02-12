@@ -58,6 +58,7 @@ void PacketDispatcher::statistics() {
 
 void PacketDispatcher::setStack(const SharedPointer<NetworkStack>& stack) {
 
+	current_network_stack_ = stack;
 	stack_name_ = stack->getName();
         setDefaultMultiplexer(stack->getLinkLayerMultiplexer().lock());
         stack->setAsioService(io_service_);
@@ -150,7 +151,7 @@ void PacketDispatcher::do_read(boost::system::error_code ec) {
 #ifdef PYTHON_BINDING
 #if BOOST_VERSION >= 104800 && BOOST_VERSION < 105000
 	if (PyErr_CheckSignals() == -1) {
-		std::cout << "Throwing exception from python." << std::endl;
+		std::cout << "Throwing exception from python" << std::endl;
 		throw std::runtime_error("Python exception\n");
        	}
 #endif
@@ -203,9 +204,19 @@ void PacketDispatcher::run_pcap(void) {
 
         std::ostringstream msg;
         msg << "Processing packets from file " << input_name_.c_str();
-
        	info_message(msg.str());
 
+	if (current_network_stack_) {
+		int memory = current_network_stack_->getAllocatedMemory();
+		std::string unit = "Bytes";
+
+		unitConverter(memory,unit);
+	
+		msg.clear();
+		msg.str("");
+        	msg << "Stack '" << stack_name_ << "' using " << memory << " " << unit << " of memory";
+       		info_message(msg.str());
+	}
 	status_ = PacketDispatcherStatus::RUNNING;
 	while (pcap_next_ex(pcap_,&header_,&pkt_data_) >= 0) {
 		// Friendly remminder:
@@ -225,6 +236,18 @@ void PacketDispatcher::run_device(void) {
         	msg << "Processing packets from device " << input_name_.c_str();
 
         	info_message(msg.str());
+
+        	if (current_network_stack_) {
+                	int memory = current_network_stack_->getAllocatedMemory();
+                	std::string unit = "Bytes";
+
+                	unitConverter(memory,unit);
+
+                	msg.clear();
+                	msg.str("");
+                	msg << "Stack '" << stack_name_ << "' using " << memory << " " << unit << " of memory";
+                	info_message(msg.str());
+        	}
 
 		try {
 			status_ = PacketDispatcherStatus::RUNNING;
@@ -353,7 +376,7 @@ void PacketDispatcher::setScheduler(VALUE callback, int seconds) {
 		// TODO: Verify if the callback is callable
 		if (NIL_P(callback)) {
 #endif
-                        std::cerr << "Object is not callable." << std::endl;
+                        std::cerr << "Object is not callable" << std::endl;
                 } else {
 
 #if defined(PYTHON_BINDING)

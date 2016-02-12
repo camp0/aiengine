@@ -30,15 +30,6 @@
 
 #include <iostream>
 #include "Pointer.h"
-
-/*
-#ifdef PYTHON_BINDING
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-#endif
-*/
-#include "Pointer.h"
-// #include <boost/ptr_container/ptr_vector.hpp>
 #include <iomanip>
 #include <stack>
 
@@ -50,7 +41,8 @@ public:
 
 	typedef aiengine::SharedPointer<Cache<A_Type>> CachePtr;
 
-    	explicit Cache(std::string name):total_acquires_(0),total_releases_(0),total_fails_(0),name_(name),empty_() {}
+    	explicit Cache(std::string name):total_acquires_(0),total_releases_(0),total_fails_(0),
+		allocated_bytes_(0),name_(name),empty_() {}
     	explicit Cache():Cache("") {}
     	virtual ~Cache() { /* items_.clear(); */ }
 
@@ -81,6 +73,7 @@ public:
 		for (int i = 0; i< number; ++i) {
 			items_.push(SharedPointer<A_Type>(new A_Type()));
 		}
+		allocated_bytes_ = (allocated_bytes_ + (classSize * number));
 	}
 
 	void destroy(int number) {
@@ -88,6 +81,7 @@ public:
 		for (int i = 0;i< number ;++i) {
 			if (!items_.empty()) {
 				items_.pop();
+				allocated_bytes_ -= classSize;
                        	} else {
 				break;
 			} 
@@ -98,10 +92,12 @@ public:
 	int32_t getTotalAcquires() const { return total_acquires_;}
 	int32_t getTotalReleases() const { return total_releases_;}
 	int32_t getTotalFails() const { return total_fails_;}
-	int32_t getAllocatedMemory() const { return (items_.size() * classSize); }
+	int32_t getAllocatedMemory() const { return allocated_bytes_; }
+	int32_t getCurrentAllocatedMemory() const { return (items_.size() * classSize); }
 
         void statistics(std::basic_ostream<char>& out) {
 
+		// compute the current memory allocated now on the stack
 		std::string unit = "Bytes";
 		int alloc_memory = items_.size() * classSize;
 
@@ -113,9 +109,22 @@ public:
 			alloc_memory = alloc_memory / 1024;
 			unit = "MBytes";
 		}	
+		// compute the total memory that have been allocated on the stack
+		std::string cunit = "Bytes";
+		int calloc_memory = allocated_bytes_;
+                if (calloc_memory > 1024) {
+                        calloc_memory = calloc_memory / 1024;
+                        cunit = "KBytes";
+                }
+                if (calloc_memory > 1024) {
+                        calloc_memory = calloc_memory / 1024;
+                        cunit = "MBytes";
+                }
+
 		out << name_ << " statistics" << std::endl;
 		out << "\t" << "Total items:            " << std::setw(10) << items_.size() <<std::endl;
-		out << "\t" << "Total allocated:        " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
+		out << "\t" << "Total allocated:        " << std::setw(9 - cunit.length()) << calloc_memory << " " << unit <<std::endl;
+		out << "\t" << "Total current alloc:    " << std::setw(9 - unit.length()) << alloc_memory << " " << unit <<std::endl;
 		out << "\t" << "Total acquires:         " << std::setw(10) << total_acquires_ <<std::endl;
 		out << "\t" << "Total releases:         " << std::setw(10) << total_releases_ <<std::endl;
 		out << "\t" << "Total fails:            " << std::setw(10) << total_fails_ <<std::endl;
@@ -127,8 +136,9 @@ private:
 	int32_t total_acquires_;
 	int32_t total_releases_;
 	int32_t total_fails_;
+	int32_t allocated_bytes_;
 	std::string name_;
-	// a vector of pointers to the created Flows
+	// a stack of pointers to the created Flows
 	std::stack<SharedPointer<A_Type>> items_;
 	SharedPointer<A_Type> empty_;
 };

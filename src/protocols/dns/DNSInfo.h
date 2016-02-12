@@ -31,6 +31,7 @@
 #include <iostream>
 #include <vector> 
 #include "StringCache.h"
+#include "names/DomainName.h"
 
 namespace aiengine {
 
@@ -40,12 +41,13 @@ public:
     	explicit DNSInfo() { reset(); }
     	virtual ~DNSInfo() {}
 
-	void reset() { name.reset() ; qtype_ = 0; ips_.clear(); }
+	void reset() { name.reset() ; qtype_ = 0; ips_.clear(); matched_domain_name.reset(); }
 
 	uint16_t getQueryType() const { return qtype_; }
 	void setQueryType(uint16_t qtype) { qtype_ = qtype; }
 
 	SharedPointer<StringCache> name;
+	SharedPointer<DomainName> matched_domain_name;
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 	friend std::ostream& operator<< (std::ostream& out, const DNSInfo& domain) {
@@ -62,6 +64,14 @@ public:
 
 	std::vector<std::string>::const_iterator begin() { return ips_.begin(); }
 	std::vector<std::string>::const_iterator end() { return ips_.end(); }
+
+#if defined(PYTHON_BINDING)
+        SharedPointer<DomainName> getMatchedDomainName() const { return matched_domain_name;}
+#elif defined(RUBY_BINDING)
+	// TODO
+#elif defined(JAVA_BINDING)
+	// TODO
+#endif
 
 private:
 	uint16_t qtype_;

@@ -489,15 +489,14 @@ void HTTPProtocol::parse_header(HTTPInfo *info, boost::string_ref &header) {
 void HTTPProtocol::process_payloadl7(Flow * flow, HTTPInfo *info, boost::string_ref &payloadl7) {
 
 	// The Flow have attached a mached DomainName
-        if (!info->matched_host.expired()) {
+        if (info->matched_domain_name) {
                 bool result = false;
 		SharedPointer<Regex> regex = flow->regex.lock();
 
 		// The flow dont have a regex attached
 		if (flow->regex.expired()) {
-                	SharedPointer<DomainName> mhost = info->matched_host.lock();
-                        if (mhost->haveRegexManager()) {
-                                SharedPointer<RegexManager> rmng = mhost->getRegexManager();
+                        if (info->matched_domain_name->haveRegexManager()) {
+                                SharedPointer<RegexManager> rmng = info->matched_domain_name->getRegexManager();
                                 rmng->evaluate(payloadl7,&result);
 				regex = rmng->getMatchedRegex();
 			}
@@ -633,6 +632,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
                 				DomainNameManagerPtr host_mng = domain_mng_.lock();
                 				SharedPointer<DomainName> host_candidate = host_mng->getDomainName(info->host->getName());
 						if (host_candidate) {
+							info->matched_domain_name = host_candidate;
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 #ifdef HAVE_LIBLOG4CXX
 							LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
@@ -641,15 +641,13 @@ void HTTPProtocol::processFlow(Flow *flow) {
 								host_candidate->call.executeCallback(flow);
                                 			}
 #endif
-							info->matched_host = host_candidate;
 						}
 					}
 				}
 			}
 
-			if (!info->matched_host.expired()and(offset > 0)) {
-				SharedPointer<DomainName> mhost = info->matched_host.lock();
-				SharedPointer<HTTPUriSet> uset = mhost->getHTTPUriSet();
+			if ((info->matched_domain_name)and(offset > 0)) {
+				SharedPointer<HTTPUriSet> uset = info->matched_domain_name->getHTTPUriSet();
 				if((uset) and (offset >0)) {
 					if (uset->lookupURI(info->uri->getName())) {
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)

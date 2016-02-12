@@ -544,12 +544,16 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Iterate over the IP addresses returned on the query response.")
 		.add_property("domain_name", &DNSInfo::getDomainName,
 				"Gets the DNS domain name.")
+                .add_property("matched_domain_name",&DNSInfo::getMatchedDomainName,
+                        "Gets the matched DomainName object.")
 		.def(self_ns::str(self_ns::self))
 	;
 
         boost::python::class_<SSLInfo, SharedPointer<SSLInfo>,boost::noncopyable>("SSLInfo")
                 .add_property("server_name",&SSLInfo::getServerName,
                         "Gets the SSL server name.")
+                .add_property("matched_domain_name",&SSLInfo::getMatchedDomainName,
+                        "Gets the matched DomainName object.")
                 .def(self_ns::str(self_ns::self))
         ;
 
@@ -562,6 +566,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         "Gets the HTTP UserAgent of the flow if the flow is HTTP.")
                 .add_property("banned",&HTTPInfo::getIsBanned,&HTTPInfo::setBanAndRelease,
                         "Gets and sets the flow banned for no more analysis on the python side and release resources.")
+                .add_property("matched_domain_name",&HTTPInfo::getMatchedDomainName,
+                        "Gets the matched DomainName object.")
                 .def(self_ns::str(self_ns::self))
 	;
 	

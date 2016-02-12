@@ -84,16 +84,17 @@ public:
 	class Statistics
 	{
 		public:
-			explicit Statistics():interval(0),prev_total_packets_per_interval(0) {
-			
-				ru_utime.tv_sec = 0; ru_utime.tv_usec = 0; 
-				ru_stime.tv_sec = 0; ru_stime.tv_usec = 0; 
+			explicit Statistics() {
+				bytes_per_second = 0;
+				max_bytes_per_second = 0;	
+				last_sample_time = 0; last_sample_time = 0; 
 			}
 			virtual ~Statistics() {}
 			int interval;
-			struct timeval ru_utime;
-			struct timeval ru_stime;
-			int64_t prev_total_packets_per_interval;	
+			std::time_t last_sample_time;
+			std::time_t curr_sample_time;
+			int64_t bytes_per_second;	
+			int64_t max_bytes_per_second;	
 	};
 
     	explicit PacketDispatcher(const std::string& source):status_(PacketDispatcherStatus::STOP),
@@ -105,7 +106,8 @@ public:
 		stats_(),header_(nullptr),pkt_data_(nullptr),
 		eth_(),current_packet_(),defMux_(),stack_name_(),input_name_(source),
 		pcap_filter_(),
-		em_(SharedPointer<EvidenceManager>(new EvidenceManager()))
+		em_(SharedPointer<EvidenceManager>(new EvidenceManager())),
+		current_network_stack_()
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 		,timer_(SharedPointer<boost::asio::deadline_timer>(new boost::asio::deadline_timer(io_service_))),
 		user_shell_(SharedPointer<Interpreter>(new Interpreter(io_service_))),
@@ -227,6 +229,7 @@ private:
 	std::string pcap_filter_;
 
 	SharedPointer<EvidenceManager> em_;
+	SharedPointer<NetworkStack> current_network_stack_;
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 	SharedPointer<boost::asio::deadline_timer> timer_;
 	SharedPointer<Interpreter> user_shell_;

@@ -308,6 +308,7 @@ void SSLProtocol::processFlow(Flow *flow) {
 						DomainNameManagerPtr host_mng = domain_mng_.lock();
 						SharedPointer<DomainName> host_candidate = host_mng->getDomainName(sinfo->host->getName());
 						if (host_candidate) {
+							sinfo->matched_domain_name = host_candidate;
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 #ifdef HAVE_LIBLOG4CXX
 							LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());

@@ -54,7 +54,7 @@ public:
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 		needs_release_ = false; 
 #endif
-		matched_host.reset();
+		matched_domain_name.reset();
 		resetStrings(); 
 	}
 
@@ -87,7 +87,7 @@ public:
         SharedPointer<StringCache> uri;
         SharedPointer<StringCache> host;
         SharedPointer<StringCache> ua;
-	WeakPointer<DomainName> matched_host;
+	SharedPointer<DomainName> matched_domain_name;
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 
@@ -104,6 +104,14 @@ public:
 	const char *getUri() const { return  (uri ? uri->getName() : ""); }	
 	const char *getHostName() const { return (host ? host->getName() : ""); }	
 	const char *getUserAgent() const { return (ua ? ua->getName() : ""); }	
+#endif
+
+#if defined(PYTHON_BINDING)
+	SharedPointer<DomainName> getMatchedDomainName() const { return matched_domain_name;}
+#elif defined(RUBY_BINDING)
+	// TODO
+#elif defined(JAVA_BINDING)
+	// TODO
 #endif
 
 private:

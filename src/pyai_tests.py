@@ -282,6 +282,7 @@ class StackLanTests(unittest.TestCase):
             self.called_callback += 1 
             self.assertEqual(str(flow.ssl_info.server_name),"0.drive.google.com")
             self.assertEqual(flow.l7_protocol_name,"SSLProtocol")
+            self.assertEqual(d, flow.ssl_info.matched_domain_name)
 
         d = pyaiengine.DomainName("Google All",".google.com")
 
@@ -391,6 +392,7 @@ class StackLanTests(unittest.TestCase):
             self.assertEqual(sw,True)
             self.assertEqual(str(flow.http_info.host_name),"www.wired.com")
             self.assertEqual(flow.l7_protocol_name,"HTTPProtocol")
+            self.assertEqual(flow.http_info.matched_domain_name , d)
 
         d = pyaiengine.DomainName("Wired domain",".wired.com")
 
@@ -1124,6 +1126,7 @@ class StackLanIPv6Tests(unittest.TestCase):
             for ip in flow.dns_info:
                 if (ip == "2607:f8b0:4001:c05::6a"):
                     self.called_callback += 1
+            self.assertEqual(flow.dns_info.matched_domain_name,d)
 
         d = pyaiengine.DomainName("Google test",".google.com")
         d.callback = dns_callback

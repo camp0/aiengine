@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include "StringCache.h"
+#include "names/DomainName.h"
 
 namespace aiengine {
 
@@ -41,11 +42,13 @@ public:
 
         void reset() {
                 host.reset();
+		matched_domain_name.reset();
 		is_banned_ = false;
 		data_pdus_ = 0;
         }
 
         SharedPointer<StringCache> host;
+        SharedPointer<DomainName> matched_domain_name;
 
         void setIsBanned(bool value) { is_banned_ = value; }
         bool getIsBanned() const { return is_banned_; }
@@ -64,6 +67,14 @@ public:
         }
 
         const char *getServerName() const { return (host ? host->getName() : ""); }
+#endif
+
+#if defined(PYTHON_BINDING)
+        SharedPointer<DomainName> getMatchedDomainName() const { return matched_domain_name;}
+#elif defined(RUBY_BINDING)
+	// TODO
+#elif defined(JAVA_BINDING)
+	// TODO
 #endif
 
 private:
