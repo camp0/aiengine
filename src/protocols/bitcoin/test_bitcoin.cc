@@ -21,17 +21,17 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#include "test_modbus.h"
+#include "test_bitcoin.h"
 
 #define BOOST_TEST_DYN_LINK
 #ifdef STAND_ALONE
-#define BOOST_TEST_MODULE modbustest
+#define BOOST_TEST_MODULE bitcointest
 #endif
 #include <boost/test/unit_test.hpp>
 
 using namespace aiengine;
 
-BOOST_FIXTURE_TEST_SUITE(modbus_suite,StackModbustest)
+BOOST_FIXTURE_TEST_SUITE(bitcoin_suite,StackBitcointest)
 
 BOOST_AUTO_TEST_CASE (test1_modbus)
 {

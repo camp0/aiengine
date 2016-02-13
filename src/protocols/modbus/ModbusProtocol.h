@@ -57,16 +57,16 @@ enum modbus_type_function_code {
 	MODBUSINFORM
 };
 
-class MODBUSProtocol: public Protocol 
+class ModbusProtocol: public Protocol 
 {
 public:
-    	explicit MODBUSProtocol():
-		Protocol("MODBUSProtocol","modbus"),
+    	explicit ModbusProtocol():
+		Protocol("ModbusProtocol","modbus"),
 		stats_level_(0),
 		modbus_header_(nullptr),total_bytes_(0)
         	{}
 
-    	virtual ~MODBUSProtocol() {}
+    	virtual ~ModbusProtocol() {}
 
 	static const uint16_t id = 0;	
 	static constexpr int header_size = sizeof(struct modbus_tcphdr);
@@ -108,7 +108,7 @@ public:
 		return false;
 	}
 
-	int64_t getAllocatedMemory() const { return sizeof(MODBUSProtocol); }
+	int64_t getAllocatedMemory() const { return sizeof(ModbusProtocol); }
 	
 #if defined(PYTHON_BINDING)
         boost::python::dict getCounters() const;
@@ -126,7 +126,7 @@ private:
 	// Some statistics 
 };
 
-typedef std::shared_ptr<MODBUSProtocol> MODBUSProtocolPtr;
+typedef std::shared_ptr<ModbusProtocol> ModbusProtocolPtr;
 
 } // namespace aiengine
 

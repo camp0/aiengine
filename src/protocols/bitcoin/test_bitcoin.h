@@ -21,8 +21,8 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#ifndef _test_modbus_H_
-#define _test_modbus_H_
+#ifndef _test_bitcoin_H_
+#define _test_bitcoin_H_
 
 #include <string>
 #include "../test/modbus_test_packets.h"
@@ -31,18 +31,18 @@
 #include "../ethernet/EthernetProtocol.h"
 #include "../ip/IPProtocol.h"
 #include "../tcp/TCPProtocol.h"
-#include "ModbusProtocol.h"
+#include "BitcoinProtocol.h"
 #include <cstring>
 
 using namespace aiengine;
 
-struct StackModbustest
+struct StackBitcointest
 {
         //Protocols
         EthernetProtocolPtr eth;
         IPProtocolPtr ip;
         TCPProtocolPtr tcp;
-        ModbusProtocolPtr modbus;
+        BitcoinProtocolPtr bitcoin;
 
         // Multiplexers
         MultiplexerPtr mux_eth;
@@ -54,15 +54,15 @@ struct StackModbustest
         FlowCachePtr flow_cache;
 
         // FlowForwarders
-        SharedPointer<FlowForwarder> ff_tcp,ff_modbus;
+        SharedPointer<FlowForwarder> ff_tcp,ff_bitcoin;
 
-        StackModbustest()
+        StackBitcointest()
         {
                 // Allocate all the Protocol objects
                 tcp = TCPProtocolPtr(new TCPProtocol());
                 ip = IPProtocolPtr(new IPProtocol());
                 eth = EthernetProtocolPtr(new EthernetProtocol());
-                modbus = ModbusProtocolPtr(new ModbusProtocol());
+                bitcoin = BitcoinProtocolPtr(new BitcoinProtocol());
 
                 // Allocate the Multiplexers
                 mux_eth = MultiplexerPtr(new Multiplexer());
@@ -74,7 +74,7 @@ struct StackModbustest
                 flow_cache = FlowCachePtr(new FlowCache());
 
                 ff_tcp = SharedPointer<FlowForwarder>(new FlowForwarder());
-                ff_modbus = SharedPointer<FlowForwarder>(new FlowForwarder());
+                ff_bitcoin = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 //configure the eth
                 eth->setMultiplexer(mux_eth);
@@ -99,10 +99,10 @@ struct StackModbustest
                 mux_tcp->addChecker(std::bind(&TCPProtocol::tcpChecker,tcp,std::placeholders::_1));
                 mux_tcp->addPacketFunction(std::bind(&TCPProtocol::processPacket,tcp,std::placeholders::_1));
 
-                modbus->setFlowForwarder(ff_modbus);
-                ff_modbus->setProtocol(static_cast<ProtocolPtr>(modbus));
-                ff_modbus->addChecker(std::bind(&ModbusProtocol::modbusChecker,modbus,std::placeholders::_1));
-                ff_modbus->addFlowFunction(std::bind(&ModbusProtocol::processFlow,modbus,
+                bitcoin->setFlowForwarder(ff_bitcoin);
+                ff_bitcoin->setProtocol(static_cast<ProtocolPtr>(bitcoin));
+                ff_bitcoin->addChecker(std::bind(&BitcoinProtocol::bitcoinChecker,bitcoin,std::placeholders::_1));
+                ff_bitcoin->addFlowFunction(std::bind(&BitcoinProtocol::processFlow,bitcoin,
 			std::placeholders::_1));
 
                 // configure the multiplexers
@@ -119,14 +119,14 @@ struct StackModbustest
 
                 // Configure the FlowForwarders
                 tcp->setFlowForwarder(ff_tcp);
-		ff_tcp->addUpFlowForwarder(ff_modbus);
+		ff_tcp->addUpFlowForwarder(ff_bitcoin);
         }
 
 	void show() {
 		tcp->setStatisticsLevel(5);
 		tcp->statistics();
-		modbus->setStatisticsLevel(5);
-		modbus->statistics();
+		bitcoin->setStatisticsLevel(5);
+		bitcoin->statistics();
 	}
 
 	void showFlows() {
@@ -135,7 +135,7 @@ struct StackModbustest
 
 	}
 
-        ~StackModbustest()
+        ~StackBitcointest()
         {
         }
 };

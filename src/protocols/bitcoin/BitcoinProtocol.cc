@@ -21,22 +21,21 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#include "MODBUSProtocol.h"
+#include "BitcoinProtocol.h"
 #include <iomanip>
 
 namespace aiengine {
 
-void MODBUSProtocol::processFlow(Flow *flow) {
+void BitcoinProtocol::processFlow(Flow *flow) {
 
 	setHeader(flow->packet->getPayload());	
 	total_bytes_ += flow->packet->getLength();
 
 	++total_packets_;
 
-	// TODO: Retrieve the IP address and mac for detect roque dhcp servers
 }
 
-void MODBUSProtocol::statistics(std::basic_ostream<char>& out){ 
+void BitcoinProtocol::statistics(std::basic_ostream<char>& out){ 
 
 	if (stats_level_ > 0) {
                 int alloc_memory = getAllocatedMemory();
@@ -77,10 +76,10 @@ void MODBUSProtocol::statistics(std::basic_ostream<char>& out){
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
 #if defined(PYTHON_BINDING)
-boost::python::dict MODBUSProtocol::getCounters() const {
+boost::python::dict BitcoinProtocol::getCounters() const {
         boost::python::dict counters;
 #elif defined(RUBY_BINDING)
-VALUE MODBUSProtocol::getCounters() const {
+VALUE BitcoinProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
 #endif
         addValueToCounter(counters,"packets",total_packets_);
