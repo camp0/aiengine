@@ -25,7 +25,7 @@
 #define _test_bitcoin_H_
 
 #include <string>
-#include "../test/modbus_test_packets.h"
+#include "../test/bitcoin_test_packets.h"
 #include "Protocol.h"
 #include "Multiplexer.h"
 #include "../ethernet/EthernetProtocol.h"

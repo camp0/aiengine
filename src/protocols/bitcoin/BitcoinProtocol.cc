@@ -26,6 +26,27 @@
 
 namespace aiengine {
 
+// List of support bitcoin commands
+std::unordered_map<const char *,BitcoinCommandType> BitcoinProtocol::commands_ {
+	{ "version", 	std::make_tuple(BC_CMD_VERSION,		"version",	0) },
+	{ "verack", 	std::make_tuple(BC_CMD_VERACK,		"version ack",	0) },
+	{ "addr", 	std::make_tuple(BC_CMD_ADDR,		"network addr",	0) },
+	{ "inv", 	std::make_tuple(BC_CMD_INV,		"inv",		0) },
+	{ "getdata", 	std::make_tuple(BC_CMD_GETDATA,		"getdata",	0) },
+	{ "notfound", 	std::make_tuple(BC_CMD_NOTFOUND,	"not found",	0) },
+	{ "getblocks", 	std::make_tuple(BC_CMD_GETBLOCKS,	"get blocks",	0) },
+	{ "getheaders", std::make_tuple(BC_CMD_GETHEADERS,	"get headers",	0) },
+	{ "tx", 	std::make_tuple(BC_CMD_TX,		"transaction",	0) },
+	{ "block", 	std::make_tuple(BC_CMD_BLOCK,		"block",	0) },
+	{ "headers", 	std::make_tuple(BC_CMD_HEADERS,		"headers",	0) },
+	{ "getaddr", 	std::make_tuple(BC_CMD_GETADDR,		"getaddr",	0) },
+	{ "mempool", 	std::make_tuple(BC_CMD_MEMPOOL,		"mempool",	0) },
+	{ "ping",	std::make_tuple(BC_CMD_PING,		"ping",		0) },
+	{ "pong",	std::make_tuple(BC_CMD_PONG,		"pong",		0) },
+	{ "reject",	std::make_tuple(BC_CMD_REJECT,		"reject",	0) },
+	{ "alert",	std::make_tuple(BC_CMD_ALERT,		"alert",	0) }
+};
+
 void BitcoinProtocol::processFlow(Flow *flow) {
 
 	setHeader(flow->packet->getPayload());	

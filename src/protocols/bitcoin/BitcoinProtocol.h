@@ -41,6 +41,29 @@ struct bitcoin_hdr {
 	u_char 		data[0];
 } __attribute__((packed));
 
+enum bitcoin_command_code {
+        BC_CMD_VERSION = 1,
+        BC_CMD_VERACK,
+        BC_CMD_ADDR,
+        BC_CMD_INV,
+        BC_CMD_GETDATA,
+        BC_CMD_NOTFOUND,
+        BC_CMD_GETBLOCKS,
+        BC_CMD_GETHEADERS,
+        BC_CMD_TX,
+        BC_CMD_BLOCK,
+        BC_CMD_HEADERS,
+        BC_CMD_GETADDR,
+        BC_CMD_MEMPOOL,
+        BC_CMD_PING,
+        BC_CMD_PONG,
+        BC_CMD_REJECT,
+        BC_CMD_ALERT
+};
+
+// Commands and their corresponding handlers
+typedef std::tuple<short,const char*,int32_t> BitcoinCommandType;
+
 class BitcoinProtocol: public Protocol 
 {
 public:
@@ -106,7 +129,8 @@ private:
 	int stats_level_;
 	struct bitcoin_hdr *bitcoin_header_;
 	int64_t total_bytes_;
-        
+
+	static std::unordered_map<const char *,BitcoinCommandType> commands_;	        
 	// Some statistics 
 };
 

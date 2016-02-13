@@ -35,8 +35,8 @@ BOOST_FIXTURE_TEST_SUITE(bitcoin_suite,StackBitcointest)
 
 BOOST_AUTO_TEST_CASE (test1_modbus)
 {
-        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_flow1_ack_write_multiple_coils);
-        int length = raw_packet_ethernet_ip_tcp_flow1_ack_write_multiple_coils_length;
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_bc_flow1_ack_version);
+        int length = raw_packet_ethernet_ip_tcp_bc_flow1_ack_version_length;
         Packet packet(pkt,length);
 
         // executing the packet
@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE (test1_modbus)
         // Check the results
         BOOST_CHECK(ip->getTotalPackets() == 1);
         BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
-        BOOST_CHECK(ip->getTotalBytes() == 66);
+        BOOST_CHECK(ip->getTotalBytes() == 145);
         BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
 
 }
