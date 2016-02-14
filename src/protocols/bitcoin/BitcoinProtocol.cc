@@ -27,7 +27,7 @@
 namespace aiengine {
 
 // List of support bitcoin commands
-std::unordered_map<const char *,BitcoinCommandType> BitcoinProtocol::commands_ {
+std::unordered_map<std::string ,BitcoinCommandType> BitcoinProtocol::commands_ {
 	{ "version", 	std::make_tuple(BC_CMD_VERSION,		"version",	0) },
 	{ "verack", 	std::make_tuple(BC_CMD_VERACK,		"version ack",	0) },
 	{ "addr", 	std::make_tuple(BC_CMD_ADDR,		"network addr",	0) },
@@ -50,10 +50,20 @@ std::unordered_map<const char *,BitcoinCommandType> BitcoinProtocol::commands_ {
 void BitcoinProtocol::processFlow(Flow *flow) {
 
 	setHeader(flow->packet->getPayload());	
-	total_bytes_ += flow->packet->getLength();
+
+	int length = flow->packet->getLength();
+	total_bytes_ += length;
 
 	++total_packets_;
 
+        if(length >= header_size) {
+		char *cmd = &bitcoin_header_->command[0];
+		auto it = commands_.find(cmd);
+                if (it != commands_.end()) {
+			int32_t *hits = &std::get<2>(it->second);
+			++(*hits);
+		}
+        }
 }
 
 void BitcoinProtocol::statistics(std::basic_ostream<char>& out){ 
@@ -72,16 +82,11 @@ void BitcoinProtocol::statistics(std::basic_ostream<char>& out){
 			out << "\t" << "Total validated packets:" << std::setw(10) << total_validated_packets_ <<std::endl;
 			out << "\t" << "Total malformed packets:" << std::setw(10) << total_malformed_packets_ <<std::endl;
                         if (stats_level_ > 3) {
-				/***
-                                out << "\t" << "Total discovers:        " << std::setw(10) << total_dhcp_discover_ <<std::endl;
-                                out << "\t" << "Total offers:           " << std::setw(10) << total_dhcp_offer_ <<std::endl;
-                                out << "\t" << "Total requests:         " << std::setw(10) << total_dhcp_request_ <<std::endl;
-                                out << "\t" << "Total declines:         " << std::setw(10) << total_dhcp_decline_ <<std::endl;
-                                out << "\t" << "Total acks:             " << std::setw(10) << total_dhcp_ack_ <<std::endl;
-                                out << "\t" << "Total naks:             " << std::setw(10) << total_dhcp_nak_ <<std::endl;
-                                out << "\t" << "Total releases:         " << std::setw(10) << total_dhcp_release_ <<std::endl;
-                                out << "\t" << "Total informs:          " << std::setw(10) << total_dhcp_inform_ <<std::endl;
-				**/
+				for (auto &cmd: commands_) {
+                                        const char *label = std::get<1>(cmd.second);
+                                        int32_t hits = std::get<2>(cmd.second);
+                                        out << "\t" << "Total " << label << ":" << std::right << std::setfill(' ') << std::setw(27 - strlen(label)) << hits <<std::endl;
+                                }
                         }
 			if (stats_level_ > 2) {
 				if(mux_.lock())

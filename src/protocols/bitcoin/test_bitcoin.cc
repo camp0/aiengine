@@ -33,7 +33,7 @@ using namespace aiengine;
 
 BOOST_FIXTURE_TEST_SUITE(bitcoin_suite,StackBitcointest)
 
-BOOST_AUTO_TEST_CASE (test1_modbus)
+BOOST_AUTO_TEST_CASE (test1_bitcoin)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_bc_flow1_ack_version);
         int length = raw_packet_ethernet_ip_tcp_bc_flow1_ack_version_length;
@@ -46,12 +46,24 @@ BOOST_AUTO_TEST_CASE (test1_modbus)
         mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forwardPacket(packet);
 
+	show();
+
         // Check the results
         BOOST_CHECK(ip->getTotalPackets() == 1);
         BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
         BOOST_CHECK(ip->getTotalBytes() == 145);
         BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
 
+        BOOST_CHECK(tcp->getTotalPackets() == 1);
+        BOOST_CHECK(tcp->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(tcp->getTotalBytes() == 105 + 20);
+        BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(tcp->getDestinationPort() == 8333);
+
+        BOOST_CHECK(bitcoin->getTotalPackets() == 1);
+        BOOST_CHECK(bitcoin->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(bitcoin->getTotalBytes() == 105);
+        BOOST_CHECK(bitcoin->getTotalMalformedPackets() == 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

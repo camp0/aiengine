@@ -107,8 +107,10 @@ public:
 		if(length >= header_size) {
 			if ((packet.getSourcePort() == 8333)||(packet.getDestinationPort() == 8333)) {
 				setHeader(packet.getPayload());
-				++total_validated_packets_; 
-				return true;
+				if (bitcoin_header_->magic == 0xd9b4bef9) { // Bitcoin magic value 0xf9beb4d9
+					++total_validated_packets_; 
+					return true;
+				}
 			}
 		}
 		++total_malformed_packets_;
@@ -130,7 +132,7 @@ private:
 	struct bitcoin_hdr *bitcoin_header_;
 	int64_t total_bytes_;
 
-	static std::unordered_map<const char *,BitcoinCommandType> commands_;	        
+	static std::unordered_map<std::string,BitcoinCommandType> commands_;	        
 	// Some statistics 
 };
 
