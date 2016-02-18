@@ -159,8 +159,8 @@ BOOST_AUTO_TEST_CASE (test4_vxlan)
 	BOOST_CHECK(flow_vir->getSourcePort() == 47864);
 	BOOST_CHECK(flow_vir->getDestinationPort() == 53);
 
-	BOOST_CHECK(flow_vir->dns_info != nullptr);
-        SharedPointer<DNSInfo> dns_info = flow_vir->dns_info;
+        SharedPointer<DNSInfo> dns_info = flow_vir->getDNSInfo();
+	BOOST_CHECK(dns_info != nullptr);
 
 	std::string domain("github.com");
 
@@ -208,16 +208,16 @@ BOOST_AUTO_TEST_CASE (test5_vxlan)
 	
 	Flow *flow_udp2 = udp_vir->getCurrentFlow();
 
-	BOOST_CHECK(flow_udp1->dns_info != nullptr);
-        SharedPointer<DNSInfo> dns_info = flow_udp1->dns_info;
+        SharedPointer<DNSInfo> dns_info = flow_udp1->getDNSInfo();
+	BOOST_CHECK(dns_info != nullptr);
 
 	std::string domain("github.com");
 
 	BOOST_CHECK(dns_info->name != nullptr);
 	BOOST_CHECK(domain.compare(dns_info->name->getName()) == 0);
 	
-	BOOST_CHECK(flow_udp2->dns_info != nullptr);
-        dns_info = flow_udp2->dns_info;
+	BOOST_CHECK(flow_udp2->getDNSInfo() != nullptr);
+        dns_info = flow_udp2->getDNSInfo();
 
 	domain = "gitgit.com";
 	BOOST_CHECK(dns_info->name != nullptr);
@@ -289,8 +289,8 @@ BOOST_AUTO_TEST_CASE (test6_vxlan)
         Flow *flow = tcp_vir->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info != nullptr);
-        SharedPointer<TCPInfo> info = flow->tcp_info;
+        SharedPointer<TCPInfo> info = flow->getTCPInfo();
+	BOOST_CHECK( info != nullptr);
 
         BOOST_CHECK(info->syn == 1);
         BOOST_CHECK(info->fin == 0);

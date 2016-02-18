@@ -508,25 +508,25 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Gets/Sets the evidence of the flow for make forensic analysis.")
 		.add_property("ip_set",make_function(&Flow::getIPSetInfo,return_internal_reference<>()),
 			"Returns the IPSet Info of the flow if the flow is part of an IPSet.")
-		.add_property("http_info",make_function(&Flow::getHTTPInfo,return_internal_reference<>()),
+		.add_property("http_info",make_function(&Flow::getHTTPInfoObject,return_internal_reference<>()),
 			"Returns the HTTP Info of the flow if the flow is HTTP.")
-		.add_property("sip_info",make_function(&Flow::getSIPInfo,return_internal_reference<>()),
+		.add_property("sip_info",make_function(&Flow::getSIPInfoObject,return_internal_reference<>()),
 			"Returns the SIP Info of the flow if the flow is SIP.")
-		.add_property("smtp_info",make_function(&Flow::getSMTPInfo,return_internal_reference<>()),
+		.add_property("smtp_info",make_function(&Flow::getSMTPInfoObject,return_internal_reference<>()),
 			"Gets the SMTP Info of the flow if the flow is SMTP.")
-		.add_property("pop_info",make_function(&Flow::getPOPInfo,return_internal_reference<>()),
+		.add_property("pop_info",make_function(&Flow::getPOPInfoObject,return_internal_reference<>()),
 			"Gets the POP Info of the flow if the flow is POP.")
-		.add_property("imap_info",make_function(&Flow::getIMAPInfo,return_internal_reference<>()),
+		.add_property("imap_info",make_function(&Flow::getIMAPInfoObject,return_internal_reference<>()),
 			"Gets the IMAP Info of the flow if the flow is IMAP.")
 		.add_property("frequencies",make_function(&Flow::getFrequencies,return_internal_reference<>()),
 			"Gets a map of frequencies of the payload of the flow.")
 		.add_property("packet_frequencies",make_function(&Flow::getPacketFrequencies,return_internal_reference<>()),
 			"Gets the packet frequencies of the flow.")
-		.add_property("dns_info",make_function(&Flow::getDNSInfo,return_internal_reference<>()),
+		.add_property("dns_info",make_function(&Flow::getDNSInfoObject,return_internal_reference<>()),
 			"Gets the DNS info name if the flow is a DNS.")
-		.add_property("ssl_info",make_function(&Flow::getSSLInfo,return_internal_reference<>()),
+		.add_property("ssl_info",make_function(&Flow::getSSLInfoObject,return_internal_reference<>()),
 			"Gets the SSL info if the flow is SSL.")
-		.add_property("ssdp_info",make_function(&Flow::getSSDPInfo,return_internal_reference<>()),
+		.add_property("ssdp_info",make_function(&Flow::getSSDPInfoObject,return_internal_reference<>()),
 			"Gets the SSDP info if the flow is SSDP.")
 		.add_property("regex",make_function(&Flow::getRegex,return_internal_reference<>()),
 			"Gets the regex if the flow have been matched with the associated regex.")
@@ -539,7 +539,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def(self_ns::str(self_ns::self))
 	;
 
-	boost::python::class_<DNSInfo, SharedPointer<DNSInfo>,boost::noncopyable>("DNSInfo")
+	boost::python::class_<DNSInfo, SharedPointer<DNSInfo>, boost::noncopyable>("DNSInfo")
 		.def("__iter__",boost::python::range(&DNSInfo::begin,&DNSInfo::end),
 			"Iterate over the IP addresses returned on the query response.")
 		.add_property("domain_name", &DNSInfo::getDomainName,

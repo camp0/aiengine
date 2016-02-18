@@ -56,6 +56,15 @@ void BitcoinProtocol::processFlow(Flow *flow) {
 
 	++total_packets_;
 
+	SharedPointer<BitcoinInfo> info = flow->getBitcoinInfo();
+        if(!info) {
+                info = info_cache_->acquire();
+                if (!info) {
+                        return;
+                }
+                flow->layer7info = info;
+        }
+
         if(length >= header_size) {
 		char *cmd = &bitcoin_header_->command[0];
 		auto it = commands_.find(cmd);
@@ -64,6 +73,7 @@ void BitcoinProtocol::processFlow(Flow *flow) {
 			++(*hits);
 		}
         }
+
 }
 
 void BitcoinProtocol::statistics(std::basic_ostream<char>& out){ 

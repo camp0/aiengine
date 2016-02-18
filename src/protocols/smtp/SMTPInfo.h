@@ -31,10 +31,11 @@
 #include <iostream>
 #include <vector> 
 #include "StringCache.h"
+#include "FlowInfo.h"
 
 namespace aiengine {
 
-class SMTPInfo 
+class SMTPInfo : public FlowInfo 
 {
 public:
     	explicit SMTPInfo() { reset(); }

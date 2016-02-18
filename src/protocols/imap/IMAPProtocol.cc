@@ -127,12 +127,12 @@ void IMAPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-                       	SharedPointer<IMAPInfo> iinfo = flow->imap_info;
+                       	SharedPointer<IMAPInfo> iinfo = flow->getIMAPInfo();
 			if (iinfo) {
 				total_bytes_released_by_flows = release_imap_info(iinfo.get()); 
                                 total_bytes_released_by_flows += sizeof(iinfo);
                                
-                                flow->imap_info.reset();
+                                flow->layer7info.reset();
                                 ++ release_flows;
                                 info_cache_->release(iinfo);
                         }
@@ -238,14 +238,13 @@ void IMAPProtocol::processFlow(Flow *flow) {
 
 	setHeader(flow->packet->getPayload());
 
-        SharedPointer<IMAPInfo> iinfo = flow->imap_info;
-
+        SharedPointer<IMAPInfo> iinfo = flow->getIMAPInfo();
         if(!iinfo) {
                 iinfo = info_cache_->acquire();
                 if (!iinfo) {
                         return;
                 }
-                flow->imap_info = iinfo;
+                flow->layer7info = iinfo;
         }
 
         if (iinfo->getIsBanned() == true) {

@@ -337,8 +337,8 @@ BOOST_AUTO_TEST_CASE (test5_gprs) // Process a pdp context creation
         Flow *flow = udp_low->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->gprs_info != nullptr);
-        SharedPointer<GPRSInfo> info = flow->gprs_info;
+        BOOST_CHECK(flow->layer4info != nullptr);
+        SharedPointer<GPRSInfo> info = flow->getGPRSInfo();
 
 	std::string imsi("234308256005467");
 	BOOST_CHECK(imsi.compare(info->getIMSIString()) == 0);
@@ -365,8 +365,8 @@ BOOST_AUTO_TEST_CASE (test6_gprs) // Process a pdp context creation
         Flow *flow = udp_low->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->gprs_info != nullptr);
-        SharedPointer<GPRSInfo> info = flow->gprs_info;
+        BOOST_CHECK(flow->layer4info != nullptr);
+        SharedPointer<GPRSInfo> info = flow->getGPRSInfo();
 
         std::string imsi("460004100000101");
         BOOST_CHECK(imsi.compare(info->getIMSIString()) == 0);
@@ -393,8 +393,8 @@ BOOST_AUTO_TEST_CASE (test7_gprs) // Process a pdp context creation
         Flow *flow = udp_low->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->gprs_info != nullptr);
-        SharedPointer<GPRSInfo> info = flow->gprs_info;
+        BOOST_CHECK(flow->layer4info != nullptr);
+        SharedPointer<GPRSInfo> info = flow->getGPRSInfo();
 
         BOOST_CHECK(info->getPdpTypeNumber() == PDP_END_USER_TYPE_IPV6); // IPv6
 }
@@ -419,8 +419,8 @@ BOOST_AUTO_TEST_CASE (test8_gprs) // Process a pdp context creation with ipv6 an
         Flow *flow = udp_low->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->gprs_info != nullptr);
-        SharedPointer<GPRSInfo> info = flow->gprs_info;
+        BOOST_CHECK(flow->layer4info != nullptr);
+        SharedPointer<GPRSInfo> info = flow->getGPRSInfo();
 
         std::string imsi("262026201608297");
         BOOST_CHECK(imsi.compare(info->getIMSIString()) == 0);
@@ -428,7 +428,7 @@ BOOST_AUTO_TEST_CASE (test8_gprs) // Process a pdp context creation with ipv6 an
 
 	gprs->releaseCache();
 
-        BOOST_CHECK(flow->gprs_info == nullptr);
+        BOOST_CHECK(flow->layer4info == nullptr);
 
 }
 

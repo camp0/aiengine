@@ -28,12 +28,21 @@ namespace aiengine {
 
 void ModbusProtocol::processFlow(Flow *flow) {
 
-	setHeader(flow->packet->getPayload());	
-	total_bytes_ += flow->packet->getLength();
+	int length = flow->packet->getLength();
+	total_bytes_ += length;
 
 	++total_packets_;
 
-	// TODO: Retrieve the IP address and mac for detect roque dhcp servers
+	if (length > header_size) {
+		setHeader(flow->packet->getPayload());	
+		if (ntohs(modbus_header_->length) >= sizeof(modbus_hdr)) {
+			struct modbus_hdr *hdr = reinterpret_cast<struct modbus_hdr*>(modbus_header_->data);
+
+			if (hdr->code == MB_CODE_READ_COILS ) {
+				std::cout << "yes" << std::endl;
+			}
+		}
+	}
 }
 
 void ModbusProtocol::statistics(std::basic_ostream<char>& out){ 

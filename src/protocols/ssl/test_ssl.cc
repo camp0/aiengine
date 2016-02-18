@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE (test4_ssl)
         flow->packet = const_cast<Packet*>(&packet1);
         ssl->processFlow(flow.get());
 
-        BOOST_CHECK(flow->ssl_info == nullptr);
+        BOOST_CHECK(flow->layer7info == nullptr);
 }
 
 BOOST_AUTO_TEST_CASE (test5_ssl)
@@ -158,10 +158,10 @@ BOOST_AUTO_TEST_CASE (test5_ssl)
         flow->packet = const_cast<Packet*>(&packet1);
         ssl->processFlow(flow.get());
 
-        BOOST_CHECK(flow->ssl_info != nullptr);
+        BOOST_CHECK(flow->layer7info != nullptr);
 	std::string cad("0.drive.google.com");
 
-	SharedPointer<SSLInfo> info = flow->ssl_info;
+	SharedPointer<SSLInfo> info = flow->getSSLInfo();
 	// The host is valid
         BOOST_CHECK(cad.compare(info->host->getName()) == 0);
 }
@@ -180,10 +180,10 @@ BOOST_AUTO_TEST_CASE (test6_ssl)
         flow->packet = const_cast<Packet*>(&packet1);
         ssl->processFlow(flow.get());
 
-        BOOST_CHECK(flow->ssl_info != nullptr);
         std::string cad("atv-ps.amazon.com");
 
-	SharedPointer<SSLInfo> info = flow->ssl_info;
+	SharedPointer<SSLInfo> info = flow->getSSLInfo();
+	BOOST_CHECK( info != nullptr);
         // The host is valid
         BOOST_CHECK(cad.compare(info->host->getName()) == 0);
 }
@@ -202,11 +202,11 @@ BOOST_AUTO_TEST_CASE (test7_ssl)
         flow->packet = const_cast<Packet*>(&packet1);
         ssl->processFlow(flow.get());
 
-        BOOST_CHECK(flow->ssl_info != nullptr);
         std::string cad("www.6k6fnxstu.com");
 
         // The host is valid
-	SharedPointer<SSLInfo> info = flow->ssl_info;
+	SharedPointer<SSLInfo> info = flow->getSSLInfo();
+	BOOST_CHECK( info != nullptr);
         BOOST_CHECK(cad.compare(info->host->getName()) == 0);
 }
 
@@ -314,7 +314,7 @@ BOOST_AUTO_TEST_CASE (test11_ssl)
 	BOOST_CHECK(c->getTotalReleases() == 0);
 #endif
 	for (auto &f: fm->getFlowTable()) {
-		BOOST_CHECK(f->ssl_info != nullptr);
+		BOOST_CHECK(f->getSSLInfo() != nullptr);
 	}
 	ssl->releaseCache();
 
@@ -325,7 +325,7 @@ BOOST_AUTO_TEST_CASE (test11_ssl)
 #endif
 
 	for (auto &f: fm->getFlowTable()) {
-		BOOST_CHECK(f->ssl_info == nullptr);
+		BOOST_CHECK(f->layer7info == nullptr);
 	}
 }
 
@@ -343,11 +343,11 @@ BOOST_AUTO_TEST_CASE (test12_ssl)
         flow->packet = const_cast<Packet*>(&packet1);
         ssl->processFlow(flow.get());
 
-        BOOST_CHECK(flow->ssl_info != nullptr);
         std::string cad("ipv4_1-aaag0-c001.1.000001.xx.aaaavideo.net");
 
         // The host is valid
-        SharedPointer<SSLInfo> info = flow->ssl_info;
+	SharedPointer<SSLInfo> info = flow->getSSLInfo();
+	BOOST_CHECK( info != nullptr);
         BOOST_CHECK(cad.compare(info->host->getName()) == 0);
 }
 

@@ -52,6 +52,11 @@ BOOST_AUTO_TEST_CASE (test1_modbus)
         BOOST_CHECK(ip->getTotalBytes() == 66);
         BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
 
+        BOOST_CHECK(modbus->getTotalPackets() == 1);
+        BOOST_CHECK(modbus->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(modbus->getTotalBytes() == 14);
+        BOOST_CHECK(modbus->getTotalMalformedPackets() == 0);
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()

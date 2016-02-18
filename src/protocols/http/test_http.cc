@@ -87,7 +87,8 @@ BOOST_AUTO_TEST_CASE (test2_http)
 	flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
-	BOOST_CHECK(flow->http_info == nullptr);
+	BOOST_CHECK(flow->layer7info == nullptr);
+	BOOST_CHECK(flow->getHTTPInfo() == nullptr);
 }
 
 
@@ -111,8 +112,8 @@ BOOST_AUTO_TEST_CASE (test3_http)
 	// Verify the size of the Header
 	BOOST_CHECK(http->getHTTPHeaderSize() == 59);
 
-	BOOST_CHECK(flow->http_info != nullptr);
-	SharedPointer<HTTPInfo> info = flow->http_info;
+	SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+	BOOST_CHECK(info != nullptr);
 
         BOOST_CHECK(info->uri != nullptr);
         BOOST_CHECK(info->host != nullptr);
@@ -150,8 +151,8 @@ BOOST_AUTO_TEST_CASE (test4_http)
 	std::string cad_host("www.g00gle.com");
         std::string cad_ua("LuisAgent");
 
-	BOOST_CHECK(flow->http_info != nullptr);
-	SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
 
         BOOST_CHECK(info->ua != nullptr);
         BOOST_CHECK(info->host != nullptr);
@@ -189,8 +190,9 @@ BOOST_AUTO_TEST_CASE (test5_http)
         std::string cad_host("www.g00gle.com");
         std::string cad_ua("LuisAgent");
 
-	BOOST_CHECK(flow->http_info != nullptr);
-	SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
+
         BOOST_CHECK(info->ua != nullptr);
         BOOST_CHECK(info->host != nullptr);
         BOOST_CHECK(info->uri != nullptr);
@@ -228,8 +230,9 @@ BOOST_AUTO_TEST_CASE (test6_http)
         std::string cad_host("www.g00gle.com");
         std::string cad_ua("LuisAgent CFNetwork/609 Darwin/13.0.0");
 
-        BOOST_CHECK(flow->http_info != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
+
         BOOST_CHECK(info->ua != nullptr);
         BOOST_CHECK(info->host != nullptr);
         BOOST_CHECK(info->uri != nullptr);
@@ -271,8 +274,9 @@ BOOST_AUTO_TEST_CASE (test7_http)
         std::string cad_host("onedomain.com");
         std::string cad_ua("LuisAgent CFNetwork/609 Darwin/13.0.0");
 
-        BOOST_CHECK(flow->http_info != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
+
         BOOST_CHECK(info->ua != nullptr);
         BOOST_CHECK(info->host != nullptr);
         BOOST_CHECK(info->uri != nullptr);
@@ -312,8 +316,9 @@ BOOST_AUTO_TEST_CASE (test8_http)
         std::string cad_host("onedomain.com");
         std::string cad_ua("LuisAgent CFNetwork/609 Darwin/13.0.0");
 
-        BOOST_CHECK(flow1->http_info != nullptr);
-        SharedPointer<HTTPInfo> info1 = flow1->http_info;
+        SharedPointer<HTTPInfo> info1 = flow1->getHTTPInfo();
+        BOOST_CHECK(info1 != nullptr);
+
         BOOST_CHECK(info1->ua != nullptr);
         BOOST_CHECK(info1->host != nullptr);
         BOOST_CHECK(info1->uri != nullptr);
@@ -344,8 +349,9 @@ BOOST_AUTO_TEST_CASE (test8_http)
 	// Verify the size of the Header
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header2));
 
-        BOOST_CHECK(flow2->http_info != nullptr);
-        SharedPointer<HTTPInfo> info2 = flow2->http_info;
+        SharedPointer<HTTPInfo> info2 = flow2->getHTTPInfo();
+        BOOST_CHECK(info2 != nullptr);
+
         BOOST_CHECK(info2->ua != nullptr);
         BOOST_CHECK(info2->host != nullptr);
         BOOST_CHECK(info2->uri != nullptr);
@@ -390,8 +396,9 @@ BOOST_AUTO_TEST_CASE (test9_http)
         std::string cad_host("onedomain.com");
         std::string cad_ua("LuisAgent CFNetwork/609 Darwin/13.0.0");
 
-        BOOST_CHECK(flow1->http_info != nullptr);
-        SharedPointer<HTTPInfo> info1 = flow1->http_info;
+        SharedPointer<HTTPInfo> info1 = flow1->getHTTPInfo();
+        BOOST_CHECK(info1 != nullptr);
+
         BOOST_CHECK(info1->ua != nullptr);
         BOOST_CHECK(info1->host != nullptr);
         BOOST_CHECK(info1->uri != nullptr);
@@ -427,8 +434,9 @@ BOOST_AUTO_TEST_CASE (test9_http)
 
         std::string cad_ua2("LuisAgent CFNetwork/609 Darwin/13.2.0");
 
-        BOOST_CHECK(flow2->http_info != nullptr);
-        SharedPointer<HTTPInfo> info2 = flow2->http_info;
+        SharedPointer<HTTPInfo> info2 = flow2->getHTTPInfo();
+        BOOST_CHECK(info2 != nullptr);
+
         BOOST_CHECK(info2->ua != nullptr);
         BOOST_CHECK(info2->host != nullptr);
         BOOST_CHECK(info2->uri != nullptr);
@@ -477,7 +485,9 @@ BOOST_AUTO_TEST_CASE (test10_http)
         // Size of the header equals 0 
         BOOST_CHECK(http->getHTTPHeaderSize() == 0);
 
-	BOOST_CHECK(flow->http_info == nullptr);
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info == nullptr);
+
 	BOOST_CHECK(host_name->getMatchs() == 0);
 }
 
@@ -518,7 +528,8 @@ BOOST_AUTO_TEST_CASE (test11_http)
         // Verify the size of the Header
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header));
 
-        BOOST_CHECK(flow->http_info != nullptr);
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
         BOOST_CHECK(host_name->getMatchs() == 0);
 }
 
@@ -556,8 +567,8 @@ BOOST_AUTO_TEST_CASE (test12_http)
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
 
-        BOOST_CHECK(flow->http_info != nullptr);
-	SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
 
 	BOOST_CHECK(info->getIsBanned() == false);
 	BOOST_CHECK(info->uri != nullptr);
@@ -603,9 +614,9 @@ BOOST_AUTO_TEST_CASE (test13_http)
 	BOOST_CHECK( http->getTotalBanHosts() == 1);
 
 	// Verify that the flow dont have references in order to save memory
-	SharedPointer<HTTPInfo> info = flow->http_info;
+	SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
 
-	BOOST_CHECK(info->getIsBanned() == true);
 	BOOST_CHECK(info->uri == nullptr);
 	BOOST_CHECK(info->ua == nullptr);
 	BOOST_CHECK(info->host == nullptr);
@@ -662,8 +673,8 @@ BOOST_AUTO_TEST_CASE (test14_http)
         std::string cad_uri1("/someur-oonnnnn-a-/somefile.php");
         std::string cad_uri2("/VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB/oonnnnn-a-/otherfile.html");
 
-	BOOST_CHECK(flow->http_info != nullptr);
-	SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
  
         BOOST_CHECK(info->uri != nullptr);
         BOOST_CHECK(cad_uri1.compare(info->uri->getName()) == 0);
@@ -717,8 +728,8 @@ BOOST_AUTO_TEST_CASE (test15_http)
 	// std::cout << "http header size:" << http->getHTTPHeaderSize() << " h:" << strlen(header) << " he:" << strlen(header_ext) << std::endl;
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header)-strlen(header_ext)) ;
 
-        BOOST_CHECK(flow->http_info != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
 
 	BOOST_CHECK(info->getResponseCode() == 200);
 
@@ -763,8 +774,8 @@ BOOST_AUTO_TEST_CASE (test16_http)
         std::string host("www.bu.com");
         std::string ua("LuisAgent");
 
-        BOOST_CHECK(flow->http_info != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
 
         BOOST_CHECK(info->host != nullptr);
         BOOST_CHECK(info->ua != nullptr);
@@ -816,8 +827,8 @@ BOOST_AUTO_TEST_CASE (test17_http)
         flow->packet = const_cast<Packet*>(&packet2);
         http->processFlow(flow.get());
 
-        BOOST_CHECK(flow->http_info != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
 
 	BOOST_CHECK(host_name->getMatchs() == 1);
 	BOOST_CHECK(info->getIsBanned() == true);
@@ -856,8 +867,8 @@ BOOST_AUTO_TEST_CASE (test18_http)
         std::string ua("Shockwave Flash");
 	std::string uri("/open/1");
 
-        BOOST_CHECK(flow->http_info != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
 
         BOOST_CHECK(info->host != nullptr);
         BOOST_CHECK(info->ua != nullptr);
@@ -893,8 +904,8 @@ BOOST_AUTO_TEST_CASE (test19_http)
         // Verify the size of the Header
         BOOST_CHECK(http->getHTTPHeaderSize() == strlen(header) - 17);
 
-        BOOST_CHECK(flow->http_info != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
 
 	BOOST_CHECK(info->getResponseCode() == 200);
         BOOST_CHECK(info->host == nullptr);
@@ -943,8 +954,8 @@ BOOST_AUTO_TEST_CASE (test20_http)
         http->processFlow(flow.get());
 
 	// Some checks
-        BOOST_CHECK(flow->http_info != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
 
 	// Should be false because the data is still on the packet
 	BOOST_CHECK(info->getHaveData() == false);
@@ -1012,7 +1023,8 @@ BOOST_AUTO_TEST_CASE (test21_http)
         flow->setFlowDirection(FlowDirection::FORWARD);
         http->processFlow(flow.get());
 
-        SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
 
         // Should be false because the data is still on the packet
         BOOST_CHECK(info->getHaveData() == false);
@@ -1087,7 +1099,8 @@ BOOST_AUTO_TEST_CASE (test22_http)
         flow->setFlowDirection(FlowDirection::FORWARD);
         http->processFlow(flow.get());
 
-        SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
 	
 	// Verify values of the first packet
         BOOST_CHECK(http->getTotalL7Bytes() == 100);
@@ -1157,8 +1170,8 @@ BOOST_AUTO_TEST_CASE (test23_http)
         flow->packet = const_cast<Packet*>(&packet1);
         http->processFlow(flow.get());
 
-        BOOST_CHECK(flow->http_info != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
 
         BOOST_CHECK(host_name->getMatchs() == 1);
         BOOST_CHECK(info->getIsBanned() == false);
@@ -1215,8 +1228,8 @@ BOOST_AUTO_TEST_CASE (test24_http)
         flow->packet = const_cast<Packet*>(&packet1);
         http->processFlow(flow.get());
 
-        BOOST_CHECK(flow->http_info != nullptr);
-        SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
 
         BOOST_CHECK(host_name->getMatchs() == 1);
         BOOST_CHECK(info->getIsBanned() == false);
@@ -1273,7 +1286,8 @@ BOOST_AUTO_TEST_CASE (test25_http)
         flow->setFlowDirection(FlowDirection::FORWARD);
         http->processFlow(flow.get());
 
-        SharedPointer<HTTPInfo> info = flow->http_info;
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
 
 	BOOST_CHECK(host_name->getMatchs() == 1);
 	BOOST_CHECK(host_name->getTotalEvaluates() == 0);
@@ -1350,8 +1364,6 @@ BOOST_AUTO_TEST_CASE (test26_http)
         flow->setFlowDirection(FlowDirection::FORWARD);
         http->processFlow(flow.get());
 
-        SharedPointer<HTTPInfo> info = flow->http_info;
-
         BOOST_CHECK(host_name->getMatchs() == 1);
         BOOST_CHECK(host_name->getTotalEvaluates() == 0);
         BOOST_CHECK(re1->getMatchs() == 1);
@@ -1410,8 +1422,6 @@ BOOST_AUTO_TEST_CASE (test27_http)
         flow->setFlowDirection(FlowDirection::BACKWARD);
         http->processFlow(flow.get());
 
-        SharedPointer<HTTPInfo> info = flow->http_info;
-        
 	BOOST_CHECK(host_name->getMatchs() == 1);
         BOOST_CHECK(host_name->getTotalEvaluates() == 0);
         BOOST_CHECK(re1->getMatchs() == 1);
@@ -1548,13 +1558,13 @@ BOOST_AUTO_TEST_CASE (test4_http)
 	auto fm = tcp->getFlowManager();
 
 	for (auto &f: fm->getFlowTable()) {
-		BOOST_CHECK(f->http_info == nullptr);
+		BOOST_CHECK(f->layer7info == nullptr);
 	}
 
 	http->releaseCache(); // Nothing to release
 
         for (auto &f: fm->getFlowTable()) {
-                BOOST_CHECK(f->http_info == nullptr);
+                BOOST_CHECK(f->getHTTPInfo() == nullptr);
         }
 }
 
@@ -1576,14 +1586,15 @@ BOOST_AUTO_TEST_CASE (test5_http)
         auto fm = tcp->getFlowManager();
 
         for (auto &f: fm->getFlowTable()) {
-                BOOST_CHECK(f->http_info != nullptr);
-                BOOST_CHECK(f->http_info->uri != nullptr);
-                BOOST_CHECK(f->http_info->ua != nullptr);
+                BOOST_CHECK(f->getHTTPInfo() != nullptr);
+                BOOST_CHECK(f->getHTTPInfo()->uri != nullptr);
+                BOOST_CHECK(f->getHTTPInfo()->ua != nullptr);
         }
         http->releaseCache(); 
 
         for (auto &f: fm->getFlowTable()) {
-                BOOST_CHECK(f->http_info == nullptr);
+                BOOST_CHECK(f->getHTTPInfo() == nullptr);
+                BOOST_CHECK(f->layer7info == nullptr);
         }
 }
 

@@ -140,12 +140,12 @@ void SMTPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-                       	SharedPointer<SMTPInfo> sinfo = flow->smtp_info;
+                       	SharedPointer<SMTPInfo> sinfo = flow->getSMTPInfo();
 			if (sinfo) {
                                 total_bytes_released_by_flows += release_smtp_info(sinfo.get());
                                 total_bytes_released_by_flows += sizeof(sinfo);
                                
-                                flow->smtp_info.reset();
+                                flow->layer7info.reset();
                                 ++ release_flows;
                                 info_cache_->release(sinfo);
                         }
@@ -279,14 +279,14 @@ void SMTPProtocol::processFlow(Flow *flow) {
 
 	setHeader(flow->packet->getPayload());
 
-       	SharedPointer<SMTPInfo> sinfo = flow->smtp_info;
+       	SharedPointer<SMTPInfo> sinfo = flow->getSMTPInfo();
 
        	if(!sinfo) {
                	sinfo = info_cache_->acquire();
                	if (!sinfo) {
                        	return;
                	}
-        	flow->smtp_info = sinfo;
+        	flow->layer7info = sinfo;
 	}
 
         if (sinfo->getIsBanned() == true) {

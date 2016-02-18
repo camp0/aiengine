@@ -127,7 +127,7 @@ SharedPointer<Flow> TCPProtocol::getFlow(const Packet& packet) {
 					// Now attach a TCPInfo to the TCP Flow
 					SharedPointer<TCPInfo> tcp_info_ptr = tcp_info_cache_->acquire();
 					if (tcp_info_ptr) {
-						flow->tcp_info = tcp_info_ptr;
+						flow->layer4info = tcp_info_ptr;
 					}
                                         
 #if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
@@ -160,7 +160,7 @@ bool TCPProtocol::processPacket(Packet &packet) {
 	++total_packets_;
 
         if (flow) {
-		SharedPointer<TCPInfo> tcp_info = flow->tcp_info;
+		SharedPointer<TCPInfo> tcp_info = flow->getTCPInfo();
 		if (tcp_info) {
         		MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();
         		MultiplexerPtr ipmux = downmux.lock();

@@ -10,6 +10,7 @@
 #include "ipset/IPSet.h"
 #include "NetworkStack.h"
 #include "Flow.h"
+#include "FlowInfo.h"
 #include "StackLan.h"
 #include "StackMobile.h"
 #include "StackLanIPv6.h"
@@ -26,7 +27,7 @@
 %apply SWIGTYPE *DISOWN { IPSet* ipset };
 
 %feature("director") DatabaseAdaptor;
-//%feature("director") IPAbstractSet; 
+%feature("director") FlowInfo; 
 
 %trackobjects;
 
@@ -118,17 +119,18 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::Flow::setPacketAnomaly;
 %ignore aiengine::Flow::getPacketAnomaly;
 %ignore aiengine::Flow::ipset;
-%ignore aiengine::Flow::tcp_info;
-%ignore aiengine::Flow::gprs_info;
-%ignore aiengine::Flow::smtp_info;
-%ignore aiengine::Flow::ssl_info;
-%ignore aiengine::Flow::pop_info;
-%ignore aiengine::Flow::http_info;
-%ignore aiengine::Flow::dns_info;
-%ignore aiengine::Flow::sip_info;
-%ignore aiengine::Flow::imap_info;
-%ignore aiengine::Flow::pop_info;
-%ignore aiengine::Flow::ssdp_info;
+%ignore aiengine::Flow::layer4info;
+%ignore aiengine::Flow::layer7info;
+%ignore aiengine::Flow::getTCPInfo;
+%ignore aiengine::Flow::getPOPInfo;
+%ignore aiengine::Flow::getIMAPInfo;
+%ignore aiengine::Flow::getSMTPInfo;
+%ignore aiengine::Flow::getSSLInfo;
+%ignore aiengine::Flow::getDNSInfo;
+%ignore aiengine::Flow::getHTTPInfo;
+%ignore aiengine::Flow::getGPRSInfo;
+%ignore aiengine::Flow::getSSDPInfo;
+%ignore aiengine::Flow::getSIPInfo;
 %ignore aiengine::Flow::packet;
 %ignore aiengine::Flow::regex;
 %ignore aiengine::Flow::frequencies;
@@ -324,18 +326,20 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("server_name")			aiengine::SSLInfo::getServerName;
 %rename("evidence=")			aiengine::Flow::setEvidence;
 %rename("evidence")			aiengine::Flow::getEvidence;
-%rename("pop_info")			aiengine::Flow::getPOPInfo;
-%rename("imap_info")			aiengine::Flow::getIMAPInfo;
-%rename("smtp_info")			aiengine::Flow::getSMTPInfo;
-%rename("ssl_info")			aiengine::Flow::getSSLInfo;
-%rename("dns_info")			aiengine::Flow::getDNSInfo;
+%rename("pop_info")			aiengine::Flow::getPOPInfoObject;
+%rename("imap_info")			aiengine::Flow::getIMAPInfoObject;
+%rename("smtp_info")			aiengine::Flow::getSMTPInfoObject;
+%rename("ssl_info")			aiengine::Flow::getSSLInfoObject;
+%rename("dns_info")			aiengine::Flow::getDNSInfoObject;
+%rename("http_info")			aiengine::Flow::getHTTPInfoObject;
+%rename("sip_info")			aiengine::Flow::getSIPInfoObject;
+%rename("ssdp_info")			aiengine::Flow::getSSDPInfoObject;
 %rename("regex")			aiengine::Flow::getRegex;
 %rename("payload")			aiengine::Flow::getPayload;
 %rename("uri")				aiengine::SIPInfo::getUri;
 %rename("from")				aiengine::SIPInfo::getFrom;
 %rename("to")				aiengine::SIPInfo::getTo;
 %rename("via")				aiengine::SIPInfo::getVia;
-%rename("sip_info")			aiengine::Flow::getSIPInfo;
 %rename("user_agent")			aiengine::HTTPInfo::getUserAgent;
 %rename("host_name")			aiengine::HTTPInfo::getHostName;
 %rename("uri")				aiengine::HTTPInfo::getUri;
@@ -343,7 +347,6 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("host_name")			aiengine::SSDPPInfo::getHostName;
 %rename("uri")				aiengine::SSDPInfo::getUri;
 %rename("http_uri_set=")		aiengine::DomainName::setHTTPUriSet;
-%rename("http_info")			aiengine::Flow::getHTTPInfo;
 %rename("tag")				aiengine::Flow::getTag;
 %rename("l7_protocol_name")		aiengine::Flow::getL7ProtocolName;
 %rename("protocol")			aiengine::Flow::getProtocol;

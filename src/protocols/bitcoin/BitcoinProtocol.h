@@ -30,6 +30,8 @@
 
 #include "Protocol.h"
 #include <arpa/inet.h>
+#include "BitcoinInfo.h"
+#include "CacheManager.h"
 
 namespace aiengine {
 
@@ -70,7 +72,8 @@ public:
     	explicit BitcoinProtocol():
 		Protocol("BitcoinProtocol","bitcoin"),
 		stats_level_(0),
-		bitcoin_header_(nullptr),total_bytes_(0)
+		bitcoin_header_(nullptr),total_bytes_(0),
+		info_cache_(new Cache<BitcoinInfo>("Bitcoin Info Cache"))
         	{}
 
     	virtual ~BitcoinProtocol() {}
@@ -117,6 +120,8 @@ public:
 		return false;
 	}
 
+	int32_t getHeaderLength() const { return bitcoin_header_->length; }	
+
 	int64_t getAllocatedMemory() const { return sizeof(BitcoinProtocol); }
 	
 #if defined(PYTHON_BINDING)
@@ -133,7 +138,8 @@ private:
 	int64_t total_bytes_;
 
 	static std::unordered_map<std::string,BitcoinCommandType> commands_;	        
-	// Some statistics 
+
+	Cache<BitcoinInfo>::CachePtr info_cache_;
 };
 
 typedef std::shared_ptr<BitcoinProtocol> BitcoinProtocolPtr;

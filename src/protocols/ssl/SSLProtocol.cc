@@ -98,12 +98,12 @@ void SSLProtocol::releaseCache() {
 		});
 
                 for (auto &flow: ft) {
-		       	SharedPointer<SSLInfo> sinfo = flow->ssl_info;
+		       	SharedPointer<SSLInfo> sinfo = flow->getSSLInfo();
                		if (sinfo) { 
                                 total_bytes_released_by_flows += release_ssl_info(sinfo.get());
                                 total_bytes_released_by_flows += sizeof(sinfo);
 
-                                flow->ssl_info.reset();
+                                flow->layer7info.reset();
                                 info_cache_->release(sinfo);
 				++release_flows;
                         }
@@ -232,14 +232,13 @@ void SSLProtocol::processFlow(Flow *flow) {
 	total_bytes_ += flow->packet->getLength();
 	++flow->total_packets_l7;
 
-        SharedPointer<SSLInfo> sinfo = flow->ssl_info;
-
+        SharedPointer<SSLInfo> sinfo = flow->getSSLInfo();
         if(!sinfo) {
                 sinfo = info_cache_->acquire();
                 if (!sinfo) {
                         return;
                 }
-                flow->ssl_info = sinfo;
+                flow->layer7info = sinfo;
         }
 
         if (sinfo->getIsBanned() == true) {

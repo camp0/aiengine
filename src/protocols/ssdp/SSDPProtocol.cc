@@ -184,12 +184,12 @@ void SSDPProtocol::releaseCache() {
 		});
 
 		for (auto &flow: ft) {
-			SharedPointer<SSDPInfo> info = flow->ssdp_info;
+			SharedPointer<SSDPInfo> info = flow->getSSDPInfo();
 			if (info) {
                                 total_bytes_released_by_flows += release_ssdp_info(info.get());
                                 total_bytes_released_by_flows += sizeof(info);
                                 
-                                flow->ssdp_info.reset();
+                                flow->layer7info.reset();
                                 ++ release_flows;
                                 info_cache_->release(info);
 			}
@@ -394,14 +394,14 @@ void SSDPProtocol::processFlow(Flow *flow) {
 	total_bytes_ += length;
 	++total_packets_;
 
-       	SharedPointer<SSDPInfo> info = flow->ssdp_info;
+       	SharedPointer<SSDPInfo> info = flow->getSSDPInfo();
 
        	if(!info) {
                	info = info_cache_->acquire();
                	if (!info) {
                        	return;
                	}
-               	flow->ssdp_info = info;
+               	flow->layer7info = info;
        	}
 
 	// The flow have been banned by a DomainNameManager so there is no need

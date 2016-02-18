@@ -29,13 +29,14 @@
 #endif
 
 #include <iostream>
+#include "FlowInfo.h"
 
 namespace aiengine {
 
 #define PDP_END_USER_TYPE_IPV4 0x21
 #define PDP_END_USER_TYPE_IPV6 0x57
 
-class GPRSInfo 
+class GPRSInfo : public FlowInfo 
 {
 public:
     	explicit GPRSInfo() { reset(); }

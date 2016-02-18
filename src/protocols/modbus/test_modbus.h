@@ -116,6 +116,7 @@ struct StackModbustest
 
                 tcp->setFlowCache(flow_cache);
                 tcp->setFlowManager(flow_mng);
+                tcp->createTCPInfos(1);
 
                 // Configure the FlowForwarders
                 tcp->setFlowForwarder(ff_tcp);

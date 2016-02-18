@@ -64,7 +64,7 @@ void DNSProtocol::releaseCache() {
 		});
 
 		for (auto &flow: ft) {
-			SharedPointer<DNSInfo> info = flow->dns_info;
+			SharedPointer<DNSInfo> info = flow->getDNSInfo();
 			if (info) {
 				if (info->name) {
 					SharedPointer<StringCache> name = info->name;		
@@ -74,7 +74,7 @@ void DNSProtocol::releaseCache() {
 					name_cache_->release(name);
 				}
 				++release_flows;
-				flow->dns_info.reset();
+				flow->layer7info.reset();
 				info_cache_->release(info);
 			}
 		} 
@@ -128,13 +128,13 @@ void DNSProtocol::processFlow(Flow *flow) {
 		setHeader(flow->packet->getPayload());
 		uint16_t flags = ntohs(dns_header_->flags);
 
-        	SharedPointer<DNSInfo> info = flow->dns_info;
+        	SharedPointer<DNSInfo> info = flow->getDNSInfo();
         	if(!info) {
                 	info = info_cache_->acquire();
                 	if (!info) {
                         	return;
                 	}
-                	flow->dns_info = info;
+                	flow->layer7info = info;
         	}
 
 		if ((flags == DNS_STANDARD_QUERY)or(flags == DNS_DYNAMIC_UPDATE)) {

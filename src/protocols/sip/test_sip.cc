@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE (test1_sip)
         flow->packet = const_cast<Packet*>(&packet);
         sip->processFlow(flow.get());
 
-	SharedPointer<SIPInfo> info = flow->sip_info;
+	SharedPointer<SIPInfo> info = flow->getSIPInfo();
 
 	BOOST_CHECK(info != nullptr);
         BOOST_CHECK(info->uri != nullptr); 
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE (test2_sip)
         flow->packet = const_cast<Packet*>(&packet);
         sip->processFlow(flow.get());
  
-	SharedPointer<SIPInfo> info = flow->sip_info;
+	SharedPointer<SIPInfo> info = flow->getSIPInfo();
 
         BOOST_CHECK(info != nullptr); 
         BOOST_CHECK(info->uri != nullptr);
@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE (test3_sip)
         flow->packet = const_cast<Packet*>(&packet);
         sip->processFlow(flow.get());
 
-	SharedPointer<SIPInfo> info = flow->sip_info;
+	SharedPointer<SIPInfo> info = flow->getSIPInfo();
 
         BOOST_CHECK(info != nullptr);
         BOOST_CHECK(info->uri != nullptr);
@@ -234,7 +234,7 @@ BOOST_AUTO_TEST_CASE (test4_sip)
         flow->packet = const_cast<Packet*>(&packet);
         sip->processFlow(flow.get());
 
-        SharedPointer<SIPInfo> info = flow->sip_info;
+        SharedPointer<SIPInfo> info = flow->getSIPInfo();
 
         BOOST_CHECK(info != nullptr);
         BOOST_CHECK(info->uri != nullptr);
@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE (test5_sip)
         flow->packet = const_cast<Packet*>(&packet);
         sip->processFlow(flow.get());
 
-        SharedPointer<SIPInfo> info = flow->sip_info;
+        SharedPointer<SIPInfo> info = flow->getSIPInfo();
 
         BOOST_CHECK(info != nullptr);
         BOOST_CHECK(info->uri != nullptr);
@@ -319,7 +319,7 @@ BOOST_AUTO_TEST_CASE (test6_sip)
         flow->packet = const_cast<Packet*>(&packet);
         sip->processFlow(flow.get());
 
-        SharedPointer<SIPInfo> info = flow->sip_info;
+        SharedPointer<SIPInfo> info = flow->getSIPInfo();
 
         BOOST_CHECK(info != nullptr);
         BOOST_CHECK(info->uri != nullptr);
@@ -390,7 +390,7 @@ BOOST_AUTO_TEST_CASE (test7_sip)
         flow->packet = const_cast<Packet*>(&packet);
         sip->processFlow(flow.get());
 
-        SharedPointer<SIPInfo> info = flow->sip_info;
+        SharedPointer<SIPInfo> info = flow->getSIPInfo();
 
         BOOST_CHECK(info != nullptr);
         BOOST_CHECK(info->uri != nullptr);
@@ -430,7 +430,7 @@ BOOST_AUTO_TEST_CASE(test8_sip)
         flow->packet = const_cast<Packet*>(&packet);
         sip->processFlow(flow.get());
 
-        SharedPointer<SIPInfo> info = flow->sip_info;
+        SharedPointer<SIPInfo> info = flow->getSIPInfo();
 
         BOOST_CHECK(info != nullptr);
         BOOST_CHECK(info->uri == nullptr);

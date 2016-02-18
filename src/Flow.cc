@@ -61,18 +61,17 @@ void Flow::reset() {
 	tag_ = 0xffffffff;	
 	ipset.reset();	
 	forwarder.reset();
+
+	// Reset layer4 object attach
+	layer4info.reset();
+	// Reset layer7 object attach
+	layer7info.reset();
+
+	// Reset frequencies objects
 	frequencies.reset();
-	http_info.reset();
-	ssl_info.reset();
-	sip_info.reset();
-	smtp_info.reset();
-	imap_info.reset();
-	pop_info.reset();
-	ssdp_info.reset();
+	packet_frequencies.reset();
+	
 	regex.reset();
-	dns_info.reset();
-	tcp_info.reset();
-	gprs_info.reset();
 	regex_mng.reset();
 	packet = nullptr;
 	frequency_engine_inspected = false;
@@ -142,9 +141,10 @@ void Flow::serialize(std::ostream& stream) {
 			}
 		}
         } else { // UDP
-                if(dns_info) {
-			if (dns_info->name)
-                        	stream << ",\"d\":\"" << dns_info->name->getName() << "\"";
+		SharedPointer<DNSInfo> dinfo = getDNSInfo();
+                if(dinfo) {
+			if (dinfo->name)
+                        	stream << ",\"d\":\"" << dinfo->name->getName() << "\"";
               	} 
 		if(gprs_info)
                         stream << ",\"g\":\"" << gprs_info->getIMSIString() << "\"";
@@ -174,24 +174,29 @@ void Flow::serialize(std::ostream& stream) {
 	stream << ",\"layer7\":\"" << getL7ProtocolName() << "\"";
 
 	if (protocol_ == IPPROTO_TCP) {
-		if (tcp_info)	
-			stream << ",\"tcpflags\":\"" << *tcp_info.get() << "\"";
-	
-		if (http_info) {
-			if (http_info->host)	
-				stream << ",\"httphost\":\"" << http_info->host->getName() << "\"";
-		} else {	
-			if (ssl_info){
-				stream << ",\"sslhost\":\"" << ssl_info->host->getName() << "\"";
+		SharedPointer<TCPInfo> tinfo = getTCPInfo();
+		if (tinfo)	
+			stream << ",\"tcpflags\":\"" << *tinfo.get() << "\"";
+
+		SharedPointer<HTTPInfo> hinfo = getHTTPInfo();	
+		if (hinfo) {
+			if (hinfo->host)	
+				stream << ",\"httphost\":\"" << hinfo->host->getName() << "\"";
+		} else {
+			SharedPointer<SSLInfo> sinfo = getSSLInfo();	
+			if (sinfo){
+				stream << ",\"sslhost\":\"" << sinfo->host->getName() << "\"";
 			}
 		}
 	} else { // UDP
-		if (dns_info) {
-			if (dns_info->name) 	
-				stream << ",\"dnsdomain\":\"" << dns_info->name->getName() << "\"";
+		SharedPointer<DNSInfo> dinfo = getDNSInfo();
+		if (dinfo) {
+			if (dinfo->name) 	
+				stream << ",\"dnsdomain\":\"" << dinfo->name->getName() << "\"";
 		}
-		if (gprs_info)	
-			stream << ",\"imsi\":\"" << gprs_info->getIMSIString() << "\"";
+		SharedPointer<GPRSInfo> ginfo = getGPRSInfo();
+		if (ginfo)	
+			stream << ",\"imsi\":\"" << ginfo->getIMSIString() << "\"";
 	}
 	if (!regex.expired())	
 		stream << ",\"matchs\":\"" << regex.lock()->getName() << "\"";
@@ -212,45 +217,54 @@ void Flow::showFlowInfo(std::ostream& out) const {
         if (ipset.lock()) out << " IPset:" << ipset.lock()->getName();
 
 	if (protocol_ == IPPROTO_TCP) {
-		if (tcp_info) out << " TCP:" << *tcp_info.get();
+		SharedPointer<TCPInfo> tinfo = getTCPInfo();
+		if (tinfo) out << " TCP:" << *tinfo.get();
 
-		if (http_info) {
-                	out << " Req(" << http_info->getTotalRequests() << ")Res(" << http_info->getTotalResponses() << ")Code(" << http_info->getResponseCode() << ") ";
-                	if (http_info->getIsBanned()) out << "Banned ";
-                	if (http_info->host) out << "Host:" << http_info->host->getName();
-                	if (http_info->ua) out << " UserAgent:" << http_info->ua->getName();
+		SharedPointer<HTTPInfo> hinfo = getHTTPInfo();
+		if (hinfo) {
+                	out << " Req(" << hinfo->getTotalRequests() << ")Res(" << hinfo->getTotalResponses() << ")Code(" << hinfo->getResponseCode() << ") ";
+                	if (hinfo->getIsBanned()) out << "Banned ";
+                	if (hinfo->host) out << "Host:" << hinfo->host->getName();
+                	if (hinfo->ua) out << " UserAgent:" << hinfo->ua->getName();
         	} else {
-			if (ssl_info) {
-				out << " Pdus:" << ssl_info->getTotalDataPdus();
-				if (ssl_info->host) out << " Host:" << ssl_info->host->getName();
+			SharedPointer<SSLInfo> sinfo = getSSLInfo();
+			if (sinfo) {
+				out << " Pdus:" << sinfo->getTotalDataPdus();
+				if (sinfo->host) out << " Host:" << sinfo->host->getName();
 			} else {
-				if (smtp_info) {
-					if (smtp_info->from) out << " From:" << smtp_info->from->getName();
-					if (smtp_info->to) out << " To:" << smtp_info->to->getName();
+				SharedPointer<SMTPInfo> smtpinfo = getSMTPInfo();
+				if (smtpinfo) {
+					if (smtpinfo->from) out << " From:" << smtpinfo->from->getName();
+					if (smtpinfo->to) out << " To:" << smtpinfo->to->getName();
 				} else {
-					if (pop_info) {
-						if (pop_info->user_name) out << " User:" << pop_info->user_name->getName();
+					SharedPointer<POPInfo> popinfo = getPOPInfo();
+					if (popinfo) {
+						if (popinfo->user_name) out << " User:" << popinfo->user_name->getName();
 					} else {
-						if (imap_info) {
-							if (imap_info->user_name) out << " User:" << imap_info->user_name->getName();
+						SharedPointer<IMAPInfo> iinfo = getIMAPInfo();
+						if (iinfo) {
+							if (iinfo->user_name) out << " User:" << iinfo->user_name->getName();
 						}
 					}
 				} 
 			} 
 		} 
 	} else {
-		if (gprs_info) {
-			out << " GPRS:" << *gprs_info.get();
+		SharedPointer<GPRSInfo> ginfo = getGPRSInfo();
+		if (ginfo) {
+			out << " GPRS:" << *ginfo.get();
 		} 
 
-		if (dns_info) {
-			if (dns_info->name) out << " Domain:" << dns_info->name->getName();	
+		SharedPointer<DNSInfo> dnsinfo = getDNSInfo();
+		if (dnsinfo) {
+			if (dnsinfo->name) out << " Domain:" << dnsinfo->name->getName();	
 		} else {
-			if (sip_info) {
-                		if (sip_info->uri) out << " SIPUri:" << sip_info->uri->getName();
-                		if (sip_info->from) out << " SIPFrom:" << sip_info->from->getName();
-                		if (sip_info->to) out << " SIPTo:" << sip_info->to->getName();
-                		if (sip_info->via) out << " SIPVia:" << sip_info->via->getName();
+			SharedPointer<SIPInfo> sipinfo = getSIPInfo();
+			if (sipinfo) {
+                		if (sipinfo->uri) out << " SIPUri:" << sipinfo->uri->getName();
+                		if (sipinfo->from) out << " SIPFrom:" << sipinfo->from->getName();
+                		if (sipinfo->to) out << " SIPTo:" << sipinfo->to->getName();
+                		if (sipinfo->via) out << " SIPVia:" << sipinfo->via->getName();
 			}
         	}
 	}

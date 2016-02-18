@@ -64,6 +64,8 @@ BOOST_AUTO_TEST_CASE (test1_bitcoin)
         BOOST_CHECK(bitcoin->getTotalValidatedPackets() == 1);
         BOOST_CHECK(bitcoin->getTotalBytes() == 105);
         BOOST_CHECK(bitcoin->getTotalMalformedPackets() == 0);
+
+	BOOST_CHECK( bitcoin->getHeaderLength() == 85);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

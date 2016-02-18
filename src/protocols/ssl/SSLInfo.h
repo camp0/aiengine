@@ -31,10 +31,11 @@
 #include <iostream>
 #include "StringCache.h"
 #include "names/DomainName.h"
+#include "FlowInfo.h"
 
 namespace aiengine {
 
-class SSLInfo
+class SSLInfo : public FlowInfo
 {
 public:
         explicit SSLInfo() { reset(); }

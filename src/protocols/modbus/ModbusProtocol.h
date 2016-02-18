@@ -38,6 +38,7 @@ struct modbus_tcphdr {
 	uint16_t 	proto;		/* Protocol id */
 	uint16_t 	length;		/* Transaction id */
 	uint8_t 	unitid;		/* Unit id */
+	u_char 		data[0];
 } __attribute__((packed));
 
 struct modbus_hdr {
@@ -47,14 +48,12 @@ struct modbus_hdr {
 } __attribute__((packed));
 
 enum modbus_type_function_code {
-	MODBUSDISCOVER = 1,
-	MODBUSOFFER,
-	MODBUSREQUEST,
-	MODBUSDECLINE,
-	MODBUSACK,
-	MODBUSNAK,
-	MODBUSRELEASE,
-	MODBUSINFORM
+	MB_CODE_READ_COILS = 0x01,
+	MB_CODE_READ_DISCRETE_INPUTS = 0x02,
+	MB_CODE_READ_HOLDING_REGISTERS = 0x03,
+	MB_CODE_READ_INPUT_REGISTERS = 0x04,
+	MB_CODE_WRITE_SINGLE_COIL = 0x05,
+	MB_CODE_WRITE_SINGLE_REGISTER = 0x06
 };
 
 class ModbusProtocol: public Protocol 

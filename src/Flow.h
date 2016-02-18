@@ -30,6 +30,7 @@
 #endif
 
 #include "FlowDirection.h"
+#include "FlowInfo.h"
 #include <boost/format.hpp>
 #include "Pointer.h"
 #include "Packet.h"
@@ -51,6 +52,7 @@
 #include "protocols/pop/POPInfo.h"
 #include "protocols/sip/SIPInfo.h"
 #include "protocols/ssdp/SSDPInfo.h"
+#include "protocols/bitcoin/BitcoinInfo.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
@@ -134,19 +136,30 @@ public:
 	WeakPointer<Regex> regex;
 	WeakPointer<FlowForwarder> forwarder;
 	WeakPointer<RegexManager> regex_mng;
-	
-	SharedPointer<TCPInfo> tcp_info;
-	SharedPointer<GPRSInfo> gprs_info;
-	SharedPointer<DNSInfo> dns_info;
-	SharedPointer<SSDPInfo> ssdp_info;
-	SharedPointer<HTTPInfo> http_info;
-	SharedPointer<SSLInfo> ssl_info;
-	SharedPointer<SIPInfo> sip_info;
-	SharedPointer<SMTPInfo> smtp_info;
-	SharedPointer<IMAPInfo> imap_info;
-	SharedPointer<POPInfo> pop_info;
+
+	// TCPInfo or GPRSInfo should be attach here	
+	SharedPointer<FlowInfo> layer4info;
+
+	// Layer 7 objects
+	SharedPointer<FlowInfo> layer7info;
+
+	SharedPointer<TCPInfo> getTCPInfo() const { return DynamicPointerCast<TCPInfo>(layer4info); }
+	SharedPointer<GPRSInfo> getGPRSInfo() const { return DynamicPointerCast<GPRSInfo>(layer4info); }
+
+        SharedPointer<DNSInfo> getDNSInfo() const { return DynamicPointerCast<DNSInfo>(layer7info); }
+        SharedPointer<SSLInfo> getSSLInfo() const { return DynamicPointerCast<SSLInfo>(layer7info); }
+        SharedPointer<HTTPInfo> getHTTPInfo() const { return DynamicPointerCast<HTTPInfo>(layer7info); }
+        SharedPointer<IMAPInfo> getIMAPInfo() const { return DynamicPointerCast<IMAPInfo>(layer7info); }
+        SharedPointer<POPInfo> getPOPInfo() const { return DynamicPointerCast<POPInfo>(layer7info); }
+        SharedPointer<SSDPInfo> getSSDPInfo() const { return DynamicPointerCast<SSDPInfo>(layer7info); }
+        SharedPointer<SIPInfo> getSIPInfo() const { return DynamicPointerCast<SIPInfo>(layer7info); }
+        SharedPointer<SMTPInfo> getSMTPInfo() const { return DynamicPointerCast<SMTPInfo>(layer7info); }
+	SharedPointer<BitcoinInfo> getBitcoinInfo() const { return DynamicPointerCast<BitcoinInfo>(layer7info); }
+
+	// Special objects for frequency analisys
 	SharedPointer<Frequencies> frequencies;
 	SharedPointer<PacketFrequencies> packet_frequencies;
+
 	Packet *packet;
 
 	// specific values for a specific Engine
@@ -172,19 +185,22 @@ public:
         int32_t getTotalPacketsLayer7() const { return total_packets_l7;}
         int32_t getTotalPackets() const { return total_packets;}
 
-        HTTPInfo& getHTTPInfo() const { return *http_info.get();}
-        SIPInfo& getSIPInfo() const { return *sip_info.get();}
         Frequencies& getFrequencies() const { return *frequencies.get();}
         PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.get();}
+
         Regex& getRegex() const { return *regex.lock().get();}
-        DNSInfo& getDNSInfo() const { return *dns_info.get();}
-        SSLInfo& getSSLInfo() const { return *ssl_info.get();}
-        SMTPInfo& getSMTPInfo() const { return *smtp_info.get();}
-        POPInfo& getPOPInfo() const { return *pop_info.get();}
-        IMAPInfo& getIMAPInfo() const { return *imap_info.get();}
-        SSDPInfo& getSSDPInfo() const { return *ssdp_info.get();}
 	IPSet& getIPSetInfo() const { return dynamic_cast<IPSet&>(*ipset.lock().get()); }
-        const char *getFlowAnomaly() const { return AnomalyManager::getInstance()->getName(pa_); }
+
+        HTTPInfo& getHTTPInfoObject() const { return *getHTTPInfo().get();}
+        SIPInfo& getSIPInfoObject() const { return *getSIPInfo().get();}
+        DNSInfo& getDNSInfoObject() const { return *getDNSInfo().get();}
+        SSLInfo& getSSLInfoObject() const { return *getSSLInfo().get();}
+        SMTPInfo& getSMTPInfoObject() const { return *getSMTPInfo().get();}
+        POPInfo& getPOPInfoObject() const { return *getPOPInfo().get();}
+        IMAPInfo& getIMAPInfoObject() const { return *getIMAPInfo().get();}
+        SSDPInfo& getSSDPInfoObject() const { return *getSSDPInfo().get();}
+        
+	const char *getFlowAnomaly() const { return AnomalyManager::getInstance()->getName(pa_); }
 #endif
 
 #if defined(PYTHON_BINDING)

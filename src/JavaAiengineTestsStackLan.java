@@ -72,7 +72,7 @@ public class JavaAiengineTestsStackLan {
 	class ExternalCallback extends JaiCallback{
             public boolean called = false;
 	    public void call(Flow flow) {
-		SSLInfo s = flow.getSSLInfo();
+		SSLInfo s = flow.getSSLInfoObject();
 		assertEquals("0.drive.google.com",s.getServerName());
 		called = true;
             }
@@ -109,7 +109,7 @@ public class JavaAiengineTestsStackLan {
         class ExternalCallbackDomain extends JaiCallback{
            public boolean called = false;
            public void call(Flow flow) {
-                SSLInfo s = flow.getSSLInfo();
+                SSLInfo s = flow.getSSLInfoObject();
                 assertEquals("SSLProtocol",flow.getL7ProtocolName());
                 called = true;
            }
@@ -149,7 +149,7 @@ public class JavaAiengineTestsStackLan {
         class ExternalCallbackDomain extends JaiCallback{
            public boolean called = false;
            public void call(Flow flow) {
-                SMTPInfo s = flow.getSMTPInfo();
+                SMTPInfo s = flow.getSMTPInfoObject();
                 assertEquals("SMTPProtocol",flow.getL7ProtocolName());
                 assertEquals("gurpartap@patriots.in",s.getFrom());
                 called = true;
@@ -227,7 +227,7 @@ public class JavaAiengineTestsStackLan {
         class ExternalCallbackDomain extends JaiCallback{
            public boolean called = false;
            public void call(Flow flow) {
-                HTTPInfo s = flow.getHTTPInfo();
+                HTTPInfo s = flow.getHTTPInfoObject();
                 assertEquals("www.wired.com",s.getHostName());
                 called = true;
            }
@@ -235,7 +235,7 @@ public class JavaAiengineTestsStackLan {
         class ExternalCallbackUri extends JaiCallback{
            public boolean called = false;
            public void call(Flow flow) {
-                HTTPInfo s = flow.getHTTPInfo();
+                HTTPInfo s = flow.getHTTPInfoObject();
 	        assertEquals(s.getUri(),"/images_blogs/wiredscience/2013/08/earth-ring-200x100.jpg");
                 called = true;
            }
@@ -272,7 +272,7 @@ public class JavaAiengineTestsStackLan {
         class ExternalCallbackDomain extends JaiCallback{
             public boolean called = false;
             public void call(Flow flow) {
-                SSLInfo s = flow.getSSLInfo();
+                SSLInfo s = flow.getSSLInfoObject();
 	        assertEquals("0.drive.google.com",s.getServerName());
                 called = true;
             }
@@ -384,7 +384,7 @@ public class JavaAiengineTestsStackLan {
         class ExternalCallbackDomain extends JaiCallback{
             public boolean called = false;
             public void call(Flow flow) {
-                HTTPInfo s = flow.getHTTPInfo();
+                HTTPInfo s = flow.getHTTPInfoObject();
                 called = true;
             }
         }
@@ -392,7 +392,7 @@ public class JavaAiengineTestsStackLan {
         class ExternalCallbackRegex extends JaiCallback{
             public boolean called = false;
             public void call(Flow flow) {
-                HTTPInfo s = flow.getHTTPInfo();
+                HTTPInfo s = flow.getHTTPInfoObject();
                 Regex r = flow.getRegex();
                 called = true;
             }

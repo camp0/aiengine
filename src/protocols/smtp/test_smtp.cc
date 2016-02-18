@@ -95,9 +95,9 @@ BOOST_AUTO_TEST_CASE (test3_smtp)
         smtp->processFlow(flow.get());
 
         BOOST_CHECK(smtp->getTotalBytes() == length);
-	BOOST_CHECK(flow->smtp_info != nullptr);
+	BOOST_CHECK(flow->getSMTPInfo() != nullptr);
 
-	SharedPointer<SMTPInfo> info = flow->smtp_info;
+	SharedPointer<SMTPInfo> info = flow->getSMTPInfo();
 	SharedPointer<StringCache> from = info->from;
 	SharedPointer<StringCache> to = info->to;
 
@@ -126,9 +126,9 @@ BOOST_AUTO_TEST_CASE (test4_smtp)
         smtp->processFlow(flow.get());
 
         BOOST_CHECK(smtp->getTotalBytes() == length);
-        BOOST_CHECK(flow->smtp_info != nullptr);
+        BOOST_CHECK(flow->getSMTPInfo() != nullptr);
 
-        SharedPointer<SMTPInfo> info = flow->smtp_info;
+        SharedPointer<SMTPInfo> info = flow->getSMTPInfo();
         SharedPointer<StringCache> from = info->from;
         SharedPointer<StringCache> to = info->to;
 
@@ -162,9 +162,9 @@ BOOST_AUTO_TEST_CASE (test5_smtp)
         flow->packet = const_cast<Packet*>(&packet);
         smtp->processFlow(flow.get());
 
-        BOOST_CHECK(flow->smtp_info != nullptr);
+        BOOST_CHECK(flow->getSMTPInfo() != nullptr);
 
-        SharedPointer<SMTPInfo> info = flow->smtp_info;
+        SharedPointer<SMTPInfo> info = flow->getSMTPInfo();
         SharedPointer<StringCache> from = info->from;
         SharedPointer<StringCache> to = info->to;
 
@@ -200,9 +200,9 @@ BOOST_AUTO_TEST_CASE (test6_smtp)
         flow->packet = const_cast<Packet*>(&packet);
         smtp->processFlow(flow.get());
 
-        BOOST_CHECK(flow->smtp_info != nullptr);
+        BOOST_CHECK(flow->getSMTPInfo() != nullptr);
 
-        SharedPointer<SMTPInfo> info = flow->smtp_info;
+        SharedPointer<SMTPInfo> info = flow->getSMTPInfo();
         SharedPointer<StringCache> from = info->from;
         SharedPointer<StringCache> to = info->to;
 

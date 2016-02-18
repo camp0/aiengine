@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS =	test_bitcoin.h
+noinst_HEADERS =	BitcoinInfo.h test_bitcoin.h
 
 TEST = test_bitcoin
 

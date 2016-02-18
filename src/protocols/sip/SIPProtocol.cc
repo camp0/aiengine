@@ -96,7 +96,7 @@ void SIPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-			SharedPointer<SIPInfo> sinfo = flow->sip_info;
+			SharedPointer<SIPInfo> sinfo = flow->getSIPInfo();
 			if (sinfo) {
                         	SharedPointer<StringCache> sc = sinfo->uri;
 				if (sc) {	
@@ -124,7 +124,7 @@ void SIPProtocol::releaseCache() {
                         	}
                         	++release_flows;
 	
-				flow->sip_info.reset();
+				flow->layer7info.reset();
 				info_cache_->release(sinfo);
 			}
                 } 
@@ -310,14 +310,14 @@ void SIPProtocol::processFlow(Flow *flow) {
 	total_bytes_ += length;
 	++flow->total_packets_l7;
 
-	SharedPointer<SIPInfo> sinfo = flow->sip_info;
+	SharedPointer<SIPInfo> sinfo = flow->getSIPInfo();
 
         if(!sinfo) {
                 sinfo = info_cache_->acquire();
                 if (!sinfo) {
                         return;
                 }
-                flow->sip_info = sinfo;
+                flow->layer7info = sinfo;
         }
 
 	boost::string_ref header(reinterpret_cast <const char*> (flow->packet->getPayload()),length);
