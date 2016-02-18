@@ -28,7 +28,7 @@ noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			Interpreter.h PyGilContext.h \
                         flow/FlowCache.h \
                         flow/FlowManager.h \
-                        Flow.h FlowDirection.h StringCache.h \
+                        Flow.h FlowInfo.h FlowDirection.h StringCache.h \
 			ipset/IPAbstractSet.h \
 			ipset/IPBloomSet.h \
 			ipset/IPSet.h \
@@ -59,6 +59,7 @@ noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			protocols/smtp/SMTPProtocol.h \
 			protocols/imap/IMAPProtocol.h \
 			protocols/pop/POPProtocol.h \
+			protocols/bitcoin/BitcoinProtocol.h \
 			protocols/dns/DNSProtocol.h \
 			protocols/sip/SIPProtocol.h \
 			protocols/dhcp/DHCPProtocol.h \
@@ -108,6 +109,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/smtp/SMTPProtocol.cc \
 			protocols/imap/IMAPProtocol.cc \
 			protocols/pop/POPProtocol.cc \
+			protocols/bitcoin/BitcoinProtocol.cc \
 			protocols/dns/DNSProtocol.cc \
 			protocols/sip/SIPProtocol.cc \
 			protocols/dhcp/DHCPProtocol.cc \
@@ -176,6 +178,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		protocols/smtp/test_smtp.cc \
 		protocols/imap/test_imap.cc \
 		protocols/pop/test_pop.cc \
+		protocols/bitcoin/test_bitcoin.cc \
 		protocols/sip/test_sip.cc \
 		protocols/dhcp/test_dhcp.cc \
 		protocols/ntp/test_ntp.cc \

@@ -49,6 +49,7 @@
 #include "protocols/smtp/SMTPProtocol.h"
 #include "protocols/imap/IMAPProtocol.h"
 #include "protocols/pop/POPProtocol.h"
+#include "protocols/bitcoin/BitcoinProtocol.h"
 #include "protocols/frequency/FrequencyProtocol.h"
 
 namespace aiengine {
@@ -189,6 +190,7 @@ protected:
         SMTPProtocolPtr smtp;
         IMAPProtocolPtr imap;
         POPProtocolPtr pop;
+        BitcoinProtocolPtr bitcoin;
         TCPGenericProtocolPtr tcp_generic;
         UDPGenericProtocolPtr udp_generic;
         FrequencyProtocolPtr freqs_tcp;
@@ -202,7 +204,7 @@ protected:
         SharedPointer<FlowForwarder> ff_ntp,ff_snmp,ff_ssdp;
         SharedPointer<FlowForwarder> ff_smtp;
         SharedPointer<FlowForwarder> ff_imap;
-        SharedPointer<FlowForwarder> ff_pop;
+        SharedPointer<FlowForwarder> ff_pop,ff_bitcoin;
         SharedPointer<FlowForwarder> ff_tcp_generic;
         SharedPointer<FlowForwarder> ff_udp_generic;
         SharedPointer<FlowForwarder> ff_tcp_freqs;

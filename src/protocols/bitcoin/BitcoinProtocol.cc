@@ -49,8 +49,6 @@ std::unordered_map<std::string ,BitcoinCommandType> BitcoinProtocol::commands_ {
 
 void BitcoinProtocol::processFlow(Flow *flow) {
 
-	setHeader(flow->packet->getPayload());	
-
 	int length = flow->packet->getLength();
 	total_bytes_ += length;
 
@@ -65,15 +63,45 @@ void BitcoinProtocol::processFlow(Flow *flow) {
                 flow->layer7info = info;
         }
 
+	int idx = static_cast<int>(flow->getFlowDirection());
+
+	if (info->data_read[idx] > 0 ) {
+		info->data_read[idx] = info->data_read[idx] - length;
+	}
+	
+	setHeader(flow->packet->getPayload());	
         if(length >= header_size) {
 		char *cmd = &bitcoin_header_->command[0];
 		auto it = commands_.find(cmd);
                 if (it != commands_.end()) {
 			int32_t *hits = &std::get<2>(it->second);
+
+			int32_t payload_len = getPayloadLength();
+		
 			++(*hits);
+			if ((payload_len + header_size) > length) {
+				info->data_read[idx] = (header_size + payload_len) - length;
+			} else {
+				info->data_read[idx] = payload_len - (header_size + length );
+			}
+			std::cout << __FILE__ << ":" << __func__ << ":cmd:" << cmd << " bcplen:" << payload_len;
+			std::cout << " len:" << length << " read[" << idx << "]:";
+			std::cout << info->data_read[idx] <<  std::endl;	
+		} else {
+			std::cout << __FILE__ << ":" << __func__ << ":cmd:" << cmd << " not found" << std::endl;	
 		}
         }
 
+}
+
+void BitcoinProtocol::createBitcoinInfos(int number) {
+
+        info_cache_->create(number);
+}
+
+void BitcoinProtocol::destroyBitcoinInfos(int number) {
+
+        info_cache_->destroy(number);
 }
 
 void BitcoinProtocol::statistics(std::basic_ostream<char>& out){ 

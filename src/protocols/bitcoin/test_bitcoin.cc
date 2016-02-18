@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE (test1_bitcoin)
         mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
         mux_eth->forwardPacket(packet);
 
-	show();
+//	show();
 
         // Check the results
         BOOST_CHECK(ip->getTotalPackets() == 1);
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE (test1_bitcoin)
         BOOST_CHECK(bitcoin->getTotalBytes() == 105);
         BOOST_CHECK(bitcoin->getTotalMalformedPackets() == 0);
 
-	BOOST_CHECK( bitcoin->getHeaderLength() == 85);
+	BOOST_CHECK( bitcoin->getPayloadLength() == 85);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

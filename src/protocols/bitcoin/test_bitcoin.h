@@ -114,6 +114,7 @@ struct StackBitcointest
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(1);
 		tcp->createTCPInfos(1);
+		bitcoin->createBitcoinInfos(1);
 
                 tcp->setFlowCache(flow_cache);
                 tcp->setFlowManager(flow_mng);

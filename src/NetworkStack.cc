@@ -46,6 +46,7 @@ NetworkStack::NetworkStack():
         smtp(SMTPProtocolPtr(new SMTPProtocol())),
         imap(IMAPProtocolPtr(new IMAPProtocol())),
         pop(POPProtocolPtr(new POPProtocol())),
+	bitcoin(BitcoinProtocolPtr(new BitcoinProtocol())),
         tcp_generic(TCPGenericProtocolPtr(new TCPGenericProtocol())),
         udp_generic(UDPGenericProtocolPtr(new UDPGenericProtocol())),
         freqs_tcp(FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol","tcpfrequency"))),
@@ -62,6 +63,7 @@ NetworkStack::NetworkStack():
         ff_smtp(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_imap(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_pop(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_bitcoin(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_tcp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_udp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_tcp_freqs(SharedPointer<FlowForwarder>(new FlowForwarder())),
@@ -139,6 +141,12 @@ NetworkStack::NetworkStack():
         ff_pop->setProtocol(static_cast<ProtocolPtr>(pop));
         ff_pop->addChecker(std::bind(&POPProtocol::popChecker,pop,std::placeholders::_1));
         ff_pop->addFlowFunction(std::bind(&POPProtocol::processFlow,pop,std::placeholders::_1));
+
+        // Configure the bitcoin 
+        bitcoin->setFlowForwarder(ff_bitcoin);
+        ff_bitcoin->setProtocol(static_cast<ProtocolPtr>(bitcoin));
+        ff_bitcoin->addChecker(std::bind(&BitcoinProtocol::bitcoinChecker,bitcoin,std::placeholders::_1));
+        ff_bitcoin->addFlowFunction(std::bind(&BitcoinProtocol::processFlow,bitcoin,std::placeholders::_1));
 
         // configure the TCP generic Layer
         tcp_generic->setFlowForwarder(ff_tcp_generic);

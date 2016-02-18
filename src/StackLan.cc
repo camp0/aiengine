@@ -70,6 +70,7 @@ StackLan::StackLan():
         addProtocol(smtp);
         addProtocol(imap);
         addProtocol(pop);
+        addProtocol(bitcoin);
         addProtocol(tcp_generic);
         addProtocol(freqs_tcp);
         addProtocol(dns);
@@ -167,6 +168,7 @@ StackLan::StackLan():
 	smtp->setFlowManager(flow_table_tcp_);
 	imap->setFlowManager(flow_table_tcp_);
 	pop->setFlowManager(flow_table_tcp_);
+	bitcoin->setFlowManager(flow_table_tcp_);
 	dns->setFlowManager(flow_table_udp_);
 	sip->setFlowManager(flow_table_udp_);
 	ssdp->setFlowManager(flow_table_udp_);
@@ -175,7 +177,7 @@ StackLan::StackLan():
 	tcp_->setFlowForwarder(ff_tcp_);	
 	udp_->setFlowForwarder(ff_udp_);	
 
-	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
+	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
 	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
 
 	std::ostringstream msg;
@@ -241,7 +243,7 @@ void StackLan::enableNIDSEngine(bool enable) {
 
 	if (enable) {
 
-		disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop}); // we dont remove the ff_tcp_generic
+		disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin}); // we dont remove the ff_tcp_generic
 		disableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp}); // we dont remove the ff_udp_generic
 
                 std::ostringstream msg;
@@ -252,7 +254,7 @@ void StackLan::enableNIDSEngine(bool enable) {
 		disableFlowForwarders(ff_tcp_,{ff_tcp_generic}); 
 		disableFlowForwarders(ff_udp_,{ff_udp_generic}); 
 	
-		enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
+		enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
         	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});	
 	}
 	enable_nids_engine_ = enable;
@@ -274,6 +276,7 @@ void StackLan::setTotalTCPFlows(int value) {
         smtp->createSMTPInfos(value * 0.05);
         imap->createIMAPInfos(value * 0.05);
         pop->createPOPInfos(value * 0.05);
+        bitcoin->createBitcoinInfos(value * 0.05);
 }
 
 void StackLan::setTotalUDPFlows(int value) {

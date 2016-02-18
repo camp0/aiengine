@@ -244,6 +244,9 @@ void Flow::showFlowInfo(std::ostream& out) const {
 						SharedPointer<IMAPInfo> iinfo = getIMAPInfo();
 						if (iinfo) {
 							if (iinfo->user_name) out << " User:" << iinfo->user_name->getName();
+						} else {
+							SharedPointer<BitcoinInfo> binfo = getBitcoinInfo();
+							if (binfo) out << " Tx:" << binfo->getTotalTransactions();
 						}
 					}
 				} 

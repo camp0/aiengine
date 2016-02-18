@@ -30,6 +30,7 @@
 
 #include "Protocol.h"
 #include <arpa/inet.h>
+#include "flow/FlowManager.h"
 #include "BitcoinInfo.h"
 #include "CacheManager.h"
 
@@ -120,10 +121,14 @@ public:
 		return false;
 	}
 
-	int32_t getHeaderLength() const { return bitcoin_header_->length; }	
+	int32_t getPayloadLength() const { return bitcoin_header_->length; }	
 
 	int64_t getAllocatedMemory() const { return sizeof(BitcoinProtocol); }
-	
+
+        void createBitcoinInfos(int number);
+        void destroyBitcoinInfos(int number);
+
+	void setFlowManager(FlowManagerPtrWeak flow_mng) { }	
 #if defined(PYTHON_BINDING)
         boost::python::dict getCounters() const;
 #elif defined(RUBY_BINDING)
