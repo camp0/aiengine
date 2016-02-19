@@ -49,11 +49,7 @@ BOOST_AUTO_TEST_CASE (test2_vxlan)
         int length = raw_packet_ethernet_ip_udp_vxlan_ethernet_arp_request_length;
         Packet packet(pkt,length);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
 	// Check the results
 
@@ -78,11 +74,7 @@ BOOST_AUTO_TEST_CASE (test3_vxlan)
         int length = raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_icmp_reply_length;
         Packet packet(pkt,length);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // Check the results of the virtual networks
 
@@ -120,11 +112,7 @@ BOOST_AUTO_TEST_CASE (test4_vxlan)
 
 	dns_vir->createDNSDomains(1);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // Check the results of the virtual networks
 
@@ -178,11 +166,7 @@ BOOST_AUTO_TEST_CASE (test5_vxlan)
 
         dns_vir->createDNSDomains(2);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(packet1.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
 	// Verify the number of flows that should be on the cache and table
 	BOOST_CHECK(flow_cache->getTotalFlows() == 1);
@@ -200,11 +184,7 @@ BOOST_AUTO_TEST_CASE (test5_vxlan)
         int length2 = raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_udp_dns_request_2_length;
         Packet packet2(pkt2,length2);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(packet2.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet2);
 	
 	Flow *flow_udp2 = udp_vir->getCurrentFlow();
 
@@ -244,11 +224,7 @@ BOOST_AUTO_TEST_CASE (test6_vxlan)
         int length1 = raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_tcp_syn_length;
         Packet packet1(pkt1,length1);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(packet1.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
 	BOOST_CHECK(tcp_vir->getTotalPackets() == 1);
 	BOOST_CHECK(tcp_vir->getTotalBytes() == 28);
@@ -267,11 +243,8 @@ BOOST_AUTO_TEST_CASE (test6_vxlan)
         unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_tcp_synack);
         int length2 = raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_tcp_synack_length;
         Packet packet2(pkt2,length2);
-        
-	mux_eth->setPacket(&packet2);
-        eth->setHeader(packet2.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+       
+	inject(packet2); 
 
         BOOST_CHECK(tcp_vir->getTotalPackets() == 2);
         BOOST_CHECK(tcp_vir->getTotalBytes() == 56);

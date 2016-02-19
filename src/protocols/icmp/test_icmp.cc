@@ -44,12 +44,7 @@ BOOST_AUTO_TEST_CASE (test2_icmp)
         int length = raw_packet_ethernet_ip_icmp_echo_request_length;
 	Packet packet1(pkt,length);
 
-        // executing first the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(packet1.getPayload());
-	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
 	BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);
 	BOOST_CHECK(icmp->getType() == ICMP_ECHO);
@@ -69,10 +64,8 @@ BOOST_AUTO_TEST_CASE (test2_icmp)
 
 	// Set the packet function
 	mux_icmp->addPacketFunction(std::bind(&ICMPProtocol::processPacket,icmp,std::placeholders::_1));
-	
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(packet2.getPayload());
-        mux_eth->forwardPacket(packet2);
+
+	inject(packet2);	
 
 	BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);
 	BOOST_CHECK(icmp->getType() == ICMP_ECHOREPLY);
@@ -95,10 +88,7 @@ BOOST_AUTO_TEST_CASE (test3_icmp)
 
 	mux_icmp->addPacketFunction(std::bind(&ICMPProtocol::processPacket,icmp,std::placeholders::_1));
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);
         BOOST_CHECK(icmp->getType() == ICMP_ROUTERSOLICIT);
@@ -115,10 +105,7 @@ BOOST_AUTO_TEST_CASE (test4_icmp)
 
         mux_icmp->addPacketFunction(std::bind(&ICMPProtocol::processPacket,icmp,std::placeholders::_1));
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(ip->getProtocol() == IPPROTO_ICMP);
         BOOST_CHECK(icmp->getType() == ICMP_REDIRECT);

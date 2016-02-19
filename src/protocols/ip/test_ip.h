@@ -28,32 +28,21 @@
 #include "../test/tests_packets.h"
 #include "../test/ip_frag_test_packets.h"
 #include "Protocol.h"
-#include "Multiplexer.h"
-#include "../ethernet/EthernetProtocol.h"
+#include "StackTest.h"
 #include "../vlan/VLanProtocol.h"
 #include "IPProtocol.h"
 
 using namespace aiengine;
 
-struct StackEthernetIP
+struct StackEthernetIP : public StackTest
 {
-        EthernetProtocolPtr eth;
         IPProtocolPtr ip;
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
 
         StackEthernetIP()
         {
-                eth = EthernetProtocolPtr(new EthernetProtocol());
                 ip = IPProtocolPtr(new IPProtocol());
                 mux_ip = MultiplexerPtr(new Multiplexer());
-                mux_eth = MultiplexerPtr(new Multiplexer());
-
-                eth->setMultiplexer(mux_eth);
-                mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-		mux_eth->setProtocolIdentifier(0);
-                mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the ip handler
                 ip->setMultiplexer(mux_ip);
@@ -72,29 +61,19 @@ struct StackEthernetIP
         }
 };
 
-struct StackEthernetVLanIP
+struct StackEthernetVLanIP : public StackTest
 {
-        EthernetProtocolPtr eth;
         VLanProtocolPtr vlan;
         IPProtocolPtr ip;
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_vlan;
         MultiplexerPtr mux_ip;
 
         StackEthernetVLanIP()
         {
-                eth = EthernetProtocolPtr(new EthernetProtocol());
                 vlan = VLanProtocolPtr(new VLanProtocol());
                 ip = IPProtocolPtr(new IPProtocol());
                 mux_ip = MultiplexerPtr(new Multiplexer());
-                mux_eth = MultiplexerPtr(new Multiplexer());
                 mux_vlan = MultiplexerPtr(new Multiplexer());
-
-                eth->setMultiplexer(mux_eth);
-                mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-		mux_eth->setProtocolIdentifier(0);
-                mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the vlan handler
                 vlan->setMultiplexer(mux_vlan);

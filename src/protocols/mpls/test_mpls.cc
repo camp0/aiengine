@@ -36,14 +36,9 @@ BOOST_AUTO_TEST_CASE (test1_mpls)
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_mpls_ip_icmp);
         int length = raw_packet_ethernet_mpls_ip_icmp_length;
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
 	// check the ethernet layer
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
@@ -72,14 +67,9 @@ BOOST_AUTO_TEST_CASE (test2_mpls)
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_mpls2_ip_icmp);
         int length = raw_packet_ethernet_mpls2_ip_icmp_length;
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // check the ethernet layer
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
@@ -103,12 +93,7 @@ BOOST_AUTO_TEST_CASE (test3_mpls)
         Packet packet1(pkt1,length1,0);
         Packet packet2(pkt2,length2,0);
 
-        // executing the first packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(packet1.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
         // check the ethernet layer
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length1);
@@ -121,11 +106,7 @@ BOOST_AUTO_TEST_CASE (test3_mpls)
         BOOST_CHECK(icmp->getType() == 8);
         BOOST_CHECK(icmp->getCode() == 0);
 
-        // executing the second packet
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(packet2.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet2);
 
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length2);
 
@@ -145,11 +126,7 @@ BOOST_AUTO_TEST_CASE (test3_mpls)
         BOOST_CHECK(icmp->getType() == 8);
         BOOST_CHECK(icmp->getCode() == 0);
 
-        // executing the thrid packet
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(packet1.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length1);
 

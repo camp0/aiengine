@@ -70,7 +70,7 @@ noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			protocols/frequency/PacketFrequencies.h \
 			protocols/frequency/FrequencyProtocol.h \
 			System.h \
-			StackLanTest.h \
+			StackTest.h StackLanTest.h \
 			Serializable.h \
 			DatabaseAdaptor.h 
 
@@ -209,6 +209,7 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		DHCPProtocol.o SIPProtocol.o SSDPProtocol.o \
 		POPProtocol.o GREProtocol.o \
 		OpenFlowProtocol.o VxLanProtocol.o \
+		BitcoinProtocol.o \
 		FrequencyProtocol.o LearnerEngine.o \
 		ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \
 		StackLan.o StackMobile.o StackLanIPv6.o StackVirtual.o StackOpenFlow.o \
@@ -229,6 +230,7 @@ java_objects = 	RegexManager.o Regex.o \
                 SMTPProtocol.o IMAPProtocol.o \
                 DHCPProtocol.o SIPProtocol.o SSDPProtocol.o \
                 POPProtocol.o GREProtocol.o \
+		BitcoinProtocol.o \
                 OpenFlowProtocol.o VxLanProtocol.o \
                 FrequencyProtocol.o LearnerEngine.o \
                 ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \

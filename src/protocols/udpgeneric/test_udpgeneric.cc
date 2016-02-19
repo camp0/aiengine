@@ -35,14 +35,9 @@ BOOST_AUTO_TEST_CASE (test1_udpgeneric)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_torrent_dht);
         int length = raw_packet_ethernet_ip_udp_torrent_dht_length;
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
 	BOOST_CHECK(ip->getPacketLength() == 86);
 
@@ -68,12 +63,7 @@ BOOST_AUTO_TEST_CASE (test2_udpgeneric) // Same case as test1_genericudp but wit
 	udp->setRegexManager(sig);
 	gudp->setRegexManager(sig);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(sig->getTotalRegexs()  == 1);
         BOOST_CHECK(sig->getTotalMatchingRegexs() == 0);

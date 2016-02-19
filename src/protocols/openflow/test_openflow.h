@@ -36,8 +36,7 @@
 #include <string>
 #include "../test/openflow_packets.h"
 #include "Protocol.h"
-#include "Multiplexer.h"
-#include "../ethernet/EthernetProtocol.h"
+#include "StackTest.h"
 #include "../ip/IPProtocol.h"
 #include "../icmp/ICMPProtocol.h"
 #include "../udp/UDPProtocol.h"
@@ -50,9 +49,8 @@
 
 using namespace aiengine;
 
-struct StackTestOpenFlow
+struct StackTestOpenFlow : public StackTest
 {
-        EthernetProtocolPtr eth;
         EthernetProtocolPtr eth_vir;
 	IPProtocolPtr ip,ip_vir;
 	UDPProtocolPtr udp_vir;
@@ -62,7 +60,6 @@ struct StackTestOpenFlow
 	ICMPProtocolPtr icmp_vir;
 	DNSProtocolPtr dns_vir;
         OpenFlowProtocolPtr of;
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_eth_vir;
         MultiplexerPtr mux_ip,mux_ip_vir;
         MultiplexerPtr mux_tcp,mux_udp_vir,mux_tcp_vir;
@@ -81,7 +78,6 @@ struct StackTestOpenFlow
 #ifdef HAVE_LIBLOG4CXX
                 log4cxx::BasicConfigurator::configure();
 #endif
-                eth = EthernetProtocolPtr(new EthernetProtocol());
                 eth_vir = EthernetProtocolPtr(new EthernetProtocol("Virtual EthernetProtocol","virtethernet"));
                 ip = IPProtocolPtr(new IPProtocol());
                 ip_vir = IPProtocolPtr(new IPProtocol("Virtual IPProtocol","virtip"));
@@ -94,7 +90,6 @@ struct StackTestOpenFlow
                 of = OpenFlowProtocolPtr(new OpenFlowProtocol());
                 icmp_vir = ICMPProtocolPtr(new ICMPProtocol());
 
-		mux_eth = MultiplexerPtr(new Multiplexer());
 		mux_ip = MultiplexerPtr(new Multiplexer());
 		mux_tcp = MultiplexerPtr(new Multiplexer());
 		mux_of = MultiplexerPtr(new Multiplexer());
@@ -114,12 +109,6 @@ struct StackTestOpenFlow
 
                 flow_cache = FlowCachePtr(new FlowCache());
                 flow_mng = FlowManagerPtr(new FlowManager());
-
-        	eth->setMultiplexer(mux_eth);
-		mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-		mux_eth->setProtocolIdentifier(0);
-        	mux_eth->setHeaderSize(eth->getHeaderSize());
-        	mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
         	eth_vir->setMultiplexer(mux_eth_vir);
 		mux_eth_vir->setProtocol(static_cast<ProtocolPtr>(eth_vir));

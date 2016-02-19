@@ -37,10 +37,9 @@
 #include "../test/tests_packets.h"
 #include "../test/gprs_packets.h"
 #include "Protocol.h"
-#include "Multiplexer.h"
+#include "StackTest.h"
 #include "flow/FlowCache.h"
 #include "flow/FlowManager.h"
-#include "../ethernet/EthernetProtocol.h"
 #include "../udp/UDPProtocol.h"
 #include "../ip/IPProtocol.h"
 #include "../icmp/ICMPProtocol.h"
@@ -49,14 +48,13 @@
 
 using namespace aiengine;
 
-struct Stack3Gtest
+struct Stack3Gtest : public StackTest
 {
-        EthernetProtocolPtr eth;
         IPProtocolPtr ip_low,ip_high;
         UDPProtocolPtr udp_low;
         GPRSProtocolPtr gprs;
 	ICMPProtocolPtr icmp;
-        MultiplexerPtr mux_eth,mux_vlan;
+        MultiplexerPtr mux_vlan;
         MultiplexerPtr mux_ip_low;
         MultiplexerPtr mux_udp_low;
 	SharedPointer<FlowForwarder> ff_udp_low;
@@ -72,7 +70,6 @@ struct Stack3Gtest
 #ifdef HAVE_LIBLOG4CXX
                 log4cxx::BasicConfigurator::configure();
 #endif
-                eth = EthernetProtocolPtr(new EthernetProtocol());
                 ip_low = IPProtocolPtr(new IPProtocol());
                 ip_high = IPProtocolPtr(new IPProtocol());
 		udp_low = UDPProtocolPtr(new UDPProtocol());
@@ -81,7 +78,6 @@ struct Stack3Gtest
 
                 mux_ip_low = MultiplexerPtr(new Multiplexer());
                 mux_udp_low = MultiplexerPtr(new Multiplexer());
-                mux_eth = MultiplexerPtr(new Multiplexer());
                 
 		mux_gprs = MultiplexerPtr(new Multiplexer());
 		mux_ip_high = MultiplexerPtr(new Multiplexer());
@@ -92,12 +88,6 @@ struct Stack3Gtest
 
                 flow_cache = FlowCachePtr(new FlowCache());
                 flow_mng = FlowManagerPtr(new FlowManager());
-
-                eth->setMultiplexer(mux_eth);
-                mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-                mux_eth->setProtocolIdentifier(0);
-                mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the low ip handler
                 ip_low->setMultiplexer(mux_ip_low);
@@ -165,6 +155,7 @@ struct Stack3Gtest
 
 		
         }
+
         ~Stack3Gtest() {
                 // nothing to delete
         }

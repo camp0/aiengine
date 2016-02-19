@@ -131,6 +131,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::Flow::getGPRSInfo;
 %ignore aiengine::Flow::getSSDPInfo;
 %ignore aiengine::Flow::getSIPInfo;
+%ignore aiengine::Flow::getBitcoinInfo;
 %ignore aiengine::Flow::packet;
 %ignore aiengine::Flow::regex;
 %ignore aiengine::Flow::frequencies;

@@ -38,12 +38,7 @@ BOOST_AUTO_TEST_CASE (test1_gprs)
 
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
 	// check the ethernet layer
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
@@ -150,12 +145,7 @@ BOOST_AUTO_TEST_CASE (test2_gprs)
         // Configure the FlowForwarders
         udp_high->setFlowForwarder(ff_udp_high);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
 	// Check the integrity of the highest IP 
 	std::string localip_h("28.102.6.36");
@@ -205,12 +195,8 @@ BOOST_AUTO_TEST_CASE (test3_gprs)
 
         // Configure the FlowForwarders
         udp_high->setFlowForwarder(ff_udp_high);
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+       
+	inject(packet); 
 
 	// Check the integrity of the first IP header
         std::string localip("192.168.62.200");
@@ -277,15 +263,8 @@ BOOST_AUTO_TEST_CASE (test4_gprs) // with the DNSProtocol
         udp_high->setFlowForwarder(ff_udp_high);
 	ff_udp_high->addUpFlowForwarder(ff_dns_);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
-
-	// forward the same packet again
-        mux_eth->forwardPacket(packet);
+	inject(packet);
+	inject(packet);
 
         // Check the integrity of the highest IP
         std::string localip_h("28.102.6.36");
@@ -315,12 +294,7 @@ BOOST_AUTO_TEST_CASE (test5_gprs) // Process a pdp context creation
 
 	gprs->createGPRSInfo(1);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // check the GPRS layer;
         BOOST_CHECK(gprs->getTotalBytes() == 159);
@@ -354,12 +328,7 @@ BOOST_AUTO_TEST_CASE (test6_gprs) // Process a pdp context creation
 
         gprs->createGPRSInfo(1);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // Verify the integrity of the flow
         Flow *flow = udp_low->getCurrentFlow();
@@ -382,12 +351,7 @@ BOOST_AUTO_TEST_CASE (test7_gprs) // Process a pdp context creation
 
         gprs->createGPRSInfo(1);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // Verify the integrity of the flow
         Flow *flow = udp_low->getCurrentFlow();
@@ -408,12 +372,7 @@ BOOST_AUTO_TEST_CASE (test8_gprs) // Process a pdp context creation with ipv6 an
 
         gprs->createGPRSInfo(1);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // Verify the integrity of the flow
         Flow *flow = udp_low->getCurrentFlow();

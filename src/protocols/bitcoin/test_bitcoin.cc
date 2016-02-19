@@ -39,14 +39,7 @@ BOOST_AUTO_TEST_CASE (test1_bitcoin)
         int length = raw_packet_ethernet_ip_tcp_bc_flow1_ack_version_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
-
-//	show();
+	inject(packet);
 
         // Check the results
         BOOST_CHECK(ip->getTotalPackets() == 1);
@@ -64,8 +57,96 @@ BOOST_AUTO_TEST_CASE (test1_bitcoin)
         BOOST_CHECK(bitcoin->getTotalValidatedPackets() == 1);
         BOOST_CHECK(bitcoin->getTotalBytes() == 105);
         BOOST_CHECK(bitcoin->getTotalMalformedPackets() == 0);
-
+	
+	BOOST_CHECK( bitcoin->getTotalBitcoinOperations() == 1);
 	BOOST_CHECK( bitcoin->getPayloadLength() == 85);
+}
+
+BOOST_AUTO_TEST_CASE (test2_bitcoin)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_bc_flow2_ack_multiple);
+        int length = raw_packet_ethernet_ip_tcp_bc_flow2_ack_multiple_length;
+        Packet packet(pkt,length);
+
+	inject(packet);
+
+        // Check the results
+        BOOST_CHECK(ip->getTotalPackets() == 1);
+        BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(ip->getTotalBytes() == 345);
+        BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+
+        BOOST_CHECK(tcp->getTotalPackets() == 1);
+        BOOST_CHECK(tcp->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(tcp->getTotalBytes() == 325);
+        BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(tcp->getSourcePort() == 8333);
+
+        BOOST_CHECK(bitcoin->getTotalPackets() == 1);
+        BOOST_CHECK(bitcoin->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(bitcoin->getTotalBytes() == 305);
+        BOOST_CHECK(bitcoin->getTotalMalformedPackets() == 0);
+
+	BOOST_CHECK( bitcoin->getTotalBitcoinOperations() == 4);
+	BOOST_CHECK( bitcoin->getPayloadLength() == 31);
+}
+
+BOOST_AUTO_TEST_CASE (test3_bitcoin)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_bc_flow3_ack_multiple_blocks);
+        int length = raw_packet_ethernet_ip_tcp_bc_flow3_ack_multiple_blocks_length;
+        Packet packet(pkt,length);
+
+	inject(packet);
+
+        // Check the results
+        BOOST_CHECK(ip->getTotalPackets() == 1);
+        BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(ip->getTotalBytes() == 1492);
+        BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+
+        BOOST_CHECK(tcp->getTotalPackets() == 1);
+        BOOST_CHECK(tcp->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(tcp->getTotalBytes() == 1472);
+        BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(tcp->getDestinationPort() == 8333);
+
+        BOOST_CHECK(bitcoin->getTotalPackets() == 1);
+        BOOST_CHECK(bitcoin->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(bitcoin->getTotalBytes() == 1452);
+        BOOST_CHECK(bitcoin->getTotalMalformedPackets() == 0);
+
+	BOOST_CHECK( bitcoin->getTotalBitcoinOperations() == 6);
+	BOOST_CHECK( bitcoin->getPayloadLength() == 215);
+}
+
+BOOST_AUTO_TEST_CASE (test4_bitcoin)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_bc_flow4_ack_tx);
+        int length = raw_packet_ethernet_ip_tcp_bc_flow4_ack_tx_length;
+        Packet packet(pkt,length);
+
+	inject(packet);
+
+        // Check the results
+        BOOST_CHECK(ip->getTotalPackets() == 1);
+        BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(ip->getTotalBytes() == 322);
+        BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+
+        BOOST_CHECK(tcp->getTotalPackets() == 1);
+        BOOST_CHECK(tcp->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(tcp->getTotalBytes() == 302);
+        BOOST_CHECK(tcp->getTotalMalformedPackets() == 0);
+        BOOST_CHECK(tcp->getDestinationPort() == 8333);
+
+        BOOST_CHECK(bitcoin->getTotalPackets() == 1);
+        BOOST_CHECK(bitcoin->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(bitcoin->getTotalBytes() == 282);
+        BOOST_CHECK(bitcoin->getTotalMalformedPackets() == 0);
+
+	BOOST_CHECK( bitcoin->getTotalBitcoinOperations() == 1);
+	BOOST_CHECK( bitcoin->getPayloadLength() == 258);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

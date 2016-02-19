@@ -37,10 +37,7 @@ BOOST_AUTO_TEST_CASE (test1_http)
         int length = raw_packet_ethernet_ip_tcp_http_barrapunto_get_length;
         Packet packet(pkt,length);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
 	BOOST_CHECK(ip->getTotalPackets() == 1);
 	BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
@@ -1439,10 +1436,7 @@ BOOST_AUTO_TEST_CASE (test1_http)
         int length = raw_packet_ethernet_ipv6_tcp_http_get_length;
         Packet packet(pkt,length);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(ip6->getTotalPackets() == 1);
         BOOST_CHECK(ip6->getTotalValidatedPackets() == 1);
@@ -1481,19 +1475,13 @@ BOOST_AUTO_TEST_CASE (test2_http)
         int length1 = raw_packet_ethernet_ipv6_tcp_http_get_length;
         Packet packet1(pkt1,length1);
 
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
         unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get2);
         int length2 = raw_packet_ethernet_ipv6_tcp_http_get2_length;
         Packet packet2(pkt2,length2);
 
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet2);
 
         BOOST_CHECK(ip6->getTotalPackets() == 2);
         BOOST_CHECK(ip6->getTotalValidatedPackets() == 2);
@@ -1521,10 +1509,7 @@ BOOST_AUTO_TEST_CASE (test3_http)
         int length = raw_ethernet_ipv6_dstopthdr_tcp_http_get_length;
         Packet packet(pkt,length);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(flow_mng->getTotalFlows() == 1);
         BOOST_CHECK(flow_cache->getTotalFlows() == 0);
@@ -1543,17 +1528,14 @@ BOOST_AUTO_TEST_CASE (test3_http)
 // Release items to their corresponding cache test with a emppy cache
 BOOST_AUTO_TEST_CASE (test4_http)
 {
-        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get);
-        int length1 = raw_packet_ethernet_ipv6_tcp_http_get_length;
-        Packet packet1(pkt1,length1);
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get);
+        int length = raw_packet_ethernet_ipv6_tcp_http_get_length;
+        Packet packet(pkt,length);
 
         // Dont create any items on the cache
         http->createHTTPInfos(0);
 
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet);
 
 	auto fm = tcp->getFlowManager();
 
@@ -1571,17 +1553,14 @@ BOOST_AUTO_TEST_CASE (test4_http)
 // Release items to their corresponding cache test 
 BOOST_AUTO_TEST_CASE (test5_http)
 {
-        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get);
-        int length1 = raw_packet_ethernet_ipv6_tcp_http_get_length;
-        Packet packet1(pkt1,length1);
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get);
+        int length = raw_packet_ethernet_ipv6_tcp_http_get_length;
+        Packet packet(pkt,length);
 
         // create any items on the cache
         http->createHTTPInfos(1);
 
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet);
 
         auto fm = tcp->getFlowManager();
 
@@ -1604,10 +1583,7 @@ BOOST_AUTO_TEST_CASE (test6_http)
         int length = raw_packet_ethernet_ipv6_hophop_dstopt_tcp_http_get_length;
         Packet packet(pkt,length);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(ip6->getTotalPackets() == 1);
         BOOST_CHECK(ip6->getTotalValidatedPackets() == 1);

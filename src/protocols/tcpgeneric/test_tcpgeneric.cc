@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE (test1_tcpgeneric)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_torrent);
         int length = raw_packet_ethernet_ip_tcp_torrent_length;
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
         RegexManagerPtr sig = RegexManagerPtr(new RegexManager());
 	SharedPointer<Regex> r = SharedPointer<Regex>(new Regex("bittorrent tcp","^(\x13)BitTorrent.*$"));
@@ -44,12 +44,7 @@ BOOST_AUTO_TEST_CASE (test1_tcpgeneric)
         gtcp->setRegexManager(sig);
         tcp->setRegexManager(sig);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(sig->getTotalRegexs()  == 1);
         BOOST_CHECK(sig->getTotalMatchingRegexs() == 1);
@@ -66,13 +61,9 @@ BOOST_AUTO_TEST_CASE (test2_tcpgeneric)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_port_6941);
         int length = raw_packet_ethernet_ipv6_tcp_port_6941_length;
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
 	BOOST_CHECK(ip6->getTotalPackets() == 1);
 	BOOST_CHECK(ip6->getTotalValidatedPackets() == 1);
@@ -110,12 +101,7 @@ BOOST_AUTO_TEST_CASE (test3_tcpgeneric)
         gtcp->setRegexManager(sig);
         tcp->setRegexManager(sig);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
 	BOOST_CHECK(r1->getMatchs() == 1);
 	BOOST_CHECK(r1->getTotalEvaluates() == 1);
@@ -144,7 +130,7 @@ BOOST_AUTO_TEST_CASE (test4_tcpgeneric)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_torrent);
         int length = raw_packet_ethernet_ip_tcp_torrent_length;
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
         SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("bittorrent tcp 1","^\\x13BitTorrent.*$"));
         SharedPointer<Regex> r2 = SharedPointer<Regex>(new Regex("bittorrent tcp 2","^.*(hello paco).*$"));
@@ -154,13 +140,8 @@ BOOST_AUTO_TEST_CASE (test4_tcpgeneric)
         sig->addRegex(r1);
         gtcp->setRegexManager(sig);
         tcp->setRegexManager(sig);
-
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	
+	inject(packet);
 
         BOOST_CHECK(r1->getMatchs() == 1);
         BOOST_CHECK(r1->getTotalEvaluates() == 1);
@@ -171,7 +152,7 @@ BOOST_AUTO_TEST_CASE (test4_tcpgeneric)
         BOOST_CHECK(sig->getTotalMatchingRegexs() == 1);
         BOOST_CHECK(sig->getMatchedRegex() == r1);
 
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(r1->getMatchs() == 1);
         BOOST_CHECK(r1->getTotalEvaluates() == 1);
@@ -206,12 +187,7 @@ BOOST_AUTO_TEST_CASE (test5_tcpgeneric)
 
 	flow_cache->createFlows(2);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
         BOOST_CHECK(r1->getMatchs() == 1);
         BOOST_CHECK(r1->getTotalEvaluates() == 1);
@@ -226,11 +202,7 @@ BOOST_AUTO_TEST_CASE (test5_tcpgeneric)
         int length2 = raw_packet_ethernet_ipv6_tcp_port_6941_length;
         Packet packet2(pkt2,length2,0);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet2);
 
         BOOST_CHECK(ip6->getTotalPackets() == 1);
         BOOST_CHECK(ip6->getTotalValidatedPackets() == 1);
@@ -275,15 +247,7 @@ BOOST_AUTO_TEST_CASE (test6_tcpgeneric)
         gtcp->setRegexManager(sig);
         tcp->setRegexManager(sig);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-
-	for (int i = 0; i< 5; ++i ) {
-		mux_eth->setPacket(&packet1);
-		eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-		mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-		mux_eth->forwardPacket(packet1);
-	}
+	for (int i = 0; i< 5; ++i ) inject(packet1); 
 
         BOOST_CHECK(r1->getMatchs() == 1);
         BOOST_CHECK(r1->getTotalEvaluates() == 1);
@@ -298,7 +262,7 @@ BOOST_AUTO_TEST_CASE (test7_tcpgeneric)
 {
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_polymorphic_clet);
         int length1 = raw_packet_ethernet_ip_tcp_polymorphic_clet_length;
-        Packet packet1(pkt1,length1,0);
+        Packet packet1(pkt1,length1);
 
         SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("bittorrent tcp 1","^\\x13BitTorrent.*$"));
         SharedPointer<Regex> r2 = SharedPointer<Regex>(new Regex("generic nop exploit tcp ","^.*\\x90\\x90\\x90\x90.*$"));
@@ -311,12 +275,7 @@ BOOST_AUTO_TEST_CASE (test7_tcpgeneric)
         gtcp->setRegexManager(sig);
         tcp->setRegexManager(sig);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
 	// Check stack integrity
         BOOST_CHECK(tcp->getTotalPackets() == 1);
@@ -344,7 +303,7 @@ BOOST_AUTO_TEST_CASE (test8_tcpgeneric)
 {
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_nopsled);
         int length1 = raw_packet_ethernet_ipv6_tcp_nopsled_length;
-        Packet packet1(pkt1,length1,0);
+        Packet packet1(pkt1,length1);
 
         SharedPointer<Regex> r1 = SharedPointer<Regex>(new Regex("generic nop exploit tcp ","^.*\\x90\\x90\\x90\x90.*$"));
         RegexManagerPtr sig = RegexManagerPtr(new RegexManager());
@@ -361,12 +320,7 @@ BOOST_AUTO_TEST_CASE (test8_tcpgeneric)
         tcp6->setRegexManager(sig);
         tcp->setRegexManager(sig);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
         // Check stack integrity
         BOOST_CHECK(tcp6->getTotalPackets() == 1);
@@ -386,12 +340,7 @@ BOOST_AUTO_TEST_CASE (test8_tcpgeneric)
         int length2 = raw_packet_ethernet_ip_tcp_polymorphic_clet_length;
         Packet packet2(pkt2,length2,0);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet2);
 
         // Check stack integrity
         BOOST_CHECK(tcp->getTotalPackets() == 1);
@@ -408,13 +357,13 @@ BOOST_AUTO_TEST_CASE (test8_tcpgeneric)
         BOOST_CHECK(sig->getMatchedRegex() == nullptr);
 
 	// Inject the last packet 5 times
-	for (int i = 0; i< 5; ++i ) mux_eth->forwardPacket(packet2);
+	for (int i = 0; i< 5; ++i ) inject(packet2);
 
         BOOST_CHECK(r1->getMatchs() == 1);
         BOOST_CHECK(r1->getTotalEvaluates() == 7);
         BOOST_CHECK(sig->getMatchedRegex() == nullptr);
 
-	for (int i = 0; i< 5; ++i ) mux_eth->forwardPacket(packet1);
+	for (int i = 0; i< 5; ++i ) inject(packet1);
 
         BOOST_CHECK(r1->getMatchs() == 1);
         BOOST_CHECK(r1->getTotalEvaluates() == 7);
@@ -435,12 +384,7 @@ BOOST_AUTO_TEST_CASE (test9_tcpgeneric) // IPv6 with auth header
         gtcp6->setRegexManager(sig);
         tcp6->setRegexManager(sig);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // Check stack integrity
         BOOST_CHECK(tcp6->getTotalPackets() == 1);

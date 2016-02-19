@@ -28,30 +28,30 @@ namespace aiengine {
 
 // List of support bitcoin commands
 std::unordered_map<std::string ,BitcoinCommandType> BitcoinProtocol::commands_ {
-	{ "version", 	std::make_tuple(BC_CMD_VERSION,		"version",	0) },
-	{ "verack", 	std::make_tuple(BC_CMD_VERACK,		"version ack",	0) },
-	{ "addr", 	std::make_tuple(BC_CMD_ADDR,		"network addr",	0) },
-	{ "inv", 	std::make_tuple(BC_CMD_INV,		"inv",		0) },
-	{ "getdata", 	std::make_tuple(BC_CMD_GETDATA,		"getdata",	0) },
-	{ "notfound", 	std::make_tuple(BC_CMD_NOTFOUND,	"not found",	0) },
-	{ "getblocks", 	std::make_tuple(BC_CMD_GETBLOCKS,	"get blocks",	0) },
-	{ "getheaders", std::make_tuple(BC_CMD_GETHEADERS,	"get headers",	0) },
-	{ "tx", 	std::make_tuple(BC_CMD_TX,		"transaction",	0) },
-	{ "block", 	std::make_tuple(BC_CMD_BLOCK,		"block",	0) },
-	{ "headers", 	std::make_tuple(BC_CMD_HEADERS,		"headers",	0) },
-	{ "getaddr", 	std::make_tuple(BC_CMD_GETADDR,		"getaddr",	0) },
-	{ "mempool", 	std::make_tuple(BC_CMD_MEMPOOL,		"mempool",	0) },
-	{ "ping",	std::make_tuple(BC_CMD_PING,		"ping",		0) },
-	{ "pong",	std::make_tuple(BC_CMD_PONG,		"pong",		0) },
-	{ "reject",	std::make_tuple(BC_CMD_REJECT,		"reject",	0) },
-	{ "alert",	std::make_tuple(BC_CMD_ALERT,		"alert",	0) }
+	{ "version", 	std::make_tuple(BC_CMD_VERSION,		"version",	0,	20) }, // ok
+	{ "verack", 	std::make_tuple(BC_CMD_VERACK,		"version ack",	0,	20) }, // ok
+	{ "addr", 	std::make_tuple(BC_CMD_ADDR,		"network addr",	0,	24) }, // ok
+	{ "inv", 	std::make_tuple(BC_CMD_INV,		"inv",		0,	20) },
+	{ "getdata", 	std::make_tuple(BC_CMD_GETDATA,		"getdata",	0,	20) },
+	{ "notfound", 	std::make_tuple(BC_CMD_NOTFOUND,	"not found",	0,	20) },
+	{ "getblocks", 	std::make_tuple(BC_CMD_GETBLOCKS,	"get blocks",	0,	24) }, // ok
+	{ "getheaders", std::make_tuple(BC_CMD_GETHEADERS,	"get headers",	0,	20) },
+	{ "tx", 	std::make_tuple(BC_CMD_TX,		"transaction",	0,	20) },
+	{ "block", 	std::make_tuple(BC_CMD_BLOCK,		"block",	0,	24) }, // ok
+	{ "headers", 	std::make_tuple(BC_CMD_HEADERS,		"headers",	0,	20) },
+	{ "getaddr", 	std::make_tuple(BC_CMD_GETADDR,		"getaddr",	0,	24) }, // ok
+	{ "mempool", 	std::make_tuple(BC_CMD_MEMPOOL,		"mempool",	0,	20) },
+	{ "ping",	std::make_tuple(BC_CMD_PING,		"ping",		0,	20) },
+	{ "pong",	std::make_tuple(BC_CMD_PONG,		"pong",		0,	20) },
+	{ "reject",	std::make_tuple(BC_CMD_REJECT,		"reject",	0,	20) },
+	{ "alert",	std::make_tuple(BC_CMD_ALERT,		"alert",	0,	20) }
 };
 
 void BitcoinProtocol::processFlow(Flow *flow) {
 
 	int length = flow->packet->getLength();
 	total_bytes_ += length;
-
+	++flow->total_packets_l7;
 	++total_packets_;
 
 	SharedPointer<BitcoinInfo> info = flow->getBitcoinInfo();
@@ -63,35 +63,42 @@ void BitcoinProtocol::processFlow(Flow *flow) {
                 flow->layer7info = info;
         }
 
-	int idx = static_cast<int>(flow->getFlowDirection());
+	unsigned char *payload = flow->packet->getPayload();
+	int offset = 0;
 
-	if (info->data_read[idx] > 0 ) {
-		info->data_read[idx] = info->data_read[idx] - length;
-	}
+	while (offset + header_size < length) {
 	
-	setHeader(flow->packet->getPayload());	
-        if(length >= header_size) {
-		char *cmd = &bitcoin_header_->command[0];
-		auto it = commands_.find(cmd);
-                if (it != commands_.end()) {
-			int32_t *hits = &std::get<2>(it->second);
+		setHeader(&payload[offset]);	
 
-			int32_t payload_len = getPayloadLength();
-		
-			++(*hits);
-			if ((payload_len + header_size) > length) {
-				info->data_read[idx] = (header_size + payload_len) - length;
+		// If no magic no packet :)
+		if (bitcoin_header_->magic == 0xd9b4bef9) {
+			char *cmd = &bitcoin_header_->command[0];
+			auto it = commands_.find(cmd);
+                	if (it != commands_.end()) {
+				int32_t *hits = &std::get<2>(it->second);
+				short padding = std::get<3>(it->second);
+				int32_t payload_len = getPayloadLength();
+	
+				++total_bitcoin_operations_;	
+				++(*hits);
+				// std::cout << __FILE__ << ":" << __func__ << ":pkt:" << flow->total_packets << ":cmd:" << cmd << " bcplen:" << payload_len;
+				// std::cout << " len:" << length << " read[" << idx << "]:";
+				// std::cout << info->data_read[idx] << " offset:" << offset; 
+
+				offset = (offset + payload_len + padding ) ;
+				// std::cout << " nextoffset:" << offset << std::endl;	
 			} else {
-				info->data_read[idx] = payload_len - (header_size + length );
+				// std::cout << __FILE__ << ":" << __func__ << ":pkt:" << flow->total_packets << ":cmd:" << cmd << " not found" << " offset:" << offset << std::endl;
 			}
-			std::cout << __FILE__ << ":" << __func__ << ":cmd:" << cmd << " bcplen:" << payload_len;
-			std::cout << " len:" << length << " read[" << idx << "]:";
-			std::cout << info->data_read[idx] <<  std::endl;	
 		} else {
-			std::cout << __FILE__ << ":" << __func__ << ":cmd:" << cmd << " not found" << std::endl;	
+			// std::cout << __FILE__ << ":" << __func__ << ":pkt:" << flow->total_packets << ":no MAGIC:" << " offset:" << offset << std::endl;
+			if (offset == 0) {
+				// The packet dont contains any command so bye bye
+				return;
+			}
+			++offset;	
 		}
         }
-
 }
 
 void BitcoinProtocol::createBitcoinInfos(int number) {

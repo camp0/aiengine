@@ -42,19 +42,11 @@ BOOST_AUTO_TEST_CASE (test1_ip6)
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_udp_llmnr);
         int length = raw_packet_ethernet_ipv6_udp_llmnr_length;
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        // Sets the raw packet to a valid ethernet header
+	inject(packet);
+
         BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IPV6);
-
-        // executing the packet
-        // forward the packet through the multiplexers
-        //mux_eth->setPacketInfo(0,packet,length);
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
-
         BOOST_CHECK(ip6->isIPver6() == true);
 	BOOST_CHECK(ip6->getPayloadLength() == 41);
 	BOOST_CHECK(srcip.compare(ip6->getSrcAddrDotNotation()) == 0);
@@ -70,18 +62,11 @@ BOOST_AUTO_TEST_CASE (test2_ip6)
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_icmpv6_ping_request);
         int length = raw_packet_ethernet_ipv6_icmpv6_ping_request_length;
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        // Sets the raw packet to a valid ethernet header
-        BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IPV6);
-
-        // executing the packet
-        // forward the packet through the multiplexers
-        //mux_eth->setPacketInfo(0,packet,length);
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
+        
+	BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IPV6);
 
         BOOST_CHECK(ip6->isIPver6() == true);
 	BOOST_CHECK(ip6->getPayloadLength() == 64);
@@ -98,18 +83,11 @@ BOOST_AUTO_TEST_CASE (test3_ip6) // ethernet -> ip
 	unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ipv6_tcp_http_get);
         int length = raw_packet_ethernet_ipv6_tcp_http_get_length;
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        // Sets the raw packet to a valid ethernet header
-        BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IPV6);
-
-        // executing the packet
-        // forward the packet through the multiplexers
-        //mux_eth->setPacketInfo(0,packet,length);
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
+        
+	BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IPV6);
 
 	BOOST_CHECK(ip6->isIPver6() == true);
 	
@@ -136,18 +114,11 @@ BOOST_AUTO_TEST_CASE (test4_ip6) // ethernet -> ip6 -> dsthdropts -> tcp -> http
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_ethernet_ipv6_dstopthdr_tcp_http_get);
         int length = raw_ethernet_ipv6_dstopthdr_tcp_http_get_length;
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        // Sets the raw packet to a valid ethernet header
+	inject(packet);
+
         BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IPV6);
-
-        // executing the packet
-        // forward the packet through the multiplexers
-        //mux_eth->setPacketInfo(0,packet,length);
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
 
         BOOST_CHECK(ip6->isIPver6() == true);
 

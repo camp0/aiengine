@@ -37,12 +37,7 @@ BOOST_AUTO_TEST_CASE (test1_ssl)
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
 	// Check the results
 	BOOST_CHECK(ip->getTotalPackets() == 1);
@@ -71,10 +66,7 @@ BOOST_AUTO_TEST_CASE (test2_ssl)
 
 	ssl->createSSLInfos(2);
 
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
         BOOST_CHECK(ssl->getTotalClientHellos() == 1);
         BOOST_CHECK(ssl->getTotalServerHellos() == 0);
@@ -85,12 +77,7 @@ BOOST_AUTO_TEST_CASE (test2_ssl)
         int length2 = raw_packet_ethernet_ip_tcp_ssl_client_hello_2_length;
         Packet packet2(pkt2,length2,0);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet2);
 
         // Check the results
         BOOST_CHECK(ssl->getTotalClientHellos() == 2);
@@ -109,12 +96,7 @@ BOOST_AUTO_TEST_CASE (test3_ssl)
 
         ssl->createSSLInfos(1);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(ssl->getTotalPackets() == 1);
         BOOST_CHECK(ssl->getTotalValidatedPackets() == 1);
@@ -249,10 +231,7 @@ BOOST_AUTO_TEST_CASE (test9_ssl)
         ssl->setDomainNameManager(host_mng_weak);
         host_mng->addDomainName(host_name);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(host_name->getMatchs() == 0);
 }
@@ -271,10 +250,7 @@ BOOST_AUTO_TEST_CASE (test10_ssl)
         ssl->setDomainNameBanManager(host_mng_weak);
         host_mng->addDomainName(host_name);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(host_name->getMatchs() == 1);
 
@@ -294,15 +270,8 @@ BOOST_AUTO_TEST_CASE (test11_ssl)
 
         ssl->createSSLInfos(2);
 
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
-
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet1);
+	inject(packet2);
 
 	auto fm = tcp->getFlowManager();
 

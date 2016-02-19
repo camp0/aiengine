@@ -37,8 +37,7 @@
 #include "../test/tests_packets.h"
 #include "../test/ipv6_test_packets.h"
 #include "Protocol.h"
-#include "Multiplexer.h"
-#include "../ethernet/EthernetProtocol.h"
+#include "StackTest.h"
 #include "../ip/IPProtocol.h"
 #include "../ip6/IPv6Protocol.h"
 #include "../tcp/TCPProtocol.h"
@@ -47,16 +46,14 @@
 
 using namespace aiengine;
 
-struct StackHTTPtest
+struct StackHTTPtest : public StackTest
 {
         //Protocols
-        EthernetProtocolPtr eth;
         IPProtocolPtr ip;
         TCPProtocolPtr tcp;
         HTTPProtocolPtr http;
 
         // Multiplexers
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
         MultiplexerPtr mux_tcp;
 
@@ -76,11 +73,9 @@ struct StackHTTPtest
                 // Allocate all the Protocol objects
                 tcp = TCPProtocolPtr(new TCPProtocol());
                 ip = IPProtocolPtr(new IPProtocol());
-                eth = EthernetProtocolPtr(new EthernetProtocol());
                 http = HTTPProtocolPtr(new HTTPProtocol());
 
                 // Allocate the Multiplexers
-                mux_eth = MultiplexerPtr(new Multiplexer());
                 mux_ip = MultiplexerPtr(new Multiplexer());
                 mux_tcp = MultiplexerPtr(new Multiplexer());
 
@@ -90,13 +85,6 @@ struct StackHTTPtest
 
                 ff_tcp = SharedPointer<FlowForwarder>(new FlowForwarder());
                 ff_http = SharedPointer<FlowForwarder>(new FlowForwarder());
-
-                //configure the eth
-                eth->setMultiplexer(mux_eth);
-                mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-                mux_eth->setProtocolIdentifier(0);
-                mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the ip
                 ip->setMultiplexer(mux_ip);
@@ -139,24 +127,22 @@ struct StackHTTPtest
                 tcp->setFlowForwarder(ff_tcp);
 
                 ff_tcp->addUpFlowForwarder(ff_http);
-
         }
+
         ~StackHTTPtest()
         {
         }
 };
 
 
-struct StackIPv6HTTPtest
+struct StackIPv6HTTPtest : public StackTest
 {
         //Protocols
-        EthernetProtocolPtr eth;
         IPv6ProtocolPtr ip6;
         TCPProtocolPtr tcp;
         HTTPProtocolPtr http;
 
         // Multiplexers
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
         MultiplexerPtr mux_tcp;
 
@@ -176,11 +162,9 @@ struct StackIPv6HTTPtest
                 // Allocate all the Protocol objects
                 tcp = TCPProtocolPtr(new TCPProtocol());
                 ip6 = IPv6ProtocolPtr(new IPv6Protocol());
-                eth = EthernetProtocolPtr(new EthernetProtocol());
                 http = HTTPProtocolPtr(new HTTPProtocol());
 
                 // Allocate the Multiplexers
-                mux_eth = MultiplexerPtr(new Multiplexer());
                 mux_ip = MultiplexerPtr(new Multiplexer());
                 mux_tcp = MultiplexerPtr(new Multiplexer());
 
@@ -190,13 +174,6 @@ struct StackIPv6HTTPtest
 
                 ff_tcp = SharedPointer<FlowForwarder>(new FlowForwarder());
                 ff_http = SharedPointer<FlowForwarder>(new FlowForwarder());
-
-                //configure the eth
-                eth->setMultiplexer(mux_eth);
-                mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-                mux_eth->setProtocolIdentifier(0);
-                mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the ip
                 ip6->setMultiplexer(mux_ip);

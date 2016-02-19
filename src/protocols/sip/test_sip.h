@@ -37,8 +37,7 @@
 #include "../test/tests_packets.h"
 #include "../test/ipv6_test_packets.h"
 #include "Protocol.h"
-#include "Multiplexer.h"
-#include "../ethernet/EthernetProtocol.h"
+#include "StackTest.h"
 #include "../ip/IPProtocol.h"
 #include "../ip6/IPv6Protocol.h"
 #include "../udp/UDPProtocol.h"
@@ -46,16 +45,14 @@
 
 using namespace aiengine;
 
-struct StackSIPtest
+struct StackSIPtest : public StackTest
 {
         //Protocols
-        EthernetProtocolPtr eth;
         IPProtocolPtr ip;
         UDPProtocolPtr udp;
         SIPProtocolPtr sip;
 
         // Multiplexers
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
         MultiplexerPtr mux_udp;
 
@@ -75,11 +72,9 @@ struct StackSIPtest
                 // Allocate all the Protocol objects
                 udp = UDPProtocolPtr(new UDPProtocol());
                 ip = IPProtocolPtr(new IPProtocol());
-                eth = EthernetProtocolPtr(new EthernetProtocol());
                 sip = SIPProtocolPtr(new SIPProtocol());
 
                 // Allocate the Multiplexers
-                mux_eth = MultiplexerPtr(new Multiplexer());
                 mux_ip = MultiplexerPtr(new Multiplexer());
                 mux_udp = MultiplexerPtr(new Multiplexer());
 
@@ -89,13 +84,6 @@ struct StackSIPtest
 
                 ff_udp = SharedPointer<FlowForwarder>(new FlowForwarder());
                 ff_sip = SharedPointer<FlowForwarder>(new FlowForwarder());
-
-                //configure the eth
-                eth->setMultiplexer(mux_eth);
-                mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-                mux_eth->setProtocolIdentifier(0);
-                mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the ip
                 ip->setMultiplexer(mux_ip);

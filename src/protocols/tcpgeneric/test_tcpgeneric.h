@@ -38,8 +38,7 @@
 #include "../test/torrent_test_packets.h"
 #include "../test/ipv6_test_packets.h"
 #include "Protocol.h"
-#include "Multiplexer.h"
-#include "../ethernet/EthernetProtocol.h"
+#include "StackTest.h"
 #include "../ip/IPProtocol.h"
 #include "../ip6/IPv6Protocol.h"
 #include "../tcp/TCPProtocol.h"
@@ -47,16 +46,14 @@
 
 using namespace aiengine;
 
-struct StackTCPGenericTest {
-
-        EthernetProtocolPtr eth;
+struct StackTCPGenericTest : public StackTest
+{
         IPProtocolPtr ip;
         IPv6ProtocolPtr ip6;
         TCPProtocolPtr tcp;
         TCPGenericProtocolPtr gtcp;
         TCPProtocolPtr tcp6;
         TCPGenericProtocolPtr gtcp6;
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
         MultiplexerPtr mux_ip6;
         MultiplexerPtr mux_tcp;
@@ -79,7 +76,6 @@ struct StackTCPGenericTest {
 #endif
                 ip = IPProtocolPtr(new IPProtocol());
                 ip6 = IPv6ProtocolPtr(new IPv6Protocol());
-                eth = EthernetProtocolPtr(new EthernetProtocol());
                 tcp = TCPProtocolPtr(new TCPProtocol());
                 gtcp = TCPGenericProtocolPtr(new TCPGenericProtocol());
                 tcp6 = TCPProtocolPtr(new TCPProtocol());
@@ -89,7 +85,6 @@ struct StackTCPGenericTest {
                 mux_tcp = MultiplexerPtr(new Multiplexer());
                 mux_tcp6 = MultiplexerPtr(new Multiplexer());
                 mux_tcp6 = MultiplexerPtr(new Multiplexer());
-                mux_eth = MultiplexerPtr(new Multiplexer());
                 ff_tcp = SharedPointer<FlowForwarder>(new FlowForwarder());
                 ff_gtcp = SharedPointer<FlowForwarder>(new FlowForwarder());
                 ff_tcp6 = SharedPointer<FlowForwarder>(new FlowForwarder());
@@ -98,13 +93,6 @@ struct StackTCPGenericTest {
                 // Allocate the flow caches and tables
                 flow_mng = FlowManagerPtr(new FlowManager());
                 flow_cache = FlowCachePtr(new FlowCache());
-
-                //configure the eth
-                eth->setMultiplexer(mux_eth);
-                mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-                mux_eth->setProtocolIdentifier(0);
-                mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the ip
                 ip->setMultiplexer(mux_ip);

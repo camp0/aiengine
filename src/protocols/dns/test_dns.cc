@@ -39,12 +39,7 @@ BOOST_AUTO_TEST_CASE (test1_dns)
         int length = raw_packet_ethernet_ip_udp_dns_as_dot_com_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // Check the results
         BOOST_CHECK(ip->getTotalPackets() == 1);
@@ -86,12 +81,7 @@ BOOST_AUTO_TEST_CASE (test2_dns)
 	dns->setDomainNameBanManager(host_ban_weak);
 	host_ban_mng->addDomainName(host_name);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // Check the results
         BOOST_CHECK(ip->getTotalPackets() == 1);
@@ -120,12 +110,7 @@ BOOST_AUTO_TEST_CASE (test3_dns)
         int length = raw_packet_ethernet_ip_udp_dns_query_srv_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = udp->getCurrentFlow();
 
@@ -141,12 +126,7 @@ BOOST_AUTO_TEST_CASE (test4_dns)
         int length = raw_packet_ethernet_ip_udp_dns_query_soa_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = udp->getCurrentFlow();
 
@@ -162,12 +142,7 @@ BOOST_AUTO_TEST_CASE (test5_dns)
         int length = raw_packet_ethernet_ip_udp_dns_dynamic_update_soa_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = udp->getCurrentFlow();
 
@@ -186,12 +161,7 @@ BOOST_AUTO_TEST_CASE (test6_dns)
         int length = raw_packet_ethernet_ip_udp_dns_query_aaaa_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = udp->getCurrentFlow();
 
@@ -210,12 +180,7 @@ BOOST_AUTO_TEST_CASE (test7_dns)
         int length = raw_packet_ethernet_ip_udp_dns_dnskey_root_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = udp->getCurrentFlow();
 
@@ -234,12 +199,7 @@ BOOST_AUTO_TEST_CASE (test8_dns)
         int length = raw_packet_ethernet_ip_udp_dns_dnskey_ietfdotorg_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = udp->getCurrentFlow();
 
@@ -258,11 +218,7 @@ BOOST_AUTO_TEST_CASE (test9_dns)
         int length = raw_packet_ethernet_ip_udp_dns_dnskey_ietfdotorg_length;
         Packet packet(pkt,length);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = udp->getCurrentFlow();
 
@@ -286,16 +242,8 @@ BOOST_AUTO_TEST_CASE (test10_dns)
         int length2 = raw_packet_ethernet_ip_udp_dns_response_youtube_length;
         Packet packet2(pkt2,length2);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
-
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet1);
+	inject(packet2);
 
         Flow *flow = udp->getCurrentFlow();
 	//show();
@@ -326,16 +274,8 @@ BOOST_AUTO_TEST_CASE (test11_dns)
         dns->setDomainNameManager(dom_mng);
         dom_mng->addDomainName(dom_name);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
-
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet1);
+	inject(packet2);
 
         Flow *flow = udp->getCurrentFlow();
         //show();
@@ -371,19 +311,12 @@ BOOST_AUTO_TEST_CASE (test12_dns)
         int length2 = raw_packet_ethernet_ip_udp_dns_response_youtube_length;
         Packet packet2(pkt2,length2);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
 	dns->releaseCache();
 
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
-
+	inject(packet2);
+	
 	// TODO check the values of the flow
 	//
 }

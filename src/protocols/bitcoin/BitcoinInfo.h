@@ -41,14 +41,11 @@ public:
 
         void reset() {
 		total_transactions_ = 0;
-		data_read[0] = 0; data_read[1] = 0;
         }
 
 	void incTransactions() { ++total_transactions_; }
 	int32_t getTotalTransactions() const { return total_transactions_; }
 
-	int32_t data_read[2];
-	
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 
         friend std::ostream& operator<< (std::ostream& out, const BitcoinInfo& binfo) {

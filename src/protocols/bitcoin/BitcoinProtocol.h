@@ -41,7 +41,7 @@ struct bitcoin_hdr {
         char       	command[12];    /* Command */
         uint32_t       	length;         /* Length */
         uint32_t       	cksum;          /* Checksum */
-	u_char 		data[0];
+	// u_char 		data[0];
 } __attribute__((packed));
 
 enum bitcoin_command_code {
@@ -65,7 +65,7 @@ enum bitcoin_command_code {
 };
 
 // Commands and their corresponding handlers
-typedef std::tuple<short,const char*,int32_t> BitcoinCommandType;
+typedef std::tuple<short,const char*,int32_t,short> BitcoinCommandType;
 
 class BitcoinProtocol: public Protocol 
 {
@@ -74,6 +74,7 @@ public:
 		Protocol("BitcoinProtocol","bitcoin"),
 		stats_level_(0),
 		bitcoin_header_(nullptr),total_bytes_(0),
+		total_bitcoin_operations_(0),
 		info_cache_(new Cache<BitcoinInfo>("Bitcoin Info Cache"))
         	{}
 
@@ -121,7 +122,9 @@ public:
 		return false;
 	}
 
+	// Returns the length of the last block process on a packet
 	int32_t getPayloadLength() const { return bitcoin_header_->length; }	
+	int32_t getTotalBitcoinOperations() const { return total_bitcoin_operations_; }	
 
 	int64_t getAllocatedMemory() const { return sizeof(BitcoinProtocol); }
 
@@ -141,6 +144,7 @@ private:
 	int stats_level_;
 	struct bitcoin_hdr *bitcoin_header_;
 	int64_t total_bytes_;
+	int64_t total_bitcoin_operations_;
 
 	static std::unordered_map<std::string,BitcoinCommandType> commands_;	        
 

@@ -122,13 +122,8 @@ BOOST_AUTO_TEST_CASE (test5_frequencies)
 
 	// Create one Frequency object
 	freq->createFrequencies(1);
-	
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+
+	inject(packet);	
 
 	// Check the results
 	BOOST_CHECK(ip->getTotalPackets() == 1);
@@ -157,13 +152,9 @@ BOOST_AUTO_TEST_CASE ( test6_frequencies )
         // Create one Frequency object
         freq->createFrequencies(1);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-
 	// Inject the packet 100 times.
 	for (int i = 0; i< 100 ; ++i) 
-       		mux_eth->forwardPacket(packet);
+       		inject(packet);
 
 	BOOST_CHECK(freq->getTotalBytes() == 19300);
 	BOOST_CHECK(freq->getTotalValidatedPackets() == 1);
@@ -200,11 +191,7 @@ BOOST_AUTO_TEST_CASE ( test7_frequencies )
         // Create one Frequency object
         freq->createFrequencies(1);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         FrequencyCounterPtr fcount = FrequencyCounterPtr(new FrequencyCounter());
 
@@ -242,11 +229,8 @@ BOOST_AUTO_TEST_CASE ( test8_frequencies )
 
         // Create one Frequency object
         freq->createFrequencies(1);
-        
-	mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+
+	inject(packet);        
 
 	FrequencyGroup<uint16_t> group_by_port;
 
@@ -268,10 +252,7 @@ BOOST_AUTO_TEST_CASE ( test9_frequencies )
         // Create one Frequency object
         freq->createFrequencies(1);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         FrequencyGroup<char*> group_by_address;
 
@@ -288,15 +269,12 @@ BOOST_AUTO_TEST_CASE ( test10_frequencies )
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_ssl_client_hello);
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
         // Create one Frequency object
         freq->createFrequencies(1);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         FrequencyGroup<std::string> group_by_destination_port;
 
@@ -321,10 +299,7 @@ BOOST_AUTO_TEST_CASE ( test11_frequencies )
         // Create one Frequency object
         freq->createFrequencies(1);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         FrequencyGroup<std::string> group_by_destination_ip_port;
 
@@ -387,10 +362,7 @@ BOOST_AUTO_TEST_CASE ( test13_frequencies ) // exercise the iterator
         // Create one Frequency object
         freq->createFrequencies(1);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         FrequencyGroup<std::string> group;
 
