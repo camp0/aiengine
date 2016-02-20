@@ -43,6 +43,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 
 %ignore aiengine::free_list;
 
+%ignore aiengine::FlowInfo;
 %ignore aiengine::FlowDirection;
 
 %ignore aiengine::Frequencies; 
@@ -469,44 +470,29 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 
 %header %{
 
-
     static void free_Regex(void *ptr) {
 	aiengine::Regex *re  = (aiengine::Regex*) ptr;
-
-   }
+    }
 
     static void mark_RegexManager(void *ptr) {
 	aiengine::RegexManager *rmng  = (aiengine::RegexManager*) ptr;
-
-//        std::cout << "Marking object" << std::endl;
-
-  }
+    }
 
     static void free_IPSetManager(void *ptr) {
         aiengine::IPSetManager *imng = (aiengine::IPSetManager*) ptr;
-  //      std::cout << "Destroy IPSetManager" << std::endl;
 
         SWIG_RubyRemoveTracking(ptr);
-
     }
 
     static void free_DomainNameManager(void *ptr) {
 	aiengine::DomainNameManager *dmng = (aiengine::DomainNameManager*) ptr;
-//	std::cout << "Destroy DomainNameManager" << std::endl;
 
         SWIG_RubyRemoveTracking(ptr);
-
     }
 
     static void free_RegexManager(void* ptr) {
         aiengine::RegexManager *rmng  = (aiengine::RegexManager*) ptr;
-  //      std::cout << "Destroy RegexManager" << std::endl;
-
-	// auto start = rmng->begin();
-	// auto end = rmng->end();
 
         SWIG_RubyRemoveTracking(ptr);
-	
-	//delete rmng;
     }
 %}

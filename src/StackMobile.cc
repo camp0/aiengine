@@ -82,6 +82,7 @@ StackMobile::StackMobile():
 	addProtocol(smtp);
 	addProtocol(imap);
 	addProtocol(pop);
+	addProtocol(bitcoin);
 	addProtocol(tcp_generic);
 	addProtocol(freqs_tcp);
 	addProtocol(dns);
@@ -215,6 +216,7 @@ StackMobile::StackMobile():
         smtp->setFlowManager(flow_table_tcp_);
         imap->setFlowManager(flow_table_tcp_);
         pop->setFlowManager(flow_table_tcp_);
+        bitcoin->setFlowManager(flow_table_tcp_);
         dns->setFlowManager(flow_table_udp_high_);
         sip->setFlowManager(flow_table_udp_high_);
         ssdp->setFlowManager(flow_table_udp_high_);
@@ -230,7 +232,7 @@ StackMobile::StackMobile():
 	tcp_->setFlowForwarder(ff_tcp_);	
 	udp_high_->setFlowForwarder(ff_udp_high_);	
 
-	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
+	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
         enableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
 
         std::ostringstream msg;
@@ -277,6 +279,7 @@ void StackMobile::setTotalTCPFlows(int value) {
         smtp->createSMTPInfos(value * 0.05);
         imap->createIMAPInfos(value * 0.05);
         pop->createPOPInfos(value * 0.05);
+        bitcoin->createBitcoinInfos(value * 0.05);
 }
 
 void StackMobile::setTotalUDPFlows(int value) {
@@ -334,7 +337,7 @@ void StackMobile::enableFrequencyEngine(bool enable) {
 void StackMobile::enableNIDSEngine(bool enable) {
 
         if (enable) {
-		disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop});
+		disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin});
         	disableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp});
 
 	        std::ostringstream msg;
@@ -345,7 +348,7 @@ void StackMobile::enableNIDSEngine(bool enable) {
 		disableFlowForwarders(ff_tcp_,{ff_tcp_generic});
         	disableFlowForwarders(ff_udp_high_,{ff_udp_generic});
 
-		enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
+		enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
         	enableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
         }
 	enable_nids_engine_ = enable;

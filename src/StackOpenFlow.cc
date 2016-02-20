@@ -85,6 +85,7 @@ StackOpenFlow::StackOpenFlow():
         addProtocol(smtp);
         addProtocol(imap);
         addProtocol(pop);
+        addProtocol(bitcoin);
         addProtocol(tcp_generic);
         addProtocol(freqs_tcp);
         addProtocol(dns);
@@ -249,7 +250,8 @@ StackOpenFlow::StackOpenFlow():
         tcp_vir_->setFlowForwarder(ff_tcp_vir_);
         udp_vir_->setFlowForwarder(ff_udp_vir_);
 
-        enableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
+        enableFlowForwarders(ff_tcp_vir_,
+		{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
         enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
 
         std::ostringstream msg;
@@ -299,6 +301,7 @@ void StackOpenFlow::setTotalTCPFlows(int value) {
         smtp->createSMTPInfos(value * 0.05);
         imap->createIMAPInfos(value * 0.05);
         pop->createPOPInfos(value * 0.05);
+        bitcoin->createBitcoinInfos(value * 0.05);
 }
 
 void StackOpenFlow::setTotalUDPFlows(int value) {
@@ -354,7 +357,7 @@ void StackOpenFlow::enableFrequencyEngine(bool enable) {
 void StackOpenFlow::enableNIDSEngine(bool enable) {
 
         if (enable) {
-        	disableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop});
+        	disableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin});
         	disableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_ssdp,ff_snmp});
 
                 std::ostringstream msg;
@@ -365,7 +368,8 @@ void StackOpenFlow::enableNIDSEngine(bool enable) {
         	disableFlowForwarders(ff_tcp_vir_,{ff_tcp_generic});
         	disableFlowForwarders(ff_udp_vir_,{ff_udp_generic});
 
-        	enableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
+        	enableFlowForwarders(ff_tcp_vir_,
+			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
         	enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
         }
 	enable_nids_engine_ = enable;

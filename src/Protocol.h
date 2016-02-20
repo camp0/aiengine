@@ -138,6 +138,10 @@ public:
 	// Memory comsumption of the Protocol, caches and so on
 	virtual int64_t getAllocatedMemory() const = 0;
 
+	// used on mainly on the bindings
+	virtual void increaseAllocatedMemory(int value) {}
+	virtual void decreaseAllocatedMemory(int value) {}
+
         virtual void setDomainNameManager(DomainNameManagerPtrWeak dnm) {} // Non pure virtual methods
         virtual void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) {}
 

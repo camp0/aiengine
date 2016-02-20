@@ -139,6 +139,9 @@ public:
 		}
 	}
 
+	void increaseAllocatedMemory(int value) { createDNSDomains(value); }
+	void decreaseAllocatedMemory(int value) { destroyDNSDomains(value); }
+
         void createDNSDomains(int number);
         void destroyDNSDomains(int number);
 

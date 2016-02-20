@@ -128,6 +128,9 @@ public:
 
 	int64_t getAllocatedMemory() const { return sizeof(BitcoinProtocol); }
 
+	void increaseAllocatedMemory(int value) { createBitcoinInfos(value); } 
+	void decreaseAllocatedMemory(int value) { destroyBitcoinInfos(value); }
+
         void createBitcoinInfos(int number);
         void destroyBitcoinInfos(int number);
 
