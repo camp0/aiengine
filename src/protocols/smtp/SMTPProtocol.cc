@@ -393,18 +393,18 @@ void SMTPProtocol::statistics(std::basic_ostream<char>& out)
 }
 
 
-void SMTPProtocol::createSMTPInfos(int number) { 
+void SMTPProtocol::increaseAllocatedMemory(int value) { 
 
-	info_cache_->create(number);
-	from_cache_->create(number);
-	to_cache_->create(number);
+	info_cache_->create(value);
+	from_cache_->create(value);
+	to_cache_->create(value);
 }
 
-void SMTPProtocol::destroySMTPInfos(int number) { 
+void SMTPProtocol::decreaseAllocatedMemory(int value) { 
 
-	info_cache_->destroy(number);
-	from_cache_->destroy(number);
-	to_cache_->destroy(number);
+	info_cache_->destroy(value);
+	from_cache_->destroy(value);
+	to_cache_->destroy(value);
 }
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)

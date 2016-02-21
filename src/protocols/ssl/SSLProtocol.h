@@ -163,8 +163,8 @@ public:
 	int32_t getTotalBanHosts() const { return total_ban_hosts_; }
 	int32_t getTotalAllowHosts() const { return total_allow_hosts_; }
 
-        void createSSLInfos(int number);
-        void destroySSLInfos(int number);
+        void increaseAllocatedMemory(int value);
+        void decreaseAllocatedMemory(int value);
 
 	void setDomainNameManager(DomainNameManagerPtrWeak dnm) override { domain_mng_ = dnm;}
 	void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) override { ban_domain_mng_ = dnm;}

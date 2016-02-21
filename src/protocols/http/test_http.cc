@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE (test3_http)
         Packet packet(pkt,length,0);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPInfos(10);
+        http->increaseAllocatedMemory(10);
 
 	flow->setFlowDirection(FlowDirection::FORWARD);
         flow->packet = const_cast<Packet*>(&packet);
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE (test4_http)
         Packet packet(pkt,length,0);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE (test5_http)
         Packet packet(pkt,length,0);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE (test6_http)
         Packet packet(pkt,length,0);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
@@ -260,7 +260,7 @@ BOOST_AUTO_TEST_CASE (test7_http)
         Packet packet(pkt,length,0);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
@@ -302,7 +302,7 @@ BOOST_AUTO_TEST_CASE (test8_http)
         Packet packet1(pkt1,length1);
         SharedPointer<Flow> flow1 = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPInfos(2);
+        http->increaseAllocatedMemory(2);
 
         flow1->packet = const_cast<Packet*>(&packet1);
         http->processFlow(flow1.get());
@@ -382,7 +382,7 @@ BOOST_AUTO_TEST_CASE (test9_http)
         Packet packet1(pkt1,length1);
         SharedPointer<Flow> flow1 = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPInfos(2);
+        http->increaseAllocatedMemory(2);
 
         flow1->packet = const_cast<Packet*>(&packet1);
         http->processFlow(flow1.get());
@@ -474,7 +474,7 @@ BOOST_AUTO_TEST_CASE (test10_http)
 	host_mng->addDomainName(host_name);
 
 	// Dont create any items on the cache
-        http->createHTTPInfos(0);
+        http->increaseAllocatedMemory(0);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
@@ -517,7 +517,7 @@ BOOST_AUTO_TEST_CASE (test11_http)
         host_mng->addDomainName(host_name);
 
         // Dont create any items on the cache
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
@@ -559,7 +559,7 @@ BOOST_AUTO_TEST_CASE (test12_http)
         host_mng->addDomainName(host_name);
 
         // Dont create any items on the cache
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
@@ -599,7 +599,7 @@ BOOST_AUTO_TEST_CASE (test13_http)
         Packet packet(pkt,length);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-	http->createHTTPInfos(1);
+	http->increaseAllocatedMemory(1);
 
         http->setDomainNameBanManager(host_mng_weak);
         host_mng->addDomainName(host_name);
@@ -658,7 +658,7 @@ BOOST_AUTO_TEST_CASE (test14_http)
 
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
 	flow->setFlowDirection(FlowDirection::FORWARD);
         flow->packet = const_cast<Packet*>(&packet1);
@@ -714,7 +714,7 @@ BOOST_AUTO_TEST_CASE (test15_http)
         Packet packet(pkt,length);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 	
 	flow->setFlowDirection(FlowDirection::BACKWARD);
 
@@ -759,7 +759,7 @@ BOOST_AUTO_TEST_CASE (test16_http)
         Packet packet(pkt,length);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
@@ -811,12 +811,12 @@ BOOST_AUTO_TEST_CASE (test17_http)
         WeakPointer<DomainNameManager> host_mng_weak = host_mng;
         SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("Banned domain","bu.com"));
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
         http->setDomainNameBanManager(host_mng_weak);
         host_mng->addDomainName(host_name);
 
-        http->createHTTPInfos(2);
+        http->increaseAllocatedMemory(2);
 
         flow->packet = const_cast<Packet*>(&packet1);
         http->processFlow(flow.get());
@@ -852,7 +852,7 @@ BOOST_AUTO_TEST_CASE (test18_http)
         Packet packet(pkt,length);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
@@ -893,7 +893,7 @@ BOOST_AUTO_TEST_CASE (test19_http)
         Packet packet(pkt,length);
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet);
         http->processFlow(flow.get());
@@ -944,7 +944,7 @@ BOOST_AUTO_TEST_CASE (test20_http)
 
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet1);
 	flow->setFlowDirection(FlowDirection::FORWARD);
@@ -1013,7 +1013,7 @@ BOOST_AUTO_TEST_CASE (test21_http)
 
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
 	// Process First packet request
         flow->packet = const_cast<Packet*>(&packet1);
@@ -1090,7 +1090,7 @@ BOOST_AUTO_TEST_CASE (test22_http)
 
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet1);
         flow->setFlowDirection(FlowDirection::FORWARD);
@@ -1148,7 +1148,7 @@ BOOST_AUTO_TEST_CASE (test23_http)
         SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("One domain","bu.com"));
 	SharedPointer<HTTPUriSet> uset = SharedPointer<HTTPUriSet>(new HTTPUriSet());
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
 	uset->addURI("/someur-oonnnnn-a-/somefile.php");
 
@@ -1204,7 +1204,7 @@ BOOST_AUTO_TEST_CASE (test24_http)
         SharedPointer<DomainName> host_name = SharedPointer<DomainName>(new DomainName("One domain","bu.com"));
         SharedPointer<HTTPUriSet> uset = SharedPointer<HTTPUriSet>(new HTTPUriSet());
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
         uset->addURI("/someur-oonnnnn-a-/somefile.html");
         uset->addURI("/index.html");
@@ -1277,7 +1277,7 @@ BOOST_AUTO_TEST_CASE (test25_http)
 
 	rmng->addRegex(re);
 	
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet1);
         flow->setFlowDirection(FlowDirection::FORWARD);
@@ -1346,7 +1346,7 @@ BOOST_AUTO_TEST_CASE (test26_http)
 
         rmng->addRegex(re1);
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
 	// Inject the first request
         flow->packet = const_cast<Packet*>(&packet1);
@@ -1408,7 +1408,7 @@ BOOST_AUTO_TEST_CASE (test27_http)
 
         rmng->addRegex(re1);
 
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
         // Inject the first request
         flow->packet = const_cast<Packet*>(&packet1);
@@ -1533,7 +1533,7 @@ BOOST_AUTO_TEST_CASE (test4_http)
         Packet packet(pkt,length);
 
         // Dont create any items on the cache
-        http->createHTTPInfos(0);
+        http->increaseAllocatedMemory(0);
 
 	inject(packet);
 
@@ -1558,7 +1558,7 @@ BOOST_AUTO_TEST_CASE (test5_http)
         Packet packet(pkt,length);
 
         // create any items on the cache
-        http->createHTTPInfos(1);
+        http->increaseAllocatedMemory(1);
 
 	inject(packet);
 

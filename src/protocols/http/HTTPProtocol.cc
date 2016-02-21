@@ -658,7 +658,6 @@ void HTTPProtocol::processFlow(Flow *flow) {
 				}
 			}
 		}
-
 	}
 
         if(info->getHaveData() == true) {
@@ -686,7 +685,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
 }
 
 
-void HTTPProtocol::createHTTPInfos(int number) {
+void HTTPProtocol::increaseAllocatedMemory(int number) {
 
 	info_cache_->create(number);
 	uri_cache_->create(number);
@@ -694,7 +693,7 @@ void HTTPProtocol::createHTTPInfos(int number) {
 	ua_cache_->create(number);
 }
 
-void HTTPProtocol::destroyHTTPInfos(int number) {
+void HTTPProtocol::decreaseAllocatedMemory(int number) {
 
 	info_cache_->destroy(number);
 	uri_cache_->destroy(number);

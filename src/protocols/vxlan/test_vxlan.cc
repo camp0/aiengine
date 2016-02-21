@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE (test4_vxlan)
         int length = raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_udp_dns_request_length;
         Packet packet(pkt,length);
 
-	dns_vir->createDNSDomains(1);
+	dns_vir->increaseAllocatedMemory(1);
 
 	inject(packet);
 
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE (test5_vxlan)
         int length1 = raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_udp_dns_request_length;
         Packet packet1(pkt1,length1);
 
-        dns_vir->createDNSDomains(2);
+        dns_vir->increaseAllocatedMemory(2);
 
 	inject(packet1);
 

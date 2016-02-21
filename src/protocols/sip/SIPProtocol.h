@@ -114,8 +114,8 @@ public:
 
 	unsigned char *getPayload() { return sip_header_; }
 
-        void createSIPInfos(int number); 
-        void destroySIPInfos(int number);
+        void increaseAllocatedMemory(int value); 
+        void decreaseAllocatedMemory(int value);
         
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 

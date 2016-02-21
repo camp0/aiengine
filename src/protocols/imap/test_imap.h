@@ -102,7 +102,7 @@ struct StackIMAPtest : public StackTest
 
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(2);
-		imap->createIMAPInfos(2);
+		imap->increaseAllocatedMemory(2);
 		tcp->createTCPInfos(2);
 
                 tcp->setFlowCache(flow_cache);

@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE (test2_ssl)
         int length1 = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
         Packet packet1(pkt1,length1);
 
-	ssl->createSSLInfos(2);
+	ssl->increaseAllocatedMemory(2);
 
 	inject(packet1);
 
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE (test3_ssl)
         int length = raw_packet_ethernet_ip_tcp_ssl_tor_length;
         Packet packet(pkt,length);
 
-        ssl->createSSLInfos(1);
+        ssl->increaseAllocatedMemory(1);
 
 	inject(packet);
 
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE (test4_ssl)
 
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        ssl->createSSLInfos(0);
+        ssl->increaseAllocatedMemory(0);
 
         flow->packet = const_cast<Packet*>(&packet1);
         ssl->processFlow(flow.get());
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE (test5_ssl)
 
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        ssl->createSSLInfos(1);
+        ssl->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet1);
         ssl->processFlow(flow.get());
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE (test6_ssl)
 
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        ssl->createSSLInfos(1);
+        ssl->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet1);
         ssl->processFlow(flow.get());
@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE (test7_ssl)
 
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        ssl->createSSLInfos(1);
+        ssl->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet1);
         ssl->processFlow(flow.get());
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE (test8_ssl)
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
         Packet packet(pkt,length,0);
 
-        ssl->createSSLInfos(1);
+        ssl->increaseAllocatedMemory(1);
         ssl->setDomainNameManager(host_mng_weak);
         host_mng->addDomainName(host_name);
         
@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE (test9_ssl)
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
         Packet packet(pkt,length,0);
 
-        ssl->createSSLInfos(1);
+        ssl->increaseAllocatedMemory(1);
         ssl->setDomainNameManager(host_mng_weak);
         host_mng->addDomainName(host_name);
 
@@ -246,7 +246,7 @@ BOOST_AUTO_TEST_CASE (test10_ssl)
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
         Packet packet(pkt,length);
 
-        ssl->createSSLInfos(1);
+        ssl->increaseAllocatedMemory(1);
         ssl->setDomainNameBanManager(host_mng_weak);
         host_mng->addDomainName(host_name);
 
@@ -268,7 +268,7 @@ BOOST_AUTO_TEST_CASE (test11_ssl)
         int length2 = raw_packet_ethernet_ip_tcp_ssl_tor_hello_length;
         Packet packet2(pkt2,length2);
 
-        ssl->createSSLInfos(2);
+        ssl->increaseAllocatedMemory(2);
 
 	inject(packet1);
 	inject(packet2);
@@ -307,7 +307,7 @@ BOOST_AUTO_TEST_CASE (test12_ssl)
 
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        ssl->createSSLInfos(1);
+        ssl->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet1);
         ssl->processFlow(flow.get());

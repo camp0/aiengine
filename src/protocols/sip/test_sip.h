@@ -114,7 +114,7 @@ struct StackSIPtest : public StackTest
 
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(1);
-		sip->createSIPInfos(1);
+		sip->increaseAllocatedMemory(1);
 
                 udp->setFlowCache(flow_cache);
                 udp->setFlowManager(flow_mng);

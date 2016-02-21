@@ -373,16 +373,16 @@ void SSLProtocol::statistics(std::basic_ostream<char>& out) {
 }
 
 
-void SSLProtocol::createSSLInfos(int number) { 
+void SSLProtocol::increaseAllocatedMemory(int value) { 
 
-	info_cache_->create(number);
-	host_cache_->create(number);
+	info_cache_->create(value);
+	host_cache_->create(value);
 }
 
-void SSLProtocol::destroySSLInfos(int number) { 
+void SSLProtocol::decreaseAllocatedMemory(int value) { 
 
-	info_cache_->destroy(number);
-	host_cache_->destroy(number);
+	info_cache_->destroy(value);
+	host_cache_->destroy(value);
 }
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)

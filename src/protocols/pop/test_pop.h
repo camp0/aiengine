@@ -114,7 +114,7 @@ struct StackPOPtest : public StackTest
 
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(2);
-		pop->createPOPInfos(2);
+		pop->increaseAllocatedMemory(2);
 		tcp->createTCPInfos(2);
 
                 tcp->setFlowCache(flow_cache);

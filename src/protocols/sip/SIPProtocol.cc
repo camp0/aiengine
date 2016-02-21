@@ -335,23 +335,23 @@ void SIPProtocol::processFlow(Flow *flow) {
 }
 
 
-void SIPProtocol::createSIPInfos(int number) {
+void SIPProtocol::increaseAllocatedMemory(int value) {
 
-	info_cache_->create(number);
-	uri_cache_->create(number);
-	from_cache_->create(number);
-	to_cache_->create(number);
-	via_cache_->create(number);
+	info_cache_->create(value);
+	uri_cache_->create(value);
+	from_cache_->create(value);
+	to_cache_->create(value);
+	via_cache_->create(value);
 }
 
 
-void SIPProtocol::destroySIPInfos(int number) {
+void SIPProtocol::decreaseAllocatedMemory(int value) {
 
-	info_cache_->destroy(number);
-	uri_cache_->destroy(number);
-	from_cache_->destroy(number);
-	to_cache_->destroy(number);
-	via_cache_->destroy(number);
+	info_cache_->destroy(value);
+	uri_cache_->destroy(value);
+	from_cache_->destroy(value);
+	to_cache_->destroy(value);
+	via_cache_->destroy(value);
 }
 
 void SIPProtocol::statistics(std::basic_ostream<char>& out) {

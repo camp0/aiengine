@@ -163,6 +163,9 @@ public:
 	//unsigned char *getPayload() const { return &gprs_header_; }
 	uint16_t getHeaderLength() const { return ntohs(gprs_header_->length); }
 
+        void increaseAllocatedMemory(int value) { gprs_info_cache_->create(value); }
+        void decreaseAllocatedMemory(int value) { gprs_info_cache_->destroy(value); }
+
         void createGPRSInfo(int number) { gprs_info_cache_->create(number);}
         void destroyGPRSInfo(int number) { gprs_info_cache_->destroy(number);}
 

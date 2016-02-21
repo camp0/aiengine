@@ -309,7 +309,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_8,StackLanTest)
 	ff_ssl_aux->addChecker(std::bind(&SSLProtocol::sslChecker,ssl_aux,std::placeholders::_1));
         ff_ssl_aux->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl_aux,std::placeholders::_1));
 
-	ssl_aux->createSSLInfos(4);
+	ssl_aux->increaseAllocatedMemory(4);
 
         pd->open("../pcapfiles/sslflow.pcap");
         pd->run();
@@ -831,7 +831,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_20,StackLanTest) // Tests for release the cach
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
 
-	ssl->createSSLInfos(4);
+	ssl->increaseAllocatedMemory(4);
 
         //flow_table_udp->setTimeout(60*60*24*365);
         //flow_table_tcp->setTimeout(60*60*24*365);
@@ -898,7 +898,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_22,StackLanTest) // Tests for release the cach
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
 
-        smtp->createSMTPInfos(1);
+        smtp->increaseAllocatedMemory(1);
 
         pd->open("../pcapfiles/smtp.pcap");
         pd->run();
@@ -929,7 +929,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_23,StackLanTest) // Tests for release the cach
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
 
-        ssl->createSSLInfos(4);
+        ssl->increaseAllocatedMemory(4);
 
         pd->open("../pcapfiles/amazon_4ssl_flows.pcap");
         pd->setPcapFilter("port 57077");

@@ -506,18 +506,18 @@ void SSDPProtocol::statistics(std::basic_ostream<char>& out) {
         }
 }
 
-void SSDPProtocol::createSSDPInfos(int number) { 
+void SSDPProtocol::increaseAllocatedMemory(int value) { 
 
-	info_cache_->create(number);
-	host_cache_->create(number);
-	uri_cache_->create(number);
+	info_cache_->create(value);
+	host_cache_->create(value);
+	uri_cache_->create(value);
 }
 
-void SSDPProtocol::destroySSDPInfos(int number) { 
+void SSDPProtocol::decreaseAllocatedMemory(int value) { 
 
-	info_cache_->destroy(number);
-	host_cache_->destroy(number);
-	uri_cache_->destroy(number);
+	info_cache_->destroy(value);
+	host_cache_->destroy(value);
+	uri_cache_->destroy(value);
 }
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)

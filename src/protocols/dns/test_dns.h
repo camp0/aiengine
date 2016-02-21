@@ -116,7 +116,7 @@ struct StackDNStest : public StackTest
                 flow_cache->createFlows(2);
 
 		dns->setFlowManager(flow_mng);
-		dns->createDNSDomains(2);
+		dns->increaseAllocatedMemory(2);
 
                 udp->setFlowCache(flow_cache);
                 udp->setFlowManager(flow_mng);

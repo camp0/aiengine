@@ -137,8 +137,8 @@ public:
 
 	unsigned char *getPayload() { return imap_header_; }
 
-        void createIMAPInfos(int number);
-        void destroyIMAPInfos(int number);
+        void increaseAllocatedMemory(int value);
+        void decreaseAllocatedMemory(int value);
 
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 

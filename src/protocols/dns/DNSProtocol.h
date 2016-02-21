@@ -139,11 +139,8 @@ public:
 		}
 	}
 
-	void increaseAllocatedMemory(int value) { createDNSDomains(value); }
-	void decreaseAllocatedMemory(int value) { destroyDNSDomains(value); }
-
-        void createDNSDomains(int number);
-        void destroyDNSDomains(int number);
+	void increaseAllocatedMemory(int value);
+	void decreaseAllocatedMemory(int value);
 
 	int32_t getTotalAllowQueries() const { return total_allow_queries_;}
 	int32_t getTotalBanQueries() const { return total_ban_queries_;}

@@ -315,16 +315,16 @@ void POPProtocol::statistics(std::basic_ostream<char>& out)
 	}
 }
 
-void POPProtocol::createPOPInfos(int number) {
+void POPProtocol::increaseAllocatedMemory(int value) {
 
-        info_cache_->create(number);
-        user_cache_->create(number);
+        info_cache_->create(value);
+        user_cache_->create(value);
 }
 
-void POPProtocol::destroyPOPInfos(int number) {
+void POPProtocol::decreaseAllocatedMemory(int value) {
 
-        info_cache_->destroy(number);
-        user_cache_->destroy(number);
+        info_cache_->destroy(value);
+        user_cache_->destroy(value);
 }
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)

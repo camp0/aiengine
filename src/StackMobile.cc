@@ -270,28 +270,28 @@ void StackMobile::setTotalTCPFlows(int value) {
         
 	// The vast majority of the traffic of internet is HTTP
         // so create 75% of the value received for the http caches
-	http->createHTTPInfos(value * 0.75);
+	http->increaseAllocatedMemory(value * 0.75);
 
         // The 40% of the traffic is SSL
-        ssl->createSSLInfos(value * 0.4);
+        ssl->increaseAllocatedMemory(value * 0.4);
 
         // 5% of the traffic could be SMTP/IMAP, im really positive :D
-        smtp->createSMTPInfos(value * 0.05);
-        imap->createIMAPInfos(value * 0.05);
-        pop->createPOPInfos(value * 0.05);
-        bitcoin->createBitcoinInfos(value * 0.05);
+        smtp->increaseAllocatedMemory(value * 0.05);
+        imap->increaseAllocatedMemory(value * 0.05);
+        pop->increaseAllocatedMemory(value * 0.05);
+        bitcoin->increaseAllocatedMemory(value * 0.05);
 }
 
 void StackMobile::setTotalUDPFlows(int value) {
 
 	flow_cache_udp_high_->createFlows(value);
         flow_cache_udp_low_->createFlows(value/8);
-        gprs_->createGPRSInfo(value/8);
-        dns->createDNSDomains(value / 2);
+        gprs_->increaseAllocatedMemory(value/8);
+        dns->increaseAllocatedMemory(value / 2);
 
         // SIP values
-        sip->createSIPInfos(value * 0.2);
-        ssdp->createSSDPInfos(value * 0.2);
+        sip->increaseAllocatedMemory(value * 0.2);
+        ssdp->increaseAllocatedMemory(value * 0.2);
 }
 
 int StackMobile::getTotalTCPFlows() const { return flow_cache_tcp_->getTotalFlows(); }

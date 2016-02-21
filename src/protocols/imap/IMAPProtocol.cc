@@ -337,16 +337,16 @@ void IMAPProtocol::statistics(std::basic_ostream<char>& out)
 	}
 }
 
-void IMAPProtocol::createIMAPInfos(int number) {
+void IMAPProtocol::increaseAllocatedMemory(int value) {
 
-        info_cache_->create(number);
-        user_cache_->create(number);
+        info_cache_->create(value);
+        user_cache_->create(value);
 }
 
-void IMAPProtocol::destroyIMAPInfos(int number) {
+void IMAPProtocol::decreaseAllocatedMemory(int value) {
 
-        info_cache_->destroy(number);
-        user_cache_->destroy(number);
+        info_cache_->destroy(value);
+        user_cache_->destroy(value);
 }
 
 

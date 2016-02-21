@@ -114,7 +114,7 @@ struct StackSMTPtest : public StackTest
 
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(2);
-		smtp->createSMTPInfos(2);
+		smtp->increaseAllocatedMemory(2);
 		tcp->createTCPInfos(2);
 
                 tcp->setFlowCache(flow_cache);

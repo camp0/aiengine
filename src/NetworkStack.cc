@@ -470,6 +470,21 @@ void NetworkStack::enableLinkLayerTagging(const std::string& type) {
         }
 }
 
+void NetworkStack::increaseAllocatedMemory(const std::string& name,int value) {
+
+        ProtocolPtr proto = get_protocol(name);
+        if (proto) {
+                proto->increaseAllocatedMemory(value);
+        }
+}
+
+void NetworkStack::decreaseAllocatedMemory(const std::string& name,int value) {
+
+        ProtocolPtr proto = get_protocol(name);
+        if (proto) {
+                proto->decreaseAllocatedMemory(value);
+        }
+}
 
 #if defined(JAVA_BINDING)
 

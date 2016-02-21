@@ -115,7 +115,7 @@ struct StackSSDPtest : public StackTest
                 flow_cache->createFlows(2);
 
 		ssdp->setFlowManager(flow_mng);
-		ssdp->createSSDPInfos(2);
+		ssdp->increaseAllocatedMemory(2);
 
                 udp->setFlowCache(flow_cache);
                 udp->setFlowManager(flow_mng);

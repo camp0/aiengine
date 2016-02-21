@@ -415,16 +415,16 @@ void DNSProtocol::statistics(std::basic_ostream<char>& out)
 }
 
 
-void DNSProtocol::createDNSDomains(int number) { 
+void DNSProtocol::increaseAllocatedMemory(int value) { 
 
-	info_cache_->create(number);
-	name_cache_->create(number);
+	info_cache_->create(value);
+	name_cache_->create(value);
 }
 
-void DNSProtocol::destroyDNSDomains(int number) { 
+void DNSProtocol::decreaseAllocatedMemory(int value) { 
 
-	info_cache_->destroy(number);
-	name_cache_->destroy(number);
+	info_cache_->destroy(value);
+	name_cache_->destroy(value);
 }
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)

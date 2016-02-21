@@ -97,6 +97,9 @@ public:
 	void releaseCache(const std::string &name);
 	void releaseCaches();
 
+        void increaseAllocatedMemory(const std::string& name,int value);
+        void decreaseAllocatedMemory(const std::string& name,int value);
+
 	void enableFlowForwarders(const SharedPointer<FlowForwarder>& ff, std::initializer_list<SharedPointer<FlowForwarder>> fps);
 	void disableFlowForwarders(const SharedPointer<FlowForwarder>& ff, std::initializer_list<SharedPointer<FlowForwarder>> fps);
 
