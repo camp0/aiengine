@@ -101,6 +101,7 @@
 %ignore aiengine::StackOpenFlow::getUDPRegexManager;
 
 %ignore aiengine::IPSetManager::addIPSet(const SharedPointer<IPAbstractSet> ipset);
+%ignore aiengine::IPSetManager::removeIPSet(const SharedPointer<IPAbstractSet> ipset);
 %ignore aiengine::IPSetManager::getMatchedIPSet;
 %ignore aiengine::IPSetManager::lookupIPAddress;
 
@@ -118,6 +119,7 @@
 %ignore aiengine::FlowManager::setProtocol;
 %ignore aiengine::FlowManager::updateFlowTime;
 
+%ignore aiengine::DomainNameManager::removeDomainName(const SharedPointer<DomainName>& domain);
 %ignore aiengine::DomainNameManager::addDomainName(const SharedPointer<DomainName>& domain);
 %ignore aiengine::DomainNameManager::getDomainName;
 

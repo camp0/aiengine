@@ -6,7 +6,7 @@ TEST = test_bitcoin
 
 check_PROGRAMS = test_bitcoin
 
-test_bitcoin_SOURCES = 	../../Multiplexer.cc \
+test_bitcoin_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../ethernet/EthernetProtocol.cc \
 			../../Flow.cc ../../CacheManager.cc \
 			../../AnomalyManager.cc \

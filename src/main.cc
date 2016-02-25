@@ -489,8 +489,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	// Modify the protocol name in case the user use aliases
-	shortProtocolName(option_selected_protocol);
-	shortProtocolName(option_release_cache_protocol);
+	// shortProtocolName(option_selected_protocol);
+	// shortProtocolName(option_release_cache_protocol);
 	
 	stack->setStatisticsLevel(option_statistics_level);
 	stack->setFlowsTimeout(option_flows_timeout);

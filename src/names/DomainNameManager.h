@@ -63,6 +63,9 @@ public:
 	void addDomainName(const SharedPointer<DomainName>& domain); 
 	void addDomainName(const std::string& name,const std::string& expression);
 
+	void removeDomainName(const SharedPointer<DomainName>& domain); 
+	void removeDomainNameByName(const std::string& name);
+
 	SharedPointer<DomainName> getDomainName(boost::string_ref &name);
 	SharedPointer<DomainName> getDomainName(const char *name); 
 
@@ -73,6 +76,8 @@ public:
 	void statistics() { std::cout << *this; }
 
 private:
+	SharedPointer<DomainNode> find_domain_name_node(const SharedPointer<DomainName>& domain);
+	void remove_domain_name_by_name(const SharedPointer<DomainNode> node, const std::string &name);
 	std::string name_;
 	SharedPointer<DomainNode> root_;
 	int32_t total_domains_;

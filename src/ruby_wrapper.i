@@ -27,7 +27,6 @@
 %apply SWIGTYPE *DISOWN { IPSet* ipset };
 
 %feature("director") DatabaseAdaptor;
-%feature("director") FlowInfo; 
 
 %trackobjects;
 
@@ -168,6 +167,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::Flow::updateTime;
 
 %ignore aiengine::IPSetManager::addIPSet(const SharedPointer<IPAbstractSet> ipset);
+%ignore aiengine::IPSetManager::removeIPSet(const SharedPointer<IPAbstractSet> ipset);
 %ignore aiengine::IPSetManager::getMatchedIPSet;
 %ignore aiengine::IPSetManager::lookupIPAddress;
 
@@ -177,6 +177,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::IPSet::getFalsePositiveRate;
 %ignore aiengine::IPSet::lookupIPAddress;
 
+%ignore aiengine::DomainNameManager::removeDomainName(const SharedPointer<DomainName>& domain);
 %ignore aiengine::DomainNameManager::addDomainName(const SharedPointer<DomainName>& domain);
 %ignore aiengine::DomainNameManager::getDomainName;
 
@@ -368,6 +369,8 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("set_scheduler")		aiengine::PacketDispatcher::setScheduler;
 %rename("callback=") 			setCallback(VALUE callback);
 %rename("add_ip_set")			aiengine::IPSetManager::addIPSet;
+%rename("remove_ip_set")			aiengine::IPSetManager::removeIPSet;
+%rename("increase_allocated_memory")	increaseAllocatedMemory;
 %rename("set_tcp_database_adaptor")	setTCPDatabaseAdaptor;
 %rename("set_udp_database_adaptor")	setUDPDatabaseAdaptor;
 %rename("tcpip_set_manager=")		setTCPIPSetManager;	

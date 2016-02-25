@@ -28,24 +28,75 @@ namespace aiengine {
 
 // List of support bitcoin commands
 std::unordered_map<std::string ,BitcoinCommandType> BitcoinProtocol::commands_ {
-	{ "version", 	std::make_tuple(BC_CMD_VERSION,		"version",	0,	20) }, // ok
-	{ "verack", 	std::make_tuple(BC_CMD_VERACK,		"version ack",	0,	20) }, // ok
-	{ "addr", 	std::make_tuple(BC_CMD_ADDR,		"network addr",	0,	24) }, // ok
-	{ "inv", 	std::make_tuple(BC_CMD_INV,		"inv",		0,	20) },
-	{ "getdata", 	std::make_tuple(BC_CMD_GETDATA,		"getdata",	0,	20) },
-	{ "notfound", 	std::make_tuple(BC_CMD_NOTFOUND,	"not found",	0,	20) },
-	{ "getblocks", 	std::make_tuple(BC_CMD_GETBLOCKS,	"get blocks",	0,	24) }, // ok
-	{ "getheaders", std::make_tuple(BC_CMD_GETHEADERS,	"get headers",	0,	20) },
-	{ "tx", 	std::make_tuple(BC_CMD_TX,		"transaction",	0,	20) },
-	{ "block", 	std::make_tuple(BC_CMD_BLOCK,		"block",	0,	24) }, // ok
-	{ "headers", 	std::make_tuple(BC_CMD_HEADERS,		"headers",	0,	20) },
-	{ "getaddr", 	std::make_tuple(BC_CMD_GETADDR,		"getaddr",	0,	24) }, // ok
-	{ "mempool", 	std::make_tuple(BC_CMD_MEMPOOL,		"mempool",	0,	20) },
-	{ "ping",	std::make_tuple(BC_CMD_PING,		"ping",		0,	20) },
-	{ "pong",	std::make_tuple(BC_CMD_PONG,		"pong",		0,	20) },
-	{ "reject",	std::make_tuple(BC_CMD_REJECT,		"reject",	0,	20) },
-	{ "alert",	std::make_tuple(BC_CMD_ALERT,		"alert",	0,	20) }
+	{ "version", 	std::make_tuple(BC_CMD_VERSION,		"version",	0,	20, [](BitcoinInfo &a) {} ) }, // ok
+	{ "verack", 	std::make_tuple(BC_CMD_VERACK,		"version ack",	0,	20, [](BitcoinInfo &a) {} ) }, // ok
+	{ "addr", 	std::make_tuple(BC_CMD_ADDR,		"network addr",	0,	24, [](BitcoinInfo &a) {} ) }, // ok
+	{ "inv", 	std::make_tuple(BC_CMD_INV,		"inv",		0,	20, [](BitcoinInfo &a) {} ) },
+	{ "getdata", 	std::make_tuple(BC_CMD_GETDATA,		"getdata",	0,	20, [](BitcoinInfo &a) {} ) },
+	{ "notfound", 	std::make_tuple(BC_CMD_NOTFOUND,	"not found",	0,	20, [](BitcoinInfo &a) {} ) },
+	{ "getblocks", 	std::make_tuple(BC_CMD_GETBLOCKS,	"get blocks",	0,	24, [](BitcoinInfo &a) {} ) }, // ok
+	{ "getheaders", std::make_tuple(BC_CMD_GETHEADERS,	"get headers",	0,	20, [](BitcoinInfo &a) {} ) },
+	{ "tx", 	std::make_tuple(BC_CMD_TX,		"transaction",	0,	20, [](BitcoinInfo &a) { a.incTransactions(); } ) },
+	{ "block", 	std::make_tuple(BC_CMD_BLOCK,		"block",	0,	24, [](BitcoinInfo &a) {} ) }, // ok
+	{ "headers", 	std::make_tuple(BC_CMD_HEADERS,		"headers",	0,	20, [](BitcoinInfo &a) {} ) },
+	{ "getaddr", 	std::make_tuple(BC_CMD_GETADDR,		"getaddr",	0,	24, [](BitcoinInfo &a) {} ) }, // ok
+	{ "mempool", 	std::make_tuple(BC_CMD_MEMPOOL,		"mempool",	0,	20, [](BitcoinInfo &a) {} ) },
+	{ "ping",	std::make_tuple(BC_CMD_PING,		"ping",		0,	20, [](BitcoinInfo &a) {} ) },
+	{ "pong",	std::make_tuple(BC_CMD_PONG,		"pong",		0,	20, [](BitcoinInfo &a) {} ) },
+	{ "reject",	std::make_tuple(BC_CMD_REJECT,		"reject",	0,	20, [](BitcoinInfo &a) {} ) },
+	{ "alert",	std::make_tuple(BC_CMD_ALERT,		"alert",	0,	20, [](BitcoinInfo &a) {} ) }
 };
+
+int64_t BitcoinProtocol::getAllocatedMemory() const {
+
+        int64_t value = 0;
+
+        value = sizeof(BitcoinProtocol);
+        value += info_cache_->getAllocatedMemory();
+
+        return value;
+}
+
+void BitcoinProtocol::releaseCache() {
+
+        FlowManagerPtr fm = flow_mng_.lock();
+
+        if (fm) {
+                auto ft = fm->getFlowTable();
+
+                std::ostringstream msg;
+                msg << "Releasing " << getName() << " cache";
+
+                infoMessage(msg.str());
+
+                int64_t total_bytes_released = 0;
+                int64_t total_bytes_released_by_flows = 0;
+                int32_t release_flows = 0;
+
+                for (auto &flow: ft) {
+                        SharedPointer<BitcoinInfo> binfo = flow->getBitcoinInfo();
+                        if (binfo) {
+                                total_bytes_released_by_flows += sizeof(binfo);
+
+                                flow->layer7info.reset();
+                                ++ release_flows;
+                                info_cache_->release(binfo);
+                        }
+                }
+
+                double cache_compression_rate = 0;
+
+                if (total_bytes_released_by_flows > 0 ) {
+                        cache_compression_rate = 100 - ((total_bytes_released*100)/total_bytes_released_by_flows);
+                }
+
+                msg.str("");
+                msg << "Release " << release_flows << " flows";
+                msg << ", " << total_bytes_released << " bytes, compression rate " << cache_compression_rate << "%";
+                infoMessage(msg.str());
+	}
+}
+
 
 void BitcoinProtocol::processFlow(Flow *flow) {
 
@@ -78,6 +129,9 @@ void BitcoinProtocol::processFlow(Flow *flow) {
 				int32_t *hits = &std::get<2>(it->second);
 				short padding = std::get<3>(it->second);
 				int32_t payload_len = getPayloadLength();
+				auto callback = std::get<4>(it->second);
+
+				callback(*info.get());
 	
 				++total_bitcoin_operations_;	
 				++(*hits);
@@ -101,14 +155,14 @@ void BitcoinProtocol::processFlow(Flow *flow) {
         }
 }
 
-void BitcoinProtocol::createBitcoinInfos(int number) {
+void BitcoinProtocol::increaseAllocatedMemory(int value) {
 
-        info_cache_->create(number);
+        info_cache_->create(value);
 }
 
-void BitcoinProtocol::destroyBitcoinInfos(int number) {
+void BitcoinProtocol::decreaseAllocatedMemory(int value) {
 
-        info_cache_->destroy(number);
+        info_cache_->destroy(value);
 }
 
 void BitcoinProtocol::statistics(std::basic_ostream<char>& out){ 
@@ -133,18 +187,19 @@ void BitcoinProtocol::statistics(std::basic_ostream<char>& out){
                                         out << "\t" << "Total " << label << ":" << std::right << std::setfill(' ') << std::setw(27 - strlen(label)) << hits <<std::endl;
                                 }
                         }
-			if (stats_level_ > 2) {
-				if(mux_.lock())
-					mux_.lock()->statistics(out);
+                        if (stats_level_ > 2) {
                                 if (flow_forwarder_.lock())
                                         flow_forwarder_.lock()->statistics(out);
+                                if (stats_level_ > 3) {
+                                        info_cache_->statistics(out);
+                                }
 			}
 		}
 	}
 }
 
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 
 #if defined(PYTHON_BINDING)
 boost::python::dict BitcoinProtocol::getCounters() const {
@@ -152,10 +207,20 @@ boost::python::dict BitcoinProtocol::getCounters() const {
 #elif defined(RUBY_BINDING)
 VALUE BitcoinProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(JAVA_BINDING)
+JavaCounters BitcoinProtocol::getCounters() const {
+        JavaCounters counters;
 #endif
         addValueToCounter(counters,"packets",total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);
 
+        for (auto &cmd: commands_) {
+        	const char *label = std::get<1>(cmd.second);
+                int32_t hits = std::get<2>(cmd.second);
+               
+		addValueToCounter(counters,label,hits);
+	}                
+	
         return counters;
 }
 

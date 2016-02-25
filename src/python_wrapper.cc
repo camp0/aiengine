@@ -100,6 +100,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (NetworkStack::*releaseCache)(const std::string& name) =			&NetworkStack::releaseCache;
 	void (NetworkStack::*releaseCaches)() =						&NetworkStack::releaseCaches;
 	void (NetworkStack::*increaseAllocatedMemory)(const std::string& name, int) =	&NetworkStack::increaseAllocatedMemory;
+	void (NetworkStack::*decreaseAllocatedMemory)(const std::string& name, int) =	&NetworkStack::decreaseAllocatedMemory;
 	boost::python::dict (NetworkStack::*getCounters)(const std::string& name) =	&NetworkStack::getCounters;
 	boost::python::dict (NetworkStack::*getCache)(const std::string& name) =	&NetworkStack::getCache;
 
@@ -110,6 +111,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("get_statistics",pure_virtual(statisticsByProtocol),
 			"Shows statistics given a protocol name.")
 		.def("increase_allocated_memory",pure_virtual(increaseAllocatedMemory))
+		.def("decrease_allocated_memory",pure_virtual(decreaseAllocatedMemory))
 		.def("set_tcp_database_adaptor",pure_virtual(setTCPDatabaseAdaptor1))
 		.def("set_tcp_database_adaptor",pure_virtual(setTCPDatabaseAdaptor2))
 		.def("set_udp_database_adaptor",pure_virtual(setUDPDatabaseAdaptor1))
@@ -126,6 +128,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	// Definitions for the StackLan class
 	void (StackLan::*increaseAllocatedMemoryLan)(const std::string& name, int) =	&StackLan::increaseAllocatedMemory;
+	void (StackLan::*decreaseAllocatedMemoryLan)(const std::string& name, int) =	&StackLan::decreaseAllocatedMemory;
         void (StackLan::*setDomainNameManagerLan1)(DomainNameManager&,const std::string&) = 		&StackLan::setDomainNameManager;
         void (StackLan::*setDomainNameManagerLan2)(DomainNameManager&,const std::string&, bool) = 	&StackLan::setDomainNameManager;
 	void (StackLan::*setTCPDatabaseAdaptorLan1)(boost::python::object&) = 		&StackLan::setTCPDatabaseAdaptor;
@@ -168,6 +171,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.add_property("enable_nids_engine",&StackLan::isEnableNIDSEngine,&StackLan::enableNIDSEngine,
 			"Enables/Disables the NIDS Engine.")
 		.def("increase_allocated_memory",increaseAllocatedMemoryLan)
+		.def("decrease_allocated_memory",decreaseAllocatedMemoryLan)
                 .def("set_domain_name_manager",setDomainNameManagerLan1)
                 .def("set_domain_name_manager",setDomainNameManagerLan2)
 		.def(self_ns::str(self_ns::self))
@@ -184,6 +188,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	// Definitions for the StackMobile class
 	void (StackMobile::*increaseAllocatedMemoryMobile)(const std::string& name, int) =	&StackMobile::increaseAllocatedMemory;
+	void (StackMobile::*decreaseAllocatedMemoryMobile)(const std::string& name, int) =	&StackMobile::decreaseAllocatedMemory;
         void (StackMobile::*setDomainNameManagerMobile1)(DomainNameManager&,const std::string&) = 		&StackMobile::setDomainNameManager;
         void (StackMobile::*setDomainNameManagerMobile2)(DomainNameManager&,const std::string&, bool) = 	&StackMobile::setDomainNameManager;
         void (StackMobile::*setTCPDatabaseAdaptorMobile1)(boost::python::object&) =     	&StackMobile::setTCPDatabaseAdaptor;
@@ -226,6 +231,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .add_property("enable_nids_engine",&StackMobile::isEnableNIDSEngine,&StackMobile::enableNIDSEngine,
                         "Enables/Disables the NIDS Engine.")
 		.def("increase_allocated_memory",increaseAllocatedMemoryMobile)
+		.def("decrease_allocated_memory",decreaseAllocatedMemoryMobile)
                 .def("set_domain_name_manager",setDomainNameManagerMobile1)
                 .def("set_domain_name_manager",setDomainNameManagerMobile2)
 		.def(self_ns::str(self_ns::self))
@@ -243,6 +249,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	// Definitions for the StackLanIPv6 class
 	void (StackLanIPv6::*increaseAllocatedMemoryLan6)(const std::string& name, int) =	&StackLanIPv6::increaseAllocatedMemory;
+	void (StackLanIPv6::*decreaseAllocatedMemoryLan6)(const std::string& name, int) =	&StackLanIPv6::decreaseAllocatedMemory;
         void (StackLanIPv6::*setDomainNameManagerLanIPv61)(DomainNameManager&,const std::string&) = 		&StackLanIPv6::setDomainNameManager;
         void (StackLanIPv6::*setDomainNameManagerLanIPv62)(DomainNameManager&,const std::string&, bool) = 	&StackLanIPv6::setDomainNameManager;
         void (StackLanIPv6::*setTCPDatabaseAdaptorLanIPv61)(boost::python::object&) = 		&StackLanIPv6::setTCPDatabaseAdaptor;
@@ -285,6 +292,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .add_property("enable_nids_engine",&StackLanIPv6::isEnableNIDSEngine,&StackLanIPv6::enableNIDSEngine,
                         "Enables/Disables the NIDS Engine.")
 		.def("increase_allocated_memory",increaseAllocatedMemoryLan6)
+		.def("decrease_allocated_memory",decreaseAllocatedMemoryLan6)
                 .def("set_domain_name_manager",setDomainNameManagerLanIPv61)
                 .def("set_domain_name_manager",setDomainNameManagerLanIPv62)
                 .def(self_ns::str(self_ns::self))
@@ -301,6 +309,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
         // Definitions for the StackVirtual class
 	void (StackVirtual::*increaseAllocatedMemoryVirt)(const std::string& name, int) =	&StackVirtual::increaseAllocatedMemory;
+	void (StackVirtual::*decreaseAllocatedMemoryVirt)(const std::string& name, int) =	&StackVirtual::decreaseAllocatedMemory;
         void (StackVirtual::*setDomainNameManagerVirt1)(DomainNameManager&,const std::string&) =              	&StackVirtual::setDomainNameManager;
         void (StackVirtual::*setDomainNameManagerVirt2)(DomainNameManager&,const std::string&, bool) =         	&StackVirtual::setDomainNameManager;
         void (StackVirtual::*setTCPDatabaseAdaptorVirt1)(boost::python::object&) =            	&StackVirtual::setTCPDatabaseAdaptor;
@@ -343,6 +352,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .add_property("enable_nids_engine",&StackVirtual::isEnableNIDSEngine,&StackVirtual::enableNIDSEngine,
                         "Enables/Disables the NIDS Engine.")
 		.def("increase_allocated_memory",increaseAllocatedMemoryVirt)
+		.def("decrease_allocated_memory",decreaseAllocatedMemoryVirt)
                 .def("set_domain_name_manager",setDomainNameManagerVirt1)
                 .def("set_domain_name_manager",setDomainNameManagerVirt2)
                 .def(self_ns::str(self_ns::self))
@@ -359,6 +369,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
         // Definitions for the StackOpenFlow class
 	void (StackOpenFlow::*increaseAllocatedMemoryOF)(const std::string& name, int) =	&StackOpenFlow::increaseAllocatedMemory;
+	void (StackOpenFlow::*decreaseAllocatedMemoryOF)(const std::string& name, int) =	&StackOpenFlow::decreaseAllocatedMemory;
         void (StackOpenFlow::*setDomainNameManagerOF1)(DomainNameManager&,const std::string&) =    		&StackOpenFlow::setDomainNameManager;
         void (StackOpenFlow::*setDomainNameManagerOF2)(DomainNameManager&,const std::string&, bool) =      	&StackOpenFlow::setDomainNameManager;
         void (StackOpenFlow::*setTCPDatabaseAdaptorOF1)(boost::python::object&) =              	&StackOpenFlow::setTCPDatabaseAdaptor;
@@ -401,6 +412,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .add_property("enable_nids_engine",&StackOpenFlow::isEnableNIDSEngine,&StackOpenFlow::enableNIDSEngine,
                         "Enables/Disables the NIDS Engine.")
 		.def("increase_allocated_memory",increaseAllocatedMemoryOF)
+		.def("decrease_allocated_memory",decreaseAllocatedMemoryOF)
                 .def("set_domain_name_manager",setDomainNameManagerOF1)
                 .def("set_domain_name_manager",setDomainNameManagerOF2)
                 .def(self_ns::str(self_ns::self))
@@ -683,6 +695,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("add_domain_name",addDomainName1,
 			"Adds a DomainName to the DomainNameManager.")
                 .def("add_domain_name",addDomainName2)
+		.def("remove_domain_name_by_name", &DomainNameManager::removeDomainNameByName)
 		.def("__len__", &DomainNameManager::getTotalDomains)
                 .def(self_ns::str(self_ns::self))
         ;
@@ -739,6 +752,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 #endif // HAVE_BLOOMFILTER
 
 	void (IPSetManager::*addIPSet)(const SharedPointer<IPAbstractSet>) = &IPSetManager::addIPSet;
+	void (IPSetManager::*removeIPSet)(const SharedPointer<IPAbstractSet>) = &IPSetManager::removeIPSet;
         boost::python::class_<IPSetManager, SharedPointer<IPSetManager>, boost::noncopyable>("IPSetManager")
 		.def(init<>())
 		.def(init<const std::string&>())
@@ -747,6 +761,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         "Gets/Sets the name of the IPSetManager object.")
                 .def("add_ip_set",addIPSet,
 			"Adds a IPSet.")
+                .def("remove_ip_set",removeIPSet,
+			"removes a IPSet.")
 		.def("__len__",&IPSetManager::getTotalSets)
                 .def(self_ns::str(self_ns::self))
         ;

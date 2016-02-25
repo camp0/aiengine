@@ -60,6 +60,7 @@ noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			protocols/imap/IMAPProtocol.h \
 			protocols/pop/POPProtocol.h \
 			protocols/bitcoin/BitcoinProtocol.h \
+			protocols/modbus/ModbusProtocol.h \
 			protocols/dns/DNSProtocol.h \
 			protocols/sip/SIPProtocol.h \
 			protocols/dhcp/DHCPProtocol.h \
@@ -110,6 +111,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/imap/IMAPProtocol.cc \
 			protocols/pop/POPProtocol.cc \
 			protocols/bitcoin/BitcoinProtocol.cc \
+			protocols/modbus/ModbusProtocol.cc \
 			protocols/dns/DNSProtocol.cc \
 			protocols/sip/SIPProtocol.cc \
 			protocols/dhcp/DHCPProtocol.cc \
@@ -179,6 +181,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		protocols/imap/test_imap.cc \
 		protocols/pop/test_pop.cc \
 		protocols/bitcoin/test_bitcoin.cc \
+		protocols/modbus/test_modbus.cc \
 		protocols/sip/test_sip.cc \
 		protocols/dhcp/test_dhcp.cc \
 		protocols/ntp/test_ntp.cc \
@@ -209,7 +212,7 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		DHCPProtocol.o SIPProtocol.o SSDPProtocol.o \
 		POPProtocol.o GREProtocol.o \
 		OpenFlowProtocol.o VxLanProtocol.o \
-		BitcoinProtocol.o \
+		BitcoinProtocol.o ModbusProtocol.o \
 		FrequencyProtocol.o LearnerEngine.o \
 		ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \
 		StackLan.o StackMobile.o StackLanIPv6.o StackVirtual.o StackOpenFlow.o \
@@ -230,7 +233,7 @@ java_objects = 	RegexManager.o Regex.o \
                 SMTPProtocol.o IMAPProtocol.o \
                 DHCPProtocol.o SIPProtocol.o SSDPProtocol.o \
                 POPProtocol.o GREProtocol.o \
-		BitcoinProtocol.o \
+		BitcoinProtocol.o ModbusProtocol.o \
                 OpenFlowProtocol.o VxLanProtocol.o \
                 FrequencyProtocol.o LearnerEngine.o \
                 ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \
@@ -239,7 +242,7 @@ java_objects = 	RegexManager.o Regex.o \
                 IPSetManager.o IPAbstractSet.o IPSet.o HTTPUriSet.o \
                 DomainNameManager.o DomainName.o RejectManager.o EvidenceManager.o
 
-tests_CPPFLAGS = $(BOOST_CPPFLAGS) -g 
+tests_CPPFLAGS = $(BOOST_CPPFLAGS) -g # -fprofile-arcs -ftest-coverage 
 # Dont forget to put -lgcov if need on test_LDADD
 tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread 
 

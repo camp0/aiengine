@@ -65,7 +65,7 @@ enum bitcoin_command_code {
 };
 
 // Commands and their corresponding handlers
-typedef std::tuple<short,const char*,int32_t,short> BitcoinCommandType;
+typedef std::tuple<short,const char*,int32_t,short,std::function <void (BitcoinInfo&)>> BitcoinCommandType;
 
 class BitcoinProtocol: public Protocol 
 {
@@ -97,7 +97,7 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-	void releaseCache() {} // No need to free cache
+	void releaseCache();
 
 	void setHeader(unsigned char *raw_packet){ 
 
@@ -126,24 +126,24 @@ public:
 	int32_t getPayloadLength() const { return bitcoin_header_->length; }	
 	int32_t getTotalBitcoinOperations() const { return total_bitcoin_operations_; }	
 
-	int64_t getAllocatedMemory() const { return sizeof(BitcoinProtocol); }
+	int64_t getAllocatedMemory() const ;
 
-	void increaseAllocatedMemory(int value) { createBitcoinInfos(value); } 
-	void decreaseAllocatedMemory(int value) { destroyBitcoinInfos(value); }
+	void increaseAllocatedMemory(int value); 
+	void decreaseAllocatedMemory(int value);
 
-        void createBitcoinInfos(int number);
-        void destroyBitcoinInfos(int number);
-
-	void setFlowManager(FlowManagerPtrWeak flow_mng) { }	
+	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }	
 #if defined(PYTHON_BINDING)
         boost::python::dict getCounters() const;
 #elif defined(RUBY_BINDING)
 	VALUE getCounters() const;
 #elif defined(JAVA_BINDING)
-        JavaCounters getCounters() const  { JavaCounters counters; return counters; }
+        JavaCounters getCounters() const; 
 #endif
 
 private:
+
+	static void default_handler(BitcoinProtocol &bt) { return; }
+
 	int stats_level_;
 	struct bitcoin_hdr *bitcoin_header_;
 	int64_t total_bytes_;
@@ -152,6 +152,8 @@ private:
 	static std::unordered_map<std::string,BitcoinCommandType> commands_;	        
 
 	Cache<BitcoinInfo>::CachePtr info_cache_;
+
+	FlowManagerPtrWeak flow_mng_;
 };
 
 typedef std::shared_ptr<BitcoinProtocol> BitcoinProtocolPtr;

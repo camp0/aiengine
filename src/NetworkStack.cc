@@ -47,6 +47,7 @@ NetworkStack::NetworkStack():
         imap(IMAPProtocolPtr(new IMAPProtocol())),
         pop(POPProtocolPtr(new POPProtocol())),
 	bitcoin(BitcoinProtocolPtr(new BitcoinProtocol())),
+	modbus(ModbusProtocolPtr(new ModbusProtocol())),
         tcp_generic(TCPGenericProtocolPtr(new TCPGenericProtocol())),
         udp_generic(UDPGenericProtocolPtr(new UDPGenericProtocol())),
         freqs_tcp(FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol","tcpfrequency"))),
@@ -64,6 +65,7 @@ NetworkStack::NetworkStack():
         ff_imap(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_pop(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_bitcoin(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_modbus(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_tcp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_udp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_tcp_freqs(SharedPointer<FlowForwarder>(new FlowForwarder())),
@@ -147,6 +149,12 @@ NetworkStack::NetworkStack():
         ff_bitcoin->setProtocol(static_cast<ProtocolPtr>(bitcoin));
         ff_bitcoin->addChecker(std::bind(&BitcoinProtocol::bitcoinChecker,bitcoin,std::placeholders::_1));
         ff_bitcoin->addFlowFunction(std::bind(&BitcoinProtocol::processFlow,bitcoin,std::placeholders::_1));
+
+        // Configure the modbus 
+        modbus->setFlowForwarder(ff_modbus);
+        ff_modbus->setProtocol(static_cast<ProtocolPtr>(modbus));
+        ff_modbus->addChecker(std::bind(&ModbusProtocol::modbusChecker,modbus,std::placeholders::_1));
+        ff_modbus->addFlowFunction(std::bind(&ModbusProtocol::processFlow,modbus,std::placeholders::_1));
 
         // configure the TCP generic Layer
         tcp_generic->setFlowForwarder(ff_tcp_generic);
@@ -474,6 +482,11 @@ void NetworkStack::increaseAllocatedMemory(const std::string& name,int value) {
 
         ProtocolPtr proto = get_protocol(name);
         if (proto) {
+        	std::ostringstream msg;
+                msg << "Increase allocated memory in " << value << " on protocol " << name;
+
+                infoMessage(msg.str());
+
                 proto->increaseAllocatedMemory(value);
         }
 }
@@ -482,6 +495,11 @@ void NetworkStack::decreaseAllocatedMemory(const std::string& name,int value) {
 
         ProtocolPtr proto = get_protocol(name);
         if (proto) {
+        	std::ostringstream msg;
+                msg << "Decrease allocated memory in " << value << " on protocol " << name;
+
+                infoMessage(msg.str());
+
                 proto->decreaseAllocatedMemory(value);
         }
 }

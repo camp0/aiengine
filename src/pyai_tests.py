@@ -786,6 +786,20 @@ class StackLanTests(unittest.TestCase):
                 self.assertFalse(False) 
 
     def test26(self):
+        """ Verify the functionatliy of the SSDP Protocol and remove the memory of that protocol """
+
+        self.s.decrease_allocated_memory("ssdp",10000)
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/ssdp_flow.pcap") as pd:
+            pd.stack = self.s
+            pd.run();
+
+        fu = self.s.udp_flow_manager
+        for flow in fu:
+            s = flow.ssdp_info
+            self.assertEqual(s,None)
+
+    def test27(self):
         """ Verify the functionatliy of the RegexManager on the HTTP Protocol for analise
             inside the l7 payload of HTTP """
 
@@ -829,7 +843,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(r3.matchs, 1)
         self.assertEqual(d.matchs, 1)
     
-    def test27(self):
+    def test28(self):
         """ Verify the correctness of the HTTP Protocol """ 
 
         """ The filter tcp and port 55354 will filter just one HTTP flow
@@ -843,7 +857,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(c["requests"], 39)
         self.assertEqual(c["responses"], 38)
 
-    def test28(self):
+    def test29(self):
         """ Verify the correctness of the HTTP Protocol """
 
         """ The filter tcp and port 49503 will filter just one HTTP flow
@@ -857,7 +871,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(c["requests"], 3)
         self.assertEqual(c["responses"], 3)
 
-    def test29(self):
+    def test30(self):
         """ Verify the functionatliy of the Evidence manager """
 
         def domain_callback(flow):
@@ -884,7 +898,7 @@ class StackLanTests(unittest.TestCase):
         files = glob.glob("evidences.*.pcap")
         os.remove(files[0])
 
-    def test30(self):
+    def test31(self):
         """ Verify the functionatliy of the RegexManager on the IPSets """
 
         def regex_callback(flow):
@@ -927,8 +941,8 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(i.lookups_in, 1)
         self.assertEqual(r.matchs, 1)
 
-    def test31(self):
-        """ Verify the functionatliy of the RegexManager on the IPSets """
+    def test32(self):
+        """ Verify the functionality of the RegexManager on the IPSets """
 
         def regex_callback(flow):
             r = flow.regex
@@ -969,6 +983,24 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(self.called_callback,1)
         self.assertEqual(i.lookups_in, 1)
         self.assertEqual(r.matchs, 0)
+
+    def test33(self):
+        """ Verify the clean of domains on the domain name manager """
+        dm = pyaiengine.DomainNameManager()
+
+        dm.add_domain_name(pyaiengine.DomainName("Wired domain",".wired.com"))
+        dm.add_domain_name(pyaiengine.DomainName("Wired domain",".photos.wired.com"))
+        dm.add_domain_name(pyaiengine.DomainName("Wired domain",".aaa.wired.com"))
+        dm.add_domain_name(pyaiengine.DomainName("Wired domain",".max.wired.com"))
+        dm.add_domain_name(pyaiengine.DomainName("domain1",".paco.com"))
+        dm.add_domain_name(pyaiengine.DomainName("domain2",".cisco.com"))
+        self.assertEqual(len(dm), 6)
+
+        dm.remove_domain_name_by_name("domain1")
+        self.assertEqual(len(dm), 5)
+     
+        dm.remove_domain_name_by_name("Wired domain")
+        self.assertEqual(len(dm), 1)
 
 
 class StackLanIPv6Tests(unittest.TestCase):

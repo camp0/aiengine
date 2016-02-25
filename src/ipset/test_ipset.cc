@@ -123,6 +123,32 @@ BOOST_AUTO_TEST_CASE ( test4_ip )
         BOOST_CHECK(ipset2->getTotalLookupsOut() == 1);	
 }
 
+// Remove some ipsets
+BOOST_AUTO_TEST_CASE ( test5_ip )
+{
+        SharedPointer<IPSet> ipset1 = SharedPointer<IPSet>(new IPSet());
+        SharedPointer<IPSet> ipset2 = SharedPointer<IPSet>(new IPSet());
+        SharedPointer<IPSet> ipset3 = SharedPointer<IPSet>(new IPSet());
+        IPSetManagerPtr ipmng = IPSetManagerPtr(new IPSetManager());
+
+        ipset1->addIPAddress("192.168.1.1");
+        ipset2->addIPAddress("10.1.1.1");
+        ipset2->addIPAddress("10.1.1.2");
+        ipset3->addIPAddress("10.1.100.1");
+
+        ipmng->addIPSet(ipset1);
+        ipmng->addIPSet(ipset2);
+        ipmng->addIPSet(ipset3);
+
+        BOOST_CHECK(ipmng->lookupIPAddress("10.1.1.2") == true);
+        BOOST_CHECK(ipmng->getMatchedIPSet() == ipset2);
+
+	ipmng->removeIPSet(ipset2);
+
+        BOOST_CHECK(ipmng->lookupIPAddress("10.1.1.2") == false);
+        BOOST_CHECK(ipmng->getMatchedIPSet() == nullptr);
+}
+
 BOOST_AUTO_TEST_SUITE_END( )
 
 BOOST_FIXTURE_TEST_SUITE(testipset_2,StackTCPIPSetTest)

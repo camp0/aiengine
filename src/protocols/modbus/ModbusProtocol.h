@@ -48,12 +48,14 @@ struct modbus_hdr {
 } __attribute__((packed));
 
 enum modbus_type_function_code {
-	MB_CODE_READ_COILS = 0x01,
-	MB_CODE_READ_DISCRETE_INPUTS = 0x02,
-	MB_CODE_READ_HOLDING_REGISTERS = 0x03,
-	MB_CODE_READ_INPUT_REGISTERS = 0x04,
-	MB_CODE_WRITE_SINGLE_COIL = 0x05,
-	MB_CODE_WRITE_SINGLE_REGISTER = 0x06
+	MB_CODE_READ_COILS = 1,
+	MB_CODE_READ_DISCRETE_INPUTS = 2,
+	MB_CODE_READ_HOLDING_REGISTERS = 3,
+	MB_CODE_READ_INPUT_REGISTERS = 4,
+	MB_CODE_WRITE_SINGLE_COIL = 5,
+	MB_CODE_WRITE_SINGLE_REGISTER = 6,
+	MB_CODE_WRITE_MULTIPLE_COILS = 15,
+	MB_CODE_WRITE_MULTIPLE_REGISTERS = 16
 };
 
 class ModbusProtocol: public Protocol 
@@ -62,8 +64,17 @@ public:
     	explicit ModbusProtocol():
 		Protocol("ModbusProtocol","modbus"),
 		stats_level_(0),
-		modbus_header_(nullptr),total_bytes_(0)
-        	{}
+		modbus_header_(nullptr),total_bytes_(0),
+        	total_read_coils_(0),
+        	total_read_discrete_inputs_(0),
+        	total_read_holding_registers_(0),
+        	total_read_input_registers_(0),
+        	total_write_single_coil_(0),
+        	total_write_single_register_(0),
+        	total_write_multiple_coils_(0),
+        	total_write_multiple_registers_(0),
+        	total_others_(0)
+	{}
 
     	virtual ~ModbusProtocol() {}
 
@@ -114,15 +125,24 @@ public:
 #elif defined(RUBY_BINDING)
 	VALUE getCounters() const;
 #elif defined(JAVA_BINDING)
-        JavaCounters getCounters() const  { JavaCounters counters; return counters; }
+        JavaCounters getCounters() const ; 
 #endif
 
 private:
 	int stats_level_;
 	struct modbus_tcphdr *modbus_header_;
 	int64_t total_bytes_;
-        
+
 	// Some statistics 
+	int32_t total_read_coils_;
+	int32_t total_read_discrete_inputs_;
+	int32_t total_read_holding_registers_;
+	int32_t total_read_input_registers_;
+	int32_t total_write_single_coil_;
+	int32_t total_write_single_register_;
+	int32_t total_write_multiple_coils_;
+	int32_t total_write_multiple_registers_;
+	int32_t total_others_;
 };
 
 typedef std::shared_ptr<ModbusProtocol> ModbusProtocolPtr;

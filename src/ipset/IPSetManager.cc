@@ -31,6 +31,14 @@ void IPSetManager::addIPSet(const SharedPointer<IPAbstractSet> ipset) {
 	sets_.push_back(ipset);
 }
 
+void IPSetManager::removeIPSet(const SharedPointer<IPAbstractSet> ipset) {
+	
+	auto ret = std::find(std::begin(sets_),std::end(sets_),ipset);
+	if (ret != sets_.end()) {
+		sets_.erase(ret);
+	}
+}
+
 bool IPSetManager::lookupIPAddress(const std::string &ip) {
 	matched_set_.reset();
 

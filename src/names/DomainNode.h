@@ -70,6 +70,16 @@ public:
 		map_.insert(std::pair<boost::string_ref,SharedPointer<DomainNode>>(boost::string_ref(node->getKey()),node));
 	}	
 
+	void removeKey(const SharedPointer<DomainNode>& node) { 
+
+		auto it = map_.find(node->getKey());
+		if (it != map_.end()) {
+			map_.erase(it);
+		}
+	}
+
+	int getTotalKeys() const { return map_.size(); }
+
 	void setDomainName(const SharedPointer<DomainName>& domain) { domain_ = domain;}
 	SharedPointer<DomainName> getDomainName() { return domain_;}
 
