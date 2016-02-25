@@ -271,19 +271,6 @@ void showStackStatistics() {
        	}
 }
 
-// The user can use aliases for protocols such as http, ssdp, etc..
-// instead of the real name of the protocols HTTPProtocol, etc...
-void shortProtocolName(std::string &protoname) {
-
-	if (protoname.length() > 0) {
-		std::size_t pos = protoname.find("Protocol");
-		if (pos == std::string::npos) { // Not found
-			std::transform(protoname.begin(),protoname.end(),protoname.begin(),::toupper);
-			protoname += "Protocol";
-		}
-	}
-}
-
 void aiengineExit() {
 
 	if (stack) {
@@ -488,10 +475,6 @@ int main(int argc, char* argv[]) {
 		exit(-1);
 	}
 
-	// Modify the protocol name in case the user use aliases
-	// shortProtocolName(option_selected_protocol);
-	// shortProtocolName(option_release_cache_protocol);
-	
 	stack->setStatisticsLevel(option_statistics_level);
 	stack->setFlowsTimeout(option_flows_timeout);
 	stack->setTotalTCPFlows(tcp_flows_cache);	
