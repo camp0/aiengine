@@ -61,7 +61,6 @@ void DomainNameManager::removeDomainNameByName(const std::string& name) {
 	remove_domain_name_by_name(root_, name);
 }
 
-
 void DomainNameManager::addDomainName(const std::string& name,const std::string& expression) {
 
 	SharedPointer<DomainName> dom = SharedPointer<DomainName>(new DomainName(name,expression));
@@ -161,60 +160,57 @@ SharedPointer<DomainName> DomainNameManager::getDomainName(boost::string_ref &na
 	return domain_candidate;
 }
 
-void printDomainNode(std::ostream& out, SharedPointer<DomainNode> node) {
+void DomainNameManager::transverse(const SharedPointer<DomainNode> node,
+	std::function<void(const SharedPointer<DomainNode>&, const SharedPointer<DomainName>&)> condition) const {
 
-        for (auto it = node->begin(); it != node->end(); ++it) {
-                SharedPointer<DomainNode> node_in = it->second;
-                SharedPointer<DomainName> name = node_in->getDomainName();
+	for (auto &it: *node) {
+		SharedPointer<DomainNode> nod = it.second;
+		SharedPointer<DomainName> dn = nod->getDomainName();
+		if (nod->getTotalKeys() > 0 ) {
+			transverse(nod,condition);
 
-		if (node_in->getTotalKeys() > 0) {
-        		for (auto it2 = node_in->begin(); it2 != node_in->end(); ++it2) {
-                		SharedPointer<DomainNode> node_aux = it2->second;
-                		SharedPointer<DomainName> name_aux = node_aux->getDomainName();
-
-				printDomainNode(out,it2->second);
-				if (name_aux)	
-                       			out << *name_aux; 
-			}
+			if (dn) condition(nod,dn);
 		} else {
-			if (name) out << *name;
+			if (dn) condition(nod,dn); 
 		}
-        }
+	}
+}
+
+void DomainNameManager::statistics(const std::string& name) {
+
+        std::cout << "DomainNameManager (" << name_ <<")[" << name << "]" << std::endl;
+	transverse(root_, [&] (const SharedPointer<DomainNode>& ,const SharedPointer<DomainName>& d) {
+		if (name.compare(d->getName()) == 0) {
+			std::cout << *d;		
+		}
+	});
+}
+
+void DomainNameManager::statistics(std::ostream& out) {
+
+        out << "DomainNameManager (" << name_ <<")" << std::endl;
+        transverse(root_, [&] (const SharedPointer<DomainNode>& ,const SharedPointer<DomainName>& d) {
+                out << *d;
+        });
 }
 
 void DomainNameManager::remove_domain_name_by_name(const SharedPointer<DomainNode> node, const std::string &name) {
 
-        for (auto it = node->begin(); it != node->end(); ++it) {
-                SharedPointer<DomainNode> node_in = it->second;
-                SharedPointer<DomainName> dname = node_in->getDomainName();
-
-                if (node_in->getTotalKeys() > 0) {
-                        for (auto it2 = node_in->begin(); it2 != node_in->end(); ++it2) {
-                                SharedPointer<DomainNode> node_aux = it2->second;
-                                SharedPointer<DomainName> name_aux = node_aux->getDomainName();
-
-				remove_domain_name_by_name(it2->second,name);
-
-                                if ((name_aux)and(name.compare(name_aux->getName()) == 0)) {
-                                        node_aux->setDomainName(nullptr);
-					--total_domains_;
-				}
-                        }
-                } else {
-                        if ((dname)and(name.compare(dname->getName()) == 0)) {
-				node_in->setDomainName(nullptr);
-				--total_domains_;
-			}	
+        transverse(root_, [this,&name] (const SharedPointer<DomainNode>& n,const SharedPointer<DomainName>& d) {
+                if (name.compare(d->getName()) == 0) {
+                        n->setDomainName(nullptr);
+			--total_domains_;
                 }
-        }
+        });
 }
 
 std::ostream& operator<< (std::ostream& out, const DomainNameManager& domain) {
 
         out << "DomainNameManager (" << domain.name_ <<")" << std::endl;
-	printDomainNode(out,domain.root_);
-
-	return out;
+        domain.transverse(domain.root_, [&domain,&out] (const SharedPointer<DomainNode>& ,const SharedPointer<DomainName>& d) {
+                out << *d;
+        });
+       	return out;
 }
 
 } // namespace aiengine

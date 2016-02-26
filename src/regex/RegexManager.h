@@ -74,6 +74,7 @@ public:
 	friend std::ostream& operator<< (std::ostream& out, const RegexManager& sig);
 
 	void statistics() { std::cout << *this; }
+	void statistics(const std::string &name);
 
 #ifdef PYTHON_BINDING
 	// Methods for exposing the class to python iterable methods

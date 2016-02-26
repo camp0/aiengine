@@ -685,7 +685,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
         void (DomainNameManager::*addDomainName1)(const std::string&,const std::string&) = &DomainNameManager::addDomainName;
         void (DomainNameManager::*addDomainName2)(const SharedPointer<DomainName>&) = &DomainNameManager::addDomainName;
-
+	void (DomainNameManager::*statisticsDomain)()			=	&DomainNameManager::statistics;
+	void (DomainNameManager::*showsByName)(const std::string&)			=	&DomainNameManager::statistics;
         boost::python::class_<DomainNameManager,SharedPointer<DomainNameManager>,boost::noncopyable >("DomainNameManager",
 		"Class that manages DomainsNames.")
 		.def(init<>())
@@ -697,6 +698,9 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("add_domain_name",addDomainName2)
 		.def("remove_domain_name_by_name", &DomainNameManager::removeDomainNameByName)
 		.def("__len__", &DomainNameManager::getTotalDomains)
+		.def("__str__", statisticsDomain)
+		.def("show", statisticsDomain)
+		.def("show",showsByName)
                 .def(self_ns::str(self_ns::self))
         ;
 
@@ -753,6 +757,9 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	void (IPSetManager::*addIPSet)(const SharedPointer<IPAbstractSet>) = &IPSetManager::addIPSet;
 	void (IPSetManager::*removeIPSet)(const SharedPointer<IPAbstractSet>) = &IPSetManager::removeIPSet;
+	void (IPSetManager::*removeIPSetByName)(const std::string&) = &IPSetManager::removeIPSet;
+	void (IPSetManager::*showsIPSetManager)()						= &IPSetManager::statistics;
+	void (IPSetManager::*showsByNameIPSetManager)(const std::string&)			= &IPSetManager::statistics;
         boost::python::class_<IPSetManager, SharedPointer<IPSetManager>, boost::noncopyable>("IPSetManager")
 		.def(init<>())
 		.def(init<const std::string&>())
@@ -763,7 +770,11 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			"Adds a IPSet.")
                 .def("remove_ip_set",removeIPSet,
 			"removes a IPSet.")
+                .def("remove_ip_set",removeIPSetByName,
+			"removes a IPSet.")
 		.def("__len__",&IPSetManager::getTotalSets)
+		.def("show",showsIPSetManager)
+		.def("show",showsByNameIPSetManager)
                 .def(self_ns::str(self_ns::self))
         ;
 

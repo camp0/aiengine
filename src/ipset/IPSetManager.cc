@@ -39,6 +39,16 @@ void IPSetManager::removeIPSet(const SharedPointer<IPAbstractSet> ipset) {
 	}
 }
 
+void IPSetManager::removeIPSet(const std::string &name) {
+	
+	auto ret = std::find_if(std::begin(sets_),std::end(sets_),[&](const SharedPointer<IPAbstractSet>& ip) {
+		return (name.compare(ip->getName()) == 0);
+	});
+	if (ret != sets_.end()) {
+		sets_.erase(ret);
+	}
+}
+
 bool IPSetManager::lookupIPAddress(const std::string &ip) {
 	matched_set_.reset();
 
@@ -65,6 +75,18 @@ std::ostream& operator<< (std::ostream& out, const IPSetManager& im) {
 	}
 
 	return out;
+}
+
+void IPSetManager::statistics(const std::string& name) {
+
+        std::cout << "IPSetManager (" << name_ << ")[" << name << "]"<< std::endl;
+        for(auto &ipa: sets_) {
+                // SharedPointer<IPAbstractSet> ipa = (*it);
+                IPSet *ipset = dynamic_cast<IPSet*>(ipa.get());
+		if (name.compare(ipset->getName()) == 0 ) {
+                	ipset->statistics();
+		}
+        }
 }
 
 } // namespace aiengine

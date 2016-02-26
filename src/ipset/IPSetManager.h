@@ -49,12 +49,14 @@ public:
 
 	void addIPSet(const SharedPointer<IPAbstractSet> ipset);
 	void removeIPSet(const SharedPointer<IPAbstractSet> ipset);
+	void removeIPSet(const std::string &name);
 	bool lookupIPAddress(const std::string &ip); 
 
 	int32_t getTotalSets() const { return sets_.size(); }
 
 	void statistics(std::basic_ostream<char>& out) { out << *this; }
 	void statistics() { statistics(std::cout);}
+	void statistics(const std::string& name);
 
 #ifdef PYTHON_BINDING
 	// Methods for exposing the class to python iterable methods

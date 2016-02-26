@@ -55,6 +55,37 @@ void RegexManager::evaluate(boost::string_ref &data, bool *result) {
         return;
 }
 
+void RegexManager::statistics(const std::string &name ) {
+
+        std::cout << "RegexManager(" << std::addressof(*this) << ")[" << name << "]" << std::dec <<  std::endl;
+        for (auto &it : signatures_ ) {
+                SharedPointer<Regex> ssig = it;
+                std::ostringstream tabs;
+
+                bool no_more_regex = false;
+
+                while (no_more_regex == false) {
+                        tabs << "\t";
+			if (name.compare(ssig->getName()) == 0) {
+                        	std::cout << tabs.str() << "Regex:" << ssig->getName() << " matches:" << ssig->getMatchs() << std::endl;
+			}
+                        if (ssig->isTerminal() == false) {
+
+                                if (ssig->getNextRegexManager())
+                                        break;
+
+                                no_more_regex = false;
+                                SharedPointer<Regex> raux = ssig->getNextRegex();
+                                if (raux)
+                                        ssig = raux;
+                        } else {
+                                no_more_regex = true;
+                        }
+                }
+        }
+}
+
+
 std::ostream& operator<< (std::ostream& out, const RegexManager& sig) {
 
 	out << "RegexManager(" << std::addressof(sig) << ") statistics" << std::dec <<  std::endl;	

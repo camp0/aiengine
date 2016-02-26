@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE ( test2_ip )
 
 BOOST_AUTO_TEST_CASE ( test3_ip )
 {
-        IPSetPtr ipset1 = IPSetPtr(new IPSet());
+        IPSetPtr ipset1 = IPSetPtr(new IPSet("one ipset"));
 	IPSetManagerPtr ipmng = IPSetManagerPtr(new IPSetManager());
 
         ipset1->addIPAddress("192.168.1.1");
@@ -84,6 +84,14 @@ BOOST_AUTO_TEST_CASE ( test3_ip )
 
 	BOOST_CHECK(ipmng->lookupIPAddress("192.168.1.1") == true);
 	BOOST_CHECK(ipmng->getMatchedIPSet() == ipset1);
+
+	BOOST_CHECK(ipmng->getTotalSets() == 1);
+	ipmng->removeIPSet("one ipset");
+
+	BOOST_CHECK(ipmng->lookupIPAddress("192.168.1.1") == false);
+	BOOST_CHECK(ipmng->getMatchedIPSet() == nullptr);
+	
+	BOOST_CHECK(ipmng->getTotalSets() == 0);
 }
 
 BOOST_AUTO_TEST_CASE ( test4_ip )

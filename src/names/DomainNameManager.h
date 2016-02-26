@@ -73,9 +73,13 @@ public:
 
 	friend std::ostream& operator<< (std::ostream& out, const DomainNameManager& domain);
 
-	void statistics() { std::cout << *this; }
+	void statistics() { statistics(std::cout); }
+	void statistics(std::ostream& out);
+	void statistics(const std::string& name);
 
 private:
+	void transverse(const SharedPointer<DomainNode> node,
+		std::function <void(const SharedPointer<DomainNode>&, const SharedPointer<DomainName>&) > condition) const; 
 	SharedPointer<DomainNode> find_domain_name_node(const SharedPointer<DomainName>& domain);
 	void remove_domain_name_by_name(const SharedPointer<DomainNode> node, const std::string &name);
 	std::string name_;
