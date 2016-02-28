@@ -481,7 +481,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 
 	void (RegexManager::*addRegex1)(const std::string&,const std::string&) = &RegexManager::addRegex;
 	void (RegexManager::*addRegex2)(const SharedPointer<Regex>&) = &RegexManager::addRegex;
-
+        void (RegexManager::*showRegexs)()			= &RegexManager::statistics;
+        void (RegexManager::*showRegexByName)(const std::string&)	= &RegexManager::statistics;
 	boost::python::class_<RegexManager,SharedPointer<RegexManager>,boost::noncopyable >("RegexManager")
 		.def("__iter__",boost::python::range(&RegexManager::begin,&RegexManager::end),
 			"Iterate over the Regex stored on the RegexManager object.")
@@ -491,6 +492,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def("add_regex",addRegex2)
 		.def("__len__",&RegexManager::getTotalRegexs,
 			"Gets the total number of Regex stored on the RegexManager object.")
+		.def("show",showRegexs)
+		.def("show",showRegexByName)
 		.def(self_ns::str(self_ns::self))
 	;
 
