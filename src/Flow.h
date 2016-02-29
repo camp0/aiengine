@@ -199,6 +199,7 @@ public:
         POPInfo& getPOPInfoObject() const { return *getPOPInfo().get();}
         IMAPInfo& getIMAPInfoObject() const { return *getIMAPInfo().get();}
         SSDPInfo& getSSDPInfoObject() const { return *getSSDPInfo().get();}
+	BitcoinInfo& getBitcoinInfoObject() const { return *getBitcoinInfo().get(); }
         
 	const char *getFlowAnomaly() const { return AnomalyManager::getInstance()->getName(pa_); }
 #endif

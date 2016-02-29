@@ -9,7 +9,7 @@ AM_JAVAFLAGS=@AM_JAVAFLAGS@
 # EXTRA_FLAGS = -O3 '-fprofile-arcs -ftest-coverage -g' For enable gcov tool
 EXTRA_FLAGS = -O3
 
-EXTRA_DIST = 	python_wrapper.cc ruby_wrapper.i setup.py MANIFEST.in \
+EXTRA_DIST = 	python_wrapper.cc python_help.h ruby_wrapper.i setup.py MANIFEST.in \
 		ruai_test.rb java_wrapper.i JavaAiengineTestsStackLan.java JavaAiengineTestsStackLanIPv6.java \
 		JavaAiengineTestsStackVirtual.java JunitTestSuite.java 	
 

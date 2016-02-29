@@ -996,10 +996,10 @@ class StackLanTests(unittest.TestCase):
         dm.add_domain_name(pyaiengine.DomainName("domain2",".cisco.com"))
         self.assertEqual(len(dm), 6)
 
-        dm.remove_domain_name_by_name("domain1")
+        dm.remove_domain_name("domain1")
         self.assertEqual(len(dm), 5)
      
-        dm.remove_domain_name_by_name("Wired domain")
+        dm.remove_domain_name("Wired domain")
         self.assertEqual(len(dm), 1)
 
 
