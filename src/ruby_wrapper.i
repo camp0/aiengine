@@ -217,6 +217,9 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::HTTPInfo::setHTTPDataDirection;
 %ignore aiengine::HTTPInfo::getHTTPDataDirection;
 
+%ignore aiengine::BitcoinInfo::reset;
+%ignore aiengine::BitcoinInfo::incTransactions;
+
 %ignore aiengine::SIPInfo::reset;
 %ignore aiengine::SIPInfo::resetStrings;
 %ignore aiengine::SIPInfo::uri;
@@ -321,6 +324,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("total_evaluates")		aiengine::Signature::getTotalEvaluates;
 %rename("expression")			aiengine::Signature::getExpression;
 %rename("next_regex=")			aiengine::Regex::setNextRegex;
+%rename("total_transactions")		aiengien::BitcoinInfo::getTotalTransactions;
 %rename("domain_name")			aiengine::DNSInfo::getDomainName;
 %rename("user_name")			aiengine::POPInfo::getUserName;
 %rename("user_name")			aiengine::IMAPInfo::getUserName;
@@ -465,6 +469,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %include "protocols/imap/IMAPInfo.h"
 %include "protocols/pop/POPInfo.h"
 %include "protocols/ssdp/SSDPInfo.h"
+%include "protocols/bitcoin/BitcoinInfo.h"
 %include "Flow.h"
 %include "learner/LearnerEngine.h"
 %include "protocols/frequency/FrequencyGroup.h"

@@ -218,27 +218,30 @@ bool TCPProtocol::processPacket(Packet &packet) {
 			} else {
 				// Retrieve the flow to the flow cache if the flow have been closed	
 				if ((tcp_info->state_prev == static_cast<int>(TcpState::CLOSED))and(tcp_info->state_curr == static_cast<int>(TcpState::CLOSED))) {
+					if (flow->total_packets > 4 ) { // syn, syn/ack , ack and ack with data
 #ifdef DEBUG
-					std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << ":retrieving to flow cache" << std::endl; 
+						std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << ":retrieving to flow cache" << std::endl; 
 #endif
-					CacheManager::getInstance()->releaseFlow(flow.get());	
-				
-					flow_table_->removeFlow(flow);
-					flow_cache_->releaseFlow(flow);
 
 #if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
-                                        if (getDatabaseObjectIsSet()) { // There is attached a database object
-						databaseAdaptorRemoveHandler(flow.get());
-                                        }
+                                        	if (getDatabaseObjectIsSet()) { // There is attached a database object
+							databaseAdaptorRemoveHandler(flow.get());
+                                        	}
 #endif
+						CacheManager::getInstance()->releaseFlow(flow.get());	
+				
+						flow_table_->removeFlow(flow);
+						flow_cache_->releaseFlow(flow);
+					}
 					return true; // I dont like but sometimes.....
 				}
 			}
 
 #if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
-                	if ((flow->total_packets % getPacketSampling()) == 0) {
+                	if (((flow->total_packets % getPacketSampling()) == 0)or(packet.forceAdaptorWrite())) {
                         	if (getDatabaseObjectIsSet()) { // There is attached a database object
 					databaseAdaptorUpdateHandler(flow.get());
+					packet.setForceAdaptorWrite(false);
                         	}
                 	}
 #endif

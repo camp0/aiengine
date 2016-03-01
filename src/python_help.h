@@ -28,7 +28,7 @@
 #include <config.h>
 #endif
 
-const char *help_stack_name = "";
+const char *help_stack_name = 			"Gets the name of the Stack.";
 const char *help_stack_stats_level = 		"Gets/Sets the number of statistics level for the stack (1-5).";
 const char *help_stack_flows_timeout = 		"Gets/Sets the timeout for the TCP/UDP flows of the stack";
 const char *help_stack_tcp_flows = 		"Gets/Sets the maximum number of flows to be on the cache for TCP traffic.";
@@ -44,47 +44,47 @@ const char *help_enable_freq_engine = 		"Enables/Disables the Frequency Engine."
 const char *help_enable_nids_engine = 		"Enables/Disables the NIDS Engine.";
 const char *help_increase_alloc_mem = 		"Increase the allocated memory for a protocol given as parameter.";
 const char *help_decrease_alloc_mem = 		"Decrease the allocated memory for a protocol given as parameter.";
-const char *help_set_domain_name_manager = 	"";
-const char *help_set_tcp_database_adaptor = 	"";
-const char *help_set_udp_database_adaptor = 	"";
-const char *help_release_cache = 		"";
-const char *help_releases_caches = 		"";
-const char *help_get_counters = 		"";
-const char *help_get_cache = 			"";
-const char *help_get_statistics =		"";
+const char *help_set_domain_name_manager = 	"Sets a DomainNameManager on a specific protocol (HTTP,SSL or DNS).";
+const char *help_set_tcp_database_adaptor = 	"Sets a databaseAdaptor for TCP traffic.";
+const char *help_set_udp_database_adaptor = 	"Sets a databaseAdattor for UDP traffic.";
+const char *help_release_cache = 		"Release the cache of a specific protocol.";
+const char *help_releases_caches = 		"Release all the caches.";
+const char *help_get_counters = 		"Gets the counters of a specific protocol on a python dict.";
+const char *help_get_cache = 			"Gets the main cache of a protocol on a python dict.";
+const char *help_get_statistics =		"Gets the statisitics of a protocol on a python dict.";
 	
-const char *help_regex_expression = 		"Gets the regular expression";
-const char *help_regex_name = 			"Gets the name of the regular expression";
-const char *help_regex_matchs = 		"Gets the number of matches of the regular expression";
-const char *help_regex_callback = 		"Gets/Sets the callback function for the regular expression";
-const char *help_regex_next_regex = 		"Gets/Sets the next regular expression that should match";
+const char *help_regex_expression = 		"Gets the regular expression.";
+const char *help_regex_name = 			"Gets the name of the regular expression.";
+const char *help_regex_matchs = 		"Gets the number of matches of the regular expression.";
+const char *help_regex_callback = 		"Gets/Sets the callback function for the regular expression.";
+const char *help_regex_next_regex = 		"Gets/Sets the next regular expression that should match.";
 const char *help_regex_next_regex_manager = 	"Gets/Sets the next RegexManager for assign to the flow when a match occurs.";
 
-const char *help_pdis_status =			"Gets the status of the PacketDispatcher";
-const char *help_pdis_packets =			"Gets the total number of packets process by the PacketDispatcher";
-const char *help_pdis_bytes =			"Gets the total number of bytes process by the PacketDispatcher";
-const char *help_pdis_enable_shell =		"Gets/Sets a python shell in order to interact with the system on real time";
+const char *help_pdis_status =			"Gets the status of the PacketDispatcher.";
+const char *help_pdis_packets =			"Gets the total number of packets process by the PacketDispatcher.";
+const char *help_pdis_bytes =			"Gets the total number of bytes process by the PacketDispatcher.";
+const char *help_pdis_enable_shell =		"Gets/Sets a python shell in order to interact with the system on real time.";
 const char *help_pdis_stack =			"Gets/Sets the Network stack that is running on the PacketDispatcher.";	
 const char *help_pdis_pcap_filter =		"Gets/Sets a pcap filter on the PacketDispatcher";
 const char *help_pdis_evidences =		"Gets/Sets the evidences for make forensic analysis.";
 const char *help_pdis_open =			"Opens a network device or a pcap file for analysis.";
-const char *help_pdis_close =			"Closes a network device or a pcap file";
-const char *help_pdis_run =			"Start to process packets";
-const char *help_pdis_forward_packet =		"Forwards the received packet to a external packet engine(Netfilter)";
+const char *help_pdis_close =			"Closes a network device or a pcap file.";
+const char *help_pdis_run =			"Start to process packets.";
+const char *help_pdis_forward_packet =		"Forwards the received packet to a external packet engine(Netfilter).";
 const char *help_set_scheduler =		"Sets the scheduler for make periodically tasks (DDoS checks).";
 
 const char *help_regex_manager_iter =		"Iterate over the Regex stored on the RegexManager object.";
 const char *help_regex_manager_name = 		"Gets/Sets the name of the RegexManager.";
 const char *help_regex_manager_add_regex =	"Adds a Regex object to the RegexManager.";
 const char *help_regex_manager_len =		"Gets the total number of Regex stored on the RegexManager object.";	
-const char *help_regex_manager_show =		"";
-const char *help_regex_manager_show_name =	"";
+const char *help_regex_manager_show =		"Shows the Regexs stored on the RegexManager.";
+const char *help_regex_manager_show_name =	"Shows the Regexs stored on the RegexManager by name.";
 
 const char *help_flow_manager_iter =		"Iterate over the Flows stored on the FlowManager object.";
 const char *help_flow_manager_len =		"Gets the number of Flows stored on the FlowManager.";
 const char *help_flow_manager_flows =		"Gets the number of Flows stored on the FlowManager.";
-const char *help_flow_manager_process_flows =	"";
-const char *help_flow_manager_timeout_flows =	"";
+const char *help_flow_manager_process_flows =	"Gets the total number of process Flows.";
+const char *help_flow_manager_timeout_flows =	"Gets the total number of Flows that have been expired by the timeout.";
 
 const char *help_flow_protocol =		"Gets the protocol of the Flow (tcp,udp).";
 const char *help_flow_dst_port =		"Gets the destination port of the Flow.";
@@ -115,7 +115,7 @@ const char *help_flow_payload = 		"Gets a list of the bytes of the payload of th
 const char *help_flow_anomaly =			"Gets the attached anomaly of the flow."; 		 	
 const char *help_flow_l7_protocol_name =	"Gets the name of the Protocol of L7 of the flow.";
  
-const char *help_bitcoin_info_tx =		"Get";
+const char *help_bitcoin_info_tx =		"Get the total number of Bitcoin transactions of the Flow.";
 	
 const char *help_dns_info_iter =		"Iterate over the IP addresses returned on the query response."; 
 const char *help_dns_info_domain_name =		"Gets the DNS domain name."; 
@@ -207,22 +207,22 @@ const char *help_ip_set_manager_show =		"Shows the IPSets.";
 const char *help_ip_set_manager_show_name =	"Shows the IPSets by name.";
 const char *help_ip_set_manager_len = 		"Return the total number of IPSets.";
 
-const char *help_freq_group_tot_proc_flows =	"Returns the total number of computed flows";
+const char *help_freq_group_tot_proc_flows =	"Returns the total number of computed Flows";
 const char *help_freq_group_tot_comp_freq =	"Returns the total number of computed frequencies";
-const char *help_freq_group_add_by_src_port =	"Adds a list of flows and group them by source port.";
-const char *help_freq_group_add_by_dst_port =	"Adds a list of flows and group them by destination port.";
-const char *help_freq_group_add_by_src_addr =	"Adds a list of flows and group them by source IP address.";
-const char *help_freq_group_add_by_dst_addr = 	"Adds a list of flows and group them by destination IP address.";
-const char *help_freq_group_add_by_dst_p_a =	"Adds a list of flows and group them by destination IP address and port";
-const char *help_freq_group_add_by_src_p_a =	"Adds a list of flows and group them by source IP address and port.";
-const char *help_freq_group_compute =		"Computes the frequencies of the flows";
+const char *help_freq_group_add_by_src_port =	"Adds a list of Flows and group them by source port.";
+const char *help_freq_group_add_by_dst_port =	"Adds a list of Flows and group them by destination port.";
+const char *help_freq_group_add_by_src_addr =	"Adds a list of Flows and group them by source IP address.";
+const char *help_freq_group_add_by_dst_addr = 	"Adds a list of Flows and group them by destination IP address.";
+const char *help_freq_group_add_by_dst_p_a =	"Adds a list of Flows and group them by destination IP address and port";
+const char *help_freq_group_add_by_src_p_a =	"Adds a list of Flows and group them by source IP address and port.";
+const char *help_freq_group_compute =		"Computes the frequencies of the Flows";
 const char *help_freq_group_reset =		"Resets all the temporay memory used by the engine"; 
 const char *help_freq_group_get_ref_flow_k =	""; 
-const char *help_freq_group_get_ref_flow =	"Returns a list of the processed flows by the FrequencyGroup"; 
+const char *help_freq_group_get_ref_flow =	"Returns a list of the processed Flows by the FrequencyGroup"; 
 
-const char *help_learn_flows_proc =		"Gets the total number of flows processes by the LearnerEngine"; 
+const char *help_learn_flows_proc =		"Gets the total number of Flows processes by the LearnerEngine"; 
 const char *help_learn_regex =			"Gets the generated regular expression"; 
-const char *help_learn_agregate_flows = 	"Adds a list of flows to be process"; 
+const char *help_learn_agregate_flows = 	"Adds a list of Flows to be process"; 
 const char *help_learn_compute = 		"runs the engine"; 
 
 #endif

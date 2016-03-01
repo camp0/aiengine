@@ -28,6 +28,7 @@ import sys
 import pyaiengine
 import unittest
 import glob
+import json
 
 """ For python compatibility """
 try:
@@ -40,10 +41,12 @@ class databaseTestAdaptor(pyaiengine.DatabaseAdaptor):
         self.__total_inserts = 0
         self.__total_updates = 0
         self.__total_removes = 0
+        self.lastdata = dict() 
 
     def update(self,key,data):
         self.__total_updates = self.__total_updates + 1 
-    
+        self.lastdata = data
+
     def insert(self,key):
         self.__total_inserts = self.__total_inserts + 1
  
@@ -1002,6 +1005,30 @@ class StackLanTests(unittest.TestCase):
         dm.remove_domain_name("Wired domain")
         self.assertEqual(len(dm), 1)
 
+    def test34(self):
+        """ Verify the functionatliy write on the databaseAdaptor when a important event happen on UDP """
+
+        rm = pyaiengine.RegexManager()
+        r = pyaiengine.Regex("my regex",b"^HTTP.*$")
+
+        rm.add_regex(r)
+
+        db = databaseTestAdaptor()
+
+        self.s.set_udp_database_adaptor(db)
+
+        self.s.udp_regex_manager = rm
+
+        self.s.enable_nids_engine = True
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/ssdp_flow.pcap") as pd:
+            pd.stack = self.s
+            pd.run()
+
+        d = json.loads(db.lastdata)
+        self.assertEqual(d["matchs"], "my regex")
+        self.assertEqual(r.matchs, 1)
+
 
 class StackLanIPv6Tests(unittest.TestCase):
 
@@ -1329,6 +1356,28 @@ class StackLanIPv6Tests(unittest.TestCase):
         """ verify the integrity of the new file created """
         files = glob.glob("evidences.*.pcap")
         os.remove(files[0])
+
+    def test14(self):
+        """ Verify the functionatliy write on the databaseAdaptor when a important event happen on TCP """
+
+        rm = pyaiengine.RegexManager()
+        r = pyaiengine.Regex("my regex",b"^Upgrade.*$")
+
+        rm.add_regex(r)
+
+        db = databaseTestAdaptor()
+
+        self.s.set_tcp_database_adaptor(db)
+
+        self.s.tcp_regex_manager = rm
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/generic_exploit_ipv6_defcon20.pcap") as pd:
+            pd.stack = self.s
+            pd.run()
+
+        d = json.loads(db.lastdata)
+        self.assertEqual(d["matchs"], "my regex")
+        self.assertEqual(r.matchs, 1)
  
 class StackLanLearningTests(unittest.TestCase):
 

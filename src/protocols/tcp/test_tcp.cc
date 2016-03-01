@@ -72,15 +72,16 @@ BOOST_AUTO_TEST_CASE (test3_tcp)
 	Flow *flow = tcp->getCurrentFlow();
 
 	BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->getTCPInfo() == nullptr);
+	SharedPointer<TCPInfo> info = flow->getTCPInfo();
+        BOOST_CHECK(info != nullptr);
 	BOOST_CHECK(flow->regex_mng.lock() == nullptr);
 	
 	// Process the packet but no syn or syn ack so the info have been released
-	// BOOST_CHECK(info->syn == 0);
-	// BOOST_CHECK(info->fin == 0);
-	// BOOST_CHECK(info->syn_ack == 0);
-	// BOOST_CHECK(info->ack == 1);
-	// BOOST_CHECK(info->push == 1);
+	BOOST_CHECK(info->syn == 0);
+	BOOST_CHECK(info->fin == 0);
+	BOOST_CHECK(info->syn_ack == 0);
+	BOOST_CHECK(info->ack == 1);
+	BOOST_CHECK(info->push == 1);
 }
 
 BOOST_AUTO_TEST_CASE (test4_tcp)
@@ -115,8 +116,11 @@ BOOST_AUTO_TEST_CASE (test5_tcp)
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->getTCPInfo() == nullptr);
+        SharedPointer<TCPInfo> info = flow->getTCPInfo();
+        BOOST_CHECK(info != nullptr);
 
+	BOOST_CHECK( info->syn == 0);
+	BOOST_CHECK( info->syn_ack == 1);
 	// no syn packet so nothing to process
 	BOOST_CHECK(tcp->isSyn() == true);
 	BOOST_CHECK(tcp->isFin() == false);
@@ -162,7 +166,13 @@ BOOST_AUTO_TEST_CASE (test7_tcp)
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->getTCPInfo() == nullptr);
+        SharedPointer<TCPInfo> info = flow->getTCPInfo();
+        BOOST_CHECK(info  != nullptr);
+
+	BOOST_CHECK(info->syn = 1);
+	BOOST_CHECK(info->syn_ack = 1);
+	BOOST_CHECK(info->fin = 1);
+	BOOST_CHECK(info->ack = 1);
 
 	BOOST_CHECK(tcp->isSyn() == true);
 	BOOST_CHECK(tcp->isFin() == true);

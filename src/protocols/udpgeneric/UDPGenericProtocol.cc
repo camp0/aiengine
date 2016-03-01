@@ -57,7 +57,8 @@ void UDPGenericProtocol::processFlow(Flow *flow) {
 
                 if((result)and(regex)) {
                         if (regex->getShowMatch()) {
-                                std::cout << "UDP Flow:" << *flow << " matchs with regex " << regex->getName() << std::endl;
+                                std::cout << "UDP Flow:[" << *flow << "] pkts:" << flow->total_packets << "] matchs with (";
+                                std::cout << std::addressof(*regex.get()) << ")Regex [" << regex->getName() << "]" << std::endl;
                         }
 #ifdef HAVE_LIBLOG4CXX
                         LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << regex->getName());
@@ -75,6 +76,9 @@ void UDPGenericProtocol::processFlow(Flow *flow) {
 #endif
 			if (regex->getRejectConnection()) flow->setReject(true);
 			if (regex->haveEvidence()) flow->setEvidence(true);
+
+			// Force to write on the databaseAdaptor update method
+			flow->packet->setForceAdaptorWrite(true);	
                 }
         }
 }

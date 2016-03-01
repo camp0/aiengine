@@ -89,7 +89,7 @@ public:
 	void setCache(Cache<SSDPInfo>::CachePtr cache) { ssdp_info_cache_ = cache; }
 
 	void releaseFlow(Flow *flow);
-        
+       
 	void statistics();
 
         friend class SingletonCache<CacheManager>;

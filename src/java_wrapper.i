@@ -202,6 +202,9 @@
 %ignore aiengine::HTTPInfo::setHTTPDataDirection;
 %ignore aiengine::HTTPInfo::getHTTPDataDirection;
 
+%ignore aiengine::BitcoinInfo::reset;
+%ignore aiengine::BitcoinInfo::incTransactions;
+
 %ignore aiengine::SIPInfo::reset;
 %ignore aiengine::SIPInfo::resetStrings;
 %ignore aiengine::SIPInfo::uri;
@@ -262,11 +265,8 @@
 
 %ignore operator<<;
 
-//%apply int32_t { Integer }; 
-
 %feature("director") JaiCallback;
 %feature("director") DatabaseAdaptor;
-// %feature("director") IPAbstractSet;
 
 %include "Callback.h"
 %include "JaiCallback.h"
@@ -298,6 +298,7 @@
 %include "protocols/imap/IMAPInfo.h"
 %include "protocols/pop/POPInfo.h"
 %include "protocols/ssdp/SSDPInfo.h"
+%include "protocols/bitcoin/BitcoinInfo.h"
 %include "Flow.h"
 //%include "learner/LearnerEngine.h"
 //%include "protocols/frequency/FrequencyGroup.h"
