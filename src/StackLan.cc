@@ -163,7 +163,7 @@ StackLan::StackLan():
 	udp_->setFlowManager(flow_table_udp_);
 	flow_table_udp_->setProtocol(udp_);	
 
-	// Connect to upper layers the FlowManager
+	// Connect to upper layers the FlowManager for release caches
 	http->setFlowManager(flow_table_tcp_);
 	ssl->setFlowManager(flow_table_tcp_);
 	smtp->setFlowManager(flow_table_tcp_);

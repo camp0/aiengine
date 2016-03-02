@@ -130,7 +130,6 @@ public:
 	int32_t total_packets_l7;
 	int32_t total_packets;
 
-	// TODO: Optimize this in order to dont affect udp to tcp and viceversa	
 	// Objects that links with the Flow
 	WeakPointer<IPAbstractSet> ipset;
 	WeakPointer<Regex> regex;

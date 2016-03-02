@@ -782,7 +782,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.add_property("name",&DomainNameManager::getName,&DomainNameManager::setName,
 			help_domain_name_mng_name )
                 .def("add_domain_name",addDomainName1,
-			help_domain_name_mng_add_domain )
+			help_domain_name_mng_add_domain_n )
                 .def("add_domain_name",addDomainName2,
 			help_domain_name_mng_add_domain )
 		.def("remove_domain_name", &DomainNameManager::removeDomainNameByName,
