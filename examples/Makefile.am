@@ -1,6 +1,7 @@
 AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = 	bitcoinminer.py \
+		bitcoinmonitor.py \
 		malware.py \
 		mostusedips.py \
 		nids_firewall.py \
