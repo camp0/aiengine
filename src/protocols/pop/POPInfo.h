@@ -30,10 +30,11 @@
 
 #include <iostream>
 #include "StringCache.h"
+#include "FlowInfo.h"
 
 namespace aiengine {
 
-class POPInfo 
+class POPInfo : public FlowInfo 
 {
 public:
     	explicit POPInfo() { reset(); }

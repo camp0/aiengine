@@ -41,6 +41,7 @@ public:
 		prev_header_size_(prev_header_size),
 		source_port_(0),dest_port_(0),pa_(pa),packet_time_(packet_time),
 		have_tag_(false),have_evidence_(false),
+		force_adaptor_write_(false),
 		tag_(0xffffffff) {}
 	
 	explicit Packet(unsigned char *packet, int length, int prev_header_size,
@@ -61,6 +62,7 @@ public:
 		dest_port_(p.dest_port_),
 		pa_(p.pa_),packet_time_(p.packet_time_),
 		have_tag_(p.have_tag_),have_evidence_(p.have_evidence_),
+		force_adaptor_write_(p.force_adaptor_write_),
 		tag_(p.tag_) {}
 
     	virtual ~Packet() {}
@@ -68,6 +70,9 @@ public:
 	void setTag(uint32_t tag) { have_tag_ = true; tag_ = tag; }
 	bool haveTag() const { return have_tag_; }
 	uint32_t getTag() const { return tag_; }
+
+	void setForceAdaptorWrite(bool value) { force_adaptor_write_ = value; }
+	bool forceAdaptorWrite() const { return force_adaptor_write_; }
 
         bool haveEvidence() const { return have_evidence_; }
         void setEvidence(bool value) { have_evidence_ = value; }
@@ -122,6 +127,7 @@ private:
 	time_t packet_time_;
 	bool have_tag_;
 	bool have_evidence_;
+	bool force_adaptor_write_; // Force to call the databaseAdaptor update method
 	uint32_t tag_;
 };
 

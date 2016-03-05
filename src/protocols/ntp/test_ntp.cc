@@ -39,10 +39,7 @@ BOOST_AUTO_TEST_CASE (test1_ntp)
         int length = raw_packet_ethernet_ip_udp_ntp_client_length;
         Packet packet(pkt,length);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(ip->getTotalPackets() == 1);
         BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
@@ -64,10 +61,7 @@ BOOST_AUTO_TEST_CASE (test2_ntp)
         int length = raw_packet_ethernet_ip_udp_ntp_server_length;
         Packet packet(pkt,length);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(ip->getTotalPackets() == 1);
         BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
@@ -89,10 +83,7 @@ BOOST_AUTO_TEST_CASE (test3_ntp)
         int length = raw_packet_ethernet_ip_udp_ntp_client4_length;
         Packet packet(pkt,length);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(ip->getTotalPackets() == 1);
         BOOST_CHECK(ip->getTotalValidatedPackets() == 1);

@@ -121,8 +121,8 @@ public:
 
 	unsigned char *getPayload() { return pop_header_; }
 
-        void createPOPInfos(int number);
-        void destroyPOPInfos(int number);
+        void increaseAllocatedMemory(int value);
+        void decreaseAllocatedMemory(int value);
 
         void setDomainNameManager(DomainNameManagerPtrWeak dnm) override { domain_mng_ = dnm;}
         void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) override { ban_domain_mng_ = dnm;}

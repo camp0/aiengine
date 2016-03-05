@@ -96,7 +96,7 @@ void SIPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-			SharedPointer<SIPInfo> sinfo = flow->sip_info;
+			SharedPointer<SIPInfo> sinfo = flow->getSIPInfo();
 			if (sinfo) {
                         	SharedPointer<StringCache> sc = sinfo->uri;
 				if (sc) {	
@@ -124,7 +124,7 @@ void SIPProtocol::releaseCache() {
                         	}
                         	++release_flows;
 	
-				flow->sip_info.reset();
+				flow->layer7info.reset();
 				info_cache_->release(sinfo);
 			}
                 } 
@@ -310,14 +310,14 @@ void SIPProtocol::processFlow(Flow *flow) {
 	total_bytes_ += length;
 	++flow->total_packets_l7;
 
-	SharedPointer<SIPInfo> sinfo = flow->sip_info;
+	SharedPointer<SIPInfo> sinfo = flow->getSIPInfo();
 
         if(!sinfo) {
                 sinfo = info_cache_->acquire();
                 if (!sinfo) {
                         return;
                 }
-                flow->sip_info = sinfo;
+                flow->layer7info = sinfo;
         }
 
 	boost::string_ref header(reinterpret_cast <const char*> (flow->packet->getPayload()),length);
@@ -335,23 +335,23 @@ void SIPProtocol::processFlow(Flow *flow) {
 }
 
 
-void SIPProtocol::createSIPInfos(int number) {
+void SIPProtocol::increaseAllocatedMemory(int value) {
 
-	info_cache_->create(number);
-	uri_cache_->create(number);
-	from_cache_->create(number);
-	to_cache_->create(number);
-	via_cache_->create(number);
+	info_cache_->create(value);
+	uri_cache_->create(value);
+	from_cache_->create(value);
+	to_cache_->create(value);
+	via_cache_->create(value);
 }
 
 
-void SIPProtocol::destroySIPInfos(int number) {
+void SIPProtocol::decreaseAllocatedMemory(int value) {
 
-	info_cache_->destroy(number);
-	uri_cache_->destroy(number);
-	from_cache_->destroy(number);
-	to_cache_->destroy(number);
-	via_cache_->destroy(number);
+	info_cache_->destroy(value);
+	uri_cache_->destroy(value);
+	from_cache_->destroy(value);
+	to_cache_->destroy(value);
+	via_cache_->destroy(value);
 }
 
 void SIPProtocol::statistics(std::basic_ostream<char>& out) {

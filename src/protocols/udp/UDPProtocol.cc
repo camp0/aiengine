@@ -201,9 +201,10 @@ bool UDPProtocol::processPacket(Packet& packet) {
 		}
 		
 #if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
-		if (((flow->total_packets - 1) % getPacketSampling()) == 0 ) {
+		if ((((flow->total_packets - 1) % getPacketSampling()) == 0 )or(packet.forceAdaptorWrite())) {
 			if (getDatabaseObjectIsSet()) { // There is attached a database object
 				databaseAdaptorUpdateHandler(flow.get());
+				packet.setForceAdaptorWrite(false);
 			} 
 		}
 #endif

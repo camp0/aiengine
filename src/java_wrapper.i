@@ -101,6 +101,7 @@
 %ignore aiengine::StackOpenFlow::getUDPRegexManager;
 
 %ignore aiengine::IPSetManager::addIPSet(const SharedPointer<IPAbstractSet> ipset);
+%ignore aiengine::IPSetManager::removeIPSet(const SharedPointer<IPAbstractSet> ipset);
 %ignore aiengine::IPSetManager::getMatchedIPSet;
 %ignore aiengine::IPSetManager::lookupIPAddress;
 
@@ -118,6 +119,7 @@
 %ignore aiengine::FlowManager::setProtocol;
 %ignore aiengine::FlowManager::updateFlowTime;
 
+%ignore aiengine::DomainNameManager::removeDomainName(const SharedPointer<DomainName>& domain);
 %ignore aiengine::DomainNameManager::addDomainName(const SharedPointer<DomainName>& domain);
 %ignore aiengine::DomainNameManager::getDomainName;
 
@@ -129,17 +131,19 @@
 %ignore aiengine::Flow::setPacketAnomaly;
 %ignore aiengine::Flow::getPacketAnomaly;
 %ignore aiengine::Flow::ipset;
-%ignore aiengine::Flow::tcp_info;
-%ignore aiengine::Flow::gprs_info;
-%ignore aiengine::Flow::smtp_info;
-%ignore aiengine::Flow::ssl_info;
-%ignore aiengine::Flow::pop_info;
-%ignore aiengine::Flow::http_info;
-%ignore aiengine::Flow::dns_info;
-%ignore aiengine::Flow::sip_info;
-%ignore aiengine::Flow::imap_info;
-%ignore aiengine::Flow::pop_info;
-%ignore aiengine::Flow::ssdp_info;
+%ignore aiengine::Flow::layer4info;
+%ignore aiengine::Flow::layer7info;
+%ignore aiengine::Flow::getTCPInfo;
+%ignore aiengine::Flow::getPOPInfo;
+%ignore aiengine::Flow::getIMAPInfo;
+%ignore aiengine::Flow::getSMTPInfo;
+%ignore aiengine::Flow::getSSLInfo;
+%ignore aiengine::Flow::getDNSInfo;
+%ignore aiengine::Flow::getHTTPInfo;
+%ignore aiengine::Flow::getGPRSInfo;
+%ignore aiengine::Flow::getSSDPInfo;
+%ignore aiengine::Flow::getSIPInfo;
+%ignore aiengine::Flow::getBitcoinInfo;
 %ignore aiengine::Flow::packet;
 %ignore aiengine::Flow::regex;
 %ignore aiengine::Flow::frequencies;
@@ -197,6 +201,9 @@
 %ignore aiengine::HTTPInfo::getIsRelease;
 %ignore aiengine::HTTPInfo::setHTTPDataDirection;
 %ignore aiengine::HTTPInfo::getHTTPDataDirection;
+
+%ignore aiengine::BitcoinInfo::reset;
+%ignore aiengine::BitcoinInfo::incTransactions;
 
 %ignore aiengine::SIPInfo::reset;
 %ignore aiengine::SIPInfo::resetStrings;
@@ -258,11 +265,8 @@
 
 %ignore operator<<;
 
-//%apply int32_t { Integer }; 
-
 %feature("director") JaiCallback;
 %feature("director") DatabaseAdaptor;
-// %feature("director") IPAbstractSet;
 
 %include "Callback.h"
 %include "JaiCallback.h"
@@ -294,6 +298,7 @@
 %include "protocols/imap/IMAPInfo.h"
 %include "protocols/pop/POPInfo.h"
 %include "protocols/ssdp/SSDPInfo.h"
+%include "protocols/bitcoin/BitcoinInfo.h"
 %include "Flow.h"
 //%include "learner/LearnerEngine.h"
 //%include "protocols/frequency/FrequencyGroup.h"

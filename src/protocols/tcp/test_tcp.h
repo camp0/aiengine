@@ -34,8 +34,7 @@
 #include "../test/ipv6_test_packets.h"
 #include "../test/full_ssl_packets.h"
 #include "Protocol.h"
-#include "Multiplexer.h"
-#include "../ethernet/EthernetProtocol.h"
+#include "StackTest.h"
 #include "../vlan/VLanProtocol.h"
 #include "../ip/IPProtocol.h"
 #include "../ip6/IPv6Protocol.h"
@@ -43,12 +42,10 @@
 
 using namespace aiengine;
 
-struct StackTCPTest
+struct StackTCPTest : public StackTest
 {
-        EthernetProtocolPtr eth;
         IPProtocolPtr ip;
         TCPProtocolPtr tcp;
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
         MultiplexerPtr mux_tcp;
 
@@ -60,17 +57,8 @@ struct StackTCPTest
         {
                 tcp = TCPProtocolPtr(new TCPProtocol());
                 ip = IPProtocolPtr(new IPProtocol());
-                eth = EthernetProtocolPtr(new EthernetProtocol());
-                mux_eth = MultiplexerPtr(new Multiplexer());
                 mux_ip = MultiplexerPtr(new Multiplexer());
                 mux_tcp = MultiplexerPtr(new Multiplexer());
-
-                //configure the eth
-                eth->setMultiplexer(mux_eth);
-                mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-                mux_eth->setProtocolIdentifier(0);
-                mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the ip
                 ip->setMultiplexer(mux_ip);
@@ -164,6 +152,13 @@ struct StackIPv6TCPTest
                 mux_ip->addDownMultiplexer(mux_eth);
                 mux_ip->addUpMultiplexer(mux_tcp,IPPROTO_TCP);
                 mux_tcp->addDownMultiplexer(mux_ip);
+        }
+
+        void inject(Packet &pkt) {
+                mux_eth->setPacket(&pkt);
+                eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
+                mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
+                mux_eth->forwardPacket(pkt);
         }
 
         ~StackIPv6TCPTest() {

@@ -47,10 +47,7 @@ BOOST_AUTO_TEST_CASE (test1_openflow)
         int length3 = raw_packet_ethernet_ip_tcp_of_features_reply_length;
         Packet packet3(pkt3,length3);
 
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(packet1.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
         // Check the results
         BOOST_CHECK(ip->getTotalPackets() == 1);
@@ -64,10 +61,7 @@ BOOST_AUTO_TEST_CASE (test1_openflow)
 	BOOST_CHECK(of->getType() == OFP_HELLO); 
 	BOOST_CHECK(of->getLength() == 8); 
 
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(packet2.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet2);
 
         BOOST_CHECK(of->getTotalPackets() == 2);
         BOOST_CHECK(of->getTotalValidatedPackets() == 1);
@@ -76,10 +70,7 @@ BOOST_AUTO_TEST_CASE (test1_openflow)
 	BOOST_CHECK(of->getType() == OFP_SET_CONFIG); 
 	BOOST_CHECK(of->getLength() == 12); 
 
-        mux_eth->setPacket(&packet3);
-        eth->setHeader(packet3.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet3);
+	inject(packet3);
 
         BOOST_CHECK(of->getTotalPackets() == 3);
         BOOST_CHECK(of->getTotalValidatedPackets() == 1);
@@ -95,10 +86,7 @@ BOOST_AUTO_TEST_CASE (test2_openflow)
         int length = raw_packet_ethernet_ip_tcp_of_pktin_ethernet_arp_length;
         Packet packet(pkt,length);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(of->getTotalPackets() == 1);
         BOOST_CHECK(of->getTotalValidatedPackets() == 1);
@@ -124,12 +112,7 @@ BOOST_AUTO_TEST_CASE (test3_openflow)
 	udpg_vir->setRegexManager(re);
 	udp_vir->setRegexManager(re);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(of->getTotalPackets() == 1);
         BOOST_CHECK(of->getTotalValidatedPackets() == 1);
@@ -176,11 +159,7 @@ BOOST_AUTO_TEST_CASE (test4_openflow)
         tcpg_vir->setRegexManager(re);
         tcp_vir->setRegexManager(re);
 
-        // executing the first packet
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
 	// Verify the integrity of the path with the first packet injected
 
@@ -235,11 +214,7 @@ BOOST_AUTO_TEST_CASE (test4_openflow)
 	BOOST_CHECK(r->getMatchs() == 0);
 	BOOST_CHECK(r->getTotalEvaluates() == 1);
 
-        // inject the second packet
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet2);
 
         BOOST_CHECK(flow_mng->getTotalProcessFlows() == 2); // One the openflowtcp and other the real flow
         BOOST_CHECK(flow_mng->getTotalFlows() == 2);

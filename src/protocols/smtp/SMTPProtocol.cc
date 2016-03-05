@@ -140,12 +140,12 @@ void SMTPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-                       	SharedPointer<SMTPInfo> sinfo = flow->smtp_info;
+                       	SharedPointer<SMTPInfo> sinfo = flow->getSMTPInfo();
 			if (sinfo) {
                                 total_bytes_released_by_flows += release_smtp_info(sinfo.get());
                                 total_bytes_released_by_flows += sizeof(sinfo);
                                
-                                flow->smtp_info.reset();
+                                flow->layer7info.reset();
                                 ++ release_flows;
                                 info_cache_->release(sinfo);
                         }
@@ -279,14 +279,14 @@ void SMTPProtocol::processFlow(Flow *flow) {
 
 	setHeader(flow->packet->getPayload());
 
-       	SharedPointer<SMTPInfo> sinfo = flow->smtp_info;
+       	SharedPointer<SMTPInfo> sinfo = flow->getSMTPInfo();
 
        	if(!sinfo) {
                	sinfo = info_cache_->acquire();
                	if (!sinfo) {
                        	return;
                	}
-        	flow->smtp_info = sinfo;
+        	flow->layer7info = sinfo;
 	}
 
         if (sinfo->getIsBanned() == true) {
@@ -393,18 +393,18 @@ void SMTPProtocol::statistics(std::basic_ostream<char>& out)
 }
 
 
-void SMTPProtocol::createSMTPInfos(int number) { 
+void SMTPProtocol::increaseAllocatedMemory(int value) { 
 
-	info_cache_->create(number);
-	from_cache_->create(number);
-	to_cache_->create(number);
+	info_cache_->create(value);
+	from_cache_->create(value);
+	to_cache_->create(value);
 }
 
-void SMTPProtocol::destroySMTPInfos(int number) { 
+void SMTPProtocol::decreaseAllocatedMemory(int value) { 
 
-	info_cache_->destroy(number);
-	from_cache_->destroy(number);
-	to_cache_->destroy(number);
+	info_cache_->destroy(value);
+	from_cache_->destroy(value);
+	to_cache_->destroy(value);
 }
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)

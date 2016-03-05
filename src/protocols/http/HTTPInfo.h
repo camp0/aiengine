@@ -33,10 +33,11 @@
 #include "StringCache.h"
 #include "names/DomainName.h"
 #include "FlowDirection.h"
+#include "FlowInfo.h"
 
 namespace aiengine {
 
-class HTTPInfo 
+class HTTPInfo : public FlowInfo 
 {
 public:
     	explicit HTTPInfo() { reset(); }

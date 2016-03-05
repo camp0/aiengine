@@ -127,7 +127,7 @@ SharedPointer<Flow> TCPProtocol::getFlow(const Packet& packet) {
 					// Now attach a TCPInfo to the TCP Flow
 					SharedPointer<TCPInfo> tcp_info_ptr = tcp_info_cache_->acquire();
 					if (tcp_info_ptr) {
-						flow->tcp_info = tcp_info_ptr;
+						flow->layer4info = tcp_info_ptr;
 					}
                                         
 #if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
@@ -160,7 +160,7 @@ bool TCPProtocol::processPacket(Packet &packet) {
 	++total_packets_;
 
         if (flow) {
-		SharedPointer<TCPInfo> tcp_info = flow->tcp_info;
+		SharedPointer<TCPInfo> tcp_info = flow->getTCPInfo();
 		if (tcp_info) {
         		MultiplexerPtrWeak downmux = mux_.lock()->getDownMultiplexer();
         		MultiplexerPtr ipmux = downmux.lock();
@@ -218,27 +218,30 @@ bool TCPProtocol::processPacket(Packet &packet) {
 			} else {
 				// Retrieve the flow to the flow cache if the flow have been closed	
 				if ((tcp_info->state_prev == static_cast<int>(TcpState::CLOSED))and(tcp_info->state_curr == static_cast<int>(TcpState::CLOSED))) {
+					if (flow->total_packets > 4 ) { // syn, syn/ack , ack and ack with data
 #ifdef DEBUG
-					std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << ":retrieving to flow cache" << std::endl; 
+						std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << ":retrieving to flow cache" << std::endl; 
 #endif
-					CacheManager::getInstance()->releaseFlow(flow.get());	
-				
-					flow_table_->removeFlow(flow);
-					flow_cache_->releaseFlow(flow);
 
 #if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
-                                        if (getDatabaseObjectIsSet()) { // There is attached a database object
-						databaseAdaptorRemoveHandler(flow.get());
-                                        }
+                                        	if (getDatabaseObjectIsSet()) { // There is attached a database object
+							databaseAdaptorRemoveHandler(flow.get());
+                                        	}
 #endif
+						CacheManager::getInstance()->releaseFlow(flow.get());	
+				
+						flow_table_->removeFlow(flow);
+						flow_cache_->releaseFlow(flow);
+					}
 					return true; // I dont like but sometimes.....
 				}
 			}
 
 #if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
-                	if ((flow->total_packets % getPacketSampling()) == 0) {
+                	if (((flow->total_packets % getPacketSampling()) == 0)or(packet.forceAdaptorWrite())) {
                         	if (getDatabaseObjectIsSet()) { // There is attached a database object
 					databaseAdaptorUpdateHandler(flow.get());
+					packet.setForceAdaptorWrite(false);
                         	}
                 	}
 #endif

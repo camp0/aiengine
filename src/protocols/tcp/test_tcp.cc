@@ -37,13 +37,8 @@ BOOST_AUTO_TEST_CASE (test1_tcp)
 	unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_tcp_http_get);
         int length = raw_packet_ethernet_ip_tcp_http_get_length;
 	Packet packet(pkt,length);
-	
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+
+	inject(packet);	
 
         // Check the TCP integrity
         BOOST_CHECK(tcp->getSourcePort() == 53637);
@@ -57,12 +52,7 @@ BOOST_AUTO_TEST_CASE (test2_tcp)
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
         Packet packet(pkt,length);
                 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);	
                 
         // Check the TCP integrity
         BOOST_CHECK(tcp->getSourcePort() == 44265);
@@ -77,23 +67,21 @@ BOOST_AUTO_TEST_CASE (test3_tcp)
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
         Packet packet(pkt,length);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);	
 
 	Flow *flow = tcp->getCurrentFlow();
 
 	BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info == nullptr);
+	SharedPointer<TCPInfo> info = flow->getTCPInfo();
+        BOOST_CHECK(info != nullptr);
 	BOOST_CHECK(flow->regex_mng.lock() == nullptr);
 	
 	// Process the packet but no syn or syn ack so the info have been released
-	// BOOST_CHECK(info->syn == 0);
-	// BOOST_CHECK(info->fin == 0);
-	// BOOST_CHECK(info->syn_ack == 0);
-	// BOOST_CHECK(info->ack == 1);
-	// BOOST_CHECK(info->push == 1);
+	BOOST_CHECK(info->syn == 0);
+	BOOST_CHECK(info->fin == 0);
+	BOOST_CHECK(info->syn_ack == 0);
+	BOOST_CHECK(info->ack == 1);
+	BOOST_CHECK(info->push == 1);
 }
 
 BOOST_AUTO_TEST_CASE (test4_tcp)
@@ -102,16 +90,13 @@ BOOST_AUTO_TEST_CASE (test4_tcp)
         int length1 = raw_packet_ethernet_ip_tcp_syn_length;
         Packet packet(pkt1,length1);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);	
 
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info != nullptr);
-        SharedPointer<TCPInfo> info = flow->tcp_info;
+        BOOST_CHECK(flow->layer4info != nullptr);
+        SharedPointer<TCPInfo> info = flow->getTCPInfo();
 
         BOOST_CHECK(info->syn == 1);
         BOOST_CHECK(info->fin == 0);
@@ -126,16 +111,16 @@ BOOST_AUTO_TEST_CASE (test5_tcp)
         int length1 = raw_packet_ethernet_ip_tcp_syn_ack_length;
         Packet packet(pkt1,length1);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info == nullptr);
+        SharedPointer<TCPInfo> info = flow->getTCPInfo();
+        BOOST_CHECK(info != nullptr);
 
+	BOOST_CHECK( info->syn == 0);
+	BOOST_CHECK( info->syn_ack == 1);
 	// no syn packet so nothing to process
 	BOOST_CHECK(tcp->isSyn() == true);
 	BOOST_CHECK(tcp->isFin() == false);
@@ -153,21 +138,14 @@ BOOST_AUTO_TEST_CASE (test6_tcp)
         int length2 = raw_packet_ethernet_ip_tcp_syn_ack_length;
         Packet packet2(pkt2,length2);
 
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(packet1.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
-
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(packet2.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet1);
+	inject(packet2);
 
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info != nullptr);
-        SharedPointer<TCPInfo> info = flow->tcp_info;
+        BOOST_CHECK(flow->layer4info != nullptr);
+        SharedPointer<TCPInfo> info = flow->getTCPInfo();
 
         BOOST_CHECK(info->syn == 1);
         BOOST_CHECK(info->fin == 0);
@@ -183,15 +161,18 @@ BOOST_AUTO_TEST_CASE (test7_tcp)
         int length1 = raw_packet_ethernet_ip_tcp_syn_ack_fin_length;
         Packet packet(pkt1,length1);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info == nullptr);
+        SharedPointer<TCPInfo> info = flow->getTCPInfo();
+        BOOST_CHECK(info  != nullptr);
+
+	BOOST_CHECK(info->syn = 1);
+	BOOST_CHECK(info->syn_ack = 1);
+	BOOST_CHECK(info->fin = 1);
+	BOOST_CHECK(info->ack = 1);
 
 	BOOST_CHECK(tcp->isSyn() == true);
 	BOOST_CHECK(tcp->isFin() == true);
@@ -207,15 +188,12 @@ BOOST_AUTO_TEST_CASE (test8_tcp)
         int length = raw_packet_ethernet_ip_tcp_syn_bogus_length;
         Packet packet(pkt,length);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info != nullptr);
+        BOOST_CHECK(flow->layer4info != nullptr);
 	PacketAnomalyType pa = flow->getPacketAnomaly();
 	BOOST_CHECK(pa == PacketAnomalyType::TCP_BOGUS_HEADER);
 }
@@ -265,10 +243,7 @@ BOOST_AUTO_TEST_CASE (test9_tcp)
 
 	// Inject the 6 packets 
 	for (auto &pkt: pktlist) { 
-		mux_eth->setPacket(&pkt);
-        	eth->setHeader(pkt.getPayload());
-        	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        	mux_eth->forwardPacket(pkt);
+		inject(pkt);
 	}
 	
         Flow *flow = tcp->getCurrentFlow();
@@ -325,10 +300,7 @@ BOOST_AUTO_TEST_CASE (test10_tcp)
 
         // Inject the 6 packets
         for (auto &pkt: pktlist) {
-                mux_eth->setPacket(&pkt);
-                eth->setHeader(pkt.getPayload());
-                mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-                mux_eth->forwardPacket(pkt);
+		inject(pkt);
         }
 
         Flow *flow = tcp->getCurrentFlow();
@@ -355,12 +327,7 @@ BOOST_AUTO_TEST_CASE (test1_tcp)
         int length = raw_packet_ethernet_ipv6_tcp_http_get_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // Check the TCP integrity
         BOOST_CHECK(tcp->getSourcePort() == 1287);
@@ -374,12 +341,7 @@ BOOST_AUTO_TEST_CASE (test2_tcp)
         int length = raw_ethernet_ipv6_dstopthdr_tcp_http_get_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // Check the TCP integrity
         BOOST_CHECK(tcp->getSourcePort() == 36951);
@@ -391,14 +353,9 @@ BOOST_AUTO_TEST_CASE (test3_tcp)
 {
         unsigned char *pkt1 = reinterpret_cast <unsigned char*> (raw_ethernet_ipv6_ahhdr_tcp_syn_flow1);
         int length1 = raw_ethernet_ipv6_ahhdr_tcp_syn_flow1_length;
-        Packet packet1(pkt1,length1);
+        Packet packet(pkt1,length1);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(packet1.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet);
 
         // Check the TCP integrity
         BOOST_CHECK(tcp->getSourcePort() == 17257);
@@ -417,12 +374,7 @@ BOOST_AUTO_TEST_CASE (test4_tcp)
         int length = raw_packet_ethernet_ipv6_hophop_dstopt_tcp_syn_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // Check the TCP integrity
         BOOST_CHECK(tcp->getSourcePort() == 55617);
@@ -566,10 +518,7 @@ BOOST_AUTO_TEST_CASE (test1_tcp) // Two flows, the first expires
 
 	flow_mng->setTimeout(80);
 
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(packet1.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
         BOOST_CHECK(flow_mng->getTotalProcessFlows() == 1);
         BOOST_CHECK(flow_mng->getTotalFlows() == 1);
@@ -580,10 +529,7 @@ BOOST_AUTO_TEST_CASE (test1_tcp) // Two flows, the first expires
         BOOST_CHECK(flow_cache->getTotalReleases() == 0);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);
 
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(packet2.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet2);
 
 	BOOST_CHECK(flow_mng->getTotalProcessFlows() == 2);
 	BOOST_CHECK(flow_mng->getTotalFlows() == 1);
@@ -606,10 +552,7 @@ BOOST_AUTO_TEST_CASE (test2_tcp) // Two flows, none of them expires due to the t
 
         flow_mng->setTimeout(120);
 
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(packet1.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
         BOOST_CHECK(flow_mng->getTotalProcessFlows() == 1);
         BOOST_CHECK(flow_mng->getTotalFlows() == 1);
@@ -620,10 +563,7 @@ BOOST_AUTO_TEST_CASE (test2_tcp) // Two flows, none of them expires due to the t
         BOOST_CHECK(flow_cache->getTotalReleases() == 0);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);
 
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(packet2.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet2);
 
         BOOST_CHECK(flow_mng->getTotalProcessFlows() == 2);
         BOOST_CHECK(flow_mng->getTotalFlows() == 2);

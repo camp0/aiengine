@@ -39,12 +39,7 @@ BOOST_AUTO_TEST_CASE (test1_pop)
         int length = raw_packet_ethernet_ip_tcp_pop_server_banner_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(pop->getTotalPackets() == 1);
         BOOST_CHECK(pop->getTotalValidatedPackets() == 1);
@@ -68,17 +63,8 @@ BOOST_AUTO_TEST_CASE (test2_pop)
         int length2 = raw_packet_ethernet_ip_tcp_pop_user_client_length;
         Packet packet2(pkt2,length2);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
-
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet1);
+	inject(packet2);
        
 	BOOST_CHECK(pop->getTotalPackets() == 2);
         BOOST_CHECK(pop->getTotalValidatedPackets() == 1);

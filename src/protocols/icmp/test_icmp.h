@@ -27,38 +27,26 @@
 #include <string>
 #include "../test/tests_packets.h"
 #include "Protocol.h"
-#include "Multiplexer.h"
-#include "../ethernet/EthernetProtocol.h"
+#include "StackTest.h"
 #include "../vlan/VLanProtocol.h"
 #include "../ip/IPProtocol.h"
 #include "ICMPProtocol.h"
 
 using namespace aiengine;
 
-struct StackIcmp
+struct StackIcmp : public StackTest
 {
-        EthernetProtocolPtr eth;
         IPProtocolPtr ip;
         ICMPProtocolPtr icmp;
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
         MultiplexerPtr mux_icmp;
 
 	StackIcmp() 
 	{
-		eth = EthernetProtocolPtr(new EthernetProtocol());
 		ip = IPProtocolPtr(new IPProtocol());
 		icmp = ICMPProtocolPtr(new ICMPProtocol());
-		mux_eth = MultiplexerPtr(new Multiplexer());
 		mux_ip = MultiplexerPtr(new Multiplexer());
 		mux_icmp = MultiplexerPtr(new Multiplexer());
-
-		//configure the eth
-		eth->setMultiplexer(mux_eth);
-		mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-		mux_eth->setProtocolIdentifier(0);
-		mux_eth->setHeaderSize(eth->getHeaderSize());
-		mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
 		// configure the ip
 		ip->setMultiplexer(mux_ip);

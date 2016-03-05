@@ -30,10 +30,11 @@
 
 #include <iostream>
 #include "StringCache.h"
+#include "FlowInfo.h"
 
 namespace aiengine {
 
-class IMAPInfo 
+class IMAPInfo : public FlowInfo
 {
 public:
     	explicit IMAPInfo() { reset(); }

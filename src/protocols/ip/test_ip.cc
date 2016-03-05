@@ -61,18 +61,14 @@ BOOST_AUTO_TEST_CASE (test2_ip) // ethernet -> ip
 	unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dns);
 	int length = raw_packet_ethernet_ip_udp_dns_length;
 
-	Packet packet(pkt,length,0);
+	Packet packet(pkt,length);
 	
 	mux_eth->setPacket(&packet);
 	eth->setHeader(packet.getPayload());     
 	// Sets the raw packet to a valid ethernet header
         BOOST_CHECK(eth->getEthernetType() == ETHERTYPE_IP);
 
-	// executing the packet
-	// forward the packet through the multiplexers
-        //mux_eth->setPacketInfo(0,packet,length);
-	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);	
+	inject(packet);
 
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
 
@@ -89,14 +85,9 @@ BOOST_FIXTURE_TEST_CASE (test3_ip, StackEthernetVLanIP) // ethernet -> vlan -> i
 	unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_vlan_ip_udp_dns);
 	int length = raw_packet_ethernet_vlan_ip_udp_dns_length;	
 
-	Packet packet(pkt,length,0);
+	Packet packet(pkt,length);
 
-	// executing the packet
-	// forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-	eth->setHeader(packet.getPayload());     
-	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-	mux_eth->forwardPacket(packet);	
+	inject(packet);
 
 	BOOST_CHECK(vlan->getTotalPackets() == 1);
 	BOOST_CHECK(ip->getTotalPackets() == 1);
@@ -129,14 +120,9 @@ BOOST_FIXTURE_TEST_CASE (test4_ip,StackEthernetVLanIP) // ethernet -> vlan -> ip
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dns);
 	int length = raw_packet_ethernet_ip_udp_dns_length;
 
-	Packet packet(pkt,length,0);
+	Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-	eth->setHeader(packet.getPayload());     
-	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
         
 	BOOST_CHECK(eth->getTotalPackets() == 0);
 	BOOST_CHECK(vlan->getTotalPackets() == 0);
@@ -165,8 +151,6 @@ BOOST_FIXTURE_TEST_CASE (test4_ip,StackEthernetVLanIP) // ethernet -> vlan -> ip
 
 BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
 {
-        EthernetProtocol *eth = new EthernetProtocol();
-        MultiplexerPtr mux_eth = MultiplexerPtr(new Multiplexer());
         VLanProtocol *vlan = new VLanProtocol();
         MultiplexerPtr mux_vlan = MultiplexerPtr(new Multiplexer());
         IPProtocol *ip1 = new IPProtocol();
@@ -176,13 +160,9 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
 
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_ip_udp_dns);
 	int length = raw_packet_ethernet_ip_ip_udp_dns_length;
-	Packet packet(pkt,length,0);
+	Packet packet(pkt,length);
 
-        //configure the eth
-        eth->setMultiplexer(mux_eth);
-        mux_eth->setHeaderSize(eth->header_size);
-	mux_eth->setProtocolIdentifier(0);
-        mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
+	inject(packet);
 
         // configure the vlan handler
         vlan->setMultiplexer(mux_vlan);
@@ -216,23 +196,13 @@ BOOST_AUTO_TEST_CASE (test5_ip) // ethernet -> vlan -> ip
 	mux_ip1->addUpMultiplexer(mux_ip2,IPPROTO_IPIP);
 	mux_ip2->addDownMultiplexer(mux_ip1);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-	eth->setHeader(packet.getPayload());     
-	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
 	// Now check all the path that the packet have take
         BOOST_CHECK(vlan->getTotalPackets() == 0);
-        BOOST_CHECK(ip1->getTotalPackets() == 1);
-        BOOST_CHECK(ip1->getTotalValidatedPackets() == 1);
         BOOST_CHECK(ip1->getTotalMalformedPackets() == 0);
-        BOOST_CHECK(ip2->getTotalValidatedPackets() == 1);
         BOOST_CHECK(ip2->getTotalMalformedPackets() == 0);
-        BOOST_CHECK(ip2->getTotalPackets() == 1);
 
-        BOOST_CHECK(mux_eth->getTotalForwardPackets() == 1);
         BOOST_CHECK(mux_vlan->getTotalForwardPackets() == 0);
         BOOST_CHECK(mux_ip1->getTotalForwardPackets() == 1);
         BOOST_CHECK(mux_ip2->getTotalForwardPackets() == 0);
@@ -277,12 +247,9 @@ BOOST_AUTO_TEST_CASE ( test1_ip )
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_frag_1);
         int length = raw_packet_ethernet_ip_frag_1_length;
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
 
@@ -303,12 +270,9 @@ BOOST_AUTO_TEST_CASE ( test2_ip )
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_frag_2);
         int length = raw_packet_ethernet_ip_frag_2_length;
 
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(mux_eth->getCurrentPacket()->getLength() == length);
 

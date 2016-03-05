@@ -47,11 +47,7 @@ BOOST_AUTO_TEST_CASE (test2_gre)
         int length = raw_packet_ethernet_ip_gre_ethernet_ip_icmp_request_length;
         Packet packet(pkt,length);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
 	// Check the results over the statck
 	BOOST_CHECK(gre->getTotalPackets() == 1);

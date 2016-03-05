@@ -29,8 +29,7 @@
 #include "../test/tests_packets.h"
 #include "../test/gprs_packets.h"
 #include "../test/ipv6_test_packets.h"
-#include "Multiplexer.h"
-#include "../ethernet/EthernetProtocol.h"
+#include "StackTest.h"
 #include "../vlan/VLanProtocol.h"
 #include "../ip/IPProtocol.h"
 #include "../ip6/IPv6Protocol.h"
@@ -38,12 +37,10 @@
 
 using namespace aiengine;
 
-struct StackUDPTest 
+struct StackUDPTest : public StackTest 
 {
-	EthernetProtocolPtr eth;
 	IPProtocolPtr ip;	
 	UDPProtocolPtr udp;
-	MultiplexerPtr mux_eth;
 	MultiplexerPtr mux_ip;
 	MultiplexerPtr mux_udp;
 	
@@ -51,17 +48,8 @@ struct StackUDPTest
 	{
         	udp = UDPProtocolPtr(new UDPProtocol());
         	ip = IPProtocolPtr(new IPProtocol());
-        	eth = EthernetProtocolPtr(new EthernetProtocol());
-        	mux_eth = MultiplexerPtr(new Multiplexer());
         	mux_ip = MultiplexerPtr(new Multiplexer());
         	mux_udp = MultiplexerPtr(new Multiplexer());	
-
-	        //configure the eth
-        	eth->setMultiplexer(mux_eth);
-		mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-		mux_eth->setProtocolIdentifier(0);
-        	mux_eth->setHeaderSize(eth->getHeaderSize());
-        	mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
         	// configure the ip
         	ip->setMultiplexer(mux_ip);
@@ -91,12 +79,10 @@ struct StackUDPTest
 };
 
 
-struct StackIPv6UDPTest
+struct StackIPv6UDPTest : public StackTest
 {
-        EthernetProtocolPtr eth;
         IPv6ProtocolPtr ip6;
         UDPProtocolPtr udp;
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
         MultiplexerPtr mux_udp;
 
@@ -104,17 +90,8 @@ struct StackIPv6UDPTest
         {
                 udp = UDPProtocolPtr(new UDPProtocol());
                 ip6 = IPv6ProtocolPtr(new IPv6Protocol());
-                eth = EthernetProtocolPtr(new EthernetProtocol());
-                mux_eth = MultiplexerPtr(new Multiplexer());
                 mux_ip = MultiplexerPtr(new Multiplexer());
                 mux_udp = MultiplexerPtr(new Multiplexer());
-
-                //configure the eth
-                eth->setMultiplexer(mux_eth);
-                mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-                mux_eth->setProtocolIdentifier(0);
-                mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the ip6
                 ip6->setMultiplexer(mux_ip);

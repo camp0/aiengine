@@ -64,7 +64,7 @@ void DNSProtocol::releaseCache() {
 		});
 
 		for (auto &flow: ft) {
-			SharedPointer<DNSInfo> info = flow->dns_info;
+			SharedPointer<DNSInfo> info = flow->getDNSInfo();
 			if (info) {
 				if (info->name) {
 					SharedPointer<StringCache> name = info->name;		
@@ -74,7 +74,7 @@ void DNSProtocol::releaseCache() {
 					name_cache_->release(name);
 				}
 				++release_flows;
-				flow->dns_info.reset();
+				flow->layer7info.reset();
 				info_cache_->release(info);
 			}
 		} 
@@ -128,13 +128,13 @@ void DNSProtocol::processFlow(Flow *flow) {
 		setHeader(flow->packet->getPayload());
 		uint16_t flags = ntohs(dns_header_->flags);
 
-        	SharedPointer<DNSInfo> info = flow->dns_info;
+        	SharedPointer<DNSInfo> info = flow->getDNSInfo();
         	if(!info) {
                 	info = info_cache_->acquire();
                 	if (!info) {
                         	return;
                 	}
-                	flow->dns_info = info;
+                	flow->layer7info = info;
         	}
 
 		if ((flags == DNS_STANDARD_QUERY)or(flags == DNS_DYNAMIC_UPDATE)) {
@@ -317,6 +317,7 @@ void DNSProtocol::handle_standard_response(Flow *flow, DNSInfo *info, int length
 			}	
 			info->matched_domain_name = domain_candidate;
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINGING)
+			flow->packet->setForceAdaptorWrite(true); // The udp layer will call the databaseAdaptor update method
                         if(domain_candidate->call.haveCallback()) {
                                 domain_candidate->call.executeCallback(flow);
                         }
@@ -415,16 +416,16 @@ void DNSProtocol::statistics(std::basic_ostream<char>& out)
 }
 
 
-void DNSProtocol::createDNSDomains(int number) { 
+void DNSProtocol::increaseAllocatedMemory(int value) { 
 
-	info_cache_->create(number);
-	name_cache_->create(number);
+	info_cache_->create(value);
+	name_cache_->create(value);
 }
 
-void DNSProtocol::destroyDNSDomains(int number) { 
+void DNSProtocol::decreaseAllocatedMemory(int value) { 
 
-	info_cache_->destroy(number);
-	name_cache_->destroy(number);
+	info_cache_->destroy(value);
+	name_cache_->destroy(value);
 }
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)

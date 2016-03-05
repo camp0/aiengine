@@ -49,6 +49,8 @@
 #include "protocols/smtp/SMTPProtocol.h"
 #include "protocols/imap/IMAPProtocol.h"
 #include "protocols/pop/POPProtocol.h"
+#include "protocols/bitcoin/BitcoinProtocol.h"
+#include "protocols/modbus/ModbusProtocol.h"
 #include "protocols/frequency/FrequencyProtocol.h"
 
 namespace aiengine {
@@ -95,6 +97,9 @@ public:
 	// Release the memory of the caches of every protocol on the stack
 	void releaseCache(const std::string &name);
 	void releaseCaches();
+
+        void increaseAllocatedMemory(const std::string& name,int value);
+        void decreaseAllocatedMemory(const std::string& name,int value);
 
 	void enableFlowForwarders(const SharedPointer<FlowForwarder>& ff, std::initializer_list<SharedPointer<FlowForwarder>> fps);
 	void disableFlowForwarders(const SharedPointer<FlowForwarder>& ff, std::initializer_list<SharedPointer<FlowForwarder>> fps);
@@ -189,6 +194,8 @@ protected:
         SMTPProtocolPtr smtp;
         IMAPProtocolPtr imap;
         POPProtocolPtr pop;
+        BitcoinProtocolPtr bitcoin;
+        ModbusProtocolPtr modbus;
         TCPGenericProtocolPtr tcp_generic;
         UDPGenericProtocolPtr udp_generic;
         FrequencyProtocolPtr freqs_tcp;
@@ -202,7 +209,8 @@ protected:
         SharedPointer<FlowForwarder> ff_ntp,ff_snmp,ff_ssdp;
         SharedPointer<FlowForwarder> ff_smtp;
         SharedPointer<FlowForwarder> ff_imap;
-        SharedPointer<FlowForwarder> ff_pop;
+        SharedPointer<FlowForwarder> ff_pop,ff_bitcoin;
+        SharedPointer<FlowForwarder> ff_modbus;
         SharedPointer<FlowForwarder> ff_tcp_generic;
         SharedPointer<FlowForwarder> ff_udp_generic;
         SharedPointer<FlowForwarder> ff_tcp_freqs;

@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE (test1_ssdp)
         flow->packet = const_cast<Packet*>(&packet);
         ssdp->processFlow(flow.get());
 
-        SharedPointer<SSDPInfo> info = flow->ssdp_info;
+        SharedPointer<SSDPInfo> info = flow->getSSDPInfo();
 
         BOOST_CHECK(info != nullptr);
         BOOST_CHECK(info->host != nullptr);
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE (test2_ssdp)
         flow->packet = const_cast<Packet*>(&packet);
         ssdp->processFlow(flow.get());
 
-        SharedPointer<SSDPInfo> info = flow->ssdp_info;
+        SharedPointer<SSDPInfo> info = flow->getSSDPInfo();
 
         BOOST_CHECK(info != nullptr);
         BOOST_CHECK(info->host != nullptr);
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE (test3_ssdp)
         flow->packet = const_cast<Packet*>(&packet_res);
         ssdp->processFlow(flow.get());
 
-        SharedPointer<SSDPInfo> info = flow->ssdp_info;
+        SharedPointer<SSDPInfo> info = flow->getSSDPInfo();
 
         BOOST_CHECK(info != nullptr);
         BOOST_CHECK(info->host != nullptr);
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE (test4_ssdp)
         flow->packet = const_cast<Packet*>(&packet);
         ssdp->processFlow(flow.get());
 
-        SharedPointer<SSDPInfo> info = flow->ssdp_info;
+        SharedPointer<SSDPInfo> info = flow->getSSDPInfo();
 
         BOOST_CHECK(info != nullptr);
         BOOST_CHECK(info->host != nullptr);

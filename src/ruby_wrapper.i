@@ -10,6 +10,7 @@
 #include "ipset/IPSet.h"
 #include "NetworkStack.h"
 #include "Flow.h"
+#include "FlowInfo.h"
 #include "StackLan.h"
 #include "StackMobile.h"
 #include "StackLanIPv6.h"
@@ -26,7 +27,6 @@
 %apply SWIGTYPE *DISOWN { IPSet* ipset };
 
 %feature("director") DatabaseAdaptor;
-//%feature("director") IPAbstractSet; 
 
 %trackobjects;
 
@@ -42,6 +42,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 
 %ignore aiengine::free_list;
 
+%ignore aiengine::FlowInfo;
 %ignore aiengine::FlowDirection;
 
 %ignore aiengine::Frequencies; 
@@ -118,17 +119,19 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::Flow::setPacketAnomaly;
 %ignore aiengine::Flow::getPacketAnomaly;
 %ignore aiengine::Flow::ipset;
-%ignore aiengine::Flow::tcp_info;
-%ignore aiengine::Flow::gprs_info;
-%ignore aiengine::Flow::smtp_info;
-%ignore aiengine::Flow::ssl_info;
-%ignore aiengine::Flow::pop_info;
-%ignore aiengine::Flow::http_info;
-%ignore aiengine::Flow::dns_info;
-%ignore aiengine::Flow::sip_info;
-%ignore aiengine::Flow::imap_info;
-%ignore aiengine::Flow::pop_info;
-%ignore aiengine::Flow::ssdp_info;
+%ignore aiengine::Flow::layer4info;
+%ignore aiengine::Flow::layer7info;
+%ignore aiengine::Flow::getTCPInfo;
+%ignore aiengine::Flow::getPOPInfo;
+%ignore aiengine::Flow::getIMAPInfo;
+%ignore aiengine::Flow::getSMTPInfo;
+%ignore aiengine::Flow::getSSLInfo;
+%ignore aiengine::Flow::getDNSInfo;
+%ignore aiengine::Flow::getHTTPInfo;
+%ignore aiengine::Flow::getGPRSInfo;
+%ignore aiengine::Flow::getSSDPInfo;
+%ignore aiengine::Flow::getSIPInfo;
+%ignore aiengine::Flow::getBitcoinInfo;
 %ignore aiengine::Flow::packet;
 %ignore aiengine::Flow::regex;
 %ignore aiengine::Flow::frequencies;
@@ -164,6 +167,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::Flow::updateTime;
 
 %ignore aiengine::IPSetManager::addIPSet(const SharedPointer<IPAbstractSet> ipset);
+%ignore aiengine::IPSetManager::removeIPSet(const SharedPointer<IPAbstractSet> ipset);
 %ignore aiengine::IPSetManager::getMatchedIPSet;
 %ignore aiengine::IPSetManager::lookupIPAddress;
 
@@ -173,6 +177,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::IPSet::getFalsePositiveRate;
 %ignore aiengine::IPSet::lookupIPAddress;
 
+%ignore aiengine::DomainNameManager::removeDomainName(const SharedPointer<DomainName>& domain);
 %ignore aiengine::DomainNameManager::addDomainName(const SharedPointer<DomainName>& domain);
 %ignore aiengine::DomainNameManager::getDomainName;
 
@@ -211,6 +216,9 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::HTTPInfo::getIsRelease;
 %ignore aiengine::HTTPInfo::setHTTPDataDirection;
 %ignore aiengine::HTTPInfo::getHTTPDataDirection;
+
+%ignore aiengine::BitcoinInfo::reset;
+%ignore aiengine::BitcoinInfo::incTransactions;
 
 %ignore aiengine::SIPInfo::reset;
 %ignore aiengine::SIPInfo::resetStrings;
@@ -316,6 +324,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("total_evaluates")		aiengine::Signature::getTotalEvaluates;
 %rename("expression")			aiengine::Signature::getExpression;
 %rename("next_regex=")			aiengine::Regex::setNextRegex;
+%rename("total_transactions")		aiengien::BitcoinInfo::getTotalTransactions;
 %rename("domain_name")			aiengine::DNSInfo::getDomainName;
 %rename("user_name")			aiengine::POPInfo::getUserName;
 %rename("user_name")			aiengine::IMAPInfo::getUserName;
@@ -324,18 +333,20 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("server_name")			aiengine::SSLInfo::getServerName;
 %rename("evidence=")			aiengine::Flow::setEvidence;
 %rename("evidence")			aiengine::Flow::getEvidence;
-%rename("pop_info")			aiengine::Flow::getPOPInfo;
-%rename("imap_info")			aiengine::Flow::getIMAPInfo;
-%rename("smtp_info")			aiengine::Flow::getSMTPInfo;
-%rename("ssl_info")			aiengine::Flow::getSSLInfo;
-%rename("dns_info")			aiengine::Flow::getDNSInfo;
+%rename("pop_info")			aiengine::Flow::getPOPInfoObject;
+%rename("imap_info")			aiengine::Flow::getIMAPInfoObject;
+%rename("smtp_info")			aiengine::Flow::getSMTPInfoObject;
+%rename("ssl_info")			aiengine::Flow::getSSLInfoObject;
+%rename("dns_info")			aiengine::Flow::getDNSInfoObject;
+%rename("http_info")			aiengine::Flow::getHTTPInfoObject;
+%rename("sip_info")			aiengine::Flow::getSIPInfoObject;
+%rename("ssdp_info")			aiengine::Flow::getSSDPInfoObject;
 %rename("regex")			aiengine::Flow::getRegex;
 %rename("payload")			aiengine::Flow::getPayload;
 %rename("uri")				aiengine::SIPInfo::getUri;
 %rename("from")				aiengine::SIPInfo::getFrom;
 %rename("to")				aiengine::SIPInfo::getTo;
 %rename("via")				aiengine::SIPInfo::getVia;
-%rename("sip_info")			aiengine::Flow::getSIPInfo;
 %rename("user_agent")			aiengine::HTTPInfo::getUserAgent;
 %rename("host_name")			aiengine::HTTPInfo::getHostName;
 %rename("uri")				aiengine::HTTPInfo::getUri;
@@ -343,7 +354,6 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("host_name")			aiengine::SSDPPInfo::getHostName;
 %rename("uri")				aiengine::SSDPInfo::getUri;
 %rename("http_uri_set=")		aiengine::DomainName::setHTTPUriSet;
-%rename("http_info")			aiengine::Flow::getHTTPInfo;
 %rename("tag")				aiengine::Flow::getTag;
 %rename("l7_protocol_name")		aiengine::Flow::getL7ProtocolName;
 %rename("protocol")			aiengine::Flow::getProtocol;
@@ -363,6 +373,8 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("set_scheduler")		aiengine::PacketDispatcher::setScheduler;
 %rename("callback=") 			setCallback(VALUE callback);
 %rename("add_ip_set")			aiengine::IPSetManager::addIPSet;
+%rename("remove_ip_set")			aiengine::IPSetManager::removeIPSet;
+%rename("increase_allocated_memory")	increaseAllocatedMemory;
 %rename("set_tcp_database_adaptor")	setTCPDatabaseAdaptor;
 %rename("set_udp_database_adaptor")	setUDPDatabaseAdaptor;
 %rename("tcpip_set_manager=")		setTCPIPSetManager;	
@@ -457,6 +469,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %include "protocols/imap/IMAPInfo.h"
 %include "protocols/pop/POPInfo.h"
 %include "protocols/ssdp/SSDPInfo.h"
+%include "protocols/bitcoin/BitcoinInfo.h"
 %include "Flow.h"
 %include "learner/LearnerEngine.h"
 %include "protocols/frequency/FrequencyGroup.h"
@@ -465,44 +478,29 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 
 %header %{
 
-
     static void free_Regex(void *ptr) {
 	aiengine::Regex *re  = (aiengine::Regex*) ptr;
-
-   }
+    }
 
     static void mark_RegexManager(void *ptr) {
 	aiengine::RegexManager *rmng  = (aiengine::RegexManager*) ptr;
-
-//        std::cout << "Marking object" << std::endl;
-
-  }
+    }
 
     static void free_IPSetManager(void *ptr) {
         aiengine::IPSetManager *imng = (aiengine::IPSetManager*) ptr;
-  //      std::cout << "Destroy IPSetManager" << std::endl;
 
         SWIG_RubyRemoveTracking(ptr);
-
     }
 
     static void free_DomainNameManager(void *ptr) {
 	aiengine::DomainNameManager *dmng = (aiengine::DomainNameManager*) ptr;
-//	std::cout << "Destroy DomainNameManager" << std::endl;
 
         SWIG_RubyRemoveTracking(ptr);
-
     }
 
     static void free_RegexManager(void* ptr) {
         aiengine::RegexManager *rmng  = (aiengine::RegexManager*) ptr;
-  //      std::cout << "Destroy RegexManager" << std::endl;
-
-	// auto start = rmng->begin();
-	// auto end = rmng->end();
 
         SWIG_RubyRemoveTracking(ptr);
-	
-	//delete rmng;
     }
 %}

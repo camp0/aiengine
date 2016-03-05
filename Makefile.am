@@ -32,6 +32,8 @@ SUBDIRS = 	src \
 		src/protocols/smtp \
 		src/protocols/pop \
 		src/protocols/imap \
+		src/protocols/modbus \
+		src/protocols/bitcoin \
 		src/protocols/dns \
 		src/protocols/sip \
 		src/protocols/dhcp \

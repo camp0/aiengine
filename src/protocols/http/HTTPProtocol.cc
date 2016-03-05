@@ -236,12 +236,12 @@ void HTTPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-			SharedPointer<HTTPInfo> info = flow->http_info;
+			SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
 			if (info) {
 				total_bytes_released_by_flows += release_http_info(info.get());
 				total_bytes_released_by_flows += sizeof(info);
 				
-				flow->http_info.reset();
+				flow->layer7info.reset();
 				++ release_flows;
 				info_cache_->release(info);	
                         }
@@ -570,14 +570,13 @@ void HTTPProtocol::processFlow(Flow *flow) {
 	total_bytes_ += length;
 	++flow->total_packets_l7;
 
-	SharedPointer<HTTPInfo> info = flow->http_info;
-
+	SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
 	if(!info) {
 		info = info_cache_->acquire();
                 if (!info) {
 			return;
 		}
-		flow->http_info = info;
+		flow->layer7info = info;
 	} 
 
 	if (info->getIsBanned() == true) {
@@ -659,7 +658,6 @@ void HTTPProtocol::processFlow(Flow *flow) {
 				}
 			}
 		}
-
 	}
 
         if(info->getHaveData() == true) {
@@ -687,7 +685,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
 }
 
 
-void HTTPProtocol::createHTTPInfos(int number) {
+void HTTPProtocol::increaseAllocatedMemory(int number) {
 
 	info_cache_->create(number);
 	uri_cache_->create(number);
@@ -695,7 +693,7 @@ void HTTPProtocol::createHTTPInfos(int number) {
 	ua_cache_->create(number);
 }
 
-void HTTPProtocol::destroyHTTPInfos(int number) {
+void HTTPProtocol::decreaseAllocatedMemory(int number) {
 
 	info_cache_->destroy(number);
 	uri_cache_->destroy(number);

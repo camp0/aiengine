@@ -39,12 +39,7 @@ BOOST_AUTO_TEST_CASE (test1_dns)
         int length = raw_packet_ethernet_ip_udp_dns_as_dot_com_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // Check the results
         BOOST_CHECK(ip->getTotalPackets() == 1);
@@ -62,8 +57,8 @@ BOOST_AUTO_TEST_CASE (test1_dns)
 	Flow *flow = udp->getCurrentFlow();
 
 	BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK(flow->dns_info != nullptr);
-        SharedPointer<DNSInfo> dom = flow->dns_info;
+        BOOST_CHECK(flow->layer7info != nullptr);
+        SharedPointer<DNSInfo> dom = flow->getDNSInfo();
 
 	BOOST_CHECK( dom->getQueryType() == static_cast<uint16_t>(DNSQueryTypes::DNS_TYPE_A));	
 
@@ -86,12 +81,7 @@ BOOST_AUTO_TEST_CASE (test2_dns)
 	dns->setDomainNameBanManager(host_ban_weak);
 	host_ban_mng->addDomainName(host_name);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // Check the results
         BOOST_CHECK(ip->getTotalPackets() == 1);
@@ -109,8 +99,8 @@ BOOST_AUTO_TEST_CASE (test2_dns)
 	Flow *flow = udp->getCurrentFlow();
 
 	BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK(flow->dns_info != nullptr);
-	SharedPointer<DNSInfo> info = flow->dns_info;
+        BOOST_CHECK(flow->layer7info != nullptr);
+	SharedPointer<DNSInfo> info = flow->getDNSInfo();
         BOOST_CHECK(info->name == nullptr);
 }
 
@@ -120,18 +110,13 @@ BOOST_AUTO_TEST_CASE (test3_dns)
         int length = raw_packet_ethernet_ip_udp_dns_query_srv_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = udp->getCurrentFlow();
 
         BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK(flow->dns_info != nullptr);
-        SharedPointer<DNSInfo> dom = flow->dns_info;
+        BOOST_CHECK(flow->layer7info != nullptr);
+        SharedPointer<DNSInfo> dom = flow->getDNSInfo();
         BOOST_CHECK( dom->getQueryType() == static_cast<uint16_t>(DNSQueryTypes::DNS_TYPE_SRV));
 }
 
@@ -141,18 +126,13 @@ BOOST_AUTO_TEST_CASE (test4_dns)
         int length = raw_packet_ethernet_ip_udp_dns_query_soa_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = udp->getCurrentFlow();
 
         BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK(flow->dns_info != nullptr);
-        SharedPointer<DNSInfo> dom = flow->dns_info;
+        BOOST_CHECK(flow->layer7info != nullptr);
+        SharedPointer<DNSInfo> dom = flow->getDNSInfo();
         BOOST_CHECK( dom->getQueryType() == static_cast<uint16_t>(DNSQueryTypes::DNS_TYPE_SOA));
 }
 
@@ -162,18 +142,13 @@ BOOST_AUTO_TEST_CASE (test5_dns)
         int length = raw_packet_ethernet_ip_udp_dns_dynamic_update_soa_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = udp->getCurrentFlow();
 
         BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK(flow->dns_info != nullptr);
-        SharedPointer<DNSInfo> dom = flow->dns_info;
+        BOOST_CHECK(flow->layer7info != nullptr);
+        SharedPointer<DNSInfo> dom = flow->getDNSInfo();
         BOOST_CHECK( dom->getQueryType() == static_cast<uint16_t>(DNSQueryTypes::DNS_TYPE_SOA));
 
 	std::string domain("bgskrot.ex");
@@ -186,18 +161,13 @@ BOOST_AUTO_TEST_CASE (test6_dns)
         int length = raw_packet_ethernet_ip_udp_dns_query_aaaa_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = udp->getCurrentFlow();
 
         BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK(flow->dns_info != nullptr);
-        SharedPointer<DNSInfo> dom = flow->dns_info;
+        BOOST_CHECK(flow->layer7info != nullptr);
+        SharedPointer<DNSInfo> dom = flow->getDNSInfo();
         BOOST_CHECK( dom->getQueryType() == static_cast<uint16_t>(DNSQueryTypes::DNS_TYPE_AAAA));
 
         std::string domain("ssl.google-analytics.com");
@@ -210,18 +180,13 @@ BOOST_AUTO_TEST_CASE (test7_dns)
         int length = raw_packet_ethernet_ip_udp_dns_dnskey_root_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = udp->getCurrentFlow();
 
 	BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK(flow->dns_info != nullptr);
-        SharedPointer<DNSInfo> dom = flow->dns_info;
+        BOOST_CHECK(flow->layer7info != nullptr);
+        SharedPointer<DNSInfo> dom = flow->getDNSInfo();
         BOOST_CHECK( dom->getQueryType() == static_cast<uint16_t>(DNSQueryTypes::DNS_TYPE_DNSKEY));
 
         std::string domain("<Root>");
@@ -234,18 +199,13 @@ BOOST_AUTO_TEST_CASE (test8_dns)
         int length = raw_packet_ethernet_ip_udp_dns_dnskey_ietfdotorg_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = udp->getCurrentFlow();
 
         BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK(flow->dns_info != nullptr);
-        SharedPointer<DNSInfo> dom = flow->dns_info;
+        BOOST_CHECK(flow->layer7info != nullptr);
+        SharedPointer<DNSInfo> dom = flow->getDNSInfo();
         BOOST_CHECK( dom->getQueryType() == static_cast<uint16_t>(DNSQueryTypes::DNS_TYPE_DNSKEY));
 
         std::string domain("ietf.org");
@@ -258,20 +218,17 @@ BOOST_AUTO_TEST_CASE (test9_dns)
         int length = raw_packet_ethernet_ip_udp_dns_dnskey_ietfdotorg_length;
         Packet packet(pkt,length);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         Flow *flow = udp->getCurrentFlow();
 
         BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK( flow->dns_info != nullptr);
+        BOOST_CHECK( flow->layer7info != nullptr);
 
 	dns->releaseCache();
 
-        BOOST_CHECK( flow->dns_info == nullptr);
+        BOOST_CHECK( flow->layer7info == nullptr);
+	BOOST_CHECK( flow->getDNSInfo() == nullptr);
 }
 
 // Process query and response
@@ -285,22 +242,14 @@ BOOST_AUTO_TEST_CASE (test10_dns)
         int length2 = raw_packet_ethernet_ip_udp_dns_response_youtube_length;
         Packet packet2(pkt2,length2);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
-
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet1);
+	inject(packet2);
 
         Flow *flow = udp->getCurrentFlow();
 	//show();
         BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK( flow->dns_info != nullptr);
-        SharedPointer<DNSInfo> dom = flow->dns_info;
+        BOOST_CHECK( flow->layer7info != nullptr);
+        SharedPointer<DNSInfo> dom = flow->getDNSInfo();
 	int i = 0;
 	for (auto &ip: *dom) {
 		++i;
@@ -325,22 +274,14 @@ BOOST_AUTO_TEST_CASE (test11_dns)
         dns->setDomainNameManager(dom_mng);
         dom_mng->addDomainName(dom_name);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
-
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet1);
+	inject(packet2);
 
         Flow *flow = udp->getCurrentFlow();
         //show();
         BOOST_CHECK( flow != nullptr);
-        BOOST_CHECK( flow->dns_info != nullptr);
-        SharedPointer<DNSInfo> dom = flow->dns_info;
+        BOOST_CHECK( flow->layer7info != nullptr);
+        SharedPointer<DNSInfo> dom = flow->getDNSInfo();
 
 	std::set<std::string> ips {
 		{ "74.125.24.139" },	
@@ -370,19 +311,12 @@ BOOST_AUTO_TEST_CASE (test12_dns)
         int length2 = raw_packet_ethernet_ip_udp_dns_response_youtube_length;
         Packet packet2(pkt2,length2);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
 	dns->releaseCache();
 
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
-
+	inject(packet2);
+	
 	// TODO check the values of the flow
 	//
 }

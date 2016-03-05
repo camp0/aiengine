@@ -43,11 +43,13 @@ template <class T1>
 using SharedPointer = boost::shared_ptr<T1>;
 template <class T2>
 using WeakPointer = boost::weak_ptr<T2>;
+#define DynamicPointerCast boost::dynamic_pointer_cast
 #else
 template <class T1>
 using SharedPointer = std::shared_ptr<T1>;
 template <class T2>
 using WeakPointer = std::weak_ptr<T2>;
+#define DynamicPointerCast std::dynamic_pointer_cast
 #endif
 
 } // namespace aiengine

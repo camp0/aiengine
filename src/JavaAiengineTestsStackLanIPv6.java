@@ -197,7 +197,7 @@ public class JavaAiengineTestsStackLanIPv6 {
             public boolean called = false;
             public void call(Flow flow) {
                 Regex r = flow.getRegex();
-                HTTPInfo h = flow.getHTTPInfo();
+                HTTPInfo h = flow.getHTTPInfoObject();
                 assertEquals(r.getName(),"Regex for analysing the content of HTTP");
                 assertEquals(h.getHostName(),"media.us.listen.com");
                 called = true;

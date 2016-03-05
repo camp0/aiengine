@@ -309,7 +309,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_8,StackLanTest)
 	ff_ssl_aux->addChecker(std::bind(&SSLProtocol::sslChecker,ssl_aux,std::placeholders::_1));
         ff_ssl_aux->addFlowFunction(std::bind(&SSLProtocol::processFlow,ssl_aux,std::placeholders::_1));
 
-	ssl_aux->createSSLInfos(4);
+	ssl_aux->increaseAllocatedMemory(4);
 
         pd->open("../pcapfiles/sslflow.pcap");
         pd->run();
@@ -831,7 +831,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_20,StackLanTest) // Tests for release the cach
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
 
-	ssl->createSSLInfos(4);
+	ssl->increaseAllocatedMemory(4);
 
         //flow_table_udp->setTimeout(60*60*24*365);
         //flow_table_tcp->setTimeout(60*60*24*365);
@@ -847,7 +847,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_20,StackLanTest) // Tests for release the cach
 	releaseCaches();
 
 	for (auto &f: flow_table_tcp->getFlowTable()) {
-		BOOST_CHECK(f->ssl_info == nullptr);
+		BOOST_CHECK(f->getSSLInfo() == nullptr);
 	}
 }
 
@@ -898,7 +898,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_22,StackLanTest) // Tests for release the cach
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
 
-        smtp->createSMTPInfos(1);
+        smtp->increaseAllocatedMemory(1);
 
         pd->open("../pcapfiles/smtp.pcap");
         pd->run();
@@ -911,17 +911,15 @@ BOOST_FIXTURE_TEST_CASE(test_case_22,StackLanTest) // Tests for release the cach
 	// there is only one flow	
 	SharedPointer<Flow> f = *flow_table_tcp->getFlowTable().begin();
  
-        BOOST_CHECK(f->smtp_info != nullptr);
-       	SharedPointer<SMTPInfo> info = f->smtp_info;
+        BOOST_CHECK(f->getSMTPInfo() != nullptr);
+       	SharedPointer<SMTPInfo> info = f->getSMTPInfo();
 	BOOST_CHECK(info != nullptr); 
-        BOOST_CHECK(f->http_info == nullptr);
-        BOOST_CHECK(f->ssl_info == nullptr);
+        BOOST_CHECK(f->getHTTPInfo() == nullptr);
+        BOOST_CHECK(f->getSSLInfo() == nullptr);
 
         releaseCaches();
 
-        BOOST_CHECK(f->smtp_info == nullptr);
-        BOOST_CHECK(f->http_info == nullptr);
-        BOOST_CHECK(f->ssl_info == nullptr);
+        BOOST_CHECK(f->layer7info == nullptr);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_case_23,StackLanTest) // Tests for release the caches and with ssl traffic 
@@ -931,7 +929,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_23,StackLanTest) // Tests for release the cach
         // connect with the stack
         pd->setDefaultMultiplexer(mux_eth);
 
-        ssl->createSSLInfos(4);
+        ssl->increaseAllocatedMemory(4);
 
         pd->open("../pcapfiles/amazon_4ssl_flows.pcap");
         pd->setPcapFilter("port 57077");
@@ -945,17 +943,17 @@ BOOST_FIXTURE_TEST_CASE(test_case_23,StackLanTest) // Tests for release the cach
         // there is only one flow
         SharedPointer<Flow> f = *flow_table_tcp->getFlowTable().begin();
 
-        BOOST_CHECK(f->ssl_info != nullptr);
-        BOOST_CHECK(f->ssl_info->host != nullptr);
-	SharedPointer<StringCache> str = f->ssl_info->host;
-        SharedPointer<SSLInfo> info = f->ssl_info;
+        BOOST_CHECK(f->getSSLInfo() != nullptr);
+        BOOST_CHECK(f->getSSLInfo()->host != nullptr);
+	SharedPointer<StringCache> str = f->getSSLInfo()->host;
+        SharedPointer<SSLInfo> info = f->getSSLInfo();
 
 	std::string cnname("images-na.ssl-images-amazon.com");
 	BOOST_CHECK(cnname.compare(str->getName()) == 0);
 
         releaseCaches();
 
-        BOOST_CHECK(f->ssl_info == nullptr);
+        BOOST_CHECK(f->getSSLInfo() == nullptr);
 	// The str should be empty
 	BOOST_CHECK(str->getNameSize() == 0);
 
@@ -970,16 +968,16 @@ BOOST_FIXTURE_TEST_CASE(test_case_23,StackLanTest) // Tests for release the cach
         BOOST_CHECK(flow_table_tcp->getTotalTimeoutFlows() == 0);
 
         f = *flow_table_tcp->getFlowTable().begin();
-	BOOST_CHECK(f->ssl_info == nullptr);
+	BOOST_CHECK(f->getSSLInfo() == nullptr);
 
 	// Both flows points to ptr and now ptr contains the name
 	BOOST_CHECK(cnname.compare(str->getName()) == 0);
 	int process_flows = 0;
 	for (auto &ff: flow_table_tcp->getFlowTable()) {
 		if (ff != f) { 
-			BOOST_CHECK(ff->ssl_info != nullptr);
-			BOOST_CHECK(ff->ssl_info->host != nullptr);
-			BOOST_CHECK(ff->ssl_info->host == str);
+			BOOST_CHECK(ff->getSSLInfo() != nullptr);
+			BOOST_CHECK(ff->getSSLInfo()->host != nullptr);
+			BOOST_CHECK(ff->getSSLInfo()->host == str);
 			BOOST_CHECK(cnname.compare(str->getName()) == 0);
 			++process_flows;
 		}
@@ -989,7 +987,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_23,StackLanTest) // Tests for release the cach
 	releaseCaches();
 	
 	for (auto &ff: flow_table_tcp->getFlowTable()) {
-		BOOST_CHECK(ff->ssl_info == nullptr);
+		BOOST_CHECK(ff->getSSLInfo() == nullptr);
 	}
 	BOOST_CHECK(str->getNameSize() == 0);
        
@@ -1007,12 +1005,12 @@ BOOST_FIXTURE_TEST_CASE(test_case_23,StackLanTest) // Tests for release the cach
 
 	for (auto &ff: flow_table_tcp->getFlowTable()) {
 		if (ff->getSourcePort() == 57080) { 
-			BOOST_CHECK(ff->ssl_info != nullptr);
-			BOOST_CHECK(ff->ssl_info->host != nullptr);
-			BOOST_CHECK(ff->ssl_info->host == str);
+			BOOST_CHECK(ff->getSSLInfo() != nullptr);
+			BOOST_CHECK(ff->getSSLInfo()->host != nullptr);
+			BOOST_CHECK(ff->getSSLInfo()->host == str);
 			BOOST_CHECK(cnname.compare(str->getName()) == 0);
 		} else {
-			BOOST_CHECK(ff->ssl_info == nullptr);
+			BOOST_CHECK(ff->getSSLInfo() == nullptr);
 		}
 	}	
 }
@@ -1593,27 +1591,27 @@ BOOST_AUTO_TEST_CASE ( test_case_17 )
 
         BOOST_CHECK(flows_tcp->getTotalFlows() == 1);
         for (auto &flow: flows_tcp->getFlowTable()) {
-                BOOST_CHECK(flow->http_info != nullptr);
-                BOOST_CHECK(flow->http_info->ua != nullptr);
-                BOOST_CHECK(flow->http_info->uri != nullptr);
+                BOOST_CHECK(flow->getHTTPInfo() != nullptr);
+                BOOST_CHECK(flow->getHTTPInfo()->ua != nullptr);
+                BOOST_CHECK(flow->getHTTPInfo()->uri != nullptr);
         }
         FlowManagerPtr flows_udp = stack->getUDPFlowManager().lock();
 
         BOOST_CHECK(flows_udp->getTotalFlows() == 1);
         for (auto &flow: flows_udp->getFlowTable()) {
-                BOOST_CHECK(flow->dns_info != nullptr);
+                BOOST_CHECK(flow->getDNSInfo() != nullptr);
         }
 
 	stack->releaseCaches();
 
         BOOST_CHECK(flows_tcp->getTotalFlows() == 1);
         for (auto &flow: flows_tcp->getFlowTable()) {
-                BOOST_CHECK(flow->http_info == nullptr);
+                BOOST_CHECK(flow->getHTTPInfo() == nullptr);
         }
 
         BOOST_CHECK(flows_udp->getTotalFlows() == 1);
         for (auto &flow: flows_udp->getFlowTable()) {
-                BOOST_CHECK(flow->dns_info == nullptr);
+                BOOST_CHECK(flow->getDNSInfo() == nullptr);
         }
 }
 
@@ -1751,14 +1749,14 @@ BOOST_AUTO_TEST_CASE ( test_case_20 )
         bool called = false;
         // Check the relaseCache functionality 
         for (auto &flow: fm->getFlowTable()) {
-                BOOST_CHECK(flow->ssdp_info != nullptr);
+                BOOST_CHECK(flow->getSSDPInfo() != nullptr);
                 called = true;
         }
 
         stack->releaseCaches();
 
         for (auto &flow: fm->getFlowTable()) {
-                BOOST_CHECK(flow->ssdp_info == nullptr);
+                BOOST_CHECK(flow->layer7info == nullptr);
                 called = true;
         }
 	BOOST_CHECK(called == true);

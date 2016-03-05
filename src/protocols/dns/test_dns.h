@@ -35,25 +35,22 @@
 
 #include <string>
 #include "../test/dns_test_packets.h"
+#include "StackTest.h"
 #include "Protocol.h"
-#include "Multiplexer.h"
-#include "../ethernet/EthernetProtocol.h"
 #include "../ip/IPProtocol.h"
 #include "../udp/UDPProtocol.h"
 #include "DNSProtocol.h"
 
 using namespace aiengine;
 
-struct StackDNStest
+struct StackDNStest : public StackTest
 {
         //Protocols
-        EthernetProtocolPtr eth;
         IPProtocolPtr ip;
         UDPProtocolPtr udp;
         DNSProtocolPtr dns;
 
         // Multiplexers
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
         MultiplexerPtr mux_udp;
 
@@ -73,11 +70,9 @@ struct StackDNStest
                 // Allocate all the Protocol objects
                 udp = UDPProtocolPtr(new UDPProtocol());
                 ip = IPProtocolPtr(new IPProtocol());
-                eth = EthernetProtocolPtr(new EthernetProtocol());
                 dns = DNSProtocolPtr(new DNSProtocol());
 
                 // Allocate the Multiplexers
-                mux_eth = MultiplexerPtr(new Multiplexer());
                 mux_ip = MultiplexerPtr(new Multiplexer());
                 mux_udp = MultiplexerPtr(new Multiplexer());
 
@@ -87,13 +82,6 @@ struct StackDNStest
 
                 ff_udp = SharedPointer<FlowForwarder>(new FlowForwarder());
                 ff_dns = SharedPointer<FlowForwarder>(new FlowForwarder());
-
-                //configure the eth
-                eth->setMultiplexer(mux_eth);
-                mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-                mux_eth->setProtocolIdentifier(0);
-                mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the ip
                 ip->setMultiplexer(mux_ip);
@@ -128,7 +116,7 @@ struct StackDNStest
                 flow_cache->createFlows(2);
 
 		dns->setFlowManager(flow_mng);
-		dns->createDNSDomains(2);
+		dns->increaseAllocatedMemory(2);
 
                 udp->setFlowCache(flow_cache);
                 udp->setFlowManager(flow_mng);

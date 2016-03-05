@@ -27,32 +27,21 @@
 #include <string>
 #include "../test/tests_packets.h"
 #include "Protocol.h"
-#include "Multiplexer.h"
-#include "../ethernet/EthernetProtocol.h"
+#include "StackTest.h"
 #include "VLanProtocol.h"
 #include <cstring>
 
 using namespace aiengine;
 
-struct StackTestVlan
+struct StackTestVlan : public StackTest
 {
-        EthernetProtocolPtr eth;
         VLanProtocolPtr vlan;
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_vlan;
 
         StackTestVlan()
         {
-        	eth = EthernetProtocolPtr(new EthernetProtocol());
         	vlan = VLanProtocolPtr(new VLanProtocol());
         	mux_vlan = MultiplexerPtr(new Multiplexer());
-        	mux_eth = MultiplexerPtr(new Multiplexer());
-
-        	eth->setMultiplexer(mux_eth);
-		mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-		mux_eth->setProtocolIdentifier(0);
-        	mux_eth->setHeaderSize(eth->getHeaderSize());
-        	mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
         	// configure the vlan handler
         	vlan->setMultiplexer(mux_vlan);

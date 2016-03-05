@@ -30,10 +30,11 @@
 
 #include <iostream>
 #include "TCPStates.h"
+#include "FlowInfo.h"
 
 namespace aiengine {
 
-class TCPInfo 
+class TCPInfo: public FlowInfo 
 {
 public:
     	explicit TCPInfo() { reset(); }

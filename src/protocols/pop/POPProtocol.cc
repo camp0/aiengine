@@ -118,12 +118,12 @@ void POPProtocol::releaseCache() {
                 });
 
                 for (auto &flow: ft) {
-                       	SharedPointer<POPInfo> pinfo = flow->pop_info;
+                       	SharedPointer<POPInfo> pinfo = flow->getPOPInfo();
 			if (pinfo) {
 				total_bytes_released_by_flows += release_pop_info(pinfo.get());
                                 total_bytes_released_by_flows += sizeof(pinfo);
                               
-                                flow->pop_info.reset();
+                                flow->layer7info.reset();
                                 ++ release_flows;
                                 info_cache_->release(pinfo);
                         }
@@ -221,14 +221,14 @@ void POPProtocol::processFlow(Flow *flow) {
 
 	setHeader(flow->packet->getPayload());
 
-        SharedPointer<POPInfo> pinfo = flow->pop_info;
+        SharedPointer<POPInfo> pinfo = flow->getPOPInfo();
 
         if(!pinfo) {
                 pinfo = info_cache_->acquire();
                 if (!pinfo) {
                         return;
                 }
-                flow->pop_info = pinfo;
+                flow->layer7info = pinfo;
         }
 
         if (pinfo->getIsBanned() == true) {
@@ -315,16 +315,16 @@ void POPProtocol::statistics(std::basic_ostream<char>& out)
 	}
 }
 
-void POPProtocol::createPOPInfos(int number) {
+void POPProtocol::increaseAllocatedMemory(int value) {
 
-        info_cache_->create(number);
-        user_cache_->create(number);
+        info_cache_->create(value);
+        user_cache_->create(value);
 }
 
-void POPProtocol::destroyPOPInfos(int number) {
+void POPProtocol::decreaseAllocatedMemory(int value) {
 
-        info_cache_->destroy(number);
-        user_cache_->destroy(number);
+        info_cache_->destroy(value);
+        user_cache_->destroy(value);
 }
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)

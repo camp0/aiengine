@@ -39,12 +39,7 @@ BOOST_AUTO_TEST_CASE (test1_smtp)
         int length = raw_packet_ethernet_ip_tcp_smtp_server_banner_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(smtp->getTotalPackets() == 1);
         BOOST_CHECK(smtp->getTotalValidatedPackets() == 1);
@@ -95,9 +90,9 @@ BOOST_AUTO_TEST_CASE (test3_smtp)
         smtp->processFlow(flow.get());
 
         BOOST_CHECK(smtp->getTotalBytes() == length);
-	BOOST_CHECK(flow->smtp_info != nullptr);
+	BOOST_CHECK(flow->getSMTPInfo() != nullptr);
 
-	SharedPointer<SMTPInfo> info = flow->smtp_info;
+	SharedPointer<SMTPInfo> info = flow->getSMTPInfo();
 	SharedPointer<StringCache> from = info->from;
 	SharedPointer<StringCache> to = info->to;
 
@@ -126,9 +121,9 @@ BOOST_AUTO_TEST_CASE (test4_smtp)
         smtp->processFlow(flow.get());
 
         BOOST_CHECK(smtp->getTotalBytes() == length);
-        BOOST_CHECK(flow->smtp_info != nullptr);
+        BOOST_CHECK(flow->getSMTPInfo() != nullptr);
 
-        SharedPointer<SMTPInfo> info = flow->smtp_info;
+        SharedPointer<SMTPInfo> info = flow->getSMTPInfo();
         SharedPointer<StringCache> from = info->from;
         SharedPointer<StringCache> to = info->to;
 
@@ -162,9 +157,9 @@ BOOST_AUTO_TEST_CASE (test5_smtp)
         flow->packet = const_cast<Packet*>(&packet);
         smtp->processFlow(flow.get());
 
-        BOOST_CHECK(flow->smtp_info != nullptr);
+        BOOST_CHECK(flow->getSMTPInfo() != nullptr);
 
-        SharedPointer<SMTPInfo> info = flow->smtp_info;
+        SharedPointer<SMTPInfo> info = flow->getSMTPInfo();
         SharedPointer<StringCache> from = info->from;
         SharedPointer<StringCache> to = info->to;
 
@@ -200,9 +195,9 @@ BOOST_AUTO_TEST_CASE (test6_smtp)
         flow->packet = const_cast<Packet*>(&packet);
         smtp->processFlow(flow.get());
 
-        BOOST_CHECK(flow->smtp_info != nullptr);
+        BOOST_CHECK(flow->getSMTPInfo() != nullptr);
 
-        SharedPointer<SMTPInfo> info = flow->smtp_info;
+        SharedPointer<SMTPInfo> info = flow->getSMTPInfo();
         SharedPointer<StringCache> from = info->from;
         SharedPointer<StringCache> to = info->to;
 

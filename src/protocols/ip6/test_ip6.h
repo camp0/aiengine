@@ -27,32 +27,21 @@
 #include <string>
 #include "../test/ipv6_test_packets.h"
 #include "Protocol.h"
-#include "Multiplexer.h"
-#include "protocols/ethernet/EthernetProtocol.h"
+#include "StackTest.h"
 #include "protocols/vlan/VLanProtocol.h"
 #include "IPv6Protocol.h"
 
 using namespace aiengine;
 
-struct StackEthernetIPv6
+struct StackEthernetIPv6 : public StackTest
 {
-        EthernetProtocolPtr eth;
         IPv6ProtocolPtr ip6;
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
 
         StackEthernetIPv6()
         {
-                eth = EthernetProtocolPtr(new EthernetProtocol());
                 ip6 = IPv6ProtocolPtr(new IPv6Protocol());
                 mux_ip = MultiplexerPtr(new Multiplexer());
-                mux_eth = MultiplexerPtr(new Multiplexer());
-
-                eth->setMultiplexer(mux_eth);
-                mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-		mux_eth->setProtocolIdentifier(0);
-                mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the ip handler
                 ip6->setMultiplexer(mux_ip);

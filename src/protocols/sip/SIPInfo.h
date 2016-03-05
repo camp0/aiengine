@@ -31,10 +31,11 @@
 #include <iostream>
 #include <vector> 
 #include "StringCache.h"
+#include "FlowInfo.h"
 
 namespace aiengine {
 
-class SIPInfo 
+class SIPInfo : public FlowInfo 
 {
 public:
     	explicit SIPInfo() { reset(); }

@@ -33,11 +33,12 @@
 #include <array>
 #include <unordered_map>
 #include <cmath>
+#include "FlowInfo.h"
 
 namespace aiengine {
 
 // TODO: evaluate the use of valarray on the code
-class Frequencies 
+class Frequencies : public FlowInfo 
 {
 public:
     	Frequencies():freqs_() { reset(); }

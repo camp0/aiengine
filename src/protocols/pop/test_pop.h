@@ -36,24 +36,21 @@
 #include <string>
 #include "../test/pop_test_packets.h"
 #include "Protocol.h"
-#include "Multiplexer.h"
-#include "../ethernet/EthernetProtocol.h"
+#include "StackTest.h"
 #include "../ip/IPProtocol.h"
 #include "../tcp/TCPProtocol.h"
 #include "POPProtocol.h"
 
 using namespace aiengine;
 
-struct StackPOPtest
+struct StackPOPtest : public StackTest
 {
         //Protocols
-        EthernetProtocolPtr eth;
         IPProtocolPtr ip;
         TCPProtocolPtr tcp;
         POPProtocolPtr pop;
 
         // Multiplexers
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
         MultiplexerPtr mux_tcp;
 
@@ -73,11 +70,9 @@ struct StackPOPtest
                 // Allocate all the Protocol objects
                 tcp = TCPProtocolPtr(new TCPProtocol());
                 ip = IPProtocolPtr(new IPProtocol());
-                eth = EthernetProtocolPtr(new EthernetProtocol());
                 pop = POPProtocolPtr(new POPProtocol());
 
                 // Allocate the Multiplexers
-                mux_eth = MultiplexerPtr(new Multiplexer());
                 mux_ip = MultiplexerPtr(new Multiplexer());
                 mux_tcp = MultiplexerPtr(new Multiplexer());
 
@@ -87,13 +82,6 @@ struct StackPOPtest
 
                 ff_tcp = SharedPointer<FlowForwarder>(new FlowForwarder());
                 ff_pop = SharedPointer<FlowForwarder>(new FlowForwarder());
-
-                //configure the eth
-                eth->setMultiplexer(mux_eth);
-                mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-                mux_eth->setProtocolIdentifier(0);
-                mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the ip
                 ip->setMultiplexer(mux_ip);
@@ -126,7 +114,7 @@ struct StackPOPtest
 
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(2);
-		pop->createPOPInfos(2);
+		pop->increaseAllocatedMemory(2);
 		tcp->createTCPInfos(2);
 
                 tcp->setFlowCache(flow_cache);

@@ -37,12 +37,7 @@ BOOST_AUTO_TEST_CASE (test1_ssl)
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
         Packet packet(pkt,length);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
 	// Check the results
 	BOOST_CHECK(ip->getTotalPackets() == 1);
@@ -69,12 +64,9 @@ BOOST_AUTO_TEST_CASE (test2_ssl)
         int length1 = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
         Packet packet1(pkt1,length1);
 
-	ssl->createSSLInfos(2);
+	ssl->increaseAllocatedMemory(2);
 
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
         BOOST_CHECK(ssl->getTotalClientHellos() == 1);
         BOOST_CHECK(ssl->getTotalServerHellos() == 0);
@@ -85,12 +77,7 @@ BOOST_AUTO_TEST_CASE (test2_ssl)
         int length2 = raw_packet_ethernet_ip_tcp_ssl_client_hello_2_length;
         Packet packet2(pkt2,length2,0);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet2);
 
         // Check the results
         BOOST_CHECK(ssl->getTotalClientHellos() == 2);
@@ -107,14 +94,9 @@ BOOST_AUTO_TEST_CASE (test3_ssl)
         int length = raw_packet_ethernet_ip_tcp_ssl_tor_length;
         Packet packet(pkt,length);
 
-        ssl->createSSLInfos(1);
+        ssl->increaseAllocatedMemory(1);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(ssl->getTotalPackets() == 1);
         BOOST_CHECK(ssl->getTotalValidatedPackets() == 1);
@@ -137,12 +119,12 @@ BOOST_AUTO_TEST_CASE (test4_ssl)
 
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        ssl->createSSLInfos(0);
+        ssl->increaseAllocatedMemory(0);
 
         flow->packet = const_cast<Packet*>(&packet1);
         ssl->processFlow(flow.get());
 
-        BOOST_CHECK(flow->ssl_info == nullptr);
+        BOOST_CHECK(flow->layer7info == nullptr);
 }
 
 BOOST_AUTO_TEST_CASE (test5_ssl)
@@ -153,15 +135,15 @@ BOOST_AUTO_TEST_CASE (test5_ssl)
 
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        ssl->createSSLInfos(1);
+        ssl->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet1);
         ssl->processFlow(flow.get());
 
-        BOOST_CHECK(flow->ssl_info != nullptr);
+        BOOST_CHECK(flow->layer7info != nullptr);
 	std::string cad("0.drive.google.com");
 
-	SharedPointer<SSLInfo> info = flow->ssl_info;
+	SharedPointer<SSLInfo> info = flow->getSSLInfo();
 	// The host is valid
         BOOST_CHECK(cad.compare(info->host->getName()) == 0);
 }
@@ -175,15 +157,15 @@ BOOST_AUTO_TEST_CASE (test6_ssl)
 
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        ssl->createSSLInfos(1);
+        ssl->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet1);
         ssl->processFlow(flow.get());
 
-        BOOST_CHECK(flow->ssl_info != nullptr);
         std::string cad("atv-ps.amazon.com");
 
-	SharedPointer<SSLInfo> info = flow->ssl_info;
+	SharedPointer<SSLInfo> info = flow->getSSLInfo();
+	BOOST_CHECK( info != nullptr);
         // The host is valid
         BOOST_CHECK(cad.compare(info->host->getName()) == 0);
 }
@@ -197,16 +179,16 @@ BOOST_AUTO_TEST_CASE (test7_ssl)
 
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        ssl->createSSLInfos(1);
+        ssl->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet1);
         ssl->processFlow(flow.get());
 
-        BOOST_CHECK(flow->ssl_info != nullptr);
         std::string cad("www.6k6fnxstu.com");
 
         // The host is valid
-	SharedPointer<SSLInfo> info = flow->ssl_info;
+	SharedPointer<SSLInfo> info = flow->getSSLInfo();
+	BOOST_CHECK( info != nullptr);
         BOOST_CHECK(cad.compare(info->host->getName()) == 0);
 }
 
@@ -220,7 +202,7 @@ BOOST_AUTO_TEST_CASE (test8_ssl)
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
         Packet packet(pkt,length,0);
 
-        ssl->createSSLInfos(1);
+        ssl->increaseAllocatedMemory(1);
         ssl->setDomainNameManager(host_mng_weak);
         host_mng->addDomainName(host_name);
         
@@ -245,14 +227,11 @@ BOOST_AUTO_TEST_CASE (test9_ssl)
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
         Packet packet(pkt,length,0);
 
-        ssl->createSSLInfos(1);
+        ssl->increaseAllocatedMemory(1);
         ssl->setDomainNameManager(host_mng_weak);
         host_mng->addDomainName(host_name);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(host_name->getMatchs() == 0);
 }
@@ -267,14 +246,11 @@ BOOST_AUTO_TEST_CASE (test10_ssl)
         int length = raw_packet_ethernet_ip_tcp_ssl_client_hello_length;
         Packet packet(pkt,length);
 
-        ssl->createSSLInfos(1);
+        ssl->increaseAllocatedMemory(1);
         ssl->setDomainNameBanManager(host_mng_weak);
         host_mng->addDomainName(host_name);
 
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         BOOST_CHECK(host_name->getMatchs() == 1);
 
@@ -292,17 +268,10 @@ BOOST_AUTO_TEST_CASE (test11_ssl)
         int length2 = raw_packet_ethernet_ip_tcp_ssl_tor_hello_length;
         Packet packet2(pkt2,length2);
 
-        ssl->createSSLInfos(2);
+        ssl->increaseAllocatedMemory(2);
 
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
-
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet1);
+	inject(packet2);
 
 	auto fm = tcp->getFlowManager();
 
@@ -314,7 +283,7 @@ BOOST_AUTO_TEST_CASE (test11_ssl)
 	BOOST_CHECK(c->getTotalReleases() == 0);
 #endif
 	for (auto &f: fm->getFlowTable()) {
-		BOOST_CHECK(f->ssl_info != nullptr);
+		BOOST_CHECK(f->getSSLInfo() != nullptr);
 	}
 	ssl->releaseCache();
 
@@ -325,7 +294,7 @@ BOOST_AUTO_TEST_CASE (test11_ssl)
 #endif
 
 	for (auto &f: fm->getFlowTable()) {
-		BOOST_CHECK(f->ssl_info == nullptr);
+		BOOST_CHECK(f->layer7info == nullptr);
 	}
 }
 
@@ -338,16 +307,16 @@ BOOST_AUTO_TEST_CASE (test12_ssl)
 
         SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
 
-        ssl->createSSLInfos(1);
+        ssl->increaseAllocatedMemory(1);
 
         flow->packet = const_cast<Packet*>(&packet1);
         ssl->processFlow(flow.get());
 
-        BOOST_CHECK(flow->ssl_info != nullptr);
         std::string cad("ipv4_1-aaag0-c001.1.000001.xx.aaaavideo.net");
 
         // The host is valid
-        SharedPointer<SSLInfo> info = flow->ssl_info;
+	SharedPointer<SSLInfo> info = flow->getSSLInfo();
+	BOOST_CHECK( info != nullptr);
         BOOST_CHECK(cad.compare(info->host->getName()) == 0);
 }
 

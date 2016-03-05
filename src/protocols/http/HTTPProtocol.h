@@ -144,9 +144,9 @@ public:
 
 	unsigned char *getPayload() { return http_header_; }
 
-	void createHTTPInfos(int number);
-	void destroyHTTPInfos(int number);
-
+	void increaseAllocatedMemory(int value);
+	void decreaseAllocatedMemory(int value);
+	
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 
 	int32_t getTotalAllowHosts() const { return total_allow_hosts_;}

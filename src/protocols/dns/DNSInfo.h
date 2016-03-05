@@ -32,10 +32,11 @@
 #include <vector> 
 #include "StringCache.h"
 #include "names/DomainName.h"
+#include "FlowInfo.h"
 
 namespace aiengine {
 
-class DNSInfo 
+class DNSInfo : public FlowInfo 
 {
 public:
     	explicit DNSInfo() { reset(); }

@@ -49,11 +49,7 @@ BOOST_AUTO_TEST_CASE (test2_vxlan)
         int length = raw_packet_ethernet_ip_udp_vxlan_ethernet_arp_request_length;
         Packet packet(pkt,length);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
 	// Check the results
 
@@ -78,11 +74,7 @@ BOOST_AUTO_TEST_CASE (test3_vxlan)
         int length = raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_icmp_reply_length;
         Packet packet(pkt,length);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // Check the results of the virtual networks
 
@@ -118,13 +110,9 @@ BOOST_AUTO_TEST_CASE (test4_vxlan)
         int length = raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_udp_dns_request_length;
         Packet packet(pkt,length);
 
-	dns_vir->createDNSDomains(1);
+	dns_vir->increaseAllocatedMemory(1);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(packet.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
         // Check the results of the virtual networks
 
@@ -159,8 +147,8 @@ BOOST_AUTO_TEST_CASE (test4_vxlan)
 	BOOST_CHECK(flow_vir->getSourcePort() == 47864);
 	BOOST_CHECK(flow_vir->getDestinationPort() == 53);
 
-	BOOST_CHECK(flow_vir->dns_info != nullptr);
-        SharedPointer<DNSInfo> dns_info = flow_vir->dns_info;
+        SharedPointer<DNSInfo> dns_info = flow_vir->getDNSInfo();
+	BOOST_CHECK(dns_info != nullptr);
 
 	std::string domain("github.com");
 
@@ -176,13 +164,9 @@ BOOST_AUTO_TEST_CASE (test5_vxlan)
         int length1 = raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_udp_dns_request_length;
         Packet packet1(pkt1,length1);
 
-        dns_vir->createDNSDomains(2);
+        dns_vir->increaseAllocatedMemory(2);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(packet1.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
 	// Verify the number of flows that should be on the cache and table
 	BOOST_CHECK(flow_cache->getTotalFlows() == 1);
@@ -200,24 +184,20 @@ BOOST_AUTO_TEST_CASE (test5_vxlan)
         int length2 = raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_udp_dns_request_2_length;
         Packet packet2(pkt2,length2);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(packet2.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet2);
 	
 	Flow *flow_udp2 = udp_vir->getCurrentFlow();
 
-	BOOST_CHECK(flow_udp1->dns_info != nullptr);
-        SharedPointer<DNSInfo> dns_info = flow_udp1->dns_info;
+        SharedPointer<DNSInfo> dns_info = flow_udp1->getDNSInfo();
+	BOOST_CHECK(dns_info != nullptr);
 
 	std::string domain("github.com");
 
 	BOOST_CHECK(dns_info->name != nullptr);
 	BOOST_CHECK(domain.compare(dns_info->name->getName()) == 0);
 	
-	BOOST_CHECK(flow_udp2->dns_info != nullptr);
-        dns_info = flow_udp2->dns_info;
+	BOOST_CHECK(flow_udp2->getDNSInfo() != nullptr);
+        dns_info = flow_udp2->getDNSInfo();
 
 	domain = "gitgit.com";
 	BOOST_CHECK(dns_info->name != nullptr);
@@ -244,11 +224,7 @@ BOOST_AUTO_TEST_CASE (test6_vxlan)
         int length1 = raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_tcp_syn_length;
         Packet packet1(pkt1,length1);
 
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(packet1.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+	inject(packet1);
 
 	BOOST_CHECK(tcp_vir->getTotalPackets() == 1);
 	BOOST_CHECK(tcp_vir->getTotalBytes() == 28);
@@ -267,11 +243,8 @@ BOOST_AUTO_TEST_CASE (test6_vxlan)
         unsigned char *pkt2 = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_tcp_synack);
         int length2 = raw_packet_ethernet_ip_udp_vxlan_ethernet_ip_tcp_synack_length;
         Packet packet2(pkt2,length2);
-        
-	mux_eth->setPacket(&packet2);
-        eth->setHeader(packet2.getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+       
+	inject(packet2); 
 
         BOOST_CHECK(tcp_vir->getTotalPackets() == 2);
         BOOST_CHECK(tcp_vir->getTotalBytes() == 56);
@@ -289,8 +262,8 @@ BOOST_AUTO_TEST_CASE (test6_vxlan)
         Flow *flow = tcp_vir->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info != nullptr);
-        SharedPointer<TCPInfo> info = flow->tcp_info;
+        SharedPointer<TCPInfo> info = flow->getTCPInfo();
+	BOOST_CHECK( info != nullptr);
 
         BOOST_CHECK(info->syn == 1);
         BOOST_CHECK(info->fin == 0);

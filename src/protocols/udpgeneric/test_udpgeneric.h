@@ -36,8 +36,7 @@
 #include <string>
 #include "../test/torrent_test_packets.h"
 #include "Protocol.h"
-#include "Multiplexer.h"
-#include "../ethernet/EthernetProtocol.h"
+#include "StackTest.h"
 #include "../ip/IPProtocol.h"
 #include "../udp/UDPProtocol.h"
 #include "UDPGenericProtocol.h"
@@ -49,13 +48,11 @@ using namespace log4cxx;
 using namespace log4cxx::helpers;
 #endif
 
-struct StackUDPGenericTest
+struct StackUDPGenericTest : public StackTest
 {
-        EthernetProtocolPtr eth;
         IPProtocolPtr ip;
         UDPProtocolPtr udp;
 	UDPGenericProtocolPtr gudp;
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
         MultiplexerPtr mux_udp;
 
@@ -73,25 +70,16 @@ struct StackUDPGenericTest
                 BasicConfigurator::configure();
 #endif
                 ip = IPProtocolPtr(new IPProtocol());
-                eth = EthernetProtocolPtr(new EthernetProtocol());
                 udp = UDPProtocolPtr(new UDPProtocol());
                 gudp = UDPGenericProtocolPtr(new UDPGenericProtocol());
                 mux_ip = MultiplexerPtr(new Multiplexer());
                 mux_udp = MultiplexerPtr(new Multiplexer());
-                mux_eth = MultiplexerPtr(new Multiplexer());
                 ff_udp = SharedPointer<FlowForwarder>(new FlowForwarder());
                 ff_gudp = SharedPointer<FlowForwarder>(new FlowForwarder());
 
                 // Allocate the flow caches and tables
                 flow_mng = FlowManagerPtr(new FlowManager());
                 flow_cache = FlowCachePtr(new FlowCache());
-
-                //configure the eth
-                eth->setMultiplexer(mux_eth);
-                mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-                mux_eth->setProtocolIdentifier(0);
-                mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the ip
                 ip->setMultiplexer(mux_ip);

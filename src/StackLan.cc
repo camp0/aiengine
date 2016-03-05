@@ -70,6 +70,8 @@ StackLan::StackLan():
         addProtocol(smtp);
         addProtocol(imap);
         addProtocol(pop);
+        addProtocol(bitcoin);
+        addProtocol(modbus);
         addProtocol(tcp_generic);
         addProtocol(freqs_tcp);
         addProtocol(dns);
@@ -161,12 +163,13 @@ StackLan::StackLan():
 	udp_->setFlowManager(flow_table_udp_);
 	flow_table_udp_->setProtocol(udp_);	
 
-	// Connect to upper layers the FlowManager
+	// Connect to upper layers the FlowManager for release caches
 	http->setFlowManager(flow_table_tcp_);
 	ssl->setFlowManager(flow_table_tcp_);
 	smtp->setFlowManager(flow_table_tcp_);
 	imap->setFlowManager(flow_table_tcp_);
 	pop->setFlowManager(flow_table_tcp_);
+	bitcoin->setFlowManager(flow_table_tcp_);
 	dns->setFlowManager(flow_table_udp_);
 	sip->setFlowManager(flow_table_udp_);
 	ssdp->setFlowManager(flow_table_udp_);
@@ -175,7 +178,8 @@ StackLan::StackLan():
 	tcp_->setFlowForwarder(ff_tcp_);	
 	udp_->setFlowForwarder(ff_udp_);	
 
-	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
+	enableFlowForwarders(ff_tcp_,
+		{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus,ff_tcp_generic});
 	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
 
 	std::ostringstream msg;
@@ -241,7 +245,8 @@ void StackLan::enableNIDSEngine(bool enable) {
 
 	if (enable) {
 
-		disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop}); // we dont remove the ff_tcp_generic
+		disableFlowForwarders(ff_tcp_,
+			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus}); // we dont remove the ff_tcp_generic
 		disableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp}); // we dont remove the ff_udp_generic
 
                 std::ostringstream msg;
@@ -252,7 +257,8 @@ void StackLan::enableNIDSEngine(bool enable) {
 		disableFlowForwarders(ff_tcp_,{ff_tcp_generic}); 
 		disableFlowForwarders(ff_udp_,{ff_udp_generic}); 
 	
-		enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_tcp_generic});
+		enableFlowForwarders(ff_tcp_,
+			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus,ff_tcp_generic});
         	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});	
 	}
 	enable_nids_engine_ = enable;
@@ -265,25 +271,26 @@ void StackLan::setTotalTCPFlows(int value) {
 
 	// The vast majority of the traffic of internet is HTTP
 	// so create 75% of the value received for the http caches
-	http->createHTTPInfos(value * 0.75);
+	http->increaseAllocatedMemory(value * 0.75);
 
 	// The 40% of the traffic is SSL
-	ssl->createSSLInfos(value * 0.4);
+	ssl->increaseAllocatedMemory(value * 0.4);
 
         // 5% of the traffic could be SMTP/IMAP, im really positive :D
-        smtp->createSMTPInfos(value * 0.05);
-        imap->createIMAPInfos(value * 0.05);
-        pop->createPOPInfos(value * 0.05);
+        smtp->increaseAllocatedMemory(value * 0.05);
+        imap->increaseAllocatedMemory(value * 0.05);
+        pop->increaseAllocatedMemory(value * 0.05);
+        bitcoin->increaseAllocatedMemory(value * 0.05);
 }
 
 void StackLan::setTotalUDPFlows(int value) {
 
 	flow_cache_udp_->createFlows(value);
-	dns->createDNSDomains(value / 2);
+	dns->increaseAllocatedMemory(value / 2);
 
 	// SIP values
-	sip->createSIPInfos(value * 0.2);
-	ssdp->createSSDPInfos(value * 0.2);
+	sip->increaseAllocatedMemory(value * 0.2);
+	ssdp->increaseAllocatedMemory(value * 0.2);
 }
 
 int StackLan::getTotalTCPFlows() const { return flow_cache_tcp_->getTotalFlows(); }

@@ -27,8 +27,7 @@
 #include <string>
 #include "../test/virtual_packets.h"
 #include "Protocol.h"
-#include "Multiplexer.h"
-#include "../ethernet/EthernetProtocol.h"
+#include "StackTest.h"
 #include "../ip/IPProtocol.h"
 #include "../icmp/ICMPProtocol.h"
 #include "../udp/UDPProtocol.h"
@@ -39,15 +38,13 @@ using namespace aiengine;
 
 // The configuration of this stack is similar to the Mobile one.
 
-struct StackTestGre
+struct StackTestGre : public StackTest
 {
-        EthernetProtocolPtr eth;
         EthernetProtocolPtr eth_vir;
 	IPProtocolPtr ip,ip_vir;
 	UDPProtocolPtr udp_vir;
 	ICMPProtocolPtr icmp_vir;
         GREProtocolPtr gre;
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_eth_vir;
         MultiplexerPtr mux_ip,mux_ip_vir;
         MultiplexerPtr mux_udp_vir;
@@ -61,7 +58,6 @@ struct StackTestGre
         StackTestGre()
         {
 
-                eth = EthernetProtocolPtr(new EthernetProtocol());
                 eth_vir = EthernetProtocolPtr(new EthernetProtocol("Virtual EthernetProtocol","virtethernet"));
                 ip = IPProtocolPtr(new IPProtocol());
                 ip_vir = IPProtocolPtr(new IPProtocol("Virtual IPProtocol","virtip"));
@@ -69,7 +65,6 @@ struct StackTestGre
                 gre = GREProtocolPtr(new GREProtocol());
                 icmp_vir = ICMPProtocolPtr(new ICMPProtocol());
 
-		mux_eth = MultiplexerPtr(new Multiplexer());
 		mux_ip = MultiplexerPtr(new Multiplexer());
 		mux_gre = MultiplexerPtr(new Multiplexer());
 		mux_icmp_vir = MultiplexerPtr(new Multiplexer());
@@ -81,12 +76,6 @@ struct StackTestGre
 
                 flow_cache = FlowCachePtr(new FlowCache());
                 flow_mng = FlowManagerPtr(new FlowManager());
-
-        	eth->setMultiplexer(mux_eth);
-		mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-		mux_eth->setProtocolIdentifier(0);
-        	mux_eth->setHeaderSize(eth->getHeaderSize());
-        	mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
         	eth_vir->setMultiplexer(mux_eth_vir);
 		mux_eth_vir->setProtocol(static_cast<ProtocolPtr>(eth_vir));

@@ -128,9 +128,8 @@ public:
 
 	unsigned char *getPayload() { return smtp_header_; }
 
-        void createSMTPInfos(int number); 
-        void destroySMTPInfos(int number); 
-
+        void increaseAllocatedMemory(int value); 
+        void decreaseAllocatedMemory(int value); 
 
 	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
 

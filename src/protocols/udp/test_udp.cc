@@ -49,12 +49,7 @@ BOOST_AUTO_TEST_CASE (test2_udp)
         int length = raw_packet_ethernet_ip_udp_dhcp_offer_length;
 	Packet packet(pkt,length,0);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
 	// Check the udp integrity
 	BOOST_CHECK(udp->getSourcePort() == 67);
@@ -66,13 +61,9 @@ BOOST_AUTO_TEST_CASE(test3_udp)
 {
         unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_dhcp_offer);
         int length = raw_packet_ethernet_ip_udp_dhcp_offer_length;
-        Packet packet(pkt,length,0);
+        Packet packet(pkt,length);
 
-	// executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
 }
 
@@ -90,12 +81,7 @@ BOOST_AUTO_TEST_CASE(test4_udp)
 	udp->setFlowCache(flow_cache);
 	udp->setFlowManager(flow_mng);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-	mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+	inject(packet);
 
 	// ip
 	BOOST_CHECK(ip->getTotalPackets() == 1);
@@ -123,11 +109,7 @@ BOOST_AUTO_TEST_CASE(test5_udp) // Test timeout on UDP traffic
 
 	flow_cache->createFlows(2);
 
-        // forward the first packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+        inject(packet1);
 
 	BOOST_CHECK(flow_mng->getTotalProcessFlows() == 1);
 	BOOST_CHECK(flow_mng->getTotalFlows() == 1);
@@ -138,11 +120,7 @@ BOOST_AUTO_TEST_CASE(test5_udp) // Test timeout on UDP traffic
 	BOOST_CHECK(flow_cache->getTotalReleases() == 0);
 	BOOST_CHECK(flow_cache->getTotalFails() == 0);
 
-        // forward the second packet through the multiplexers
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+	inject(packet2);
 
         BOOST_CHECK(flow_mng->getTotalProcessFlows() == 2);
         BOOST_CHECK(flow_mng->getTotalFlows() == 1);
@@ -173,11 +151,7 @@ BOOST_AUTO_TEST_CASE(test6_udp) // Test timeout on UDP traffic, no expire flows
 
         flow_cache->createFlows(2);
 
-        // forward the first packet through the multiplexers
-        mux_eth->setPacket(&packet1);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet1);
+        inject(packet1);
 
         BOOST_CHECK(flow_mng->getTotalProcessFlows() == 1);
         BOOST_CHECK(flow_mng->getTotalFlows() == 1);
@@ -188,11 +162,7 @@ BOOST_AUTO_TEST_CASE(test6_udp) // Test timeout on UDP traffic, no expire flows
         BOOST_CHECK(flow_cache->getTotalReleases() == 0);
         BOOST_CHECK(flow_cache->getTotalFails() == 0);
 
-        // forward the second packet through the multiplexers
-        mux_eth->setPacket(&packet2);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet2);
+        inject(packet2);
 
         BOOST_CHECK(flow_mng->getTotalProcessFlows() == 2);
         BOOST_CHECK(flow_mng->getTotalFlows() == 2);
@@ -220,11 +190,7 @@ BOOST_AUTO_TEST_CASE(test7_udp) // Test small packet udp , one byte packet
 
         flow_cache->createFlows(1);
 
-        // forward the first packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+        inject(packet);
 
 	BOOST_CHECK(ip->getTotalPackets() == 1);
 	BOOST_CHECK(ip->getTotalBytes() == 29);
@@ -255,12 +221,7 @@ BOOST_AUTO_TEST_CASE (test1_udp)
         udp->setFlowCache(flow_cache);
         udp->setFlowManager(flow_mng);
 
-        // executing the packet
-        // forward the packet through the multiplexers
-        mux_eth->setPacket(&packet);
-        eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-        mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-        mux_eth->forwardPacket(packet);
+        inject(packet);
 
         // ip6
         BOOST_CHECK(ip6->getTotalPackets() == 1);

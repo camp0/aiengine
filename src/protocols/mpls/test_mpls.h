@@ -27,44 +27,33 @@
 #include <string>
 #include "../test/mpls_test_packets.h"
 #include "Protocol.h"
-#include "Multiplexer.h"
+#include "StackTest.h"
 #include "flow/FlowCache.h"
 #include "flow/FlowManager.h"
-#include "protocols/ethernet/EthernetProtocol.h"
 #include "protocols/ip/IPProtocol.h"
 #include "protocols/icmp/ICMPProtocol.h"
 #include "MPLSProtocol.h"
 
 using namespace aiengine;
 
-struct StackMPLStest
+struct StackMPLStest : public StackTest
 {
-        EthernetProtocolPtr eth;
         MPLSProtocolPtr mpls;
         IPProtocolPtr ip;
 	ICMPProtocolPtr icmp;
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_mpls;
         MultiplexerPtr mux_ip;
         MultiplexerPtr mux_icmp;
 
         StackMPLStest()
         {
-                eth = EthernetProtocolPtr(new EthernetProtocol());
                 ip = IPProtocolPtr(new IPProtocol());
 		mpls = MPLSProtocolPtr(new MPLSProtocol());
 		icmp = ICMPProtocolPtr(new ICMPProtocol());
 
                 mux_ip = MultiplexerPtr(new Multiplexer());
                 mux_mpls = MultiplexerPtr(new Multiplexer());
-                mux_eth = MultiplexerPtr(new Multiplexer());
 		mux_icmp = MultiplexerPtr(new Multiplexer());
-
-                eth->setMultiplexer(mux_eth);
-                mux_eth->setProtocol(static_cast<ProtocolPtr>(eth));
-                mux_eth->setProtocolIdentifier(0);
-                mux_eth->setHeaderSize(eth->getHeaderSize());
-                mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
                 // configure the mpls handler
                 mpls->setMultiplexer(mux_mpls);
