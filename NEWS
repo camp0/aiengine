@@ -123,6 +123,10 @@ Features/Changes of 1.4
 - Support for RegexManagers on IPSets.
 - Support for network forensics on real time.
 - Enable rejecting for StackLanIPv6.
-- SSDP protocol support.
+- SSDP, Modbus and Bitcoin protocol support.
 - Support for regex on HTTP l7 payloads (DomainNames with RegexManagers).
+- Increase/Decrease allocated memory for protocols.
+- Improvements on the Memory management. Reduce size of Flow class.
+- Improvements for show objects on python.
 - Bug fixing.
+
