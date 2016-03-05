@@ -128,13 +128,16 @@ void Flow::serialize(std::ostream& stream) {
 		stream << ",\"p\":\"" << sname << "\"";
 	}
         if (protocol_ == IPPROTO_TCP) {
+		SharedPointer<TCPInfo> tcp_info = getTCPInfo();
                 if(tcp_info)
                         stream << ",\"t\":\"" << *tcp_info.get() << "\"";
 
+		SharedPointer<HTTPInfo> http_info = getHTTPInfo();
 		if (http_info) {
 			if (http_info->host)	
                         	stream << ",\"h\":\"" << http_info->host->getName() << "\"";
 		} else {
+			SharedPointer<SSLInfo> ssl_info = getSSLInfo();
                 	if (ssl_info) {
 				if (ssl_info->host)
                         		stream << ",\"s\":\"" << ssl_info->host->getName() << "\"";
@@ -145,7 +148,8 @@ void Flow::serialize(std::ostream& stream) {
                 if(dinfo) {
 			if (dinfo->name)
                         	stream << ",\"d\":\"" << dinfo->name->getName() << "\"";
-              	} 
+              	}
+		SharedPointer<GPRSInfo> gprs_info = getGPRSInfo(); 
 		if(gprs_info)
                         stream << ",\"g\":\"" << gprs_info->getIMSIString() << "\"";
         }

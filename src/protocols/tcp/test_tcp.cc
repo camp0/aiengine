@@ -249,8 +249,8 @@ BOOST_AUTO_TEST_CASE (test9_tcp)
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info != nullptr);
-        SharedPointer<TCPInfo> info = flow->tcp_info;
+        SharedPointer<TCPInfo> info = flow->getTCPInfo();
+        BOOST_CHECK(info != nullptr);
 
 	BOOST_CHECK(info->state_curr == static_cast<int>(TcpState::ESTABLISHED));
 	BOOST_CHECK(info->state_prev == static_cast<int>(TcpState::ESTABLISHED));
@@ -306,8 +306,8 @@ BOOST_AUTO_TEST_CASE (test10_tcp)
         Flow *flow = tcp->getCurrentFlow();
 
         BOOST_CHECK(flow != nullptr);
-        BOOST_CHECK(flow->tcp_info != nullptr);
-        SharedPointer<TCPInfo> info = flow->tcp_info;
+        SharedPointer<TCPInfo> info = flow->getTCPInfo();
+        BOOST_CHECK( info != nullptr);
 
         BOOST_CHECK(info->state_curr == static_cast<int>(TcpState::ESTABLISHED));
         BOOST_CHECK(info->state_prev == static_cast<int>(TcpState::ESTABLISHED));
