@@ -11,7 +11,7 @@ The main functionalities of AIEngine are:
 
 - Support for interacting/programing with the user while the engine is running.
 - Support for PCRE JIT for regex matching.
-- Support for regex graphs.
+- Support for regex graphs (complex detection patterns).
 - Support five types of NetworkStacks (lan,mobile,lan6,virtual and oflow).
 - Support Sets and Bloom filters for IP searches.
 - Support Linux, FreeBSD and MacOS operating systems.
@@ -103,6 +103,7 @@ AIEngine is a python/ruby/java module also that allows to be more flexible in te
 The main objects that the python module provide export are the following ones.
 
         DNSInfo
+        BitcoinInfo
         DatabaseAdaptor (Abstract class)
         DomainName
         DomainNameManager
@@ -137,8 +138,8 @@ For a complete description of the class methods
 	import pyaiengine
 	help(pyaiengine)
 
-Check the configuration wiki pages or the examples directory in order to have more complex examples.
-[https://bitbucket.org/camp0/aiengine/wiki/Configurations Configurations]
+Check the configuration wiki pages or the examples directory in order to have more interesting examples.
+[https://bitbucket.org/camp0/aiengine/wiki/Configurations] 
 
 Compile AIEngine binary
 -----------------------
@@ -199,6 +200,8 @@ AIEngine is develop with c++11/14 standard and is under the terms of GPLv2.
 Check out the AIEngine source with 
 
     $ git clone https://bitbucket.com/camp0/aiengine
+
+If you are interested in some functionality or some help just drop me an email. Contributions are always helpful.
 
 Develop new functionality
 -------------------------
