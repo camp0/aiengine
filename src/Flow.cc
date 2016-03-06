@@ -97,6 +97,7 @@ void Flow::serialize(std::ostream& stream) {
 	//	t:	TCPInfo (flags,QoS)
 	//	h:	Hostname of the HTTP flow if is HTTP 
 	//	s:	Hostname of the client hello in SSL
+	//	m:	Matched domain for HTTP,SSL of DNS
 	//	d:	DNSname
 	//	g:	GPRS information if StackMobile is running
 	//	r:	Regex matched on the flow
@@ -132,15 +133,19 @@ void Flow::serialize(std::ostream& stream) {
                 if(tcp_info)
                         stream << ",\"t\":\"" << *tcp_info.get() << "\"";
 
-		SharedPointer<HTTPInfo> http_info = getHTTPInfo();
-		if (http_info) {
-			if (http_info->host)	
-                        	stream << ",\"h\":\"" << http_info->host->getName() << "\"";
+		SharedPointer<HTTPInfo> hinfo = getHTTPInfo();
+		if (hinfo) {
+			if (hinfo->host)	
+                        	stream << ",\"h\":\"" << hinfo->host->getName() << "\"";
+			if (hinfo->matched_domain_name)
+				stream << ",\"m\":\"" << hinfo->matched_domain_name->getName() << "\"";
 		} else {
-			SharedPointer<SSLInfo> ssl_info = getSSLInfo();
-                	if (ssl_info) {
-				if (ssl_info->host)
-                        		stream << ",\"s\":\"" << ssl_info->host->getName() << "\"";
+			SharedPointer<SSLInfo> sinfo = getSSLInfo();
+                	if (sinfo) {
+				if (sinfo->host)
+                        		stream << ",\"s\":\"" << sinfo->host->getName() << "\"";
+				if (sinfo->matched_domain_name)
+					stream << ",\"m\":\"" << sinfo->matched_domain_name->getName() << "\"";
 			}
 		}
         } else { // UDP
@@ -148,6 +153,8 @@ void Flow::serialize(std::ostream& stream) {
                 if(dinfo) {
 			if (dinfo->name)
                         	stream << ",\"d\":\"" << dinfo->name->getName() << "\"";
+			if (dinfo->matched_domain_name)
+				stream << ",\"m\":\"" << dinfo->matched_domain_name->getName() << "\"";
               	}
 		SharedPointer<GPRSInfo> gprs_info = getGPRSInfo(); 
 		if(gprs_info)
@@ -186,10 +193,14 @@ void Flow::serialize(std::ostream& stream) {
 		if (hinfo) {
 			if (hinfo->host)	
 				stream << ",\"httphost\":\"" << hinfo->host->getName() << "\"";
+			if (hinfo->matched_domain_name)
+				stream << ",\"matchs\":\"" << hinfo->matched_domain_name->getName() << "\"";
 		} else {
 			SharedPointer<SSLInfo> sinfo = getSSLInfo();	
 			if (sinfo){
 				stream << ",\"sslhost\":\"" << sinfo->host->getName() << "\"";
+				if (sinfo->matched_domain_name)
+					stream << ",\"matchs\":\"" << sinfo->matched_domain_name->getName() << "\"";
 			}
 		}
 	} else { // UDP
@@ -197,6 +208,8 @@ void Flow::serialize(std::ostream& stream) {
 		if (dinfo) {
 			if (dinfo->name) 	
 				stream << ",\"dnsdomain\":\"" << dinfo->name->getName() << "\"";
+			if (dinfo->matched_domain_name)
+				stream << ",\"matchs\":\"" << dinfo->matched_domain_name->getName() << "\"";
 		}
 		SharedPointer<GPRSInfo> ginfo = getGPRSInfo();
 		if (ginfo)	
