@@ -28,6 +28,8 @@
 #include <config.h>
 #endif
 
+#include <ostream>
+
 namespace aiengine {
 
 class FlowInfo
@@ -37,6 +39,7 @@ public:
     	virtual ~FlowInfo() {}
 
     	virtual void reset() = 0;
+        virtual void serialize(std::ostream& stream) = 0;
 };
 
 } // namespace aiengine 

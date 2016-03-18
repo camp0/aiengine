@@ -50,6 +50,7 @@ enum class PacketAnomalyType : std::int8_t {
 	IMAP_BOGUS_HEADER = 10, 
 	POP_BOGUS_HEADER = 11, 
 	SNMP_BOGUS_HEADER = 12,
+	SSL_BOGUS_HEADER = 13,
 	MAX_PACKET_ANOMALIES
 };
 

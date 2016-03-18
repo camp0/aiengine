@@ -41,12 +41,8 @@ public:
         explicit SSLInfo() { reset(); }
         virtual ~SSLInfo() {}
 
-        void reset() {
-                host.reset();
-		matched_domain_name.reset();
-		is_banned_ = false;
-		data_pdus_ = 0;
-        }
+        void reset(); 
+	void serialize(std::ostream& stream); 
 
         SharedPointer<StringCache> host;
         SharedPointer<DomainName> matched_domain_name;
@@ -56,6 +52,12 @@ public:
 
 	void incDataPdus() { ++data_pdus_; }
 	int32_t getTotalDataPdus() const { return data_pdus_; }
+
+	void setVersion(uint16_t version) { version_ = version; }
+	uint16_t getVersion() const { return version_; }
+
+	void setHeartbeat(bool value) { heartbeat_ = value; }
+	bool getHeartbeat() const { return heartbeat_; }
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 
@@ -73,13 +75,15 @@ public:
 #if defined(PYTHON_BINDING)
         SharedPointer<DomainName> getMatchedDomainName() const { return matched_domain_name;}
 #elif defined(RUBY_BINDING)
-	// TODO
+        DomainName& getMatchedDomainName() const { return *matched_domain_name.get();}
 #elif defined(JAVA_BINDING)
-	// TODO
+        DomainName& getMatchedDomainName() const { return *matched_domain_name.get();}
 #endif
 
 private:
 	bool is_banned_;
+	bool heartbeat_;
+	uint16_t version_;
 	int32_t data_pdus_;
 };
 

@@ -50,6 +50,8 @@ public:
 		uri.reset();
 	 }
 
+	void serialize(std::ostream& stream) {}
+
 	void resetStrings() { uri.reset(); host.reset(); }
 
 	SharedPointer<StringCache> uri;

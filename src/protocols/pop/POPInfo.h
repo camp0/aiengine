@@ -47,6 +47,8 @@ public:
 		is_banned_ = false;
 	}
 
+	void serialize(std::ostream& stream) {}
+
 	void resetStrings() { user_name.reset(); }
 
 	void incClientCommands() { ++client_commands_; }

@@ -96,23 +96,29 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/icmp6/ICMPv6Header.cc \
 			protocols/icmp6/ICMPv6Protocol.cc \
 			protocols/udp/UDPProtocol.cc \
+			protocols/tcp/TCPInfo.cc \
 			protocols/tcp/TCPHeader.cc \
 			protocols/tcp/TCPProtocol.cc \
 			protocols/tcpgeneric/TCPGenericProtocol.cc \
 			protocols/udpgeneric/UDPGenericProtocol.cc \
+			protocols/gprs/GPRSInfo.cc \
 			protocols/gprs/GPRSProtocol.cc \
 			protocols/vxlan/VxLanProtocol.cc \
 			protocols/openflow/OpenFlowProtocol.cc \
 			protocols/gre/GREProtocol.cc \
+			protocols/http/HTTPInfo.cc \
 			protocols/http/HTTPProtocol.cc \
 			protocols/http/HTTPUriSet.cc \
+			protocols/ssl/SSLInfo.cc \
 			protocols/ssl/SSLProtocol.cc \
 			protocols/smtp/SMTPProtocol.cc \
 			protocols/imap/IMAPProtocol.cc \
 			protocols/pop/POPProtocol.cc \
 			protocols/bitcoin/BitcoinProtocol.cc \
 			protocols/modbus/ModbusProtocol.cc \
+			protocols/dns/DNSInfo.cc \
 			protocols/dns/DNSProtocol.cc \
+			protocols/sip/SIPInfo.cc \
 			protocols/sip/SIPProtocol.cc \
 			protocols/dhcp/DHCPProtocol.cc \
 			protocols/ntp/NTPProtocol.cc \
@@ -203,13 +209,15 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		Flow.o Callback.o \
 		RegexManager.o Regex.o \
 		VLanProtocol.o MPLSProtocol.o \
-		IPProtocol.o IPv6Protocol.o TCPHeader.o TCPProtocol.o UDPProtocol.o \
+		IPProtocol.o IPv6Protocol.o \
+		TCPInfo.o TCPHeader.o TCPProtocol.o UDPProtocol.o \
 		TCPGenericProtocol.o UDPGenericProtocol.o \
-		HTTPProtocol.o SSLProtocol.o \
-		DNSProtocol.o GPRSProtocol.o \
+		HTTPProtocol.o HTTPInfo.o SSLProtocol.o SSLInfo.o \
+		DNSProtocol.o DNSInfo.o \
+		GPRSInfo.o GPRSProtocol.o \
 		NTPProtocol.o SNMPProtocol.o \
 		SMTPProtocol.o IMAPProtocol.o \
-		DHCPProtocol.o SIPProtocol.o SSDPProtocol.o \
+		DHCPProtocol.o SIPProtocol.o SIPInfo.o SSDPProtocol.o \
 		POPProtocol.o GREProtocol.o \
 		OpenFlowProtocol.o VxLanProtocol.o \
 		BitcoinProtocol.o ModbusProtocol.o \
@@ -225,13 +233,15 @@ java_objects = 	RegexManager.o Regex.o \
 		FlowManager.o Flow.o Callback.o \
                 AnomalyManager.o CacheManager.o Multiplexer.o FlowForwarder.o PacketDispatcher.o \
                 VLanProtocol.o MPLSProtocol.o \
-                IPProtocol.o IPv6Protocol.o TCPHeader.o TCPProtocol.o UDPProtocol.o \
+                IPProtocol.o IPv6Protocol.o \
+		TCPInfo.o TCPHeader.o TCPProtocol.o UDPProtocol.o \
                 TCPGenericProtocol.o UDPGenericProtocol.o \
-                HTTPProtocol.o SSLProtocol.o \
-                DNSProtocol.o GPRSProtocol.o \
+                HTTPProtocol.o HTTPInfo.o SSLProtocol.o SSLInfo.o \
+                DNSProtocol.o DNSInfo.o \
+		GPRSInfo.o GPRSProtocol.o \
                 NTPProtocol.o SNMPProtocol.o \
                 SMTPProtocol.o IMAPProtocol.o \
-                DHCPProtocol.o SIPProtocol.o SSDPProtocol.o \
+                DHCPProtocol.o SIPProtocol.o SIPInfo.o SSDPProtocol.o \
                 POPProtocol.o GREProtocol.o \
 		BitcoinProtocol.o ModbusProtocol.o \
                 OpenFlowProtocol.o VxLanProtocol.o \

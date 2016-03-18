@@ -43,23 +43,9 @@ public:
     	explicit HTTPInfo() { reset(); }
     	virtual ~HTTPInfo() {}
 
-	void reset() {
-		direction_ = FlowDirection::NONE; 
-		content_length_ = 0; 
-		data_chunk_length_ = 0; 
-		have_data_ = false; 
-		is_banned_ = false;
-		total_requests_ = 0;
-		total_responses_ = 0;
-		response_code_ = 0; 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
-		needs_release_ = false; 
-#endif
-		matched_domain_name.reset();
-		resetStrings(); 
-	}
-
-	void resetStrings() { uri.reset(); host.reset(); ua.reset(); }
+	void reset(); 
+	void serialize(std::ostream& stream); 
+	void resetStrings();
 
 	int32_t getContentLength() const { return content_length_; }
 	void setContentLength(int32_t content_length) { content_length_ = content_length; }
@@ -110,9 +96,9 @@ public:
 #if defined(PYTHON_BINDING)
 	SharedPointer<DomainName> getMatchedDomainName() const { return matched_domain_name;}
 #elif defined(RUBY_BINDING)
-	// TODO
+	DomainName& getMatchedDomainName() const { return *matched_domain_name.get(); }
 #elif defined(JAVA_BINDING)
-	// TODO
+	DomainName& getMatchedDomainName() const { return *matched_domain_name.get(); }
 #endif
 
 private:

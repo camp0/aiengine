@@ -69,16 +69,18 @@ public class JavaAiengineTestsStackLan {
     @Test
     public void test03() {
 
+        DomainName d = new DomainName("Google Drive Cert",".drive.google.com");
 	class ExternalCallback extends JaiCallback{
             public boolean called = false;
 	    public void call(Flow flow) {
 		SSLInfo s = flow.getSSLInfoObject();
 		assertEquals("0.drive.google.com",s.getServerName());
+		// assertEquals(s.getMatchedDomainName(),d);
 		called = true;
             }
 	}
   	DomainNameManager dm = new DomainNameManager();
-        DomainName d = new DomainName("Google Drive Cert",".drive.google.com");
+        // DomainName d = new DomainName("Google Drive Cert",".drive.google.com");
 	ExternalCallback call = new ExternalCallback();
 
 	d.setCallback(call);

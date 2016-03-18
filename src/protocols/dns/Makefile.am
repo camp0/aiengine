@@ -24,7 +24,7 @@ test_dns_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \
 			../../names/DomainName.cc \
-			DNSProtocol.cc test_dns.cc
+			DNSInfo.cc DNSProtocol.cc test_dns.cc
 
 test_dns_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
 test_dns_LDADD   = $(BOOST_LDFLAGS) $(LOG4CXX_FLAGS) -lboost_unit_test_framework

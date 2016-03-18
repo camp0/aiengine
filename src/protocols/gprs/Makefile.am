@@ -27,7 +27,12 @@ test_gprs_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../names/DomainNameManager.cc \
 			../../names/DomainName.cc \
 			../dns/DNSProtocol.cc \
-			GPRSProtocol.cc test_gprs.cc
+			../dns/DNSInfo.cc \
+			../sip/SIPInfo.cc \
+			../http/HTTPInfo.cc \
+			../ssl/SSLInfo.cc \
+			../tcp/TCPInfo.cc \
+			GPRSInfo.cc GPRSProtocol.cc test_gprs.cc
 
 test_gprs_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
 test_gprs_LDADD   = $(BOOST_LDFLAGS) $(LOG4CXX_FLAGS) -lboost_unit_test_framework

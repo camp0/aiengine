@@ -21,12 +21,15 @@ test_sip_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../ipset/IPSet.cc \
 			../ip6/IPv6Protocol.cc \
 			../udp/UDPProtocol.cc \
+			../dns/DNSInfo.cc \
+			../ssl/SSLInfo.cc \
+			../http/HTTPInfo.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \
 			../../names/DomainName.cc \
 			../../regex/Regex.cc \
-			SIPProtocol.cc test_sip.cc
+			SIPInfo.cc SIPProtocol.cc test_sip.cc
 
 test_sip_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
 test_sip_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework $(LOG4CXX_FLAGS) $(PCRE_LIB)

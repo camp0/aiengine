@@ -15,10 +15,14 @@ test_tcp_SOURCES = 	../../Multiplexer.cc  \
 			../ethernet/EthernetProtocol.cc \
 			../vlan/VLanProtocol.cc \
 			../ip/IPProtocol.cc \
+			../dns/DNSInfo.cc \
+			../http/HTTPInfo.cc \
+			../ssl/SSLInfo.cc \
+			../sip/SIPInfo.cc \
 			../../ipset/IPSetManager.cc \
 			../../ipset/IPSet.cc \
 			../ip6/IPv6Protocol.cc \
-			TCPHeader.cc TCPProtocol.cc \
+			TCPInfo.cc TCPHeader.cc TCPProtocol.cc \
 			test_tcp.cc
 
 test_tcp_CPPFLAGS = -I../../  $(BOOST_CPPFLAGS) -DSTAND_ALONE

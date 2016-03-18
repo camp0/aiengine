@@ -42,7 +42,8 @@ public:
     	explicit DNSInfo() { reset(); }
     	virtual ~DNSInfo() {}
 
-	void reset() { name.reset() ; qtype_ = 0; ips_.clear(); matched_domain_name.reset(); }
+	void reset();
+	void serialize(std::ostream& stream); 
 
 	uint16_t getQueryType() const { return qtype_; }
 	void setQueryType(uint16_t qtype) { qtype_ = qtype; }
@@ -61,7 +62,7 @@ public:
 
 	const char *getDomainName() const { return (name ? name->getName() : ""); }
 #endif
-	void addIPAddress(const char* ipstr) { ips_.push_back(ipstr); }
+	void addIPAddress(const char* ipstr);
 
 	std::vector<std::string>::const_iterator begin() { return ips_.begin(); }
 	std::vector<std::string>::const_iterator end() { return ips_.end(); }
@@ -69,9 +70,9 @@ public:
 #if defined(PYTHON_BINDING)
         SharedPointer<DomainName> getMatchedDomainName() const { return matched_domain_name;}
 #elif defined(RUBY_BINDING)
-	// TODO
+        DomainName& getMatchedDomainName() const { return *matched_domain_name.get();}
 #elif defined(JAVA_BINDING)
-	// TODO
+        DomainName& getMatchedDomainName() const { return *matched_domain_name.get();}
 #endif
 
 private:

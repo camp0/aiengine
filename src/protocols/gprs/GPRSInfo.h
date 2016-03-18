@@ -29,6 +29,7 @@
 #endif
 
 #include <iostream>
+#include <sstream>
 #include "FlowInfo.h"
 
 namespace aiengine {
@@ -42,34 +43,15 @@ public:
     	explicit GPRSInfo() { reset(); }
     	virtual ~GPRSInfo() {}
 
-        void reset() { 
-		imsi_ = 0;
-		imei_ = 0;
-		pdp_type_number_ = 0; // The upper protocol
-	}
+        void reset(); 
+	void serialize(std::ostream& stream); 
 
 	void setPdpTypeNumber(uint8_t type) { pdp_type_number_ = type; }
 	uint8_t getPdpTypeNumber() const { return pdp_type_number_; }
 	void setIMSI(uint64_t imsi) { imsi_ = imsi; }
 	uint64_t getIMSI() const { return imsi_; }
 
-	std::string& getIMSIString() const { 
-		std::ostringstream o;
-		static std::string cad;
-		uint8_t bcd;
-		uint8_t *data = (uint8_t*)&imsi_;
-
-		for(int i = 0; i < 8; ++i ) {
-			bcd = *data & 0xf;
-			if (bcd != 0xf) o << (int)bcd;
-			bcd = *data >> 4;
-			if (bcd != 0xf) o << (int) bcd; 
-			data++;
-		}
-			
-		cad = o.str();
-		return cad;
-	}
+	std::string& getIMSIString() const ; 
 
 	//uint64_t getIMEI() const { return imei; }
 

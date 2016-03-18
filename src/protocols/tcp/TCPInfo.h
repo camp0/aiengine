@@ -40,20 +40,8 @@ public:
     	explicit TCPInfo() { reset(); }
     	virtual ~TCPInfo() {}
 
-        void reset() { 
-		syn = 0; syn_ack = 0; ack= 0; fin = 0; rst = 0; push= 0; 
-		seq_num[0] = 0; 
-		seq_num[1] = 0; 
-		state_prev = static_cast<int>(TcpState::CLOSED);
-		state_curr = static_cast<int>(TcpState::CLOSED);
-#if defined(HAVE_TCP_QOS_METRICS)
-		last_sample_time = 0;
-		last_client_data_time = 0;
-		connection_setup_time = 0;
-		server_reset_rate = 0;
-		application_response_time = 0;
-#endif	
-	}
+        void reset();
+	void serialize(std::ostream& stream); 
 
 	// TCP State
         short state_prev;
@@ -92,5 +80,4 @@ public:
 
 } // namespace aiengine
  
-
 #endif  // SRC_PROTOCOLS_TCP_TCPINFO_H_

@@ -21,47 +21,39 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#ifndef SRC_PROTOCOLS_BITCOIN_BITCOININFO_H_
-#define SRC_PROTOCOLS_BITCOIN_BITCOININFO_H_
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <iostream>
-#include "FlowInfo.h"
+#include "TCPInfo.h"
 
 namespace aiengine {
 
-class BitcoinInfo : public FlowInfo
-{
-public:
-        explicit BitcoinInfo() { reset(); }
-        virtual ~BitcoinInfo() {}
+void TCPInfo::reset() { 
+	syn = 0; syn_ack = 0; ack= 0; fin = 0; rst = 0; push= 0; 
+	seq_num[0] = 0; 
+	seq_num[1] = 0; 
+	state_prev = static_cast<int>(TcpState::CLOSED);
+	state_curr = static_cast<int>(TcpState::CLOSED);
+#if defined(HAVE_TCP_QOS_METRICS)
+	last_sample_time = 0;
+	last_client_data_time = 0;
+	connection_setup_time = 0;
+	server_reset_rate = 0;
+	application_response_time = 0;
+#endif	
+}
 
-        void reset() {
-		total_transactions_ = 0;
-        }
+void TCPInfo::serialize(std::ostream& stream) {
 
-	void serialize(std::ostream& stream) {}
-
-	void incTransactions() { ++total_transactions_; }
-	int32_t getTotalTransactions() const { return total_transactions_; }
-
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
-
-        friend std::ostream& operator<< (std::ostream& out, const BitcoinInfo& binfo) {
-
-		out << " TX:" << binfo.total_transactions_;
-
-                return out;
-        }
+        bool have_item = false;
+#ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION 
+	stream << ",\"t\":\"" << this << "\"";
+#else
+	stream << ",\"tcpflags\":\"" << this << "\"";
 #endif
 
-private:
-	int32_t total_transactions_;
-};
+#if defined(HAVE_TCP_QOS_METRICS)
+//	out << "QoS[ST(" << ti.connection_setup_time << ")RR(" << ti.server_reset_rate << ")";
+//	out << "RT(" << ti.application_response_time << ")]";
+#endif
 
-} // namespace aiengine  
+}
 
-#endif  // SRC_PROTOCOLS_BITCOIN_BITCOININFO_H_
+} // namespace aiengine

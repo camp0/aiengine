@@ -21,47 +21,37 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#ifndef SRC_PROTOCOLS_BITCOIN_BITCOININFO_H_
-#define SRC_PROTOCOLS_BITCOIN_BITCOININFO_H_
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <iostream>
-#include "FlowInfo.h"
+#include "GPRSInfo.h"
 
 namespace aiengine {
 
-class BitcoinInfo : public FlowInfo
-{
-public:
-        explicit BitcoinInfo() { reset(); }
-        virtual ~BitcoinInfo() {}
+void GPRSInfo::reset() { 
+	imsi_ = 0;
+	imei_ = 0;
+	pdp_type_number_ = 0; // The upper protocol
+}
 
-        void reset() {
-		total_transactions_ = 0;
-        }
+void GPRSInfo::serialize(std::ostream& stream) {
 
-	void serialize(std::ostream& stream) {}
 
-	void incTransactions() { ++total_transactions_; }
-	int32_t getTotalTransactions() const { return total_transactions_; }
+}
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+std::string& GPRSInfo::getIMSIString() const { 
+	std::ostringstream o;
+	static std::string cad;
+	uint8_t bcd;
+	uint8_t *data = (uint8_t*)&imsi_;
 
-        friend std::ostream& operator<< (std::ostream& out, const BitcoinInfo& binfo) {
+	for(int i = 0; i < 8; ++i ) {
+		bcd = *data & 0xf;
+		if (bcd != 0xf) o << (int)bcd;
+		bcd = *data >> 4;
+		if (bcd != 0xf) o << (int) bcd; 
+		data++;
+	}
+			
+	cad = o.str();
+	return cad;
+}
 
-		out << " TX:" << binfo.total_transactions_;
-
-                return out;
-        }
-#endif
-
-private:
-	int32_t total_transactions_;
-};
-
-} // namespace aiengine  
-
-#endif  // SRC_PROTOCOLS_BITCOIN_BITCOININFO_H_
+} // namespace aiengine

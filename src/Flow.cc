@@ -91,14 +91,10 @@ void Flow::serialize(std::ostream& stream) {
 	// Here is the meaning
 	// 	5tuple: The tuple connection
 	// 	b:	Number of bytes transfer
-	// 	i:	IPSet name associated to the flow
+	// 	s:	IPSet name associated to the flow
 	//	a:	Anomaly name associated to the flow
 	//	p:	Short layer7 protocol name
 	//	t:	TCPInfo (flags,QoS)
-	//	h:	Hostname of the HTTP flow if is HTTP 
-	//	s:	Hostname of the client hello in SSL
-	//	m:	Matched domain for HTTP,SSL of DNS
-	//	d:	DNSname
 	//	g:	GPRS information if StackMobile is running
 	//	r:	Regex matched on the flow
 		
@@ -112,61 +108,13 @@ void Flow::serialize(std::ostream& stream) {
 	stream << "\"b\":" << total_bytes; 
 
 	if (!ipset.expired()) 
-                stream << ",\"i\":\"" << ipset.lock()->getName() << "\"";
+                stream << ",\"s\":\"" << ipset.lock()->getName() << "\"";
 	
 	if(pa_ != PacketAnomalyType::NONE)
 		stream << ",\"a\":\"" << AnomalyManager::getInstance()->getName(pa_) << "\"";
 
-	// The protocol name are like HTTPProtocol, SMTPProtocol, SSLProtocol and so on
-	// So for reduce the number of bytes transmited we remove the word Protocol.
-	boost::string_ref sname(getL7ProtocolName());
-
-	if (sname.length() > 4) { 
-		boost::string_ref pname(sname.substr(0,sname.length()-8));
-
-		stream << ",\"p\":\"" << pname << "\"";
-	} else {
-		stream << ",\"p\":\"" << sname << "\"";
-	}
-        if (protocol_ == IPPROTO_TCP) {
-		SharedPointer<TCPInfo> tcp_info = getTCPInfo();
-                if(tcp_info)
-                        stream << ",\"t\":\"" << *tcp_info.get() << "\"";
-
-		SharedPointer<HTTPInfo> hinfo = getHTTPInfo();
-		if (hinfo) {
-			if (hinfo->host)	
-                        	stream << ",\"h\":\"" << hinfo->host->getName() << "\"";
-			if (hinfo->matched_domain_name)
-				stream << ",\"m\":\"" << hinfo->matched_domain_name->getName() << "\"";
-		} else {
-			SharedPointer<SSLInfo> sinfo = getSSLInfo();
-                	if (sinfo) {
-				if (sinfo->host)
-                        		stream << ",\"s\":\"" << sinfo->host->getName() << "\"";
-				if (sinfo->matched_domain_name)
-					stream << ",\"m\":\"" << sinfo->matched_domain_name->getName() << "\"";
-			}
-		}
-        } else { // UDP
-		SharedPointer<DNSInfo> dinfo = getDNSInfo();
-                if(dinfo) {
-			if (dinfo->name)
-                        	stream << ",\"d\":\"" << dinfo->name->getName() << "\"";
-			if (dinfo->matched_domain_name)
-				stream << ",\"m\":\"" << dinfo->matched_domain_name->getName() << "\"";
-              	}
-		SharedPointer<GPRSInfo> gprs_info = getGPRSInfo(); 
-		if(gprs_info)
-                        stream << ",\"g\":\"" << gprs_info->getIMSIString() << "\"";
-        }
-        if(!regex.expired())
-                stream << ",\"r\":\"" << regex.lock()->getName() << "\"";
-	
-	stream << "}";
-
+	stream << ",\"p\":\"" << getL7ShortProtocolName() << "\"";
 #else
-
 	stream << "{";
 	stream << "\"ipsrc\":\"" << address_.getSrcAddrDotNotation() << "\",";
 	stream << "\"portsrc\":" << source_port_ << ",";
@@ -183,43 +131,45 @@ void Flow::serialize(std::ostream& stream) {
 		stream << ",\"anomaly\":\"" << AnomalyManager::getInstance()->getName(pa_) << "\"";
 
 	stream << ",\"layer7\":\"" << getL7ProtocolName() << "\"";
-
+#endif
 	if (protocol_ == IPPROTO_TCP) {
 		SharedPointer<TCPInfo> tinfo = getTCPInfo();
 		if (tinfo)	
-			stream << ",\"tcpflags\":\"" << *tinfo.get() << "\"";
+			tinfo->serialize(stream);
 
 		SharedPointer<HTTPInfo> hinfo = getHTTPInfo();	
 		if (hinfo) {
-			if (hinfo->host)	
-				stream << ",\"httphost\":\"" << hinfo->host->getName() << "\"";
-			if (hinfo->matched_domain_name)
-				stream << ",\"matchs\":\"" << hinfo->matched_domain_name->getName() << "\"";
+			hinfo->serialize(stream);
 		} else {
 			SharedPointer<SSLInfo> sinfo = getSSLInfo();	
 			if (sinfo){
-				stream << ",\"sslhost\":\"" << sinfo->host->getName() << "\"";
-				if (sinfo->matched_domain_name)
-					stream << ",\"matchs\":\"" << sinfo->matched_domain_name->getName() << "\"";
+				sinfo->serialize(stream);
 			}
 		}
 	} else { // UDP
 		SharedPointer<DNSInfo> dinfo = getDNSInfo();
 		if (dinfo) {
-			if (dinfo->name) 	
-				stream << ",\"dnsdomain\":\"" << dinfo->name->getName() << "\"";
-			if (dinfo->matched_domain_name)
-				stream << ",\"matchs\":\"" << dinfo->matched_domain_name->getName() << "\"";
+			dinfo->serialize(stream);
+		} else {
+			SharedPointer<SIPInfo> sinfo = getSIPInfo();
+			if (sinfo) {
+				sinfo->serialize(stream);
+			}
 		}
 		SharedPointer<GPRSInfo> ginfo = getGPRSInfo();
 		if (ginfo)	
-			stream << ",\"imsi\":\"" << ginfo->getIMSIString() << "\"";
+			// stream << ",\"imsi\":\"" << ginfo->getIMSIString() << "\"";
+			ginfo->serialize(stream);
 	}
+
+#ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION 
+        if(!regex.expired())
+                stream << ",\"r\":\"" << regex.lock()->getName() << "\"";
+#else
 	if (!regex.expired())	
 		stream << ",\"matchs\":\"" << regex.lock()->getName() << "\"";
-	
-	stream << "}";
 #endif
+	stream << "}";
 }
 
 void Flow::showFlowInfo(std::ostream& out) const {
@@ -308,6 +258,17 @@ const char* Flow::getL7ProtocolName() const {
         if (forwarder.lock()) {
         	ProtocolPtr proto = forwarder.lock()->getProtocol();
                 if (proto) proto_name = proto->getName();
+	}
+        return proto_name;
+}
+
+const char* Flow::getL7ShortProtocolName() const {
+
+	const char *proto_name = "None";
+
+        if (forwarder.lock()) {
+        	ProtocolPtr proto = forwarder.lock()->getProtocol();
+                if (proto) proto_name = proto->getShortName();
 	}
         return proto_name;
 }

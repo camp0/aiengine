@@ -121,13 +121,15 @@ class StackLanUnitTests < Test::Unit::TestCase
   def test_4
     @have_been_call_ssl = false
     @have_been_call_ipset = false
+    @d1 = DomainName.new("Google",".google.com")
 
     def callback_ssl(flow)
       assert_equal(flow.l7_protocol_name,"SSLProtocol")
       s = flow.ssl_info
       if (s)
         assert_equal(s.server_name,"0.drive.google.com")
-        @have_been_call_ssl = true 
+        @have_been_call_ssl = true
+        assert_equal(s.matched_domain_name,@d1) 
       end
       # Verify the integrity of the payload 
       s = flow.payload
@@ -145,10 +147,9 @@ class StackLanUnitTests < Test::Unit::TestCase
     ipmng = IPSetManager.new()
     ipmng.add_ip_set(ip)
  
-    d1 = DomainName.new("Google",".google.com")
-    d1.callback = method(:callback_ssl)
+    @d1.callback = method(:callback_ssl)
     dmng = DomainNameManager.new
-    dmng.add_domain_name(d1)
+    dmng.add_domain_name(@d1)
 
     @s.tcpip_set_manager = ipmng
     @s.set_domain_name_manager(dmng,"SSLProtocol")
@@ -157,7 +158,7 @@ class StackLanUnitTests < Test::Unit::TestCase
     @pd.run()
     @pd.close()
 
-    assert_equal( d1.matchs, 1)
+    assert_equal( @d1.matchs, 1)
     assert_equal( @have_been_call_ssl , true)
     assert_equal( @have_been_call_ipset , true)
 
@@ -183,20 +184,21 @@ class StackLanUnitTests < Test::Unit::TestCase
       h = flow.http_info
       assert_not_equal(h,nil)
       assert_equal(h.host_name,"www.wired.com")
+      assert_equal(h.matched_domain_name,@d)
       @have_been_call_domain = true
     end
 
-    d = DomainName.new("Wired",".wired.com")
-    d.callback = method(:callback_domain)
+    @d = DomainName.new("Wired",".wired.com")
+    @d.callback = method(:callback_domain)
     dmng = DomainNameManager.new
-    dmng.add_domain_name(d)
+    dmng.add_domain_name(@d)
 
     u = HTTPUriSet.new()
     u.add_uri("/js/jquery.hoverIntent.js")
     # u.add_uri("/images_blogs/gadgetlab/2013/08/AP090714043057-60x60.jpg")
     u.callback = method(:callback_uri)
 
-    d.http_uri_set = u
+    @d.http_uri_set = u
 
     @s.set_domain_name_manager(dmng,"HTTPProtocol")
 
@@ -204,7 +206,7 @@ class StackLanUnitTests < Test::Unit::TestCase
     @pd.run()
     @pd.close()
 
-    assert_equal( d.matchs, 1)
+    assert_equal( @d.matchs, 1)
     assert_equal( @have_been_call_uri , true)
     assert_equal( @have_been_call_domain , true)
   end
@@ -465,14 +467,15 @@ class StackLanIPv6UnitTests < Test::Unit::TestCase
         assert_equal(flow.l7_protocol_name,"DNSProtocol")
         assert_equal(d.domain_name,"www.google.com")
         assert_equal(flow.src_ip,"2014:dead:beef::1")
+        assert_equal(d.matched_domain_name,@d1)
         @have_been_call = true 
       end
     end
 
-    d1 = DomainName.new("Google",".google.com")
-    d1.callback = method(:callback_dns)
+    @d1 = DomainName.new("Google",".google.com")
+    @d1.callback = method(:callback_dns)
     dmng = DomainNameManager.new
-    dmng.add_domain_name(d1)
+    dmng.add_domain_name(@d1)
 
     @s.set_domain_name_manager(dmng,"DNSProtocol")
 

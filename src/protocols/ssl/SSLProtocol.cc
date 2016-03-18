@@ -153,6 +153,12 @@ void SSLProtocol::handle_client_hello(SSLInfo *info,int length,int offset, u_cha
 
 	if((version >= SSL3_VERSION)and(version <= TLS1_2_VERSION)) {
 
+		if (ntohs(hello->length) > length) {
+			std::cout << "Malformed ssl header" << std::endl;
+			return;
+		}
+		length = ntohs(hello->length);
+
 		if (ntohs(hello->session_id_length) > 0) {
 			// Session id management
 			// the alignment of the struct should be fix
@@ -173,20 +179,15 @@ void SSLProtocol::handle_client_hello(SSLInfo *info,int length,int offset, u_cha
 				u_char *extensions = &data[block_offset];
 				uint16_t extensions_length = ((extensions[0] << 8) + extensions[1]);
 
-				if (extensions_length + block_offset < length) {
-					block_offset += 2;
-					ssl_extension *extension = reinterpret_cast<ssl_extension*>(&data[block_offset]);
+				if (extensions_length > length) {
+					// malformed header
+					return;
+				}
 
-					// std::cout << "Type:" << extension->type << " length:" << ntohs(extension->length) << std::endl;
-					if (extension->type == 0x01ff) {
-						block_offset += 2;
-						block_offset += ntohs(extension->length) + 2;
-						// TODO: CHECK limits
-						extension = reinterpret_cast<ssl_extension*>(&data[block_offset]);
-					}
-					// TODO extension->type == 0x000f HEARTBEAT 
+				block_offset += 2;
+				while (block_offset < length) {
+					ssl_extension *extension = reinterpret_cast<ssl_extension*>(&data[block_offset]);
 					if (extension->type == 0x0000) { // Server name
-						block_offset += 2;
 						ssl_server_name *server = reinterpret_cast<ssl_server_name*>(&extension->data[0]);
 						int server_length = ntohs(server->length);
 						
@@ -208,7 +209,20 @@ void SSLProtocol::handle_client_hello(SSLInfo *info,int length,int offset, u_cha
 
 							attach_host(info,servername);
 						}	
-					} // Server name 
+					} else {
+						if (extension->type == 0x01ff) { // Renegotiation
+							// std::cout << "RENEOGOTIATIONT" << std::endl;
+						} else {
+							if (extension->type == 0x0f00) { // Heartbeat
+								info->setHeartbeat(true);
+							} else {
+								if (extension->type == 0x000d) {
+									std::cout << "signature algorithm" << std::endl;
+								}
+							}
+						}
+					}	
+					block_offset += ntohs(extension->length) + sizeof(ssl_extension) ;
 				}
 			}	
 		}
@@ -264,6 +278,8 @@ void SSLProtocol::processFlow(Flow *flow) {
 				++maxattemps;
 
 				if((version >= SSL3_VERSION)and(version <= TLS1_2_VERSION)) {
+
+					sinfo->setVersion(version);
 					// This is a valid SSL header that we could extract some usefulll information.
 					// SSL Records are group by blocks
 					// std::cout << __FILE__ << ":" << __func__ << ":length:" << flow->packet->getLength();

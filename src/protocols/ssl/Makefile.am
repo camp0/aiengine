@@ -24,7 +24,8 @@ test_ssl_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \
 			../../names/DomainName.cc \
-			SSLProtocol.cc test_ssl.cc
+			../dns/DNSInfo.cc \
+			SSLInfo.cc SSLProtocol.cc test_ssl.cc
 
 test_ssl_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE -g
 test_ssl_LDADD   = $(BOOST_LDFLAGS) $(LOG4CXX_FLAGS) -lboost_unit_test_framework

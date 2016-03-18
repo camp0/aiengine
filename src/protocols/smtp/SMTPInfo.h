@@ -47,6 +47,8 @@ public:
 		is_banned_ = false; 
 	}
 
+	void serialize(std::ostream& stream) {}
+	
 	void setCommand(int8_t command) { command_ = command; }
 	void resetStrings() { from.reset(); to.reset(); }
 

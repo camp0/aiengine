@@ -42,9 +42,9 @@ public:
 	typedef aiengine::SharedPointer<Cache<A_Type>> CachePtr;
 
     	explicit Cache(std::string name):total_acquires_(0),total_releases_(0),total_fails_(0),
-		allocated_bytes_(0),name_(name),empty_() {}
+		allocated_bytes_(0),name_(name),items_(),empty_() {}
     	explicit Cache():Cache("") {}
-    	virtual ~Cache() { /* items_.clear(); */ }
+    	virtual ~Cache() { destroy(items_.size()); }
 
 	static constexpr int classSize = sizeof(A_Type);
 

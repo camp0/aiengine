@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include <vector> 
+#include "Pointer.h"
 #include "StringCache.h"
 #include "FlowInfo.h"
 
@@ -41,12 +42,9 @@ public:
     	explicit SIPInfo() { reset(); }
     	virtual ~SIPInfo() {}
 
-	void reset() { 
-		resetStrings();
-		state_ = 0; 
-	}
-
-	void resetStrings() { uri.reset(); from.reset(); to.reset(); via.reset(); }
+	void reset(); 
+	void serialize(std::ostream& stream); 
+	void resetStrings();
 
         SharedPointer<StringCache> uri;
         SharedPointer<StringCache> from;

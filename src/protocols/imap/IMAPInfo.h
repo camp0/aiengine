@@ -47,6 +47,8 @@ public:
 		is_banned_ = false;
 	}
 
+	void serialize(std::ostream& stream) {}
+
         void setIsBanned(bool value) { is_banned_ = value; }
         bool getIsBanned() const { return is_banned_; }
 

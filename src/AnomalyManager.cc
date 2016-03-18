@@ -38,7 +38,8 @@ std::array <Anomaly,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMA
         { static_cast<std::int8_t>(PacketAnomalyType::SMTP_BOGUS_HEADER),                "SMTP bogus header",            0 },
         { static_cast<std::int8_t>(PacketAnomalyType::IMAP_BOGUS_HEADER),                "IMAP bogus header",            0 },
         { static_cast<std::int8_t>(PacketAnomalyType::POP_BOGUS_HEADER),                 "POP bogus header",             0 },
-        { static_cast<std::int8_t>(PacketAnomalyType::SNMP_BOGUS_HEADER),                "SNMP bogus header",            0 } 
+        { static_cast<std::int8_t>(PacketAnomalyType::SNMP_BOGUS_HEADER),                "SNMP bogus header",            0 }, 
+        { static_cast<std::int8_t>(PacketAnomalyType::SSL_BOGUS_HEADER),                 "SSL bogus header",             0 } 
 }};
 
 

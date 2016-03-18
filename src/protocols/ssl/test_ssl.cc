@@ -84,8 +84,6 @@ BOOST_AUTO_TEST_CASE (test2_ssl)
         BOOST_CHECK(ssl->getTotalServerHellos() == 0);
         BOOST_CHECK(ssl->getTotalCertificates() == 0);
         BOOST_CHECK(ssl->getTotalRecords() == 2);
-
-
 }
 
 BOOST_AUTO_TEST_CASE (test3_ssl)
@@ -146,6 +144,8 @@ BOOST_AUTO_TEST_CASE (test5_ssl)
 	SharedPointer<SSLInfo> info = flow->getSSLInfo();
 	// The host is valid
         BOOST_CHECK(cad.compare(info->host->getName()) == 0);
+	BOOST_CHECK(info->getHeartbeat() == false);
+	BOOST_CHECK(info->getVersion() == TLS1_VERSION);
 }
 
 
@@ -168,6 +168,8 @@ BOOST_AUTO_TEST_CASE (test6_ssl)
 	BOOST_CHECK( info != nullptr);
         // The host is valid
         BOOST_CHECK(cad.compare(info->host->getName()) == 0);
+	BOOST_CHECK(info->getHeartbeat() == false);
+	BOOST_CHECK(info->getVersion() == TLS1_VERSION);
 }
 
 // Tor ssl case 
@@ -190,6 +192,8 @@ BOOST_AUTO_TEST_CASE (test7_ssl)
 	SharedPointer<SSLInfo> info = flow->getSSLInfo();
 	BOOST_CHECK( info != nullptr);
         BOOST_CHECK(cad.compare(info->host->getName()) == 0);
+	BOOST_CHECK(info->getHeartbeat() == false);
+	BOOST_CHECK(info->getVersion() == TLS1_VERSION);
 }
 
 BOOST_AUTO_TEST_CASE (test8_ssl)
@@ -318,6 +322,30 @@ BOOST_AUTO_TEST_CASE (test12_ssl)
 	SharedPointer<SSLInfo> info = flow->getSSLInfo();
 	BOOST_CHECK( info != nullptr);
         BOOST_CHECK(cad.compare(info->host->getName()) == 0);
+        BOOST_CHECK(info->getHeartbeat() == false);
+}
+
+// have a heartbeat header on the ssl hello, just at the end
+BOOST_AUTO_TEST_CASE (test13_ssl)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (&(raw_ethernet_ip_tcp_port_8080_ssl_client_hello_heartbeat[66]));
+        int length = raw_ethernet_ip_tcp_port_8080_ssl_client_hello_heartbeat_length - 66;
+        Packet packet(pkt,length);
+
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        ssl->increaseAllocatedMemory(1);
+
+        flow->packet = const_cast<Packet*>(&packet);
+        ssl->processFlow(flow.get());
+
+        std::string cad("www.gi7n35abj6dehjlg5g7.com");
+
+        // The host is valid
+	SharedPointer<SSLInfo> info = flow->getSSLInfo();
+	BOOST_CHECK( info != nullptr);
+        BOOST_CHECK(cad.compare(info->host->getName()) == 0);
+        BOOST_CHECK(info->getHeartbeat() == true);
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

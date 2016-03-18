@@ -58,6 +58,7 @@
 
 namespace aiengine {
 
+class TCPInfo;
 class FlowForwarder;
 
 class Flow : public Serializable {
@@ -106,6 +107,7 @@ public:
 	struct in6_addr *getDestinationAddress6() const { return address_.getDestinationAddress6();}
 
 	const char* getL7ProtocolName() const;
+	const char* getL7ShortProtocolName() const;
 
 	// Methods for flow time management
 	// TODO: Verify that the current_time_ is allways > than the arrive_time, in some cases

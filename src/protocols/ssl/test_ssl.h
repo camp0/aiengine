@@ -35,6 +35,7 @@
 
 #include <string>
 #include "../test/tests_packets.h"
+#include "../test/ssl_test_packets.h"
 #include "Protocol.h"
 #include "StackTest.h"
 #include "../ip/IPProtocol.h"

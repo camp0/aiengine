@@ -46,6 +46,8 @@ public:
 
 	void reset() { for (auto& value: freqs_) value = 0;}
 
+	void serialize(std::ostream& stream) {}
+
 	void addPayload(unsigned char *payload, int length) {
 	
 		for(int i=0;i< length;++i) ++freqs_[payload[i]];
