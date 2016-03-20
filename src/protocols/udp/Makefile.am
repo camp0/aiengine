@@ -14,6 +14,13 @@ test_udp_SOURCES = 	../../Multiplexer.cc \
 			../../FlowForwarder.cc \
 			../vlan/VLanProtocol.cc \
 			../ip/IPProtocol.cc \
+                        ../dns/DNSInfo.cc \
+                        ../gprs/GPRSInfo.cc \
+                        ../sip/SIPInfo.cc \
+                        ../tcp/TCPInfo.cc \
+                        ../http/HTTPInfo.cc \
+                        ../ssl/SSLInfo.cc \
+                        ../smtp/SMTPInfo.cc \
 			../../ipset/IPSetManager.cc \
 			../../ipset/IPSet.cc \
 			../ip6/IPv6Protocol.cc \

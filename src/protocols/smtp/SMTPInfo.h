@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include <vector> 
+#include "Pointer.h"
 #include "StringCache.h"
 #include "FlowInfo.h"
 
@@ -41,16 +42,11 @@ public:
     	explicit SMTPInfo() { reset(); }
     	virtual ~SMTPInfo() {}
 
-	void reset() { 
-		resetStrings();
-		command_ = 0;
-		is_banned_ = false; 
-	}
-
-	void serialize(std::ostream& stream) {}
+	void reset();
+	void serialize(std::ostream& stream); 
 	
 	void setCommand(int8_t command) { command_ = command; }
-	void resetStrings() { from.reset(); to.reset(); }
+	void resetStrings();
 
         void setIsBanned(bool value) { is_banned_ = value; }
         bool getIsBanned() const { return is_banned_; }

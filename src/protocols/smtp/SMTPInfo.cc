@@ -21,41 +21,48 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#include "GPRSInfo.h"
+#include "SMTPInfo.h"
 
 namespace aiengine {
 
-void GPRSInfo::reset() { 
-	imsi_ = 0;
-	imei_ = 0;
-	pdp_type_number_ = 0; // The upper protocol
+void SMTPInfo::reset() { 
+	resetStrings();
+	command_ = 0;
+	is_banned_ = false; 
 }
 
-void GPRSInfo::serialize(std::ostream& stream) {
+void SMTPInfo::serialize(std::ostream& stream) {
 
+	bool have_item = false;
 #ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION
-        stream << ",\"i\":\"" << getIMSIString() << "\"";
+        stream << ",\"i\":{";
+        if (from) {
+                stream << "\"f\":\"" << from->getName() << "\"";
+                have_item = true;
+        }
+        if (to) {
+                if (have_item) stream << ",";
+                stream << "\"t\":\"" << to->getName() << "\"";
+        }
 #else
-        stream << ",\"imsi\":\"" << getIMSIString() << "\"";
+        stream << ",\"info\":{";
+        if (from) {
+                stream << "\"from\":\"" << from->getName() << "\"";
+                have_item = true;
+        }
+        if (to) {
+                if (have_item) stream << ",";
+                stream << "\"to\":\"" << to->getName() << "\"";
+        }
 #endif
+	stream << "}";
+
 }
+	
+void SMTPInfo::resetStrings() { 
 
-std::string& GPRSInfo::getIMSIString() const { 
-	std::ostringstream o;
-	static std::string cad;
-	uint8_t bcd;
-	uint8_t *data = (uint8_t*)&imsi_;
-
-	for(int i = 0; i < 8; ++i ) {
-		bcd = *data & 0xf;
-		if (bcd != 0xf) o << (int)bcd;
-		bcd = *data >> 4;
-		if (bcd != 0xf) o << (int) bcd; 
-		data++;
-	}
-			
-	cad = o.str();
-	return cad;
+	from.reset(); 
+	to.reset(); 
 }
 
 } // namespace aiengine

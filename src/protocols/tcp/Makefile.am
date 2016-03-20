@@ -18,7 +18,9 @@ test_tcp_SOURCES = 	../../Multiplexer.cc  \
 			../dns/DNSInfo.cc \
 			../http/HTTPInfo.cc \
 			../ssl/SSLInfo.cc \
-			../sip/SIPInfo.cc \
+                        ../gprs/GPRSInfo.cc \
+                        ../sip/SIPInfo.cc \
+                        ../smtp/SMTPInfo.cc \
 			../../ipset/IPSetManager.cc \
 			../../ipset/IPSet.cc \
 			../ip6/IPv6Protocol.cc \

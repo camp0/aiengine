@@ -21,9 +21,12 @@ test_sip_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../ipset/IPSet.cc \
 			../ip6/IPv6Protocol.cc \
 			../udp/UDPProtocol.cc \
+			../gprs/GPRSInfo.cc \
 			../dns/DNSInfo.cc \
+			../tcp/TCPInfo.cc \
 			../ssl/SSLInfo.cc \
 			../http/HTTPInfo.cc \
+			../smtp/SMTPInfo.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \

@@ -211,7 +211,7 @@ private:
         DomainNameManagerPtrWeak ban_domain_mng_;
 	FlowManagerPtrWeak flow_mng_;
 
-	void handle_client_hello(SSLInfo *info,int length,int offset, unsigned char *data);
+	PacketAnomalyType handle_client_hello(SSLInfo *info,int length,int offset, unsigned char *data);
 	void handle_server_hello(SSLInfo *info,int offset, unsigned char *data);
 	void handle_certificate(SSLInfo *info,int offset, unsigned char *data);
 

@@ -147,6 +147,8 @@ public:
 
 	virtual void addRejectFunction(std::function <void (Flow*)> reject) {}
 
+	virtual void setAnomalyManager(SharedPointer<AnomalyManager> amng) {}
+
 #if defined(PYTHON_BINDING)
         virtual boost::python::dict getCounters() const = 0;
 	virtual boost::python::dict getCache() const { return boost::python::dict(); }

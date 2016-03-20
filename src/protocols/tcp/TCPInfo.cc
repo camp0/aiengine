@@ -42,18 +42,11 @@ void TCPInfo::reset() {
 
 void TCPInfo::serialize(std::ostream& stream) {
 
-        bool have_item = false;
 #ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION 
 	stream << ",\"t\":\"" << this << "\"";
 #else
 	stream << ",\"tcpflags\":\"" << this << "\"";
 #endif
-
-#if defined(HAVE_TCP_QOS_METRICS)
-//	out << "QoS[ST(" << ti.connection_setup_time << ")RR(" << ti.server_reset_rate << ")";
-//	out << "RT(" << ti.application_response_time << ")]";
-#endif
-
 }
 
 } // namespace aiengine

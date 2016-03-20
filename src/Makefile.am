@@ -112,6 +112,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/ssl/SSLInfo.cc \
 			protocols/ssl/SSLProtocol.cc \
 			protocols/smtp/SMTPProtocol.cc \
+			protocols/smtp/SMTPInfo.cc \
 			protocols/imap/IMAPProtocol.cc \
 			protocols/pop/POPProtocol.cc \
 			protocols/bitcoin/BitcoinProtocol.cc \
@@ -216,7 +217,7 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		DNSProtocol.o DNSInfo.o \
 		GPRSInfo.o GPRSProtocol.o \
 		NTPProtocol.o SNMPProtocol.o \
-		SMTPProtocol.o IMAPProtocol.o \
+		SMTPProtocol.o SMTPInfo.o IMAPProtocol.o \
 		DHCPProtocol.o SIPProtocol.o SIPInfo.o SSDPProtocol.o \
 		POPProtocol.o GREProtocol.o \
 		OpenFlowProtocol.o VxLanProtocol.o \
@@ -240,7 +241,7 @@ java_objects = 	RegexManager.o Regex.o \
                 DNSProtocol.o DNSInfo.o \
 		GPRSInfo.o GPRSProtocol.o \
                 NTPProtocol.o SNMPProtocol.o \
-                SMTPProtocol.o IMAPProtocol.o \
+                SMTPProtocol.o SMTPInfo.o IMAPProtocol.o \
                 DHCPProtocol.o SIPProtocol.o SIPInfo.o SSDPProtocol.o \
                 POPProtocol.o GREProtocol.o \
 		BitcoinProtocol.o ModbusProtocol.o \

@@ -22,9 +22,16 @@ test_openflow_SOURCES =	../../Multiplexer.cc ../../Protocol.cc \
 			../../ipset/IPSet.cc \
 			../../ipset/IPSetManager.cc \
 			../udp/UDPProtocol.cc \
+			../gprs/GPRSInfo.cc \
+			../dns/DNSInfo.cc \
+			../sip/SIPInfo.cc \
 			../udpgeneric/UDPGenericProtocol.cc \
 			../tcpgeneric/TCPGenericProtocol.cc \
 			../tcp/TCPProtocol.cc \
+			../tcp/TCPInfo.cc \
+			../http/HTTPInfo.cc \
+			../ssl/SSLInfo.cc \
+			../smtp/SMTPInfo.cc \
 			../../regex/RegexManager.cc \
 			../../regex/Regex.cc \
 			../../names/DomainNameManager.cc \

@@ -158,7 +158,6 @@ void Flow::serialize(std::ostream& stream) {
 		}
 		SharedPointer<GPRSInfo> ginfo = getGPRSInfo();
 		if (ginfo)	
-			// stream << ",\"imsi\":\"" << ginfo->getIMSIString() << "\"";
 			ginfo->serialize(stream);
 	}
 

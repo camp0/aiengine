@@ -20,10 +20,15 @@ test_ssl_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../ipset/IPSetManager.cc \
 			../../ipset/IPSet.cc \
 			../tcp/TCPProtocol.cc \
+			../tcp/TCPInfo.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \
 			../../names/DomainName.cc \
+			../gprs/GPRSInfo.cc \
+			../sip/SIPInfo.cc \
+			../http/HTTPInfo.cc \
+			../smtp/SMTPInfo.cc \
 			../dns/DNSInfo.cc \
 			SSLInfo.cc SSLProtocol.cc test_ssl.cc
 

@@ -13,11 +13,18 @@ test_imap_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../protocols/ip/IPProtocol.cc \
 			../../ipset/IPSetManager.cc \
 			../../ipset/IPSet.cc \
-			../../protocols/tcp/TCPProtocol.cc \
+			../tcp/TCPProtocol.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainName.cc \
 			../../names/DomainNameManager.cc \
+                        ../tcp/TCPInfo.cc \
+                        ../http/HTTPInfo.cc \
+                        ../ssl/SSLInfo.cc \
+                        ../smtp/SMTPInfo.cc \
+                        ../dns/DNSInfo.cc \
+                        ../gprs/GPRSInfo.cc \
+                        ../sip/SIPInfo.cc \
 			IMAPProtocol.cc test_imap.cc
 
 test_imap_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE

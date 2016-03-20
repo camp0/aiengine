@@ -24,6 +24,13 @@ test_pop_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainName.cc \
 			../../names/DomainNameManager.cc \
+			../tcp/TCPInfo.cc \
+			../http/HTTPInfo.cc \
+			../ssl/SSLInfo.cc \
+			../smtp/SMTPInfo.cc \
+			../dns/DNSInfo.cc \
+			../gprs/GPRSInfo.cc \
+			../sip/SIPInfo.cc \
 			POPProtocol.cc test_pop.cc
 
 test_pop_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE

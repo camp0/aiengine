@@ -31,53 +31,68 @@ void CacheManager::statistics() {
 
 void CacheManager::releaseFlow(Flow *flow) {
 
-        if (flow->getProtocol() == IPPROTO_TCP) {
-		SharedPointer<TCPInfo> tcpinfo = flow->getTCPInfo();
+	if (flow->getProtocol() == IPPROTO_TCP) {
+		releaseTCPFlow(flow);
+	} else {
+		releaseUDPFlow(flow);
+	}
+}
 
-		if ((tcpinfo)and(tcp_info_cache_)) {
-			tcp_info_cache_->release(tcpinfo);	
-		}
+void CacheManager::releaseTCPFlow(Flow *flow) {
 
-		SharedPointer<HTTPInfo> httpinfo = flow->getHTTPInfo();
-		if (httpinfo) {
-			if (http_info_cache_) http_info_cache_->release(httpinfo); 
+	SharedPointer<TCPInfo> tcpinfo = flow->getTCPInfo();
+
+	if ((tcpinfo)and(tcp_info_cache_)) {
+		tcp_info_cache_->release(tcpinfo);	
+	}
+
+	SharedPointer<HTTPInfo> httpinfo = flow->getHTTPInfo();
+	if (httpinfo) {
+		if (http_info_cache_) http_info_cache_->release(httpinfo); 
+	} else {
+		SharedPointer<SSLInfo> sslinfo = flow->getSSLInfo();
+		if (sslinfo) {
+			if (ssl_info_cache_) ssl_info_cache_->release(sslinfo);
 		} else {
-			SharedPointer<SSLInfo> sslinfo = flow->getSSLInfo();
-			if (sslinfo) {
-				if (ssl_info_cache_) ssl_info_cache_->release(sslinfo);
+			SharedPointer<SMTPInfo> smtpinfo = flow->getSMTPInfo();
+			if (smtpinfo) {
+				if (smtp_info_cache_) smtp_info_cache_->release(smtpinfo);
 			} else {
-				SharedPointer<SMTPInfo> smtpinfo = flow->getSMTPInfo();
-				if (smtpinfo) {
-					if (smtp_info_cache_) smtp_info_cache_->release(smtpinfo);
+				SharedPointer<POPInfo> popinfo = flow->getPOPInfo();
+				if (popinfo) {
+					if (pop_info_cache_) pop_info_cache_->release(popinfo);
 				} else {
-					SharedPointer<POPInfo> popinfo = flow->getPOPInfo();
-					if (popinfo) {
-						if (pop_info_cache_) pop_info_cache_->release(popinfo);
+					SharedPointer<IMAPInfo> imapinfo = flow->getIMAPInfo();
+					if (imapinfo) {
+						if (imap_info_cache_) imap_info_cache_->release(imapinfo);
 					} else {
-						SharedPointer<IMAPInfo> imapinfo = flow->getIMAPInfo();
-						if (imapinfo) {
-							if (imap_info_cache_) imap_info_cache_->release(imapinfo);
+						SharedPointer<BitcoinInfo> btinfo = flow->getBitcoinInfo();
+						if (btinfo) {
+							if (bitcoin_info_cache_) bitcoin_info_cache_->release(btinfo);
 						}
 					}
 				}
 			}
 		}
+	}
+}
+
+void CacheManager::releaseUDPFlow(Flow *flow) {
+
+	if (flow->layer4info) {
+		if (gprs_info_cache_) gprs_info_cache_->release(flow->getGPRSInfo());
+	} 
+	SharedPointer<DNSInfo> dnsinfo = flow->getDNSInfo();
+	if (dnsinfo) {
+		if (dns_info_cache_) dns_info_cache_->release(dnsinfo);
 	} else {
-		if (flow->layer4info) {
-			if (gprs_info_cache_) gprs_info_cache_->release(flow->getGPRSInfo());
-		} 
-		SharedPointer<DNSInfo> dnsinfo = flow->getDNSInfo();
-		if (dnsinfo) {
-			if (dns_info_cache_) dns_info_cache_->release(dnsinfo);
+		SharedPointer<SIPInfo> sipinfo = flow->getSIPInfo();
+		if (sipinfo) {
+			if (sip_info_cache_) sip_info_cache_->release(sipinfo);
 		} else {
-			SharedPointer<SIPInfo> sipinfo = flow->getSIPInfo();
-			if (sipinfo) {
-				if (sip_info_cache_) sip_info_cache_->release(sipinfo);
-			} else {
-				SharedPointer<SSDPInfo> ssdpinfo = flow->getSSDPInfo();
-				if (ssdpinfo) {
-					if (ssdp_info_cache_) ssdp_info_cache_->release(ssdpinfo);
-				}
+			SharedPointer<SSDPInfo> ssdpinfo = flow->getSSDPInfo();
+			if (ssdpinfo) {
+				if (ssdp_info_cache_) ssdp_info_cache_->release(ssdpinfo);
 			}
 		}
 	}

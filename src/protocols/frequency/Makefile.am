@@ -20,6 +20,13 @@ test_frequency_SOURCES = 	../../Multiplexer.cc \
 				../../AnomalyManager.cc \
 				../ethernet/EthernetProtocol.cc \
 				../ip/IPProtocol.cc \
+                        	../tcp/TCPInfo.cc \
+                        	../http/HTTPInfo.cc \
+                        	../ssl/SSLInfo.cc \
+                        	../smtp/SMTPInfo.cc \
+                        	../dns/DNSInfo.cc \
+                        	../gprs/GPRSInfo.cc \
+                        	../sip/SIPInfo.cc \
 				../../ipset/IPSetManager.cc \
 				../../ipset/IPSet.cc \
 				../tcp/TCPProtocol.cc \

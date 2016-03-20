@@ -64,6 +64,7 @@ template <class T> T*  SingletonCache<T>::cacheMngInstance_ = nullptr;
 
 // TODO: make the class non singleton in order to have different stacks 
 // running at the same time from the python side.
+// Also the setCache methods are not nice to see :(
 class CacheManager: public SingletonCache<CacheManager>
 {
 public:
@@ -75,7 +76,9 @@ public:
 		smtp_info_cache_(),
 		imap_info_cache_(),
 		pop_info_cache_(),
-		dns_info_cache_() {}
+		dns_info_cache_(),
+		ssdp_info_cache_(),
+		bitcoin_info_cache_() {}
 
 	void setCache(Cache<HTTPInfo>::CachePtr cache) { http_info_cache_ = cache; }
 	void setCache(Cache<SSLInfo>::CachePtr cache) { ssl_info_cache_ = cache; }
@@ -87,8 +90,11 @@ public:
 	void setCache(Cache<POPInfo>::CachePtr cache) { pop_info_cache_ = cache; }
 	void setCache(Cache<DNSInfo>::CachePtr cache) { dns_info_cache_ = cache; }
 	void setCache(Cache<SSDPInfo>::CachePtr cache) { ssdp_info_cache_ = cache; }
+	void setCache(Cache<BitcoinInfo>::CachePtr cache) { bitcoin_info_cache_ = cache; }
 
 	void releaseFlow(Flow *flow);
+	void releaseTCPFlow(Flow *flow);
+	void releaseUDPFlow(Flow *flow);
        
 	void statistics();
 
@@ -104,6 +110,7 @@ private:
 	Cache<POPInfo>::CachePtr pop_info_cache_;
 	Cache<DNSInfo>::CachePtr dns_info_cache_;
 	Cache<SSDPInfo>::CachePtr ssdp_info_cache_;
+	Cache<BitcoinInfo>::CachePtr bitcoin_info_cache_;
 };
 
 

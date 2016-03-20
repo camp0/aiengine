@@ -20,6 +20,13 @@ test_udpgeneric_SOURCES = 	../../Multiplexer.cc \
 				../../ipset/IPSetManager.cc \
 				../../ipset/IPSet.cc \
 				../udp/UDPProtocol.cc \
+                        	../tcp/TCPInfo.cc \
+                        	../http/HTTPInfo.cc \
+                        	../ssl/SSLInfo.cc \
+                        	../smtp/SMTPInfo.cc \
+                        	../dns/DNSInfo.cc \
+                        	../gprs/GPRSInfo.cc \
+                        	../sip/SIPInfo.cc \
 				../../Flow.cc \
 				../../flow/FlowManager.cc \
 				../../regex/RegexManager.cc \

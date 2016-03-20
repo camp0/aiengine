@@ -31,6 +31,7 @@ test_gprs_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../sip/SIPInfo.cc \
 			../http/HTTPInfo.cc \
 			../ssl/SSLInfo.cc \
+			../smtp/SMTPInfo.cc \
 			../tcp/TCPInfo.cc \
 			GPRSInfo.cc GPRSProtocol.cc test_gprs.cc
 

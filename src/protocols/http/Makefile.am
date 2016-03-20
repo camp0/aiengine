@@ -21,6 +21,10 @@ test_http_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../ipset/IPSet.cc \
 			../ip6/IPv6Protocol.cc \
 			../tcp/TCPProtocol.cc \
+			../gprs/GPRSInfo.cc \
+			../sip/SIPInfo.cc \
+			../tcp/TCPInfo.cc \
+			../smtp/SMTPInfo.cc \
 			../dns/DNSInfo.cc \
 			../ssl/SSLInfo.cc \
 			../../Flow.cc \

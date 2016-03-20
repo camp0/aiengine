@@ -15,7 +15,7 @@ check_PROGRAMS = test_dns
 test_dns_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../FlowForwarder.cc ../../CacheManager.cc \
 			../../AnomalyManager.cc \
-			../../protocols/ethernet/EthernetProtocol.cc \
+			../ethernet/EthernetProtocol.cc \
 			../../protocols/ip/IPProtocol.cc \
 			../../ipset/IPSetManager.cc \
 			../../ipset/IPSet.cc \
@@ -24,6 +24,12 @@ test_dns_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \
 			../../names/DomainName.cc \
+                        ../tcp/TCPInfo.cc \
+                        ../http/HTTPInfo.cc \
+                        ../ssl/SSLInfo.cc \
+                        ../smtp/SMTPInfo.cc \
+                        ../gprs/GPRSInfo.cc \
+                        ../sip/SIPInfo.cc \
 			DNSInfo.cc DNSProtocol.cc test_dns.cc
 
 test_dns_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE

@@ -21,6 +21,13 @@ test_tcpgeneric_SOURCES = 	../../Multiplexer.cc \
 				../../ipset/IPSet.cc \
 				../ip6/IPv6Protocol.cc \
 				../tcp/TCPProtocol.cc \
+                        	../tcp/TCPInfo.cc \
+                        	../http/HTTPInfo.cc \
+                        	../ssl/SSLInfo.cc \
+                        	../smtp/SMTPInfo.cc \
+                        	../dns/DNSInfo.cc \
+                        	../gprs/GPRSInfo.cc \
+                        	../sip/SIPInfo.cc \
 				../../Flow.cc \
 				../../flow/FlowManager.cc \
 				../../regex/RegexManager.cc \
