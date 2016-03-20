@@ -148,6 +148,7 @@ private:
 	time_t packet_time_;
 
 	std::function <void (Flow*)> reject_func_;
+	SharedPointer<AnomalyManager> anomaly_;
 };
 
 typedef std::shared_ptr<UDPProtocol> UDPProtocolPtr;

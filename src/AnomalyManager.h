@@ -54,32 +54,7 @@ enum class PacketAnomalyType : std::int8_t {
 	MAX_PACKET_ANOMALIES
 };
 
-template <class T>
-class SingletonPacketAnomaly
-{
-public:
-        template <typename... Args>
-
-        static T* getInstance()
-        {
-                if(!pktaMngInstance_)
-                {
-                        pktaMngInstance_ = new T();
-                }
-                return pktaMngInstance_;
-        }
-
-        static void destroyInstance()
-        {
-                delete pktaMngInstance_;
-                pktaMngInstance_ = nullptr;
-        }
-
-private:
-        static T* pktaMngInstance_;
-};
-
-template <class T> T*  SingletonPacketAnomaly<T>::pktaMngInstance_ = nullptr;
+static std::array <const char *,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> PacketAnomamlyTypeString;
 
 struct Anomaly {
 	std::int8_t index;
@@ -87,10 +62,9 @@ struct Anomaly {
 	int32_t hits;
 };
 
-class AnomalyManager: public SingletonPacketAnomaly<AnomalyManager>
+class AnomalyManager
 {
 public:
-
         explicit AnomalyManager()
                 {}
 
@@ -99,9 +73,8 @@ public:
 	void incAnomaly(PacketAnomalyType t); 
 	const char *getName(PacketAnomalyType t);
 
-        friend class SingletonPacketAnomaly<AnomalyManager>;
 private:
-	static std::array <Anomaly,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> anomalies_;
+	std::array <Anomaly,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> anomalies_;
 };
 
 } // namespace aiengine 

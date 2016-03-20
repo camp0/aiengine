@@ -290,7 +290,7 @@ void SSLProtocol::processFlow(Flow *flow) {
 						PacketAnomalyType ret = handle_client_hello(sinfo.get(),flow->packet->getLength(),offset,ssl_data);
 						if ((ret != PacketAnomalyType::NONE)and(flow->getPacketAnomaly() == PacketAnomalyType::NONE)) {
 							flow->setPacketAnomaly(ret);
-							AnomalyManager::getInstance()->incAnomaly(ret);	
+							anomaly_->incAnomaly(ret);	
 						}
 						have_data = true;
 					} else if (type == SSL3_MT_SERVER_HELLO)  {

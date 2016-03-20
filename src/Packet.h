@@ -89,7 +89,7 @@ public:
 
 	void setPacketAnomaly(const PacketAnomalyType &pa) { 
 		pa_ = pa; 
-		AnomalyManager::getInstance()->incAnomaly(pa);
+		//AnomalyManager::getInstance()->incAnomaly(pa);
 	}
 
 	PacketAnomalyType getPacketAnomaly() const { return pa_;} 

@@ -199,7 +199,7 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, boost::string_ref 
                 if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
                         flow->setPacketAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
                 }
-		AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
+		anomaly_->incAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
 		return;
 	}
 
@@ -210,7 +210,7 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, boost::string_ref 
                 if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
                         flow->setPacketAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
                 }
-		AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
+		anomaly_->incAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
 		return;
 	}
 	boost::string_ref domain(from.substr(token + 1,from.size()));

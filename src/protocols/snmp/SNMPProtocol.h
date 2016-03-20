@@ -126,6 +126,7 @@ private:
 	int32_t total_snmp_get_next_requests_;
 	int32_t total_snmp_get_responses_;
 	int32_t total_snmp_set_requests_;
+	SharedPointer<AnomalyManager> anomaly_;
 };
 
 typedef std::shared_ptr<SNMPProtocol> SNMPProtocolPtr;

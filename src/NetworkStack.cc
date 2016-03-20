@@ -76,7 +76,8 @@ NetworkStack::NetworkStack():
 	domain_mng_list_(),
 	tcp_regex_mng_(),udp_regex_mng_(),
 	tcp_ipset_mng_(),udp_ipset_mng_(),
-	link_layer_tag_name_() {
+	link_layer_tag_name_(),
+	anomaly_(SharedPointer<AnomalyManager>(new AnomalyManager())) {
 
         // configure the HTTP Layer
         http->setFlowForwarder(ff_http);
@@ -247,7 +248,7 @@ std::ostream& operator<< (std::ostream& out, const NetworkStack& ns) {
 			out << std::endl;
 		});
 		// Print the PacketAnomailes
-		AnomalyManager::getInstance()->statistics(out);
+		ns.anomaly_->statistics(out);
 		out << std::endl;
         }
         return out;

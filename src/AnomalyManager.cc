@@ -25,7 +25,9 @@
 
 namespace aiengine {
 
-std::array <Anomaly,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> AnomalyManager::anomalies_ {{
+
+/*
+std::array <const char *,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> AnomalyManager::anomalies_ {{
         { static_cast<std::int8_t>(PacketAnomalyType::NONE),                             "None",                         0 },
         { static_cast<std::int8_t>(PacketAnomalyType::IPV4_FRAGMENTATION),               "IPv4 Fragmentation",           0 },
         { static_cast<std::int8_t>(PacketAnomalyType::IPV6_FRAGMENTATION),               "IPv6 Fragmentation",           0 },
@@ -41,7 +43,7 @@ std::array <Anomaly,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMA
         { static_cast<std::int8_t>(PacketAnomalyType::SNMP_BOGUS_HEADER),                "SNMP bogus header",            0 }, 
         { static_cast<std::int8_t>(PacketAnomalyType::SSL_BOGUS_HEADER),                 "SSL bogus header",             0 } 
 }};
-
+*/
 
 void AnomalyManager::statistics(std::basic_ostream<char>& out) {
 

@@ -173,7 +173,7 @@ void POPProtocol::handle_cmd_user(Flow *flow,POPInfo *info, boost::string_ref &h
                 if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
                         flow->setPacketAnomaly(PacketAnomalyType::POP_BOGUS_HEADER);
                 }
-		AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::POP_BOGUS_HEADER);
+		anomaly_->incAnomaly(PacketAnomalyType::POP_BOGUS_HEADER);
 		return;
 	}
 

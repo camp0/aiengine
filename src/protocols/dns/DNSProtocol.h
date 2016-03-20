@@ -202,6 +202,7 @@ private:
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
 #endif
+	SharedPointer<AnomalyManager> anomaly_;
 };
 
 typedef std::shared_ptr<DNSProtocol> DNSProtocolPtr;

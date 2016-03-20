@@ -221,6 +221,7 @@ private:
         static log4cxx::LoggerPtr logger;
 #endif
 	Flow *current_flow_; // For accessing for logging
+	SharedPointer<AnomalyManager> anomaly_;
 };
 
 typedef std::shared_ptr<SSLProtocol> SSLProtocolPtr;

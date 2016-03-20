@@ -153,7 +153,7 @@ bool UDPProtocol::processPacket(Packet& packet) {
 			if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
 				flow->setPacketAnomaly(PacketAnomalyType::UDP_BOGUS_HEADER);
 			}
-			AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::UDP_BOGUS_HEADER);
+			anomaly_->incAnomaly(PacketAnomalyType::UDP_BOGUS_HEADER);
 		}
 
 		total_bytes_ += bytes;

@@ -104,6 +104,7 @@ public:
 				// The packet header lengths dont match but there is
 				// a minimal TCP header on the packet
 				packet.setPacketAnomaly(PacketAnomalyType::TCP_BOGUS_HEADER);
+				anomaly_->incAnomaly(PacketAnomalyType::TCP_BOGUS_HEADER);
 			}		
 			++total_validated_packets_;
 			total_bytes_ += length; 
@@ -188,6 +189,7 @@ private:
        	std::time_t last_timeout_;
        	std::time_t packet_time_;
 	std::function <void (Flow*)> reject_func_;
+	SharedPointer<AnomalyManager> anomaly_;
 };
 
 typedef std::shared_ptr<TCPProtocol> TCPProtocolPtr;

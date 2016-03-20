@@ -187,7 +187,8 @@ void IMAPProtocol::handle_cmd_login(Flow *flow,IMAPInfo *info, boost::string_ref
 	       	if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
                         flow->setPacketAnomaly(PacketAnomalyType::IMAP_BOGUS_HEADER);
                 }
-		AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::IMAP_BOGUS_HEADER);
+		anomaly_->incAnomaly(PacketAnomalyType::IMAP_BOGUS_HEADER);
+		return;
 	}
 
 	if (token < header.length()) {

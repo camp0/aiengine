@@ -235,6 +235,7 @@ private:
 	SharedPointer<IPSetManager> tcp_ipset_mng_;
 	SharedPointer<IPSetManager> udp_ipset_mng_;
 	std::string link_layer_tag_name_;
+	SharedPointer<AnomalyManager> anomaly_;
 };
 
 typedef std::shared_ptr <NetworkStack> NetworkStackPtr;

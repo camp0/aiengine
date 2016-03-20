@@ -363,7 +363,7 @@ void TCPProtocol::computeState(Flow *flow, TCPInfo *info,int32_t bytes) {
 		if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
 			flow->setPacketAnomaly(PacketAnomalyType::TCP_BAD_FLAGS);
 		}
-		AnomalyManager::getInstance()->incAnomaly(PacketAnomalyType::TCP_BAD_FLAGS);
+		anomaly_->incAnomaly(PacketAnomalyType::TCP_BAD_FLAGS);
 	}
 
 	// Check if the sequence numbers are fine
