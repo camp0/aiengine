@@ -188,6 +188,7 @@ public:
 	Cache<StringCache>::CachePtr getHostCache() const { return host_cache_; }
 #endif
 
+	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
 private:
         void release_ssl_info_cache(SSLInfo *info);
         int32_t release_ssl_info(SSLInfo *info);

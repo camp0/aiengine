@@ -70,14 +70,15 @@ NetworkStack::NetworkStack():
         ff_udp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_tcp_freqs(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_udp_freqs(SharedPointer<FlowForwarder>(new FlowForwarder())),
-
+	anomaly_(SharedPointer<AnomalyManager>(new AnomalyManager())), 
+	// Private section
 	stats_level_(0),name_(""),
 	proto_vector_(),
 	domain_mng_list_(),
 	tcp_regex_mng_(),udp_regex_mng_(),
 	tcp_ipset_mng_(),udp_ipset_mng_(),
-	link_layer_tag_name_(),
-	anomaly_(SharedPointer<AnomalyManager>(new AnomalyManager())) {
+	link_layer_tag_name_()
+	{
 
         // configure the HTTP Layer
         http->setFlowForwarder(ff_http);

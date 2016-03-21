@@ -142,7 +142,7 @@ public:
 #elif defined(JAVA_BINDING)
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
 #endif
-
+	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
 private:
 	void release_smtp_info_cache(SMTPInfo *info);
 	int32_t release_smtp_info(SMTPInfo *info);

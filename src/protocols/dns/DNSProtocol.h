@@ -91,7 +91,8 @@ public:
 		name_cache_(new Cache<StringCache>("Name cache")),
 		domain_map_(),
 		domain_mng_(),ban_domain_mng_(),
-		flow_mng_() {
+		flow_mng_(),
+		anomaly_() {
 
 		CacheManager::getInstance()->setCache(info_cache_);
 	}
@@ -159,6 +160,8 @@ public:
 	JavaCounters getCounters() const  { JavaCounters counters; return counters; }
 #endif
 
+	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
+
 private:
 	void attach_dns_to_flow(DNSInfo *info, boost::string_ref &domain, uint16_t qtype);
 	void update_query_types(uint16_t type);
@@ -198,11 +201,11 @@ private:
 	DomainNameManagerPtrWeak ban_domain_mng_;
 
 	FlowManagerPtrWeak flow_mng_;	
+	SharedPointer<AnomalyManager> anomaly_;
 	char dns_buffer_name_[MAX_DNS_BUFFER_NAME] = {0};
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
 #endif
-	SharedPointer<AnomalyManager> anomaly_;
 };
 
 typedef std::shared_ptr<DNSProtocol> DNSProtocolPtr;

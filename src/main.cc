@@ -545,9 +545,13 @@ int main(int argc, char* argv[]) {
 					or(it->path().extension() == ".cap") 
 					or(it->path().extension() == ".pcapng"))) {
 					std::ostringstream os;
-				
-					os << option_input.c_str() << "/" << it->path().filename().c_str();
+			
+					// std::cout << "adding " << it->path().c_str() << std::endl;	
+					// os << option_input.c_str() << "/" << it->path().filename().c_str();
+					os << it->path().c_str();
       					inputs.push_back(os.str());
+				} else {
+					it.no_push();
 				}
 				++it;
 			}

@@ -94,6 +94,8 @@ struct StackTCPTest : public StackTest
 
                 tcp->setFlowCache(flow_cache);
                 tcp->setFlowManager(flow_mng);
+
+		tcp->setAnomalyManager(anomaly);
         }
 
 	void statistics() {
@@ -106,12 +108,10 @@ struct StackTCPTest : public StackTest
 };
 
 
-struct StackIPv6TCPTest
+struct StackIPv6TCPTest : public StackTest
 {
-        EthernetProtocolPtr eth;
         IPv6ProtocolPtr ip6;
         TCPProtocolPtr tcp;
-        MultiplexerPtr mux_eth;
         MultiplexerPtr mux_ip;
         MultiplexerPtr mux_tcp;
 
@@ -119,8 +119,6 @@ struct StackIPv6TCPTest
         {
                 tcp = TCPProtocolPtr(new TCPProtocol());
                 ip6 = IPv6ProtocolPtr(new IPv6Protocol());
-                eth = EthernetProtocolPtr(new EthernetProtocol());
-                mux_eth = MultiplexerPtr(new Multiplexer());
                 mux_ip = MultiplexerPtr(new Multiplexer());
                 mux_tcp = MultiplexerPtr(new Multiplexer());
 
@@ -152,13 +150,9 @@ struct StackIPv6TCPTest
                 mux_ip->addDownMultiplexer(mux_eth);
                 mux_ip->addUpMultiplexer(mux_tcp,IPPROTO_TCP);
                 mux_tcp->addDownMultiplexer(mux_ip);
-        }
-
-        void inject(Packet &pkt) {
-                mux_eth->setPacket(&pkt);
-                eth->setHeader(mux_eth->getCurrentPacket()->getPayload());
-                mux_eth->setNextProtocolIdentifier(eth->getEthernetType());
-                mux_eth->forwardPacket(pkt);
+		
+		ip6->setAnomalyManager(anomaly);
+		tcp->setAnomalyManager(anomaly);
         }
 
         ~StackIPv6TCPTest() {

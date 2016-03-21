@@ -54,18 +54,34 @@ enum class PacketAnomalyType : std::int8_t {
 	MAX_PACKET_ANOMALIES
 };
 
-static std::array <const char *,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> PacketAnomamlyTypeString;
-
 struct Anomaly {
 	std::int8_t index;
 	const char* name;
-	int32_t hits;
 };
+
+static std::array <struct Anomaly,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> PacketAnomalyTypeString {{
+        { static_cast<std::int8_t>(PacketAnomalyType::NONE),                             "None"                         },
+        { static_cast<std::int8_t>(PacketAnomalyType::IPV4_FRAGMENTATION),               "IPv4 Fragmentation"           },
+        { static_cast<std::int8_t>(PacketAnomalyType::IPV6_FRAGMENTATION),               "IPv6 Fragmentation"           },
+        { static_cast<std::int8_t>(PacketAnomalyType::IPV6_LOOP_EXTENSION_HEADERS),      "IPv6 Loop ext headers"        },
+        { static_cast<std::int8_t>(PacketAnomalyType::TCP_BAD_FLAGS),                    "TCP bad flags"                },
+        { static_cast<std::int8_t>(PacketAnomalyType::TCP_BOGUS_HEADER),                 "TCP bogus header"             },
+        { static_cast<std::int8_t>(PacketAnomalyType::UDP_BOGUS_HEADER),                 "UDP bogus header"             },
+        { static_cast<std::int8_t>(PacketAnomalyType::DNS_BOGUS_HEADER),                 "DNS bogus header"             },
+        { static_cast<std::int8_t>(PacketAnomalyType::DNS_LONG_NAME),                    "DNS long domain name"         },
+        { static_cast<std::int8_t>(PacketAnomalyType::SMTP_BOGUS_HEADER),                "SMTP bogus header"            },
+        { static_cast<std::int8_t>(PacketAnomalyType::IMAP_BOGUS_HEADER),                "IMAP bogus header"            },
+        { static_cast<std::int8_t>(PacketAnomalyType::POP_BOGUS_HEADER),                 "POP bogus header"             },
+        { static_cast<std::int8_t>(PacketAnomalyType::SNMP_BOGUS_HEADER),                "SNMP bogus header"            },
+        { static_cast<std::int8_t>(PacketAnomalyType::SSL_BOGUS_HEADER),                 "SSL bogus header"             }
+}};
+
+//static std::array <struct Anomaly,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> PacketAnomalyTypeString;
 
 class AnomalyManager
 {
 public:
-        explicit AnomalyManager()
+        explicit AnomalyManager(): anomalies_()
                 {}
 
 	void statistics(std::basic_ostream<char>& out);
@@ -74,7 +90,7 @@ public:
 	const char *getName(PacketAnomalyType t);
 
 private:
-	std::array <Anomaly,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> anomalies_;
+	std::array <int32_t,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> anomalies_;
 };
 
 } // namespace aiengine 

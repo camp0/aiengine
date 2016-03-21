@@ -169,6 +169,8 @@ public:
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
 #endif
 
+	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
+
 private:
         SharedPointer<Flow> getFlow(const Packet& packet);
 	void default_reject_function(Flow *flow) {}

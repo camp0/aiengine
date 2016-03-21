@@ -256,6 +256,18 @@ StackVirtual::StackVirtual():
         sip->setFlowManager(flow_table_udp_vir_);
         ssdp->setFlowManager(flow_table_udp_vir_);
 
+	// Connect the AnomalyManager with the protocols that may have anomalies
+        ip_->setAnomalyManager(anomaly_);
+        tcp_vir_->setAnomalyManager(anomaly_);
+        udp_vir_->setAnomalyManager(anomaly_);
+        udp_->setAnomalyManager(anomaly_);
+        dns->setAnomalyManager(anomaly_);
+        http->setAnomalyManager(anomaly_);
+        ssl->setAnomalyManager(anomaly_);
+        smtp->setAnomalyManager(anomaly_);
+        pop->setAnomalyManager(anomaly_);
+        imap->setAnomalyManager(anomaly_);
+
 	// Configure the FlowForwarders
 	udp_->setFlowForwarder(ff_udp_);
 	ff_udp_->addUpFlowForwarder(ff_vxlan_);	

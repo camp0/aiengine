@@ -110,8 +110,8 @@ void Flow::serialize(std::ostream& stream) {
 	if (!ipset.expired()) 
                 stream << ",\"s\":\"" << ipset.lock()->getName() << "\"";
 	
-	//if(pa_ != PacketAnomalyType::NONE)
-	//	stream << ",\"a\":\"" << AnomalyManager::getInstance()->getName(pa_) << "\"";
+	if(pa_ != PacketAnomalyType::NONE)
+		stream << ",\"a\":\"" << static_cast<std::int8_t>(pa_) << "\"";
 
 	stream << ",\"p\":\"" << getL7ShortProtocolName() << "\"";
 #else
@@ -127,8 +127,8 @@ void Flow::serialize(std::ostream& stream) {
 	if (!ipset.expired())
 		stream << ",\"ipset\":\"" << ipset.lock()->getName() << "\"";
 
-	//if (pa_ != PacketAnomalyType::NONE)
-		//stream << ",\"anomaly\":\"" << AnomalyManager::getInstance()->getName(pa_) << "\"";
+	if (pa_ != PacketAnomalyType::NONE)
+		stream << ",\"anomaly\":\"" << getFlowAnomalyString() << "\"";
 
 	stream << ",\"layer7\":\"" << getL7ProtocolName() << "\"";
 #endif
@@ -177,8 +177,8 @@ void Flow::showFlowInfo(std::ostream& out) const {
         	out << " Tag:" << getTag();
         }
 
-        //if (getPacketAnomaly() != PacketAnomalyType::NONE)
-	//	out << " Anomaly:" << AnomalyManager::getInstance()->getName(pa_);
+        if (getPacketAnomaly() != PacketAnomalyType::NONE)
+		out << " Anomaly:" << getFlowAnomalyString();
 
         if (ipset.lock()) out << " IPset:" << ipset.lock()->getName();
 

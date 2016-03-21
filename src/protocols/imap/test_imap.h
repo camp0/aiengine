@@ -112,7 +112,7 @@ struct StackIMAPtest : public StackTest
                 tcp->setFlowForwarder(ff_tcp);
 
                 ff_tcp->addUpFlowForwarder(ff_imap);
-
+		imap->setAnomalyManager(anomaly);
         }
 
 	void show() {

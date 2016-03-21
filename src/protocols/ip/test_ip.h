@@ -55,6 +55,8 @@ struct StackEthernetIP : public StackTest
                 // configure the multiplexers
                 mux_eth->addUpMultiplexer(mux_ip,ETHERTYPE_IP);
                 mux_ip->addDownMultiplexer(mux_eth);
+
+		ip->setAnomalyManager(anomaly);
 	}
 	~StackEthernetIP() {
                 // nothing to delete

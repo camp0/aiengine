@@ -55,6 +55,7 @@
 #include "protocols/bitcoin/BitcoinInfo.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "AnomalyManager.h"
 
 namespace aiengine {
 
@@ -87,8 +88,9 @@ public:
 	FlowDirection getFlowDirection() { return direction_; }
 	FlowDirection getPrevFlowDirection() { return prev_direction_; }
 
-	void setPacketAnomaly(const PacketAnomalyType &pa) { pa_ = pa; /* ++ PacketAnomalies[static_cast<std::int8_t>(pa)].hits; */ }
+	void setPacketAnomaly(const PacketAnomalyType &pa) { pa_ = pa; }
 	PacketAnomalyType getPacketAnomaly() const { return pa_; }
+	const char *getFlowAnomalyString() const { return PacketAnomalyTypeString[static_cast<std::int8_t>(pa_)].name; }
 
 	// IP functions
 	void setFiveTuple(uint32_t src_a,uint16_t src_p,uint16_t proto,uint32_t dst_a,uint16_t dst_p);
@@ -201,8 +203,6 @@ public:
         IMAPInfo& getIMAPInfoObject() const { return *getIMAPInfo().get();}
         SSDPInfo& getSSDPInfoObject() const { return *getSSDPInfo().get();}
 	BitcoinInfo& getBitcoinInfoObject() const { return *getBitcoinInfo().get(); }
-        
-	const char *getFlowAnomaly() const { return AnomalyManager::getInstance()->getName(pa_); }
 #endif
 
 #if defined(PYTHON_BINDING)

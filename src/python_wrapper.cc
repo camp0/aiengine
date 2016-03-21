@@ -634,7 +634,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_flow_regex )
 		.add_property("payload",&Flow::getPayload,
 			help_flow_payload )
-		.add_property("anomaly",make_function(&Flow::getFlowAnomaly,return_value_policy<return_by_value>()),
+		.add_property("anomaly",make_function(&Flow::getFlowAnomalyString,return_value_policy<return_by_value>()),
 			help_flow_anomaly )
 		.add_property("l7_protocol_name",make_function(&Flow::getL7ProtocolName,return_value_policy<return_by_value>()),
 			help_flow_l7_protocol_name )

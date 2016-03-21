@@ -173,6 +173,17 @@ StackLan::StackLan():
 	dns->setFlowManager(flow_table_udp_);
 	sip->setFlowManager(flow_table_udp_);
 	ssdp->setFlowManager(flow_table_udp_);
+
+	// Connect the AnomalyManager with the protocols that may have anomalies
+	ip_->setAnomalyManager(anomaly_);
+	tcp_->setAnomalyManager(anomaly_);
+	udp_->setAnomalyManager(anomaly_);
+	dns->setAnomalyManager(anomaly_);
+	http->setAnomalyManager(anomaly_);
+	ssl->setAnomalyManager(anomaly_);
+	smtp->setAnomalyManager(anomaly_);
+	pop->setAnomalyManager(anomaly_);
+	imap->setAnomalyManager(anomaly_);
 	
 	// Configure the FlowForwarders
 	tcp_->setFlowForwarder(ff_tcp_);	

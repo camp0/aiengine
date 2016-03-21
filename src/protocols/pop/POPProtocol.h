@@ -138,7 +138,7 @@ public:
 #elif defined(JAVA_BINDING)
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
 #endif
-
+	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
 private:
 	void release_pop_info_cache(POPInfo *info);
         int32_t release_pop_info(POPInfo *info);

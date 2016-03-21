@@ -44,7 +44,8 @@ public:
 		ip6_header_(nullptr),total_bytes_(0),total_frag_packets_(0),
 		total_no_header_packets_(0),
 		total_extension_header_packets_(0),
-		total_other_extension_header_packets_(0) {}
+		total_other_extension_header_packets_(0),
+		anomaly_() {}
 
     	virtual ~IPv6Protocol() {}
 
@@ -103,9 +104,11 @@ public:
 #elif defined(RUBY_BINDING)
         VALUE getCounters() const;
 #elif defined(JAVA_BINDING)
+	// TODO
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
 #endif
 
+	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
 private:
 	int stats_level_;
 	struct ip6_hdr *ip6_header_;
@@ -114,6 +117,7 @@ private:
 	int32_t total_no_header_packets_;
 	int32_t total_extension_header_packets_;
 	int32_t total_other_extension_header_packets_;
+	SharedPointer<AnomalyManager> anomaly_;
 };
 
 typedef std::shared_ptr<IPv6Protocol> IPv6ProtocolPtr;

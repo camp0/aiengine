@@ -126,6 +126,7 @@ struct StackDNStest : public StackTest
 
                 ff_udp->addUpFlowForwarder(ff_dns);
 
+		dns->setAnomalyManager(anomaly);
         }
 
 	void show() {

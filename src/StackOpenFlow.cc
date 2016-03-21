@@ -240,6 +240,18 @@ StackOpenFlow::StackOpenFlow():
         sip->setFlowManager(flow_table_udp_vir_);
         ssdp->setFlowManager(flow_table_udp_vir_);
 
+	// Connect the AnomalyManager with the protocols that may have anomalies
+        ip_->setAnomalyManager(anomaly_);
+        tcp_->setAnomalyManager(anomaly_);
+        tcp_vir_->setAnomalyManager(anomaly_);
+        udp_vir_->setAnomalyManager(anomaly_);
+        dns->setAnomalyManager(anomaly_);
+        http->setAnomalyManager(anomaly_);
+        ssl->setAnomalyManager(anomaly_);
+        smtp->setAnomalyManager(anomaly_);
+        pop->setAnomalyManager(anomaly_);
+        imap->setAnomalyManager(anomaly_);
+
 	// The low FlowManager have a 24 hours timeout to keep the Context on memory
         flow_table_tcp_->setTimeout(86400);
 

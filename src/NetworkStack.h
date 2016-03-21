@@ -175,6 +175,8 @@ public:
 
 	friend std::ostream& operator<< (std::ostream& out, const NetworkStack& ns);
 
+	// SharedPointer<AnomalyManager>& getAnomalyManager() const { return anomaly_; } 
+
 protected:
 	// Multiplexers of low layer parts (vlan, mpls, ethernet, etc....)
         MultiplexerPtr mux_eth;
@@ -216,6 +218,7 @@ protected:
         SharedPointer<FlowForwarder> ff_tcp_freqs;
         SharedPointer<FlowForwarder> ff_udp_freqs;
 
+	SharedPointer<AnomalyManager> anomaly_;
 private:
 #ifdef HAVE_LIBLOG4CXX
         static log4cxx::LoggerPtr logger;
@@ -235,7 +238,6 @@ private:
 	SharedPointer<IPSetManager> tcp_ipset_mng_;
 	SharedPointer<IPSetManager> udp_ipset_mng_;
 	std::string link_layer_tag_name_;
-	SharedPointer<AnomalyManager> anomaly_;
 };
 
 typedef std::shared_ptr <NetworkStack> NetworkStackPtr;
