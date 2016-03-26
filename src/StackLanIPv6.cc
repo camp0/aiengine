@@ -175,13 +175,12 @@ StackLanIPv6::StackLanIPv6():
         ip6_->setAnomalyManager(anomaly_);
         tcp_->setAnomalyManager(anomaly_);
         udp_->setAnomalyManager(anomaly_);
-        dns->setAnomalyManager(anomaly_);
-        http->setAnomalyManager(anomaly_);
-        ssl->setAnomalyManager(anomaly_);
-        smtp->setAnomalyManager(anomaly_);
-        pop->setAnomalyManager(anomaly_);
-        imap->setAnomalyManager(anomaly_);
-	
+
+        // Link the CacheManager  
+        flow_table_udp_->setCacheManager(cache_mng_);
+        flow_table_tcp_->setCacheManager(cache_mng_);
+        tcp_->setCacheManager(cache_mng_);
+        
 	// Configure the FlowForwarders
 	tcp_->setFlowForwarder(ff_tcp_);	
 	udp_->setFlowForwarder(ff_udp_);	

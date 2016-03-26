@@ -261,13 +261,13 @@ StackVirtual::StackVirtual():
         tcp_vir_->setAnomalyManager(anomaly_);
         udp_vir_->setAnomalyManager(anomaly_);
         udp_->setAnomalyManager(anomaly_);
-        dns->setAnomalyManager(anomaly_);
-        http->setAnomalyManager(anomaly_);
-        ssl->setAnomalyManager(anomaly_);
-        smtp->setAnomalyManager(anomaly_);
-        pop->setAnomalyManager(anomaly_);
-        imap->setAnomalyManager(anomaly_);
 
+        // Link the CacheManager  
+        flow_table_udp_->setCacheManager(cache_mng_);
+        flow_table_udp_vir_->setCacheManager(cache_mng_);
+        flow_table_tcp_vir_->setCacheManager(cache_mng_);
+        tcp_vir_->setCacheManager(cache_mng_);
+        
 	// Configure the FlowForwarders
 	udp_->setFlowForwarder(ff_udp_);
 	ff_udp_->addUpFlowForwarder(ff_vxlan_);	

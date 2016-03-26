@@ -33,8 +33,12 @@
 #include <array>
 #include <vector>
 #include <cstring>
+#include <algorithm>
+#include "Callback.h"
 
 namespace aiengine {
+
+class Flow;
 
 enum class PacketAnomalyType : std::int8_t {
 	NONE = 0, 
@@ -51,15 +55,17 @@ enum class PacketAnomalyType : std::int8_t {
 	POP_BOGUS_HEADER = 11, 
 	SNMP_BOGUS_HEADER = 12,
 	SSL_BOGUS_HEADER = 13,
+	HTTP_BOGUS_URI_HEADER = 14,
+	HTTP_BOGUS_NO_HEADERS = 15,
 	MAX_PACKET_ANOMALIES
 };
 
-struct Anomaly {
+typedef struct {
 	std::int8_t index;
 	const char* name;
-};
+} AnomalyDescription ;
 
-static std::array <struct Anomaly,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> PacketAnomalyTypeString {{
+static std::array <AnomalyDescription,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> PacketAnomalyTypeString {{
         { static_cast<std::int8_t>(PacketAnomalyType::NONE),                             "None"                         },
         { static_cast<std::int8_t>(PacketAnomalyType::IPV4_FRAGMENTATION),               "IPv4 Fragmentation"           },
         { static_cast<std::int8_t>(PacketAnomalyType::IPV6_FRAGMENTATION),               "IPv6 Fragmentation"           },
@@ -73,24 +79,59 @@ static std::array <struct Anomaly,static_cast<std::int8_t>(PacketAnomalyType::MA
         { static_cast<std::int8_t>(PacketAnomalyType::IMAP_BOGUS_HEADER),                "IMAP bogus header"            },
         { static_cast<std::int8_t>(PacketAnomalyType::POP_BOGUS_HEADER),                 "POP bogus header"             },
         { static_cast<std::int8_t>(PacketAnomalyType::SNMP_BOGUS_HEADER),                "SNMP bogus header"            },
-        { static_cast<std::int8_t>(PacketAnomalyType::SSL_BOGUS_HEADER),                 "SSL bogus header"             }
+        { static_cast<std::int8_t>(PacketAnomalyType::SSL_BOGUS_HEADER),                 "SSL bogus header"             },
+        { static_cast<std::int8_t>(PacketAnomalyType::HTTP_BOGUS_URI_HEADER),            "HTTP malformed URI"           },
+        { static_cast<std::int8_t>(PacketAnomalyType::HTTP_BOGUS_NO_HEADERS),            "HTTP no headers"           	}
 }};
 
-//static std::array <struct Anomaly,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> PacketAnomalyTypeString;
+typedef struct {
+	std::int8_t index;
+	int32_t hits;
+	const char* protocol_name;
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+	Callback call;
+#endif
+} AnomalyInfo;
 
 class AnomalyManager
 {
 public:
-        explicit AnomalyManager(): anomalies_()
-                {}
+        explicit AnomalyManager(): anomalies_{{
+		{ static_cast<std::int8_t>(PacketAnomalyType::NONE), 				0, 	"" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::IPV4_FRAGMENTATION), 		0, 	"" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::IPV6_FRAGMENTATION),		0,	"" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::IPV6_LOOP_EXTENSION_HEADERS),	0,	"" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::TCP_BAD_FLAGS),			0,	"tcp" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::TCP_BOGUS_HEADER),		0,	"tcp" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::UDP_BOGUS_HEADER),		0,	"udp" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::DNS_BOGUS_HEADER),		0,	"dns" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::DNS_LONG_NAME),			0,	"dns" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::SMTP_BOGUS_HEADER),		0,	"smtp" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::IMAP_BOGUS_HEADER),		0,	"imap" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::POP_BOGUS_HEADER),		0,	"pop" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::SNMP_BOGUS_HEADER),		0,	"" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::SSL_BOGUS_HEADER),		0,	"ssl" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::HTTP_BOGUS_URI_HEADER),		0,	"http" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::HTTP_BOGUS_NO_HEADERS),		0,	"http" }
+		}}
+        {}
 
 	void statistics(std::basic_ostream<char>& out);
         void statistics() { statistics(std::cout); }
+	void incAnomaly(Flow *flow, PacketAnomalyType t); 
 	void incAnomaly(PacketAnomalyType t); 
 	const char *getName(PacketAnomalyType t);
 
+#if defined(PYTHON_BINDING)
+        void setCallback(PyObject *callback,const std::string &protocol_name);
+#elif defined(RUBY_BINDING)
+        void setCallback(VALUE callback,const std::string &protocol_name); 
+#elif defined(JAVA_BINDING)
+        void setCallback(JaiCallback *callback,const std::string &protocol_name); 
+#endif
+
 private:
-	std::array <int32_t,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> anomalies_;
+	std::array <AnomalyInfo,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> anomalies_;
 };
 
 } // namespace aiengine 

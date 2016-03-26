@@ -164,16 +164,16 @@ void POPProtocol::attach_user_name(POPInfo *info, boost::string_ref &name) {
 }
 
 
-void POPProtocol::handle_cmd_user(Flow *flow,POPInfo *info, boost::string_ref &header) {
+void POPProtocol::handle_cmd_user(POPInfo *info, boost::string_ref &header) {
 
         size_t token = header.find("@");
         size_t end = header.find("\x0d\x0a") - 5;
 
 	if ((token > header.length())or(end > header.length())) {
-                if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
-                        flow->setPacketAnomaly(PacketAnomalyType::POP_BOGUS_HEADER);
+                if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        current_flow_->setPacketAnomaly(PacketAnomalyType::POP_BOGUS_HEADER);
                 }
-		anomaly_->incAnomaly(PacketAnomalyType::POP_BOGUS_HEADER);
+		anomaly_->incAnomaly(current_flow_,PacketAnomalyType::POP_BOGUS_HEADER);
 		return;
 	}
 
@@ -186,7 +186,7 @@ void POPProtocol::handle_cmd_user(Flow *flow,POPInfo *info, boost::string_ref &h
                 SharedPointer<DomainName> dom_candidate = ban_hosts->getDomainName(domain);
                 if (dom_candidate) {
 #ifdef HAVE_LIBLOG4CXX
-                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with ban host " << dom_candidate->getName());
+                        LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with ban host " << dom_candidate->getName());
 #endif
                         ++total_ban_domains_;
                         info->setIsBanned(true);
@@ -203,10 +203,10 @@ void POPProtocol::handle_cmd_user(Flow *flow,POPInfo *info, boost::string_ref &h
                 if (dom_candidate) {
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 #ifdef HAVE_LIBLOG4CXX
-                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << dom_candidate->getName());
+                        LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with " << dom_candidate->getName());
 #endif
                         if(dom_candidate->call.haveCallback()) {
-                                dom_candidate->call.executeCallback(flow);
+                                dom_candidate->call.executeCallback(current_flow_);
                         }
 #endif
                 }
@@ -236,6 +236,8 @@ void POPProtocol::processFlow(Flow *flow) {
                 return;
         }
 
+	current_flow_ = flow;
+
 	if (flow->getFlowDirection() == FlowDirection::FORWARD) {
 		
                 // Commands send by the client
@@ -253,7 +255,7 @@ void POPProtocol::processFlow(Flow *flow) {
                 
 				if ( cmd == static_cast<int8_t>(POPCommandTypes::POP_CMD_USER)) {
 					boost::string_ref header(reinterpret_cast<const char*>(pop_header_),length);
-					handle_cmd_user(flow,pinfo.get(),header);
+					handle_cmd_user(pinfo.get(),header);
 				}
 		                return;
                         }

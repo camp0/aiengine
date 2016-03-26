@@ -32,7 +32,7 @@ Using AIEngine
 To use AIEngine(reduce version) just execute the binary aiengine or use the python/ruby/java binding.
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
-	aiengine 1.4
+	aiengine 1.5
 	Mandatory arguments:
 	  -I [ --input ] arg                Sets the network interface ,pcap file or 
 	                                    directory with pcap files.

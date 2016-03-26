@@ -47,8 +47,8 @@ public:
 	void serialize(std::ostream& stream); 
 	void resetStrings();
 
-	int32_t getContentLength() const { return content_length_; }
-	void setContentLength(int32_t content_length) { content_length_ = content_length; }
+	int64_t getContentLength() const { return content_length_; }
+	void setContentLength(int64_t content_length) { content_length_ = content_length; }
 
 	int32_t getDataChunkLength() const { return data_chunk_length_; }
 	void setDataChunkLength(int32_t length) { data_chunk_length_ = length; }
@@ -107,7 +107,7 @@ private:
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 	bool needs_release_;
 #endif
-	int32_t content_length_;	
+	int64_t content_length_;	
 	int32_t data_chunk_length_;
 	int16_t total_requests_;
 	int16_t total_responses_;	

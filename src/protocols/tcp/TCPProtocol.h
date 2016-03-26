@@ -50,22 +50,24 @@ public:
 		stats_level_(0),
                 flow_table_(),flow_cache_(),sigs_(),
                 tcp_info_cache_(new Cache<TCPInfo>("TCP info cache")), 
-                tcp_header_(nullptr),current_flow_(nullptr),
+                tcp_header_(nullptr),
+		current_flow_(nullptr),
 		total_bytes_(0),
 		total_flags_syn_(0),
 		total_flags_synack_(0),
 		total_flags_ack_(0),
 		total_flags_rst_(0),
 		total_flags_fin_(0),
-		last_timeout_(0),packet_time_(0) {
+		last_timeout_(0),packet_time_(0),
+		anomaly_(),
+		cache_mng_() {
 
 		addRejectFunction(std::bind(&TCPProtocol::default_reject_function,this,std::placeholders::_1));
-		CacheManager::getInstance()->setCache(tcp_info_cache_);
 	}
 
     	explicit TCPProtocol():TCPProtocol(TCPProtocol::default_name,TCPProtocol::default_short_name) {}
 
-    	virtual ~TCPProtocol() {}
+    	virtual ~TCPProtocol() { anomaly_.reset(); cache_mng_.reset(); }
 
 	static constexpr char *default_name = "TCPProtocol";
 	static constexpr char *default_short_name = "tcp";
@@ -80,7 +82,7 @@ public:
 
 	void processFlow(Flow *flow) {}; // This protocol generates flows but not for destination.
 	bool processPacket(Packet &packet);
-	void computeState(Flow *flow, TCPInfo *info,int32_t bytes);
+	void computeState(TCPInfo *info,int32_t bytes);
 
 	void setStatisticsLevel(int level) { stats_level_ = level;}
 	void statistics(std::basic_ostream<char>& out);
@@ -170,7 +172,7 @@ public:
 #endif
 
 	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
-
+	void setCacheManager(SharedPointer<CacheManager> cmng) { cache_mng_ = cmng; cache_mng_->setCache(tcp_info_cache_); }
 private:
         SharedPointer<Flow> getFlow(const Packet& packet);
 	void default_reject_function(Flow *flow) {}
@@ -192,6 +194,7 @@ private:
        	std::time_t packet_time_;
 	std::function <void (Flow*)> reject_func_;
 	SharedPointer<AnomalyManager> anomaly_;
+	SharedPointer<CacheManager> cache_mng_;
 };
 
 typedef std::shared_ptr<TCPProtocol> TCPProtocolPtr;

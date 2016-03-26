@@ -147,6 +147,8 @@ public:
 
 	const char *getLinkLayerTag() const { return link_layer_tag_name_.c_str(); } 
 
+	void setAnomalyCallback(PyObject *callback,const std::string& proto_name);
+
 #elif defined(RUBY_BINDING)
 	void setTCPDatabaseAdaptor(VALUE dbptr); 
 	void setTCPDatabaseAdaptor(VALUE dbptr, int packet_sampling); 
@@ -155,6 +157,9 @@ public:
 
 	VALUE getCounters(const std::string& name);
 	VALUE getCache(const std::string& name);
+
+	void setAnomalyCallback(VALUE callback,const std::string& proto_name);
+
 #elif defined(JAVA_BINDING)
 	void setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr);
 	void setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr,int packet_sampling);
@@ -162,6 +167,8 @@ public:
 	void setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr,int packet_sampling);
 	
 	std::map<std::string,int> getCounters(const std::string& name);
+	
+	void setAnomalyCallback(JaiCallback *callback,const std::string& proto_name);
 #endif
 	void addProtocol(ProtocolPtr proto); 
 	void setStatisticsLevel(int level); 
@@ -219,6 +226,7 @@ protected:
         SharedPointer<FlowForwarder> ff_udp_freqs;
 
 	SharedPointer<AnomalyManager> anomaly_;
+	SharedPointer<CacheManager> cache_mng_;
 private:
 #ifdef HAVE_LIBLOG4CXX
         static log4cxx::LoggerPtr logger;

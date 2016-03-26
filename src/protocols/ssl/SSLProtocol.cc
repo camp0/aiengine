@@ -143,7 +143,7 @@ void SSLProtocol::attach_host(SSLInfo *info, boost::string_ref &host) {
         }
 }
 
-PacketAnomalyType SSLProtocol::handle_client_hello(SSLInfo *info,int length,int offset, u_char *data) {
+void SSLProtocol::handle_client_hello(SSLInfo *info,int length,int offset, u_char *data) {
 
 	ssl_hello *hello = reinterpret_cast<ssl_hello*>(data); 
 	uint16_t version = ntohs(hello->version);
@@ -154,7 +154,11 @@ PacketAnomalyType SSLProtocol::handle_client_hello(SSLInfo *info,int length,int 
 	if((version >= SSL3_VERSION)and(version <= TLS1_2_VERSION)) {
 
 		if (ntohs(hello->length) > length) {
-			return PacketAnomalyType::SSL_BOGUS_HEADER;
+			if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        	current_flow_->setPacketAnomaly(PacketAnomalyType::SSL_BOGUS_HEADER);
+			}
+                        anomaly_->incAnomaly(current_flow_,PacketAnomalyType::SSL_BOGUS_HEADER);
+                        return; 
 		}
 		length = ntohs(hello->length);
 
@@ -178,9 +182,9 @@ PacketAnomalyType SSLProtocol::handle_client_hello(SSLInfo *info,int length,int 
 				u_char *extensions = &data[block_offset];
 				uint16_t extensions_length = ((extensions[0] << 8) + extensions[1]);
 
-				if (extensions_length > length) {
-					return PacketAnomalyType::SSL_BOGUS_HEADER;
-				}
+				////if (extensions_length > length) {
+			// 		return PacketAnomalyType::SSL_BOGUS_HEADER;
+			//	}
 
 				block_offset += 2;
 				while (block_offset < length) {
@@ -200,7 +204,7 @@ PacketAnomalyType SSLProtocol::handle_client_hello(SSLInfo *info,int length,int 
 									LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with banned host " << host_candidate->getName());
 #endif
 									++total_ban_hosts_;
-									return PacketAnomalyType::NONE;
+									return;
 								}
 							}
 							++total_allow_hosts_;
@@ -225,7 +229,7 @@ PacketAnomalyType SSLProtocol::handle_client_hello(SSLInfo *info,int length,int 
 			}	
 		}
 	} // end version 
-	return PacketAnomalyType::NONE;
+	return;
 }
 
 void SSLProtocol::handle_server_hello(SSLInfo *info,int offset,unsigned char *data) {
@@ -287,11 +291,7 @@ void SSLProtocol::processFlow(Flow *flow) {
 					bool have_data = false;
 	
 					if (type == SSL3_MT_CLIENT_HELLO)  {
-						PacketAnomalyType ret = handle_client_hello(sinfo.get(),flow->packet->getLength(),offset,ssl_data);
-						if ((ret != PacketAnomalyType::NONE)and(flow->getPacketAnomaly() == PacketAnomalyType::NONE)) {
-							flow->setPacketAnomaly(ret);
-							anomaly_->incAnomaly(ret);	
-						}
+						handle_client_hello(sinfo.get(),flow->packet->getLength(),offset,ssl_data);
 						have_data = true;
 					} else if (type == SSL3_MT_SERVER_HELLO)  {
 						handle_server_hello(sinfo.get(),offset,ssl_data);

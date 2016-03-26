@@ -92,12 +92,11 @@ public:
 		domain_map_(),
 		domain_mng_(),ban_domain_mng_(),
 		flow_mng_(),
-		anomaly_() {
+		current_flow_(nullptr),
+		anomaly_(),
+		cache_mng_() {}
 
-		CacheManager::getInstance()->setCache(info_cache_);
-	}
-
-    	virtual ~DNSProtocol() {}
+    	virtual ~DNSProtocol() { anomaly_.reset(); cache_mng_.reset(); }
 
 	static const uint16_t id = 0;
 	static const int header_size = sizeof(struct dns_header);
@@ -161,13 +160,14 @@ public:
 #endif
 
 	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
+	void setCacheManager(SharedPointer<CacheManager> cmng) { cache_mng_ = cmng; cache_mng_->setCache(info_cache_); }
 
 private:
 	void attach_dns_to_flow(DNSInfo *info, boost::string_ref &domain, uint16_t qtype);
 	void update_query_types(uint16_t type);
-	void handle_standard_query(Flow *flow, DNSInfo *info,int length);
+	void handle_standard_query(DNSInfo *info,int length);
 	int extract_domain_name(Flow *flow);
-	void handle_standard_response(Flow *flow, DNSInfo *info,int length);
+	void handle_standard_response(DNSInfo *info,int length);
 
 	int stats_level_;
 	struct dns_header *dns_header_;
@@ -200,8 +200,10 @@ private:
 	DomainNameManagerPtrWeak domain_mng_;
 	DomainNameManagerPtrWeak ban_domain_mng_;
 
-	FlowManagerPtrWeak flow_mng_;	
+	FlowManagerPtrWeak flow_mng_;
+	Flow *current_flow_;	
 	SharedPointer<AnomalyManager> anomaly_;
+	SharedPointer<CacheManager> cache_mng_;
 	char dns_buffer_name_[MAX_DNS_BUFFER_NAME] = {0};
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;

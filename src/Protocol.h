@@ -55,6 +55,7 @@
 #include "DatabaseAdaptor.h"
 #include "./ipset/IPSetManager.h"
 #include "names/DomainNameManager.h"
+#include "CacheManager.h"
 
 namespace aiengine {
 
@@ -148,6 +149,7 @@ public:
 	virtual void addRejectFunction(std::function <void (Flow*)> reject) {}
 
 	virtual void setAnomalyManager(SharedPointer<AnomalyManager> amng) {}
+	virtual void setCacheManager(SharedPointer<CacheManager> cmng) {}
 
 #if defined(PYTHON_BINDING)
         virtual boost::python::dict getCounters() const = 0;

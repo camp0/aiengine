@@ -51,6 +51,7 @@ const char *help_release_cache = 		"Release the cache of a specific protocol.";
 const char *help_releases_caches = 		"Release all the caches.";
 const char *help_get_counters = 		"Gets the counters of a specific protocol on a python dict.";
 const char *help_get_cache = 			"Gets the main cache of a protocol on a python dict.";
+const char *help_anomaly_callback = 		"Sets a callback for specific anomalies on the given protocol.";
 const char *help_get_statistics =		"Gets the statisitics of a protocol on a python dict.";
 	
 const char *help_regex_expression = 		"Gets the regular expression.";

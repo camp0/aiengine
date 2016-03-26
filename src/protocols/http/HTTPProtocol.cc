@@ -312,19 +312,12 @@ bool HTTPProtocol::process_ua_parameter(HTTPInfo *info, boost::string_ref &ua) {
 
 bool HTTPProtocol::process_content_length_parameter(HTTPInfo *info, boost::string_ref &parameter) {
 
-	int32_t length = 0;
+	int64_t length = std::atoll(parameter.data());
 
-	try {
-		length = std::stoi(std::string(parameter));
-		info->setContentLength(length);
-		info->setDataChunkLength(length);
-		info->setHaveData(true);
+	info->setContentLength(length);
+	info->setDataChunkLength(length);
+	info->setHaveData(true);
 
-	} catch(std::invalid_argument&) { //or catch(...) to catch all exceptions
-		length = 0;
-	}
-
-	// std::cout << "Content-length:" << length << std::endl;
 	return true;
 }
 
@@ -422,7 +415,13 @@ int HTTPProtocol::extract_uri(HTTPInfo *info, boost::string_ref &header) {
                         // ++total_requests_;
                         attach_uri(info,uri);
 			method_size = end + 10;
-                }
+                } else {
+			// Anomaly on the URI header
+			if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+				current_flow_->setPacketAnomaly(PacketAnomalyType::HTTP_BOGUS_URI_HEADER);
+			}
+			anomaly_->incAnomaly(current_flow_,PacketAnomalyType::HTTP_BOGUS_URI_HEADER);
+		}
         }else{
                 ++total_http_others_;
         }
@@ -445,7 +444,6 @@ void HTTPProtocol::parse_header(HTTPInfo *info, boost::string_ref &header) {
        		// Check if is end off line
                 if (std::memcmp(&header[i],"\r\n",2) == 0 ) {
 
-			// std::cout << "HEADER PARAMETER:i(" << i << ")" << &header[i] << std::endl;
                 	if(header_field_.length()) {
                         	auto it = parameters_.find(header_field_);
                                 if (it != parameters_.end()) {
@@ -555,6 +553,11 @@ int HTTPProtocol::process_requests_and_responses(HTTPInfo *info, boost::string_r
 			boost::string_ref newheader(header.substr(offset, length));
 			// std::cout << __FILE__ << ":" << __func__ << ":length:" << length << " header:" << newheader << std::endl;
                 	parse_header(info, newheader);
+		} else {
+                        if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                                current_flow_->setPacketAnomaly(PacketAnomalyType::HTTP_BOGUS_NO_HEADERS);
+                        }
+                        anomaly_->incAnomaly(current_flow_,PacketAnomalyType::HTTP_BOGUS_NO_HEADERS);
 		}
         }
 
@@ -578,6 +581,8 @@ void HTTPProtocol::processFlow(Flow *flow) {
 		}
 		flow->layer7info = info;
 	} 
+	
+	current_flow_ = flow;
 
 	if (info->getIsBanned() == true) {
 #ifdef PYTHON_BINDING

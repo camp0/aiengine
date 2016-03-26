@@ -58,10 +58,11 @@ public:
                 total_snmp_get_requests_(0),
         	total_snmp_get_next_requests_(0),
         	total_snmp_get_responses_(0),
-        	total_snmp_set_requests_(0) 
+        	total_snmp_set_requests_(0),
+		anomaly_() 
 		{}
 
-    	virtual ~SNMPProtocol() {}
+    	virtual ~SNMPProtocol() { anomaly_.reset(); }
 
 	static const uint16_t id = 0;	
 	static constexpr int header_size = sizeof(struct snmp_hdr);
@@ -118,6 +119,7 @@ public:
         std::map<std::string,int> getCounters() const  { std::map<std::string,int> counters; return counters;};
 #endif	
 
+	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
 private:
 	int stats_level_;
 	struct snmp_hdr *snmp_header_;

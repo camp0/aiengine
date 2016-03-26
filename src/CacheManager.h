@@ -34,38 +34,10 @@
 
 namespace aiengine {
 
-template <class T>
-class SingletonCache
-{
-public:
-        template <typename... Args>
-
-        static T* getInstance()
-        {
-                if(!cacheMngInstance_)
-                {
-                        cacheMngInstance_ = new T();
-                }
-                return cacheMngInstance_;
-        }
-
-        static void destroyInstance()
-        {
-                delete cacheMngInstance_;
-                cacheMngInstance_ = nullptr;
-        }
-
-private:
-        static T* cacheMngInstance_;
-};
-
-template <class T> T*  SingletonCache<T>::cacheMngInstance_ = nullptr;
-
-
 // TODO: make the class non singleton in order to have different stacks 
 // running at the same time from the python side.
 // Also the setCache methods are not nice to see :(
-class CacheManager: public SingletonCache<CacheManager>
+class CacheManager
 {
 public:
 
@@ -98,7 +70,6 @@ public:
        
 	void statistics();
 
-        friend class SingletonCache<CacheManager>;
 private:
 	Cache<HTTPInfo>::CachePtr http_info_cache_;
 	Cache<SSLInfo>::CachePtr ssl_info_cache_;

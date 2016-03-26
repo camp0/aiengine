@@ -104,6 +104,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (NetworkStack::*decreaseAllocatedMemory)(const std::string& name, int) =	&NetworkStack::decreaseAllocatedMemory;
 	boost::python::dict (NetworkStack::*getCounters)(const std::string& name) =	&NetworkStack::getCounters;
 	boost::python::dict (NetworkStack::*getCache)(const std::string& name) =	&NetworkStack::getCache;
+        void (NetworkStack::*setAnomalyCallback)(PyObject*,const std::string&) =	&NetworkStack::setAnomalyCallback;
 
         boost::python::class_<NetworkStack, boost::noncopyable>("NetworkStack",no_init)
                 .def("set_domain_name_manager",pure_virtual(setDomainNameManager1))
@@ -119,6 +120,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("release_caches",pure_virtual(releaseCaches))
                 .def("get_counters",pure_virtual(getCounters))
                 .def("get_cache",pure_virtual(getCache))
+                .def("set_anomaly_callback",pure_virtual(setAnomalyCallback))
         ;
 
 	// Definitions for the StackLan class
@@ -135,6 +137,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (StackLan::*releaseCachesLan)() =						&StackLan::releaseCaches;
 	boost::python::dict (StackLan::*getCountersLan)(const std::string& name) =	&StackLan::getCounters;
 	boost::python::dict (StackLan::*getCacheLan)(const std::string& name) =		&StackLan::getCache;
+        void (StackLan::*setAnomalyCallbackLan)(PyObject*,const std::string&) =		&StackLan::setAnomalyCallback;
 
 	boost::python::class_<StackLan, bases<NetworkStack> >("StackLan",
 		"Class that implements a network stack for lan enviroments")
@@ -193,6 +196,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_get_counters )
 		.def("get_cache", getCacheLan, 
 			help_get_cache )
+                .def("set_anomaly_callback",setAnomalyCallbackLan,
+			help_anomaly_callback )
 	;
 
 	// Definitions for the StackMobile class
@@ -209,6 +214,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (StackMobile::*releaseCachesMobile)() =						&StackMobile::releaseCaches;
 	boost::python::dict (StackMobile::*getCountersMobile)(const std::string& name) =	&StackMobile::getCounters;
 	boost::python::dict (StackMobile::*getCacheMobile)(const std::string& name) =		&StackMobile::getCache;
+        void (StackMobile::*setAnomalyCallbackMobile)(PyObject*,const std::string&) =		&StackMobile::setAnomalyCallback;
 
         boost::python::class_<StackMobile, bases<NetworkStack> >("StackMobile",
 		"Class that implements a network stack for mobile enviroments")
@@ -267,6 +273,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_get_counters )
 		.def("get_cache", getCacheMobile,
 			help_get_cache )
+                .def("set_anomaly_callback",setAnomalyCallbackMobile,
+			help_anomaly_callback )
         ;
 
 
@@ -284,6 +292,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (StackLanIPv6::*releaseCachesLanIPv6)() =						&StackLanIPv6::releaseCaches;
 	boost::python::dict (StackLanIPv6::*getCountersLanIPv6)(const std::string& name) =	&StackLanIPv6::getCounters;
 	boost::python::dict (StackLanIPv6::*getCacheLanIPv6)(const std::string& name) =		&StackLanIPv6::getCache;
+        void (StackLanIPv6::*setAnomalyCallbackLanIPv6)(PyObject*,const std::string&) =		&StackLanIPv6::setAnomalyCallback;
 
         boost::python::class_<StackLanIPv6, bases<NetworkStack> >("StackLanIPv6",
 		"Class that implements a network stack for lan environments with IPv6")
@@ -342,6 +351,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_get_counters )
 		.def("get_cache", getCacheLanIPv6,
 			help_get_cache )
+                .def("set_anomaly_callback",setAnomalyCallbackLanIPv6,
+			help_anomaly_callback )
         ;
 
         // Definitions for the StackVirtual class
@@ -358,6 +369,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (StackVirtual::*releaseCachesVirtual)() =						&StackVirtual::releaseCaches;
 	boost::python::dict (StackVirtual::*getCountersVirtual)(const std::string& name) =	&StackVirtual::getCounters;
 	boost::python::dict (StackVirtual::*getCacheVirtual)(const std::string& name) =		&StackVirtual::getCache;
+        void (StackVirtual::*setAnomalyCallbackVirtual)(PyObject*,const std::string&) =		&StackVirtual::setAnomalyCallback;
 
         boost::python::class_<StackVirtual, bases<NetworkStack> >("StackVirtual",
                 "Class that implements a network stack for cloud/virtual environments")
@@ -416,6 +428,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_get_counters )
 		.def("get_cache", getCacheVirtual,
 			help_get_cache )
+                .def("set_anomaly_callback",setAnomalyCallbackVirtual,
+			help_anomaly_callback )
         ;
 
         // Definitions for the StackOpenFlow class
@@ -432,6 +446,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackOpenFlow::*releaseCachesOpenFlow)() =                          		&StackOpenFlow::releaseCaches;
 	boost::python::dict (StackOpenFlow::*getCountersOpenFlow)(const std::string& name) =	&StackOpenFlow::getCounters;
 	boost::python::dict (StackOpenFlow::*getCacheOpenFlow)(const std::string& name) =	&StackOpenFlow::getCache;
+        void (StackOpenFlow::*setAnomalyCallbackOpenFlow)(PyObject*,const std::string&) =	&StackOpenFlow::setAnomalyCallback;
 
         boost::python::class_<StackOpenFlow, bases<NetworkStack> >("StackOpenFlow",
                 "Class that implements a network stack for openflow environments")
@@ -490,6 +505,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_get_counters )
                 .def("get_cache", getCacheOpenFlow,
 			help_get_cache )
+                .def("set_anomaly_callback",setAnomalyCallbackOpenFlow,
+			help_anomaly_callback )
 	;
 	
 	boost::python::class_<Regex, SharedPointer<Regex>,boost::noncopyable>("Regex",init<const std::string&,const std::string&>())

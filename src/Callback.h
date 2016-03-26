@@ -99,6 +99,14 @@ public:
 private:
 	bool callback_set_;
 	JaiCallback *callback_;
+#else
+public:
+	Callback():callback_set_(false) {}
+	virtual ~Callback() {}
+
+	bool haveCallback() const { return callback_set_;}
+private:
+	bool callback_set_;
 #endif
 };
 

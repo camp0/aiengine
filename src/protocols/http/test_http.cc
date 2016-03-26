@@ -1361,6 +1361,9 @@ BOOST_AUTO_TEST_CASE (test26_http)
         flow->setFlowDirection(FlowDirection::FORWARD);
         http->processFlow(flow.get());
 
+	// Verify the anomaly
+	BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::NONE);
+
         BOOST_CHECK(host_name->getMatchs() == 1);
         BOOST_CHECK(host_name->getTotalEvaluates() == 0);
         BOOST_CHECK(re1->getMatchs() == 1);
@@ -1419,12 +1422,92 @@ BOOST_AUTO_TEST_CASE (test27_http)
         flow->setFlowDirection(FlowDirection::BACKWARD);
         http->processFlow(flow.get());
 
+	// Verify the anomaly
+	BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::NONE);
+
 	BOOST_CHECK(host_name->getMatchs() == 1);
         BOOST_CHECK(host_name->getTotalEvaluates() == 0);
         BOOST_CHECK(re1->getMatchs() == 1);
         BOOST_CHECK(re1->getTotalEvaluates() == 1);
 }
 
+// Verify the use of malformed uris
+BOOST_AUTO_TEST_CASE (test28_http) 
+{
+        char *header =  "GET /VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB/oonnnnn-a-/otherfile.html\r\n"
+                        "Connection: close\r\n"
+                        "Accept-Language: en-gb\r\n"
+                        "Accept: */*\r\n"
+			"Cookie: PREF=ID=765870cb5ff303a3:TM=1209230140:LM=1209255358:GM=1:S=tFGcUUKdZTTlFhg8; "
+				"rememberme=true; SID=DQAAAHcAAADymnf27WSdmq8VK7DtQkDCYwpT6yEH1c8p6crrirTO3HsXN"
+				"2N_pOcW-T82lcNyvlUHgXiVPsZYrH6TnjQrgCEOLjUSOCrlLFh5I0BdGjioxzmksgWrrfeMV-y7bx1"
+				"T1LPCMDOW0Wkw0XFqWOpMlkBCHsdt2Vcsha0j20VpIaw6yg; NID=10=jMYWNkozslA4UaRu8zyFSL"
+				"Ens8iWVz4GdkeefkqVm5dFS0F0ztc8hDlNJRllb_WeYe9Wx6a8Yo7MnrFzqwZczgXV5e-RFbCrrJ9dfU5gs79L_v3BSdueIg_OOfjpScSh\r\n"
+                        "User-Agent: LuisAgent\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Host: www.bu.com\r\n\r\n";
+
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+        Packet packet(pkt,length);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->increaseAllocatedMemory(1);
+
+        flow->packet = const_cast<Packet*>(&packet);
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+
+	// Verify the anomaly
+	BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::HTTP_BOGUS_URI_HEADER);
+}
+
+// Verify the use of no headers anomaly
+BOOST_AUTO_TEST_CASE (test29_http) 
+{
+        char *header1 = "GET /VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB/oonnnnn-a-/otherfile.html HTTP/1.0\r\n"
+                        "Host: www.somehost.com\r\n";
+                        "\r\n";
+
+        char *response = "HTTP/1.1 200 OK\r\n"
+                        "Cache-Control: no-cache\r\n"
+                        "Connection: Keep-Alive\r\n"
+			"\r\n";
+
+        Packet packetr(reinterpret_cast <unsigned char*> (response),strlen(response));
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header1);
+        int length1 = strlen(header1);
+        Packet packet1(pkt1,length1);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->increaseAllocatedMemory(1);
+
+        flow->packet = const_cast<Packet*>(&packet1);
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+
+	// Verify the anomaly
+	BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::NONE);
+
+	// The HTTP response from the server
+        flow->packet = const_cast<Packet*>(&packetr);
+        flow->setFlowDirection(FlowDirection::BACKWARD);
+        http->processFlow(flow.get());
+
+        char *header2 = "GET /VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WF%20%20x3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB/oonnnnn-a-/otherfile.html HTTP/1.0\r\n"
+                  	"\r\n";
+        
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (header2);
+        int length2 = strlen(header2);
+        Packet packet2(pkt2,length2);
+
+	flow->packet = const_cast<Packet*>(&packet2);
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+
+	// Verify the anomaly
+	BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::HTTP_BOGUS_NO_HEADERS);
+}
 
 BOOST_AUTO_TEST_SUITE_END( )
 

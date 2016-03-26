@@ -172,7 +172,7 @@ void IMAPProtocol::attach_user_name(IMAPInfo *info, boost::string_ref &name) {
         }
 }
 
-void IMAPProtocol::handle_cmd_login(Flow *flow,IMAPInfo *info, boost::string_ref &header) {
+void IMAPProtocol::handle_cmd_login(IMAPInfo *info, boost::string_ref &header) {
 
 	boost::string_ref domain;
 	boost::string_ref user_name;
@@ -184,8 +184,8 @@ void IMAPProtocol::handle_cmd_login(Flow *flow,IMAPInfo *info, boost::string_ref
 		domain = header.substr(0,end);
 		user_name = header.substr(0,end);
 	} else {
-	       	if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
-                        flow->setPacketAnomaly(PacketAnomalyType::IMAP_BOGUS_HEADER);
+	       	if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        current_flow_->setPacketAnomaly(PacketAnomalyType::IMAP_BOGUS_HEADER);
                 }
 		anomaly_->incAnomaly(PacketAnomalyType::IMAP_BOGUS_HEADER);
 		return;
@@ -203,7 +203,7 @@ void IMAPProtocol::handle_cmd_login(Flow *flow,IMAPInfo *info, boost::string_ref
                 SharedPointer<DomainName> dom_candidate = ban_hosts->getDomainName(domain);
                 if (dom_candidate) {
 #ifdef HAVE_LIBLOG4CXX
-                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with ban host " << dom_candidate->getName());
+                        LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with ban host " << dom_candidate->getName());
 #endif
                         ++total_ban_domains_;
                         info->setIsBanned(true);
@@ -220,10 +220,10 @@ void IMAPProtocol::handle_cmd_login(Flow *flow,IMAPInfo *info, boost::string_ref
                 if (dom_candidate) {
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 #ifdef HAVE_LIBLOG4CXX
-                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << dom_candidate->getName());
+                        LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with " << dom_candidate->getName());
 #endif
                         if(dom_candidate->call.haveCallback()) {
-                                dom_candidate->call.executeCallback(flow);
+                                dom_candidate->call.executeCallback(current_flow_);
                         }
 #endif
                 }
@@ -253,6 +253,8 @@ void IMAPProtocol::processFlow(Flow *flow) {
                 return;
         }
 
+	current_flow_ = flow;
+
 	if (flow->getFlowDirection() == FlowDirection::FORWARD) {
 		boost::string_ref header(reinterpret_cast<const char*>(imap_header_),length);
 		// bypass the tag
@@ -276,7 +278,7 @@ void IMAPProtocol::processFlow(Flow *flow) {
 				if ( cmd == static_cast<int8_t>(IMAPCommandTypes::IMAP_CMD_LOGIN)) {
 					int cmdoff = offset + endtag + 2;
                                         boost::string_ref header_cmd(header.substr(cmdoff, length - cmdoff ));
-                                        handle_cmd_login(flow,iinfo.get(),header_cmd);
+                                        handle_cmd_login(iinfo.get(),header_cmd);
                                 }
 				iinfo->incClientCommands();	
                                 return;

@@ -71,6 +71,7 @@ NetworkStack::NetworkStack():
         ff_tcp_freqs(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_udp_freqs(SharedPointer<FlowForwarder>(new FlowForwarder())),
 	anomaly_(SharedPointer<AnomalyManager>(new AnomalyManager())), 
+	cache_mng_(SharedPointer<CacheManager>(new CacheManager())), 
 	// Private section
 	stats_level_(0),name_(""),
 	proto_vector_(),
@@ -182,6 +183,24 @@ NetworkStack::NetworkStack():
         ff_udp_freqs->addChecker(std::bind(&FrequencyProtocol::freqChecker,freqs_udp,std::placeholders::_1));
         ff_udp_freqs->addFlowFunction(std::bind(&FrequencyProtocol::processFlow,freqs_udp,std::placeholders::_1));
 
+	// Sets the reference to the CacheManager or protocols that release objects
+        ssl->setCacheManager(cache_mng_);
+       	http->setCacheManager(cache_mng_);
+        dns->setCacheManager(cache_mng_);
+        sip->setCacheManager(cache_mng_);
+        smtp->setCacheManager(cache_mng_);
+        pop->setCacheManager(cache_mng_);
+        imap->setCacheManager(cache_mng_);
+
+	// Sets the AnomalyManager on protocols that could generate an anomaly
+        dns->setAnomalyManager(anomaly_);
+        snmp->setAnomalyManager(anomaly_);
+        sip->setAnomalyManager(anomaly_);
+        http->setAnomalyManager(anomaly_);
+        ssl->setAnomalyManager(anomaly_);
+        smtp->setAnomalyManager(anomaly_);
+        pop->setAnomalyManager(anomaly_);
+        imap->setAnomalyManager(anomaly_);
 }
 
 ProtocolPtr NetworkStack::get_protocol(const std::string &name) {
@@ -337,6 +356,18 @@ void NetworkStack::setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_samp
                         proto->setDatabaseAdaptor(dbptr,packet_sampling);
                 }
         }
+}
+
+#if defined(PYTHON_BINDING)
+void NetworkStack::setAnomalyCallback(PyObject *callback,const std::string& proto_name) {
+#elif defined(RUBY_BINDING)
+void NetworkStack::setAnomalyCallback(VALUE callback,const std::string& proto_name) {
+#elif defined(JAVA_BINDING)
+void NetworkStack::setAnomalyCallback(JaiCallback *callback,const std::string& proto_name) {
+#endif
+	if (anomaly_) {
+		anomaly_->setCallback(callback,proto_name);
+	}
 }
 
 #endif

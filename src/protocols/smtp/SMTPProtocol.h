@@ -76,12 +76,12 @@ public:
                 from_cache_(new Cache<StringCache>("From cache")),
                 to_cache_(new Cache<StringCache>("To cache")),
                 from_map_(),to_map_(),
-		flow_mng_() {
+		flow_mng_(),
+		current_flow_(nullptr),
+		anomaly_(),
+		cache_mng_() {}
 
-		CacheManager::getInstance()->setCache(info_cache_);
-	}
-
-    	virtual ~SMTPProtocol() {}
+    	virtual ~SMTPProtocol() { anomaly_.reset(); cache_mng_.reset(); }
 
 	static const uint16_t id = 0;
 	static const int header_size = 6; // Minimum header 220 \r\n;
@@ -143,11 +143,12 @@ public:
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
 #endif
 	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
+	void setCacheManager(SharedPointer<CacheManager> cmng) { cache_mng_ = cmng; cache_mng_->setCache(info_cache_); }
 private:
 	void release_smtp_info_cache(SMTPInfo *info);
 	int32_t release_smtp_info(SMTPInfo *info);
 
-	void handle_cmd_mail(Flow *flow,SMTPInfo *info, boost::string_ref &header);
+	void handle_cmd_mail(SMTPInfo *info, boost::string_ref &header);
 	void handle_cmd_rcpt(SMTPInfo *info, boost::string_ref &header);
 	void attach_from(SMTPInfo *info, boost::string_ref &from);	
 
@@ -172,11 +173,13 @@ private:
         GenericMapType from_map_;
         GenericMapType to_map_;
 
-	FlowManagerPtrWeak flow_mng_;	
+	FlowManagerPtrWeak flow_mng_;
+	Flow *current_flow_;	
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
 #endif
 	SharedPointer<AnomalyManager> anomaly_;
+	SharedPointer<CacheManager> cache_mng_;
 };
 
 typedef std::shared_ptr<SMTPProtocol> SMTPProtocolPtr;

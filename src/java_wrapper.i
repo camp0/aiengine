@@ -118,6 +118,7 @@
 %ignore aiengine::FlowManager::getLastProcessFlow;
 %ignore aiengine::FlowManager::setProtocol;
 %ignore aiengine::FlowManager::updateFlowTime;
+%ignore aiengine::FlowManager::setCacheManager;
 
 %ignore aiengine::DomainNameManager::removeDomainName(const SharedPointer<DomainName>& domain);
 %ignore aiengine::DomainNameManager::addDomainName(const SharedPointer<DomainName>& domain);

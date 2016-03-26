@@ -38,7 +38,7 @@ void SNMPProtocol::processFlow(Flow *flow) {
                 if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
                         flow->setPacketAnomaly(PacketAnomalyType::SNMP_BOGUS_HEADER);
                 }
-		anomaly_->incAnomaly(PacketAnomalyType::SNMP_BOGUS_HEADER);
+		anomaly_->incAnomaly(flow,PacketAnomalyType::SNMP_BOGUS_HEADER);
                 return;
 	}
 
@@ -52,6 +52,7 @@ void SNMPProtocol::processFlow(Flow *flow) {
                 	if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
                         	flow->setPacketAnomaly(PacketAnomalyType::SNMP_BOGUS_HEADER);
                 	}
+			anomaly_->incAnomaly(flow,PacketAnomalyType::SNMP_BOGUS_HEADER);
 			return;	
 		}
 

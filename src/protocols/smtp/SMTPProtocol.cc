@@ -188,7 +188,7 @@ void SMTPProtocol::attach_from(SMTPInfo *info, boost::string_ref &from) {
         }
 }
 
-void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, boost::string_ref &header) {
+void SMTPProtocol::handle_cmd_mail(SMTPInfo *info, boost::string_ref &header) {
 
 	SharedPointer<StringCache> from_ptr = info->from;
 
@@ -196,10 +196,10 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, boost::string_ref 
 	size_t end = header.rfind(">");
 
 	if ((start > header.length())or(end > header.length())) {
-                if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
-                        flow->setPacketAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
+                if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        current_flow_->setPacketAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
                 }
-		anomaly_->incAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
+		anomaly_->incAnomaly(current_flow_,PacketAnomalyType::SMTP_BOGUS_HEADER);
 		return;
 	}
 
@@ -207,10 +207,10 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, boost::string_ref 
 	size_t token = from.find("@");
 
 	if (token > from.length()) {
-                if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
-                        flow->setPacketAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
+                if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        current_flow_->setPacketAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
                 }
-		anomaly_->incAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
+		anomaly_->incAnomaly(current_flow_,PacketAnomalyType::SMTP_BOGUS_HEADER);
 		return;
 	}
 	boost::string_ref domain(from.substr(token + 1,from.size()));
@@ -220,7 +220,7 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, boost::string_ref 
                 SharedPointer<DomainName> dom_candidate = ban_hosts->getDomainName(domain);
                 if (dom_candidate) {
 #ifdef HAVE_LIBLOG4CXX
-                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with ban host " << dom_candidate->getName());
+                        LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with ban host " << dom_candidate->getName());
 #endif
                         ++total_ban_domains_;
 			info->setIsBanned(true);
@@ -237,10 +237,10 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, boost::string_ref 
                 if (dom_candidate) {
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 #ifdef HAVE_LIBLOG4CXX
-			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << dom_candidate->getName());
+			LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with " << dom_candidate->getName());
 #endif
                         if(dom_candidate->call.haveCallback()) {
-                       		dom_candidate->call.executeCallback(flow);
+                       		dom_candidate->call.executeCallback(current_flow_);
                         }
 #endif
                 }
@@ -294,6 +294,8 @@ void SMTPProtocol::processFlow(Flow *flow) {
                 return;
         }
 
+	current_flow_ = flow;
+
 	if (flow->getFlowDirection() == FlowDirection::FORWARD) {
 		
 		// Commands send by the client
@@ -311,7 +313,7 @@ void SMTPProtocol::processFlow(Flow *flow) {
 				// Check if the commands are MAIL or RCPT
 				if ( cmd == static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_MAIL)) {
 					boost::string_ref header(reinterpret_cast<const char*>(smtp_header_),length);
-					handle_cmd_mail(flow,sinfo.get(),header);
+					handle_cmd_mail(sinfo.get(),header);
 				} else if ( cmd == static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_RCPT)) {
 					boost::string_ref header(reinterpret_cast<const char*>(smtp_header_),length);
 					handle_cmd_rcpt(sinfo.get(),header);

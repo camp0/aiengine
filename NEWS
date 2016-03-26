@@ -130,3 +130,5 @@ Features/Changes of 1.4
 - Improvements for show objects on python.
 - Bug fixing.
 
+Features/Changes of 1.5
+- Support for anomaly handlers.

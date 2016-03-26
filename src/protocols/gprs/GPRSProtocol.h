@@ -106,12 +106,10 @@ public:
         	total_delete_pdp_ctx_requests_(0),
         	total_delete_pdp_ctx_responses_(0),
         	total_tpdus_(0),
-		flow_mng_() {
+		flow_mng_(),
+		cache_mng_() {}
 
-		CacheManager::getInstance()->setCache(gprs_info_cache_);
-	}
-
-    	virtual ~GPRSProtocol() {}
+    	virtual ~GPRSProtocol() { cache_mng_.reset(); }
 
 	static const uint16_t id = 0;
 	static const int header_size = 8; // GTP version 1
@@ -181,6 +179,7 @@ public:
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
 #endif
 
+	void setCacheManager(SharedPointer<CacheManager> cmng) { cache_mng_ = cmng; cache_mng_->setCache(gprs_info_cache_); }
 private:
 
 	void process_create_pdp_context(Flow *flow);
@@ -197,6 +196,7 @@ private:
 	int32_t total_delete_pdp_ctx_responses_;
 	int32_t total_tpdus_;
 	FlowManagerPtrWeak flow_mng_;
+	SharedPointer<CacheManager> cache_mng_;
 };
 
 typedef std::shared_ptr<GPRSProtocol> GPRSProtocolPtr;

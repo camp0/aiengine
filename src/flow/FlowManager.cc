@@ -152,7 +152,7 @@ void FlowManager::updateTimers(std::time_t current_time) {
 			flow_list.push_front(flow);
 #else
 			// Release to their corresponding caches the attached objects
-			CacheManager::getInstance()->releaseFlow(tmpflow);
+			cache_mng_->releaseFlow(tmpflow);
 
 			if (flow_cache_) 
 				flow_cache_->releaseFlow(flow);
@@ -178,7 +178,7 @@ void FlowManager::updateTimers(std::time_t current_time) {
                         	proto->databaseAdaptorRemoveHandler(f.get());
                         }
 		}
-		CacheManager::getInstance()->releaseFlow(f.get());
+		cache_mng_->releaseFlow(f.get());
 
 		if (flow_cache_) 
 			flow_cache_->releaseFlow(f);

@@ -54,6 +54,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore PCAP_NETMASK_UNKNOWN;
 %ignore aiengine::RegexNullDeleter;
 
+%ignore aiengine::CacheManager;
 %ignore aiengine::NetworkStack::setName;
 %ignore aiengine::NetworkStack::setLinkLayerMultiplexer;
 %ignore aiengine::NetworkStack::getLinkLayerMultiplexer;
@@ -313,6 +314,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::FlowManager::setProtocol;
 %ignore aiengine::FlowManager::updateFlowTime;
 %ignore aiengine::FlowManager::FlowTimeRefreshRate;
+%ignore aiengine::FlowManager::setCacheManager;
 
 %rename("regexmanager=")		aiengine::IPAbstractSet::setRegexManager;
 %rename("timeout=")			aiengine::FlowManager::setTimeout;

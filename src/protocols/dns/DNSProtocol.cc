@@ -124,6 +124,8 @@ void DNSProtocol::processFlow(Flow *flow) {
 	total_bytes_ += length;
 	++total_packets_;
 
+	current_flow_ = flow;
+
 	if (length > header_size) { // Minimum header size consider
 		setHeader(flow->packet->getPayload());
 		uint16_t flags = ntohs(dns_header_->flags);
@@ -139,11 +141,11 @@ void DNSProtocol::processFlow(Flow *flow) {
 
 		if ((flags == DNS_STANDARD_QUERY)or(flags == DNS_DYNAMIC_UPDATE)) {
 			if (ntohs(dns_header_->questions) > 0) {  
-				handle_standard_query(flow,info.get(),length);
+				handle_standard_query(info.get(),length);
 			}
 		} else if ((flags & DNS_STANDARD_RESPONSE) == DNS_STANDARD_RESPONSE) {
 			if (ntohs(dns_header_->answers) > 0) {
-				handle_standard_response(flow,info.get(),length);
+				handle_standard_response(info.get(),length);
 			}
 		}
 	} else {
@@ -180,9 +182,9 @@ int DNSProtocol::extract_domain_name(Flow *flow) {
 }
 
 
-void DNSProtocol::handle_standard_query(Flow *flow, DNSInfo *info, int length) {
+void DNSProtocol::handle_standard_query(DNSInfo *info, int length) {
 	boost::string_ref domain;
-	int offset = extract_domain_name(flow); 
+	int offset = extract_domain_name(current_flow_); 
 	
 	++total_queries_;
 	
@@ -197,10 +199,10 @@ void DNSProtocol::handle_standard_query(Flow *flow, DNSInfo *info, int length) {
 
 	// Check if the payload is malformed
 	if (header_size + offset > length) {
-               	if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
-               		flow->setPacketAnomaly(PacketAnomalyType::DNS_BOGUS_HEADER);
+               	if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+               		current_flow_->setPacketAnomaly(PacketAnomalyType::DNS_BOGUS_HEADER);
 		}
-               	anomaly_->incAnomaly(PacketAnomalyType::DNS_BOGUS_HEADER);
+               	anomaly_->incAnomaly(current_flow_,PacketAnomalyType::DNS_BOGUS_HEADER);
 	}
 
 	uint16_t qtype = ntohs((dns_header_->data[offset+2] << 8) + dns_header_->data[offset+1]);
@@ -213,7 +215,7 @@ void DNSProtocol::handle_standard_query(Flow *flow, DNSInfo *info, int length) {
 			SharedPointer<DomainName> domain_candidate = ban_dnm->getDomainName(domain);
 			if (domain_candidate) {
 #ifdef HAVE_LIBLOG4CXX
-				LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with banned domain " << domain_candidate->getName());
+				LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with banned domain " << domain_candidate->getName());
 #endif
 				++total_ban_queries_;
 				return;
@@ -226,7 +228,7 @@ void DNSProtocol::handle_standard_query(Flow *flow, DNSInfo *info, int length) {
 	}
 }
 
-void DNSProtocol::handle_standard_response(Flow *flow, DNSInfo *info, int length) {
+void DNSProtocol::handle_standard_response(DNSInfo *info, int length) {
 	boost::string_ref domain;
 
 	++total_responses_;
@@ -234,7 +236,7 @@ void DNSProtocol::handle_standard_response(Flow *flow, DNSInfo *info, int length
        	SharedPointer<StringCache> name = info->name;
        	if (!name) {
 		// There is no name attached so lets try to extract from the response
-        	int offset = extract_domain_name(flow);
+        	int offset = extract_domain_name(current_flow_);
 
         	boost::string_ref dns_name(dns_buffer_name_,offset);
 
@@ -271,10 +273,10 @@ void DNSProtocol::handle_standard_response(Flow *flow, DNSInfo *info, int length
                        	
                 		// Extra check for bogus packets
                 		if (offset >= MAX_DNS_BUFFER_NAME) {
-                        		if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
-                                		flow->setPacketAnomaly(PacketAnomalyType::DNS_LONG_NAME);
+                        		if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                                		current_flow_->setPacketAnomaly(PacketAnomalyType::DNS_LONG_NAME);
                         		}
-                        		anomaly_->incAnomaly(PacketAnomalyType::DNS_LONG_NAME);
+                        		anomaly_->incAnomaly(current_flow_,PacketAnomalyType::DNS_LONG_NAME);
                         		return;
 				}
                 	}
@@ -285,7 +287,7 @@ void DNSProtocol::handle_standard_response(Flow *flow, DNSInfo *info, int length
 			u_char *ptr = &(dns_header_->data[offset]);
 
 #ifdef HAVE_LIBLOG4CXX
-                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << domain_candidate->getName());
+                        LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with " << domain_candidate->getName());
 #endif
 
 			// Extract the IP addresses and store on the DNSDomain just when the domain have been matched
@@ -317,9 +319,9 @@ void DNSProtocol::handle_standard_response(Flow *flow, DNSInfo *info, int length
 			}	
 			info->matched_domain_name = domain_candidate;
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINGING)
-			flow->packet->setForceAdaptorWrite(true); // The udp layer will call the databaseAdaptor update method
+			current_flow_->packet->setForceAdaptorWrite(true); // The udp layer will call the databaseAdaptor update method
                         if(domain_candidate->call.haveCallback()) {
-                                domain_candidate->call.executeCallback(flow);
+                                domain_candidate->call.executeCallback(current_flow_);
                         }
 #endif
                 }

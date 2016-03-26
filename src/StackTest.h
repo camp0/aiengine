@@ -29,6 +29,7 @@
 #include "FlowForwarder.h"
 #include "protocols/ethernet/EthernetProtocol.h"
 #include "AnomalyManager.h"
+#include "CacheManager.h"
 
 using namespace aiengine;
 
@@ -37,6 +38,7 @@ struct StackTest
         EthernetProtocolPtr eth;
         MultiplexerPtr mux_eth;
 	SharedPointer<AnomalyManager> anomaly;
+	SharedPointer<CacheManager> cache_mng;
 
         StackTest()
         {
@@ -51,6 +53,7 @@ struct StackTest
                 mux_eth->addChecker(std::bind(&EthernetProtocol::ethernetChecker,eth,std::placeholders::_1));
 
 		anomaly = SharedPointer<AnomalyManager>(new AnomalyManager());
+		cache_mng = SharedPointer<CacheManager>(new CacheManager());
         }
 
         void inject(Packet &pkt) {

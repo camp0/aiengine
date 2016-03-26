@@ -87,6 +87,7 @@ struct StackTCPTest : public StackTest
                 flow_cache = FlowCachePtr(new FlowCache());
 
 		flow_mng->setFlowCache(flow_cache);
+		flow_mng->setCacheManager(cache_mng);
 
                 // Connect the FlowManager and FlowCache
                 flow_cache->createFlows(2);
@@ -96,6 +97,7 @@ struct StackTCPTest : public StackTest
                 tcp->setFlowManager(flow_mng);
 
 		tcp->setAnomalyManager(anomaly);
+		tcp->setCacheManager(cache_mng);
         }
 
 	void statistics() {
@@ -153,6 +155,7 @@ struct StackIPv6TCPTest : public StackTest
 		
 		ip6->setAnomalyManager(anomaly);
 		tcp->setAnomalyManager(anomaly);
+		tcp->setCacheManager(cache_mng);
         }
 
         ~StackIPv6TCPTest() {

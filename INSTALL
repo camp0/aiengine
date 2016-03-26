@@ -1,10 +1,17 @@
 Installing on Linux systems.
 ----------------------------
 
-- Notice that g++ with c++11 is available on compilers up to 4.7.6 versions.
+Mandatory options
+- Notice that g++ with c++11 is available on compilers up to 4.7.6 versions. Some compilers 4.8.2 dont have full support
+  for all the standard 11 on the compiler. Our recomendation is to use a 5.x version compiler.
 - Boost also is need on versions 1.50 or greater (with boost::string_ref support).
-- Python 2.7,3.3 and 3.4.
-- Libpcap 0.8. 
+- Libpcap-dev 0.8. 
+- Libpcre-dev.
+
+Optional
+- Python 2.7,3.3 and 3.4 If you expect to have the python binding.
+- Ruby dev if expected to have ruby support.
+- Swig for generate Java/Ruby interfaces.
 - Log4cxx is optional.
 
 ./configure

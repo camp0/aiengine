@@ -228,14 +228,13 @@ StackMobile::StackMobile():
         tcp_->setAnomalyManager(anomaly_);
         udp_low_->setAnomalyManager(anomaly_);
         udp_high_->setAnomalyManager(anomaly_);
-        dns->setAnomalyManager(anomaly_);
-        sip->setAnomalyManager(anomaly_);
-        http->setAnomalyManager(anomaly_);
-        ssl->setAnomalyManager(anomaly_);
-        smtp->setAnomalyManager(anomaly_);
-        pop->setAnomalyManager(anomaly_);
-        imap->setAnomalyManager(anomaly_);
-        
+      
+	// Link the CacheManager  
+        flow_table_udp_low_->setCacheManager(cache_mng_);
+        flow_table_udp_high_->setCacheManager(cache_mng_);
+        flow_table_tcp_->setCacheManager(cache_mng_);
+        tcp_->setCacheManager(cache_mng_);
+ 
 	// The low FlowManager have a 24 hours timeout to keep the Context on memory
         flow_table_udp_low_->setTimeout(86400);
 
