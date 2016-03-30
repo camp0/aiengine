@@ -29,7 +29,6 @@
 #endif
 
 #include <iostream>
-#include <algorithm>
 
 namespace aiengine {
 
@@ -37,10 +36,10 @@ class StringCache
 {
 public:
     	explicit StringCache(const char *value):value_(value) {}
-    	explicit StringCache() { reset(); }
+    	explicit StringCache():StringCache("") {}
     	virtual ~StringCache() { value_.clear();}
 
-	void reset() { value_ = ""; }
+	void reset() { setName(""); }
 	const char *getName() const { return value_.c_str(); }
 	void setName(const char *name, int length) { value_.assign(name,length); }
 	void setName(const char *name) { value_.assign(name); }

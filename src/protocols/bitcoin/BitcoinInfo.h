@@ -43,6 +43,7 @@ public:
 		total_transactions_ = 0;
         }
 
+	// TODO
 	void serialize(std::ostream& stream) {}
 
 	void incTransactions() { ++total_transactions_; }
