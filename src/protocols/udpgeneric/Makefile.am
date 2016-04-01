@@ -24,9 +24,11 @@ test_udpgeneric_SOURCES = 	../../Multiplexer.cc \
                         	../http/HTTPInfo.cc \
                         	../ssl/SSLInfo.cc \
                         	../smtp/SMTPInfo.cc \
+                        	../bitcoin/BitcoinInfo.cc \
                         	../dns/DNSInfo.cc \
                         	../gprs/GPRSInfo.cc \
                         	../sip/SIPInfo.cc \
+                        	../ssdp/SSDPInfo.cc \
 				../../Flow.cc \
 				../../flow/FlowManager.cc \
 				../../regex/RegexManager.cc \
@@ -42,4 +44,3 @@ MAINTAINERCLEANFILES = \
         $(srcdir)/Makefile \
         $(srcdir)/Makefile.in \
         `rm -rf $(srcdir)/build `
-

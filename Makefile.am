@@ -40,6 +40,7 @@ SUBDIRS = 	src \
 		src/protocols/ntp \
 		src/protocols/snmp \
 		src/protocols/ssdp \
+		src/protocols/coap \
 		src/protocols/tcpgeneric \
 		src/protocols/udpgeneric \
 		src/protocols/frequency 

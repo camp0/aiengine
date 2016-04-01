@@ -41,8 +41,6 @@ namespace aiengine {
 class Protocol;
 typedef std::shared_ptr<Protocol> ProtocolPtr;
 
-// class FlowForwarder;
-
 class FlowForwarder 
 {
 public:

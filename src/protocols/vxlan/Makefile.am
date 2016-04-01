@@ -26,11 +26,13 @@ test_vxlan_SOURCES = 	../../Multiplexer.cc \
 			../gprs/GPRSInfo.cc \
 			../sip/SIPInfo.cc \
 			../dns/DNSInfo.cc \
+			../ssdp/SSDPInfo.cc \
 			../tcp/TCPProtocol.cc \
 			../tcp/TCPInfo.cc \
 			../ssl/SSLInfo.cc \
 			../http/HTTPInfo.cc \
 			../smtp/SMTPInfo.cc \
+			../bitcoin/BitcoinInfo.cc \
 			../../names/DomainNameManager.cc \
 			../../names/DomainName.cc \
 			../dns/DNSProtocol.cc \

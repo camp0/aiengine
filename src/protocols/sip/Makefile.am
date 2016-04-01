@@ -23,10 +23,12 @@ test_sip_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../udp/UDPProtocol.cc \
 			../gprs/GPRSInfo.cc \
 			../dns/DNSInfo.cc \
+			../ssdp/SSDPInfo.cc \
 			../tcp/TCPInfo.cc \
 			../ssl/SSLInfo.cc \
 			../http/HTTPInfo.cc \
 			../smtp/SMTPInfo.cc \
+			../bitcoin/BitcoinInfo.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \

@@ -62,11 +62,14 @@ noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			protocols/bitcoin/BitcoinProtocol.h \
 			protocols/modbus/ModbusProtocol.h \
 			protocols/dns/DNSProtocol.h \
+			protocols/dns/DNSInfo.h \
 			protocols/sip/SIPProtocol.h \
+			protocols/sip/SIPInfo.h \
 			protocols/dhcp/DHCPProtocol.h \
 			protocols/ntp/NTPProtocol.h \
 			protocols/snmp/SNMPProtocol.h \
 			protocols/ssdp/SSDPProtocol.h \
+			protocols/ssdp/SSDPInfo.h \
 			protocols/frequency/Frequencies.h \
 			protocols/frequency/PacketFrequencies.h \
 			protocols/frequency/FrequencyProtocol.h \
@@ -116,6 +119,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/imap/IMAPProtocol.cc \
 			protocols/pop/POPProtocol.cc \
 			protocols/bitcoin/BitcoinProtocol.cc \
+			protocols/bitcoin/BitcoinInfo.cc \
 			protocols/modbus/ModbusProtocol.cc \
 			protocols/dns/DNSInfo.cc \
 			protocols/dns/DNSProtocol.cc \
@@ -125,6 +129,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/ntp/NTPProtocol.cc \
 			protocols/snmp/SNMPProtocol.cc \
 			protocols/ssdp/SSDPProtocol.cc \
+			protocols/ssdp/SSDPInfo.cc \
 			regex/Regex.cc \
 			regex/RegexManager.cc RejectManager.cc \
 			protocols/frequency/FrequencyProtocol.cc \
@@ -218,10 +223,12 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		GPRSInfo.o GPRSProtocol.o \
 		NTPProtocol.o SNMPProtocol.o \
 		SMTPProtocol.o SMTPInfo.o IMAPProtocol.o \
-		DHCPProtocol.o SIPProtocol.o SIPInfo.o SSDPProtocol.o \
+		DHCPProtocol.o SIPProtocol.o SIPInfo.o \
+		SSDPProtocol.o SSDPInfo.o \
 		POPProtocol.o GREProtocol.o \
 		OpenFlowProtocol.o VxLanProtocol.o \
-		BitcoinProtocol.o ModbusProtocol.o \
+		BitcoinProtocol.o BitcoinInfo.o \
+		ModbusProtocol.o \
 		FrequencyProtocol.o LearnerEngine.o \
 		ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \
 		StackLan.o StackMobile.o StackLanIPv6.o StackVirtual.o StackOpenFlow.o \
@@ -242,9 +249,10 @@ java_objects = 	RegexManager.o Regex.o \
 		GPRSInfo.o GPRSProtocol.o \
                 NTPProtocol.o SNMPProtocol.o \
                 SMTPProtocol.o SMTPInfo.o IMAPProtocol.o \
-                DHCPProtocol.o SIPProtocol.o SIPInfo.o SSDPProtocol.o \
+                DHCPProtocol.o SIPProtocol.o SIPInfo.o 
+		SSDPProtocol.o SSDPInfo.o \
                 POPProtocol.o GREProtocol.o \
-		BitcoinProtocol.o ModbusProtocol.o \
+		BitcoinProtocol.o BitcoinInfo.o ModbusProtocol.o \
                 OpenFlowProtocol.o VxLanProtocol.o \
                 FrequencyProtocol.o LearnerEngine.o \
                 ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \

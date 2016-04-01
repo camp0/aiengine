@@ -46,6 +46,7 @@ src_files += ["protocols/dhcp/DHCPProtocol.cc"]
 src_files += ["protocols/ntp/NTPProtocol.cc"]
 src_files += ["protocols/snmp/SNMPProtocol.cc"]
 src_files += ["protocols/ssdp/SSDPProtocol.cc"]
+src_files += ["protocols/ssdp/SSDPInfo.cc"]
 src_files += ["protocols/modbus/ModbusProtocol.cc"]
 src_files += ["protocols/bitcoin/BitcoinProtocol.cc"]
 src_files += ["regex/Regex.cc","regex/RegexManager.cc","protocols/frequency/FrequencyProtocol.cc"]
@@ -166,6 +167,8 @@ if __name__ == "__main__":
     aiengine_module.include_dirs = includes
     aiengine_module.define_macros = macros
 
+    long_desc = ""
+
     setup(name="aiengine",
         version = "1.5",
         author = "Luis Campo Giralte",
@@ -174,7 +177,7 @@ if __name__ == "__main__":
         license = "GPLv2",
         package_dir = {'': '.'},
         description = "Wrapper for the aiengine",
-        long_description = open('../README.md').read(),
+        long_description = long_desc ,
         ext_modules = [aiengine_module],
         py_modules = ["pyaiengine"],
         classifiers=[

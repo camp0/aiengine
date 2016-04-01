@@ -24,9 +24,11 @@ test_frequency_SOURCES = 	../../Multiplexer.cc \
                         	../http/HTTPInfo.cc \
                         	../ssl/SSLInfo.cc \
                         	../smtp/SMTPInfo.cc \
+                        	../bitcoin/BitcoinInfo.cc \
                         	../dns/DNSInfo.cc \
                         	../gprs/GPRSInfo.cc \
                         	../sip/SIPInfo.cc \
+                        	../ssdp/SSDPInfo.cc \
 				../../ipset/IPSetManager.cc \
 				../../ipset/IPSet.cc \
 				../tcp/TCPProtocol.cc \

@@ -19,10 +19,12 @@ test_ipset_SOURCES = 	../Multiplexer.cc  \
 			../protocols/ssl/SSLInfo.cc \
 			../protocols/http/HTTPInfo.cc \
 			../protocols/smtp/SMTPInfo.cc \
+			../protocols/bitcoin/BitcoinInfo.cc \
 			../protocols/udp/UDPProtocol.cc \
 			../protocols/dns/DNSInfo.cc \
 			../protocols/gprs/GPRSInfo.cc \
 			../protocols/sip/SIPInfo.cc \
+			../protocols/ssdp/SSDPInfo.cc \
 			../protocols/udpgeneric/UDPGenericProtocol.cc \
 			../protocols/tcpgeneric/TCPGenericProtocol.cc \
 			../regex/RegexManager.cc \

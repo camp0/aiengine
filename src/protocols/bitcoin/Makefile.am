@@ -23,7 +23,8 @@ test_bitcoin_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
                         ../dns/DNSInfo.cc \
                         ../gprs/GPRSInfo.cc \
                         ../sip/SIPInfo.cc \
-			BitcoinProtocol.cc test_bitcoin.cc
+                        ../ssdp/SSDPInfo.cc \
+			BitcoinProtocol.cc BitcoinInfo.cc test_bitcoin.cc
 
 test_bitcoin_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
 test_bitcoin_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework

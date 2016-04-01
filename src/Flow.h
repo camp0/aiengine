@@ -21,7 +21,6 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#pragma once
 #ifndef SRC_FLOW_H_
 #define SRC_FLOW_H_
 

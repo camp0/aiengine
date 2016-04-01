@@ -25,6 +25,7 @@ test_openflow_SOURCES =	../../Multiplexer.cc ../../Protocol.cc \
 			../gprs/GPRSInfo.cc \
 			../dns/DNSInfo.cc \
 			../sip/SIPInfo.cc \
+			../ssdp/SSDPInfo.cc \
 			../udpgeneric/UDPGenericProtocol.cc \
 			../tcpgeneric/TCPGenericProtocol.cc \
 			../tcp/TCPProtocol.cc \
@@ -32,6 +33,7 @@ test_openflow_SOURCES =	../../Multiplexer.cc ../../Protocol.cc \
 			../http/HTTPInfo.cc \
 			../ssl/SSLInfo.cc \
 			../smtp/SMTPInfo.cc \
+			../bitcoin/BitcoinInfo.cc \
 			../../regex/RegexManager.cc \
 			../../regex/Regex.cc \
 			../../names/DomainNameManager.cc \

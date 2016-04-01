@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include <vector> 
+#include "Pointer.h"
 #include "StringCache.h"
 #include "FlowInfo.h"
 
@@ -41,18 +42,9 @@ public:
     	explicit SSDPInfo() { reset(); }
     	virtual ~SSDPInfo() {}
 
-	void reset() {
-		is_banned_ = false; 
-		total_requests_ = 0;
-		total_responses_ = 0;
-		response_code_ = 0;
-		host.reset(); 
-		uri.reset();
-	 }
-
-	void serialize(std::ostream& stream) {}
-
-	void resetStrings() { uri.reset(); host.reset(); }
+	void reset(); 
+	void serialize(std::ostream& stream); 
+	void resetStrings(); 
 
 	SharedPointer<StringCache> uri;
 	SharedPointer<StringCache> host;

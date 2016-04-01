@@ -19,13 +19,15 @@ test_smtp_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../protocols/ip/IPProtocol.cc \
 			../../ipset/IPSetManager.cc \
 			../../ipset/IPSet.cc \
-			../../protocols/tcp/TCPProtocol.cc \
-			../../protocols/tcp/TCPInfo.cc \
-			../../protocols/ssl/SSLInfo.cc \
-			../../protocols/http/HTTPInfo.cc \
-			../../protocols/gprs/GPRSInfo.cc \
-			../../protocols/dns/DNSInfo.cc \
-			../../protocols/sip/SIPInfo.cc \
+			../tcp/TCPProtocol.cc \
+			../tcp/TCPInfo.cc \
+			../ssl/SSLInfo.cc \
+			../bitcoin/BitcoinInfo.cc \
+			../http/HTTPInfo.cc \
+			../gprs/GPRSInfo.cc \
+			../dns/DNSInfo.cc \
+			../sip/SIPInfo.cc \
+			../ssdp/SSDPInfo.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \

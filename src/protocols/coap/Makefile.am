@@ -1,17 +1,18 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS =	test_ntp.h
+noinst_HEADERS =	test_coap.h
 
-TEST = test_ntp
+TEST = test_coap
 
-check_PROGRAMS = test_ntp
+check_PROGRAMS = test_coap
 
-test_ntp_SOURCES = 	../../Multiplexer.cc \
+test_coap_SOURCES = 	../../Multiplexer.cc \
 			../ethernet/EthernetProtocol.cc \
 			../../Flow.cc ../../CacheManager.cc \
 			../../AnomalyManager.cc \
 			../../FlowForwarder.cc \
 			../../flow/FlowManager.cc \
+			../ip/IPProtocol.cc \
                         ../tcp/TCPInfo.cc \
                         ../http/HTTPInfo.cc \
                         ../ssl/SSLInfo.cc \
@@ -21,14 +22,13 @@ test_ntp_SOURCES = 	../../Multiplexer.cc \
                         ../gprs/GPRSInfo.cc \
                         ../sip/SIPInfo.cc \
                         ../ssdp/SSDPInfo.cc \
-			../ip/IPProtocol.cc \
 			../../ipset/IPSet.cc \
 			../../ipset/IPSetManager.cc \
 			../udp/UDPProtocol.cc \
-			NTPProtocol.cc test_ntp.cc
+			CoAPProtocol.cc test_coap.cc
 
-test_ntp_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
-test_ntp_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
+test_coap_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE -fvisibility=hidden
+test_coap_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
 
 CLEANFILES = *.o *.lo *.so
 

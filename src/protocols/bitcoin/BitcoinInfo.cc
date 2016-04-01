@@ -21,44 +21,24 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#ifndef SRC_PROTOCOLS_BITCOIN_BITCOININFO_H_
-#define SRC_PROTOCOLS_BITCOIN_BITCOININFO_H_
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <iostream>
-#include "FlowInfo.h"
+#include "BitcoinInfo.h"
 
 namespace aiengine {
 
-class BitcoinInfo : public FlowInfo
-{
-public:
-        explicit BitcoinInfo() { reset(); }
-        virtual ~BitcoinInfo() {}
+void BitcoinInfo::reset() {
+	total_transactions_ = 0;
+}
 
-        void reset(); 
-	void serialize(std::ostream& stream);
+void BitcoinInfo::serialize(std::ostream& stream) {
 
-	void incTransactions() { ++total_transactions_; }
-	int32_t getTotalTransactions() const { return total_transactions_; }
-
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
-
-        friend std::ostream& operator<< (std::ostream& out, const BitcoinInfo& binfo) {
-
-		out << " TX:" << binfo.total_transactions_;
-
-                return out;
-        }
+#ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION 
+        stream << ",\"i\":{";
+        stream << "\"t\":" << total_transactions_ << "";
+#else
+        stream << ",\"info\":{";
+        stream << "\"tx\":" << total_transactions_ << "";
 #endif
-
-private:
-	int32_t total_transactions_;
-};
+        stream << "}";
+}
 
 } // namespace aiengine  
-
-#endif  // SRC_PROTOCOLS_BITCOIN_BITCOININFO_H_

@@ -27,8 +27,10 @@ test_ssl_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../names/DomainName.cc \
 			../gprs/GPRSInfo.cc \
 			../sip/SIPInfo.cc \
+			../ssdp/SSDPInfo.cc \
 			../http/HTTPInfo.cc \
 			../smtp/SMTPInfo.cc \
+			../bitcoin/BitcoinInfo.cc \
 			../dns/DNSInfo.cc \
 			SSLInfo.cc SSLProtocol.cc test_ssl.cc
 

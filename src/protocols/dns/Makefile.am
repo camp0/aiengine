@@ -28,8 +28,10 @@ test_dns_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
                         ../http/HTTPInfo.cc \
                         ../ssl/SSLInfo.cc \
                         ../smtp/SMTPInfo.cc \
+                        ../bitcoin/BitcoinInfo.cc \
                         ../gprs/GPRSInfo.cc \
                         ../sip/SIPInfo.cc \
+                        ../ssdp/SSDPInfo.cc \
 			DNSInfo.cc DNSProtocol.cc test_dns.cc
 
 test_dns_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
