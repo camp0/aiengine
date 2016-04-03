@@ -623,6 +623,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_flow_tag )
 		.add_property("evidence",&Flow::haveEvidence,&Flow::setEvidence,
 			help_flow_evidence )
+		.add_property("label",&Flow::getLabel,&Flow::setLabel,
+			help_flow_label )
 		.add_property("ip_set",make_function(&Flow::getIPSetInfo,return_internal_reference<>()),
 			help_flow_ip_set )
 		.add_property("http_info",make_function(&Flow::getHTTPInfoObject,return_internal_reference<>()),

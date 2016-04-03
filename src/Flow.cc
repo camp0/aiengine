@@ -79,6 +79,7 @@ void Flow::reset() {
 	pa_ = PacketAnomalyType::NONE;
 	arrive_time_ = 0;
 	current_time_ = 0;
+	label_ = nullptr;
 }
 
 void Flow::serialize(std::ostream& stream) {
@@ -114,6 +115,9 @@ void Flow::serialize(std::ostream& stream) {
 		stream << ",\"a\":\"" << static_cast<std::int8_t>(pa_) << "\"";
 
 	stream << ",\"p\":\"" << getL7ShortProtocolName() << "\"";
+
+	if (label_ != nullptr) 
+		stream << ",\"l\":\"" << getLabel() << "\"";
 #else
 	stream << "{";
 	stream << "\"ipsrc\":\"" << address_.getSrcAddrDotNotation() << "\",";
@@ -131,6 +135,9 @@ void Flow::serialize(std::ostream& stream) {
 		stream << ",\"anomaly\":\"" << getFlowAnomalyString() << "\"";
 
 	stream << ",\"layer7\":\"" << getL7ProtocolName() << "\"";
+
+	if (label_ != nullptr) 
+		stream << ",\"label\":\"" << getLabel() << "\"";
 #endif
 	if (protocol_ == IPPROTO_TCP) {
 		SharedPointer<TCPInfo> tinfo = getTCPInfo();

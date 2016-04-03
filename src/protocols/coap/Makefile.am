@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS =	test_coap.h
+noinst_HEADERS =	CoAPProtocol.h CoAPInfo.h test_coap.h
 
 TEST = test_coap
 
@@ -8,11 +8,14 @@ check_PROGRAMS = test_coap
 
 test_coap_SOURCES = 	../../Multiplexer.cc \
 			../ethernet/EthernetProtocol.cc \
-			../../Flow.cc ../../CacheManager.cc \
+			../../Flow.cc \
+			../../Protocol.cc \
+			../../CacheManager.cc \
 			../../AnomalyManager.cc \
 			../../FlowForwarder.cc \
 			../../flow/FlowManager.cc \
 			../ip/IPProtocol.cc \
+			../ip6/IPv6Protocol.cc \
                         ../tcp/TCPInfo.cc \
                         ../http/HTTPInfo.cc \
                         ../ssl/SSLInfo.cc \

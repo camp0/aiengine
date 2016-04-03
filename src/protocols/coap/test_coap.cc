@@ -41,6 +41,12 @@ BOOST_AUTO_TEST_CASE (test1_coap)
 
 	inject(packet);
 
+        Flow *flow = coap->getCurrentFlow();
+
+        BOOST_CHECK( flow != nullptr);
+        SharedPointer<CoAPInfo> info = flow->getCoAPInfo();
+        BOOST_CHECK(info != nullptr);
+
         // Check the results
        	BOOST_CHECK(ip->getTotalPackets() == 1);
         BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
@@ -58,6 +64,12 @@ BOOST_AUTO_TEST_CASE (test1_coap)
 	BOOST_CHECK(coap->getType() == COAP_TYPE_CONFIRMABLE);
 	BOOST_CHECK(coap->getCode() == COAP_CODE_GET); 
 	BOOST_CHECK(coap->getMessageId() == 33408); 
+
+	std::string uri("/1/1/768/core.power");
+	
+        std::string hostname("localhost");
+        // BOOST_CHECK(hostname.compare(info->hostname->getName()) == 0);
+        BOOST_CHECK(uri.compare(info->uri->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test2_coap)
@@ -114,5 +126,110 @@ BOOST_AUTO_TEST_CASE (test3_coap)
         BOOST_CHECK(coap->getMessageId() == 35444);
 }
 
+BOOST_AUTO_TEST_CASE (test4_coap)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_coap_conf_get_mid8434);
+        int length = raw_packet_ethernet_ip_udp_coap_conf_get_mid8434_length;
+        Packet packet(pkt,length);
+
+        inject(packet);
+
+        Flow *flow = coap->getCurrentFlow();
+
+        BOOST_CHECK( flow != nullptr);
+        SharedPointer<CoAPInfo> info = flow->getCoAPInfo();
+        BOOST_CHECK(info != nullptr);
+
+        // Check the results
+        BOOST_CHECK(ip->getTotalPackets() == 1);
+        BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(ip->getTotalBytes() == 51);
+        BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+
+        // Check the udp integrity
+        BOOST_CHECK(udp->getSourcePort() == 33564);
+        BOOST_CHECK(udp->getDestinationPort() == 5683);
+        BOOST_CHECK(udp->getPayloadLength() == 31 - 8);
+
+        BOOST_CHECK(coap->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(coap->getVersion() == COAP_VERSION);
+        BOOST_CHECK(coap->getTokenLength() == 4);
+        BOOST_CHECK(coap->getType() == COAP_TYPE_CONFIRMABLE);
+        BOOST_CHECK(coap->getCode() == COAP_CODE_GET);
+        BOOST_CHECK(coap->getMessageId() == 8434);
+	
+	std::string hostname("localhost");
+	BOOST_CHECK(hostname.compare(info->hostname->getName()) == 0);
+}
+
+BOOST_AUTO_TEST_CASE (test5_coap)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_coap_conf_get_mid33043);
+        int length = raw_packet_ethernet_ip_udp_coap_conf_get_mid33043_length;
+        Packet packet(pkt,length);
+
+        inject(packet);
+
+        Flow *flow = coap->getCurrentFlow();
+
+        BOOST_CHECK( flow != nullptr);
+        SharedPointer<CoAPInfo> info = flow->getCoAPInfo();
+        BOOST_CHECK(info != nullptr);
+
+        // Check the results
+        BOOST_CHECK(ip->getTotalPackets() == 1);
+        BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(ip->getTotalBytes() == 110);
+        BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+
+        // Check the udp integrity
+        BOOST_CHECK(udp->getSourcePort() == 46025);
+        BOOST_CHECK(udp->getDestinationPort() == 5683);
+        BOOST_CHECK(udp->getPayloadLength() == 90 - 8);
+
+        BOOST_CHECK(coap->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(coap->getVersion() == COAP_VERSION);
+        BOOST_CHECK(coap->getTokenLength() == 4);
+        BOOST_CHECK(coap->getType() == COAP_TYPE_CONFIRMABLE);
+        BOOST_CHECK(coap->getCode() == COAP_CODE_GET);
+        BOOST_CHECK(coap->getMessageId() == 33043);
+
+	std::string uri("/somepath/really/maliciousuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuua/time");
+	std::string hostname("localhost");
+	BOOST_CHECK(hostname.compare(info->hostname->getName()) == 0);
+	BOOST_CHECK(uri.compare(info->uri->getName()) == 0);
+
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
+BOOST_FIXTURE_TEST_SUITE(ipv6_coap_suite,StackIPv6CoAPtest)
+
+BOOST_AUTO_TEST_CASE (test1_coap)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip6_udp_coap_conf_delete_mid18020);
+        int length = raw_packet_ethernet_ip6_udp_coap_conf_delete_mid18020_length;
+        Packet packet(pkt,length);
+
+        inject(packet);
+
+        // Check the results
+        BOOST_CHECK(ip6->getTotalPackets() == 1);
+        BOOST_CHECK(ip6->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(ip6->getTotalBytes() == 32 + 40);
+        BOOST_CHECK(ip6->getTotalMalformedPackets() == 0);
+
+        // Check the udp integrity
+        BOOST_CHECK(udp->getSourcePort() == 61046);
+        BOOST_CHECK(udp->getDestinationPort() == 5683);
+        BOOST_CHECK(udp->getPayloadLength() == 32 - 8);
+
+        BOOST_CHECK(coap->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(coap->getVersion() == COAP_VERSION);
+        BOOST_CHECK(coap->getTokenLength() == 3);
+        BOOST_CHECK(coap->getType() == COAP_TYPE_CONFIRMABLE);
+        BOOST_CHECK(coap->getCode() == COAP_CODE_DELETE);
+        BOOST_CHECK(coap->getMessageId() == 18020);
+}
+
+BOOST_AUTO_TEST_SUITE_END()

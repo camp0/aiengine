@@ -28,19 +28,30 @@
 #include <config.h>
 #endif
 
+#ifdef HAVE_LIBLOG4CXX
+#include "log4cxx/logger.h"
+#endif
 #include "Protocol.h"
 #include <arpa/inet.h>
+#include "CoAPInfo.h"
+#include "flow/FlowManager.h"
+#include "Cache.h"
 
 namespace aiengine {
 
 #define COAP_VERSION 1
 
-struct coap_hdr {
-	uint8_t 	vertype;	/* version, type and lenght */
-	uint8_t 	code;		/* code */
+typedef struct __attribute__((packed)) {
+	u_char 		vertype;	/* version, type and lenght */
+	u_char 		code;		/* code */
     	uint16_t 	msgid;		/* msgid */
     	u_char 		data[0];
-} __attribute__((packed));
+} coap_hdr; 
+
+typedef struct __attribute__((packed)) {
+	u_char deltalength;
+	u_char data[0];
+} coap_ext_hdr;
 
 enum coap_type {
 	COAP_TYPE_CONFIRMABLE = 0,
@@ -50,9 +61,10 @@ enum coap_type {
 
 enum coap_code {
 	COAP_CODE_GET = 1,
-	COAP_CODE_POST, 
-	COAP_CODE_PUT,  
-	COAP_CODE_DELETE 
+	COAP_CODE_POST = 2, 
+	COAP_CODE_PUT = 3,  
+	COAP_CODE_DELETE = 4,
+	COAP_CODE_RESPONSE_CONTENT = 69 
 };
 
 class CoAPProtocol: public Protocol 
@@ -61,16 +73,27 @@ public:
     	explicit CoAPProtocol():
 		Protocol("CoAPProtocol","coap"),
 		stats_level_(0),
-		coap_header_(nullptr),total_bytes_(0),
+		coap_header_(nullptr),
+                info_cache_(new Cache<CoAPInfo>("CoAP Info cache")),
+                host_cache_(new Cache<StringCache>("Host cache")),
+                uri_cache_(new Cache<StringCache>("Uri cache")),
+		host_map_(),uri_map_(),
+		total_bytes_(0),
         	total_coap_gets_(0), 
         	total_coap_posts_(0),
         	total_coap_puts_(0), 
-        	total_coap_deletes_(0) {}
+        	total_coap_deletes_(0),
+        	total_coap_others_(0),
+        	flow_mng_(),
+		current_flow_(nullptr),
+        	anomaly_(),
+		cache_mng_() {}
 
     	virtual ~CoAPProtocol() {}
 
 	static const uint16_t id = 0;	
-	static constexpr int header_size = sizeof(struct coap_hdr);
+	static constexpr int header_size = sizeof(coap_hdr);
+	static const int MAX_URI_BUFFER = 1024;
 
 	int getHeaderSize() const { return header_size;}
 
@@ -86,11 +109,14 @@ public:
 	void statistics(std::basic_ostream<char>& out);
 	void statistics() { statistics(std::cout);}
 
-	void releaseCache() {} // No need to free cache
+	void releaseCache();
+
+        void setDomainNameManager(DomainNameManagerPtrWeak dnm) override { host_mng_ = dnm;}
+        void setDomainNameBanManager(DomainNameManagerPtrWeak dnm) override { ban_host_mng_ = dnm;}
 
 	void setHeader(unsigned char *raw_packet){ 
 
-		coap_header_ = reinterpret_cast <struct coap_hdr*> (raw_packet);
+		coap_header_ = reinterpret_cast <coap_hdr*> (raw_packet);
 	}
 
 	// Condition for say that a packet is coap
@@ -109,15 +135,17 @@ public:
 		return false;
 	}
 
-	// uint8_t getType() const { return dhcp_header_->op; }
-
+	// Protocol specific
 	uint8_t getVersion() const { return coap_header_->vertype >> 6; }
 	uint8_t getType() const { return (coap_header_->vertype >> 4) & 0x02; }
 	uint8_t getTokenLength() const { return coap_header_->vertype & 0x0F; }
 	uint16_t getCode() const { return coap_header_->code; }
 	uint16_t getMessageId() const { return ntohs(coap_header_->msgid); }
 
-	int64_t getAllocatedMemory() const { return sizeof(CoAPProtocol); }
+        void increaseAllocatedMemory(int value);
+        void decreaseAllocatedMemory(int value);
+
+	int64_t getAllocatedMemory() const;
 	
 #if defined(PYTHON_BINDING)
         boost::python::dict getCounters() const;
@@ -127,9 +155,28 @@ public:
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
 #endif
 
+        void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
+        void setCacheManager(SharedPointer<CacheManager> cmng) { cache_mng_ = cmng; cache_mng_->setCache(info_cache_); }
+
+	Flow *getCurrentFlow() const { return current_flow_; }
 private:
+	void handle_get(CoAPInfo *info,unsigned char *payload, int length);
+	void attach_host_to_flow(CoAPInfo *info, boost::string_ref &hostname);
+	void attach_uri(CoAPInfo *info, boost::string_ref &uri);
+
 	int stats_level_;
-	struct coap_hdr *coap_header_;
+	coap_hdr *coap_header_;
+
+        Cache<CoAPInfo>::CachePtr info_cache_;
+        Cache<StringCache>::CachePtr host_cache_;
+        Cache<StringCache>::CachePtr uri_cache_;
+
+        GenericMapType host_map_;
+        GenericMapType uri_map_;
+
+        DomainNameManagerPtrWeak host_mng_;
+        DomainNameManagerPtrWeak ban_host_mng_;
+
 	int64_t total_bytes_;
         
 	// Some statistics 
@@ -137,6 +184,16 @@ private:
 	int32_t total_coap_posts_;
 	int32_t total_coap_puts_;
 	int32_t total_coap_deletes_; 
+	int32_t total_coap_others_; 
+
+        FlowManagerPtrWeak flow_mng_;
+        Flow *current_flow_;
+        SharedPointer<AnomalyManager> anomaly_;
+        SharedPointer<CacheManager> cache_mng_;
+        char uri_buffer_[MAX_URI_BUFFER] = {0};
+#ifdef HAVE_LIBLOG4CXX
+        static log4cxx::LoggerPtr logger;
+#endif
 };
 
 typedef std::shared_ptr<CoAPProtocol> CoAPProtocolPtr;

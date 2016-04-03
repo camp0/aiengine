@@ -50,7 +50,8 @@ public:
 		pop_info_cache_(),
 		dns_info_cache_(),
 		ssdp_info_cache_(),
-		bitcoin_info_cache_() {}
+		bitcoin_info_cache_(),
+		coap_info_cache_() {}
 
 	void setCache(Cache<HTTPInfo>::CachePtr cache) { http_info_cache_ = cache; }
 	void setCache(Cache<SSLInfo>::CachePtr cache) { ssl_info_cache_ = cache; }
@@ -63,6 +64,7 @@ public:
 	void setCache(Cache<DNSInfo>::CachePtr cache) { dns_info_cache_ = cache; }
 	void setCache(Cache<SSDPInfo>::CachePtr cache) { ssdp_info_cache_ = cache; }
 	void setCache(Cache<BitcoinInfo>::CachePtr cache) { bitcoin_info_cache_ = cache; }
+	void setCache(Cache<CoAPInfo>::CachePtr cache) { coap_info_cache_ = cache; }
 
 	void releaseFlow(Flow *flow);
 	void releaseTCPFlow(Flow *flow);
@@ -82,6 +84,7 @@ private:
 	Cache<DNSInfo>::CachePtr dns_info_cache_;
 	Cache<SSDPInfo>::CachePtr ssdp_info_cache_;
 	Cache<BitcoinInfo>::CachePtr bitcoin_info_cache_;
+	Cache<CoAPInfo>::CachePtr coap_info_cache_;
 };
 
 
