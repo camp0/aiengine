@@ -256,6 +256,15 @@ BOOST_AUTO_TEST_CASE (test10_ssl)
 
 	inject(packet);
 
+	Flow *flow = ssl->getCurrentFlow();
+
+	BOOST_CHECK( flow != nullptr);
+
+	SharedPointer<SSLInfo> info = flow->getSSLInfo();
+        BOOST_CHECK( info != nullptr);
+        BOOST_CHECK(info->getIsBanned() == true);
+        BOOST_CHECK( info->host  == nullptr);
+	
         BOOST_CHECK(host_name->getMatchs() == 1);
 
         BOOST_CHECK(ssl->getTotalAllowHosts() == 0);

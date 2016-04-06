@@ -93,6 +93,11 @@ void CacheManager::releaseUDPFlow(Flow *flow) {
 			SharedPointer<SSDPInfo> ssdpinfo = flow->getSSDPInfo();
 			if (ssdpinfo) {
 				if (ssdp_info_cache_) ssdp_info_cache_->release(ssdpinfo);
+			} else {
+				SharedPointer<CoAPInfo> coapinfo = flow->getCoAPInfo();
+				if (coapinfo) {
+					if (coap_info_cache_) coap_info_cache_->release(coapinfo);
+				}
 			}
 		}
 	}

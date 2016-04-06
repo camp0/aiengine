@@ -54,15 +54,18 @@ public:
         SharedPointer<StringCache> from;
         SharedPointer<StringCache> to;
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
-
 	friend std::ostream& operator<< (std::ostream& out, const SMTPInfo& sinfo) {
 
-		out << "From:" << sinfo.getFrom() << " ";
-		out << "To:" << sinfo.getTo() << " ";
+		if (sinfo.from) {
+			out << " From:" << sinfo.from->getName();
+		}
+		if (sinfo.to) {
+			out << " To:" << sinfo.to->getName();
+		}
         	return out;
 	}
 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 	const char *getFrom() const { return (from ? from->getName() : ""); }	
 	const char *getTo() const { return (to ? to->getName() : ""); }	
 #endif

@@ -43,9 +43,9 @@ void TCPInfo::reset() {
 void TCPInfo::serialize(std::ostream& stream) {
 
 #ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION 
-	stream << ",\"t\":\"" << this << "\"";
+	stream << ",\"t\":\"" << *this << "\"";
 #else
-	stream << ",\"tcpflags\":\"" << this << "\"";
+	stream << ",\"tcpflags\":\"" << *this << "\"";
 #endif
 }
 

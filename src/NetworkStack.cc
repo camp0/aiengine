@@ -48,6 +48,7 @@ NetworkStack::NetworkStack():
         pop(POPProtocolPtr(new POPProtocol())),
 	bitcoin(BitcoinProtocolPtr(new BitcoinProtocol())),
 	modbus(ModbusProtocolPtr(new ModbusProtocol())),
+	coap(CoAPProtocolPtr(new CoAPProtocol())),
         tcp_generic(TCPGenericProtocolPtr(new TCPGenericProtocol())),
         udp_generic(UDPGenericProtocolPtr(new UDPGenericProtocol())),
         freqs_tcp(FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol","tcpfrequency"))),
@@ -66,6 +67,7 @@ NetworkStack::NetworkStack():
         ff_pop(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_bitcoin(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_modbus(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_coap(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_tcp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_udp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_tcp_freqs(SharedPointer<FlowForwarder>(new FlowForwarder())),
@@ -129,6 +131,12 @@ NetworkStack::NetworkStack():
         ff_ssdp->addChecker(std::bind(&SSDPProtocol::ssdpChecker,ssdp,std::placeholders::_1));
         ff_ssdp->addFlowFunction(std::bind(&SSDPProtocol::processFlow,ssdp,std::placeholders::_1));
 
+	// Configure the CoAP
+        coap->setFlowForwarder(ff_coap);
+        ff_coap->setProtocol(static_cast<ProtocolPtr>(coap));
+        ff_coap->addChecker(std::bind(&CoAPProtocol::coapChecker,coap,std::placeholders::_1));
+        ff_coap->addFlowFunction(std::bind(&CoAPProtocol::processFlow,coap,std::placeholders::_1));
+
         // Configure the SMTP 
         smtp->setFlowForwarder(ff_smtp);
         ff_smtp->setProtocol(static_cast<ProtocolPtr>(smtp));
@@ -188,6 +196,7 @@ NetworkStack::NetworkStack():
        	http->setCacheManager(cache_mng_);
         dns->setCacheManager(cache_mng_);
         sip->setCacheManager(cache_mng_);
+        coap->setCacheManager(cache_mng_);
         smtp->setCacheManager(cache_mng_);
         pop->setCacheManager(cache_mng_);
         imap->setCacheManager(cache_mng_);
@@ -195,6 +204,7 @@ NetworkStack::NetworkStack():
 	// Sets the AnomalyManager on protocols that could generate an anomaly
         dns->setAnomalyManager(anomaly_);
         snmp->setAnomalyManager(anomaly_);
+        coap->setAnomalyManager(anomaly_);
         sip->setAnomalyManager(anomaly_);
         http->setAnomalyManager(anomaly_);
         ssl->setAnomalyManager(anomaly_);

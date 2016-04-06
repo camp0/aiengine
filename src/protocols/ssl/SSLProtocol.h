@@ -189,6 +189,9 @@ public:
 
 	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
 	void setCacheManager(SharedPointer<CacheManager> cmng) { cache_mng_ = cmng; cache_mng_->setCache(info_cache_); }
+
+	Flow* getCurrentFlow() const { return current_flow_; }
+
 private:
         void release_ssl_info_cache(SSLInfo *info);
         int32_t release_ssl_info(SSLInfo *info);

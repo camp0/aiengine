@@ -76,17 +76,23 @@ public:
         SharedPointer<StringCache> ua;
 	SharedPointer<DomainName> matched_domain_name;
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+	friend std::ostream& operator<< (std::ostream& out, const HTTPInfo& hinfo) {
 
+                out << " Req(" << hinfo.getTotalRequests();
+		out << ")Res(" << hinfo.getTotalResponses();
+		out << ")Code(" << hinfo.getResponseCode() << ") ";
+                
+		if (hinfo.getIsBanned()) out << "Banned ";
+                if (hinfo.host) out << "Host:" << hinfo.host->getName();
+                if (hinfo.ua) out << " UserAgent:" << hinfo.ua->getName();
+
+        	return out;
+	}
+
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 	void setBanAndRelease(bool value) { needs_release_ = value; is_banned_ = value; }
 	void setIsRelease(bool value) { needs_release_ = value; }
 	bool getIsRelease() const { return needs_release_; }
-
-	friend std::ostream& operator<< (std::ostream& out, const HTTPInfo& hinfo) {
-	
-		out << "Banned:" << hinfo.is_banned_ << " CLength:" << hinfo.content_length_;
-        	return out;
-	}
 
 	const char *getUri() const { return  (uri ? uri->getName() : ""); }	
 	const char *getHostName() const { return (host ? host->getName() : ""); }	

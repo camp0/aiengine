@@ -67,6 +67,12 @@ enum coap_code {
 	COAP_CODE_RESPONSE_CONTENT = 69 
 };
 
+enum coap_options_number {
+	COAP_OPTION_URI_HOST = 3,
+	COAP_OPTION_LOCATION_PATH = 8,
+	COAP_OPTION_URI_PATH = 11
+};
+
 class CoAPProtocol: public Protocol 
 {
 public:
@@ -79,6 +85,8 @@ public:
                 uri_cache_(new Cache<StringCache>("Uri cache")),
 		host_map_(),uri_map_(),
 		total_bytes_(0),
+        	total_allow_hosts_(0),
+        	total_ban_hosts_(0),
         	total_coap_gets_(0), 
         	total_coap_posts_(0),
         	total_coap_puts_(0), 
@@ -155,12 +163,19 @@ public:
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
 #endif
 
+	void setFlowManager(FlowManagerPtrWeak flow_mng) { flow_mng_ = flow_mng; }
+
         void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
         void setCacheManager(SharedPointer<CacheManager> cmng) { cache_mng_ = cmng; cache_mng_->setCache(info_cache_); }
 
 	Flow *getCurrentFlow() const { return current_flow_; }
 private:
+
+	void process_common_header(CoAPInfo *info,unsigned char *payload, int length);
+	
 	void handle_get(CoAPInfo *info,unsigned char *payload, int length);
+	void handle_put(CoAPInfo *info,unsigned char *payload, int length);
+
 	void attach_host_to_flow(CoAPInfo *info, boost::string_ref &hostname);
 	void attach_uri(CoAPInfo *info, boost::string_ref &uri);
 
@@ -180,6 +195,8 @@ private:
 	int64_t total_bytes_;
         
 	// Some statistics 
+        int32_t total_allow_hosts_;
+        int32_t total_ban_hosts_;
         int32_t total_coap_gets_;
 	int32_t total_coap_posts_;
 	int32_t total_coap_puts_;

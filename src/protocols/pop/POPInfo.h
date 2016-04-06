@@ -59,14 +59,15 @@ public:
 
 	SharedPointer<StringCache> user_name;
 	
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+	friend std::ostream& operator<< (std::ostream& out, const POPInfo& pinfo) {
 
-	friend std::ostream& operator<< (std::ostream& out, const POPInfo& iinfo) {
-	
-		out << "Client cmds:" << iinfo.client_commands_ << " Server cmds:" << iinfo.server_commands_;
+		if (pinfo.user_name) {
+			out << " User:" << pinfo.user_name->getName();
+		}	
         	return out;
 	}
 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 	const char *getUserName() const { return (user_name ? user_name->getName() : ""); }
 #endif
 

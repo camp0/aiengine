@@ -59,16 +59,15 @@ public:
 	void setHeartbeat(bool value) { heartbeat_ = value; }
 	bool getHeartbeat() const { return heartbeat_; }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
-
         friend std::ostream& operator<< (std::ostream& out, const SSLInfo& sinfo) {
 
-		out << " DataPdus:" << sinfo.data_pdus_;
-                out << " Host:" << sinfo.getServerName() << " ";
+                out << " Pdus:" << sinfo.getTotalDataPdus();
+                if (sinfo.host) out << " Host:" << sinfo.host->getName();
 
                 return out;
         }
 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
         const char *getServerName() const { return (host ? host->getName() : ""); }
 #endif
 

@@ -18,6 +18,7 @@ test_coap_SOURCES = 	../../Multiplexer.cc \
 			../ip6/IPv6Protocol.cc \
                         ../tcp/TCPInfo.cc \
                         ../http/HTTPInfo.cc \
+                        ../http/HTTPUriSet.cc \
                         ../ssl/SSLInfo.cc \
                         ../smtp/SMTPInfo.cc \
                         ../bitcoin/BitcoinInfo.cc \
@@ -28,6 +29,8 @@ test_coap_SOURCES = 	../../Multiplexer.cc \
 			../../ipset/IPSet.cc \
 			../../ipset/IPSetManager.cc \
 			../udp/UDPProtocol.cc \
+                        ../../names/DomainNameManager.cc \
+                        ../../names/DomainName.cc \
 			CoAPProtocol.cc test_coap.cc
 
 test_coap_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE -fvisibility=hidden

@@ -45,18 +45,28 @@ public:
 	void incTransactions() { ++total_transactions_; }
 	int32_t getTotalTransactions() const { return total_transactions_; }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+	void incBlocks() { ++total_blocks_; }
+	int32_t getTotalBlocks() const { return total_blocks_; }
+
+	void incRejects() { ++total_rejects_; }
+	int32_t getTotalRejects() const { return total_rejects_; }
+
+//#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 
         friend std::ostream& operator<< (std::ostream& out, const BitcoinInfo& binfo) {
 
 		out << " TX:" << binfo.total_transactions_;
+		out << " Blocks:" << binfo.total_blocks_;
+		out << " Rejects:" << binfo.total_rejects_;
 
                 return out;
         }
-#endif
+// #endif
 
 private:
 	int32_t total_transactions_;
+	int32_t total_blocks_;
+	int32_t total_rejects_;
 };
 
 } // namespace aiengine  

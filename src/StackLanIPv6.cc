@@ -78,6 +78,7 @@ StackLanIPv6::StackLanIPv6():
         addProtocol(ntp);
         addProtocol(snmp);
         addProtocol(ssdp);
+        addProtocol(coap);
         addProtocol(udp_generic);
         addProtocol(freqs_udp);
  
@@ -170,6 +171,7 @@ StackLanIPv6::StackLanIPv6():
         dns->setFlowManager(flow_table_udp_);
         sip->setFlowManager(flow_table_udp_);
         ssdp->setFlowManager(flow_table_udp_);
+        coap->setFlowManager(flow_table_udp_);
 
 	// Connect the AnomalyManager with the protocols that may have anomalies
         ip6_->setAnomalyManager(anomaly_);
@@ -187,7 +189,7 @@ StackLanIPv6::StackLanIPv6():
 
 	enableFlowForwarders(ff_tcp_,
 		{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
-        enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
+        enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_coap,ff_udp_generic});
 
         std::ostringstream msg;
         msg << getName() << " ready.";
@@ -250,7 +252,7 @@ void StackLanIPv6::enableNIDSEngine(bool enable) {
 
 	if (enable) {
         	disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin});
-        	disableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp});
+        	disableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_coap});
 
 	        std::ostringstream msg;
        		msg << "Enable NIDSEngine on " << getName(); 
@@ -262,7 +264,7 @@ void StackLanIPv6::enableNIDSEngine(bool enable) {
 
         	enableFlowForwarders(ff_tcp_,
 			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
-        	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
+        	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_coap,ff_udp_generic});
 	}
 	enable_nids_engine_ = enable;
 }
@@ -291,9 +293,9 @@ void StackLanIPv6::setTotalUDPFlows(int value) {
 	flow_cache_udp_->createFlows(value);
 	dns->increaseAllocatedMemory(value/ 2);
 
-        // SIP values
         sip->increaseAllocatedMemory(value * 0.2);
         ssdp->increaseAllocatedMemory(value * 0.2);
+        coap->increaseAllocatedMemory(value * 0.2);
 }
 
 int StackLanIPv6::getTotalTCPFlows() const { return flow_cache_tcp_->getTotalFlows(); }

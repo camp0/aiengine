@@ -75,7 +75,9 @@ public:
 		stats_level_(0),
 		bitcoin_header_(nullptr),total_bytes_(0),
 		total_bitcoin_operations_(0),
-		info_cache_(new Cache<BitcoinInfo>("Bitcoin Info Cache"))
+		info_cache_(new Cache<BitcoinInfo>("Bitcoin Info Cache")),
+		flow_mng_(),
+		current_flow_(nullptr)
         	{}
 
     	virtual ~BitcoinProtocol() {}
@@ -140,6 +142,8 @@ public:
         JavaCounters getCounters() const; 
 #endif
 
+	Flow* getCurrentFlow() const { return current_flow_; }
+
 private:
 
 	static void default_handler(BitcoinProtocol &bt) { return; }
@@ -154,6 +158,7 @@ private:
 	Cache<BitcoinInfo>::CachePtr info_cache_;
 
 	FlowManagerPtrWeak flow_mng_;
+	Flow *current_flow_;
 };
 
 typedef std::shared_ptr<BitcoinProtocol> BitcoinProtocolPtr;

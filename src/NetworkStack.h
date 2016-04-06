@@ -51,6 +51,7 @@
 #include "protocols/pop/POPProtocol.h"
 #include "protocols/bitcoin/BitcoinProtocol.h"
 #include "protocols/modbus/ModbusProtocol.h"
+#include "protocols/coap/CoAPProtocol.h"
 #include "protocols/frequency/FrequencyProtocol.h"
 
 namespace aiengine {
@@ -205,6 +206,7 @@ protected:
         POPProtocolPtr pop;
         BitcoinProtocolPtr bitcoin;
         ModbusProtocolPtr modbus;
+        CoAPProtocolPtr coap;
         TCPGenericProtocolPtr tcp_generic;
         UDPGenericProtocolPtr udp_generic;
         FrequencyProtocolPtr freqs_tcp;
@@ -220,6 +222,7 @@ protected:
         SharedPointer<FlowForwarder> ff_imap;
         SharedPointer<FlowForwarder> ff_pop,ff_bitcoin;
         SharedPointer<FlowForwarder> ff_modbus;
+        SharedPointer<FlowForwarder> ff_coap;
         SharedPointer<FlowForwarder> ff_tcp_generic;
         SharedPointer<FlowForwarder> ff_udp_generic;
         SharedPointer<FlowForwarder> ff_tcp_freqs;

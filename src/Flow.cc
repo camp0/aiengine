@@ -151,6 +151,26 @@ void Flow::serialize(std::ostream& stream) {
 			SharedPointer<SSLInfo> sinfo = getSSLInfo();	
 			if (sinfo){
 				sinfo->serialize(stream);
+			} else {
+				SharedPointer<SMTPInfo> smtpinfo = getSMTPInfo();
+				if (smtpinfo) {
+					smtpinfo->serialize(stream);
+				} else {
+					SharedPointer<POPInfo> popinfo = getPOPInfo();
+					if (popinfo) {
+						popinfo->serialize(stream);
+					} else {
+						SharedPointer<IMAPInfo> iinfo = getIMAPInfo();
+						if (iinfo) {
+							iinfo->serialize(stream);
+						} else {
+							SharedPointer<BitcoinInfo> binfo = getBitcoinInfo();
+							if (binfo) {
+								binfo->serialize(stream);
+							}
+						}
+					}
+				}
 			}
 		}
 	} else { // UDP
@@ -161,6 +181,16 @@ void Flow::serialize(std::ostream& stream) {
 			SharedPointer<SIPInfo> sinfo = getSIPInfo();
 			if (sinfo) {
 				sinfo->serialize(stream);
+			} else {
+				SharedPointer<SSDPInfo> ssdpinfo = getSSDPInfo();
+				if (ssdpinfo) {
+					ssdpinfo->serialize(stream);
+				} else {
+					SharedPointer<CoAPInfo> coapinfo = getCoAPInfo();
+					if (coapinfo) {
+						coapinfo->serialize(stream);
+					}
+				}
 			}
 		}
 		SharedPointer<GPRSInfo> ginfo = getGPRSInfo();
@@ -195,31 +225,28 @@ void Flow::showFlowInfo(std::ostream& out) const {
 
 		SharedPointer<HTTPInfo> hinfo = getHTTPInfo();
 		if (hinfo) {
-                	out << " Req(" << hinfo->getTotalRequests() << ")Res(" << hinfo->getTotalResponses() << ")Code(" << hinfo->getResponseCode() << ") ";
-                	if (hinfo->getIsBanned()) out << "Banned ";
-                	if (hinfo->host) out << "Host:" << hinfo->host->getName();
-                	if (hinfo->ua) out << " UserAgent:" << hinfo->ua->getName();
+			out << *hinfo.get();
         	} else {
 			SharedPointer<SSLInfo> sinfo = getSSLInfo();
 			if (sinfo) {
-				out << " Pdus:" << sinfo->getTotalDataPdus();
-				if (sinfo->host) out << " Host:" << sinfo->host->getName();
+				out << *sinfo.get();
 			} else {
 				SharedPointer<SMTPInfo> smtpinfo = getSMTPInfo();
 				if (smtpinfo) {
-					if (smtpinfo->from) out << " From:" << smtpinfo->from->getName();
-					if (smtpinfo->to) out << " To:" << smtpinfo->to->getName();
+					out << *smtpinfo.get();
 				} else {
 					SharedPointer<POPInfo> popinfo = getPOPInfo();
 					if (popinfo) {
-						if (popinfo->user_name) out << " User:" << popinfo->user_name->getName();
+						out << *popinfo.get();
 					} else {
 						SharedPointer<IMAPInfo> iinfo = getIMAPInfo();
 						if (iinfo) {
-							if (iinfo->user_name) out << " User:" << iinfo->user_name->getName();
+							out << *iinfo.get();
 						} else {
 							SharedPointer<BitcoinInfo> binfo = getBitcoinInfo();
-							if (binfo) out << " Tx:" << binfo->getTotalTransactions();
+							if (binfo) {
+								out << *binfo.get();
+							}
 						}
 					}
 				} 
@@ -233,7 +260,7 @@ void Flow::showFlowInfo(std::ostream& out) const {
 
 		SharedPointer<DNSInfo> dnsinfo = getDNSInfo();
 		if (dnsinfo) {
-			if (dnsinfo->name) out << " Domain:" << dnsinfo->name->getName();	
+			out << *dnsinfo.get();	
 		} else {
 			SharedPointer<SIPInfo> sipinfo = getSIPInfo();
 			if (sipinfo) {
@@ -241,6 +268,18 @@ void Flow::showFlowInfo(std::ostream& out) const {
                 		if (sipinfo->from) out << " SIPFrom:" << sipinfo->from->getName();
                 		if (sipinfo->to) out << " SIPTo:" << sipinfo->to->getName();
                 		if (sipinfo->via) out << " SIPVia:" << sipinfo->via->getName();
+			} else {
+				SharedPointer<SSDPInfo> ssdpinfo = getSSDPInfo();
+				if (ssdpinfo) {
+					if (ssdpinfo->host) out << " Host:" << ssdpinfo->host->getName();
+					if (ssdpinfo->uri) out << " Uri:" << ssdpinfo->uri->getName();
+				} else {
+					SharedPointer<CoAPInfo> coapinfo = getCoAPInfo();
+					if (coapinfo) {
+						if (coapinfo->hostname) out << " Host:" << coapinfo->hostname->getName();
+						if (coapinfo->uri) out << " Uri:" << coapinfo->uri->getName();
+					}
+				}
 			}
         	}
 	}

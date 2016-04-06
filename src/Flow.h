@@ -210,6 +210,7 @@ public:
         IMAPInfo& getIMAPInfoObject() const { return *getIMAPInfo().get();}
         SSDPInfo& getSSDPInfoObject() const { return *getSSDPInfo().get();}
 	BitcoinInfo& getBitcoinInfoObject() const { return *getBitcoinInfo().get(); }
+        CoAPInfo& getCoAPInfoObject() const { return *getCoAPInfo().get();}
 #endif
 
 #if defined(PYTHON_BINDING)

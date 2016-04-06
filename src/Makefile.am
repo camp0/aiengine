@@ -70,6 +70,8 @@ noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			protocols/snmp/SNMPProtocol.h \
 			protocols/ssdp/SSDPProtocol.h \
 			protocols/ssdp/SSDPInfo.h \
+			protocols/coap/CoAPProtocol.h \
+			protocols/coap/CoAPInfo.h \
 			protocols/frequency/Frequencies.h \
 			protocols/frequency/PacketFrequencies.h \
 			protocols/frequency/FrequencyProtocol.h \
@@ -130,6 +132,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/snmp/SNMPProtocol.cc \
 			protocols/ssdp/SSDPProtocol.cc \
 			protocols/ssdp/SSDPInfo.cc \
+			protocols/coap/CoAPProtocol.cc \
 			regex/Regex.cc \
 			regex/RegexManager.cc RejectManager.cc \
 			protocols/frequency/FrequencyProtocol.cc \
@@ -229,6 +232,7 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		OpenFlowProtocol.o VxLanProtocol.o \
 		BitcoinProtocol.o BitcoinInfo.o \
 		ModbusProtocol.o \
+		CoAPProtocol.o \
 		FrequencyProtocol.o LearnerEngine.o \
 		ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \
 		StackLan.o StackMobile.o StackLanIPv6.o StackVirtual.o StackOpenFlow.o \
@@ -249,9 +253,10 @@ java_objects = 	RegexManager.o Regex.o \
 		GPRSInfo.o GPRSProtocol.o \
                 NTPProtocol.o SNMPProtocol.o \
                 SMTPProtocol.o SMTPInfo.o IMAPProtocol.o \
-                DHCPProtocol.o SIPProtocol.o SIPInfo.o 
+                DHCPProtocol.o SIPProtocol.o SIPInfo.o \
 		SSDPProtocol.o SSDPInfo.o \
                 POPProtocol.o GREProtocol.o \
+		CoAPProtocol.o \
 		BitcoinProtocol.o BitcoinInfo.o ModbusProtocol.o \
                 OpenFlowProtocol.o VxLanProtocol.o \
                 FrequencyProtocol.o LearnerEngine.o \

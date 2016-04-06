@@ -133,6 +133,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::Flow::getSSDPInfo;
 %ignore aiengine::Flow::getSIPInfo;
 %ignore aiengine::Flow::getBitcoinInfo;
+%ignore aiengine::Flow::getCoAPInfo;
 %ignore aiengine::Flow::packet;
 %ignore aiengine::Flow::regex;
 %ignore aiengine::Flow::frequencies;
@@ -285,6 +286,13 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::SSDPInfo::getTotalRequests;
 %ignore aiengine::SSDPInfo::getTotalResponses;
 
+%ignore aiengine::CoAPInfo::reset;
+%ignore aiengine::CoAPInfo::hostname;
+%ignore aiengine::CoAPInfo::uri;
+%ignore aiengine::CoAPInfo::matched_domain_name;
+%ignore aiengine::CoAPInfo::setIsBanned;
+%ignore aiengine::CoAPInfo::getIsBanned;
+
 %ignore aiengine::LearnerEngine::agregatePacketFlow;
 %ignore aiengine::LearnerEngine::setFrequencyGroup;
 %ignore aiengine::LearnerEngine::agregateFlows;
@@ -345,6 +353,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("http_info")			aiengine::Flow::getHTTPInfoObject;
 %rename("sip_info")			aiengine::Flow::getSIPInfoObject;
 %rename("ssdp_info")			aiengine::Flow::getSSDPInfoObject;
+%rename("coap_info")			aiengine::Flow::getCoAPInfoObject;
 %rename("regex")			aiengine::Flow::getRegex;
 %rename("payload")			aiengine::Flow::getPayload;
 %rename("uri")				aiengine::SIPInfo::getUri;
@@ -475,6 +484,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %include "protocols/pop/POPInfo.h"
 %include "protocols/ssdp/SSDPInfo.h"
 %include "protocols/bitcoin/BitcoinInfo.h"
+%include "protocols/coap/CoAPInfo.h"
 %include "Flow.h"
 %include "learner/LearnerEngine.h"
 %include "protocols/frequency/FrequencyGroup.h"

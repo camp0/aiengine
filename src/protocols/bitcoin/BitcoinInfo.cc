@@ -27,16 +27,22 @@ namespace aiengine {
 
 void BitcoinInfo::reset() {
 	total_transactions_ = 0;
+	total_blocks_ = 0;
+	total_rejects_ = 0;
 }
 
 void BitcoinInfo::serialize(std::ostream& stream) {
 
 #ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION 
         stream << ",\"i\":{";
-        stream << "\"t\":" << total_transactions_ << "";
+        stream << "\"t\":" << total_transactions_ << ",";
+        stream << "\"b\":" << total_blocks_ << ",";
+        stream << "\"r\":" << total_rejects_ << "";
 #else
         stream << ",\"info\":{";
-        stream << "\"tx\":" << total_transactions_ << "";
+        stream << "\"tx\":" << total_transactions_ << ",";
+        stream << "\"blocks\":" << total_blocks_ << ",";
+        stream << "\"rejects\":" << total_rejects_ << "";
 #endif
         stream << "}";
 }

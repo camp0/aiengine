@@ -582,8 +582,6 @@ void HTTPProtocol::processFlow(Flow *flow) {
 		flow->layer7info = info;
 	} 
 	
-	current_flow_ = flow;
-
 	if (info->getIsBanned() == true) {
 #ifdef PYTHON_BINDING
 		// The HTTP flow could be banned from the python side
@@ -652,7 +650,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
 
 			if ((info->matched_domain_name)and(offset > 0)) {
 				SharedPointer<HTTPUriSet> uset = info->matched_domain_name->getHTTPUriSet();
-				if((uset) and (offset >0)) {
+				if (uset) {
 					if (uset->lookupURI(info->uri->getName())) {
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 						if (uset->call.haveCallback()) {

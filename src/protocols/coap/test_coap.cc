@@ -25,7 +25,7 @@
 
 #define BOOST_TEST_DYN_LINK
 #ifdef STAND_ALONE
-#define BOOST_TEST_MODULE dhcptest
+#define BOOST_TEST_MODULE coaptest
 #endif
 #include <boost/test/unit_test.hpp>
 
@@ -199,6 +199,46 @@ BOOST_AUTO_TEST_CASE (test5_coap)
 	BOOST_CHECK(hostname.compare(info->hostname->getName()) == 0);
 	BOOST_CHECK(uri.compare(info->uri->getName()) == 0);
 
+}
+
+BOOST_AUTO_TEST_CASE (test6_coap)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (raw_packet_ethernet_ip_udp_coap_conf_put_mid45900);
+        int length = raw_packet_ethernet_ip_udp_coap_conf_put_mid45900_length;
+        Packet packet(pkt,length);
+
+        inject(packet);
+
+        Flow *flow = coap->getCurrentFlow();
+
+        BOOST_CHECK( flow != nullptr);
+        SharedPointer<CoAPInfo> info = flow->getCoAPInfo();
+        BOOST_CHECK(info != nullptr);
+        BOOST_CHECK(info->hostname != nullptr);
+        BOOST_CHECK(info->uri != nullptr);
+
+        // Check the results
+        BOOST_CHECK(ip->getTotalPackets() == 1);
+        BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(ip->getTotalBytes() == 1092);
+        BOOST_CHECK(ip->getTotalMalformedPackets() == 0);
+
+        // Check the udp integrity
+        BOOST_CHECK(udp->getSourcePort() == 58928);
+        BOOST_CHECK(udp->getDestinationPort() == 5683);
+        BOOST_CHECK(udp->getPayloadLength() == 1072 - 8);
+
+        BOOST_CHECK(coap->getTotalValidatedPackets() == 1);
+        BOOST_CHECK(coap->getVersion() == COAP_VERSION);
+        BOOST_CHECK(coap->getTokenLength() == 4);
+        BOOST_CHECK(coap->getType() == COAP_TYPE_CONFIRMABLE);
+        BOOST_CHECK(coap->getCode() == COAP_CODE_PUT);
+        BOOST_CHECK(coap->getMessageId() == 45900);
+
+	std::string uri("/other/block");
+	std::string hostname("somedomain.com");
+	BOOST_CHECK(hostname.compare(info->hostname->getName()) == 0);
+	BOOST_CHECK(uri.compare(info->uri->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

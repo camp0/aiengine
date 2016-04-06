@@ -51,15 +51,15 @@ public:
 	SharedPointer<StringCache> name;
 	SharedPointer<DomainName> matched_domain_name;
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 	friend std::ostream& operator<< (std::ostream& out, const DNSInfo& domain) {
 
 		if (!domain.name) {	
-			out << domain.name->getName();
+			out << " Domain:" << domain.name->getName();
 		}
         	return out;
 	}
 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 	const char *getDomainName() const { return (name ? name->getName() : ""); }
 #endif
 	void addIPAddress(const char* ipstr);

@@ -116,6 +116,7 @@ void CoAPProtocol::processFlow(Flow *flow) {
 	int length = flow->packet->getLength();
 	total_bytes_ += length;
 	++total_packets_;
+	++flow->total_packets_l7;
 
 	if(length >= header_size) {
 		setHeader(flow->packet->getPayload());	
@@ -131,15 +132,18 @@ void CoAPProtocol::processFlow(Flow *flow) {
 	
 			current_flow_ = flow;
 
+			uint8_t type = getType();
 			uint8_t code = getCode();
+			unsigned char *payload = (unsigned char*)coap_header_;
+			int offset = sizeof(coap_hdr) + getTokenLength();
+			// TODO anomaly for the size of the getTokenLength()
 			if (code == COAP_CODE_GET) {
 				++ total_coap_gets_;
-				unsigned char *payload = (unsigned char*)coap_header_;
-				int offset = sizeof(coap_hdr) + getTokenLength();
 				handle_get(info.get(),&payload[offset],length - offset);
 			} else if (code == COAP_CODE_POST) {
 				++ total_coap_posts_;
 			} else if (code == COAP_CODE_PUT) {
+				handle_put(info.get(),&payload[offset],length - offset);
 				++ total_coap_puts_;
 			} else if (code == COAP_CODE_DELETE) {
 				++ total_coap_deletes_;
@@ -147,43 +151,74 @@ void CoAPProtocol::processFlow(Flow *flow) {
 				++ total_coap_others_;
 			}
 		}
+	} else {
+                if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        flow->setPacketAnomaly(PacketAnomalyType::COAP_BOGUS_HEADER);
+                }
+                anomaly_->incAnomaly(PacketAnomalyType::COAP_BOGUS_HEADER);
 	}
 }
 
 void CoAPProtocol::handle_get(CoAPInfo *info,unsigned char *payload, int length) {
 
+	process_common_header(info,payload,length);
+}
+
+void CoAPProtocol::handle_put(CoAPInfo *info,unsigned char *payload, int length) {
+
+	process_common_header(info,payload,length);
+}
+
+void CoAPProtocol::process_common_header(CoAPInfo *info,unsigned char *payload, int length) {
+
 	int offset = 0;
 	int buffer_offset = 0;	
+	uint8_t type = 0;
 	// std::cout << "First code:" << (int)payload[0] << " head size:" << header_size << std::endl;
 	do {
 		int data_offset = 0;
 		coap_ext_hdr *extension = reinterpret_cast <coap_ext_hdr*> (&payload[offset]);
-		int delta = (extension->deltalength >> 4); 	
+		int delta = (extension->deltalength >> 4); 
+		type += delta;	
 		int extension_length = (extension->deltalength & 0x0F) ; 	
 		if (extension_length > 12 ) {
 			extension_length += extension->data[0];
 			++data_offset;
 		}
-		char *dataptr = (char*)&(extension->data[data_offset]);
-		if (delta == 3) { // The hostname 
+		char *dataptr = reinterpret_cast <char*> (&(extension->data[data_offset]));
+		if (type == COAP_OPTION_URI_HOST) { // The hostname 
 			boost::string_ref hostname(dataptr,extension_length);
+
+        		if (!ban_host_mng_.expired()) {
+                		DomainNameManagerPtr ban_hosts = ban_host_mng_.lock();
+                		SharedPointer<DomainName> host_candidate = ban_hosts->getDomainName(hostname);
+                		if (host_candidate) {
+#ifdef HAVE_LIBLOG4CXX
+                        		LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with ban host " << host_candidate->getName());
+#endif
+                        		++total_ban_hosts_;
+					info->setIsBanned(true);
+                        		return;
+                		}
+        		}
+        		++total_allow_hosts_;
 
 			attach_host_to_flow(info,hostname);
 		} else {
-			if (buffer_offset < MAX_URI_BUFFER) {
-				std::memcpy(uri_buffer_ + buffer_offset,"/",1); 
-				++buffer_offset;
-				std::memcpy(uri_buffer_ + buffer_offset, dataptr,extension_length);
-				buffer_offset += extension_length;
+			if ((type == COAP_OPTION_LOCATION_PATH)or(type == COAP_OPTION_URI_PATH)) {
+				// Copy the parts of the uri on a temp buffer
+				if (buffer_offset < MAX_URI_BUFFER) {
+					std::memcpy(uri_buffer_ + buffer_offset,"/",1); 
+					++buffer_offset;
+					std::memcpy(uri_buffer_ + buffer_offset, dataptr,extension_length);
+					buffer_offset += extension_length;
+				}
 			}	
 		}
-		//int extension_length = (extension->deltalength << 2) ; 	
-		//int extension_length = (extension->deltalength << 4) -1; 	
-		//int extension_length = extension->deltalength << 4; 	
+		if (extension->data[0] == 0xFF) { // End of options marker
+			break;
+		}
 
-		// std::cout << "-----delta:" << delta  << " length:" << extension_length << std::endl;
-		//std::string data((char*)&(extension->data[data_offset]),extension_length);
-		//std::cout << " data:" << data << std::endl;
 		offset += extension_length + data_offset + 1;
 	} while (offset + sizeof(coap_ext_hdr) < length);
 
@@ -192,6 +227,40 @@ void CoAPProtocol::handle_get(CoAPInfo *info,unsigned char *payload, int length)
 
 		attach_uri(info,uri);	
 	}	
+
+	// Just verify the hostname on the first coap request
+        if (current_flow_->total_packets_l7 == 1) {
+        	if (!host_mng_.expired()) {
+                	if (info->hostname) {
+                        	DomainNameManagerPtr host_mng = host_mng_.lock();
+                                SharedPointer<DomainName> host_candidate = host_mng->getDomainName(info->hostname->getName());
+                                if (host_candidate) {
+                                	info->matched_domain_name = host_candidate;
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#ifdef HAVE_LIBLOG4CXX
+                                        LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with " << host_candidate->getName());
+#endif
+                                       	if(host_candidate->call.haveCallback()) {
+                                       		host_candidate->call.executeCallback(current_flow_);
+                                        }
+#endif
+				}
+    			}
+  		}
+	}	
+
+	if ((info->matched_domain_name)and(buffer_offset > 0)) {
+        	SharedPointer<HTTPUriSet> uset = info->matched_domain_name->getHTTPUriSet();
+                if (uset) {
+                	if (uset->lookupURI(info->uri->getName())) {
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+                        	if (uset->call.haveCallback()) {
+                                	uset->call.executeCallback(current_flow_);
+                                }
+#endif
+			}
+		}
+	}
 }
 
 void CoAPProtocol::attach_host_to_flow(CoAPInfo *info, boost::string_ref &hostname) {
