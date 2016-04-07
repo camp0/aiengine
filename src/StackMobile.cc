@@ -35,7 +35,7 @@ StackMobile::StackMobile():
         mpls_(MPLSProtocolPtr(new MPLSProtocol())),
         ip_low_(IPProtocolPtr(new IPProtocol())),
         ip_high_(IPProtocolPtr(new IPProtocol())),
-        udp_low_(UDPProtocolPtr(new UDPProtocol())),
+        udp_low_(UDPProtocolPtr(new UDPProtocol("UDPProtocol GPRS","udp gprs"))),
         udp_high_(UDPProtocolPtr(new UDPProtocol())),
         tcp_(TCPProtocolPtr(new TCPProtocol())),
 	gprs_(GPRSProtocolPtr(new GPRSProtocol())),
