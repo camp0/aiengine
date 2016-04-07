@@ -15,6 +15,7 @@ test_flows_SOURCES =     ../Flow.cc \
 			../protocols/gprs/GPRSInfo.cc \
 			../protocols/sip/SIPInfo.cc \
 			../protocols/ssdp/SSDPInfo.cc \
+			../protocols/coap/CoAPInfo.cc \
 			../CacheManager.cc \
 			../AnomalyManager.cc FlowManager.cc test_flows.cc
 test_flows_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework

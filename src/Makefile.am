@@ -133,6 +133,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/ssdp/SSDPProtocol.cc \
 			protocols/ssdp/SSDPInfo.cc \
 			protocols/coap/CoAPProtocol.cc \
+			protocols/coap/CoAPInfo.cc \
 			regex/Regex.cc \
 			regex/RegexManager.cc RejectManager.cc \
 			protocols/frequency/FrequencyProtocol.cc \
@@ -202,6 +203,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		protocols/ntp/test_ntp.cc \
 		protocols/snmp/test_snmp.cc \
 		protocols/ssdp/test_ssdp.cc \
+		protocols/coap/test_coap.cc \
 		regex/test_regex.cc \
 		user/test_users.cc \
 		learner/test_learner.cc \
@@ -232,7 +234,7 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		OpenFlowProtocol.o VxLanProtocol.o \
 		BitcoinProtocol.o BitcoinInfo.o \
 		ModbusProtocol.o \
-		CoAPProtocol.o \
+		CoAPProtocol.o CoAPInfo.o \
 		FrequencyProtocol.o LearnerEngine.o \
 		ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \
 		StackLan.o StackMobile.o StackLanIPv6.o StackVirtual.o StackOpenFlow.o \
@@ -255,8 +257,9 @@ java_objects = 	RegexManager.o Regex.o \
                 SMTPProtocol.o SMTPInfo.o IMAPProtocol.o \
                 DHCPProtocol.o SIPProtocol.o SIPInfo.o \
 		SSDPProtocol.o SSDPInfo.o \
-                POPProtocol.o GREProtocol.o \
-		CoAPProtocol.o \
+                POPProtocol.o \
+		GREProtocol.o \
+		CoAPProtocol.o CoAPInfo.o \
 		BitcoinProtocol.o BitcoinInfo.o ModbusProtocol.o \
                 OpenFlowProtocol.o VxLanProtocol.o \
                 FrequencyProtocol.o LearnerEngine.o \

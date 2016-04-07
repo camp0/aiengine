@@ -25,6 +25,7 @@ test_ipset_SOURCES = 	../Multiplexer.cc  \
 			../protocols/gprs/GPRSInfo.cc \
 			../protocols/sip/SIPInfo.cc \
 			../protocols/ssdp/SSDPInfo.cc \
+			../protocols/coap/CoAPInfo.cc \
 			../protocols/udpgeneric/UDPGenericProtocol.cc \
 			../protocols/tcpgeneric/TCPGenericProtocol.cc \
 			../regex/RegexManager.cc \

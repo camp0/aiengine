@@ -33,6 +33,7 @@ test_vxlan_SOURCES = 	../../Multiplexer.cc \
 			../http/HTTPInfo.cc \
 			../smtp/SMTPInfo.cc \
 			../bitcoin/BitcoinInfo.cc \
+			../coap/CoAPInfo.cc \
 			../../names/DomainNameManager.cc \
 			../../names/DomainName.cc \
 			../dns/DNSProtocol.cc \

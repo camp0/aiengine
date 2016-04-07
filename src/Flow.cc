@@ -255,7 +255,7 @@ void Flow::showFlowInfo(std::ostream& out) const {
 	} else {
 		SharedPointer<GPRSInfo> ginfo = getGPRSInfo();
 		if (ginfo) {
-			out << " GPRS:" << *ginfo.get();
+			out << *ginfo.get();
 		} 
 
 		SharedPointer<DNSInfo> dnsinfo = getDNSInfo();
@@ -264,20 +264,15 @@ void Flow::showFlowInfo(std::ostream& out) const {
 		} else {
 			SharedPointer<SIPInfo> sipinfo = getSIPInfo();
 			if (sipinfo) {
-                		if (sipinfo->uri) out << " SIPUri:" << sipinfo->uri->getName();
-                		if (sipinfo->from) out << " SIPFrom:" << sipinfo->from->getName();
-                		if (sipinfo->to) out << " SIPTo:" << sipinfo->to->getName();
-                		if (sipinfo->via) out << " SIPVia:" << sipinfo->via->getName();
+				out << *sipinfo.get();
 			} else {
 				SharedPointer<SSDPInfo> ssdpinfo = getSSDPInfo();
 				if (ssdpinfo) {
-					if (ssdpinfo->host) out << " Host:" << ssdpinfo->host->getName();
-					if (ssdpinfo->uri) out << " Uri:" << ssdpinfo->uri->getName();
+					out << *ssdpinfo.get();
 				} else {
 					SharedPointer<CoAPInfo> coapinfo = getCoAPInfo();
 					if (coapinfo) {
-						if (coapinfo->hostname) out << " Host:" << coapinfo->hostname->getName();
-						if (coapinfo->uri) out << " Uri:" << coapinfo->uri->getName();
+						out << *coapinfo.get();
 					}
 				}
 			}

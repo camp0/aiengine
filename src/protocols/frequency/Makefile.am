@@ -29,6 +29,7 @@ test_frequency_SOURCES = 	../../Multiplexer.cc \
                         	../gprs/GPRSInfo.cc \
                         	../sip/SIPInfo.cc \
                         	../ssdp/SSDPInfo.cc \
+                        	../coap/CoAPInfo.cc \
 				../../ipset/IPSetManager.cc \
 				../../ipset/IPSet.cc \
 				../tcp/TCPProtocol.cc \

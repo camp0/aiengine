@@ -51,14 +51,18 @@ public:
         SharedPointer<StringCache> to;
         SharedPointer<StringCache> via;
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 
 	friend std::ostream& operator<< (std::ostream& out, const SIPInfo& sinfo) {
+
+		if (sinfo.uri) out << " Uri:" << sinfo.uri->getName();
+                if (sinfo.from) out << " From:" << sinfo.from->getName();
+                if (sinfo.to) out << " To:" << sinfo.to->getName();
+                if (sinfo.via) out << " Via:" << sinfo.via->getName();
 	
-		// out << "Uri:" << sinfo.uri.lock<< " CLength:" << sinfo.content_length_;
         	return out;
 	}
 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 	const char *getUri() const { return (uri ? uri->getName() : "");}	
 	const char *getFrom() const { return (from ? from->getName() : "");}	
 	const char *getTo() const { return (to ? to->getName() : "");}	

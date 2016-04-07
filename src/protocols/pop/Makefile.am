@@ -33,6 +33,7 @@ test_pop_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../gprs/GPRSInfo.cc \
 			../sip/SIPInfo.cc \
 			../ssdp/SSDPInfo.cc \
+			../coap/CoAPInfo.cc \
 			POPProtocol.cc test_pop.cc
 
 test_pop_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE

@@ -30,6 +30,7 @@ test_tcpgeneric_SOURCES = 	../../Multiplexer.cc \
                         	../gprs/GPRSInfo.cc \
                         	../sip/SIPInfo.cc \
                         	../ssdp/SSDPInfo.cc \
+                        	../coap/CoAPInfo.cc \
 				../../Flow.cc \
 				../../flow/FlowManager.cc \
 				../../regex/RegexManager.cc \

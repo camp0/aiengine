@@ -29,6 +29,7 @@ test_sip_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../http/HTTPInfo.cc \
 			../smtp/SMTPInfo.cc \
 			../bitcoin/BitcoinInfo.cc \
+			../coap/CoAPInfo.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \

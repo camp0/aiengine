@@ -61,14 +61,16 @@ public:
         void setResponseCode(int16_t code) { response_code_ = code; }
         int16_t getResponseCode() const { return response_code_; }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 
         const char *getUri() const { return  (uri ? uri->getName() : ""); }
         const char *getHostName() const { return (host ? host->getName() : ""); }
 #endif
+
 	friend std::ostream& operator<< (std::ostream& out, const SSDPInfo& info) {
 
-		if (info.host) out << info.host->getName();	
+		if (info.host) out << " Host:" << info.host->getName();	
+		if (info.uri) out << " Uri:" << info.uri->getName();	
         	return out;
 	}
 

@@ -25,6 +25,7 @@ test_modbus_SOURCES = 	../../Multiplexer.cc \
                         ../gprs/GPRSInfo.cc \
                         ../sip/SIPInfo.cc \
                         ../ssdp/SSDPInfo.cc \
+                        ../coap/CoAPInfo.cc \
 			ModbusProtocol.cc test_modbus.cc
 
 test_modbus_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE

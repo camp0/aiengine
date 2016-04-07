@@ -24,6 +24,7 @@ test_bitcoin_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
                         ../gprs/GPRSInfo.cc \
                         ../sip/SIPInfo.cc \
                         ../ssdp/SSDPInfo.cc \
+			../coap/CoAPInfo.cc \
 			BitcoinProtocol.cc BitcoinInfo.cc test_bitcoin.cc
 
 test_bitcoin_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE

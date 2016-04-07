@@ -22,6 +22,7 @@ test_dhcp_SOURCES = 	../../Multiplexer.cc \
                         ../gprs/GPRSInfo.cc \
                         ../sip/SIPInfo.cc \
                         ../ssdp/SSDPInfo.cc \
+                        ../coap/CoAPInfo.cc \
 			../../ipset/IPSet.cc \
 			../../ipset/IPSetManager.cc \
 			../udp/UDPProtocol.cc \

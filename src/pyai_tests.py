@@ -303,6 +303,8 @@ class StackLanTests(unittest.TestCase):
         self.dis.run()
         self.dis.close()
 
+        print(db.lastdata)
+
         self.assertEqual(db.getInserts(), 1)
         self.assertEqual(db.getUpdates(), 5)
         self.assertEqual(db.getRemoves(), 0)

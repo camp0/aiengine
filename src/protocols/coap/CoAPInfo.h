@@ -42,8 +42,8 @@ public:
     	explicit CoAPInfo() { reset(); }
     	virtual ~CoAPInfo() {}
 
-	void reset() { is_banned_ = false; hostname.reset(); uri.reset(); matched_domain_name.reset(); }
-	void serialize(std::ostream& stream) {} 
+	void reset(); 
+	void serialize(std::ostream& stream); 
 
         void setIsBanned(bool value) { is_banned_ = value; }
         bool getIsBanned() const { return is_banned_; }
@@ -52,18 +52,16 @@ public:
 	SharedPointer<StringCache> uri;
 	SharedPointer<DomainName> matched_domain_name;
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
-	friend std::ostream& operator<< (std::ostream& out, const CoAPInfo& coap) {
+	friend std::ostream& operator<< (std::ostream& out, const CoAPInfo& info) {
 
-		if (!coap.hostname) {	
-			out << coap.hostname->getName();
-		}
+                if (info.hostname) out << " Host:" << info.hostname->getName();
+                if (info.uri) out << " Uri:" << info.uri->getName();
         	return out;
 	}
 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
 	const char *getHostName() const { return (hostname ? hostname->getName() : ""); }
         const char *getUri() const { return (uri ? uri->getName() : "");}   
-
 #endif
 
 #if defined(PYTHON_BINDING)

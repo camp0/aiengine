@@ -23,6 +23,7 @@ test_udp_SOURCES = 	../../Multiplexer.cc \
                         ../ssl/SSLInfo.cc \
                         ../smtp/SMTPInfo.cc \
                         ../bitcoin/BitcoinInfo.cc \
+			../coap/CoAPInfo.cc \
 			../../ipset/IPSetManager.cc \
 			../../ipset/IPSet.cc \
 			../ip6/IPv6Protocol.cc \

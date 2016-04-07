@@ -31,7 +31,7 @@ test_coap_SOURCES = 	../../Multiplexer.cc \
 			../udp/UDPProtocol.cc \
                         ../../names/DomainNameManager.cc \
                         ../../names/DomainName.cc \
-			CoAPProtocol.cc test_coap.cc
+			CoAPProtocol.cc CoAPInfo.cc test_coap.cc
 
 test_coap_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE -fvisibility=hidden
 test_coap_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework

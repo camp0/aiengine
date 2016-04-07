@@ -48,8 +48,11 @@ void HTTPInfo::serialize(std::ostream& stream) {
 #ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION 
 	stream << ",\"i\":{";
 
+       	stream << "\"q\":" << getTotalRequests() << ",";
+       	stream << "\"s\":" << getTotalResponses();
+
 	if (host) {
-        	stream << "\"h\":\"" << host->getName() << "\"";
+        	stream << ",\"h\":\"" << host->getName() << "\"";
 		have_item = true;
 	}
         if (matched_domain_name) {
@@ -58,8 +61,10 @@ void HTTPInfo::serialize(std::ostream& stream) {
 	}
 #else
 	stream << ",\"info\":{";
+       	stream << "\"reqs\":" << getTotalRequests() << ",";
+       	stream << "\"ress\":" << getTotalResponses();
 	if (host) {
-        	stream << "\"host\":\"" << host->getName() << "\"";
+        	stream << ",\"host\":\"" << host->getName() << "\"";
 		have_item = true;
 	}
         if (matched_domain_name) {
