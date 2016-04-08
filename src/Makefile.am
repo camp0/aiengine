@@ -119,7 +119,9 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/smtp/SMTPProtocol.cc \
 			protocols/smtp/SMTPInfo.cc \
 			protocols/imap/IMAPProtocol.cc \
+			protocols/imap/IMAPInfo.cc \
 			protocols/pop/POPProtocol.cc \
+			protocols/pop/POPInfo.cc \
 			protocols/bitcoin/BitcoinProtocol.cc \
 			protocols/bitcoin/BitcoinInfo.cc \
 			protocols/modbus/ModbusProtocol.cc \

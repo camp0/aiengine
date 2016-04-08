@@ -30,6 +30,8 @@ test_sip_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../smtp/SMTPInfo.cc \
 			../bitcoin/BitcoinInfo.cc \
 			../coap/CoAPInfo.cc \
+                        ../imap/IMAPInfo.cc \
+                        ../pop/POPInfo.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \

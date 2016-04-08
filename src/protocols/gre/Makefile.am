@@ -26,6 +26,8 @@ test_gre_SOURCES = 	../../Multiplexer.cc \
 			../smtp/SMTPInfo.cc \
 			../bitcoin/BitcoinInfo.cc \
 			../coap/CoAPInfo.cc \
+			../pop/POPInfo.cc \
+			../imap/IMAPInfo.cc \
 			../icmp/ICMPProtocol.cc \
 			GREProtocol.cc test_gre.cc
 

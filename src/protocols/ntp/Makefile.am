@@ -22,6 +22,8 @@ test_ntp_SOURCES = 	../../Multiplexer.cc \
                         ../sip/SIPInfo.cc \
                         ../ssdp/SSDPInfo.cc \
                         ../coap/CoAPInfo.cc \
+                        ../imap/IMAPInfo.cc \
+                        ../pop/POPInfo.cc \
 			../ip/IPProtocol.cc \
 			../../ipset/IPSet.cc \
 			../../ipset/IPSetManager.cc \

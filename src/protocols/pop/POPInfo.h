@@ -29,6 +29,7 @@
 #endif
 
 #include <iostream>
+#include "Pointer.h"
 #include "StringCache.h"
 #include "FlowInfo.h"
 
@@ -40,14 +41,8 @@ public:
     	explicit POPInfo() { reset(); }
     	virtual ~POPInfo() {}
 
-	void reset() { 
-		client_commands_ = 0;
-		server_commands_ = 0;
-		user_name.reset();
-		is_banned_ = false;
-	}
-
-	void serialize(std::ostream& stream) {}
+	void reset(); 
+	void serialize(std::ostream& stream); 
 
 	void resetStrings() { user_name.reset(); }
 

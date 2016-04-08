@@ -303,8 +303,6 @@ class StackLanTests(unittest.TestCase):
         self.dis.run()
         self.dis.close()
 
-        print(db.lastdata)
-
         self.assertEqual(db.getInserts(), 1)
         self.assertEqual(db.getUpdates(), 5)
         self.assertEqual(db.getRemoves(), 0)
@@ -1614,11 +1612,17 @@ class StackOpenFlowTests(unittest.TestCase):
         rm.add_regex(r)
         self.s.tcp_regex_manager = rm
 
+        db = databaseTestAdaptor()
+        self.s.set_tcp_database_adaptor(db,1)
+
         with pyaiengine.PacketDispatcher("../pcapfiles/openflow.pcap") as pd:
             pd.stack = self.s
             pd.run()
 
+        d = json.loads(db.lastdata)
+        self.assertEqual(d["matchs"], "Bin directory")
         self.assertEqual(r.matchs, 1)
+
 
 if __name__ == '__main__':
 

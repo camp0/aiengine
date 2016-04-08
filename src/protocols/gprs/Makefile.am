@@ -36,6 +36,8 @@ test_gprs_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../tcp/TCPInfo.cc \
 			../bitcoin/BitcoinInfo.cc \
 			../coap/CoAPInfo.cc \
+                        ../imap/IMAPInfo.cc \
+                        ../pop/POPInfo.cc \
 			GPRSInfo.cc GPRSProtocol.cc test_gprs.cc
 
 test_gprs_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE

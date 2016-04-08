@@ -30,6 +30,8 @@ test_http_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../ssl/SSLInfo.cc \
 			../bitcoin/BitcoinInfo.cc \
 			../coap/CoAPInfo.cc \
+                        ../imap/IMAPInfo.cc \
+                        ../pop/POPInfo.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \

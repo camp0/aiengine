@@ -24,6 +24,8 @@ test_tcp_SOURCES = 	../../Multiplexer.cc  \
                         ../smtp/SMTPInfo.cc \
                         ../bitcoin/BitcoinInfo.cc \
 			../coap/CoAPInfo.cc \
+                        ../pop/POPInfo.cc \
+                        ../imap/IMAPInfo.cc \
 			../../ipset/IPSetManager.cc \
 			../../ipset/IPSet.cc \
 			../ip6/IPv6Protocol.cc \

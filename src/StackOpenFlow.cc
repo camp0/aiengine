@@ -37,7 +37,7 @@ StackOpenFlow::StackOpenFlow():
 	ip_(IPProtocolPtr(new IPProtocol())),
 	ip_vir_(IPProtocolPtr(new IPProtocol())),
 	udp_vir_(UDPProtocolPtr(new UDPProtocol())),
-	tcp_(TCPProtocolPtr(new TCPProtocol())),
+	tcp_(TCPProtocolPtr(new TCPProtocol("TCPProtocol oflow","tcp oflow"))),
 	tcp_vir_(TCPProtocolPtr(new TCPProtocol())),
 	of_(OpenFlowProtocolPtr(new OpenFlowProtocol())),
 	icmp_(ICMPProtocolPtr(new ICMPProtocol())),

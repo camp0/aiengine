@@ -29,6 +29,8 @@ test_smtp_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../sip/SIPInfo.cc \
 			../ssdp/SSDPInfo.cc \
 			../coap/CoAPInfo.cc \
+                        ../pop/POPInfo.cc \
+                        ../imap/IMAPInfo.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \

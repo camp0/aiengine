@@ -29,6 +29,8 @@ test_ssdp_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
                         ../sip/SIPInfo.cc \
                         ../ssdp/SSDPInfo.cc \
                         ../coap/CoAPInfo.cc \
+                        ../imap/IMAPInfo.cc \
+                        ../pop/POPInfo.cc \
 			../../protocols/udp/UDPProtocol.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \

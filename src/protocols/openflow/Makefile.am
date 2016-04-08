@@ -35,6 +35,8 @@ test_openflow_SOURCES =	../../Multiplexer.cc ../../Protocol.cc \
 			../smtp/SMTPInfo.cc \
 			../bitcoin/BitcoinInfo.cc \
 			../coap/CoAPInfo.cc \
+                        ../imap/IMAPInfo.cc \
+                        ../pop/POPInfo.cc \
 			../../regex/RegexManager.cc \
 			../../regex/Regex.cc \
 			../../names/DomainNameManager.cc \

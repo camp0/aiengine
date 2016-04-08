@@ -28,6 +28,8 @@ test_imap_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
                         ../sip/SIPInfo.cc \
                         ../ssdp/SSDPInfo.cc \
 			../coap/CoAPInfo.cc \
+			../imap/IMAPInfo.cc \
+			../pop/POPInfo.cc \
 			IMAPProtocol.cc test_imap.cc
 
 test_imap_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE

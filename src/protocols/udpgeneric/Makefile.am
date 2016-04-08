@@ -30,6 +30,8 @@ test_udpgeneric_SOURCES = 	../../Multiplexer.cc \
                         	../sip/SIPInfo.cc \
                         	../ssdp/SSDPInfo.cc \
 				../coap/CoAPInfo.cc \
+                        	../pop/POPInfo.cc \
+                        	../imap/IMAPInfo.cc \
 				../../Flow.cc \
 				../../flow/FlowManager.cc \
 				../../regex/RegexManager.cc \

@@ -33,6 +33,8 @@ test_ssl_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../bitcoin/BitcoinInfo.cc \
 			../dns/DNSInfo.cc \
 			../coap/CoAPInfo.cc \
+			../imap/IMAPInfo.cc \
+                        ../pop/POPInfo.cc \
 			SSLInfo.cc SSLProtocol.cc test_ssl.cc
 
 test_ssl_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE -g

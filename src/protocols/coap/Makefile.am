@@ -26,6 +26,8 @@ test_coap_SOURCES = 	../../Multiplexer.cc \
                         ../gprs/GPRSInfo.cc \
                         ../sip/SIPInfo.cc \
                         ../ssdp/SSDPInfo.cc \
+                        ../imap/IMAPInfo.cc \
+                        ../pop/POPInfo.cc \
 			../../ipset/IPSet.cc \
 			../../ipset/IPSetManager.cc \
 			../udp/UDPProtocol.cc \

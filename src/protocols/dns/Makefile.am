@@ -33,6 +33,8 @@ test_dns_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
                         ../sip/SIPInfo.cc \
                         ../ssdp/SSDPInfo.cc \
 			../coap/CoAPInfo.cc \
+                        ../imap/IMAPInfo.cc \
+                        ../pop/POPInfo.cc \
 			DNSInfo.cc DNSProtocol.cc test_dns.cc
 
 test_dns_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE

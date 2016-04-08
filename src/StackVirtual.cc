@@ -34,7 +34,7 @@ StackVirtual::StackVirtual():
 	vlan_(VLanProtocolPtr(new VLanProtocol())),
 	mpls_(MPLSProtocolPtr(new MPLSProtocol())),
 	ip_(IPProtocolPtr(new IPProtocol())),
-	udp_(UDPProtocolPtr(new UDPProtocol())),
+	udp_(UDPProtocolPtr(new UDPProtocol("UPDProtocol vlxan","udp vxlan"))),
 	vxlan_(VxLanProtocolPtr(new VxLanProtocol())),
 	gre_(GREProtocolPtr(new GREProtocol())),
 	eth_vir_(EthernetProtocolPtr(new EthernetProtocol())),
