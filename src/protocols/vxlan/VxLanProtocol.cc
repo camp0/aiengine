@@ -32,7 +32,7 @@ void VxLanProtocol::processFlow(Flow *flow) {
         total_bytes_ += bytes;
         ++total_packets_;
 
-        if (!mux_.expired()&&(bytes > 0)) {
+        if (!mux_.expired()&&(bytes >= header_size)) {
 		// TODO: Check the VNI and forward the packet
                 MultiplexerPtr mux = mux_.lock();
 

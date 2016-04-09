@@ -32,7 +32,7 @@ void OpenFlowProtocol::processFlow(Flow *flow) {
         total_bytes_ += bytes;
         ++total_packets_;
 
-        if (mux_.lock()&&(bytes > 0)) {
+        if (mux_.lock()&&(bytes >= header_size)) {
                 MultiplexerPtr mux = mux_.lock();
 
                 Packet *packet = flow->packet;
