@@ -649,6 +649,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_flow_ssdp_info )
 		.add_property("bitcoin_info",make_function(&Flow::getBitcoinInfoObject,return_internal_reference<>()),
 			help_flow_bitcoin_info )
+		.add_property("coap_info",make_function(&Flow::getCoAPInfoObject,return_internal_reference<>()),
+			help_flow_coap_info )
 		.add_property("regex",make_function(&Flow::getRegex,return_internal_reference<>()),
 			help_flow_regex )
 		.add_property("payload",&Flow::getPayload,
@@ -660,9 +662,23 @@ BOOST_PYTHON_MODULE(pyaiengine)
 		.def(self_ns::str(self_ns::self))
 	;
 
+        boost::python::class_<CoAPInfo, SharedPointer<CoAPInfo>, boost::noncopyable>("CoAPInfo")
+                .add_property("uri",&CoAPInfo::getUri,
+                        help_coap_info_uri )
+                .add_property("host_name",&CoAPInfo::getHostName,
+                        help_coap_info_host_name )
+                .add_property("matched_domain_name",&CoAPInfo::getMatchedDomainName,
+                        help_coap_info_matched_domain_name )
+                .def(self_ns::str(self_ns::self))
+        ;
+
         boost::python::class_<BitcoinInfo, SharedPointer<BitcoinInfo>,boost::noncopyable>("BitcoinInfo")
                 .add_property("total_transactions",&BitcoinInfo::getTotalTransactions,
                         help_bitcoin_info_tx )
+                .add_property("total_blocks",&BitcoinInfo::getTotalBlocks,
+                        help_bitcoin_info_blocks )
+                .add_property("total_rejects",&BitcoinInfo::getTotalRejects,
+                        help_bitcoin_info_rejects )
                 .def(self_ns::str(self_ns::self))
         ;
 

@@ -51,8 +51,6 @@ public:
 	void incRejects() { ++total_rejects_; }
 	int32_t getTotalRejects() const { return total_rejects_; }
 
-//#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
-
         friend std::ostream& operator<< (std::ostream& out, const BitcoinInfo& binfo) {
 
 		out << " TX:" << binfo.total_transactions_;
@@ -61,7 +59,6 @@ public:
 
                 return out;
         }
-// #endif
 
 private:
 	int32_t total_transactions_;

@@ -108,16 +108,23 @@ const char *help_flow_pop_info = 		"Gets the POP Info if the Flow is POP.";
 const char *help_flow_imap_info = 		"Gets the IMAP Info if the Flow is IMAP.";	
 const char *help_flow_frequencies =		"Gets a map of frequencies of the payload of the Flow."; 	
 const char *help_flow_packet_frequencies =	"Gets the packet frequencies of the Flow."; 	
-const char *help_flow_ssl_info = 		"Gets the SSL info if the Flow is SSL.";	
-const char *help_flow_dns_info = 		"Gets the DNS info name if the Flow is a DNS.";	
-const char *help_flow_ssdp_info =		"Gets the SSDP info if the Flow is SSDP.";	
-const char *help_flow_bitcoin_info =		"Gets the Bitcoin info if the Flow is Bitcoin.";	
+const char *help_flow_ssl_info = 		"Gets a SSLInfo object the Flow is SSL.";	
+const char *help_flow_dns_info = 		"Returns a DNSInfo object if the Flow is a DNS.";	
+const char *help_flow_ssdp_info =		"Gets a SSDPInfo object if the Flow is SSDP.";	
+const char *help_flow_bitcoin_info =		"Gets a BitcoinInfo object if the Flow is Bitcoin.";	
+const char *help_flow_coap_info =		"Gets a CoAPInfo object if the Flow is CoAP.";	
 const char *help_flow_regex =			"Gets the regex if the Flow have been matched with the associated regex.";	
 const char *help_flow_payload = 		"Gets a list of the bytes of the payload of the Flow.";	
 const char *help_flow_anomaly =			"Gets the attached anomaly of the Flow."; 		 	
 const char *help_flow_l7_protocol_name =	"Gets the name of the Protocol of L7 of the Flow.";
  
-const char *help_bitcoin_info_tx =		"Get the total number of Bitcoin transactions of the Flow.";
+const char *help_coap_info_uri =		"Gets the CoAP URI if the Flow is CoAP.";
+const char *help_coap_info_host_name =		"Gets the CoAP Hostname if the Flow is CoAP."; 
+const char *help_coap_info_matched_domain_name ="Gets the matched DomainName object."; 
+
+const char *help_bitcoin_info_tx =		"Get the total number of Bitcoin transactions on the Flow.";
+const char *help_bitcoin_info_blocks =		"Get the total number of Bitcoin blocks on the Flow.";
+const char *help_bitcoin_info_rejects =		"Get the total number of Bitcoin rejects on the Flow.";
 	
 const char *help_dns_info_iter =		"Iterate over the IP addresses returned on the query response."; 
 const char *help_dns_info_domain_name =		"Gets the DNS domain name."; 
