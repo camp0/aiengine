@@ -625,6 +625,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_flow_evidence )
 		.add_property("label",&Flow::getLabel,&Flow::setLabel,
 			help_flow_label )
+		.add_property("duration",&Flow::getDuration,
+			help_flow_duration )
 		.add_property("ip_set",make_function(&Flow::getIPSetInfo,return_internal_reference<>()),
 			help_flow_ip_set )
 		.add_property("http_info",make_function(&Flow::getHTTPInfoObject,return_internal_reference<>()),
@@ -717,10 +719,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
         boost::python::class_<HTTPUriSet, SharedPointer<HTTPUriSet>, boost::noncopyable>("HTTPUriSet")
 		.def(init<>())
 		.def(init<const std::string&>())
+		.def("__len__",&HTTPUriSet::getTotalURIs,
+			help_http_uri_set_uris )
                 .add_property("callback",&HTTPUriSet::getCallback, &HTTPUriSet::setCallback,
                         help_http_uri_set_callback )
-		.add_property("uris",&HTTPUriSet::getTotalURIs,
-			help_http_uri_set_uris )
 		.add_property("lookups",&HTTPUriSet::getTotalLookups,
 			help_http_uri_set_lookups )
 		.add_property("lookups_in",&HTTPUriSet::getTotalLookupsIn,

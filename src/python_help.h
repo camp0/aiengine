@@ -100,6 +100,7 @@ const char *help_flow_reject =			"Gets/Sets the reject of the connection.";
 const char *help_flow_tag =			"Gets the tag from lower network layers."; 
 const char *help_flow_evidence =		"Gets/Sets the evidence of the Flow for make forensic analysis."; 
 const char *help_flow_label =			"Gets/Sets the label of the Flow (external labeling)."; 
+const char *help_flow_duration =		"Gets the duration on secs of the Flow."; 
 const char *help_flow_ip_set = 			"Returns the IPSet Info of the Flow if is part of an IPSet."; 
 const char *help_flow_http_info =		"Returns the HTTP Info if the Flow is HTTP."; 
 const char *help_flow_sip_info =		"Returns the SIP Info if the Flow is SIP.";	

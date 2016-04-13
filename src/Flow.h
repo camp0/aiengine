@@ -199,7 +199,7 @@ public:
         PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.get();}
 
         Regex& getRegex() const { return *regex.lock().get();}
-	IPSet& getIPSetInfo() const { return dynamic_cast<IPSet&>(*ipset.lock().get()); }
+	IPSet *getIPSetInfo() const { return (ipset.lock() ? dynamic_cast<IPSet*>(ipset.lock().get()) : nullptr); }
 
         HTTPInfo& getHTTPInfoObject() const { return *getHTTPInfo().get();}
         SIPInfo& getSIPInfoObject() const { return *getSIPInfo().get();}

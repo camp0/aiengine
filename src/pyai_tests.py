@@ -170,6 +170,10 @@ class StackLanTests(unittest.TestCase):
 
         self.assertEqual(str(http_flow.http_info.host_name),"www.google.com")
 
+        """ All the flows can not have ip_set assigned """
+        for flow in self.s.tcp_flow_manager:
+            self.assertEqual(flow.ip_set,None)
+
     def test5(self):
         """ Verify SSL traffic """
 
