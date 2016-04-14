@@ -610,7 +610,7 @@ class StackOpenFlowUnitTests < Test::Unit::TestCase
     storage_tcp = FileAdaptor.new
     storage_udp = FileAdaptor.new
 
-    @s.set_tcp_database_adaptor(storage_tcp)
+    @s.set_tcp_database_adaptor(storage_tcp,2)
     @s.set_udp_database_adaptor(storage_udp,1)
 
     @pd.open("../pcapfiles/openflow.pcap")

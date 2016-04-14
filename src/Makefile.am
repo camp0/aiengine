@@ -225,14 +225,18 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		IPProtocol.o IPv6Protocol.o \
 		TCPInfo.o TCPHeader.o TCPProtocol.o UDPProtocol.o \
 		TCPGenericProtocol.o UDPGenericProtocol.o \
-		HTTPProtocol.o HTTPInfo.o SSLProtocol.o SSLInfo.o \
+		HTTPProtocol.o HTTPInfo.o \
+		SSLProtocol.o SSLInfo.o \
 		DNSProtocol.o DNSInfo.o \
 		GPRSInfo.o GPRSProtocol.o \
 		NTPProtocol.o SNMPProtocol.o \
-		SMTPProtocol.o SMTPInfo.o IMAPProtocol.o \
-		DHCPProtocol.o SIPProtocol.o SIPInfo.o \
+		SMTPProtocol.o SMTPInfo.o \
+		IMAPProtocol.o IMAPInfo.o \
+		DHCPProtocol.o \
+		SIPProtocol.o SIPInfo.o \
 		SSDPProtocol.o SSDPInfo.o \
-		POPProtocol.o GREProtocol.o \
+		POPProtocol.o POPInfo.o \
+		GREProtocol.o \
 		OpenFlowProtocol.o VxLanProtocol.o \
 		BitcoinProtocol.o BitcoinInfo.o \
 		ModbusProtocol.o \
@@ -256,10 +260,11 @@ java_objects = 	RegexManager.o Regex.o \
                 DNSProtocol.o DNSInfo.o \
 		GPRSInfo.o GPRSProtocol.o \
                 NTPProtocol.o SNMPProtocol.o \
-                SMTPProtocol.o SMTPInfo.o IMAPProtocol.o \
+                SMTPProtocol.o SMTPInfo.o \
+		IMAPProtocol.o IMAPInfo.o \
                 DHCPProtocol.o SIPProtocol.o SIPInfo.o \
 		SSDPProtocol.o SSDPInfo.o \
-                POPProtocol.o \
+                POPProtocol.o POPInfo.o \
 		GREProtocol.o \
 		CoAPProtocol.o CoAPInfo.o \
 		BitcoinProtocol.o BitcoinInfo.o ModbusProtocol.o \

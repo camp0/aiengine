@@ -695,7 +695,7 @@ class StackLanTests(unittest.TestCase):
             self.called_callback += 1
 
         def uri_callback(flow):
-            self.assertEqual(self.uset.uris, 1)
+            self.assertEqual(len(self.uset), 1)
             self.assertEqual(self.uset.lookups, 39)
             self.assertEqual(self.uset.lookups_in, 1)
             self.assertEqual(self.uset.lookups_out, 38)
@@ -719,7 +719,7 @@ class StackLanTests(unittest.TestCase):
             pd.run();
 
         self.assertEqual(d.http_uri_set, self.uset)
-        self.assertEqual(self.uset.uris, 1)
+        self.assertEqual(len(self.uset), 1)
         self.assertEqual(self.uset.lookups, 39)
         self.assertEqual(self.uset.lookups_in, 1)
         self.assertEqual(self.uset.lookups_out, 38)
@@ -734,7 +734,7 @@ class StackLanTests(unittest.TestCase):
             self.called_callback += 1
 
         def uri_callback(flow):
-            self.assertEqual(self.uset.uris, 1)
+            self.assertEqual(len(self.uset), 1)
             self.assertEqual(self.uset.lookups, 4)
             self.assertEqual(self.uset.lookups_in, 1)
             self.assertEqual(self.uset.lookups_out, 3)
@@ -758,7 +758,7 @@ class StackLanTests(unittest.TestCase):
             pd.stack = self.s
             pd.run();
 
-        self.assertEqual(self.uset.uris, 1)
+        self.assertEqual(len(self.uset), 1)
         self.assertEqual(self.uset.lookups, 39)
         self.assertEqual(self.uset.lookups_in, 1)
         self.assertEqual(self.uset.lookups_out, 38)
