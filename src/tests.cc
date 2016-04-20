@@ -891,7 +891,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_21,StackLanTest)
         BOOST_CHECK(r4->getTotalEvaluates() == 1);
 }
 
-BOOST_FIXTURE_TEST_CASE(test_case_22,StackLanTest) // Tests for release the caches and SMTP
+BOOST_FIXTURE_TEST_CASE(test_case_22,StackLanTest) // Tests for release the caches on SMTP
 {
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
 
@@ -913,7 +913,13 @@ BOOST_FIXTURE_TEST_CASE(test_case_22,StackLanTest) // Tests for release the cach
  
         BOOST_CHECK(f->getSMTPInfo() != nullptr);
        	SharedPointer<SMTPInfo> info = f->getSMTPInfo();
-	BOOST_CHECK(info != nullptr); 
+	BOOST_CHECK(info != nullptr);
+
+	// Verify some information about the SMTPInfo object
+	BOOST_CHECK(info->getTotalDataBytes() >= 20389);
+	BOOST_CHECK(info->getTotalDataBlocks() == 1);
+	BOOST_CHECK(info->getIsData() == false);
+ 
         BOOST_CHECK(f->getHTTPInfo() == nullptr);
         BOOST_CHECK(f->getSSLInfo() == nullptr);
 

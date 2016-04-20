@@ -142,18 +142,31 @@ void GPRSProtocol::processFlow(Flow *flow) {
 	++total_packets_;
 
         if (!mux_.expired()&&(bytes >= header_size)) {
-      
-		setHeader(flow->packet->getPayload());
+
+		unsigned char *payload = flow->packet->getPayload();      
+		setHeader(payload);
 
 		uint8_t type = gprs_header_->type; 
-		
+			
 		if (type == T_PDU) {
 			MultiplexerPtr mux = mux_.lock();
 
 			Packet gpacket(*(flow->packet));
-			
-			gpacket.setPrevHeaderSize(header_size);
+		
+			bool next_extension_header_present = gprs_header_->flags & (1 << 2); 
+			int offset = 0;
 
+			if (next_extension_header_present) {
+				offset += 6; // sizeof extension headers
+			}
+			bool have_seq_number = gprs_header_->flags & (1 << 1);
+			if (have_seq_number) {
+				offset += 2;
+			}	
+
+			gpacket.setPayload(&payload[offset]);
+			gpacket.setPrevHeaderSize(header_size + offset);
+			
 			mux->setNextProtocolIdentifier(ETHERTYPE_IP); 
 			mux->forwardPacket(gpacket);
 

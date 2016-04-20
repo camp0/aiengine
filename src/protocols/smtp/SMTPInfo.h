@@ -51,6 +51,15 @@ public:
         void setIsBanned(bool value) { is_banned_ = value; }
         bool getIsBanned() const { return is_banned_; }
 
+	void setIsData(bool value) { is_data_ = value; }
+	bool getIsData() const { return is_data_; }
+
+	void incTotalDataBytes(int32_t value) { total_data_bytes_ += value; }
+	int32_t getTotalDataBytes() const { return total_data_bytes_; }
+
+	void incTotalDataBlocks() { ++total_data_blocks_; }
+	int32_t getTotalDataBlocks() { return total_data_blocks_; }
+
         SharedPointer<StringCache> from;
         SharedPointer<StringCache> to;
 
@@ -73,6 +82,9 @@ public:
 private:
 	int8_t command_;	
 	bool is_banned_;
+	bool is_data_;
+	int32_t total_data_bytes_;
+	int32_t total_data_blocks_;
 };
 
 } // namespace aiengine

@@ -35,6 +35,10 @@ bool VLanProtocol::processPacket(Packet &packet) {
         	MultiplexerPtr mux = mux_.lock();
 
                 mux->setNextProtocolIdentifier(getEthernetType());
+
+
+                // Sets the Tag for the packet
+                packet.setTag(getVlanId());
                 
 		mux->setHeaderSize(header_size);
                 packet.setPrevHeaderSize(header_size);

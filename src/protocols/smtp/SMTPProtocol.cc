@@ -274,10 +274,11 @@ void SMTPProtocol::handle_cmd_rcpt(SMTPInfo *info, boost::string_ref &header) {
 void SMTPProtocol::processFlow(Flow *flow) {
 
 	int length = flow->packet->getLength();
+	unsigned char *payload = flow->packet->getPayload();
 	total_bytes_ += length;
 	++total_packets_;
 
-	setHeader(flow->packet->getPayload());
+	setHeader(payload);
 
        	SharedPointer<SMTPInfo> sinfo = flow->getSMTPInfo();
 
@@ -297,32 +298,45 @@ void SMTPProtocol::processFlow(Flow *flow) {
 	current_flow_ = flow;
 
 	if (flow->getFlowDirection() == FlowDirection::FORWARD) {
-		
-		// Commands send by the client
-        	for (auto &command: commands_) {
-                	const char *c = std::get<0>(command);
-                	int offset = std::get<1>(command);
+	
+		if (sinfo->getIsData()) { // The client is transfering the email
+			sinfo->incTotalDataBytes(length);
 
-                	if (std::memcmp(c,&smtp_header_[0],offset) == 0) {
-                        	int32_t *hits = &std::get<3>(command);
-				int8_t cmd = std::get<4>(command);
+			// Check if is the last data block
+			int offset = length - 7;
+			if (offset > 0) {
+				if (std::memcmp(&payload[offset],"\x0d\x0a\x0d\x0a\x2e\x0d\x0a",7) == 0) {
+					sinfo->incTotalDataBlocks();
+					sinfo->setIsData(false);
+				}
+			}	
+		} else { // Commands send by the client
+        		for (auto &command: commands_) {
+                		const char *c = std::get<0>(command);
+                		int offset = std::get<1>(command);
 
-                        	++(*hits);
-				++total_smtp_client_commands_;
+                		if (std::memcmp(c,&smtp_header_[0],offset) == 0) {
+                        		int32_t *hits = &std::get<3>(command);
+					int8_t cmd = std::get<4>(command);
 
-				// Check if the commands are MAIL or RCPT
-				if ( cmd == static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_MAIL)) {
-					boost::string_ref header(reinterpret_cast<const char*>(smtp_header_),length);
-					handle_cmd_mail(sinfo.get(),header);
-				} else if ( cmd == static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_RCPT)) {
-					boost::string_ref header(reinterpret_cast<const char*>(smtp_header_),length);
-					handle_cmd_rcpt(sinfo.get(),header);
-				}	
-				sinfo->setCommand(cmd);
+                        		++(*hits);
+					++total_smtp_client_commands_;
 
-                        	return;
-                	}
-        	}
+					// Check if the commands are MAIL or RCPT
+					if ( cmd == static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_MAIL)) {
+						boost::string_ref header(reinterpret_cast<const char*>(smtp_header_),length);
+						handle_cmd_mail(sinfo.get(),header);
+					} else if ( cmd == static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_RCPT)) {
+						boost::string_ref header(reinterpret_cast<const char*>(smtp_header_),length);
+						handle_cmd_rcpt(sinfo.get(),header);
+					} else if ( cmd == static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_DATA)) {
+						sinfo->setIsData(true);
+					}	
+					sinfo->setCommand(cmd);
+                        		return;
+                		}
+        		}
+		}
 	} else {
 		// Responses from the server
 

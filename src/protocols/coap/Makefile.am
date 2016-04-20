@@ -12,6 +12,7 @@ test_coap_SOURCES = 	../../Multiplexer.cc \
 			../../Protocol.cc \
 			../../CacheManager.cc \
 			../../AnomalyManager.cc \
+			../../StringCache.cc \
 			../../FlowForwarder.cc \
 			../../flow/FlowManager.cc \
 			../ip/IPProtocol.cc \

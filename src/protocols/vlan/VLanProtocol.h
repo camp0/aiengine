@@ -91,7 +91,7 @@ public:
 	}
 
 	uint16_t getEthernetType() const { return ntohs(vlan_header_->vlan_tci);}
-
+	uint16_t getVlanId() const { return (ntohs(vlan_header_->vlan_tpid) & 0x0FFF);} 
 	int64_t getAllocatedMemory() const { return sizeof(VLanProtocol); }
 
 #if defined(PYTHON_BINDING)

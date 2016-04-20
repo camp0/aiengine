@@ -15,6 +15,7 @@ noinst_HEADERS = 	SIPProtocol.h SIPInfo.h test_sip.h
 test_sip_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../FlowForwarder.cc ../../CacheManager.cc \
 			../../AnomalyManager.cc \
+			../../StringCache.cc \
 			../ethernet/EthernetProtocol.cc \
 			../ip/IPProtocol.cc \
 			../../ipset/IPSetManager.cc \

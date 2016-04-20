@@ -14,6 +14,7 @@ check_PROGRAMS = test_vxlan
 
 test_vxlan_SOURCES = 	../../Multiplexer.cc \
 			../../Protocol.cc ../../CacheManager.cc \
+			../../StringCache.cc \
 			../ethernet/EthernetProtocol.cc \
 			../../Flow.cc \
 			../../AnomalyManager.cc \

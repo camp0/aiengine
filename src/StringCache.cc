@@ -21,46 +21,39 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#ifndef SRC_STRINGCACHE_H_
-#define SRC_STRINGCACHE_H_
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <iostream>
+#include "StringCache.h"
+#include <cstring>
 
 namespace aiengine {
 
-class StringCache 
-{
-public:
-    	explicit StringCache(const char *value);
-    	explicit StringCache():StringCache("") {}
-    	virtual ~StringCache() { value_.clear();}
-
+StringCache::StringCache(const char *value) {
 #ifdef HAVE_STATIC_MEMORY_CACHE
-	static const int max_static_memory = 256;
+	value_.reserve(max_static_memory);
 #endif
-	void reset(); 
-	const char *getName() const { return value_.c_str(); }
-	void setName(const char *name, int length); 
-	void setName(const char *name);
+	setName(value);
+}
 
-	size_t getNameSize() const { return value_.size(); }
+void StringCache::reset() { 
 
-#ifdef PYTHON_BINDING
-	friend std::ostream& operator<< (std::ostream& out, const StringCache& sc) {
-	
-		out << sc.value_;
-        	return out;
-	}
+	setName(""); 
+}
+
+void StringCache::setName(const char *name, int length) { 
+#ifdef HAVE_STATIC_MEMORY_CACHE
+        if (length > max_static_memory) {
+                value_.assign(name,max_static_memory);
+        } else {
+                value_.assign(name,length);
+        }
+#else
+	value_.assign(name,length); 
 #endif
+}
 
-private:
-	std::string value_;
-};
+void StringCache::setName(const char *name) { 
+
+	setName(name,std::strlen(name));
+}
 
 } // namespace aiengine  
 
-#endif  // SRC_STRINGCACHE_H_

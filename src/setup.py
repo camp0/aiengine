@@ -11,7 +11,7 @@ from distutils.extension import Extension
 # from setuptools import setup
 
 """ List of the files of the lib """
-src_files =  ["Multiplexer.cc","FlowForwarder.cc","PacketDispatcher.cc","Flow.cc","Protocol.cc"]
+src_files =  ["Multiplexer.cc","FlowForwarder.cc","PacketDispatcher.cc","Flow.cc","Protocol.cc","StringCache.cc"]
 src_files += ["Callback.cc","Interpreter.cc","NetworkStack.cc","EvidenceManager.cc","CacheManager.cc","AnomalyManager.cc"]
 src_files += ["flow/FlowManager.cc"] 
 src_files += ["protocols/ethernet/EthernetProtocol.cc"]

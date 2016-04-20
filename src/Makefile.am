@@ -85,7 +85,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			PacketDispatcher.cc \
 			Flow.cc CacheManager.cc \
 			Protocol.cc AnomalyManager.cc \
-			Callback.cc \
+			Callback.cc StringCache.cc \
 			Interpreter.cc \
 			flow/FlowManager.cc \
 			protocols/ethernet/EthernetProtocol.cc \
@@ -219,7 +219,7 @@ tests_LDFLAGS = 	-DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ \
 
 ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		AnomalyManager.o CacheManager.o Multiplexer.o FlowForwarder.o PacketDispatcher.o \
-		Flow.o Callback.o \
+		Flow.o Callback.o StringCache.o \
 		RegexManager.o Regex.o \
 		VLanProtocol.o MPLSProtocol.o \
 		IPProtocol.o IPv6Protocol.o \
@@ -250,7 +250,7 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 
 java_objects = 	RegexManager.o Regex.o \
 		NetworkStack.o Protocol.o EthernetProtocol.o \
-		FlowManager.o Flow.o Callback.o \
+		FlowManager.o Flow.o Callback.o StringCache.o \
                 AnomalyManager.o CacheManager.o Multiplexer.o FlowForwarder.o PacketDispatcher.o \
                 VLanProtocol.o MPLSProtocol.o \
                 IPProtocol.o IPv6Protocol.o \

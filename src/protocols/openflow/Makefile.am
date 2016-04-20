@@ -13,6 +13,7 @@ TEST = test_openflow
 check_PROGRAMS = test_openflow
 
 test_openflow_SOURCES =	../../Multiplexer.cc ../../Protocol.cc \
+			../../StringCache.cc \
 			../ethernet/EthernetProtocol.cc \
 			../../Flow.cc ../../CacheManager.cc \
 			../../AnomalyManager.cc \

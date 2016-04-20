@@ -15,6 +15,7 @@ check_PROGRAMS = test_ssdp
 test_ssdp_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../FlowForwarder.cc ../../CacheManager.cc \
 			../../AnomalyManager.cc \
+			../../StringCache.cc \
 			../../protocols/ethernet/EthernetProtocol.cc \
 			../../protocols/ip/IPProtocol.cc \
 			../../ipset/IPSetManager.cc \

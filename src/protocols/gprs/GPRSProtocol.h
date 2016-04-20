@@ -82,6 +82,12 @@ typedef struct {
 	u_char data[0];
 } __attribute__((packed)) gprs_create_pdp_hdr_routing;
 
+// GPRS Extension header 
+typedef struct {
+        uint8_t length;           // Length of the extension
+        uint16_t seq;           //e
+        uint8_t next_hdr;
+} __attribute__((packed)) gprs_extension_hdr;
 
 #define CREATE_PDP_CONTEXT_REQUEST 16 
 #define	CREATE_PDP_CONTEXT_RESPONSE 17
