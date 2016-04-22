@@ -1,5 +1,11 @@
 AUTOMAKE_OPTIONS = gnu
 
+if HAVE_LIBLOG4CXX
+  LOG4CXX_FLAGS = -llog4cxx
+else
+  LOG4CXX_FLAGS =
+endif
+
 noinst_HEADERS =	test_imap.h IMAPInfo.h
 
 TEST = test_imap
@@ -34,7 +40,7 @@ test_imap_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			IMAPProtocol.cc test_imap.cc
 
 test_imap_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
-test_imap_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
+test_imap_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework $(LOG4CXX_FLAGS)
 
 CLEANFILES = *.o *.lo *.so
 

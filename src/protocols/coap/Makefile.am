@@ -1,5 +1,11 @@
 AUTOMAKE_OPTIONS = gnu
 
+if HAVE_LIBLOG4CXX
+  LOG4CXX_FLAGS = -llog4cxx
+else
+  LOG4CXX_FLAGS =
+endif
+
 noinst_HEADERS =	CoAPProtocol.h CoAPInfo.h test_coap.h
 
 TEST = test_coap
@@ -36,8 +42,8 @@ test_coap_SOURCES = 	../../Multiplexer.cc \
                         ../../names/DomainName.cc \
 			CoAPProtocol.cc CoAPInfo.cc test_coap.cc
 
-test_coap_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE -fvisibility=hidden
-test_coap_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework
+test_coap_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE 
+test_coap_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework $(LOG4CXX_FLAGS)
 
 CLEANFILES = *.o *.lo *.so
 

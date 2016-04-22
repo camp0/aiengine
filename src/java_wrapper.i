@@ -21,6 +21,14 @@
 #include "names/DomainNameManager.h"
 #include "names/DomainName.h"
 #include "learner/LearnerEngine.h"
+#ifdef HAVE_LIBLOG4CXX
+#include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
+
+using namespace log4cxx;
+using namespace log4cxx::helpers;
+#endif
+using namespace std;
 %}
 
 %template(Counters) std::map<std::string,int32_t>;
@@ -317,10 +325,24 @@
   static {
     try {
       System.load("/home/luis/c++/aiengine/src/jaaiengine.so");  
-      //System.loadLibrary("example");
     } catch (UnsatisfiedLinkError e) {
       System.err.println("Native code library failed to load. \n" + e);
       System.exit(1);
     }
   }
+%}
+
+%inline %{
+#ifdef HAVE_LIBLOG4CXX
+#include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
+
+using namespace log4cxx;
+using namespace log4cxx::helpers;
+
+using namespace std;
+std::cout << "joder ya te digo" << std::endl;
+// BasicConfigurator::configure();
+#endif
+
 %}

@@ -6,37 +6,45 @@ else
   LOG4CXX_FLAGS =
 endif
 
-noinst_HEADERS =	BitcoinInfo.h test_bitcoin.h
+noinst_HEADERS =	RTPProtocol.h test_rtp.h
 
-TEST = test_bitcoin
+TEST = test_rtp
 
-check_PROGRAMS = test_bitcoin
+check_PROGRAMS = test_rtp
 
-test_bitcoin_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
+test_rtp_SOURCES = 	../../Multiplexer.cc \
 			../ethernet/EthernetProtocol.cc \
-			../../Flow.cc ../../CacheManager.cc \
+			../../Flow.cc \
+			../../Protocol.cc \
+			../../CacheManager.cc \
 			../../AnomalyManager.cc \
+			../../StringCache.cc \
 			../../FlowForwarder.cc \
 			../../flow/FlowManager.cc \
 			../ip/IPProtocol.cc \
-			../../ipset/IPSet.cc \
-			../../ipset/IPSetManager.cc \
-			../tcp/TCPProtocol.cc \
+			../ip6/IPv6Protocol.cc \
                         ../tcp/TCPInfo.cc \
                         ../http/HTTPInfo.cc \
+                        ../http/HTTPUriSet.cc \
                         ../ssl/SSLInfo.cc \
                         ../smtp/SMTPInfo.cc \
+                        ../bitcoin/BitcoinInfo.cc \
                         ../dns/DNSInfo.cc \
                         ../gprs/GPRSInfo.cc \
                         ../sip/SIPInfo.cc \
                         ../ssdp/SSDPInfo.cc \
-			../coap/CoAPInfo.cc \
-                        ../pop/POPInfo.cc \
                         ../imap/IMAPInfo.cc \
-			BitcoinProtocol.cc BitcoinInfo.cc test_bitcoin.cc
+                        ../pop/POPInfo.cc \
+                        ../coap/CoAPInfo.cc \
+			../../ipset/IPSet.cc \
+			../../ipset/IPSetManager.cc \
+			../udp/UDPProtocol.cc \
+                        ../../names/DomainNameManager.cc \
+                        ../../names/DomainName.cc \
+			RTPProtocol.cc test_rtp.cc
 
-test_bitcoin_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
-test_bitcoin_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework $(LOG4CXX_FLAGS)
+test_rtp_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE 
+test_rtp_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework $(LOG4CXX_FLAGS)
 
 CLEANFILES = *.o *.lo *.so
 

@@ -58,6 +58,7 @@ enum class PacketAnomalyType : std::int8_t {
 	HTTP_BOGUS_URI_HEADER = 14,
 	HTTP_BOGUS_NO_HEADERS = 15,
 	COAP_BOGUS_HEADER = 16,
+	RTP_BOGUS_HEADER = 17,
 	MAX_PACKET_ANOMALIES
 };
 
@@ -83,7 +84,8 @@ static std::array <AnomalyDescription,static_cast<std::int8_t>(PacketAnomalyType
         { static_cast<std::int8_t>(PacketAnomalyType::SSL_BOGUS_HEADER),                "SSL bogus header"              },
         { static_cast<std::int8_t>(PacketAnomalyType::HTTP_BOGUS_URI_HEADER),           "HTTP malformed URI"            },
         { static_cast<std::int8_t>(PacketAnomalyType::HTTP_BOGUS_NO_HEADERS),           "HTTP no headers"		},
-        { static_cast<std::int8_t>(PacketAnomalyType::COAP_BOGUS_HEADER),		"CoAP bogus headers"          	}
+        { static_cast<std::int8_t>(PacketAnomalyType::COAP_BOGUS_HEADER),		"CoAP bogus headers"          	},
+        { static_cast<std::int8_t>(PacketAnomalyType::RTP_BOGUS_HEADER),		"RTP bogus headers"          	}
 }};
 
 typedef struct {
@@ -115,7 +117,8 @@ public:
 		{ static_cast<std::int8_t>(PacketAnomalyType::SSL_BOGUS_HEADER),		0,	"ssl" },
 		{ static_cast<std::int8_t>(PacketAnomalyType::HTTP_BOGUS_URI_HEADER),		0,	"http" },
 		{ static_cast<std::int8_t>(PacketAnomalyType::HTTP_BOGUS_NO_HEADERS),		0,	"http" },
-        	{ static_cast<std::int8_t>(PacketAnomalyType::COAP_BOGUS_HEADER),		0,      "" }
+        	{ static_cast<std::int8_t>(PacketAnomalyType::COAP_BOGUS_HEADER),		0,      "" },
+        	{ static_cast<std::int8_t>(PacketAnomalyType::RTP_BOGUS_HEADER),		0,      "" }
 		}}
         {}
 

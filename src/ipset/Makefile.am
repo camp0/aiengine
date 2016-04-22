@@ -1,5 +1,11 @@
 AUTOMAKE_OPTIONS = gnu
 
+if HAVE_LIBLOG4CXX
+  LOG4CXX_FLAGS = -llog4cxx
+else
+  LOG4CXX_FLAGS =
+endif
+
 noinst_HEADERS =	test_ipset.h IPAbstractSet.h IPBloomSet.h
 
 TEST = test_ipset
@@ -37,7 +43,7 @@ test_ipset_SOURCES = 	../Multiplexer.cc  \
 			IPSetManager.cc test_ipset.cc 
 
 test_ipset_CPPFLAGS = -I../ $(BOOST_CPPFLAGS) -DSTAND_ALONE
-test_ipset_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework -lpcre
+test_ipset_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework -lpcre $(LOG4CXX_FLAGS)
 
 CLEANFILES = *.o *.lo *.so
 

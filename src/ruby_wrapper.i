@@ -19,6 +19,13 @@
 #include "names/DomainNameManager.h"
 #include "names/DomainName.h"
 #include "learner/LearnerEngine.h"
+#ifdef HAVE_LIBLOG4CXX
+#include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
+
+using namespace log4cxx;
+using namespace log4cxx::helpers;
+#endif
 %}
 
 %apply SWIGTYPE *DISOWN { Signature* signature };
@@ -32,6 +39,9 @@
 
 %init %{ 
 std::cout << "Ruby AIengine BETA init." << std::endl;
+#ifdef HAVE_LIBLOG4CXX  
+        BasicConfigurator::configure();
+#endif
 %}
 
 %ignore operator+;

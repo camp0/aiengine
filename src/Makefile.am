@@ -278,7 +278,7 @@ java_objects = 	RegexManager.o Regex.o \
 
 tests_CPPFLAGS = $(BOOST_CPPFLAGS) -g # -fprofile-arcs -ftest-coverage 
 # Dont forget to put -lgcov if need on test_LDADD
-tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread 
+tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread $(LOG4CXX_FLAGS) 
 
 CLEANFILES = *.o *.lo *.so *.class *_wrap.cxx *_wrap.h
 
@@ -308,14 +308,15 @@ if HAVE_RUBY_SUPPORT
 	@echo "* Compiling Ruby extension.                                                          *"
 	@echo "**************************************************************************************"
 	@echo "Generating interface" $(SWIG)	
-	swig -DRUBY_BINDING -globalmodule -c++ -ruby ruby_wrapper.i 	
+	swig -DRUBY_BINDING -DHAVE_CONFIG_H -globalmodule -c++ -ruby ruby_wrapper.i 	
 	@echo "Compiling ruby interface"
 	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DRUBY_BINDING -I.. -I. \
 		-std=c++11 -c $(aiengine_core_sources) ruby_wrapper_wrap.cxx \
 		-I/usr/include/ruby -I/usr/local/lib/ruby/1.6/i686-linux 
 	@echo "Linking ruby interface"
 	$(CXX) -g -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DRUBY_BINDING -I.. \
-		-shared -std=c++11 $(ruby_objects) ruby_wrapper_wrap.o -o ruaiengine.so $(BOOST_LINK_CORE) -lpcap -lruby -lpcre
+		-shared -std=c++11 $(ruby_objects) ruby_wrapper_wrap.o -o ruaiengine.so $(BOOST_LINK_CORE) \
+		$(LOG4CXX_FLAGS) -lpcap -lruby -lpcre
 endif
 java:
 if HAVE_JAVA_SUPPORT
@@ -323,13 +324,14 @@ if HAVE_JAVA_SUPPORT
 	@echo "* Compiling Java extension.                                                          *"
 	@echo "**************************************************************************************"
 	@echo "Generating Java interface" 
-	swig -DJAVA_BINDING -c++ -java java_wrapper.i 	
+	swig -DJAVA_BINDING -DHAVE_CONFIG_H -c++ -java java_wrapper.i 	
 	@echo "Compiling Java interface"
 	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DJAVA_BINDING -I.. -I. $(CPPFLAGS) $(AM_JAVAFLAGS) \
 		-std=c++11 -c $(aiengine_core_sources) java_wrapper_wrap.cxx 
 	@echo "Linking Java interface"
 	$(CXX) -g -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DJAVA_BINDING -I.. \
-		-shared -std=c++11 $(java_objects) java_wrapper_wrap.o -o jaaiengine.so -lpcap $(BOOST_LINK_CORE) -lpcre 
+		-shared -std=c++11 $(java_objects) java_wrapper_wrap.o -o jaaiengine.so -lpcap \
+		$(LOG4CXX_FLAGS) $(BOOST_LINK_CORE) -lpcre 
 	@echo "Compiling Java Unit tests"
 	$(MKDIR_P) buildjava 2>/dev/null
 	$(JAVA_CC) -d buildjava/ -cp /usr/share/java/junit.jar  *.java

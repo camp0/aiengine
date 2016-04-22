@@ -410,8 +410,7 @@ void SSDPProtocol::processFlow(Flow *flow) {
                 return;
         }
 
-	// const char *header = reinterpret_cast <const char*> (flow->packet->getPayload());
-
+	current_flow_ = flow;
 	boost::string_ref header(reinterpret_cast <const char*> (flow->packet->getPayload()),length);
 
         int offset = extract_uri(info.get(),header);

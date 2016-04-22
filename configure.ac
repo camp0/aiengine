@@ -453,6 +453,7 @@ src/protocols/ntp/Makefile
 src/protocols/snmp/Makefile
 src/protocols/ssdp/Makefile
 src/protocols/coap/Makefile
+src/protocols/rtp/Makefile
 src/protocols/tcpgeneric/Makefile
 src/protocols/udpgeneric/Makefile
 src/protocols/frequency/Makefile

@@ -66,6 +66,7 @@ public:
 		host_map_(),
 		host_mng_(),ban_host_mng_(),
 		flow_mng_(),
+		current_flow_(nullptr),
 		cache_mng_(),
 		header_field_(),header_parameter_() {
 
@@ -200,6 +201,7 @@ private:
 	DomainNameManagerPtrWeak ban_host_mng_;
 
 	FlowManagerPtrWeak flow_mng_;	
+	Flow *current_flow_;
 	SharedPointer<CacheManager> cache_mng_;
         boost::string_ref header_field_;
         boost::string_ref header_parameter_;
