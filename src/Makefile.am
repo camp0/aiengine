@@ -72,6 +72,7 @@ noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			protocols/ssdp/SSDPInfo.h \
 			protocols/coap/CoAPProtocol.h \
 			protocols/coap/CoAPInfo.h \
+			protocols/rtp/RTPProtocol.h \
 			protocols/frequency/Frequencies.h \
 			protocols/frequency/PacketFrequencies.h \
 			protocols/frequency/FrequencyProtocol.h \
@@ -136,6 +137,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/ssdp/SSDPInfo.cc \
 			protocols/coap/CoAPProtocol.cc \
 			protocols/coap/CoAPInfo.cc \
+			protocols/rtp/RTPProtocol.cc \
 			regex/Regex.cc \
 			regex/RegexManager.cc RejectManager.cc \
 			protocols/frequency/FrequencyProtocol.cc \

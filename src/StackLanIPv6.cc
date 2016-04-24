@@ -79,6 +79,7 @@ StackLanIPv6::StackLanIPv6():
         addProtocol(snmp);
         addProtocol(ssdp);
         addProtocol(coap);
+        addProtocol(rtp);
         addProtocol(udp_generic);
         addProtocol(freqs_udp);
  
@@ -189,7 +190,8 @@ StackLanIPv6::StackLanIPv6():
 
 	enableFlowForwarders(ff_tcp_,
 		{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
-        enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_coap,ff_udp_generic});
+        enableFlowForwarders(ff_udp_,
+		{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_coap,ff_rtp,ff_udp_generic});
 
         std::ostringstream msg;
         msg << getName() << " ready.";
@@ -252,7 +254,8 @@ void StackLanIPv6::enableNIDSEngine(bool enable) {
 
 	if (enable) {
         	disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin});
-        	disableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_coap});
+        	disableFlowForwarders(ff_udp_,
+			{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_coap,ff_rtp});
 
 	        std::ostringstream msg;
        		msg << "Enable NIDSEngine on " << getName(); 
@@ -264,7 +267,8 @@ void StackLanIPv6::enableNIDSEngine(bool enable) {
 
         	enableFlowForwarders(ff_tcp_,
 			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
-        	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_coap,ff_udp_generic});
+        	enableFlowForwarders(ff_udp_,
+			{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_coap,ff_rtp,ff_udp_generic});
 	}
 	enable_nids_engine_ = enable;
 }

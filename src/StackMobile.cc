@@ -90,6 +90,7 @@ StackMobile::StackMobile():
 	addProtocol(ntp);
 	addProtocol(snmp);
 	addProtocol(ssdp);
+	addProtocol(rtp);
 	addProtocol(udp_generic);
 	addProtocol(freqs_udp);
 
@@ -245,8 +246,10 @@ StackMobile::StackMobile():
 	tcp_->setFlowForwarder(ff_tcp_);	
 	udp_high_->setFlowForwarder(ff_udp_high_);	
 
-	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
-        enableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
+	enableFlowForwarders(ff_tcp_,
+		{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
+        enableFlowForwarders(ff_udp_high_,
+		{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_rtp,ff_udp_generic});
 
         std::ostringstream msg;
         msg << getName() << " ready.";
@@ -351,7 +354,8 @@ void StackMobile::enableNIDSEngine(bool enable) {
 
         if (enable) {
 		disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin});
-        	disableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp});
+        	disableFlowForwarders(ff_udp_high_,
+			{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_rtp});
 
 	        std::ostringstream msg;
         	msg << "Enable NIDSEngine on " << getName(); 
@@ -362,7 +366,8 @@ void StackMobile::enableNIDSEngine(bool enable) {
         	disableFlowForwarders(ff_udp_high_,{ff_udp_generic});
 
 		enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
-        	enableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
+        	enableFlowForwarders(ff_udp_high_,
+			{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_rtp,ff_udp_generic});
         }
 	enable_nids_engine_ = enable;
 }

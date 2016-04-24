@@ -92,7 +92,7 @@ public:
 
 		if(length >= header_size) {
 			setHeader(packet.getPayload());
-			if (getVersion() == RTP_VERSION) {
+			if (rtp_header_->version == 0x80) {
 				++total_validated_packets_; 
 				return true;
 			}
@@ -102,7 +102,8 @@ public:
 	}
 
 	// Protocol specific
-	uint8_t getVersion() const { return ((rtp_header_->version) >> 6); }
+	uint8_t getVersion() const { return (rtp_header_->version >> 6); }
+	bool getPadding() const { return ((rtp_header_->version & 0x20) == 1); }
 	int getPayloadType() const { return (rtp_header_->payload_type); }
 
 	int64_t getAllocatedMemory() const;

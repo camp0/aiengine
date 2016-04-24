@@ -49,8 +49,8 @@ void RTPProtocol::processFlow(Flow *flow) {
 	current_flow_ = flow;
 
 	if(length >= header_size) {
-		setHeader(flow->packet->getPayload());	
-		if (getVersion() == RTP_VERSION) {
+		setHeader(flow->packet->getPayload());
+		if (rtp_header_->version == 0x80) {
 
 		}
 	} else {

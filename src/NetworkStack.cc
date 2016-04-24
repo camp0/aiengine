@@ -49,6 +49,7 @@ NetworkStack::NetworkStack():
 	bitcoin(BitcoinProtocolPtr(new BitcoinProtocol())),
 	modbus(ModbusProtocolPtr(new ModbusProtocol())),
 	coap(CoAPProtocolPtr(new CoAPProtocol())),
+	rtp(RTPProtocolPtr(new RTPProtocol())),
         tcp_generic(TCPGenericProtocolPtr(new TCPGenericProtocol())),
         udp_generic(UDPGenericProtocolPtr(new UDPGenericProtocol())),
         freqs_tcp(FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol","tcpfrequency"))),
@@ -68,6 +69,7 @@ NetworkStack::NetworkStack():
         ff_bitcoin(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_modbus(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_coap(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_rtp(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_tcp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_udp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_tcp_freqs(SharedPointer<FlowForwarder>(new FlowForwarder())),
@@ -137,6 +139,13 @@ NetworkStack::NetworkStack():
         ff_coap->addChecker(std::bind(&CoAPProtocol::coapChecker,coap,std::placeholders::_1));
         ff_coap->addFlowFunction(std::bind(&CoAPProtocol::processFlow,coap,std::placeholders::_1));
 
+        // configure the rtp 
+        rtp->setFlowForwarder(ff_rtp);
+        ff_rtp->setProtocol(static_cast<ProtocolPtr>(rtp));
+        ff_rtp->addChecker(std::bind(&RTPProtocol::rtpChecker,rtp,std::placeholders::_1));
+        ff_rtp->addFlowFunction(std::bind(&RTPProtocol::processFlow,rtp,
+		std::placeholders::_1));
+
         // Configure the SMTP 
         smtp->setFlowForwarder(ff_smtp);
         ff_smtp->setProtocol(static_cast<ProtocolPtr>(smtp));
@@ -205,6 +214,7 @@ NetworkStack::NetworkStack():
         dns->setAnomalyManager(anomaly_);
         snmp->setAnomalyManager(anomaly_);
         coap->setAnomalyManager(anomaly_);
+        rtp->setAnomalyManager(anomaly_);
         sip->setAnomalyManager(anomaly_);
         http->setAnomalyManager(anomaly_);
         ssl->setAnomalyManager(anomaly_);
