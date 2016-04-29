@@ -69,6 +69,11 @@ void CacheManager::releaseTCPFlow(Flow *flow) {
 						SharedPointer<BitcoinInfo> btinfo = flow->getBitcoinInfo();
 						if (btinfo) {
 							if (bitcoin_info_cache_) bitcoin_info_cache_->release(btinfo);
+						} else {
+							SharedPointer<MQTTInfo> minfo = flow->getMQTTInfo();
+							if (minfo) {
+								if (mqtt_info_cache_) mqtt_info_cache_->release(minfo);
+							}
 						}
 					}
 				}

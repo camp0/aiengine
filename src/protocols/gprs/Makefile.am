@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 if HAVE_LIBLOG4CXX
@@ -27,18 +29,7 @@ test_gprs_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../names/DomainNameManager.cc \
 			../../names/DomainName.cc \
 			../dns/DNSProtocol.cc \
-			../dns/DNSInfo.cc \
-			../sip/SIPInfo.cc \
-			../ssdp/SSDPInfo.cc \
-			../http/HTTPInfo.cc \
-			../ssl/SSLInfo.cc \
-			../smtp/SMTPInfo.cc \
-			../tcp/TCPInfo.cc \
-			../bitcoin/BitcoinInfo.cc \
-			../coap/CoAPInfo.cc \
-                        ../imap/IMAPInfo.cc \
-                        ../pop/POPInfo.cc \
-			GPRSInfo.cc GPRSProtocol.cc test_gprs.cc
+			$(TEST_FLOW_OBJECTS) GPRSProtocol.cc test_gprs.cc
 
 test_gprs_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
 test_gprs_LDADD   = $(BOOST_LDFLAGS) $(LOG4CXX_FLAGS) -lboost_unit_test_framework

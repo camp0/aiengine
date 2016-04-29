@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 if HAVE_LIBLOG4CXX
@@ -23,19 +25,8 @@ test_rtp_SOURCES = 	../../Multiplexer.cc \
 			../../flow/FlowManager.cc \
 			../ip/IPProtocol.cc \
 			../ip6/IPv6Protocol.cc \
-                        ../tcp/TCPInfo.cc \
-                        ../http/HTTPInfo.cc \
+                        $(TEST_FLOW_OBJECTS) \
                         ../http/HTTPUriSet.cc \
-                        ../ssl/SSLInfo.cc \
-                        ../smtp/SMTPInfo.cc \
-                        ../bitcoin/BitcoinInfo.cc \
-                        ../dns/DNSInfo.cc \
-                        ../gprs/GPRSInfo.cc \
-                        ../sip/SIPInfo.cc \
-                        ../ssdp/SSDPInfo.cc \
-                        ../imap/IMAPInfo.cc \
-                        ../pop/POPInfo.cc \
-                        ../coap/CoAPInfo.cc \
 			../../ipset/IPSet.cc \
 			../../ipset/IPSetManager.cc \
 			../udp/UDPProtocol.cc \

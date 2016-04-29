@@ -73,6 +73,7 @@ noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			protocols/coap/CoAPProtocol.h \
 			protocols/coap/CoAPInfo.h \
 			protocols/rtp/RTPProtocol.h \
+			protocols/mqtt/MQTTProtocol.h \
 			protocols/frequency/Frequencies.h \
 			protocols/frequency/PacketFrequencies.h \
 			protocols/frequency/FrequencyProtocol.h \
@@ -138,6 +139,8 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/coap/CoAPProtocol.cc \
 			protocols/coap/CoAPInfo.cc \
 			protocols/rtp/RTPProtocol.cc \
+			protocols/mqtt/MQTTProtocol.cc \
+			protocols/mqtt/MQTTInfo.cc \
 			regex/Regex.cc \
 			regex/RegexManager.cc RejectManager.cc \
 			protocols/frequency/FrequencyProtocol.cc \
@@ -208,6 +211,8 @@ tests_SOURCES = $(aiengine_core_sources) \
 		protocols/snmp/test_snmp.cc \
 		protocols/ssdp/test_ssdp.cc \
 		protocols/coap/test_coap.cc \
+		protocols/rtp/test_rtp.cc \
+		protocols/mqtt/test_mqtt.cc \
 		regex/test_regex.cc \
 		user/test_users.cc \
 		learner/test_learner.cc \
@@ -243,6 +248,7 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		BitcoinProtocol.o BitcoinInfo.o \
 		ModbusProtocol.o \
 		CoAPProtocol.o CoAPInfo.o \
+		MQTTProtocol.o MQTTInfo.o \
 		FrequencyProtocol.o LearnerEngine.o \
 		ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \
 		StackLan.o StackMobile.o StackLanIPv6.o StackVirtual.o StackOpenFlow.o \
@@ -270,6 +276,7 @@ java_objects = 	RegexManager.o Regex.o \
 		GREProtocol.o \
 		CoAPProtocol.o CoAPInfo.o \
 		BitcoinProtocol.o BitcoinInfo.o ModbusProtocol.o \
+		MQTTProtocol.o MQTTInfo.o \
                 OpenFlowProtocol.o VxLanProtocol.o \
                 FrequencyProtocol.o LearnerEngine.o \
                 ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \

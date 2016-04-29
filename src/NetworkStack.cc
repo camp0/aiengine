@@ -50,6 +50,7 @@ NetworkStack::NetworkStack():
 	modbus(ModbusProtocolPtr(new ModbusProtocol())),
 	coap(CoAPProtocolPtr(new CoAPProtocol())),
 	rtp(RTPProtocolPtr(new RTPProtocol())),
+	mqtt(MQTTProtocolPtr(new MQTTProtocol())),
         tcp_generic(TCPGenericProtocolPtr(new TCPGenericProtocol())),
         udp_generic(UDPGenericProtocolPtr(new UDPGenericProtocol())),
         freqs_tcp(FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol","tcpfrequency"))),
@@ -70,6 +71,7 @@ NetworkStack::NetworkStack():
         ff_modbus(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_coap(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_rtp(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_mqtt(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_tcp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_udp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_tcp_freqs(SharedPointer<FlowForwarder>(new FlowForwarder())),
@@ -176,6 +178,12 @@ NetworkStack::NetworkStack():
         ff_modbus->addChecker(std::bind(&ModbusProtocol::modbusChecker,modbus,std::placeholders::_1));
         ff_modbus->addFlowFunction(std::bind(&ModbusProtocol::processFlow,modbus,std::placeholders::_1));
 
+        // Configure the mqtt
+        mqtt->setFlowForwarder(ff_mqtt);
+        ff_mqtt->setProtocol(static_cast<ProtocolPtr>(mqtt));
+        ff_mqtt->addChecker(std::bind(&MQTTProtocol::mqttChecker,mqtt,std::placeholders::_1));
+        ff_mqtt->addFlowFunction(std::bind(&MQTTProtocol::processFlow,mqtt,std::placeholders::_1));
+
         // configure the TCP generic Layer
         tcp_generic->setFlowForwarder(ff_tcp_generic);
         ff_tcp_generic->setProtocol(static_cast<ProtocolPtr>(tcp_generic));
@@ -209,6 +217,7 @@ NetworkStack::NetworkStack():
         smtp->setCacheManager(cache_mng_);
         pop->setCacheManager(cache_mng_);
         imap->setCacheManager(cache_mng_);
+        mqtt->setCacheManager(cache_mng_);
 
 	// Sets the AnomalyManager on protocols that could generate an anomaly
         dns->setAnomalyManager(anomaly_);

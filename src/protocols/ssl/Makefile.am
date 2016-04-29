@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 if HAVE_LIBLOG4CXX
@@ -21,22 +23,12 @@ test_ssl_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../ipset/IPSetManager.cc \
 			../../ipset/IPSet.cc \
 			../tcp/TCPProtocol.cc \
-			../tcp/TCPInfo.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \
 			../../names/DomainName.cc \
-			../gprs/GPRSInfo.cc \
-			../sip/SIPInfo.cc \
-			../ssdp/SSDPInfo.cc \
-			../http/HTTPInfo.cc \
-			../smtp/SMTPInfo.cc \
-			../bitcoin/BitcoinInfo.cc \
-			../dns/DNSInfo.cc \
-			../coap/CoAPInfo.cc \
-			../imap/IMAPInfo.cc \
-                        ../pop/POPInfo.cc \
-			SSLInfo.cc SSLProtocol.cc test_ssl.cc
+			$(TEST_FLOW_OBJECTS) \
+			SSLProtocol.cc test_ssl.cc
 
 test_ssl_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE -g
 test_ssl_LDADD   = $(BOOST_LDFLAGS) $(LOG4CXX_FLAGS) -lboost_unit_test_framework

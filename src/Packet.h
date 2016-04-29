@@ -87,11 +87,7 @@ public:
 	void setDestinationPort(uint16_t port) { dest_port_ = port;}
 	void setSourcePort(uint16_t port) { source_port_ = port;}
 
-	void setPacketAnomaly(const PacketAnomalyType &pa) { 
-		pa_ = pa; 
-		//AnomalyManager::getInstance()->incAnomaly(pa);
-	}
-
+	void setPacketAnomaly(const PacketAnomalyType &pa) { pa_ = pa; } 
 	PacketAnomalyType getPacketAnomaly() const { return pa_;} 
 
 	uint16_t getDestinationPort() { return dest_port_;}

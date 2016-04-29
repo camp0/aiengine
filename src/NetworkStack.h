@@ -53,6 +53,7 @@
 #include "protocols/modbus/ModbusProtocol.h"
 #include "protocols/coap/CoAPProtocol.h"
 #include "protocols/rtp/RTPProtocol.h"
+#include "protocols/mqtt/MQTTProtocol.h"
 #include "protocols/frequency/FrequencyProtocol.h"
 
 namespace aiengine {
@@ -209,6 +210,7 @@ protected:
         ModbusProtocolPtr modbus;
         CoAPProtocolPtr coap;
         RTPProtocolPtr rtp;
+        MQTTProtocolPtr mqtt;
         TCPGenericProtocolPtr tcp_generic;
         UDPGenericProtocolPtr udp_generic;
         FrequencyProtocolPtr freqs_tcp;
@@ -226,6 +228,7 @@ protected:
         SharedPointer<FlowForwarder> ff_modbus;
         SharedPointer<FlowForwarder> ff_coap;
         SharedPointer<FlowForwarder> ff_rtp;
+	SharedPointer<FlowForwarder> ff_mqtt;
         SharedPointer<FlowForwarder> ff_tcp_generic;
         SharedPointer<FlowForwarder> ff_udp_generic;
         SharedPointer<FlowForwarder> ff_tcp_freqs;

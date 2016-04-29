@@ -18,6 +18,11 @@ Optional
 make 
 make install
 
+Can not find boost asio.
+------------------------
+
+./configure --with-boost-libdir=/lib64/
+
 Installing on BSD systems.
 --------------------------
 

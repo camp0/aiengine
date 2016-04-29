@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 noinst_HEADERS =	test_gre.h
@@ -16,18 +18,7 @@ test_gre_SOURCES = 	../../Multiplexer.cc \
 			../../ipset/IPSet.cc \
 			../../ipset/IPSetManager.cc \
 			../udp/UDPProtocol.cc \
-			../dns/DNSInfo.cc \
-			../gprs/GPRSInfo.cc \
-			../sip/SIPInfo.cc \
-			../ssdp/SSDPInfo.cc \
-			../tcp/TCPInfo.cc \
-			../http/HTTPInfo.cc \
-			../ssl/SSLInfo.cc \
-			../smtp/SMTPInfo.cc \
-			../bitcoin/BitcoinInfo.cc \
-			../coap/CoAPInfo.cc \
-			../pop/POPInfo.cc \
-			../imap/IMAPInfo.cc \
+			$(TEST_FLOW_OBJECTS) \
 			../icmp/ICMPProtocol.cc \
 			GREProtocol.cc test_gre.cc
 

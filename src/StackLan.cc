@@ -72,6 +72,7 @@ StackLan::StackLan():
         addProtocol(pop);
         addProtocol(bitcoin);
         addProtocol(modbus);
+        addProtocol(mqtt);
         addProtocol(tcp_generic);
         addProtocol(freqs_tcp);
         addProtocol(dns);
@@ -175,6 +176,7 @@ StackLan::StackLan():
 	dns->setFlowManager(flow_table_udp_);
 	sip->setFlowManager(flow_table_udp_);
 	ssdp->setFlowManager(flow_table_udp_);
+	mqtt->setFlowManager(flow_table_udp_);
 
 	// Connect the AnomalyManager with the protocols that may have anomalies
 	ip_->setAnomalyManager(anomaly_);
@@ -191,7 +193,7 @@ StackLan::StackLan():
 	udp_->setFlowForwarder(ff_udp_);	
 
 	enableFlowForwarders(ff_tcp_,
-		{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus,ff_tcp_generic});
+		{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus,ff_mqtt,ff_tcp_generic});
 	enableFlowForwarders(ff_udp_,
 		{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_coap,ff_rtp,ff_udp_generic});
 
@@ -259,7 +261,7 @@ void StackLan::enableNIDSEngine(bool enable) {
 	if (enable) {
 
 		disableFlowForwarders(ff_tcp_,
-			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus}); // we dont remove the ff_tcp_generic
+			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus,ff_mqtt}); // we dont remove the ff_tcp_generic
 		disableFlowForwarders(ff_udp_,
 			{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_coap,ff_rtp}); // we dont remove the ff_udp_generic
 
@@ -272,7 +274,7 @@ void StackLan::enableNIDSEngine(bool enable) {
 		disableFlowForwarders(ff_udp_,{ff_udp_generic}); 
 	
 		enableFlowForwarders(ff_tcp_,
-			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus,ff_tcp_generic});
+			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus,ff_mqtt,ff_tcp_generic});
         	enableFlowForwarders(ff_udp_,
 			{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_coap,ff_rtp,ff_udp_generic});	
 	}
@@ -296,13 +298,14 @@ void StackLan::setTotalTCPFlows(int value) {
         imap->increaseAllocatedMemory(value * 0.05);
         pop->increaseAllocatedMemory(value * 0.05);
         bitcoin->increaseAllocatedMemory(value * 0.05);
+        mqtt->increaseAllocatedMemory(value * 0.05);
 }
 
 void StackLan::setTotalUDPFlows(int value) {
 
 	flow_cache_udp_->createFlows(value);
-	dns->increaseAllocatedMemory(value / 2);
 
+	dns->increaseAllocatedMemory(value / 2);
 	sip->increaseAllocatedMemory(value * 0.2);
 	ssdp->increaseAllocatedMemory(value * 0.2);
 	coap->increaseAllocatedMemory(value * 0.2);

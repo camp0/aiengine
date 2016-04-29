@@ -18,6 +18,7 @@ test_flows_SOURCES =     ../Flow.cc \
 			../protocols/coap/CoAPInfo.cc \
 			../protocols/pop/POPInfo.cc \
 			../protocols/imap/IMAPInfo.cc \
+			../protocols/mqtt/MQTTInfo.cc \
 			../CacheManager.cc \
 			../AnomalyManager.cc FlowManager.cc test_flows.cc
 test_flows_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework

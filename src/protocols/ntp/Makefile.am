@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 noinst_HEADERS =	test_ntp.h
@@ -12,18 +14,7 @@ test_ntp_SOURCES = 	../../Multiplexer.cc \
 			../../AnomalyManager.cc \
 			../../FlowForwarder.cc \
 			../../flow/FlowManager.cc \
-                        ../tcp/TCPInfo.cc \
-                        ../http/HTTPInfo.cc \
-                        ../ssl/SSLInfo.cc \
-                        ../smtp/SMTPInfo.cc \
-                        ../bitcoin/BitcoinInfo.cc \
-                        ../dns/DNSInfo.cc \
-                        ../gprs/GPRSInfo.cc \
-                        ../sip/SIPInfo.cc \
-                        ../ssdp/SSDPInfo.cc \
-                        ../coap/CoAPInfo.cc \
-                        ../imap/IMAPInfo.cc \
-                        ../pop/POPInfo.cc \
+                        $(TEST_FLOW_OBJECTS) \
 			../ip/IPProtocol.cc \
 			../../ipset/IPSet.cc \
 			../../ipset/IPSetManager.cc \

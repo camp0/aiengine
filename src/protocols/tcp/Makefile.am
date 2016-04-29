@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 noinst_HEADERS =	test_tcp.h TCPStates.h TCPProtocol.h TCPInfo.h TCPHeader.h \
@@ -15,21 +17,11 @@ test_tcp_SOURCES = 	../../Multiplexer.cc  \
 			../ethernet/EthernetProtocol.cc \
 			../vlan/VLanProtocol.cc \
 			../ip/IPProtocol.cc \
-			../dns/DNSInfo.cc \
-			../http/HTTPInfo.cc \
-			../ssl/SSLInfo.cc \
-                        ../gprs/GPRSInfo.cc \
-                        ../sip/SIPInfo.cc \
-                        ../ssdp/SSDPInfo.cc \
-                        ../smtp/SMTPInfo.cc \
-                        ../bitcoin/BitcoinInfo.cc \
-			../coap/CoAPInfo.cc \
-                        ../pop/POPInfo.cc \
-                        ../imap/IMAPInfo.cc \
+			$(TEST_FLOW_OBJECTS) \
 			../../ipset/IPSetManager.cc \
 			../../ipset/IPSet.cc \
 			../ip6/IPv6Protocol.cc \
-			TCPInfo.cc TCPHeader.cc TCPProtocol.cc \
+			TCPHeader.cc TCPProtocol.cc \
 			test_tcp.cc
 
 test_tcp_CPPFLAGS = -I../../  $(BOOST_CPPFLAGS) -DSTAND_ALONE

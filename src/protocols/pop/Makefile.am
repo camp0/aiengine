@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 if HAVE_LIBLOG4CXX
@@ -25,18 +27,7 @@ test_pop_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainName.cc \
 			../../names/DomainNameManager.cc \
-			../tcp/TCPInfo.cc \
-			../http/HTTPInfo.cc \
-			../ssl/SSLInfo.cc \
-			../smtp/SMTPInfo.cc \
-			../bitcoin/BitcoinInfo.cc \
-			../dns/DNSInfo.cc \
-			../gprs/GPRSInfo.cc \
-			../sip/SIPInfo.cc \
-			../ssdp/SSDPInfo.cc \
-			../coap/CoAPInfo.cc \
-			../imap/IMAPInfo.cc \
-			../pop/POPInfo.cc \
+			$(TEST_FLOW_OBJECTS) \
 			POPProtocol.cc test_pop.cc
 
 test_pop_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE

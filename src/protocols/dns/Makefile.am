@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 if HAVE_LIBLOG4CXX
@@ -25,18 +27,8 @@ test_dns_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \
 			../../names/DomainName.cc \
-                        ../tcp/TCPInfo.cc \
-                        ../http/HTTPInfo.cc \
-                        ../ssl/SSLInfo.cc \
-                        ../smtp/SMTPInfo.cc \
-                        ../bitcoin/BitcoinInfo.cc \
-                        ../gprs/GPRSInfo.cc \
-                        ../sip/SIPInfo.cc \
-                        ../ssdp/SSDPInfo.cc \
-			../coap/CoAPInfo.cc \
-                        ../imap/IMAPInfo.cc \
-                        ../pop/POPInfo.cc \
-			DNSInfo.cc DNSProtocol.cc test_dns.cc
+                        $(TEST_FLOW_OBJECTS) \
+			DNSProtocol.cc test_dns.cc
 
 test_dns_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
 test_dns_LDADD   = $(BOOST_LDFLAGS) $(LOG4CXX_FLAGS) -lboost_unit_test_framework

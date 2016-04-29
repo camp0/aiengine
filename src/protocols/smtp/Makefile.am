@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 if HAVE_LIBLOG4CXX
@@ -21,22 +23,12 @@ test_smtp_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../ipset/IPSetManager.cc \
 			../../ipset/IPSet.cc \
 			../tcp/TCPProtocol.cc \
-			../tcp/TCPInfo.cc \
-			../ssl/SSLInfo.cc \
-			../bitcoin/BitcoinInfo.cc \
-			../http/HTTPInfo.cc \
-			../gprs/GPRSInfo.cc \
-			../dns/DNSInfo.cc \
-			../sip/SIPInfo.cc \
-			../ssdp/SSDPInfo.cc \
-			../coap/CoAPInfo.cc \
-                        ../pop/POPInfo.cc \
-                        ../imap/IMAPInfo.cc \
+			$(TEST_FLOW_OBJECTS) \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \
 			../../names/DomainName.cc \
-			SMTPInfo.cc SMTPProtocol.cc test_smtp.cc
+			SMTPProtocol.cc test_smtp.cc
 
 test_smtp_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
 test_smtp_LDADD   = $(BOOST_LDFLAGS) $(LOG4CXX_FLAGS) -lboost_unit_test_framework

@@ -34,6 +34,7 @@ test_ipset_SOURCES = 	../Multiplexer.cc  \
 			../protocols/coap/CoAPInfo.cc \
                         ../protocols/imap/IMAPInfo.cc \
                         ../protocols/pop/POPInfo.cc \
+                        ../protocols/mqtt/MQTTInfo.cc \
 			../protocols/udpgeneric/UDPGenericProtocol.cc \
 			../protocols/tcpgeneric/TCPGenericProtocol.cc \
 			../regex/RegexManager.cc \

@@ -53,6 +53,7 @@
 #include "protocols/ssdp/SSDPInfo.h"
 #include "protocols/bitcoin/BitcoinInfo.h"
 #include "protocols/coap/CoAPInfo.h"
+#include "protocols/mqtt/MQTTInfo.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "AnomalyManager.h"
@@ -165,6 +166,7 @@ public:
         SharedPointer<SMTPInfo> getSMTPInfo() const { return DynamicPointerCast<SMTPInfo>(layer7info); }
 	SharedPointer<BitcoinInfo> getBitcoinInfo() const { return DynamicPointerCast<BitcoinInfo>(layer7info); }
 	SharedPointer<CoAPInfo> getCoAPInfo() const { return DynamicPointerCast<CoAPInfo>(layer7info); }
+	SharedPointer<MQTTInfo> getMQTTInfo() const { return DynamicPointerCast<MQTTInfo>(layer7info); }
 
 	// Special objects for frequency analisys
 	SharedPointer<Frequencies> frequencies;

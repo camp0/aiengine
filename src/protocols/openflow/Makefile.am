@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 if HAVE_LIBLOG4CXX
@@ -23,21 +25,10 @@ test_openflow_SOURCES =	../../Multiplexer.cc ../../Protocol.cc \
 			../../ipset/IPSet.cc \
 			../../ipset/IPSetManager.cc \
 			../udp/UDPProtocol.cc \
-			../gprs/GPRSInfo.cc \
-			../dns/DNSInfo.cc \
-			../sip/SIPInfo.cc \
-			../ssdp/SSDPInfo.cc \
+			$(TEST_FLOW_OBJECTS) \
 			../udpgeneric/UDPGenericProtocol.cc \
 			../tcpgeneric/TCPGenericProtocol.cc \
 			../tcp/TCPProtocol.cc \
-			../tcp/TCPInfo.cc \
-			../http/HTTPInfo.cc \
-			../ssl/SSLInfo.cc \
-			../smtp/SMTPInfo.cc \
-			../bitcoin/BitcoinInfo.cc \
-			../coap/CoAPInfo.cc \
-                        ../imap/IMAPInfo.cc \
-                        ../pop/POPInfo.cc \
 			../../regex/RegexManager.cc \
 			../../regex/Regex.cc \
 			../../names/DomainNameManager.cc \

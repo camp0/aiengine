@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 if HAVE_LIBLOG4CXX
@@ -23,24 +25,14 @@ test_coap_SOURCES = 	../../Multiplexer.cc \
 			../../flow/FlowManager.cc \
 			../ip/IPProtocol.cc \
 			../ip6/IPv6Protocol.cc \
-                        ../tcp/TCPInfo.cc \
-                        ../http/HTTPInfo.cc \
+                        $(TEST_FLOW_OBJECTS) \
                         ../http/HTTPUriSet.cc \
-                        ../ssl/SSLInfo.cc \
-                        ../smtp/SMTPInfo.cc \
-                        ../bitcoin/BitcoinInfo.cc \
-                        ../dns/DNSInfo.cc \
-                        ../gprs/GPRSInfo.cc \
-                        ../sip/SIPInfo.cc \
-                        ../ssdp/SSDPInfo.cc \
-                        ../imap/IMAPInfo.cc \
-                        ../pop/POPInfo.cc \
 			../../ipset/IPSet.cc \
 			../../ipset/IPSetManager.cc \
 			../udp/UDPProtocol.cc \
                         ../../names/DomainNameManager.cc \
                         ../../names/DomainName.cc \
-			CoAPProtocol.cc CoAPInfo.cc test_coap.cc
+			CoAPProtocol.cc test_coap.cc
 
 test_coap_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE 
 test_coap_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework $(LOG4CXX_FLAGS)
