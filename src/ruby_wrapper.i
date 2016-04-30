@@ -144,6 +144,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::Flow::getSIPInfo;
 %ignore aiengine::Flow::getBitcoinInfo;
 %ignore aiengine::Flow::getCoAPInfo;
+%ignore aiengine::Flow::getMQTTInfo;
 %ignore aiengine::Flow::packet;
 %ignore aiengine::Flow::regex;
 %ignore aiengine::Flow::frequencies;
@@ -228,6 +229,9 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::HTTPInfo::getIsRelease;
 %ignore aiengine::HTTPInfo::setHTTPDataDirection;
 %ignore aiengine::HTTPInfo::getHTTPDataDirection;
+
+%ignore aiengine::MQTTInfo::reset;
+//%ignore aiengine::MQTTInfo::incTransactions;
 
 %ignore aiengine::BitcoinInfo::reset;
 %ignore aiengine::BitcoinInfo::incTransactions;
@@ -364,6 +368,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("sip_info")			aiengine::Flow::getSIPInfoObject;
 %rename("ssdp_info")			aiengine::Flow::getSSDPInfoObject;
 %rename("coap_info")			aiengine::Flow::getCoAPInfoObject;
+%rename("mqtt_info")			aiengine::Flow::getMQTTInfoObject;
 %rename("regex")			aiengine::Flow::getRegex;
 %rename("payload")			aiengine::Flow::getPayload;
 %rename("uri")				aiengine::SIPInfo::getUri;
@@ -495,6 +500,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %include "protocols/ssdp/SSDPInfo.h"
 %include "protocols/bitcoin/BitcoinInfo.h"
 %include "protocols/coap/CoAPInfo.h"
+%include "protocols/mqtt/MQTTInfo.h"
 %include "Flow.h"
 %include "learner/LearnerEngine.h"
 %include "protocols/frequency/FrequencyGroup.h"

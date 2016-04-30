@@ -247,6 +247,7 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		OpenFlowProtocol.o VxLanProtocol.o \
 		BitcoinProtocol.o BitcoinInfo.o \
 		ModbusProtocol.o \
+		RTPProtocol.o \
 		CoAPProtocol.o CoAPInfo.o \
 		MQTTProtocol.o MQTTInfo.o \
 		FrequencyProtocol.o LearnerEngine.o \
@@ -274,6 +275,7 @@ java_objects = 	RegexManager.o Regex.o \
 		SSDPProtocol.o SSDPInfo.o \
                 POPProtocol.o POPInfo.o \
 		GREProtocol.o \
+		RTPProtocol.o \
 		CoAPProtocol.o CoAPInfo.o \
 		BitcoinProtocol.o BitcoinInfo.o ModbusProtocol.o \
 		MQTTProtocol.o MQTTInfo.o \

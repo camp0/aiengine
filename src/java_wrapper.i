@@ -154,6 +154,7 @@ using namespace std;
 %ignore aiengine::Flow::getSIPInfo;
 %ignore aiengine::Flow::getBitcoinInfo;
 %ignore aiengine::Flow::getCoAPInfo;
+%ignore aiengine::Flow::getMQTTInfo;
 %ignore aiengine::Flow::packet;
 %ignore aiengine::Flow::regex;
 %ignore aiengine::Flow::frequencies;
@@ -214,6 +215,8 @@ using namespace std;
 
 %ignore aiengine::BitcoinInfo::reset;
 %ignore aiengine::BitcoinInfo::incTransactions;
+
+%ignore aiengine::MQTTInfo::reset;
 
 %ignore aiengine::SIPInfo::reset;
 %ignore aiengine::SIPInfo::resetStrings;
@@ -317,6 +320,7 @@ using namespace std;
 %include "protocols/ssdp/SSDPInfo.h"
 %include "protocols/bitcoin/BitcoinInfo.h"
 %include "protocols/coap/CoAPInfo.h"
+%include "protocols/mqtt/MQTTInfo.h"
 %include "Flow.h"
 //%include "learner/LearnerEngine.h"
 //%include "protocols/frequency/FrequencyGroup.h"

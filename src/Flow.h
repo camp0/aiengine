@@ -213,6 +213,7 @@ public:
         SSDPInfo& getSSDPInfoObject() const { return *getSSDPInfo().get();}
 	BitcoinInfo& getBitcoinInfoObject() const { return *getBitcoinInfo().get(); }
         CoAPInfo& getCoAPInfoObject() const { return *getCoAPInfo().get();}
+        MQTTInfo& getMQTTInfoObject() const { return *getMQTTInfo().get();}
 #endif
 
 #if defined(PYTHON_BINDING)

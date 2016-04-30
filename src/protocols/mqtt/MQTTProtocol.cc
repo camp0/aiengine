@@ -63,6 +63,7 @@ int32_t MQTTProtocol::getLength() const {
 	} else {
 		return mqtt_header_->length;
 	}
+	return 0;
 }
 
 
