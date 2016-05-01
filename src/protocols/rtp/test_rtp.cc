@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE (test1_rtp)
 	BOOST_CHECK( rtp->getTotalValidatedPackets() == 1);
 	BOOST_CHECK( rtp->getTotalMalformedPackets() == 0);
 
-	std::cout << "pt:" << rtp->getPayloadType() << std::endl;
+	// std::cout << "pt:" << rtp->getPayloadType() << std::endl;
 	BOOST_CHECK( rtp->getPayloadType() == 99); //Clear mode
 	BOOST_CHECK( rtp->getPadding() == false); //Clear mode
 }

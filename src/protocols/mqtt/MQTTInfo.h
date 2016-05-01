@@ -60,6 +60,8 @@ public:
         void setHaveData(bool value) { have_data_ = value; }
         bool getHaveData() const { return have_data_; }
 
+	SharedPointer<StringCache> topic;
+
 	friend std::ostream& operator<< (std::ostream& out, const MQTTInfo& sinfo) {
 
         	return out;

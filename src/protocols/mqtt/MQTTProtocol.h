@@ -92,6 +92,8 @@ public:
 		total_mqtt_client_commands_(0),
 		total_mqtt_server_responses_(0),
 		info_cache_(new Cache<MQTTInfo>("MQTT Info cache")),
+		topic_cache_(new Cache<StringCache>("MQTT Topic cache")),
+		topic_map_(),
 		flow_mng_(),
 		current_flow_(nullptr),
 		anomaly_(),
@@ -184,6 +186,9 @@ private:
 	int32_t total_mqtt_server_responses_;
 
         Cache<MQTTInfo>::CachePtr info_cache_;
+        Cache<StringCache>::CachePtr topic_cache_;
+
+	GenericMapType topic_map_;
 
 	FlowManagerPtrWeak flow_mng_;
 	Flow *current_flow_;	

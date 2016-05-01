@@ -31,34 +31,32 @@ void MQTTInfo::reset() {
 	total_server_commands_ = 0;
 	total_client_commands_ = 0;
 	data_chunk_length_ = 0;
+	topic.reset();
 }
 
 void MQTTInfo::serialize(std::ostream& stream) {
-/*
+
 #ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION
         stream << ",\"i\":{";
-        stream << "\"t\":" << total_data_blocks_ << ",";
-        stream << "\"b\":" << total_data_bytes_ << "";
+        stream << "\"o\":" << command_ << ",";
+        stream << "\"s\":" << total_server_commands_ << ",";
+        stream << "\"c\":" << total_client_commands_ << "";
 
-        if (from) {
-                stream << ",\"f\":\"" << from->getName() << "\"";
-        }
-        if (to) {
-                stream << ",\"t\":\"" << to->getName() << "\"";
+        if (topic) {
+                stream << ",\"t\":\"" << topic->getName() << "\"";
         }
 #else
         stream << ",\"info\":{";
-        stream << "\"total\":" << total_data_blocks_ << ",";
-        stream << "\"bytes\":" << total_data_bytes_ << "";
-        if (from) {
-                stream << ",\"from\":\"" << from->getName() << "\"";
-        }
-        if (to) {
-                stream << ",\"to\":\"" << to->getName() << "\"";
+        stream << "\"operation\":" << command_ << ",";
+        stream << "\"total_server\":" << total_server_commands_ << "";
+        stream << "\"total_client\":" << total_client_commands_ << "";
+
+        if (topic) {
+                stream << ",\"topic\":\"" << topic->getName() << "\"";
         }
 #endif
 	stream << "}";
-*/
+
 }
 	
 } // namespace aiengine

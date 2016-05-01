@@ -167,6 +167,11 @@ void Flow::serialize(std::ostream& stream) {
 							SharedPointer<BitcoinInfo> binfo = getBitcoinInfo();
 							if (binfo) {
 								binfo->serialize(stream);
+							} else {
+								SharedPointer<MQTTInfo> minfo = getMQTTInfo();
+								if (minfo) {
+									minfo->serialize(stream);
+								}
 							}
 						}
 					}
