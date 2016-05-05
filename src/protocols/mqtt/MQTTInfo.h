@@ -62,14 +62,19 @@ public:
 
 	SharedPointer<StringCache> topic;
 
-	friend std::ostream& operator<< (std::ostream& out, const MQTTInfo& sinfo) {
+	friend std::ostream& operator<< (std::ostream& out, const MQTTInfo& minfo) {
+
+                out << " Cmd(" << (int)minfo.getCommand();
+                out << ")Cli(" << minfo.getTotalClientCommands();
+                out << ")Ser(" << minfo.getTotalServerCommands() << ") ";
+
+                if (minfo.topic) out << " Topic:" << minfo.topic->getName();
 
         	return out;
 	}
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
-	//const char *getFrom() const { return (from ? from->getName() : ""); }	
-	//const char *getTo() const { return (to ? to->getName() : ""); }	
+	const char *getTopic() const { return (topic ? topic->getName() : ""); }	
 #endif
 
 private:

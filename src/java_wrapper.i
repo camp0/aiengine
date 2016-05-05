@@ -217,6 +217,7 @@ using namespace std;
 %ignore aiengine::BitcoinInfo::incTransactions;
 
 %ignore aiengine::MQTTInfo::reset;
+%ignore aiengine::MQTTInfo::topic;
 
 %ignore aiengine::SIPInfo::reset;
 %ignore aiengine::SIPInfo::resetStrings;

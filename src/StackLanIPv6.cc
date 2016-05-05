@@ -170,11 +170,12 @@ StackLanIPv6::StackLanIPv6():
         smtp->setFlowManager(flow_table_tcp_);
         imap->setFlowManager(flow_table_tcp_);
         pop->setFlowManager(flow_table_tcp_);
+        mqtt->setFlowManager(flow_table_tcp_);
+
         dns->setFlowManager(flow_table_udp_);
         sip->setFlowManager(flow_table_udp_);
         ssdp->setFlowManager(flow_table_udp_);
         coap->setFlowManager(flow_table_udp_);
-        mqtt->setFlowManager(flow_table_udp_);
 
 	// Connect the AnomalyManager with the protocols that may have anomalies
         ip6_->setAnomalyManager(anomaly_);

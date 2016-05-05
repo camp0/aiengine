@@ -38,7 +38,7 @@ void MQTTInfo::serialize(std::ostream& stream) {
 
 #ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION
         stream << ",\"i\":{";
-        stream << "\"o\":" << command_ << ",";
+        stream << "\"o\":" << (int)command_ << ",";
         stream << "\"s\":" << total_server_commands_ << ",";
         stream << "\"c\":" << total_client_commands_ << "";
 
@@ -47,8 +47,8 @@ void MQTTInfo::serialize(std::ostream& stream) {
         }
 #else
         stream << ",\"info\":{";
-        stream << "\"operation\":" << command_ << ",";
-        stream << "\"total_server\":" << total_server_commands_ << "";
+        stream << "\"operation\":" << (int)command_ << ",";
+        stream << "\"total_server\":" << total_server_commands_ << ",";
         stream << "\"total_client\":" << total_client_commands_ << "";
 
         if (topic) {

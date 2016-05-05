@@ -192,8 +192,8 @@ void SMTPProtocol::handle_cmd_mail(SMTPInfo *info, boost::string_ref &header) {
 
 	SharedPointer<StringCache> from_ptr = info->from;
 
-	size_t start = header.find("<");
-	size_t end = header.rfind(">");
+	size_t start = header.find_first_of("<");
+	size_t end = header.find_first_of(">");
 
 	if ((start > header.length())or(end > header.length())) {
                 if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
@@ -204,7 +204,8 @@ void SMTPProtocol::handle_cmd_mail(SMTPInfo *info, boost::string_ref &header) {
 	}
 
 	boost::string_ref from(header.substr(start + 1, end - start - 1));
-	size_t token = from.find("@");
+
+	size_t token = from.find_first_of("@");
 
 	if (token > from.length()) {
                 if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
@@ -250,7 +251,7 @@ void SMTPProtocol::handle_cmd_mail(SMTPInfo *info, boost::string_ref &header) {
 void SMTPProtocol::handle_cmd_rcpt(SMTPInfo *info, boost::string_ref &header) {
 
 	if (!info->to) {
-        	size_t start = header.find("<");
+        	size_t start = header.find_first_of("<");
         	size_t end = header.rfind(">");
 
 		boost::string_ref to(header.substr(start + 1,end - start - 1));

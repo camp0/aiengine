@@ -91,6 +91,7 @@ public:
 		mqtt_header_(nullptr),total_bytes_(0),
 		total_mqtt_client_commands_(0),
 		total_mqtt_server_responses_(0),
+		length_offset_(0),
 		info_cache_(new Cache<MQTTInfo>("MQTT Info cache")),
 		topic_cache_(new Cache<StringCache>("MQTT Topic cache")),
 		topic_map_(),
@@ -149,7 +150,7 @@ public:
 
 	int8_t getCommandType() const { return mqtt_header_->type >> 4; }
 	uint8_t getFlags() const { return mqtt_header_->type & 0x0F; }
-	int32_t getLength() const; 
+	int32_t getLength(); 
 
 	int32_t getTotalClientCommands() const { return total_mqtt_client_commands_; }
 	int32_t getTotalServerCommands() const { return total_mqtt_server_responses_; }
@@ -176,6 +177,9 @@ private:
 	void release_mqtt_info_cache(MQTTInfo *info);
 	int32_t release_mqtt_info(MQTTInfo *info);
 
+	void attach_topic(MQTTInfo *info, boost::string_ref &topic);
+	void handle_publish_message(MQTTInfo *info, unsigned char *payload, int length);
+
 	int stats_level_;
 	mqtt_hdr *mqtt_header_;
         int64_t total_bytes_;
@@ -184,6 +188,8 @@ private:
 	
 	int32_t total_mqtt_client_commands_;
 	int32_t total_mqtt_server_responses_;
+
+	int8_t length_offset_;
 
         Cache<MQTTInfo>::CachePtr info_cache_;
         Cache<StringCache>::CachePtr topic_cache_;

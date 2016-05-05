@@ -50,7 +50,7 @@ std::vector<MqttControlPacketType> MQTTProtocol::commands_ {
 	std::make_tuple(static_cast<int8_t>(MQTTControlPacketTypes::MQTT_CPT_RESERVED2),	"Reserved",	0)
 };
 
-int32_t MQTTProtocol::getLength() const { 
+int32_t MQTTProtocol::getLength() { 
 
 	// Specific way of manage the lengths
 	if (mqtt_header_->length >= 0x80) {
@@ -58,11 +58,14 @@ int32_t MQTTProtocol::getLength() const {
 		if ((tok & 0x80) == 0) { // For two bytes
 			int8_t val = (mqtt_header_->length & 0x7f); 
 			int16_t value = val + (128 * tok); 
+			length_offset_ = 2;
 			return value;	
 		}	
 	} else {
+		length_offset_ = 1;
 		return mqtt_header_->length;
 	}
+	length_offset_ = 0;
 	return 0;
 }
 
@@ -73,6 +76,7 @@ int64_t MQTTProtocol::getAllocatedMemory() const {
 
         value = sizeof(MQTTProtocol);
         value += info_cache_->getAllocatedMemory();
+        value += topic_cache_->getAllocatedMemory();
 
         return value;
 }
@@ -93,14 +97,24 @@ void MQTTProtocol::releaseCache() {
 		int64_t total_bytes_released_by_flows = 0;
 		int32_t release_flows = 0;
 
+                std::for_each (topic_map_.begin(), topic_map_.end(), [&total_bytes_released] (PairStringCacheHits const &f) {
+                        total_bytes_released += f.first.size();
+                });
+
                 for (auto &flow: ft) {
-                       	SharedPointer<MQTTInfo> sinfo = flow->getMQTTInfo();
-			if (sinfo) {
-                                total_bytes_released_by_flows += sizeof(sinfo);
+                       	SharedPointer<MQTTInfo> minfo = flow->getMQTTInfo();
+			if (minfo) {
+                                SharedPointer<StringCache> sc = minfo->topic;
+                                if (sc) {
+                                        minfo->topic.reset();
+                                        total_bytes_released_by_flows += sc->getNameSize();
+                                        topic_cache_->release(sc);
+                                }
+                                total_bytes_released_by_flows += sizeof(minfo);
                                
                                 flow->layer7info.reset();
                                 ++ release_flows;
-                                info_cache_->release(sinfo);
+                                info_cache_->release(minfo);
                         }
                 }
 
@@ -163,9 +177,16 @@ void MQTTProtocol::processFlow(Flow *flow) {
 			if (flow->getFlowDirection() == FlowDirection::FORWARD) { // client side
 				++total_mqtt_client_commands_;
 				minfo->incClientCommands();
+
+				// The getLength also update the header_size with the variable length_offset_
 				if (getLength() > length - header_size) {
 					minfo->setDataChunkLength(getLength() - (length + header_size));
 					minfo->setHaveData(true);
+				}
+
+				// The message publish message contains the topic and the information
+				if (type == static_cast<int8_t>(MQTTControlPacketTypes::MQTT_CPT_PUBLISH)) {
+					handle_publish_message(minfo.get(),&payload[header_size],length - header_size);
 				}
 			} else { // Server side
 				++ total_mqtt_server_responses_;
@@ -176,6 +197,54 @@ void MQTTProtocol::processFlow(Flow *flow) {
 	
 	return;
 } 
+
+void MQTTProtocol::handle_publish_message(MQTTInfo *info, unsigned char *payload, int length) {
+
+	int16_t msglen = 0;
+//	std::cout << "Hex0: "<<  (int)payload[1] << " Hex1:" << (int)payload[2] << " lenght_offset:" << (int)length_offset_ << std::endl;
+	if (length_offset_ == 2) {
+		msglen = ntohs((payload[2] << 8) + payload[1]);
+	} else {
+		msglen = payload[1];
+//		std::cout << "yes" << std::endl;
+	}
+
+//	std::cout << "msglen=" << msglen << std::endl;
+	//int16_t msglen = ntohs(payload[2] + payload[1]);
+//	int16_t msglen = ntohs((payload[length_offset_] << 8) + payload[length_offset_-1]);
+	if (msglen < length) {
+		boost::string_ref topic((char*)&payload[length_offset_ + 1],msglen);
+
+		attach_topic(info,topic);
+//		std::cout << "The topic is:" << topic << std::endl;
+	} else {
+//		std::cout << "anomaly" << std::endl;
+                if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        current_flow_->setPacketAnomaly(PacketAnomalyType::MQTT_BOGUS_HEADER);
+                }
+                anomaly_->incAnomaly(PacketAnomalyType::MQTT_BOGUS_HEADER);
+	}
+}
+
+void MQTTProtocol::attach_topic(MQTTInfo *info, boost::string_ref &topic) {
+
+        if (!info->topic) {
+                GenericMapType::iterator it = topic_map_.find(topic);
+                if (it == topic_map_.end()) {
+                        SharedPointer<StringCache> topic_ptr = topic_cache_->acquire();
+                        if (topic_ptr) {
+                                topic_ptr->setName(topic.data(),topic.size());
+                                info->topic = topic_ptr;
+                                topic_map_.insert(std::make_pair(boost::string_ref(topic_ptr->getName()),
+                                        std::make_pair(topic_ptr,1)));
+                        }
+                } else {
+                        int *counter = &std::get<1>(it->second);
+                        ++(*counter);
+                        info->topic = std::get<0>(it->second);
+                }
+        }
+}
 
 void MQTTProtocol::statistics(std::basic_ostream<char>& out)
 {
@@ -203,7 +272,6 @@ void MQTTProtocol::statistics(std::basic_ostream<char>& out)
                                         const char *label = std::get<1>(command);
                                         int32_t hits = std::get<2>(command);
                                         out << "\t" << "Total " << label << ":" << std::right << std::setfill(' ') << std::setw(27 - strlen(label)) << hits <<std::endl;
-
                                 }
                         }
 	
@@ -213,6 +281,10 @@ void MQTTProtocol::statistics(std::basic_ostream<char>& out)
 					flow_forwarder_.lock()->statistics(out);
                                 if (stats_level_ > 3) {
                                         info_cache_->statistics(out);
+                                        topic_cache_->statistics(out);
+                                        if(stats_level_ > 4) {
+                                                showCacheMap(out,topic_map_,"MQTT Topics","Topic");
+                                        }
                                 }
 			}
 		}
@@ -223,11 +295,13 @@ void MQTTProtocol::statistics(std::basic_ostream<char>& out)
 void MQTTProtocol::increaseAllocatedMemory(int value) { 
 
 	info_cache_->create(value);
+	topic_cache_->create(value);
 }
 
 void MQTTProtocol::decreaseAllocatedMemory(int value) { 
 
 	info_cache_->destroy(value);
+	topic_cache_->destroy(value);
 }
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)

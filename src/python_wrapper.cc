@@ -653,6 +653,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_flow_bitcoin_info )
 		.add_property("coap_info",make_function(&Flow::getCoAPInfoObject,return_internal_reference<>()),
 			help_flow_coap_info )
+		.add_property("mqtt_info",make_function(&Flow::getMQTTInfoObject,return_internal_reference<>()),
+			help_flow_mqtt_info )
 		.add_property("regex",make_function(&Flow::getRegex,return_internal_reference<>()),
 			help_flow_regex )
 		.add_property("payload",&Flow::getPayload,
@@ -663,6 +665,12 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_flow_l7_protocol_name )
 		.def(self_ns::str(self_ns::self))
 	;
+
+        boost::python::class_<MQTTInfo, SharedPointer<MQTTInfo>, boost::noncopyable>("MQTTInfo")
+                .add_property("topic",&MQTTInfo::getTopic,
+                        help_mqtt_info_topic )
+                .def(self_ns::str(self_ns::self))
+        ;
 
         boost::python::class_<CoAPInfo, SharedPointer<CoAPInfo>, boost::noncopyable>("CoAPInfo")
                 .add_property("uri",&CoAPInfo::getUri,

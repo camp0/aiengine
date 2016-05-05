@@ -230,6 +230,7 @@ NetworkStack::NetworkStack():
         smtp->setAnomalyManager(anomaly_);
         pop->setAnomalyManager(anomaly_);
         imap->setAnomalyManager(anomaly_);
+        mqtt->setAnomalyManager(anomaly_);
 }
 
 ProtocolPtr NetworkStack::get_protocol(const std::string &name) {

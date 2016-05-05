@@ -231,6 +231,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::HTTPInfo::getHTTPDataDirection;
 
 %ignore aiengine::MQTTInfo::reset;
+%ignore aiengine::MQTTInfo::topic;
 //%ignore aiengine::MQTTInfo::incTransactions;
 
 %ignore aiengine::BitcoinInfo::reset;

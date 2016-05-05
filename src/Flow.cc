@@ -251,6 +251,11 @@ void Flow::showFlowInfo(std::ostream& out) const {
 							SharedPointer<BitcoinInfo> binfo = getBitcoinInfo();
 							if (binfo) {
 								out << *binfo.get();
+							} else {
+								SharedPointer<MQTTInfo> minfo = getMQTTInfo();
+								if (minfo) {
+									out << *minfo.get();
+								}
 							}
 						}
 					}

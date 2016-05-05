@@ -247,12 +247,13 @@ StackVirtual::StackVirtual():
 	udp_->setFlowManager(flow_table_udp_);
 	flow_table_udp_->setProtocol(udp_);	
 
-        // TODO: Im not sure of need this
+        // Protocols that contains objects should have a reference to the FlowManager 
         http->setFlowManager(flow_table_tcp_vir_);
         ssl->setFlowManager(flow_table_tcp_vir_);
         smtp->setFlowManager(flow_table_tcp_vir_);
         imap->setFlowManager(flow_table_tcp_vir_);
         pop->setFlowManager(flow_table_tcp_vir_);
+
         dns->setFlowManager(flow_table_udp_vir_);
         sip->setFlowManager(flow_table_udp_vir_);
         ssdp->setFlowManager(flow_table_udp_vir_);

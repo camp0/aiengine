@@ -39,7 +39,7 @@ void CoAPInfo::serialize(std::ostream& stream) {
         stream << ",\"i\":{";
 
         if (hostname) {
-                stream << ",\"h\":\"" << hostname->getName() << "\"";
+                stream << "\"h\":\"" << hostname->getName() << "\"";
                 have_item = true;
         }
         if (matched_domain_name) {
@@ -54,7 +54,7 @@ void CoAPInfo::serialize(std::ostream& stream) {
         stream << ",\"info\":{";
 
         if (hostname) {
-                stream << ",\"host\":\"" << hostname->getName() << "\"";
+                stream << "\"host\":\"" << hostname->getName() << "\"";
                 have_item = true;
         }
         if (matched_domain_name) {

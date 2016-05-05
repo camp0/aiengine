@@ -164,6 +164,11 @@ BOOST_AUTO_TEST_CASE (test4_mqtt)
         BOOST_CHECK( info != nullptr);
         BOOST_CHECK( info->getCommand() == static_cast<int8_t>(MQTTControlPacketTypes::MQTT_CPT_PUBLISH));
 
+	BOOST_CHECK( info->topic != nullptr);
+
+	std::string topic("/test");
+	BOOST_CHECK( topic.compare(info->topic->getName()) == 0);
+
         BOOST_CHECK( info->getTotalClientCommands() == 1);
         BOOST_CHECK( info->getTotalServerCommands() == 0);
 
@@ -209,9 +214,13 @@ BOOST_AUTO_TEST_CASE (test5_mqtt)
         BOOST_CHECK( info->getTotalServerCommands() == 0);
 	BOOST_CHECK( info->getHaveData() == true );
 	BOOST_CHECK( info->getDataChunkLength() == 595); // The data left to read
+	BOOST_CHECK( info->topic != nullptr);
+
+	std::string topic("/test");
+	BOOST_CHECK( topic.compare(info->topic->getName()) == 0);
 
 	// This packet just contains data payload
-        flow->setFlowDirection(FlowDirection::BACKWARD);
+        flow->setFlowDirection(FlowDirection::FORWARD);
         flow->packet = const_cast<Packet*>(&packet2);
         mqtt->processFlow(flow.get());
 
@@ -275,6 +284,40 @@ BOOST_AUTO_TEST_CASE (test7_mqtt)
         SharedPointer<MQTTInfo> info = flow->getMQTTInfo();
         BOOST_CHECK(info != nullptr);
         BOOST_CHECK(info->getCommand() == static_cast<int8_t>(MQTTControlPacketTypes::MQTT_CPT_CONNECT));
+}
+
+BOOST_AUTO_TEST_CASE (test8_mqtt)
+{
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (&raw_packet_ethernet_ip_tcp_flow4_mqtt_publish_message[54]);
+        int length = raw_packet_ethernet_ip_tcp_flow4_mqtt_publish_message_length - 54;
+        Packet packet(pkt,length);
+
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        flow->packet = const_cast<Packet*>(&packet);
+       	mqtt->processFlow(flow.get());
+
+        BOOST_CHECK(mqtt->getTotalPackets() == 1);
+        BOOST_CHECK(mqtt->getTotalValidatedPackets() == 0);
+        BOOST_CHECK(mqtt->getTotalBytes() == 86);
+
+        BOOST_CHECK(mqtt->getCommandType() == static_cast<int8_t>(MQTTControlPacketTypes::MQTT_CPT_PUBLISH));
+        BOOST_CHECK(mqtt->getFlags() == 0x02);
+        BOOST_CHECK(mqtt->getLength() == 84);
+
+        BOOST_CHECK(mqtt->getTotalClientCommands() == 1);
+        BOOST_CHECK(mqtt->getTotalServerCommands() == 0);
+
+        Flow *cflow = mqtt->getCurrentFlow();
+        BOOST_CHECK( cflow != nullptr);
+        SharedPointer<MQTTInfo> info = cflow->getMQTTInfo();
+        BOOST_CHECK(info != nullptr);
+        BOOST_CHECK(info->getCommand() == static_cast<int8_t>(MQTTControlPacketTypes::MQTT_CPT_PUBLISH));
+	BOOST_CHECK( info->topic != nullptr);
+
+	std::string topic("Bus17Cmd");
+	BOOST_CHECK( topic.compare(info->topic->getName()) == 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
