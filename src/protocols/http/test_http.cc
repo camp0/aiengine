@@ -681,6 +681,9 @@ BOOST_AUTO_TEST_CASE (test14_http)
         http->processFlow(flow.get());
 
 	// TODO: Verify the response
+	std::string ct("text/plain");
+	BOOST_CHECK(info->ct != nullptr);
+        BOOST_CHECK(ct.compare(info->ct->getName()) == 0);
 
 	// Inject the next header
 	flow->setFlowDirection(FlowDirection::FORWARD);
@@ -863,15 +866,18 @@ BOOST_AUTO_TEST_CASE (test18_http)
         std::string host("86.19.100.102");
         std::string ua("Shockwave Flash");
 	std::string uri("/open/1");
+	std::string ct("application/x-fcs");
 
         SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
         BOOST_CHECK(info != nullptr);
 
         BOOST_CHECK(info->host != nullptr);
         BOOST_CHECK(info->ua != nullptr);
+        BOOST_CHECK(info->ct != nullptr);
         BOOST_CHECK(host.compare(info->host->getName()) == 0);
         BOOST_CHECK(ua.compare(info->ua->getName()) == 0);
         BOOST_CHECK(uri.compare(info->uri->getName()) == 0);
+        BOOST_CHECK(ct.compare(info->ct->getName()) == 0);
 
 	BOOST_CHECK(info->getContentLength() == 1);
 }
@@ -884,7 +890,7 @@ BOOST_AUTO_TEST_CASE (test19_http)
 			"Connection: Keep-Alive\r\n"
 			"Content-Length: 17\r\n"
 			"Server: FlashCom/3.5.7\r\n"
-			"Content-Type:  application/x-fcs\r\n"
+			"Content-Type: application/x-fcs\r\n"
 			"\r\n"
 			"Cuomdz02wSLGeYbI.";
 
@@ -934,7 +940,7 @@ BOOST_AUTO_TEST_CASE (test20_http)
                         "Connection: Keep-Alive\r\n"
                         "Content-Length: 17\r\n"
                         "Server: FlashCom/3.5.7\r\n"
-                        "Content-Type:  application/x-fcs\r\n"
+                        "Content-Type: application/x-fcs\r\n"
                         "\r\n"
                         "Cuomdz02wSLGeYbI.";
 
@@ -970,13 +976,16 @@ BOOST_AUTO_TEST_CASE (test20_http)
         std::string host("86.19.100.102");
         std::string ua("Shockwave Flash");
         std::string uri("/open/1");
+	std::string ct("application/x-fcs");
 
         BOOST_CHECK(info->host != nullptr);
         BOOST_CHECK(info->ua != nullptr);
         BOOST_CHECK(info->uri != nullptr);
+        BOOST_CHECK(info->ct != nullptr);
         BOOST_CHECK(host.compare(info->host->getName()) == 0);
         BOOST_CHECK(ua.compare(info->ua->getName()) == 0);
         BOOST_CHECK(uri.compare(info->uri->getName()) == 0);
+        BOOST_CHECK(ct.compare(info->ct->getName()) == 0);
 
         BOOST_CHECK(info->getContentLength() == 17);
 }
@@ -999,7 +1008,7 @@ BOOST_AUTO_TEST_CASE (test21_http)
                         "Connection: Keep-Alive\r\n"
                         "Content-Length: 37\r\n"
                         "Server: FlashCom/3.5.7\r\n"
-                        "Content-Type:  application/x-fcs\r\n"
+                        "Content-Type: application/x-fcs\r\n"
                         "\r\n"
                         "Cuomdz02wSLGeYbI.";
 
@@ -1389,7 +1398,7 @@ BOOST_AUTO_TEST_CASE (test27_http)
                         "Connection: Keep-Alive\r\n"
                         "Content-Length: 37\r\n"
                         "Server: FlashCom/3.5.7\r\n"
-                        "Content-Type:  application/x-fcs\r\n"
+                        "Content-Type: application/x-fcs\r\n"
                         "\r\n"
                         "Cuomdz02wSLGeYbI.";
 

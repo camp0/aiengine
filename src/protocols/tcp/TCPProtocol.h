@@ -58,6 +58,11 @@ public:
 		total_flags_ack_(0),
 		total_flags_rst_(0),
 		total_flags_fin_(0),
+#if defined(HAVE_TCP_QOS_METRICS)
+        	total_connection_setup_time_(0),
+        	total_server_reset_rate_(0),
+        	total_application_response_time_(0),
+#endif
 		last_timeout_(0),packet_time_(0),
 		anomaly_(),
 		cache_mng_() {
@@ -190,6 +195,11 @@ private:
 	int32_t total_flags_ack_;
 	int32_t total_flags_rst_;
 	int32_t total_flags_fin_;
+#if defined(HAVE_TCP_QOS_METRICS)
+        int32_t total_connection_setup_time_;
+        int32_t total_server_reset_rate_;
+        int32_t total_application_response_time_;
+#endif
        	std::time_t last_timeout_;
        	std::time_t packet_time_;
 	std::function <void (Flow*)> reject_func_;

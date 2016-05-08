@@ -717,6 +717,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         help_http_info_host_name )
                 .add_property("user_agent",&HTTPInfo::getUserAgent,
                         help_http_info_user_agent )
+                .add_property("content_type",&HTTPInfo::getContentType,
+                        help_http_info_content_type )
                 .add_property("banned",&HTTPInfo::getIsBanned,&HTTPInfo::setBanAndRelease,
                         help_http_info_banned )
                 .add_property("matched_domain_name",&HTTPInfo::getMatchedDomainName,

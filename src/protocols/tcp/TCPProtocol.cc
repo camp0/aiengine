@@ -342,6 +342,7 @@ void TCPProtocol::computeState(TCPInfo *info,int32_t bytes) {
 #if defined(HAVE_TCP_QOS_METRICS)
 				if (info->ack == 1) {
 					info->connection_setup_time = current_flow_->getLastPacketTime() - info->connection_setup_time;
+					total_connection_setup_time_ += info->connection_setup_time;
 				}
 				// TODO: Application response time, time between client and server with payload
 				if (bytes > 0) {
@@ -349,6 +350,7 @@ void TCPProtocol::computeState(TCPInfo *info,int32_t bytes) {
 						info->last_client_data_time = current_flow_->getLastPacketTime();
 					} else { // Server data, so compute the values
 						info->application_response_time = current_flow_->getLastPacketTime() - info->last_client_data_time;
+						total_application_response_time_ += info->application_response_time;
 					}
 				}
 #endif
@@ -399,6 +401,7 @@ void TCPProtocol::computeState(TCPInfo *info,int32_t bytes) {
         if (current_flow_->getLastPacketTime() - info->last_sample_time >= 1) {
        		if (current_flow_->getDuration() > 0) { 
 	        	info->server_reset_rate = info->rst / current_flow_->getDuration();
+			total_server_reset_rate_ += info->server_reset_rate;
 		}
         }
 

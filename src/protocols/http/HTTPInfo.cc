@@ -55,6 +55,10 @@ void HTTPInfo::serialize(std::ostream& stream) {
         	stream << ",\"h\":\"" << host->getName() << "\"";
 		have_item = true;
 	}
+	if (ct) {
+        	stream << ",\"c\":\"" << ct->getName() << "\"";
+		have_item = true;
+	}
         if (matched_domain_name) {
 		if (have_item) stream << ",";	
                 stream << "\"m\":\"" << matched_domain_name->getName() << "\"";
@@ -65,6 +69,10 @@ void HTTPInfo::serialize(std::ostream& stream) {
        	stream << "\"ress\":" << getTotalResponses();
 	if (host) {
         	stream << ",\"host\":\"" << host->getName() << "\"";
+		have_item = true;
+	}
+	if (ct) {
+        	stream << ",\"ctype\":\"" << ct->getName() << "\"";
 		have_item = true;
 	}
         if (matched_domain_name) {
@@ -80,6 +88,7 @@ void HTTPInfo::resetStrings() {
 	uri.reset(); 
 	host.reset(); 
 	ua.reset(); 
+	ct.reset();
 }
 
 } // namespace aiengine

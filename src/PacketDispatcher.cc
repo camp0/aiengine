@@ -516,6 +516,9 @@ std::ostream& operator<< (std::ostream& out, const PacketDispatcher& pdis) {
 		out << "\t" << "Scheduler off" << std::endl;
 	}
 #endif
+	if (pdis.pcap_filter_.length() > 0) {
+		out << "\t" << "Pcap filter:" << pdis.pcap_filter_ <<std::endl;
+	}
 	out << "\t" << "Total packets:          " << std::setw(10) << pdis.total_packets_ <<std::endl;
 	out << "\t" << "Total bytes:        " << std::setw(14) << pdis.total_bytes_ <<std::endl;
 

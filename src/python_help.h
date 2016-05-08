@@ -140,6 +140,7 @@ const char *help_ssl_info_matched_domain_name =	"Gets the matched DomainName obj
 const char *help_http_info_uri =		"Gets the HTTP URI if the Flow is HTTP.";
 const char *help_http_info_host_name =		"Gets the HTTP Host if the Flow is HTTP."; 
 const char *help_http_info_user_agent =		"Gets the HTTP UserAgent if the Flow is HTTP."; 
+const char *help_http_info_content_type =	"Gets the HTTP Content Type if the Flow is HTTP."; 
 const char *help_http_info_banned =		"Gets/Sets the Flow banned for no more analysis on the python side and release resources."; 
 const char *help_http_info_matched_domain_name ="Gets the matched DomainName object."; 
 

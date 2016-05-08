@@ -26,6 +26,7 @@
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 #endif
+using namespace std;
 %}
 
 %apply SWIGTYPE *DISOWN { Signature* signature };
@@ -220,6 +221,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::HTTPInfo::uri;
 %ignore aiengine::HTTPInfo::host;
 %ignore aiengine::HTTPInfo::ua;
+%ignore aiengine::HTTPInfo::ct;
 %ignore aiengine::HTTPInfo::matched_domain_name;
 %ignore aiengine::HTTPInfo::getTotalRequests;
 %ignore aiengine::HTTPInfo::getTotalResponses;
@@ -379,6 +381,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("user_agent")			aiengine::HTTPInfo::getUserAgent;
 %rename("host_name")			aiengine::HTTPInfo::getHostName;
 %rename("uri")				aiengine::HTTPInfo::getUri;
+%rename("content_type")			aiengine::HTTPInfo::getContentType;
 %rename("banned")			aiengine::HTTPInfo::getIsBanned;
 %rename("matched_domain_name")          aiengine::HTTPInfo::getMatchedDomainName;
 %rename("host_name")			aiengine::SSDPPInfo::getHostName;

@@ -1072,7 +1072,7 @@ class StackLanTests(unittest.TestCase):
         with pyaiengine.PacketDispatcher("../pcapfiles/ipv4_mqtt.pcap") as pd:
             pd.stack = self.s
             pd.run()
-
+           
         d = json.loads(db.lastdata)
         self.assertEqual(d["info"]["operation"], 11)
         self.assertEqual(d["info"]["total_server"], 7)
