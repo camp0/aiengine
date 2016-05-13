@@ -137,6 +137,7 @@ int64_t HTTPProtocol::getAllocatedMemory() const {
         value += host_cache_->getAllocatedMemory();
         value += ua_cache_->getAllocatedMemory();
         value += ct_cache_->getAllocatedMemory();
+        value += file_cache_->getAllocatedMemory();
 
         return value;
 }
@@ -205,6 +206,11 @@ int32_t HTTPProtocol::release_http_info(HTTPInfo *info) {
         	bytes_released += ct->getNameSize();
                 ct_cache_->release(ct);
         }
+	if (info->filename) {
+        	SharedPointer<StringCache> name = info->filename;
+        	bytes_released += name->getNameSize();
+                file_cache_->release(name);
+        }
         info->resetStrings();
 
 	return bytes_released;
@@ -230,6 +236,7 @@ void HTTPProtocol::releaseCache() {
                 int32_t release_uris = uri_map_.size();
                 int32_t release_uas = ua_map_.size();
                 int32_t release_cts = ct_map_.size();
+                int32_t release_files = file_map_.size();
 
                 // Compute the size of the strings used as keys on the map
                 std::for_each (host_map_.begin(), host_map_.end(), [&total_bytes_released] (PairStringCacheHits const &ht) {
@@ -242,6 +249,9 @@ void HTTPProtocol::releaseCache() {
                         total_bytes_released += ht.first.size();
                 });
                 std::for_each (ct_map_.begin(), ct_map_.end(), [&total_bytes_released] (PairStringCacheHits const &ht) {
+                        total_bytes_released += ht.first.size();
+                });
+                std::for_each (file_map_.begin(), file_map_.end(), [&total_bytes_released] (PairStringCacheHits const &ht) {
                         total_bytes_released += ht.first.size();
                 });
 
@@ -261,6 +271,7 @@ void HTTPProtocol::releaseCache() {
 		uri_map_.clear();
 		ua_map_.clear();
 		ct_map_.clear();
+		file_map_.clear();
 
                 double cache_compression_rate = 0;
                 
@@ -271,6 +282,7 @@ void HTTPProtocol::releaseCache() {
                 msg.str("");
                 msg << "Release " << release_hosts << " hosts, " << release_uas;
 		msg << " useragents, " << release_uris << " uris, ";
+		msg << release_files << " filenames, ";
 		msg << release_cts << " contenttypes, " << release_flows << " flows";
 		msg << ", " << total_bytes_released << " bytes, compression rate " << cache_compression_rate << "%";
                 infoMessage(msg.str());
@@ -334,6 +346,24 @@ bool HTTPProtocol::process_content_length_parameter(HTTPInfo *info, boost::strin
 	return true;
 }
 
+bool HTTPProtocol::process_content_disposition_parameter(HTTPInfo *info, boost::string_ref &cd) {
+
+        size_t end = cd.find("filename=");
+
+        if (end != std::string::npos) {
+		boost::string_ref filename = cd.substr(end + 9);
+		if (filename.starts_with('"')) {
+			filename.remove_prefix(1);
+		}      
+		if (filename.ends_with('"')) {
+			filename.remove_suffix(1);
+		} 
+		if (filename.length() > 0) {
+			attach_filename(info,filename);
+		}
+	}
+        return true;
+}
 
 bool HTTPProtocol::process_content_type_parameter(HTTPInfo *info, boost::string_ref &ct) {
 
@@ -404,6 +434,23 @@ void HTTPProtocol::attach_content_type(HTTPInfo *info, boost::string_ref &ct) {
 	}
 }
 
+void HTTPProtocol::attach_filename(HTTPInfo *info, boost::string_ref &name) {
+
+        GenericMapType::iterator it = file_map_.find(name);
+        if (it == file_map_.end()) {
+                SharedPointer<StringCache> name_ptr = file_cache_->acquire();
+                if (name_ptr) {
+                        name_ptr->setName(name.data(),name.length());
+                        info->filename = name_ptr;
+                        file_map_.insert(std::make_pair(boost::string_ref(name_ptr->getName()),
+                                std::make_pair(name_ptr,1)));
+                }
+        } else {
+                // Update the Filename of the flow
+                info->filename = std::get<0>(it->second);
+	}
+}
+
 int HTTPProtocol::extract_uri(HTTPInfo *info, boost::string_ref &header) {
 
         int offset = 0;
@@ -430,25 +477,23 @@ int HTTPProtocol::extract_uri(HTTPInfo *info, boost::string_ref &header) {
 		}
 
 		// Extract the content-type
-		size_t ct_off = header.find("Content-Type:");
-		if (ct_off != std::string::npos) {
-			boost::string_ref ct_value(header.substr(ct_off + 14));
+		size_t h_offset = header.find("Content-Type:");
+		if (h_offset != std::string::npos) {
+			boost::string_ref ct_value(header.substr(h_offset + 14));
 			size_t ct_end = ct_value.find_first_of("\r\n");
 
 			ct_value = ct_value.substr(0,ct_end);
 			process_content_type_parameter(info,ct_value);
+		
+			h_offset = header.find("Content-Disposition:");
+			if (h_offset != std::string::npos) {
+				boost::string_ref cd_value(header.substr(h_offset + 20));
+				size_t ct_end = cd_value.find_first_of("\r\n");
 
-			/* if (ct_end != std::string::npos) {
-				ct_value = ct_value.substr(0,ct_end);
-				ct_end = ct_value.find_first_of(";");
-
-				if (ct_end != std::string::npos) {
-					ct_value = ct_value.substr(0,ct_end);
-				}
+				cd_value = cd_value.substr(0,ct_end);
+				process_content_disposition_parameter(info,cd_value);
 			}
-			
-			attach_content_type(info,ct_value);*/	
-		}
+                }
                 // No uri to extract
                 return method_size;
         }
@@ -639,6 +684,9 @@ void HTTPProtocol::processFlow(Flow *flow) {
 	if(!info) {
 		info = info_cache_->acquire();
                 if (!info) {
+#ifdef HAVE_LIBLOG4CXX
+                        LOG4CXX_WARN (logger, "No memory on '" << info_cache_->getName() << "' for flow:" << *flow);
+#endif
 			return;
 		}
 		flow->layer7info = info;
@@ -757,6 +805,7 @@ void HTTPProtocol::increaseAllocatedMemory(int number) {
 	host_cache_->create(number);
 	ua_cache_->create(number);
 	ct_cache_->create(number);
+	file_cache_->create(number);
 }
 
 void HTTPProtocol::decreaseAllocatedMemory(int number) {
@@ -766,6 +815,7 @@ void HTTPProtocol::decreaseAllocatedMemory(int number) {
 	host_cache_->destroy(number);
 	ua_cache_->destroy(number);
 	ct_cache_->destroy(number);
+	file_cache_->destroy(number);
 }
 
 void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
@@ -822,12 +872,14 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 					host_cache_->statistics(out);
 					ua_cache_->statistics(out);
 					ct_cache_->statistics(out);
+					file_cache_->statistics(out);
 
 					if(stats_level_ > 4) {
 						showCacheMap(out,uri_map_,"HTTP Uris","Uri");
 						showCacheMap(out,host_map_,"HTTP Hosts","Host");
 						showCacheMap(out,ua_map_,"HTTP UserAgents","UserAgent");
 						showCacheMap(out,ct_map_,"HTTP ContentTypes","ContentType");
+						showCacheMap(out,file_map_,"HTTP Filenames","Filename");
 					}
 				}
 			}

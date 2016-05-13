@@ -1475,7 +1475,7 @@ BOOST_AUTO_TEST_CASE (test28_http)
 BOOST_AUTO_TEST_CASE (test29_http) 
 {
         char *header1 = "GET /VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB/oonnnnn-a-/otherfile.html HTTP/1.0\r\n"
-                        "Host: www.somehost.com\r\n";
+                        "Host: www.somehost.com\r\n"
                         "\r\n";
 
         char *response = "HTTP/1.1 200 OK\r\n"
@@ -1517,6 +1517,77 @@ BOOST_AUTO_TEST_CASE (test29_http)
 	// Verify the anomaly
 	BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::HTTP_BOGUS_NO_HEADERS);
 }
+
+// Verify the extraction of the filename on the content-disposition field
+BOOST_AUTO_TEST_CASE (test30_http)
+{
+	char *header =	"GET /00015d766423rr9f/1415286120 HTTP/1.1\r\n"
+			"Accept: image/jpeg, application/x-ms-application, image/gif, */*\r\n"
+			"Referer: http://grannityrektonaver.co.vu/15c0b14drr9f_1_08282d03fb0251bbd75ff6dc6e317bd9.html\r\n"
+			"Accept-Language: en-US\r\n"
+			"User-Agent: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729\r\n"
+			"Accept-Encoding: gzip, deflate\r\n"
+			"Host: grannityrektonaver.co.vu\r\n"
+			"Connection: Keep-Alive\r\n"
+			"\r\n";
+
+        char *response = "HTTP/1.1 200 OK\r\n"
+                        "Server: nginx/1.2.1r\n"
+			"Date: Thu, 06 Nov 2014 15:03:10 GMT\r\n"
+			"Content-Type: application/pdf\r\n"
+			"Content-Length: 9940\r\n"
+			"Connection: keep-alive\r\n"
+			"X-Powered-By: PHP/5.4.33\r\n"
+			"Accept-Ranges: bytes\r\n"
+			"Content-Disposition: inline; filename=XykpdWhZZ2.pdf\r\n"
+			"\r\n"
+			"%PDF-1.6\r\n"
+			"%....\r\n"
+			"1 0 obj\r\n"
+			"<<\r\n"
+			"/Type /Catalog\r\n"
+			"/Version /1.4\r\n"
+			"/Pages 2 0 R\r\n"
+                        "/AcroForm 3 0 R\r\n"
+			">>\r\n"
+			"endobj";
+
+        Packet packetr(reinterpret_cast <unsigned char*> (response),strlen(response));
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header);
+        int length1 = strlen(header);
+        Packet packet1(pkt1,length1);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->increaseAllocatedMemory(1);
+
+        flow->packet = const_cast<Packet*>(&packet1);
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+
+        flow->packet = const_cast<Packet*>(&packetr);
+        flow->setFlowDirection(FlowDirection::BACKWARD);
+        http->processFlow(flow.get());
+
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
+
+        BOOST_CHECK(info->getResponseCode() == 200);
+        BOOST_CHECK(info->getContentLength() == 9940);
+
+        BOOST_CHECK(info->getTotalRequests()  == 1);
+        BOOST_CHECK(info->getTotalResponses()  == 1);
+
+	BOOST_CHECK(info->ct != nullptr);
+	BOOST_CHECK(info->filename != nullptr);
+
+	std::string ct("application/pdf");
+	std::string filename("XykpdWhZZ2.pdf");
+
+	BOOST_CHECK(ct.compare(info->ct->getName()) == 0);
+	BOOST_CHECK(filename.compare(info->filename->getName()) == 0);
+}
+
+
 
 BOOST_AUTO_TEST_SUITE_END( )
 

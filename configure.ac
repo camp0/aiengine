@@ -21,6 +21,7 @@ m4_include([m4/ax_swig_enable_cxx.m4])
 m4_include([m4/ax_swig_multi_module_support.m4])
 m4_include([m4/ax_prog_javah.m4])
 m4_include([m4/ax_prog_java_cc.m4])
+m4_include([m4/ax_lua.m4])
 
 AC_PREREQ(2.59)
 
@@ -357,6 +358,27 @@ AM_JAVAFLAGS="$CPPFLAGS"
 CPPFLAGS="$temp_cpp_flags"
 
 ##########################################################################
+# Swig Lua support
+##########################################################################
+
+AM_CONDITIONAL([HAVE_LUA_SUPPORT],false)
+
+enable_lua_support=no
+have_lua_support=no
+AX_PROG_LUA(5.1,[],[enable_lua_support=yes],[enable_lua_support=no])
+
+if test x"$enable_lua_support" = x"yes"; then
+    AX_LUA_HEADERS([have_lua_support=yes],[have_lua_support=no])
+
+    echo $LUA_INCLUDE $LUA_LIBS
+    if test x"$have_lua_support" = x"yes"; then
+        AM_CONDITIONAL([HAVE_LUA_SUPPORT],true)
+    fi
+fi
+
+LUA_INCLUDE="$LUA_INCLUDE"
+
+##########################################################################
 # TCP/UDP reject connection support
 ##########################################################################
 
@@ -488,6 +510,7 @@ echo "
   Flow sc support.......: $fscompress_support
   Swig/Ruby support.....: $have_ruby_support
   Swig/Java support.....: $have_java_support
+  Swig/Lua support......: $have_lua_support
   TCP Qos support.......: $tcpqos
   TCP/UDP reject support: $reject_support
   Python GIL support....: $pythongil_support

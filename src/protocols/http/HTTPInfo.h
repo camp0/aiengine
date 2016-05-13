@@ -75,6 +75,7 @@ public:
         SharedPointer<StringCache> host;
         SharedPointer<StringCache> ua;
         SharedPointer<StringCache> ct;
+        SharedPointer<StringCache> filename;
 	SharedPointer<DomainName> matched_domain_name;
 
 	friend std::ostream& operator<< (std::ostream& out, const HTTPInfo& hinfo) {
@@ -86,6 +87,7 @@ public:
 		if (hinfo.getIsBanned()) out << "Banned ";
                 if (hinfo.host) out << "Host:" << hinfo.host->getName();
                 if (hinfo.ct) out << " ContentType:" << hinfo.ct->getName();
+                if (hinfo.filename) out << " Filename:" << hinfo.filename->getName();
                 if (hinfo.ua) out << " UserAgent:" << hinfo.ua->getName();
 
         	return out;
@@ -100,6 +102,7 @@ public:
 	const char *getHostName() const { return (host ? host->getName() : ""); }	
 	const char *getUserAgent() const { return (ua ? ua->getName() : ""); }	
 	const char *getContentType() const { return (ct ? ct->getName() : ""); }	
+	const char *getFilename() const { return (filename ? filename->getName() : ""); }	
 #endif
 
 #if defined(PYTHON_BINDING)

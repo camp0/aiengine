@@ -30,17 +30,6 @@ using namespace log4cxx::helpers;
 #endif
 %}
 
-%insert("runtime") %{
-#include <iostream>
-
-using namespace std;
-
-std::cout << "Ruby AIengine BETA init." << std::endl;
-#ifdef HAVE_LIBLOG4CXX
-        BasicConfigurator::configure();
-#endif
-%}
-
 %template(Counters) std::map<std::string,int32_t>;
 
 %ignore operator+;
@@ -214,6 +203,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::HTTPInfo::host;
 %ignore aiengine::HTTPInfo::ua;
 %ignore aiengine::HTTPInfo::ct;
+%ignore aiengine::HTTPInfo::filename;
 %ignore aiengine::HTTPInfo::matched_domain_name;
 %ignore aiengine::HTTPInfo::getTotalRequests;
 %ignore aiengine::HTTPInfo::getTotalResponses;

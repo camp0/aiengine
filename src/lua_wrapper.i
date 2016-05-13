@@ -1,5 +1,6 @@
-%module(directors="1") ruaiengine 
+%module(directors="1") luaiengine 
 %include <std_string.i>
+%include <typemaps.i>
 
 %{
 #include <iostream>
@@ -29,17 +30,17 @@ using namespace log4cxx::helpers;
 using namespace std;
 %}
 
-%apply SWIGTYPE *DISOWN { Signature* signature };
-%apply SWIGTYPE *DISOWN { Regex* regex };
+// %apply SWIGTYPE *DISOWN { Signature* signature };
+// %apply SWIGTYPE *DISOWN { Regex* regex };
 %apply SWIGTYPE *DISOWN { DomainName* domain };
 %apply SWIGTYPE *DISOWN { IPSet* ipset };
 
+%apply SWIGTYPE *DISOWN {aiengine::Regex& sig};
+
 %feature("director") DatabaseAdaptor;
 
-%trackobjects;
-
 %init %{ 
-std::cout << "Ruby AIengine BETA init." << std::endl;
+std::cout << "Lua AIengine BETA init." << std::endl;
 #ifdef HAVE_LIBLOG4CXX  
         BasicConfigurator::configure();
 #endif
@@ -112,6 +113,8 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::Signature::incrementMatchs;
 %ignore aiengine::Signature::total_matchs_;
 %ignore aiengine::Signature::total_evaluates_;
+
+%ignore aiengine::RegexManager::evaluate;
 
 %ignore aiengine::Regex::evaluate;
 %ignore aiengine::Regex::isTerminal;
@@ -401,7 +404,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("pcap_filter")			aiengine::PacketDispatcher::getPcapFilter;
 %rename("total_bytes")			aiengine::PacketDispatcher::getTotalBytes;
 %rename("total_packets")		aiengine::PacketDispatcher::getTotalPackets;
-%rename("stack=")			aiengine::PacketDispatcher::setStack;
+// %rename("stack=")			aiengine::PacketDispatcher::setStack;
 %rename("shell")			aiengine::PacketDispatcher::getShell;
 %rename("shell=")			aiengine::PacketDispatcher::setShell;
 %rename("set_scheduler")		aiengine::PacketDispatcher::setScheduler;
@@ -467,11 +470,6 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %apply long long { int64_t };
 %apply int { int32_t };
 
-%freefunc Regex "free_Regex";
-%freefunc RegexManager "free_RegexManager";
-%freefunc DomainNameManager "free_DomainNameManager";
-%freefunc IPSetManager "free_IPSetManager";
-
 %ignore operator<<;
 
 %include "Callback.h"
@@ -507,36 +505,8 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %include "protocols/coap/CoAPInfo.h"
 %include "protocols/mqtt/MQTTInfo.h"
 %include "Flow.h"
-%include "learner/LearnerEngine.h"
-%include "protocols/frequency/FrequencyGroup.h"
+//%include "learner/LearnerEngine.h"
+//%include "protocols/frequency/FrequencyGroup.h"
 
-%template(FrequencyGroupString) aiengine::FrequencyGroup<std::string>;
+//%template(FrequencyGroupString) aiengine::FrequencyGroup<std::string>;
 
-%header %{
-
-    static void free_Regex(void *ptr) {
-	aiengine::Regex *re  = (aiengine::Regex*) ptr;
-    }
-
-    static void mark_RegexManager(void *ptr) {
-	aiengine::RegexManager *rmng  = (aiengine::RegexManager*) ptr;
-    }
-
-    static void free_IPSetManager(void *ptr) {
-        aiengine::IPSetManager *imng = (aiengine::IPSetManager*) ptr;
-
-        SWIG_RubyRemoveTracking(ptr);
-    }
-
-    static void free_DomainNameManager(void *ptr) {
-	aiengine::DomainNameManager *dmng = (aiengine::DomainNameManager*) ptr;
-
-        SWIG_RubyRemoveTracking(ptr);
-    }
-
-    static void free_RegexManager(void* ptr) {
-        aiengine::RegexManager *rmng  = (aiengine::RegexManager*) ptr;
-
-        SWIG_RubyRemoveTracking(ptr);
-    }
-%}
