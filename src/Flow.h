@@ -191,7 +191,7 @@ public:
 
 	void showFlowInfo(std::ostream& out) const;
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 
         int32_t getTotalBytes() const { return total_bytes;}
         int32_t getTotalPacketsLayer7() const { return total_packets_l7;}

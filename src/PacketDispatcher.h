@@ -134,7 +134,7 @@ public:
 	void run(void);
 	void close(void);
     	void stop(void) { io_service_.stop(); }
-	void setPcapFilter(const std::string& filter);
+	void setPcapFilter(const char *filter);
 	const char *getPcapFilter() const { return pcap_filter_.c_str(); }
 	void status(void);
 	const char *getStackName() const { return stack_name_.c_str(); }

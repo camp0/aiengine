@@ -1,6 +1,7 @@
 %module(directors="1") luaiengine 
 %include <std_string.i>
 %include <typemaps.i>
+%include <attribute.i>
 
 %{
 #include <iostream>
@@ -67,6 +68,7 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %ignore aiengine::RegexNullDeleter;
 
 %ignore aiengine::CacheManager;
+
 %ignore aiengine::NetworkStack::setName;
 %ignore aiengine::NetworkStack::setLinkLayerMultiplexer;
 %ignore aiengine::NetworkStack::getLinkLayerMultiplexer;
@@ -345,12 +347,21 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %ignore aiengine::FlowManager::FlowTimeRefreshRate;
 %ignore aiengine::FlowManager::setCacheManager;
 
+%attribute(aiengine::NetworkStack,std::string,link_layer_tag,getLinkLayerTagging,enableLinkLayerTagging)
+
+%attribute(aiengine::FlowManager,int,timeout,getTimeout,setTimeout)
+%attribute(aiengine::FlowManager,int,total_flows,getTotalFlows)
+%attribute(aiengine::FlowManager,int,total_process_flows,getTotalProcessFlows)
+%attribute(aiengine::FlowManager,int,total_timeout_flows,getTotalTimeoutFlows)
+
+%attribute(aiengine::Flow,POPInfo&,pop_info,getPOPInfoObject)
+%attribute(aiengine::Flow,IMAPInfo&,imap_info,getIMAPInfoObject)
+
+%attribute(aiengine::PacketDispatcher,const char*,stack_name,getStackName)
+%attribute(aiengine::PacketDispatcher,std::string,pcap_filter,getPcapFilter,setPcapFilter)
+%attribute(aiengine::PacketDispatcher,int64_t,total_bytes,getTotalBytes)
+
 %rename("regexmanager=")		aiengine::IPAbstractSet::setRegexManager;
-%rename("timeout=")			aiengine::FlowManager::setTimeout;
-%rename("timeout")			aiengine::FlowManager::getTimeout;
-%rename("total_flows")			aiengine::FlowManager::getTotalFlows;
-%rename("total_process_flows")		aiengine::FlowManager::getTotalProcessFlows;
-%rename("total_timeout_flows")		aiengine::FlowManager::getTotalTimeoutFlows;
 %rename("show_flows")			showFlows;
 %rename("total_evaluates")		aiengine::Signature::getTotalEvaluates;
 %rename("expression")			aiengine::Signature::getExpression;
@@ -366,7 +377,6 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %rename("matched_domain_name")          aiengine::SSLInfo::getMatchedDomainName;
 %rename("evidence=")			aiengine::Flow::setEvidence;
 %rename("evidence")			aiengine::Flow::getEvidence;
-%rename("pop_info")			aiengine::Flow::getPOPInfoObject;
 %rename("imap_info")			aiengine::Flow::getIMAPInfoObject;
 %rename("smtp_info")			aiengine::Flow::getSMTPInfoObject;
 %rename("ssl_info")			aiengine::Flow::getSSLInfoObject;
@@ -428,7 +438,7 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %rename("flows_timeout")		getFlowsTimeout;
 %rename("enable_nids_engine=")		enableNIDSEngine;
 %rename("enable_frequency_engine=")	enableFrequencyEngine;
-%rename("link_layer_tag=")		enableLinkLayerTagging;
+//%rename("link_layer_tag=")		aiengine::NetworkStack::enableLinkLayerTagging;
 %rename("add_regex")			addRegex;
 %rename("add_domain_name")		addDomainName;
 %rename("matchs")			aiengine::Signature::getMatchs;

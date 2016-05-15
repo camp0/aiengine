@@ -302,11 +302,11 @@ void PacketDispatcher::close(void) {
         }
 }
 
-void PacketDispatcher::setPcapFilter(const std::string &filter) {
+void PacketDispatcher::setPcapFilter(const char *filter) {
 
 	if ((device_is_ready_)or(pcap_file_ready_)) {
 		struct bpf_program fp;
-		char *c_filter = const_cast<char*>(filter.c_str());
+		char *c_filter = const_cast<char*>(filter);
 
 		if (pcap_compile(pcap_, &fp, c_filter, 1, PCAP_NETMASK_UNKNOWN) == 0) {
 

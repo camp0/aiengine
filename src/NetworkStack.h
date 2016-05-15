@@ -93,6 +93,7 @@ public:
 	virtual bool isEnableNIDSEngine() const = 0;
 
 	void enableLinkLayerTagging(const std::string& type); 
+	const std::string &getLinkLayerTagging() const { return link_layer_tag_name_; } 
 
 	virtual void setFlowsTimeout(int timeout) = 0;
 	virtual int getFlowsTimeout() const = 0;
