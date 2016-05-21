@@ -326,7 +326,7 @@ tests_CPPFLAGS = $(BOOST_CPPFLAGS) -g # -fprofile-arcs -ftest-coverage
 # Dont forget to put -lgcov if need on test_LDADD
 tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread $(LOG4CXX_FLAGS) 
 
-CLEANFILES = *.o *.lo *.so *.class *_wrap.cxx *_wrap.h
+CLEANFILES = *.o *.lo *.so *.class *_wrap.cxx *_wrap.h swigluarun.h
 
 MAINTAINERCLEANFILES = \
         $(srcdir)/Makefile \
@@ -388,9 +388,10 @@ if HAVE_LUA_SUPPORT
 	@echo "* Compiling Lua extension. i                                                         *"
 	@echo "**************************************************************************************"
 	@echo "Generating Lua interface" 
-	swig -DLUA_BINDING -DHAVE_CONFIG_H -c++ -lua lua_wrapper.i 	
+	swig -lua -external-runtime 
+	swig -DLUA_BINDING -DHAVE_CONFIG_H -c++ -lua lua_wrapper.i 
 	@echo "Compiling Lua interface"
-	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DLUA_BINDING -I.. -I. $(CPPFLAGS) $(LUA_INCLUDE) -I/usr/include/lua \
+	$(CXX) -fPIC $(EXTRA_FLAGS) -DSWIG_TYPE_TABLE=luaiengine -DHAVE_CONFIG_H -DLUA_BINDING -I.. -I. $(CPPFLAGS) $(LUA_INCLUDE) -I/usr/include \
 		-std=c++11 -c $(aiengine_core_sources) lua_wrapper_wrap.cxx 
 	@echo "Linking lua interface"
 	$(CXX) -g -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DLUA_BINDING -I.. \

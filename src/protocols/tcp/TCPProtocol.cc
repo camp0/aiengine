@@ -190,7 +190,7 @@ bool TCPProtocol::processPacket(Packet &packet) {
 #ifdef DEBUG
                                                 std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << ":Lookup positive on IPSet:" << ipset->getName() << std::endl;
 #endif
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
                                                 if (ipset->call.haveCallback()) {
                                                         ipset->call.executeCallback(flow.get());
                                                 }

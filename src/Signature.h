@@ -41,6 +41,8 @@
 #elif defined(JAVA_BINDING)
 #include "JaiCallback.h"
 #include "Callback.h"
+#elif defined(LUA_BINDING)
+#include "Callback.h"
 #endif
 
 namespace aiengine {
@@ -53,7 +55,7 @@ public:
 	Signature(const std::string &name, const std::string& exp):
 		total_matchs_(0),
 		total_evaluates_(0), 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 	 	call(),	
 #endif
 		name_(name),
@@ -81,6 +83,8 @@ public:
 	void setCallback(VALUE callback) { call.setCallback(callback); }
 #elif defined(JAVA_BINDING)
 	void setCallback(JaiCallback *callback) { call.setCallback(callback); }
+#elif defined(LUA_BINDING)
+	void setCallback(lua_State* lua, const char *callback) { call.setCallback(lua,callback); }
 #endif
 
 	bool getRejectConnection() const { return reject_connection_; }
@@ -88,7 +92,7 @@ public:
 
 	int32_t total_matchs_;
 	int32_t total_evaluates_;
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 	Callback call;	
 #endif
 

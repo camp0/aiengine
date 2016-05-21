@@ -63,7 +63,6 @@ public:
 		SharedPointer<Regex> re(new Regex());
 		re.reset(&sig);
 
-		std::cout << __FILE__ << ":" << __func__ << std::endl;
 		addRegex(re); 
 	}
 #endif

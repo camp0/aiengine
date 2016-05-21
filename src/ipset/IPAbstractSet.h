@@ -33,7 +33,7 @@
 #include <iostream>
 #include "../regex/RegexManager.h"
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 #include "Callback.h"
 #endif
 
@@ -46,7 +46,7 @@ class IPAbstractSet
 public:
     	explicit IPAbstractSet(const std::string &name):total_ips_(0),
 		total_ips_not_on_set_(0),total_ips_on_set_(0),
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 		call(),
 #endif
 		name_(name),
@@ -77,7 +77,7 @@ public:
 	int32_t total_ips_;
 	int32_t total_ips_not_on_set_;
 	int32_t total_ips_on_set_;
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 	Callback call;	
 #endif
 

@@ -108,7 +108,7 @@ public:
 	void enableFlowForwarders(const SharedPointer<FlowForwarder>& ff, std::initializer_list<SharedPointer<FlowForwarder>> fps);
 	void disableFlowForwarders(const SharedPointer<FlowForwarder>& ff, std::initializer_list<SharedPointer<FlowForwarder>> fps);
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING) 
 	void setDomainNameManager(DomainNameManager& dnm, const std::string& name);
 	void setDomainNameManager(DomainNameManager& dnm, const std::string& name, bool allow);
 	
@@ -119,9 +119,16 @@ public:
 	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;
 #endif
 
-#if defined(RUBY_BINDING) // || defined(JAVA_BINDING)
+#if defined(RUBY_BINDING) || defined(LUA_BINDING)
 	virtual void setTCPRegexManager(RegexManager &sig) { setTCPRegexManager(std::make_shared<RegexManager>(sig)); } 
 	virtual void setUDPRegexManager(RegexManager &sig) { setUDPRegexManager(std::make_shared<RegexManager>(sig)); } 
+
+	RegexManager &getTCPRegexManager() const { return *tcp_regex_mng_.get(); }
+	RegexManager &getUDPRegexManager() const { return *udp_regex_mng_.get(); }
+
+	IPSetManager &getTCPIPSetManager() const { return *tcp_ipset_mng_.get(); }
+	IPSetManager &getUDPIPSetManager() const { return *udp_ipset_mng_.get(); }
+
 #elif defined(JAVA_BINDING)
 	virtual void setTCPRegexManager(RegexManager *sig);
 	virtual void setUDPRegexManager(RegexManager *sig); 

@@ -124,7 +124,7 @@ public:
 	void setFlowsTimeout(int timeout);
 	int getFlowsTimeout() const { return flow_table_tcp_vir_->getTimeout(); }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
         FlowManager &getTCPFlowManager() { return *flow_table_tcp_vir_.get();}
         FlowManager &getUDPFlowManager() { return *flow_table_udp_vir_.get();}
 #else
@@ -138,7 +138,7 @@ public:
         void setTCPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng);
         void setUDPIPSetManager(const SharedPointer<IPSetManager>& ipset_mng);
 
-#if defined(RUBY_BINDING)
+#if defined(RUBY_BINDING) || defined(LUA_BINDING)
         void setTCPRegexManager(RegexManager& sig) { setTCPRegexManager(std::make_shared<RegexManager>(sig)); }
         void setUDPRegexManager(RegexManager& sig) { setUDPRegexManager(std::make_shared<RegexManager>(sig)); }
 

@@ -64,7 +64,7 @@ public:
 	std::vector<SharedPointer<IPAbstractSet>>::iterator end() { return sets_.end(); }
 #endif
 
-#if defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
         void addIPSet(IPSet& ipset) {
                 // Create a shared pointer and reset it to the object
                 SharedPointer<IPSet> ip = SharedPointer<IPSet>(new IPSet());

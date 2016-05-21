@@ -309,7 +309,7 @@ void NetworkStack::statistics(std::basic_ostream<char>& out) const {
 	out << *this; 
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 
 void NetworkStack::setDomainNameManager(DomainNameManager& dnm, const std::string& name) {
 
