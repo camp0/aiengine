@@ -94,7 +94,7 @@ typedef struct {
 	std::int8_t index;
 	int32_t hits;
 	const char* protocol_name;
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 	Callback call;
 #endif
 } AnomalyInfo;
@@ -137,6 +137,8 @@ public:
         void setCallback(VALUE callback,const std::string &protocol_name); 
 #elif defined(JAVA_BINDING)
         void setCallback(JaiCallback *callback,const std::string &protocol_name); 
+#elif defined(LUA_BINDING)
+        void setCallback(lua_State *lua, const std::string& callback,const std::string &protocol_name); 
 #endif
 
 private:

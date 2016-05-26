@@ -25,6 +25,8 @@ The main functionalities of AIEngine are:
 - Support for detect DDoS at network/application layer.
 - Support for rejecting TCP/UDP connections.
 - Support for network forensics on real time.
+- Supports protocols such as Bitcoin,CoAP,DHCP,DNS,GPRS,GRE,HTTP,ICMPv4/ICMPv6,IMAP,IPv4/v6,Modbus,
+  MPLS,MQTT,NTP,OpenFlow,POP,RTP,SIP,SMTP,SSDP,SSL,TCP,UDP,VLAN,VXLAN. 
 
 Using AIEngine 
 ---------------
@@ -132,6 +134,8 @@ The main objects that the python module provide export are the following ones.
         SIPInfo
         SMTPInfo
         SSLInfo
+        MQTTInfo
+        CoAPInfo
 
 For a complete description of the class methods 
 
@@ -191,6 +195,17 @@ The java library is still on develop phase.
     $ cd src
     $ make java
     $ java -cp ".:/usr/share/java/junit.jar:/usr/share/java/hamcrest/core.jar:./buildjava" org.junit.runner.JUnitCore JunitTestSuite
+
+Compile AIEngine Lua library 
+------------------------------
+
+The lua library is still on develop phase.
+
+    $ git clone https://bitbucket.com/camp0/aiengine
+    $ ./autogen.sh
+    $ ./configure
+    $ cd src
+    $ make lua
 
 Contributing to AIEngine 
 -------------------------

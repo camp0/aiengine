@@ -136,7 +136,7 @@ void Callback::executeCallback(Flow *flow) {
 
 Callback::~Callback() {
 
-	if (ref_function_ != LUA_NOREF) {
+	if ((ref_function_ != LUA_NOREF) and ( lua_ != nullptr)) {
 		// delete the reference from registry
 		luaL_unref(lua_, LUA_REGISTRYINDEX, ref_function_);
 	}
@@ -144,14 +144,13 @@ Callback::~Callback() {
 
 void Callback::setCallback(lua_State* lua,const char *callback) {
 
-	// std::cout << __FILE__ << ":" << __func__ << " callbackname:" << lua_gettop(lua) << std::endl;
-	// std::cout << __FILE__ << ":" << __func__ << " callbackname:" << callback << std::endl;
 	lua_getglobal(lua,callback);
 	if (lua_isfunction(lua,-1)) {
 		ref_function_ = luaL_ref(lua, LUA_REGISTRYINDEX);
-		// std::cout << "es una funcion:"<< ref_function_ << " on lua stack:" << lua_gettop(lua) << std::endl;
+		// std::cout << __FILE__<< ":" << __func__ << ":name:" << callback << " ref:" << ref_function_ << std::endl;
 		callback_set_ = true;
 		lua_ = lua;
+		callback_name_ = callback;
 	} else {
 		lua_pop(lua, 1);
 		ref_function_ = LUA_NOREF;
@@ -182,14 +181,13 @@ bool Callback::push_pointer(lua_State *L, void* ptr, const char* type_name, int 
 
 void Callback::executeCallback(Flow *flow) {
 
-	// std::cout << __FILE__ << ":" << __func__ << " with flow:" << flow << std::endl;
-
 	lua_rawgeti(lua_, LUA_REGISTRYINDEX, ref_function_);
 
 	if (push_pointer(lua_,flow,"aiengine::Flow*",0)) {
-        	int ret;
-        	if( (ret = lua_pcall(lua_,1,0,0)) != 0)
-			std::cout << "ERRRORR DE LA LECHE:" << ret << std::endl;
+        	int ret; 
+        	if ((ret = lua_pcall(lua_,1,0,0)) != 0) {
+			std::cout << "ERROR:" << lua_tostring(lua_, -1) << std::endl;
+		} 
 	}	
 }
 

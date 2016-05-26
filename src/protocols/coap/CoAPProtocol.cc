@@ -236,7 +236,7 @@ void CoAPProtocol::process_common_header(CoAPInfo *info,unsigned char *payload, 
                                 SharedPointer<DomainName> host_candidate = host_mng->getDomainName(info->hostname->getName());
                                 if (host_candidate) {
                                 	info->matched_domain_name = host_candidate;
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 #ifdef HAVE_LIBLOG4CXX
                                         LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with " << host_candidate->getName());
 #endif

@@ -29,7 +29,8 @@
 #endif
 
 #include <iostream>
-#include <vector> 
+// #include <vector> 
+#include <algorithm>
 #include "Pointer.h"
 #include "StringCache.h"
 #include "FlowInfo.h"

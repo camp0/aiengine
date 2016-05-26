@@ -62,7 +62,7 @@ public:
         	return out;
 	}
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 	const char *getUserName() const { return (user_name ? user_name->getName() : ""); }
 #endif
 

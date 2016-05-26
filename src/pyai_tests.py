@@ -1134,6 +1134,55 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(d.matchs, 1)
 
 
+class StackMobileTests(unittest.TestCase):
+
+    def setUp(self):
+        self.st = pyaiengine.StackMobile()
+        self.pd = pyaiengine.PacketDispatcher()
+        self.pd.stack = self.st
+        self.st.tcp_flows = 2048
+        self.st.udp_flows = 1024
+
+    def tearDown(self):
+        del self.st
+        del self.pd
+
+    def test1(self):
+        """ Verify the integrity of the sip fields """
+
+        db = databaseTestAdaptor()
+
+        self.st.set_udp_database_adaptor(db)
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/gprs_sip_flow.pcap") as pd:
+            pd.stack = self.st
+            pd.run()
+
+        for flow in self.st.udp_flow_manager:
+            self.assertEqual(flow.mqtt_info,None)
+            self.assertEqual(flow.coap_info,None)
+            self.assertEqual(flow.http_info,None)
+            self.assertEqual(flow.dns_info,None)
+            self.assertEqual(flow.ssl_info,None)
+            self.assertNotEqual(flow.sip_info,None)
+            self.assertEqual(flow.sip_info.from_name,"\"User1\" <sip:ng40user1@apn.sip.voice.ng4t.com>;tag=690711")
+            self.assertEqual(flow.sip_info.to_name,"\"User1\" <sip:ng40user1@apn.sip.voice.ng4t.com>")
+
+        d = json.loads(db.lastdata)
+        c = self.st.get_counters("SIPProtocol")
+        self.assertEqual(c["requests"], 7)
+        self.assertEqual(c["responses"], 7)
+        self.assertEqual(c["registers"], 2)
+        self.assertEqual(d["info"]["uri"],"sip:apn.sip.voice.ng4t.com")
+        self.assertEqual(d["info"]["from"],"'User1' <sip:ng40user1@apn.sip.voice.ng4t.com>;tag=690711")
+        self.assertEqual(d["info"]["to"],"'User1' <sip:ng40user1@apn.sip.voice.ng4t.com>")
+        self.assertEqual(d["info"]["via"],"SIP/2.0/UDP 10.255.1.1:5090;branch=z9hG4bK199817980098801998")
+
+        self.st.release_cache("SIPProtocol")
+        
+        for flow in self.st.udp_flow_manager:
+            self.assertEqual(flow.sip_info,None)
+
 class StackLanIPv6Tests(unittest.TestCase):
 
     def setUp(self):

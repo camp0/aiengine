@@ -75,7 +75,7 @@ public:
         SharedPointer<DomainName> getMatchedDomainName() const { return matched_domain_name;}
 #elif defined(RUBY_BINDING)
         DomainName& getMatchedDomainName() const { return *matched_domain_name.get();}
-#elif defined(JAVA_BINDING)
+#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
         DomainName& getMatchedDomainName() const { return *matched_domain_name.get();}
 #endif
 

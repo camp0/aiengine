@@ -103,16 +103,19 @@ private:
 	JaiCallback *callback_;
 #elif defined(LUA_BINDING)
 public:
-	Callback():ref_function_(LUA_NOREF),callback_set_(false),lua_(nullptr) { }
+	Callback():callback_name_(),ref_function_(LUA_NOREF),callback_set_(false),lua_(nullptr) { }
 	virtual ~Callback(); 
 
 	bool haveCallback() const { return callback_set_;}
+
+	const char *getCallback() const { return callback_name_.c_str(); }
 
 	void setCallback(lua_State* lua, const char *callback); 
 	void executeCallback(Flow *flow); 
 private:
 	bool push_pointer(lua_State*L, void* ptr, const char* type_name, int owned = 0); 
 
+	std::string callback_name_;
 	int ref_function_;
 	bool callback_set_;
 	lua_State *lua_;

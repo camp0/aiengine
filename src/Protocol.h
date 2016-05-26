@@ -107,7 +107,7 @@ public:
 		,dbptr_(),is_set_db_(false),packet_sampling_(32)
 #elif defined(RUBY_BINDING)
 		,dbptr_(Qnil),is_set_db_(false),packet_sampling_(32)
-#elif defined(JAVA_BINDING)
+#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
 		,dbptr_(nullptr),is_set_db_(false),packet_sampling_(32)
 #endif
 		{}
@@ -166,12 +166,13 @@ public:
 	
 	VALUE addMapToHash(const GenericMapType &mt) const;
 #elif defined(JAVA_BINDING)
-
 	void setDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling);
 	virtual JavaCounters getCounters() const = 0;
+#elif defined(LUA_BINDING)
+	void setDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling);
 #endif
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 
 	bool getDatabaseObjectIsSet() const { return is_set_db_;}
 	int getPacketSampling() const { return packet_sampling_;}
@@ -206,7 +207,7 @@ private:
 	VALUE dbptr_;
 	bool is_set_db_;
 	int packet_sampling_;
-#elif defined(JAVA_BINDING)
+#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
 	DatabaseAdaptor *dbptr_;
 	bool is_set_db_;
 	int packet_sampling_;

@@ -334,13 +334,13 @@ void NetworkStack::setDomainNameManager(DomainNameManager& dnm, const std::strin
 
 #endif
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 
 #if defined(PYTHON_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(boost::python::object &dbptr) {
 #elif defined(RUBY_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(VALUE dbptr) {
-#elif defined(JAVA_BINDING)
+#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr) {
 #endif
 	setUDPDatabaseAdaptor(dbptr,32);
@@ -350,7 +350,7 @@ void NetworkStack::setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr) {
 void NetworkStack::setTCPDatabaseAdaptor(boost::python::object &dbptr) {
 #elif defined(RUBY_BINDING)
 void NetworkStack::setTCPDatabaseAdaptor(VALUE dbptr) {
-#elif defined(JAVA_BINDING)
+#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
 void NetworkStack::setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr) {
 #endif
 	setTCPDatabaseAdaptor(dbptr,32);
@@ -360,7 +360,7 @@ void NetworkStack::setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr) {
 void NetworkStack::setUDPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
 #elif defined(RUBY_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
-#elif defined(JAVA_BINDING)
+#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
 #endif
         ProtocolPtr pp = get_protocol(UDPProtocol::default_name);
@@ -376,7 +376,7 @@ void NetworkStack::setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_samp
 void NetworkStack::setTCPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
 #elif defined(RUBY_BINDING)
 void NetworkStack::setTCPDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
-#elif defined(JAVA_BINDING)
+#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
 void NetworkStack::setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
 #endif
         ProtocolPtr pp = get_protocol(TCPProtocol::default_name);
@@ -394,9 +394,15 @@ void NetworkStack::setAnomalyCallback(PyObject *callback,const std::string& prot
 void NetworkStack::setAnomalyCallback(VALUE callback,const std::string& proto_name) {
 #elif defined(JAVA_BINDING)
 void NetworkStack::setAnomalyCallback(JaiCallback *callback,const std::string& proto_name) {
+#elif defined(LUA_BINDING)
+void NetworkStack::setAnomalyCallback(lua_State *lua, const std::string& callback,const std::string& proto_name) {
 #endif
 	if (anomaly_) {
+#if defined(LUA_BINDING)
+		anomaly_->setCallback(lua,callback,proto_name);
+#else
 		anomaly_->setCallback(callback,proto_name);
+#endif
 	}
 }
 

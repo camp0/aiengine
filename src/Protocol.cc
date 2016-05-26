@@ -65,7 +65,7 @@ void Protocol::setDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
                 is_set_db_ = false;
         }
 }
-#elif defined(JAVA_BINDING)
+#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
 void Protocol::setDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
 
 	if (dbptr == nullptr) {
@@ -76,12 +76,13 @@ void Protocol::setDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
 		dbptr_ = dbptr;
 		is_set_db_ = true;
 		packet_sampling_ = packet_sampling;
+		// std::cout << __FILE__ << ":" << __func__ << " new adaptor set" << std::endl;
 	}	
 }
 
 #endif
 
-#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)) && defined(HAVE_ADAPTOR)
 
 #if defined(RUBY_BINDING)
 

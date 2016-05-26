@@ -61,7 +61,7 @@ public:
         void setResponseCode(int16_t code) { response_code_ = code; }
         int16_t getResponseCode() const { return response_code_; }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 
         const char *getUri() const { return  (uri ? uri->getName() : ""); }
         const char *getHostName() const { return (host ? host->getName() : ""); }

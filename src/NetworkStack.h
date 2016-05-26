@@ -180,7 +180,15 @@ public:
 	std::map<std::string,int> getCounters(const std::string& name);
 	
 	void setAnomalyCallback(JaiCallback *callback,const std::string& proto_name);
+#elif defined(LUA_BINDING)
+	void setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr);
+	void setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr,int packet_sampling);
+	void setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr);
+	void setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr,int packet_sampling);
+
+	void setAnomalyCallback(lua_State *lua, const std::string& callback,const std::string& proto_name);
 #endif
+
 	void addProtocol(ProtocolPtr proto); 
 	void setStatisticsLevel(int level); 
 	int getStatisticsLevel() const { return stats_level_; }

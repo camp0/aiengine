@@ -111,7 +111,7 @@ SharedPointer<Flow> UDPProtocol::getFlow(const Packet& packet) {
                                                         getDestinationPort());
                                         }
 					flow_table_->addFlow(flow);		
-#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)) && defined(HAVE_ADAPTOR)
                         		if (getDatabaseObjectIsSet()) { // There is attached a database object
 						databaseAdaptorInsertHandler(flow.get()); 
                         		}
@@ -200,7 +200,7 @@ bool UDPProtocol::processPacket(Packet& packet) {
                         ff->forwardFlow(flow.get());
 		}
 		
-#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)) && defined(HAVE_ADAPTOR)
 		if ((((flow->total_packets - 1) % getPacketSampling()) == 0 )or(packet.forceAdaptorWrite())) {
 			if (getDatabaseObjectIsSet()) { // There is attached a database object
 				databaseAdaptorUpdateHandler(flow.get());

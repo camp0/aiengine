@@ -1,5 +1,6 @@
 %module(directors="1") luaiengine 
 %include <std_string.i>
+%include <std_map.i>
 %include <typemaps.i>
 %include <attribute.i>
 
@@ -37,8 +38,9 @@ using namespace std;
 %apply SWIGTYPE *DISOWN {aiengine::IPSet& ipset};
 %apply SWIGTYPE *DISOWN {aiengine::Regex& sig};
 %apply SWIGTYPE *DISOWN {aiengine::RegexManager& sig};
+%apply SWIGTYPE *DISOWN {aiengine::HTTPUriSet &uset};
 
-%feature("director") DatabaseAdaptor;
+%template(Counters) std::map<std::string,int32_t>;
 
 %init %{ 
 std::cout << "Lua AIengine BETA init." << std::endl;
@@ -82,9 +84,26 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %ignore aiengine::NetworkStack::addProtocol;
 %ignore aiengine::NetworkStack::infoMessage;
 %ignore aiengine::NetworkStack::setPacketDispatcher;
+%ignore aiengine::NetworkStack::isEnableFrequencyEngine;
+%ignore aiengine::NetworkStack::getAllocatedMemory;
+%ignore aiengine::NetworkStack::getTCPIPSetManager;
+%ignore aiengine::NetworkStack::getTotalTCPFlows;
+%ignore aiengine::NetworkStack::getTotalUDPFlows;
+%ignore aiengine::NetworkStack::getUDPIPSetManager;
+%ignore aiengine::NetworkStack::isEnableNIDSEngine;
+%ignore aiengine::NetworkStack::setAsioService;
+%ignore aiengine::NetworkStack::setTotalTCPFlows;
+%ignore aiengine::NetworkStack::setTotalUDPFlows;
+%ignore aiengine::NetworkStack::enableFrequencyEngine;
+%ignore aiengine::NetworkStack::enableNIDSEngine;
 
 %rename("increase_allocated_memory")    aiengine::NetworkStack::increaseAllocatedMemory;
 %rename("decrease_allocated_memory")    aiengine::NetworkStack::decreaseAllocatedMemory;
+%rename("get_counters")                 aiengine::NetworkStack::getCounters;
+%rename("get_cache")                    aiengine::NetworkStack::getCache;
+%rename("release_caches")               aiengine::NetworkStack::releaseCaches;
+%rename("release_cache")                aiengine::NetworkStack::releaseCache;
+%rename("set_domain_name_manager")      aiengine::NetworkStack::setDomainNameManager;
 
 %attribute(aiengine::NetworkStack,std::string,link_layer_tag,getLinkLayerTagging,enableLinkLayerTagging)
 %attribute2(aiengine::NetworkStack,RegexManager,tcp_regex_manager,getTCPRegexManager,setTCPRegexManager)
@@ -149,7 +168,8 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %ignore aiengine::Signature::setRejectConnection;
 %ignore aiengine::Signature::call;
 %attribute(aiengine::Signature,int,matchs,getMatchs)
-
+%rename("set_callback") aiengine::Signature::setCallback;
+%attribute(aiengine::Signature,const char*,name,getName)
 
 %ignore aiengine::RegexManager::evaluate;
 
@@ -167,6 +187,7 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %ignore aiengine::PacketDispatcher::setStack(const SharedPointer<NetworkStack>& stack);
 %ignore aiengine::PacketDispatcher::setDefaultMultiplexer;
 %ignore aiengine::PacketDispatcher::setIdleFunction;
+%rename("set_stack")    aiengine::PacketDispatcher::setStack;
 
 %ignore aiengine::Flow::setPacketAnomaly;
 %ignore aiengine::Flow::getPacketAnomaly;
@@ -187,7 +208,7 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %ignore aiengine::Flow::getCoAPInfo;
 %ignore aiengine::Flow::getMQTTInfo;
 %ignore aiengine::Flow::packet;
-%ignore aiengine::Flow::regex;
+//%ignore aiengine::Flow::regex;
 %ignore aiengine::Flow::frequencies;
 %ignore aiengine::Flow::packet_frequencies;
 %ignore aiengine::Flow::forwarder;
@@ -241,7 +262,7 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %attribute(aiengine::Flow,uint16_t,dst_port,getDestinationPort)
 %attribute(aiengine::Flow,uint16_t,src_port,getSourcePort)
 %attribute(aiengine::Flow,uint16_t,protocol,getProtocol)
-// TODO %attribute2(aiengine::Flow,IPSetInfo,ipset_info,getIPSetInfo)
+// %attribute2(aiengine::Flow,IPSet,ipset_info,getIPSetInfo)
 %attribute2(aiengine::Flow,HTTPInfo,http_info,getHTTPInfoObject)
 %attribute2(aiengine::Flow,SSLInfo,ssl_info,getSSLInfoObject)
 %attribute2(aiengine::Flow,DNSInfo,dns_info,getDNSInfoObject)
@@ -255,6 +276,7 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %attribute2(aiengine::Flow,MQTTInfo,mqtt_info,getMQTTInfoObject)
 %attribute2(aiengine::Flow,Regex,regex,getRegex)
 // TODO %attribute2(aiengine::Flow,Regex,payload,getPayload)
+%ignore aiengine::Flow::regex;
 
 %ignore aiengine::IPSetManager::addIPSet(const SharedPointer<IPAbstractSet> ipset);
 %ignore aiengine::IPSetManager::removeIPSet(const SharedPointer<IPAbstractSet> ipset);
@@ -273,6 +295,7 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 
 %ignore aiengine::IPSet::getFalsePositiveRate;
 %ignore aiengine::IPSet::lookupIPAddress;
+%rename("set_callback") aiengine::IPSet::setCallback;
 
 %ignore aiengine::DomainNameManager::removeDomainName(const SharedPointer<DomainName>& domain);
 %ignore aiengine::DomainNameManager::addDomainName(const SharedPointer<DomainName>& domain);
@@ -280,14 +303,22 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 
 %ignore aiengine::DomainName::setHTTPUriSet(const SharedPointer<HTTPUriSet>& uset);
 %ignore aiengine::DomainName::getHTTPUriSet;
-%ignore aiengine::DomainName::setRegexManager;
+%ignore aiengine::DomainName::setRegexManager(const SharedPointer<RegexManager>& rmng);
 %ignore aiengine::DomainName::getRegexManager;
+// %attribute(aiengine::DomainName,RegexManager,regex_manager,getRegexManager,setRegexManager)
+%rename("set_http_uri_set")                aiengine::DomainName::setHTTPUriSet;
 
 %ignore aiengine::HTTPUriSet::lookupURI;
 %ignore aiengine::HTTPUriSet::getFalsePositiveRate;
-%ignore aiengine::HTTPUriSet::getTotalLookups;
-%ignore aiengine::HTTPUriSet::getTotalLookupsIn;
-%ignore aiengine::HTTPUriSet::getTotalLookupsOut;
+%ignore aiengine::HTTPUriSet::call;
+%ignore aiengine::HTTPUriSet::getCallback;
+%attribute(aiengine::HTTPUriSet,int,total_uris,getTotalURIs)
+%attribute(aiengine::HTTPUriSet,int,total_lookups,getTotalLookups)
+%attribute(aiengine::HTTPUriSet,int,total_lookups_in,getTotalLookupsIn)
+%attribute(aiengine::HTTPUriSet,int,total_lookups_out,getTotalLookupsOut)
+%rename("set_callback") aiengine::HTTPUriSet::setCallback;
+%attribute(aiengine::HTTPUriSet,const char*,name,getName)
+
 
 %ignore aiengine::HTTPInfo::reset;
 %ignore aiengine::HTTPInfo::resetStrings;
@@ -301,12 +332,11 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %ignore aiengine::HTTPInfo::incTotalRequests;
 %ignore aiengine::HTTPInfo::incTotalResponses;
 %ignore aiengine::HTTPInfo::setResponseCode;
-%ignore aiengine::HTTPInfo::uri;
+// %ignore aiengine::HTTPInfo::uri;
 %ignore aiengine::HTTPInfo::host;
 %ignore aiengine::HTTPInfo::ua;
 %ignore aiengine::HTTPInfo::ct;
 %ignore aiengine::HTTPInfo::filename;
-%ignore aiengine::HTTPInfo::matched_domain_name;
 %ignore aiengine::HTTPInfo::getTotalRequests;
 %ignore aiengine::HTTPInfo::getTotalResponses;
 %ignore aiengine::HTTPInfo::getResponseCode;
@@ -315,6 +345,16 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %ignore aiengine::HTTPInfo::getIsRelease;
 %ignore aiengine::HTTPInfo::setHTTPDataDirection;
 %ignore aiengine::HTTPInfo::getHTTPDataDirection;
+%ignore aiengine::HTTPInfo::getFilename;
+%ignore aiengine::HTTPInfo::serialize;
+%attribute(aiengine::HTTPInfo,const char*,user_agent,getUserAgent)
+%attribute(aiengine::HTTPInfo,const char*,host_name,getHostName)
+%attribute(aiengine::HTTPInfo,const char*,uri,getUri)
+%attribute(aiengine::HTTPInfo,const char*,content_type,getContentType)
+%attribute(aiengine::HTTPInfo,const char*,banned,getIsBanned)
+%attribute2(aiengine::HTTPInfo,DomainName,matched_domain_name,getMatchedDomainName)
+%ignore aiengine::HTTPInfo::matched_domain_name;
+%ignore aiengine::HTTPInfo::uri;
 
 %ignore aiengine::MQTTInfo::reset;
 %ignore aiengine::MQTTInfo::topic;
@@ -344,7 +384,9 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %ignore aiengine::DNSInfo::resetStrings;
 %ignore aiengine::DNSInfo::getQueryType;
 %ignore aiengine::DNSInfo::setQueryType;
+%attribute2(aiengine::DNSInfo,DomainName,matched_domain_name,getMatchedDomainName)
 %ignore aiengine::DNSInfo::matched_domain_name;
+%attribute(aiengine::DNSInfo,const char*,domain_name,getDomainName)
 
 %ignore aiengine::SSLInfo::reset;
 %ignore aiengine::SSLInfo::host;
@@ -352,20 +394,29 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %ignore aiengine::SSLInfo::getIsBanned;
 %ignore aiengine::SSLInfo::incDataPdus;
 %ignore aiengine::SSLInfo::getTotalDataPdus;
-%ignore aiengine::SSLInfo::matched_domain_name;
 %ignore aiengine::SSLInfo::getHeartbeat;
 %ignore aiengine::SSLInfo::getVersion;
 %ignore aiengine::SSLInfo::serialize;
 %ignore aiengine::SSLInfo::setHeartbeat;
 %ignore aiengine::SSLInfo::setVersion;
 %attribute(aiengine::SSLInfo,const char*,server_name,getServerName)
-
+%attribute2(aiengine::SSLInfo,DomainName,matched_domain_name,getMatchedDomainName)
+%ignore aiengine::SSLInfo::matched_domain_name;
 
 %ignore aiengine::SMTPInfo::reset;
 %ignore aiengine::SMTPInfo::resetStrings;
 %ignore aiengine::SMTPInfo::setIsBanned;
 %ignore aiengine::SMTPInfo::getIsBanned;
 %ignore aiengine::SMTPInfo::setCommand;
+%ignore aiengine::SMTPInfo::getIsData;
+%ignore aiengine::SMTPInfo::getTotalDataBlocks;
+%ignore aiengine::SMTPInfo::getTotalDataBytes;
+%ignore aiengine::SMTPInfo::incTotalDataBlocks;
+%ignore aiengine::SMTPInfo::incTotalDataBytes;
+%ignore aiengine::SMTPInfo::serialize;
+%ignore aiengine::SMTPInfo::setIsData;
+%attribute (aiengine::SMTPInfo,const char*,mail_from,getFrom)
+%attribute (aiengine::SMTPInfo,const char*,mail_to,getTo)
 %ignore aiengine::SMTPInfo::from;
 %ignore aiengine::SMTPInfo::to;
 
@@ -396,10 +447,14 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 
 %ignore aiengine::CoAPInfo::reset;
 %ignore aiengine::CoAPInfo::hostname;
-%ignore aiengine::CoAPInfo::uri;
-%ignore aiengine::CoAPInfo::matched_domain_name;
 %ignore aiengine::CoAPInfo::setIsBanned;
 %ignore aiengine::CoAPInfo::getIsBanned;
+%attribute(aiengine::CoAPInfo,const char*,host_name,getHostName)
+%attribute(aiengine::CoAPInfo,const char*,uri,getUri)
+%attribute2(aiengine::CoAPInfo,DomainName,matched_domain_name,getMatchedDomainName)
+%ignore aiengine::CoAPInfo::matched_domain_name;
+%ignore aiengine::CoAPInfo::uri;
+
 
 %ignore aiengine::LearnerEngine::agregatePacketFlow;
 %ignore aiengine::LearnerEngine::setFrequencyGroup;
@@ -454,31 +509,21 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %rename("next_regex=")			aiengine::Regex::setNextRegex;
 %rename("total_transactions")		aiengien::BitcoinInfo::getTotalTransactions;
 %rename("domain_name")			aiengine::DNSInfo::getDomainName;
-%rename("matched_domain_name")          aiengine::DNSInfo::getMatchedDomainName;
 %rename("user_name")			aiengine::POPInfo::getUserName;
 %rename("user_name")			aiengine::IMAPInfo::getUserName;
 %rename("mail_to")			aiengine::SMTPInfo::getTo;
 %rename("mail_from")			aiengine::SMTPInfo::getFrom;
 %rename("server_name")			aiengine::SSLInfo::getServerName;
-%rename("matched_domain_name")          aiengine::SSLInfo::getMatchedDomainName;
 %rename("uri")				aiengine::SIPInfo::getUri;
 %rename("from")				aiengine::SIPInfo::getFrom;
 %rename("to")				aiengine::SIPInfo::getTo;
 %rename("via")				aiengine::SIPInfo::getVia;
-%rename("user_agent")			aiengine::HTTPInfo::getUserAgent;
-%rename("host_name")			aiengine::HTTPInfo::getHostName;
-%rename("uri")				aiengine::HTTPInfo::getUri;
-%rename("content_type")			aiengine::HTTPInfo::getContentType;
-%rename("banned")			aiengine::HTTPInfo::getIsBanned;
-%rename("matched_domain_name")          aiengine::HTTPInfo::getMatchedDomainName;
 %rename("host_name")			aiengine::SSDPPInfo::getHostName;
 %rename("uri")				aiengine::SSDPInfo::getUri;
-%rename("http_uri_set=")		aiengine::DomainName::setHTTPUriSet;
 %rename("stack_name")			aiengine::PacketDispatcher::getStackName;
 %rename("shell")			aiengine::PacketDispatcher::getShell;
 %rename("shell=")			aiengine::PacketDispatcher::setShell;
 %rename("set_scheduler")		aiengine::PacketDispatcher::setScheduler;
-%rename("callback=") 			setCallback(VALUE callback);
 %rename("add_ip_set")			aiengine::IPSetManager::addIPSet;
 %rename("remove_ip_set")			aiengine::IPSetManager::removeIPSet;
 %rename("set_tcp_database_adaptor")	setTCPDatabaseAdaptor;
@@ -487,9 +532,8 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %rename("udp_flow_manager")		getUDPFlowManager;
 %rename("flows_timeout=")		setFlowsTimeout;
 %rename("flows_timeout")		getFlowsTimeout;
-%rename("enable_nids_engine=")		enableNIDSEngine;
-%rename("enable_frequency_engine=")	enableFrequencyEngine;
-//%rename("link_layer_tag=")		aiengine::NetworkStack::enableLinkLayerTagging;
+//%rename("enable_nids_engine=")		enableNIDSEngine;
+//%rename("enable_frequency_engine=")	enableFrequencyEngine;
 %rename("add_regex")			addRegex;
 %rename("add_domain_name")		aiengine::DomainNameManager::addDomainName;
 %rename("matchs")			aiengine::Signature::getMatchs;
@@ -498,10 +542,6 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %rename("add_ip_address")		addIPAddress;
 %rename("stats_level=")			setStatisticsLevel;
 %rename("stats_level")			getStatisticsLevel;
-%rename("get_counters")			aiengine::NetworkStack::getCounters;
-%rename("get_cache")			aiengine::NetworkStack::getCache;
-%rename("release_caches")		aiengine::NetworkStack::releaseCaches;
-%rename("release_cache")		aiengine::NetworkStack::releaseCache;
 %rename("total_process_flows")		aiengine::FrequencyGroup<std::string>::getTotalProcessFlows;
 %rename("total_computed_frequencies")	aiengine::FrequencyGroup<std::string>::getTotalComputedFrequencies;
 %rename("reference_flows")		aiengine::FrequencyGroup<std::string>::getReferenceFlows;
@@ -519,7 +559,7 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %rename("add_uri")			aiengine::HTTPUriSet::addURI;
 %rename("total_domains")		aiengine::DomainNameManager::getTotalDomains;
 %rename("total_sets")			aiengine::IPSetManager::getTotalSets;
-%rename setDomainNameManager		set_domain_name_manager;
+// %rename setDomainNameManager		set_domain_name_manager;
 
 %typemap(in) IPSetManager & "IPSetManager"
 %typemap(in) IPSet & "IPSet"

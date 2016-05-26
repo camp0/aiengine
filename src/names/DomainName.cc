@@ -103,6 +103,25 @@ void DomainName::setRegexManager(RegexManager *regex_mng) {
 	setRegexManager(rm);
 }
 
+#elif defined(LUA_BINDING)
+
+void DomainName::setRegexManager(RegexManager& sig) {
+
+	SharedPointer<RegexManager> rm = SharedPointer<RegexManager>(new RegexManager());
+
+	rm.reset(&sig);
+	
+	setRegexManager(rm);
+}
+
+void DomainName::setHTTPUriSet(HTTPUriSet &uset) {
+	SharedPointer<HTTPUriSet> hset(new HTTPUriSet());
+
+	hset.reset(&uset);
+
+	setHTTPUriSet(hset);
+}
+
 #endif
 
 } // namespace aiengine

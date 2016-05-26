@@ -69,7 +69,7 @@ void UDPGenericProtocol::processFlow(Flow *flow) {
 				flow->regex_mng = rmng;
 				flow->regex.reset();
 			}
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
                         if(regex->call.haveCallback()) {
 				regex->call.executeCallback(flow); 
                         }

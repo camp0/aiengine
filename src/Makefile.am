@@ -11,9 +11,9 @@ AM_JAVAFLAGS=@AM_JAVAFLAGS@
 EXTRA_FLAGS = -O3
 
 EXTRA_DIST = 	python_wrapper.cc python_help.h ruby_wrapper.i setup.py MANIFEST.in \
-		ruai_test.rb java_wrapper.i JavaAiengineTestsStackLan.java JavaAiengineTestsStackLanIPv6.java \
+		ruai_tests.rb java_wrapper.i JavaAiengineTestsStackLan.java JavaAiengineTestsStackLanIPv6.java \
 		JavaAiengineTestsStackVirtual.java JunitTestSuite.java \
-		luai_test.lua lua_wrapper.i	
+		luai_tests.lua lua_wrapper.i	
 
 noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			Protocol.h AnomalyManager.h RejectManager.h \
@@ -326,7 +326,8 @@ tests_CPPFLAGS = $(BOOST_CPPFLAGS) -g # -fprofile-arcs -ftest-coverage
 # Dont forget to put -lgcov if need on test_LDADD
 tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread $(LOG4CXX_FLAGS) 
 
-CLEANFILES = *.o *.lo *.so *.class *_wrap.cxx *_wrap.h swigluarun.h
+CLEANFILES = *.o *.lo *.so *.class *_wrap.cxx *_wrap.h swigluarun.h \
+		`rm -rf $(srcdir)/buildjava`
 
 MAINTAINERCLEANFILES = \
         $(srcdir)/Makefile \
@@ -370,17 +371,17 @@ if HAVE_JAVA_SUPPORT
 	@echo "* Compiling Java extension.                                                          *"
 	@echo "**************************************************************************************"
 	@echo "Generating Java interface" 
-	swig -DJAVA_BINDING -DHAVE_CONFIG_H -c++ -java java_wrapper.i 	
+	$(MKDIR_P) buildjava 2>/dev/null
+	swig -DJAVA_BINDING -DHAVE_CONFIG_H -outdir buildjava -c++ -java java_wrapper.i 	
 	@echo "Compiling Java interface"
-	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DJAVA_BINDING -I.. -I. $(CPPFLAGS) $(AM_JAVAFLAGS) \
+	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DJAVA_BINDING -I./buildjava -I.. -I. $(CPPFLAGS) $(AM_JAVAFLAGS) \
 		-std=c++11 -c $(aiengine_core_sources) java_wrapper_wrap.cxx 
 	@echo "Linking Java interface"
-	$(CXX) -g -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DJAVA_BINDING -I.. \
+	$(CXX) -g -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DJAVA_BINDING -I.. -I./buildjava  \
 		-shared -std=c++11 $(java_objects) java_wrapper_wrap.o -o jaaiengine.so -lpcap \
 		$(LOG4CXX_FLAGS) $(BOOST_LINK_CORE) -lpcre 
 	@echo "Compiling Java Unit tests"
-	$(MKDIR_P) buildjava 2>/dev/null
-	$(JAVA_CC) -d buildjava/ -cp /usr/share/java/junit.jar  *.java
+	$(JAVA_CC) -d buildjava/ -sourcepath buildjava/ -cp /usr/share/java/junit.jar  *.java
 endif
 lua:
 if HAVE_LUA_SUPPORT

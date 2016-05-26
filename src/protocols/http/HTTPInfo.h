@@ -93,7 +93,7 @@ public:
         	return out;
 	}
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 	void setBanAndRelease(bool value) { needs_release_ = value; is_banned_ = value; }
 	void setIsRelease(bool value) { needs_release_ = value; }
 	bool getIsRelease() const { return needs_release_; }
@@ -111,12 +111,14 @@ public:
 	DomainName& getMatchedDomainName() const { return *matched_domain_name.get(); }
 #elif defined(JAVA_BINDING)
 	DomainName& getMatchedDomainName() const { return *matched_domain_name.get(); }
+#elif defined(LUA_BINDING)
+	DomainName& getMatchedDomainName() const { return *matched_domain_name.get(); }
 #endif
 
 private:
 	bool have_data_;
 	bool is_banned_;
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 	bool needs_release_;
 #endif
 	int64_t content_length_;	

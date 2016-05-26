@@ -59,7 +59,7 @@ public:
         	return out;
 	}
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 	const char *getDomainName() const { return (name ? name->getName() : ""); }
 #endif
 	void addIPAddress(const char* ipstr);
@@ -71,7 +71,7 @@ public:
         SharedPointer<DomainName> getMatchedDomainName() const { return matched_domain_name;}
 #elif defined(RUBY_BINDING)
         DomainName& getMatchedDomainName() const { return *matched_domain_name.get();}
-#elif defined(JAVA_BINDING)
+#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
         DomainName& getMatchedDomainName() const { return *matched_domain_name.get();}
 #endif
 

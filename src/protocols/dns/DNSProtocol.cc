@@ -318,7 +318,7 @@ void DNSProtocol::handle_standard_response(DNSInfo *info, int length) {
 				ptr = &(addr->data[block_length]);	
 			}	
 			info->matched_domain_name = domain_candidate;
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINGING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINGING) || defined(LUA_BINDING)
 			current_flow_->packet->setForceAdaptorWrite(true); // The udp layer will call the databaseAdaptor update method
                         if(domain_candidate->call.haveCallback()) {
                                 domain_candidate->call.executeCallback(current_flow_);
