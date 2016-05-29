@@ -201,7 +201,7 @@ void BitcoinProtocol::statistics(std::basic_ostream<char>& out){
 }
 
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 
 #if defined(PYTHON_BINDING)
 boost::python::dict BitcoinProtocol::getCounters() const {
@@ -212,6 +212,9 @@ VALUE BitcoinProtocol::getCounters() const {
 #elif defined(JAVA_BINDING)
 JavaCounters BitcoinProtocol::getCounters() const {
         JavaCounters counters;
+#elif defined(LUA_BINDING)
+LuaCounters BitcoinProtocol::getCounters() const {
+        LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets",total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

@@ -353,13 +353,16 @@ void IMAPProtocol::decreaseAllocatedMemory(int value) {
 }
 
 
-#if defined(PYTHON_BINDING) || (RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict IMAPProtocol::getCounters() const {
 	boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE IMAPProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters IMAPProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
 
         addValueToCounter(counters,"packets", total_packets_);

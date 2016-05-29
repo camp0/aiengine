@@ -405,13 +405,16 @@ void SSLProtocol::decreaseAllocatedMemory(int value) {
 	host_cache_->destroy(value);
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict SSLProtocol::getCounters() const {
 	boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE SSLProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters SSLProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
 	addValueToCounter(counters,"packets", total_packets_);
 	addValueToCounter(counters,"bytes", total_bytes_);
@@ -424,7 +427,9 @@ VALUE SSLProtocol::getCounters() const {
 
         return counters;
 }
+#endif
 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) 
 #if defined(PYTHON_BINDING)
 boost::python::dict SSLProtocol::getCache() const {
 #elif defined(RUBY_BINDING)
@@ -432,7 +437,6 @@ VALUE SSLProtocol::getCache() const {
 #endif
         return addMapToHash(host_map_);
 }
-
 #endif
 
 } // namespace aiengine

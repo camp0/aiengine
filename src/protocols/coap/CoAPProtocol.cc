@@ -253,7 +253,7 @@ void CoAPProtocol::process_common_header(CoAPInfo *info,unsigned char *payload, 
         	SharedPointer<HTTPUriSet> uset = info->matched_domain_name->getHTTPUriSet();
                 if (uset) {
                 	if (uset->lookupURI(info->uri->getName())) {
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
                         	if (uset->call.haveCallback()) {
                                 	uset->call.executeCallback(current_flow_);
                                 }
@@ -362,14 +362,16 @@ void CoAPProtocol::decreaseAllocatedMemory(int value) {
         uri_cache_->destroy(value);
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
-
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict CoAPProtocol::getCounters() const {
         boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE CoAPProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters CoAPProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets",total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

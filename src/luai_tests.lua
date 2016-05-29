@@ -64,8 +64,19 @@ TestStackLan = {}
 
         luaunit.assertEquals(d.matchs , 1)
         luaunit.assertEquals( callme, true)
-    end
-   
+    
+        local c = self.st:get_counters("SSLProtocol")
+        luaunit.assertEquals(c:has_key("packets"), true)
+        luaunit.assertEquals(c:get("packets"), 56)
+        luaunit.assertEquals(c:get("bytes"), 41821)
+        luaunit.assertEquals(c:get("allow hosts"), 1)
+        luaunit.assertEquals(c:get("banned hosts"), 0)
+        luaunit.assertEquals(c:get("client hellos"), 1)
+        luaunit.assertEquals(c:get("server hellos"), 1)
+        luaunit.assertEquals(c:get("certificates"), 1)
+        luaunit.assertEquals(c:get("records"), 3)
+    end  
+ 
     function TestStackLan:test03()
         -- Verify SSL traffic with domain callback and IPset
         local callme_set = false
@@ -169,6 +180,13 @@ TestStackLan = {}
         self.pd:run()
         self.pd:close()
 
+        local c = self.st:get_counters("SMTPProtocol")
+        luaunit.assertEquals(c:has_key("packets"), true)
+        luaunit.assertEquals(c:get("packets"), 33)
+        luaunit.assertEquals(c:get("bytes"), 21083)
+        luaunit.assertEquals(c:get("commands"), 6)
+        luaunit.assertEquals(c:get("responses"), 10)
+ 
         luaunit.assertEquals (d.matchs , 1)
         luaunit.assertEquals (callme,true)
     end
@@ -388,6 +406,26 @@ TestStackLanIPv6 = {}
     end
 
     function TestStackLanIPv6:test03()
+        -- Verify the get_counters for HTTP
+
+        self.pd:open("../pcapfiles/http_over_ipv6.pcap")
+        self.pd:run()
+        self.pd:close()
+
+        local c = self.st:get_counters("HTTPProtocol")
+        luaunit.assertEquals(c:has_key("packets"), true)
+        luaunit.assertEquals(c:get("packets"), 318)
+        luaunit.assertEquals(c:get("bytes"), 400490)
+        luaunit.assertEquals(c:get("L7 bytes"), 394179)
+        -- TODO: this should be 1 ???
+        luaunit.assertEquals(c:get("allow hosts"), 11)
+        luaunit.assertEquals(c:get("banned hosts"), 0)
+        luaunit.assertEquals(c:get("requests"), 11)
+        luaunit.assertEquals(c:get("responses"), 11)
+
+    end
+
+    function TestStackLanIPv6:test04()
         -- Verify the functionatliy of the RegexManager on the HTTP Protocol for analise
         -- inside the l7 payload of HTTP on IPv6 traffic 
         local callme_dom = false
@@ -432,7 +470,7 @@ TestStackLanIPv6 = {}
         luaunit.assertEquals( d.matchs, 1) 
     end
     
-    function TestStackLanIPv6:test04()
+    function TestStackLanIPv6:test05()
         -- Verify the DNS functionality
         local call_domain = false
 

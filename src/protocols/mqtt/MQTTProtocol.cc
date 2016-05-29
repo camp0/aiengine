@@ -201,24 +201,18 @@ void MQTTProtocol::processFlow(Flow *flow) {
 void MQTTProtocol::handle_publish_message(MQTTInfo *info, unsigned char *payload, int length) {
 
 	int16_t msglen = 0;
-//	std::cout << "Hex0: "<<  (int)payload[1] << " Hex1:" << (int)payload[2] << " lenght_offset:" << (int)length_offset_ << std::endl;
+
 	if (length_offset_ == 2) {
 		msglen = ntohs((payload[2] << 8) + payload[1]);
 	} else {
 		msglen = payload[1];
-//		std::cout << "yes" << std::endl;
 	}
 
-//	std::cout << "msglen=" << msglen << std::endl;
-	//int16_t msglen = ntohs(payload[2] + payload[1]);
-//	int16_t msglen = ntohs((payload[length_offset_] << 8) + payload[length_offset_-1]);
 	if (msglen < length) {
 		boost::string_ref topic((char*)&payload[length_offset_ + 1],msglen);
 
 		attach_topic(info,topic);
-//		std::cout << "The topic is:" << topic << std::endl;
 	} else {
-//		std::cout << "anomaly" << std::endl;
                 if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
                         current_flow_->setPacketAnomaly(PacketAnomalyType::MQTT_BOGUS_HEADER);
                 }
@@ -304,13 +298,16 @@ void MQTTProtocol::decreaseAllocatedMemory(int value) {
 	topic_cache_->destroy(value);
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict MQTTProtocol::getCounters() const {
         boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE MQTTProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters MQTTProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets", total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

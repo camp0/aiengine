@@ -888,10 +888,7 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 }
 
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
-
-#if !defined(JAVA_BINDING)
-
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) 
 #if defined(PYTHON_BINDING)
 boost::python::dict HTTPProtocol::getCache() const {
 #elif defined(RUBY_BINDING)
@@ -902,7 +899,7 @@ VALUE HTTPProtocol::getCache() const {
 
 #endif
 
-
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict HTTPProtocol::getCounters() const {
 	boost::python::dict counters;
@@ -912,6 +909,9 @@ VALUE HTTPProtocol::getCounters() const {
 #elif defined(JAVA_BINDING)
 JavaCounters HTTPProtocol::getCounters() const {
 	JavaCounters counters;
+#elif defined(LUA_BINDING)
+LuaCounters HTTPProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
 
         addValueToCounter(counters,"packets", total_packets_);

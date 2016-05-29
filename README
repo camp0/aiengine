@@ -163,6 +163,7 @@ The first option for compile the library is using O3 compile optimization, this 
     $ ./configure
     $ cd src
     $ make python
+    $ python pyai_test.py
 
 The second option will compile the library by using the standard pythonic way by using setup.py, this will generate
 a bigger library size if compare with the previous one.
@@ -172,6 +173,7 @@ a bigger library size if compare with the previous one.
     $ ./configure
     $ cd src
     $ python setup.py build_ext -i 
+    $ python pyai_test.py
    
 Compile AIEngine Ruby library 
 ------------------------------
@@ -183,6 +185,7 @@ The ruby library is still on develop phase.
     $ ./configure
     $ cd src
     $ make ruby
+    $ ruby ruai_tests.rb
 
 Compile AIEngine Java library
 ------------------------------
@@ -206,6 +209,7 @@ The lua library is still on develop phase.
     $ ./configure
     $ cd src
     $ make lua
+    $ lua luai_tests.lua
 
 Contributing to AIEngine 
 -------------------------

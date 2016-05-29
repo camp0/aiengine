@@ -40,7 +40,9 @@ using namespace std;
 %apply SWIGTYPE *DISOWN {aiengine::RegexManager& sig};
 %apply SWIGTYPE *DISOWN {aiengine::HTTPUriSet &uset};
 
-%template(Counters) std::map<std::string,int32_t>;
+%apply int { int32_t };
+
+%template(LuaCounters) std::map<std::string,int>;
 
 %init %{ 
 std::cout << "Lua AIengine BETA init." << std::endl;

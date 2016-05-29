@@ -81,13 +81,16 @@ bool ICMPv6Protocol::processPacket(Packet &packet) {
 	return true;
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict ICMPv6Protocol::getCounters() const {
         boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE ICMPv6Protocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters ICMPv6Protocol::getCounters() const {
+	LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets", total_packets_);
         addValueToCounter(counters,"echo", total_echo_request_);

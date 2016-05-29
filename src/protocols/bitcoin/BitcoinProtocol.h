@@ -140,6 +140,8 @@ public:
 	VALUE getCounters() const;
 #elif defined(JAVA_BINDING)
         JavaCounters getCounters() const; 
+#elif defined(LUA_BINDING)
+        LuaCounters getCounters() const;
 #endif
 
 	Flow* getCurrentFlow() const { return current_flow_; }

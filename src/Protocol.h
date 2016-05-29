@@ -91,6 +91,11 @@ typedef struct ruby_shared_data {
 
 #define addValueToCounter(h,key,value) rb_hash_aset(h,rb_str_new2(key),INT2NUM(value)); 
 
+#elif defined(LUA_BINDING)
+
+#define addValueToCounter(h,key,value) h[key] = value;
+typedef std::map<std::string,int32_t> LuaCounters;
+
 #endif
 
 class Protocol 
@@ -170,6 +175,7 @@ public:
 	virtual JavaCounters getCounters() const = 0;
 #elif defined(LUA_BINDING)
 	void setDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling);
+	virtual LuaCounters getCounters() const = 0;
 #endif
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)

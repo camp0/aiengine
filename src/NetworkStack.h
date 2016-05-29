@@ -187,6 +187,9 @@ public:
 	void setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr,int packet_sampling);
 
 	void setAnomalyCallback(lua_State *lua, const std::string& callback,const std::string& proto_name);
+
+	std::map<std::string,int> getCounters(const char *name);
+	// std::map<std::string,int> getCounters(lua_State *lua, const char *name);
 #endif
 
 	void addProtocol(ProtocolPtr proto); 

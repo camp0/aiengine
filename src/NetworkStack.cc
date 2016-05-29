@@ -470,6 +470,21 @@ std::map<std::string,int> NetworkStack::getCounters(const std::string& name) {
 	return counters;
 }
 
+#elif defined(LUA_BINDING)
+
+std::map<std::string,int> NetworkStack::getCounters(const char *name) {
+// std::map<std::string,int> NetworkStack::getCounters(lua_State *lua, const char *name) {
+	std::map<std::string,int> counters;
+	std::string sname(name);
+
+        ProtocolPtr pp = get_protocol(sname);
+
+        if (pp) {
+                counters = pp->getCounters();
+	}
+	return counters;
+}
+
 #endif
 
 void NetworkStack::releaseCache(const std::string &name) {

@@ -168,6 +168,8 @@ public:
 	VALUE getCache() const; 
 #elif defined(JAVA_BINDING)
         JavaCounters getCounters() const;
+#elif defined(LUA_BINDING)
+        LuaCounters getCounters() const;
 #endif
 	void setCacheManager(SharedPointer<CacheManager> cmng) { cache_mng_ = cmng; cache_mng_->setCache(info_cache_); }
 	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }

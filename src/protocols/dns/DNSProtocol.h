@@ -157,6 +157,8 @@ public:
 	VALUE getCache() const;
 #elif defined(JAVA_BINDING)
 	JavaCounters getCounters() const  { JavaCounters counters; return counters; }
+#elif defined(LUA_BINDING)
+        LuaCounters getCounters() const;
 #endif
 
 	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }

@@ -431,7 +431,6 @@ void DNSProtocol::decreaseAllocatedMemory(int value) {
 }
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
-
 #if defined(PYTHON_BINDING)
 boost::python::dict DNSProtocol::getCache() const {
 #elif defined(RUBY_BINDING)
@@ -439,13 +438,18 @@ VALUE DNSProtocol::getCache() const {
 #endif
 	return addMapToHash(domain_map_);
 }
+#endif
 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict DNSProtocol::getCounters() const {
 	boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE DNSProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters DNSProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
         addValueToCounter(counters,"total allow queries", total_allow_queries_);
         addValueToCounter(counters,"total banned queries", total_ban_queries_);

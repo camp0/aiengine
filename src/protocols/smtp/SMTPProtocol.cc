@@ -424,13 +424,16 @@ void SMTPProtocol::decreaseAllocatedMemory(int value) {
 	to_cache_->destroy(value);
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict SMTPProtocol::getCounters() const {
         boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE SMTPProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters SMTPProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets", total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

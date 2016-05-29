@@ -116,7 +116,9 @@ public:
 #elif defined(RUBY_BINDING)
         VALUE getCounters() const;
 #elif defined(JAVA_BINDING)
-        std::map<std::string,int> getCounters() const  { std::map<std::string,int> counters; return counters;};
+        JavaCounters getCounters() const  { JavaCounters counters; return counters; }
+#elif defined(LUA_BINDING)
+        LuaCounters getCounters() const  { LuaCounters counters; return counters; }
 #endif	
 
 	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
