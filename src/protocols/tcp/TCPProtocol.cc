@@ -130,7 +130,7 @@ SharedPointer<Flow> TCPProtocol::getFlow(const Packet& packet) {
 						flow->layer4info = tcp_info_ptr;
 					}
                                         
-#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)) && defined(HAVE_ADAPTOR)
                                         if (getDatabaseObjectIsSet()) { // There is attached a database object
 						databaseAdaptorInsertHandler(flow.get());
                                         }
@@ -223,7 +223,7 @@ bool TCPProtocol::processPacket(Packet &packet) {
 						std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << ":retrieving to flow cache" << std::endl; 
 #endif
 
-#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)) && defined(HAVE_ADAPTOR)
                                         	if (getDatabaseObjectIsSet()) { // There is attached a database object
 							databaseAdaptorRemoveHandler(flow.get());
                                         	}
@@ -237,7 +237,7 @@ bool TCPProtocol::processPacket(Packet &packet) {
 				}
 			}
 
-#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)) && defined(HAVE_ADAPTOR)
                 	if (((flow->total_packets % getPacketSampling()) == 0)or(packet.forceAdaptorWrite())) {
                         	if (getDatabaseObjectIsSet()) { // There is attached a database object
 					databaseAdaptorUpdateHandler(flow.get());
@@ -417,7 +417,7 @@ void TCPProtocol::computeState(TCPInfo *info,int32_t bytes) {
 #endif
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 
 #if defined(PYTHON_BINDING)
 boost::python::dict TCPProtocol::getCounters() const {
@@ -425,6 +425,9 @@ boost::python::dict TCPProtocol::getCounters() const {
 #elif defined(RUBY_BINDING)
 VALUE TCPProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters TCPProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets", total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

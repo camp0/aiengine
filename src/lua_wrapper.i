@@ -190,6 +190,12 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %ignore aiengine::PacketDispatcher::setDefaultMultiplexer;
 %ignore aiengine::PacketDispatcher::setIdleFunction;
 %rename("set_stack")    aiengine::PacketDispatcher::setStack;
+%rename("set_shell")    aiengine::PacketDispatcher::setShell;
+// %attribute(aiengine::PacketDispatcher,bool,shell,getShell,setShell)
+%attribute(aiengine::PacketDispatcher,const char*,stack_name,getStackName)
+%attribute(aiengine::PacketDispatcher,const char*,pcap_filter,getPcapFilter,setPcapFilter)
+%attribute(aiengine::PacketDispatcher,int64_t,total_bytes,getTotalBytes)
+%attribute(aiengine::PacketDispatcher,int64_t,total_packets,getTotalPackets)
 
 %ignore aiengine::Flow::setPacketAnomaly;
 %ignore aiengine::Flow::getPacketAnomaly;
@@ -497,13 +503,6 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %attribute(aiengine::FlowManager,int,total_process_flows,getTotalProcessFlows)
 %attribute(aiengine::FlowManager,int,total_timeout_flows,getTotalTimeoutFlows)
 
-%attribute(aiengine::PacketDispatcher,const char*,stack_name,getStackName)
-%attribute(aiengine::PacketDispatcher,const char*,pcap_filter,getPcapFilter,setPcapFilter)
-%attribute(aiengine::PacketDispatcher,int64_t,total_bytes,getTotalBytes)
-%attribute(aiengine::PacketDispatcher,int64_t,total_packets,getTotalPackets)
-
-
-
 %rename("regexmanager=")		aiengine::IPAbstractSet::setRegexManager;
 %rename("show_flows")			showFlows;
 %rename("total_evaluates")		aiengine::Signature::getTotalEvaluates;
@@ -523,8 +522,6 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %rename("host_name")			aiengine::SSDPPInfo::getHostName;
 %rename("uri")				aiengine::SSDPInfo::getUri;
 %rename("stack_name")			aiengine::PacketDispatcher::getStackName;
-%rename("shell")			aiengine::PacketDispatcher::getShell;
-%rename("shell=")			aiengine::PacketDispatcher::setShell;
 %rename("set_scheduler")		aiengine::PacketDispatcher::setScheduler;
 %rename("add_ip_set")			aiengine::IPSetManager::addIPSet;
 %rename("remove_ip_set")			aiengine::IPSetManager::removeIPSet;

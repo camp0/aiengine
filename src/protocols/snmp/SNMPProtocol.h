@@ -105,9 +105,7 @@ public:
 	}
 
 	uint8_t getLength() const { return snmp_header_->length; }
-	//uint8_t getLength() const { return ntohs(snmp_header_->length); }
 	uint8_t getVersionLength() const { return snmp_header_->version_length; }
-	//uint8_t getVersionLength() const { return ntohs(snmp_header_->version_length); }
 
 	int64_t getAllocatedMemory() const { return sizeof(SNMPProtocol); }
 
@@ -118,7 +116,7 @@ public:
 #elif defined(JAVA_BINDING)
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
 #elif defined(LUA_BINDING)
-        LuaCounters getCounters() const  { LuaCounters counters; return counters; }
+        LuaCounters getCounters() const; 
 #endif	
 
 	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }

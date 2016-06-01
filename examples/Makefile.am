@@ -2,14 +2,14 @@ AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = 	bitcoinminer.py \
 		bitcoinmonitor.py \
-		malware.py \
+		malware.py malware.rb \
 		mostusedips.py \
 		nids_firewall.py \
 		troyan.py \
-		redis_adaptor.py \
+		redis_adaptor.py redis_adaptor.rb \
 		cassandra_adaptor.py \
 		hadoop_adaptor.py \
-		heartbeat.py \
+		heartbeat.py heartbeat.rb \
 		unknown.py \
 		tor.py \
 		netfilter.py \
@@ -17,13 +17,9 @@ EXTRA_DIST = 	bitcoinminer.py \
 		snort.py \
 		query.py \
 		uri_exploit.py \
-		zeus_malware.py \
-		ddos.py \
-		malware.rb \
+		zeus_malware.py zeus_malware.lua \
+		ddos.py ddos.rb ddos.lua \
 		file_adaptor.rb \
-		redis_adaptor.rb \
-		heartbeat.rb \
-		ddos.rb \
-		spam.rb
+		spam.rb 
 
 MAINTAINERCLEANFILES = Makefile.in 

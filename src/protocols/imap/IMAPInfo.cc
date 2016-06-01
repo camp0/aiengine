@@ -34,18 +34,15 @@ void IMAPInfo::reset() {
 
 void IMAPInfo::serialize(std::ostream& stream) {
 
-        bool have_item = false;
 #ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION
         stream << ",\"i\":{";
         if (user_name) {
                 stream << "\"u\":\"" << user_name->getName() << "\"";
-                have_item = true;
         }
 #else
         stream << ",\"info\":{";
         if (user_name) {
                 stream << "\"user\":\"" << user_name->getName() << "\"";
-                have_item = true;
         }
 #endif
         stream << "}";

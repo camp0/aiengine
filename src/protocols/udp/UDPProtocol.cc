@@ -174,7 +174,7 @@ bool UDPProtocol::processPacket(Packet& packet) {
 #ifdef DEBUG
                                         std::cout << __PRETTY_FUNCTION__ << ":flow:" << flow << ":Lookup positive on IPSet:" << ipset->getName() << std::endl;
 #endif
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
                                         if (ipset->call.haveCallback()) {
                                                 ipset->call.executeCallback(flow.get());
                                         }
@@ -240,7 +240,7 @@ bool UDPProtocol::processPacket(Packet& packet) {
 }
 
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 
 #if defined(PYTHON_BINDING)
 boost::python::dict UDPProtocol::getCounters() const {
@@ -248,6 +248,9 @@ boost::python::dict UDPProtocol::getCounters() const {
 #elif defined(RUBY_BINDING)
 VALUE UDPProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters UDPProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets", total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

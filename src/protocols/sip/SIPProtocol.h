@@ -126,7 +126,7 @@ public:
 #elif defined(JAVA_BINDING)
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
 #elif defined(LUA_BINDING)
-        LuaCounters getCounters() const  { LuaCounters counters; return counters; }
+        LuaCounters getCounters() const; 
 #endif
 	void setCacheManager(SharedPointer<CacheManager> cmng) { cache_mng_ = cmng; cache_mng_->setCache(info_cache_); }
 private:

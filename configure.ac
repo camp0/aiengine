@@ -370,7 +370,6 @@ AX_PROG_LUA(5.1,[],[enable_lua_support=yes],[enable_lua_support=no])
 if test x"$enable_lua_support" = x"yes"; then
     AX_LUA_HEADERS([have_lua_support=yes],[have_lua_support=no])
 
-    echo $LUA_INCLUDE $LUA_LIBS
     if test x"$have_lua_support" = x"yes"; then
         AM_CONDITIONAL([HAVE_LUA_SUPPORT],true)
     fi

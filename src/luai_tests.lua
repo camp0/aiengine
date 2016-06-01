@@ -346,10 +346,52 @@ TestStackMobile = {}
     end
 
     function TestStackMobile:test01()
+        -- Check functionality for gprs and icmp
+        -- gprs_icmp.pcap 
         -- self.st.link_layer_tag = "vlan"
 
+        self.pd:open("../pcapfiles/gprs_icmp.pcap");
+        self.pd:run();
+        self.pd:close();
         -- print(inspect(luaiengine.StackMobile))
 
+        local c = self.st:get_counters("GPRSProtocol")
+        luaunit.assertEquals(c:has_key("packets"), true)
+        luaunit.assertEquals(c:get("packets"), 4)
+        luaunit.assertEquals(c:get("bytes"), 368)
+        luaunit.assertEquals(c:get("create pdp reqs"), 0)
+        luaunit.assertEquals(c:get("tpdus"), 4)
+
+        c = self.st:get_counters("ICMPProtocol")
+        luaunit.assertEquals(c:has_key("packets"), true)
+        luaunit.assertEquals(c:get("packets"), 4)
+        luaunit.assertEquals(c:get("echo"), 2)
+        luaunit.assertEquals(c:get("echoreplay"), 2)
+    end
+
+    function TestStackMobile:test02()
+        -- Check functionality for gprs and sip
+        -- gprs_icmp.pcap 
+        -- self.st.link_layer_tag = "vlan"
+
+        self.pd:open("../pcapfiles/gprs_sip_flow.pcap");
+        self.pd:run();
+        self.pd:close();
+        -- print(inspect(luaiengine.StackMobile))
+
+        local c = self.st:get_counters("GPRSProtocol")
+        luaunit.assertEquals(c:has_key("packets"), true)
+        luaunit.assertEquals(c:get("packets"), 22)
+        luaunit.assertEquals(c:get("bytes"), 15329)
+        luaunit.assertEquals(c:get("create pdp reqs"), 0)
+        luaunit.assertEquals(c:get("tpdus"), 22)
+
+        c = self.st:get_counters("SIPProtocol")
+        luaunit.assertEquals(c:has_key("packets"), true)
+        luaunit.assertEquals(c:get("packets"), 22)
+        luaunit.assertEquals(c:get("requests"), 7)
+        luaunit.assertEquals(c:get("responses"), 7)
+        luaunit.assertEquals(c:get("registers"), 2)
     end
 
 TestStackLanIPv6 = {} 
@@ -494,6 +536,14 @@ TestStackLanIPv6 = {}
         self.pd:open("../pcapfiles/ipv6_google_dns.pcap") 
         self.pd:run()
         self.pd:close()
+
+        -- Get the countes of dns
+        local c = self.st:get_counters("DNSProtocol")
+        luaunit.assertEquals(c:has_key("total allow queries"), true)
+        luaunit.assertEquals(c:get("total allow queries"), 1)
+        luaunit.assertEquals(c:get("total type NS"), 0)
+        luaunit.assertEquals(c:get("total type A"), 0)
+        luaunit.assertEquals(c:get("total type AAAA"), 1)
 
         luaunit.assertEquals(call_domain, true)
         luaunit.assertEquals(d.matchs, 1)
