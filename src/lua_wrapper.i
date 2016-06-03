@@ -106,6 +106,8 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %rename("release_caches")               aiengine::NetworkStack::releaseCaches;
 %rename("release_cache")                aiengine::NetworkStack::releaseCache;
 %rename("set_domain_name_manager")      aiengine::NetworkStack::setDomainNameManager;
+%rename("set_tcp_database_adaptor")     aiengine::NetworkStack::setTCPDatabaseAdaptor;
+%rename("set_udp_database_adaptor")     aiengine::NetworkStack::setUDPDatabaseAdaptor;
 
 %attribute(aiengine::NetworkStack,std::string,link_layer_tag,getLinkLayerTagging,enableLinkLayerTagging)
 %attribute2(aiengine::NetworkStack,RegexManager,tcp_regex_manager,getTCPRegexManager,setTCPRegexManager)
@@ -525,8 +527,8 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %rename("set_scheduler")		aiengine::PacketDispatcher::setScheduler;
 %rename("add_ip_set")			aiengine::IPSetManager::addIPSet;
 %rename("remove_ip_set")			aiengine::IPSetManager::removeIPSet;
-%rename("set_tcp_database_adaptor")	setTCPDatabaseAdaptor;
-%rename("set_udp_database_adaptor")	setUDPDatabaseAdaptor;
+//%rename("set_tcp_database_adaptor")	setTCPDatabaseAdaptor;
+//%rename("set_udp_database_adaptor")	setUDPDatabaseAdaptor;
 %rename("tcp_flow_manager")		getTCPFlowManager;
 %rename("udp_flow_manager")		getUDPFlowManager;
 %rename("flows_timeout=")		setFlowsTimeout;

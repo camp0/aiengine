@@ -22,6 +22,9 @@
  *
  */
 #include "Protocol.h"
+#if defined(LUA_BINDING)
+#include "swigluarun.h"
+#endif
 
 namespace aiengine {
 
@@ -65,7 +68,7 @@ void Protocol::setDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
                 is_set_db_ = false;
         }
 }
-#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
+#elif defined(JAVA_BINDING) 
 void Protocol::setDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
 
 	if (dbptr == nullptr) {
@@ -78,6 +81,140 @@ void Protocol::setDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
 		packet_sampling_ = packet_sampling;
 		// std::cout << __FILE__ << ":" << __func__ << " new adaptor set" << std::endl;
 	}	
+}
+
+#elif defined(LUA_BINDING)
+
+void lua_stacktrace(lua_State* L)
+{
+    lua_Debug entry;
+    int depth = 0; 
+
+    while (lua_getstack(L, depth, &entry))
+    {
+        int status = lua_getinfo(L, "Sln", &entry);
+        assert(status);
+
+	//std::cout << "(" << entry.currentline << "): " << (entry.name ? entry.name : "?")  << std::endl;
+	std::cout << entry.short_src << "(" << entry.currentline << "): " << (entry.name ? entry.name : "?");
+	std::cout << " what(" << (entry.what ? entry.what : "?") << std::endl; 
+
+        // dprintf("%s(%d): %s\n", entry.short_src, entry.currentline, entry.name ? entry.name : "?");
+        depth++;
+    }
+}
+
+static void dumpstack (lua_State *L, const char *message) {
+  int i;
+  int top=lua_gettop(L);
+  printf("dumpstack -- %s\n",message);
+  for (i=1; i<=top; i++) {
+    printf("%d\t%s\t",i,luaL_typename(L,i));
+    switch (lua_type(L, i)) {
+      case LUA_TNUMBER:
+        printf("%g\n",lua_tonumber(L,i));
+        break;
+      case LUA_TSTRING:
+        printf("%s\n",lua_tostring(L,i));
+        break;
+      case LUA_TBOOLEAN:
+        printf("%s\n", (lua_toboolean(L, i) ? "true" : "false"));
+        break;
+      case LUA_TNIL:
+        printf("%s\n", "nil");
+        break;
+      default:
+        printf("%p\n",lua_topointer(L,i));
+        break;
+    }
+  }
+  printf("dumpstack -- END\n");
+}
+
+
+void PrintTable(lua_State *L)
+{
+    lua_pushnil(L);
+
+    while(lua_next(L, -2) != 0)
+    {
+        if(lua_isstring(L, -1))
+		std::cout << lua_tostring(L, -2) << "=" << lua_tostring(L, -1) << std::endl;
+        else if(lua_isnumber(L, -1))
+		std::cout << lua_tostring(L, -2) << "=" << lua_tonumber(L, -1) << std::endl;
+        else if(lua_istable(L, -1))
+          PrintTable(L);
+
+        lua_pop(L, 1);
+    }
+}
+
+void Protocol::setDatabaseAdaptor(lua_State *lua, int packet_sampling) {
+
+	lua_ = lua;
+	/// https://www.lua.org/source/5.1/lua.h.html
+	const char *object_name = lua_tostring(lua, -1);
+	std::cout << "Setting adaptor on protocol:" << lua_tostring(lua, -1) << std::endl;
+	// PrintTable(lua);	
+	dumpstack(lua, "protocol");
+	// lua_stacktrace(lua);
+
+        lua_getglobal(lua,object_name);
+        if (lua_istable(lua,-1)) {
+		std::cout << "im a table" << std::endl;
+		// lua_gettable(lua,-1);
+		PrintTable(lua);	
+                // ref_function_ = luaL_ref(lua, LUA_REGISTRYINDEX);
+                lua_getfield(lua,-1,"insert");
+		if (lua_isfunction(lua,-1)) {
+                	// lua_pushnumber(lua,67);
+			ref_function_insert_ = luaL_ref(lua, LUA_REGISTRYINDEX);
+			// int Error = lua_pcall(lua, 1, 0, 0);
+			std::cout << "method inset locate" << std::endl;
+			is_set_db_ = true;
+			packet_sampling_ =1; 
+		} else {	
+			std::cout << "no insert method on class " << object_name << std::endl;
+			return;
+		}
+                lua_getfield(lua,-1,"update");
+		if (lua_isfunction(lua,-1)) {
+                	// lua_pushnumber(lua,67);
+			ref_function_update_ = luaL_ref(lua, LUA_REGISTRYINDEX);
+		} else {	
+			std::cout << "no update method on class " << object_name << std::endl;
+			return;
+		}
+                lua_getfield(lua,-1,"remove");
+		if (lua_isfunction(lua,-1)) {
+                	// lua_pushnumber(lua,67);
+			ref_function_remove_ = luaL_ref(lua, LUA_REGISTRYINDEX);
+		} else {	
+			std::cout << "no remove method on class " << object_name << std::endl;
+			return;
+		}
+
+	} else {
+		std::cout << "im not a table" << std::endl;
+	} 
+}
+
+
+bool Protocol::push_pointer(lua_State *L, void* ptr, const char* type_name, int owned) {
+
+        // task 1: get the object 'type' which is registered with SWIG
+        // you need to call SWIG_TypeQuery() with the class name
+        // (normally, just look in the wrapper file to get this)
+      
+        swig_type_info * pTypeInfo = SWIG_TypeQuery(L, type_name);
+        if (pTypeInfo == 0)
+        	return false;   // error
+        // task 2: push the pointer to the Lua stack
+        // this requires a pointer & the type
+        // the last param specifies if Lua is responsible for deleting the object
+
+        SWIG_NewPointerObj(L, ptr, pTypeInfo, owned);
+        return true;
 }
 
 #endif
@@ -127,6 +264,19 @@ void Protocol::databaseAdaptorInsertHandler(Flow *flow) {
 	if (dbptr_ != nullptr) { 
 		dbptr_->insert(key.str());
 	}
+#elif defined(LUA_BINDING)
+
+	std::cout << "Calling from c++ to lua" << std::endl;
+        lua_rawgeti(lua_, LUA_REGISTRYINDEX, ref_function_insert_);
+
+        //if (push_pointer(lua_,flow,"aiengine::Flow*",0)) {
+                int ret;
+		lua_pushnumber(lua_,1000);
+                if ((ret = lua_pcall(lua_,1,0,0)) != 0) {
+                        std::cout << "ERROR:" << lua_tostring(lua_, -1) << std::endl;
+                }
+        //}
+
 #endif
 }
 

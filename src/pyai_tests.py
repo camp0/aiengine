@@ -86,6 +86,8 @@ class StackLanTests(unittest.TestCase):
         rm.add_regex(r)
         self.s.udp_regex_manager = rm
 
+        self.s.enable_nids_engine = True
+
         self.dis.open("../pcapfiles/flow_vlan_netbios.pcap");
         self.dis.run();
         self.dis.close();
@@ -125,6 +127,8 @@ class StackLanTests(unittest.TestCase):
         r.callback = callback
         rm.add_regex(r)
         self.s.udp_regex_manager = rm
+
+        self.s.enable_nids_engine = True
 
         self.dis.open("../pcapfiles/flow_vlan_netbios.pcap");
         self.dis.run();

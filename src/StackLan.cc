@@ -75,12 +75,14 @@ StackLan::StackLan():
         addProtocol(mqtt);
         addProtocol(tcp_generic);
         addProtocol(freqs_tcp);
+
         addProtocol(dns);
         addProtocol(sip);
         addProtocol(dhcp);
         addProtocol(ntp);
         addProtocol(snmp);
         addProtocol(ssdp);
+	addProtocol(netbios);
         addProtocol(coap);
         addProtocol(rtp);
         addProtocol(udp_generic);
@@ -197,7 +199,7 @@ StackLan::StackLan():
 	enableFlowForwarders(ff_tcp_,
 		{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus,ff_mqtt,ff_tcp_generic});
 	enableFlowForwarders(ff_udp_,
-		{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_coap,ff_rtp,ff_udp_generic});
+		{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_netbios,ff_coap,ff_rtp,ff_udp_generic});
 
 	std::ostringstream msg;
 
@@ -265,7 +267,7 @@ void StackLan::enableNIDSEngine(bool enable) {
 		disableFlowForwarders(ff_tcp_,
 			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus,ff_mqtt}); // we dont remove the ff_tcp_generic
 		disableFlowForwarders(ff_udp_,
-			{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_coap,ff_rtp}); // we dont remove the ff_udp_generic
+			{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_netbios,ff_coap,ff_rtp}); // we dont remove the ff_udp_generic
 
                 std::ostringstream msg;
                 msg << "Enable NIDSEngine on " << getName();
@@ -278,7 +280,7 @@ void StackLan::enableNIDSEngine(bool enable) {
 		enableFlowForwarders(ff_tcp_,
 			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus,ff_mqtt,ff_tcp_generic});
         	enableFlowForwarders(ff_udp_,
-			{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_coap,ff_rtp,ff_udp_generic});	
+			{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_netbios,ff_coap,ff_rtp,ff_udp_generic});	
 	}
 	enable_nids_engine_ = enable;
 }

@@ -54,6 +54,7 @@
 #include "protocols/coap/CoAPProtocol.h"
 #include "protocols/rtp/RTPProtocol.h"
 #include "protocols/mqtt/MQTTProtocol.h"
+#include "protocols/netbios/NetbiosProtocol.h"
 #include "protocols/frequency/FrequencyProtocol.h"
 
 namespace aiengine {
@@ -181,10 +182,10 @@ public:
 	
 	void setAnomalyCallback(JaiCallback *callback,const std::string& proto_name);
 #elif defined(LUA_BINDING)
-	void setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr);
-	void setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr,int packet_sampling);
-	void setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr);
-	void setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr,int packet_sampling);
+	void setTCPDatabaseAdaptor(lua_State *dbptr, const char* obj_name);
+	void __setTCPDatabaseAdaptor(lua_State *dbptr,int packet_sampling);
+	void setUDPDatabaseAdaptor(lua_State *dbptr);
+	void setUDPDatabaseAdaptor(lua_State *dbptr,int packet_sampling);
 
 	void setAnomalyCallback(lua_State *lua, const std::string& callback,const std::string& proto_name);
 
@@ -230,6 +231,7 @@ protected:
         CoAPProtocolPtr coap;
         RTPProtocolPtr rtp;
         MQTTProtocolPtr mqtt;
+	NetbiosProtocolPtr netbios;
         TCPGenericProtocolPtr tcp_generic;
         UDPGenericProtocolPtr udp_generic;
         FrequencyProtocolPtr freqs_tcp;
@@ -248,6 +250,7 @@ protected:
         SharedPointer<FlowForwarder> ff_coap;
         SharedPointer<FlowForwarder> ff_rtp;
 	SharedPointer<FlowForwarder> ff_mqtt;
+	SharedPointer<FlowForwarder> ff_netbios;
         SharedPointer<FlowForwarder> ff_tcp_generic;
         SharedPointer<FlowForwarder> ff_udp_generic;
         SharedPointer<FlowForwarder> ff_tcp_freqs;

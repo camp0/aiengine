@@ -112,8 +112,13 @@ public:
 		,dbptr_(),is_set_db_(false),packet_sampling_(32)
 #elif defined(RUBY_BINDING)
 		,dbptr_(Qnil),is_set_db_(false),packet_sampling_(32)
-#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
+#elif defined(JAVA_BINDING)
 		,dbptr_(nullptr),is_set_db_(false),packet_sampling_(32)
+#elif defined(LUA_BINDING)
+		,lua_(nullptr),is_set_db_(false),packet_sampling_(32),
+		ref_function_insert_(LUA_NOREF), 
+		ref_function_update_(LUA_NOREF), 
+		ref_function_remove_(LUA_NOREF)
 #endif
 		{}
 
@@ -174,7 +179,7 @@ public:
 	void setDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling);
 	virtual JavaCounters getCounters() const = 0;
 #elif defined(LUA_BINDING)
-	void setDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling);
+	void setDatabaseAdaptor(lua_State *lua, int packet_sampling);
 	virtual LuaCounters getCounters() const = 0;
 #endif
 
@@ -213,10 +218,20 @@ private:
 	VALUE dbptr_;
 	bool is_set_db_;
 	int packet_sampling_;
-#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
+#elif defined(JAVA_BINDING) 
 	DatabaseAdaptor *dbptr_;
 	bool is_set_db_;
 	int packet_sampling_;
+#elif defined(LUA_BINDING)
+
+	bool push_pointer(lua_State *L, void* ptr, const char* type_name, int owned);
+
+	lua_State *lua_;
+	bool is_set_db_;
+	int packet_sampling_;
+	int ref_function_insert_;
+	int ref_function_update_;
+	int ref_function_remove_;
 #endif
 
 #ifdef HAVE_LIBLOG4CXX

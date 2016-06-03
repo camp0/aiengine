@@ -51,6 +51,7 @@ NetworkStack::NetworkStack():
 	coap(CoAPProtocolPtr(new CoAPProtocol())),
 	rtp(RTPProtocolPtr(new RTPProtocol())),
 	mqtt(MQTTProtocolPtr(new MQTTProtocol())),
+	netbios(NetbiosProtocolPtr(new NetbiosProtocol())),
         tcp_generic(TCPGenericProtocolPtr(new TCPGenericProtocol())),
         udp_generic(UDPGenericProtocolPtr(new UDPGenericProtocol())),
         freqs_tcp(FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol","tcpfrequency"))),
@@ -72,6 +73,7 @@ NetworkStack::NetworkStack():
         ff_coap(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_rtp(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_mqtt(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_netbios(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_tcp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_udp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_tcp_freqs(SharedPointer<FlowForwarder>(new FlowForwarder())),
@@ -134,6 +136,12 @@ NetworkStack::NetworkStack():
         ff_ssdp->setProtocol(static_cast<ProtocolPtr>(ssdp));
         ff_ssdp->addChecker(std::bind(&SSDPProtocol::ssdpChecker,ssdp,std::placeholders::_1));
         ff_ssdp->addFlowFunction(std::bind(&SSDPProtocol::processFlow,ssdp,std::placeholders::_1));
+
+        // Configure the netbios
+        netbios->setFlowForwarder(ff_netbios);
+        ff_netbios->setProtocol(static_cast<ProtocolPtr>(netbios));
+        ff_netbios->addChecker(std::bind(&NetbiosProtocol::netbiosChecker,netbios,std::placeholders::_1));
+        ff_netbios->addFlowFunction(std::bind(&NetbiosProtocol::processFlow,netbios,std::placeholders::_1));
 
 	// Configure the CoAP
         coap->setFlowForwarder(ff_coap);
@@ -340,8 +348,10 @@ void NetworkStack::setDomainNameManager(DomainNameManager& dnm, const std::strin
 void NetworkStack::setUDPDatabaseAdaptor(boost::python::object &dbptr) {
 #elif defined(RUBY_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(VALUE dbptr) {
-#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
+#elif defined(JAVA_BINDING) 
 void NetworkStack::setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr) {
+#elif defined(LUA_BINDING)
+void NetworkStack::setUDPDatabaseAdaptor(lua_State *dbptr) {
 #endif
 	setUDPDatabaseAdaptor(dbptr,32);
 }
@@ -350,18 +360,22 @@ void NetworkStack::setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr) {
 void NetworkStack::setTCPDatabaseAdaptor(boost::python::object &dbptr) {
 #elif defined(RUBY_BINDING)
 void NetworkStack::setTCPDatabaseAdaptor(VALUE dbptr) {
-#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
+#elif defined(JAVA_BINDING) 
 void NetworkStack::setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr) {
+#elif defined(LUA_BINDING)
+void NetworkStack::setTCPDatabaseAdaptor(lua_State *dbptr, const char* obj_name) {
 #endif
-	setTCPDatabaseAdaptor(dbptr,32);
+	__setTCPDatabaseAdaptor(dbptr,32);
 }
 
 #if defined(PYTHON_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
 #elif defined(RUBY_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
-#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
+#elif defined(JAVA_BINDING) 
 void NetworkStack::setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
+#elif defined(LUA_BINDING)
+void NetworkStack::setUDPDatabaseAdaptor(lua_State *dbptr, int packet_sampling) {
 #endif
         ProtocolPtr pp = get_protocol(UDPProtocol::default_name);
         if (pp) {
@@ -376,8 +390,10 @@ void NetworkStack::setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_samp
 void NetworkStack::setTCPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
 #elif defined(RUBY_BINDING)
 void NetworkStack::setTCPDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
-#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
+#elif defined(JAVA_BINDING)
 void NetworkStack::setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
+#elif defined(LUA_BINDING)
+void NetworkStack::__setTCPDatabaseAdaptor(lua_State *dbptr, int packet_sampling) {
 #endif
         ProtocolPtr pp = get_protocol(TCPProtocol::default_name);
         if (pp) {

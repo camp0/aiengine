@@ -1492,6 +1492,8 @@ BOOST_AUTO_TEST_CASE (test_case_13) // Test the UDP regex
         stack->setTotalUDPFlows(2);
         stack->enableLinkLayerTagging("vlan");
 
+	stack->enableNIDSEngine(true);
+
         rmng->addRegex(r_generic);
         stack->setUDPRegexManager(rmng);
 

@@ -143,6 +143,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/rtp/RTPProtocol.cc \
 			protocols/mqtt/MQTTProtocol.cc \
 			protocols/mqtt/MQTTInfo.cc \
+			protocols/netbios/NetbiosProtocol.cc \
 			regex/Regex.cc \
 			regex/RegexManager.cc RejectManager.cc \
 			protocols/frequency/FrequencyProtocol.cc \
@@ -215,6 +216,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 		protocols/coap/test_coap.cc \
 		protocols/rtp/test_rtp.cc \
 		protocols/mqtt/test_mqtt.cc \
+		protocols/netbios/test_netbios.cc \
 		regex/test_regex.cc \
 		user/test_users.cc \
 		learner/test_learner.cc \
@@ -252,6 +254,7 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		RTPProtocol.o \
 		CoAPProtocol.o CoAPInfo.o \
 		MQTTProtocol.o MQTTInfo.o \
+		NetbiosProtocol.o \
 		FrequencyProtocol.o LearnerEngine.o \
 		ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \
 		StackLan.o StackMobile.o StackLanIPv6.o StackVirtual.o StackOpenFlow.o \
@@ -281,6 +284,7 @@ java_objects = 	RegexManager.o Regex.o \
 		CoAPProtocol.o CoAPInfo.o \
 		BitcoinProtocol.o BitcoinInfo.o ModbusProtocol.o \
 		MQTTProtocol.o MQTTInfo.o \
+		NetbiosProtocol.o \
                 OpenFlowProtocol.o VxLanProtocol.o \
                 FrequencyProtocol.o LearnerEngine.o \
                 ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \
@@ -313,6 +317,7 @@ lua_objects =  	NetworkStack.o Protocol.o EthernetProtocol.o \
                 BitcoinProtocol.o BitcoinInfo.o \
                 ModbusProtocol.o \
                 RTPProtocol.o \
+		NetbiosProtocol.o \
                 CoAPProtocol.o CoAPInfo.o \
                 MQTTProtocol.o MQTTInfo.o \
                 FrequencyProtocol.o LearnerEngine.o \

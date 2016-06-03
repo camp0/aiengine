@@ -476,6 +476,7 @@ src/protocols/snmp/Makefile
 src/protocols/ssdp/Makefile
 src/protocols/coap/Makefile
 src/protocols/rtp/Makefile
+src/protocols/netbios/Makefile
 src/protocols/tcpgeneric/Makefile
 src/protocols/udpgeneric/Makefile
 src/protocols/frequency/Makefile

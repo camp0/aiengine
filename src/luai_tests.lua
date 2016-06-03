@@ -549,6 +549,20 @@ TestStackLanIPv6 = {}
         luaunit.assertEquals(d.matchs, 1)
     end
 
+pepe = {}
+
+function pepe.insert(a)
+    print("calling pepe joder",a)
+end
+
+function pepe.update(a)
+    print("calling pepe joder",a)
+end
+function pepe.remove(a)
+    print("calling pepe joder",a)
+end
+
+
 TestStackVirtual = {} 
     function TestStackVirtual:setUp() 
         self.st = luaiengine.StackVirtual()
@@ -564,6 +578,12 @@ TestStackVirtual = {}
 
     function TestStackVirtual:test01()
         -- Create a regex for a detect the flow on a virtual network on the GRE side 
+
+        setmetatable(pepe,luaiengine.DatabaseAdaptor)
+
+        print(inspect(pepe))
+
+        self.st:set_tcp_database_adaptor("pepe")
 
         local rm = luaiengine.RegexManager()
         r = luaiengine.Regex("Bin directory","^SSH-2.0.*$")
