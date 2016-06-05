@@ -183,14 +183,13 @@ public:
 	void setAnomalyCallback(JaiCallback *callback,const std::string& proto_name);
 #elif defined(LUA_BINDING)
 	void setTCPDatabaseAdaptor(lua_State *dbptr, const char* obj_name);
-	void __setTCPDatabaseAdaptor(lua_State *dbptr,int packet_sampling);
-	void setUDPDatabaseAdaptor(lua_State *dbptr);
-	void setUDPDatabaseAdaptor(lua_State *dbptr,int packet_sampling);
+	void setTCPDatabaseAdaptor(lua_State *dbptr, const char* obj_name, int packet_sampling);
+	void setUDPDatabaseAdaptor(lua_State *dbptr, const char *obj_name);
+	void setUDPDatabaseAdaptor(lua_State *dbptr, const char *obj_name, int packet_sampling);
 
 	void setAnomalyCallback(lua_State *lua, const std::string& callback,const std::string& proto_name);
 
 	std::map<std::string,int> getCounters(const char *name);
-	// std::map<std::string,int> getCounters(lua_State *lua, const char *name);
 #endif
 
 	void addProtocol(ProtocolPtr proto); 

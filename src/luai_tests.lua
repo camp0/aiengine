@@ -2,6 +2,22 @@ luaunit = require('luaunit')
 luaiengine = require('luaiengine')
 local inspect = require 'inspect'
 
+adaptor = { inserts = 0, updates = 0, removes = 0}
+
+function adaptor.insert(a)
+    print("calling pepe joder",a)
+    -- self.inserts = self.inserts + 1
+end
+
+function adaptor.update(a,b)
+    -- self.updates = self.updates + 1
+    print("update",a,b)
+end
+function adaptor.remove(a)
+    -- removes = removes + 1
+    print("remove pepe joder",a)
+end
+
 TestStackLan = {} 
     function TestStackLan:setUp() 
         self.st = luaiengine.StackLan()
@@ -549,20 +565,6 @@ TestStackLanIPv6 = {}
         luaunit.assertEquals(d.matchs, 1)
     end
 
-pepe = {}
-
-function pepe.insert(a)
-    print("calling pepe joder",a)
-end
-
-function pepe.update(a)
-    print("calling pepe joder",a)
-end
-function pepe.remove(a)
-    print("calling pepe joder",a)
-end
-
-
 TestStackVirtual = {} 
     function TestStackVirtual:setUp() 
         self.st = luaiengine.StackVirtual()
@@ -579,11 +581,11 @@ TestStackVirtual = {}
     function TestStackVirtual:test01()
         -- Create a regex for a detect the flow on a virtual network on the GRE side 
 
-        setmetatable(pepe,luaiengine.DatabaseAdaptor)
+        -- setmetatable(pepe,luaiengine.DatabaseAdaptor)
 
-        print(inspect(pepe))
+        -- print(inspect(pepe))
 
-        self.st:set_tcp_database_adaptor("pepe")
+        self.st:set_tcp_database_adaptor("adaptor")
 
         local rm = luaiengine.RegexManager()
         r = luaiengine.Regex("Bin directory","^SSH-2.0.*$")

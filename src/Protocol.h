@@ -179,7 +179,7 @@ public:
 	void setDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling);
 	virtual JavaCounters getCounters() const = 0;
 #elif defined(LUA_BINDING)
-	void setDatabaseAdaptor(lua_State *lua, int packet_sampling);
+	void setDatabaseAdaptor(lua_State *lua, const char *obj_name, int packet_sampling);
 	virtual LuaCounters getCounters() const = 0;
 #endif
 
@@ -223,9 +223,6 @@ private:
 	bool is_set_db_;
 	int packet_sampling_;
 #elif defined(LUA_BINDING)
-
-	bool push_pointer(lua_State *L, void* ptr, const char* type_name, int owned);
-
 	lua_State *lua_;
 	bool is_set_db_;
 	int packet_sampling_;

@@ -346,27 +346,47 @@ void NetworkStack::setDomainNameManager(DomainNameManager& dnm, const std::strin
 
 #if defined(PYTHON_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(boost::python::object &dbptr) {
-#elif defined(RUBY_BINDING)
-void NetworkStack::setUDPDatabaseAdaptor(VALUE dbptr) {
-#elif defined(JAVA_BINDING) 
-void NetworkStack::setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr) {
-#elif defined(LUA_BINDING)
-void NetworkStack::setUDPDatabaseAdaptor(lua_State *dbptr) {
-#endif
+
 	setUDPDatabaseAdaptor(dbptr,32);
 }
+#elif defined(RUBY_BINDING)
+void NetworkStack::setUDPDatabaseAdaptor(VALUE dbptr) {
+
+	setUDPDatabaseAdaptor(dbptr,32);
+}
+#elif defined(JAVA_BINDING) 
+void NetworkStack::setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr) {
+
+	setUDPDatabaseAdaptor(dbptr,32);
+}
+#elif defined(LUA_BINDING)
+void NetworkStack::setUDPDatabaseAdaptor(lua_State *lua, const char *obj_name) {
+
+	setUDPDatabaseAdaptor(lua,obj_name,32);
+}
+#endif
 
 #if defined(PYTHON_BINDING)
 void NetworkStack::setTCPDatabaseAdaptor(boost::python::object &dbptr) {
+
+	setTCPDatabaseAdaptor(dbptr,32);
+}
 #elif defined(RUBY_BINDING)
 void NetworkStack::setTCPDatabaseAdaptor(VALUE dbptr) {
+
+	setTCPDatabaseAdaptor(dbptr,32);
+}
 #elif defined(JAVA_BINDING) 
 void NetworkStack::setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr) {
-#elif defined(LUA_BINDING)
-void NetworkStack::setTCPDatabaseAdaptor(lua_State *dbptr, const char* obj_name) {
-#endif
-	__setTCPDatabaseAdaptor(dbptr,32);
+	
+	setTCPDatabaseAdaptor(dbptr,32);
 }
+#elif defined(LUA_BINDING)
+void NetworkStack::setTCPDatabaseAdaptor(lua_State *lua, const char* obj_name) {
+	
+	setTCPDatabaseAdaptor(lua,obj_name,32);
+}
+#endif
 
 #if defined(PYTHON_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
@@ -375,13 +395,17 @@ void NetworkStack::setUDPDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
 #elif defined(JAVA_BINDING) 
 void NetworkStack::setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
 #elif defined(LUA_BINDING)
-void NetworkStack::setUDPDatabaseAdaptor(lua_State *dbptr, int packet_sampling) {
+void NetworkStack::setUDPDatabaseAdaptor(lua_State *lua, const char *obj_name, int packet_sampling) {
 #endif
         ProtocolPtr pp = get_protocol(UDPProtocol::default_name);
         if (pp) {
                 UDPProtocolPtr proto = std::static_pointer_cast<UDPProtocol>(pp);
                 if (proto) {
+#if defined(LUA_BINDING)
+                        proto->setDatabaseAdaptor(lua,obj_name,packet_sampling);
+#else
                         proto->setDatabaseAdaptor(dbptr,packet_sampling);
+#endif
                 }
         }
 }
@@ -393,13 +417,17 @@ void NetworkStack::setTCPDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
 #elif defined(JAVA_BINDING)
 void NetworkStack::setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
 #elif defined(LUA_BINDING)
-void NetworkStack::__setTCPDatabaseAdaptor(lua_State *dbptr, int packet_sampling) {
+void NetworkStack::setTCPDatabaseAdaptor(lua_State *lua, const char *obj_name, int packet_sampling) {
 #endif
         ProtocolPtr pp = get_protocol(TCPProtocol::default_name);
         if (pp) {
                 TCPProtocolPtr proto = std::static_pointer_cast<TCPProtocol>(pp);
                 if (proto) {
+#if defined(LUA_BINDING)
+                        proto->setDatabaseAdaptor(lua,obj_name,packet_sampling);
+#else
                         proto->setDatabaseAdaptor(dbptr,packet_sampling);
+#endif
                 }
         }
 }

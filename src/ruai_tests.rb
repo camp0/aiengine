@@ -110,6 +110,8 @@ class StackLanUnitTests < Test::Unit::TestCase
     udp_r.add_regex(r1)
     @s.udp_regex_manager = udp_r
 
+    @s.enable_nids_engine = true
+
     @pd.open("../pcapfiles/flow_vlan_netbios.pcap")
     @pd.run()
     @pd.close()
