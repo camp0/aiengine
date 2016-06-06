@@ -110,6 +110,7 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %rename("set_udp_database_adaptor")     aiengine::NetworkStack::setUDPDatabaseAdaptor;
 
 %attribute(aiengine::NetworkStack,std::string,link_layer_tag,getLinkLayerTagging,enableLinkLayerTagging)
+%attribute(aiengine::NetworkStack,bool,enable_nids_engine,isEnableFrequencyEngine,enableNIDSEngine)
 %attribute2(aiengine::NetworkStack,RegexManager,tcp_regex_manager,getTCPRegexManager,setTCPRegexManager)
 %attribute2(aiengine::NetworkStack,RegexManager,udp_regex_manager,getUDPRegexManager,setUDPRegexManager)
 

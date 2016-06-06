@@ -2,20 +2,29 @@ luaunit = require('luaunit')
 luaiengine = require('luaiengine')
 local inspect = require 'inspect'
 
-adaptor = { inserts = 0, updates = 0, removes = 0}
+Adaptor = {}
 
-function adaptor.insert(a)
-    print("calling pepe joder",a)
-    -- self.inserts = self.inserts + 1
-end
+Adaptor.new = function()
+    local self = {}
+    setmetatable(self,luaiengine.DatabaseAdaptor)
+    self.inserts = 0
+    self.updates = 0
+    self.removes = 0
 
-function adaptor.update(a,b)
-    -- self.updates = self.updates + 1
-    print("update",a,b)
-end
-function adaptor.remove(a)
-    -- removes = removes + 1
-    print("remove pepe joder",a)
+    self.get_inserts = function() return self.inserts end
+    self.get_updates = function() return self.updates end
+    self.get_removes = function() return self.removes end
+
+    self.insert = function(key)
+        self.inserts = self.inserts + 1
+    end
+    self.update = function(key,data)
+        self.updates = self.updates + 1
+    end
+    self.remove = function(key)
+        self.removes = self.removes + 1
+    end
+    return self
 end
 
 TestStackLan = {} 
@@ -41,7 +50,10 @@ TestStackLan = {}
 
         rm:add_regex(r)
 
+        -- self.st.enable_nids_engine =True
         self.st.udp_regex_manager = rm
+
+        print(inspect(luaiengine.StackLan))
 
         self.pd:open("../pcapfiles/flow_vlan_netbios.pcap");
         self.pd:run();
@@ -581,11 +593,8 @@ TestStackVirtual = {}
     function TestStackVirtual:test01()
         -- Create a regex for a detect the flow on a virtual network on the GRE side 
 
-        -- setmetatable(pepe,luaiengine.DatabaseAdaptor)
-
-        -- print(inspect(pepe))
-
-        self.st:set_tcp_database_adaptor("adaptor")
+        adap = Adaptor:new()
+        self.st:set_tcp_database_adaptor("adap")
 
         local rm = luaiengine.RegexManager()
         r = luaiengine.Regex("Bin directory","^SSH-2.0.*$")
@@ -596,6 +605,8 @@ TestStackVirtual = {}
         self.pd:run()
         self.pd:close()
 
+        luaunit.assertEquals(adap.inserts, 1)
+        luaunit.assertEquals(adap.updates, 5)
         luaunit.assertEquals(r.matchs, 1)
 
     end
