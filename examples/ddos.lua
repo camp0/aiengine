@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env lua
 
 -- Example for detect denial of service attacks  
 

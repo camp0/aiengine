@@ -19,7 +19,7 @@ EXTRA_DIST = 	bitcoinminer.py \
 		uri_exploit.py \
 		zeus_malware.py zeus_malware.lua \
 		ddos.py ddos.rb ddos.lua \
-		file_adaptor.rb \
+		file_adaptor.rb file_adaptor.lua \
 		spam.rb 
 
 MAINTAINERCLEANFILES = Makefile.in 

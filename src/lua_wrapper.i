@@ -108,9 +108,10 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %rename("set_domain_name_manager")      aiengine::NetworkStack::setDomainNameManager;
 %rename("set_tcp_database_adaptor")     aiengine::NetworkStack::setTCPDatabaseAdaptor;
 %rename("set_udp_database_adaptor")     aiengine::NetworkStack::setUDPDatabaseAdaptor;
+%rename("set_anomaly_callback")         aiengine::NetworkStack::setAnomalyCallback;
 
 %attribute(aiengine::NetworkStack,std::string,link_layer_tag,getLinkLayerTagging,enableLinkLayerTagging)
-%attribute(aiengine::NetworkStack,bool,enable_nids_engine,isEnableFrequencyEngine,enableNIDSEngine)
+//%attribute(aiengine::NetworkStack,bool,enable_nids_engine,isEnableFrequencyEngine,enableNIDSEngine)
 %attribute2(aiengine::NetworkStack,RegexManager,tcp_regex_manager,getTCPRegexManager,setTCPRegexManager)
 %attribute2(aiengine::NetworkStack,RegexManager,udp_regex_manager,getUDPRegexManager,setUDPRegexManager)
 
@@ -124,11 +125,13 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %attribute(aiengine::StackLan,int,udp_flows,getTotalUDPFlows,setTotalUDPFlows)
 %attribute2(aiengine::StackLan,IPSetManager,tcp_ip_set_manager,getTCPIPSetManager,setTCPIPSetManager)
 %attribute2(aiengine::StackLan,IPSetManager,udp_ip_set_manager,getUDPIPSetManager,setUDPIPSetManager)
+%attribute(aiengine::StackLan,bool,enable_nids_engine,isEnableNIDSEngine,enableNIDSEngine)
 
 %ignore aiengine::StackMobile::setLinkLayerMultiplexer;
 %ignore aiengine::StackMobile::getLinkLayerMultiplexer;
 %ignore aiengine::StackMobile::getTCPRegexManager;
 %ignore aiengine::StackMobile::getUDPRegexManager;
+%attribute(aiengine::StackMobile,bool,enable_nids_engine,isEnableNIDSEngine,enableNIDSEngine)
 %attribute(aiengine::StackMobile,int,tcp_flows,getTotalTCPFlows,setTotalTCPFlows)
 %attribute(aiengine::StackMobile,int,udp_flows,getTotalUDPFlows,setTotalUDPFlows)
 %attribute2(aiengine::StackMobile,IPSetManager,tcp_ip_set_manager,getTCPIPSetManager,setTCPIPSetManager)
@@ -138,6 +141,7 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %ignore aiengine::StackLanIPv6::getLinkLayerMultiplexer;
 %ignore aiengine::StackLanIPv6::getTCPRegexManager;
 %ignore aiengine::StackLanIPv6::getUDPRegexManager;
+%attribute(aiengine::StackLanIPv6,bool,enable_nids_engine,isEnableNIDSEngine,enableNIDSEngine)
 %attribute(aiengine::StackLanIPv6,int,tcp_flows,getTotalTCPFlows,setTotalTCPFlows)
 %attribute(aiengine::StackLanIPv6,int,udp_flows,getTotalUDPFlows,setTotalUDPFlows)
 %attribute2(aiengine::StackLanIPv6,IPSetManager,tcp_ip_set_manager,getTCPIPSetManager,setTCPIPSetManager)
@@ -147,6 +151,7 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %ignore aiengine::StackVirtual::getLinkLayerMultiplexer;
 %ignore aiengine::StackVirtual::getTCPRegexManager;
 %ignore aiengine::StackVirtual::getUDPRegexManager;
+%attribute(aiengine::StackVirtual,bool,enable_nids_engine,isEnableNIDSEngine,enableNIDSEngine)
 %attribute(aiengine::StackVirtual,int,tcp_flows,getTotalTCPFlows,setTotalTCPFlows)
 %attribute(aiengine::StackVirtual,int,udp_flows,getTotalUDPFlows,setTotalUDPFlows)
 %attribute2(aiengine::StackLanVirtual,IPSetManager,tcp_ip_set_manager,getTCPIPSetManager,setTCPIPSetManager)
@@ -156,6 +161,7 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %ignore aiengine::StackOpenFlow::getLinkLayerMultiplexer;
 %ignore aiengine::StackOpenFlow::getTCPRegexManager;
 %ignore aiengine::StackOpenFlow::getUDPRegexManager;
+%attribute(aiengine::StackOpenFlow,bool,enable_nids_engine,isEnableNIDSEngine,enableNIDSEngine)
 %attribute(aiengine::StackOpenFlow,int,tcp_flows,getTotalTCPFlows,setTotalTCPFlows)
 %attribute(aiengine::StackOpenFlow,int,udp_flows,getTotalUDPFlows,setTotalUDPFlows)
 %attribute2(aiengine::StackOpenFlow,IPSetManager,tcp_ip_set_manager,getTCPIPSetManager,setTCPIPSetManager)
@@ -528,14 +534,10 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %rename("set_scheduler")		aiengine::PacketDispatcher::setScheduler;
 %rename("add_ip_set")			aiengine::IPSetManager::addIPSet;
 %rename("remove_ip_set")			aiengine::IPSetManager::removeIPSet;
-//%rename("set_tcp_database_adaptor")	setTCPDatabaseAdaptor;
-//%rename("set_udp_database_adaptor")	setUDPDatabaseAdaptor;
 %rename("tcp_flow_manager")		getTCPFlowManager;
 %rename("udp_flow_manager")		getUDPFlowManager;
 %rename("flows_timeout=")		setFlowsTimeout;
 %rename("flows_timeout")		getFlowsTimeout;
-//%rename("enable_nids_engine=")		enableNIDSEngine;
-//%rename("enable_frequency_engine=")	enableFrequencyEngine;
 %rename("add_regex")			addRegex;
 %rename("add_domain_name")		aiengine::DomainNameManager::addDomainName;
 %rename("matchs")			aiengine::Signature::getMatchs;

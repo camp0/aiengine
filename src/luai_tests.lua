@@ -1,25 +1,50 @@
+#!/usr/bin/env lua 
+--
+-- AIEngine.
+--
+-- Copyright (C) 2013-2016  Luis Campo Giralte
+--
+-- This library is free software; you can redistribute it and/or
+-- modify it under the terms of the GNU Library General Public
+-- License as published by the Free Software Foundation; either
+-- version 2 of the License, or (at your option) any later version.
+--
+-- This library is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+-- Library General Public License for more details.
+--
+-- You should have received a copy of the GNU Library General Public
+-- License along with this library; if not, write to the
+-- Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+-- Boston, MA  02110-1301, USA.
+--
+-- Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
+--
+
 luaunit = require('luaunit')
 luaiengine = require('luaiengine')
+json = require('json')
 local inspect = require 'inspect'
 
 Adaptor = {}
 
+-- Creates a new Adaptor object for testing purposes
 Adaptor.new = function()
     local self = {}
+    -- Is not really needed but for clarity....
     setmetatable(self,luaiengine.DatabaseAdaptor)
     self.inserts = 0
     self.updates = 0
     self.removes = 0
-
-    self.get_inserts = function() return self.inserts end
-    self.get_updates = function() return self.updates end
-    self.get_removes = function() return self.removes end
+    self.lastdata = ""
 
     self.insert = function(key)
         self.inserts = self.inserts + 1
     end
     self.update = function(key,data)
         self.updates = self.updates + 1
+        self.lastdata = data
     end
     self.remove = function(key)
         self.removes = self.removes + 1
@@ -34,8 +59,6 @@ TestStackLan = {}
 
         self.st.tcp_flows = 2048
         self.st.udp_flows = 1024
-        -- self.st:tcp_total_flows(1000)
-        -- print(self.st.name)
         self.pd:set_stack(self.st)
     end
 
@@ -50,10 +73,8 @@ TestStackLan = {}
 
         rm:add_regex(r)
 
-        -- self.st.enable_nids_engine =True
+        self.st.enable_nids_engine = true 
         self.st.udp_regex_manager = rm
-
-        print(inspect(luaiengine.StackLan))
 
         self.pd:open("../pcapfiles/flow_vlan_netbios.pcap");
         self.pd:run();
@@ -160,8 +181,6 @@ TestStackLan = {}
         -- Verify HTTP traffic with domain callback 
         local callme_domain = false
 
-        -- print(inspect(luaiengine.HTTPInfo))
-
         function domain_callback(flow)
             luaunit.assertNotEquals (flow.http_info,nill) 
             luaunit.assertEquals( flow.http_info.host_name,"www.wired.com")
@@ -220,22 +239,28 @@ TestStackLan = {}
     end
     
     function TestStackLan:test06()
-
-        -- d = luaiengine.DatabaseAdaptor()
-        -- print(inspect(d))
+        -- test udp adaptor on a Lan
 
         self.st.link_layer_tag  = "vlan"
-        -- self.st:set_udp_database_adaptor(d,16)
+
+        -- Setup an Adaptor for udp traffic        
+        adap = Adaptor:new()
+        self.st:set_udp_database_adaptor("adap")
 
         self.pd:open("../pcapfiles/flow_vlan_netbios.pcap");
         self.pd:run();
         self.pd:close();
 
-        --self.assertEqual(db.getInserts(), 1)
-        --self.assertEqual(db.getUpdates(), 1)
-        --self.assertEqual(db.getRemoves(), 0)
+        -- Check the information of the adaptor 
+        luaunit.assertEquals(adap.inserts, 1)
+        luaunit.assertEquals(adap.updates, 1)
+        luaunit.assertEquals(adap.removes, 0)
+        
+        local decode = json.decode(adap.lastdata)
 
-        -- d:insert = insert
+        -- check info of the adaptor
+        luaunit.assertEquals(decode["layer7"],"NetbiosProtocol")
+        luaunit.assertEquals(decode["portdst"],137)
     end
 
     function TestStackLan:test07()
@@ -356,8 +381,6 @@ TestStackLan = {}
 
         luaunit.assertEquals(callme_domain, true)
         luaunit.assertEquals(d.matchs, 1)
-
-
     end
 
 TestStackMobile = {} 
@@ -400,12 +423,10 @@ TestStackMobile = {}
     function TestStackMobile:test02()
         -- Check functionality for gprs and sip
         -- gprs_icmp.pcap 
-        -- self.st.link_layer_tag = "vlan"
 
         self.pd:open("../pcapfiles/gprs_sip_flow.pcap");
         self.pd:run();
         self.pd:close();
-        -- print(inspect(luaiengine.StackMobile))
 
         local c = self.st:get_counters("GPRSProtocol")
         luaunit.assertEquals(c:has_key("packets"), true)
@@ -453,9 +474,6 @@ TestStackLanIPv6 = {}
     function TestStackLanIPv6:test02()
 
         im = luaiengine.IPSetManager()
-
-        -- print(inspect(luaiengine.IPSetManager))
-        -- print(inspect(luaiengine.IPSet))
 
         i = luaiengine.IPSet("IPv6 generic set")
         i:add_ip_address("dc20:c7f:2012:11::2")
@@ -553,6 +571,10 @@ TestStackLanIPv6 = {}
             call_domain = true
         end
 
+        -- Setup an Adaptor for udp traffic        
+        adap = Adaptor:new()
+        self.st:set_udp_database_adaptor("adap")
+
         d = luaiengine.DomainName("Google domain",".google.com")
 
         dm = luaiengine.DomainNameManager()
@@ -575,6 +597,18 @@ TestStackLanIPv6 = {}
 
         luaunit.assertEquals(call_domain, true)
         luaunit.assertEquals(d.matchs, 1)
+
+        local decode = json.decode(adap.lastdata)
+
+        -- Check some dns json info
+        luaunit.assertEquals(decode["portdst"], 53) 
+        luaunit.assertEquals(decode["info"]["dnsdomain"], "www.google.com") 
+        luaunit.assertEquals(decode["info"]["matchs"], "Google domain") 
+
+        -- Check the information of the adaptor 
+        luaunit.assertEquals(adap.inserts, 1)
+        luaunit.assertEquals(adap.updates, 2)
+        luaunit.assertEquals(adap.removes, 0)
     end
 
 TestStackVirtual = {} 
@@ -607,9 +641,50 @@ TestStackVirtual = {}
 
         luaunit.assertEquals(adap.inserts, 1)
         luaunit.assertEquals(adap.updates, 5)
+        luaunit.assertEquals(adap.removes, 0)
         luaunit.assertEquals(r.matchs, 1)
 
     end
 
+    function TestStackVirtual:test02()
+        -- Create a regex for a detect the flow on a virtual network 
+        local callme_regex = false
+
+        function callback_regex(flow)
+            luaunit.assertNotEquals( flow.regex,nill)
+            luaunit.assertEquals(flow.regex.name,"Bin directory")
+            callme_regex = true
+        end
+
+        -- Setup an Adaptor for udp traffic        
+        adap = Adaptor:new()
+        self.st:set_tcp_database_adaptor("adap")
+
+        rm = luaiengine.RegexManager()
+        r = luaiengine.Regex("Bin directory","^bin$")
+        r:set_callback("callback_regex")
+        rm:add_regex(r)
+        self.st.tcp_regex_manager = rm
+
+        self.pd:open("../pcapfiles/vxlan_ftp.pcap")
+        self.pd:run()
+        self.pd:close()
+
+        luaunit.assertEquals(r.matchs, 1)
+        luaunit.assertEquals(callme_regex, true)
+       
+        local decode = json.decode(adap.lastdata)
+  
+        -- check info of the adaptor
+        luaunit.assertEquals(decode["matchs"],"Bin directory")
+        luaunit.assertEquals(decode["proto"],6)
+        luaunit.assertEquals(decode["ipdst"],"192.168.1.100")
+
+        -- print(adap.lastdata)
+        -- check the values of the adaptor 
+        luaunit.assertEquals(adap.inserts, 1)
+        luaunit.assertEquals(adap.updates, 1)
+        luaunit.assertEquals(adap.removes, 0)
+    end
 
 luaunit.LuaUnit:run()
