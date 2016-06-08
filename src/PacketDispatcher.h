@@ -49,7 +49,7 @@
 #include "StackLanIPv6.h"
 #include "StackVirtual.h"
 #include "StackOpenFlow.h"
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #include "Interpreter.h"
 #endif
 #include <sys/resource.h>
@@ -108,7 +108,7 @@ public:
 		pcap_filter_(),
 		em_(SharedPointer<EvidenceManager>(new EvidenceManager())),
 		current_network_stack_()
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 		,timer_(SharedPointer<boost::asio::deadline_timer>(new boost::asio::deadline_timer(io_service_))),
 		user_shell_(SharedPointer<Interpreter>(new Interpreter(io_service_))),
         	scheduler_set_(false),
@@ -118,6 +118,10 @@ public:
 		pystack_()
 #elif defined(RUBY_BINDING)
 		scheduler_callback_(Qnil)
+#elif defined(LUA_BINDING)
+		scheduler_callback_(),
+		ref_function_(LUA_NOREF),
+		lua_(nullptr)
 #endif
 #endif
 		{	
@@ -128,13 +132,13 @@ public:
 
 	explicit PacketDispatcher():PacketDispatcher("") {}
 
-    	virtual ~PacketDispatcher() { io_service_.stop(); }
+    	virtual ~PacketDispatcher(); 
 
 	void open(const std::string& source);
 	void run(void);
 	void close(void);
     	void stop(void) { io_service_.stop(); }
-	void setPcapFilter(const std::string& filter);
+	void setPcapFilter(const char *filter);
 	const char *getPcapFilter() const { return pcap_filter_.c_str(); }
 	void status(void);
 	const char *getStackName() const { return stack_name_.c_str(); }
@@ -180,9 +184,15 @@ public:
 	bool getShell() const;
 #endif
 
-#ifdef RUBY_BINDING
+#if defined(RUBY_BINDING)
 	void setScheduler(VALUE callback, int seconds);
 #endif
+
+#if defined(LUA_BINDING)
+	void setShell(lua_State *lua, bool enable);
+	bool getShell() const;
+	void setScheduler(lua_State* lua, const char *callback,int seconds);
+#endif 
 
 private:
 	void start_operations(void);
@@ -191,6 +201,7 @@ private:
 	void forward_raw_packet(unsigned char *packet,int length,time_t packet_time);
 	void scheduler_handler(boost::system::error_code error);
 	void default_idle_function(void) const {};
+	void restart_timer(int seconds);
 
         void open_device(const std::string& device);
         void close_device(void);
@@ -230,7 +241,7 @@ private:
 
 	SharedPointer<EvidenceManager> em_;
 	SharedPointer<NetworkStack> current_network_stack_;
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 	SharedPointer<boost::asio::deadline_timer> timer_;
 	SharedPointer<Interpreter> user_shell_;
 	bool scheduler_set_;
@@ -240,6 +251,10 @@ private:
 	boost::python::object pystack_;
 #elif defined(RUBY_BINDING)
 	VALUE scheduler_callback_;
+#elif defined(LUA_BINDING)
+	std::string scheduler_callback_;
+	int ref_function_;
+        lua_State *lua_;
 #endif
 #endif
 };

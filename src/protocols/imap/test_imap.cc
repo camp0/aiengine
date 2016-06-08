@@ -111,6 +111,22 @@ BOOST_AUTO_TEST_CASE (test4_imap)
         //BOOST_CHECK(cad.compare(0,cad.length(),h.str(),0,cad.length()) == 0);
 }
 
+BOOST_AUTO_TEST_CASE (test5_imap)
+{
+        char *header =  "00001 LOGIN pepe@meneameandsomebigggbuerferexc.netmypassword";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+        Packet packet(pkt,length);
+
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        flow->packet = const_cast<Packet*>(&packet);
+        imap->processFlow(flow.get());
+
+        BOOST_CHECK(imap->getTotalBytes() == length);
+	BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::IMAP_BOGUS_HEADER);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 

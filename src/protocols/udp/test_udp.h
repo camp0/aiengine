@@ -72,6 +72,8 @@ struct StackUDPTest : public StackTest
 		mux_ip->addDownMultiplexer(mux_eth);
 		mux_ip->addUpMultiplexer(mux_udp,IPPROTO_UDP);
 		mux_udp->addDownMultiplexer(mux_ip);
+
+		udp->setAnomalyManager(anomaly);
 	}
 
 	~StackUDPTest() {
@@ -114,6 +116,8 @@ struct StackIPv6UDPTest : public StackTest
                 mux_ip->addDownMultiplexer(mux_eth);
                 mux_ip->addUpMultiplexer(mux_udp,IPPROTO_UDP);
                 mux_udp->addDownMultiplexer(mux_ip);
+		
+		udp->setAnomalyManager(anomaly);
         }
 
         ~StackIPv6UDPTest() {

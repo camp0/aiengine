@@ -92,6 +92,8 @@ struct StackLanTest
 	SharedPointer<FlowForwarder> ff_ssl;
 	SharedPointer<FlowForwarder> ff_smtp;
 
+	SharedPointer<CacheManager> cache_mng;
+
         StackLanTest()
         {
 		// Allocate all the Protocol objects
@@ -122,6 +124,8 @@ struct StackLanTest
                 mux_tcp6 = MultiplexerPtr(new Multiplexer());
                 mux_icmp = MultiplexerPtr(new Multiplexer());
 
+		cache_mng = SharedPointer<CacheManager>(new CacheManager());
+	
 		// Allocate the flow caches and tables
 		flow_table_udp = FlowManagerPtr(new FlowManager());
 		flow_table_tcp = FlowManagerPtr(new FlowManager());
@@ -298,6 +302,11 @@ struct StackLanTest
 		ff_tcp->addUpFlowForwarder(ff_tcp_generic);
 		ff_tcp6->addUpFlowForwarder(ff_tcp_generic6);
 
+		// connect with the CacheManager
+		flow_table_tcp->setCacheManager(cache_mng);
+		flow_table_udp->setCacheManager(cache_mng);
+		tcp->setCacheManager(cache_mng);
+		tcp6->setCacheManager(cache_mng);
         }
 
 

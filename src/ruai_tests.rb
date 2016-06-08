@@ -110,6 +110,8 @@ class StackLanUnitTests < Test::Unit::TestCase
     udp_r.add_regex(r1)
     @s.udp_regex_manager = udp_r
 
+    @s.enable_nids_engine = true
+
     @pd.open("../pcapfiles/flow_vlan_netbios.pcap")
     @pd.run()
     @pd.close()
@@ -610,7 +612,7 @@ class StackOpenFlowUnitTests < Test::Unit::TestCase
     storage_tcp = FileAdaptor.new
     storage_udp = FileAdaptor.new
 
-    @s.set_tcp_database_adaptor(storage_tcp)
+    @s.set_tcp_database_adaptor(storage_tcp,2)
     @s.set_udp_database_adaptor(storage_udp,1)
 
     @pd.open("../pcapfiles/openflow.pcap")

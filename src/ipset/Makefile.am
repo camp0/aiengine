@@ -1,5 +1,11 @@
 AUTOMAKE_OPTIONS = gnu
 
+if HAVE_LIBLOG4CXX
+  LOG4CXX_FLAGS = -llog4cxx
+else
+  LOG4CXX_FLAGS =
+endif
+
 noinst_HEADERS =	test_ipset.h IPAbstractSet.h IPBloomSet.h
 
 TEST = test_ipset
@@ -19,10 +25,16 @@ test_ipset_SOURCES = 	../Multiplexer.cc  \
 			../protocols/ssl/SSLInfo.cc \
 			../protocols/http/HTTPInfo.cc \
 			../protocols/smtp/SMTPInfo.cc \
+			../protocols/bitcoin/BitcoinInfo.cc \
 			../protocols/udp/UDPProtocol.cc \
 			../protocols/dns/DNSInfo.cc \
 			../protocols/gprs/GPRSInfo.cc \
 			../protocols/sip/SIPInfo.cc \
+			../protocols/ssdp/SSDPInfo.cc \
+			../protocols/coap/CoAPInfo.cc \
+                        ../protocols/imap/IMAPInfo.cc \
+                        ../protocols/pop/POPInfo.cc \
+                        ../protocols/mqtt/MQTTInfo.cc \
 			../protocols/udpgeneric/UDPGenericProtocol.cc \
 			../protocols/tcpgeneric/TCPGenericProtocol.cc \
 			../regex/RegexManager.cc \
@@ -32,7 +44,7 @@ test_ipset_SOURCES = 	../Multiplexer.cc  \
 			IPSetManager.cc test_ipset.cc 
 
 test_ipset_CPPFLAGS = -I../ $(BOOST_CPPFLAGS) -DSTAND_ALONE
-test_ipset_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework -lpcre
+test_ipset_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework -lpcre $(LOG4CXX_FLAGS)
 
 CLEANFILES = *.o *.lo *.so
 

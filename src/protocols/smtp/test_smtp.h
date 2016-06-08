@@ -125,6 +125,7 @@ struct StackSMTPtest : public StackTest
 
                 ff_tcp->addUpFlowForwarder(ff_smtp);
 
+		smtp->setAnomalyManager(anomaly);
         }
 
 	void show() {

@@ -104,6 +104,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (NetworkStack::*decreaseAllocatedMemory)(const std::string& name, int) =	&NetworkStack::decreaseAllocatedMemory;
 	boost::python::dict (NetworkStack::*getCounters)(const std::string& name) =	&NetworkStack::getCounters;
 	boost::python::dict (NetworkStack::*getCache)(const std::string& name) =	&NetworkStack::getCache;
+        void (NetworkStack::*setAnomalyCallback)(PyObject*,const std::string&) =	&NetworkStack::setAnomalyCallback;
 
         boost::python::class_<NetworkStack, boost::noncopyable>("NetworkStack",no_init)
                 .def("set_domain_name_manager",pure_virtual(setDomainNameManager1))
@@ -119,6 +120,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
                 .def("release_caches",pure_virtual(releaseCaches))
                 .def("get_counters",pure_virtual(getCounters))
                 .def("get_cache",pure_virtual(getCache))
+                .def("set_anomaly_callback",pure_virtual(setAnomalyCallback))
         ;
 
 	// Definitions for the StackLan class
@@ -135,6 +137,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (StackLan::*releaseCachesLan)() =						&StackLan::releaseCaches;
 	boost::python::dict (StackLan::*getCountersLan)(const std::string& name) =	&StackLan::getCounters;
 	boost::python::dict (StackLan::*getCacheLan)(const std::string& name) =		&StackLan::getCache;
+        void (StackLan::*setAnomalyCallbackLan)(PyObject*,const std::string&) =		&StackLan::setAnomalyCallback;
 
 	boost::python::class_<StackLan, bases<NetworkStack> >("StackLan",
 		"Class that implements a network stack for lan enviroments")
@@ -193,6 +196,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_get_counters )
 		.def("get_cache", getCacheLan, 
 			help_get_cache )
+                .def("set_anomaly_callback",setAnomalyCallbackLan,
+			help_anomaly_callback )
 	;
 
 	// Definitions for the StackMobile class
@@ -209,6 +214,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (StackMobile::*releaseCachesMobile)() =						&StackMobile::releaseCaches;
 	boost::python::dict (StackMobile::*getCountersMobile)(const std::string& name) =	&StackMobile::getCounters;
 	boost::python::dict (StackMobile::*getCacheMobile)(const std::string& name) =		&StackMobile::getCache;
+        void (StackMobile::*setAnomalyCallbackMobile)(PyObject*,const std::string&) =		&StackMobile::setAnomalyCallback;
 
         boost::python::class_<StackMobile, bases<NetworkStack> >("StackMobile",
 		"Class that implements a network stack for mobile enviroments")
@@ -267,6 +273,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_get_counters )
 		.def("get_cache", getCacheMobile,
 			help_get_cache )
+                .def("set_anomaly_callback",setAnomalyCallbackMobile,
+			help_anomaly_callback )
         ;
 
 
@@ -284,6 +292,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (StackLanIPv6::*releaseCachesLanIPv6)() =						&StackLanIPv6::releaseCaches;
 	boost::python::dict (StackLanIPv6::*getCountersLanIPv6)(const std::string& name) =	&StackLanIPv6::getCounters;
 	boost::python::dict (StackLanIPv6::*getCacheLanIPv6)(const std::string& name) =		&StackLanIPv6::getCache;
+        void (StackLanIPv6::*setAnomalyCallbackLanIPv6)(PyObject*,const std::string&) =		&StackLanIPv6::setAnomalyCallback;
 
         boost::python::class_<StackLanIPv6, bases<NetworkStack> >("StackLanIPv6",
 		"Class that implements a network stack for lan environments with IPv6")
@@ -342,6 +351,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_get_counters )
 		.def("get_cache", getCacheLanIPv6,
 			help_get_cache )
+                .def("set_anomaly_callback",setAnomalyCallbackLanIPv6,
+			help_anomaly_callback )
         ;
 
         // Definitions for the StackVirtual class
@@ -358,6 +369,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
 	void (StackVirtual::*releaseCachesVirtual)() =						&StackVirtual::releaseCaches;
 	boost::python::dict (StackVirtual::*getCountersVirtual)(const std::string& name) =	&StackVirtual::getCounters;
 	boost::python::dict (StackVirtual::*getCacheVirtual)(const std::string& name) =		&StackVirtual::getCache;
+        void (StackVirtual::*setAnomalyCallbackVirtual)(PyObject*,const std::string&) =		&StackVirtual::setAnomalyCallback;
 
         boost::python::class_<StackVirtual, bases<NetworkStack> >("StackVirtual",
                 "Class that implements a network stack for cloud/virtual environments")
@@ -416,6 +428,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_get_counters )
 		.def("get_cache", getCacheVirtual,
 			help_get_cache )
+                .def("set_anomaly_callback",setAnomalyCallbackVirtual,
+			help_anomaly_callback )
         ;
 
         // Definitions for the StackOpenFlow class
@@ -432,6 +446,7 @@ BOOST_PYTHON_MODULE(pyaiengine)
         void (StackOpenFlow::*releaseCachesOpenFlow)() =                          		&StackOpenFlow::releaseCaches;
 	boost::python::dict (StackOpenFlow::*getCountersOpenFlow)(const std::string& name) =	&StackOpenFlow::getCounters;
 	boost::python::dict (StackOpenFlow::*getCacheOpenFlow)(const std::string& name) =	&StackOpenFlow::getCache;
+        void (StackOpenFlow::*setAnomalyCallbackOpenFlow)(PyObject*,const std::string&) =	&StackOpenFlow::setAnomalyCallback;
 
         boost::python::class_<StackOpenFlow, bases<NetworkStack> >("StackOpenFlow",
                 "Class that implements a network stack for openflow environments")
@@ -490,6 +505,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_get_counters )
                 .def("get_cache", getCacheOpenFlow,
 			help_get_cache )
+                .def("set_anomaly_callback",setAnomalyCallbackOpenFlow,
+			help_anomaly_callback )
 	;
 	
 	boost::python::class_<Regex, SharedPointer<Regex>,boost::noncopyable>("Regex",init<const std::string&,const std::string&>())
@@ -606,6 +623,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_flow_tag )
 		.add_property("evidence",&Flow::haveEvidence,&Flow::setEvidence,
 			help_flow_evidence )
+		.add_property("label",&Flow::getLabel,&Flow::setLabel,
+			help_flow_label )
+		.add_property("duration",&Flow::getDuration,
+			help_flow_duration )
 		.add_property("ip_set",make_function(&Flow::getIPSetInfo,return_internal_reference<>()),
 			help_flow_ip_set )
 		.add_property("http_info",make_function(&Flow::getHTTPInfoObject,return_internal_reference<>()),
@@ -630,20 +651,44 @@ BOOST_PYTHON_MODULE(pyaiengine)
 			help_flow_ssdp_info )
 		.add_property("bitcoin_info",make_function(&Flow::getBitcoinInfoObject,return_internal_reference<>()),
 			help_flow_bitcoin_info )
+		.add_property("coap_info",make_function(&Flow::getCoAPInfoObject,return_internal_reference<>()),
+			help_flow_coap_info )
+		.add_property("mqtt_info",make_function(&Flow::getMQTTInfoObject,return_internal_reference<>()),
+			help_flow_mqtt_info )
 		.add_property("regex",make_function(&Flow::getRegex,return_internal_reference<>()),
 			help_flow_regex )
 		.add_property("payload",&Flow::getPayload,
 			help_flow_payload )
-		.add_property("anomaly",make_function(&Flow::getFlowAnomaly,return_value_policy<return_by_value>()),
+		.add_property("anomaly",make_function(&Flow::getFlowAnomalyString,return_value_policy<return_by_value>()),
 			help_flow_anomaly )
 		.add_property("l7_protocol_name",make_function(&Flow::getL7ProtocolName,return_value_policy<return_by_value>()),
 			help_flow_l7_protocol_name )
 		.def(self_ns::str(self_ns::self))
 	;
 
+        boost::python::class_<MQTTInfo, SharedPointer<MQTTInfo>, boost::noncopyable>("MQTTInfo")
+                .add_property("topic",&MQTTInfo::getTopic,
+                        help_mqtt_info_topic )
+                .def(self_ns::str(self_ns::self))
+        ;
+
+        boost::python::class_<CoAPInfo, SharedPointer<CoAPInfo>, boost::noncopyable>("CoAPInfo")
+                .add_property("uri",&CoAPInfo::getUri,
+                        help_coap_info_uri )
+                .add_property("host_name",&CoAPInfo::getHostName,
+                        help_coap_info_host_name )
+                .add_property("matched_domain_name",&CoAPInfo::getMatchedDomainName,
+                        help_coap_info_matched_domain_name )
+                .def(self_ns::str(self_ns::self))
+        ;
+
         boost::python::class_<BitcoinInfo, SharedPointer<BitcoinInfo>,boost::noncopyable>("BitcoinInfo")
                 .add_property("total_transactions",&BitcoinInfo::getTotalTransactions,
                         help_bitcoin_info_tx )
+                .add_property("total_blocks",&BitcoinInfo::getTotalBlocks,
+                        help_bitcoin_info_blocks )
+                .add_property("total_rejects",&BitcoinInfo::getTotalRejects,
+                        help_bitcoin_info_rejects )
                 .def(self_ns::str(self_ns::self))
         ;
 
@@ -672,6 +717,8 @@ BOOST_PYTHON_MODULE(pyaiengine)
                         help_http_info_host_name )
                 .add_property("user_agent",&HTTPInfo::getUserAgent,
                         help_http_info_user_agent )
+                .add_property("content_type",&HTTPInfo::getContentType,
+                        help_http_info_content_type )
                 .add_property("banned",&HTTPInfo::getIsBanned,&HTTPInfo::setBanAndRelease,
                         help_http_info_banned )
                 .add_property("matched_domain_name",&HTTPInfo::getMatchedDomainName,
@@ -682,10 +729,10 @@ BOOST_PYTHON_MODULE(pyaiengine)
         boost::python::class_<HTTPUriSet, SharedPointer<HTTPUriSet>, boost::noncopyable>("HTTPUriSet")
 		.def(init<>())
 		.def(init<const std::string&>())
+		.def("__len__",&HTTPUriSet::getTotalURIs,
+			help_http_uri_set_uris )
                 .add_property("callback",&HTTPUriSet::getCallback, &HTTPUriSet::setCallback,
                         help_http_uri_set_callback )
-		.add_property("uris",&HTTPUriSet::getTotalURIs,
-			help_http_uri_set_uris )
 		.add_property("lookups",&HTTPUriSet::getTotalLookups,
 			help_http_uri_set_lookups )
 		.add_property("lookups_in",&HTTPUriSet::getTotalLookupsIn,

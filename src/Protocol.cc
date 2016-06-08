@@ -22,6 +22,9 @@
  *
  */
 #include "Protocol.h"
+#if defined(LUA_BINDING)
+#include "swigluarun.h"
+#endif
 
 namespace aiengine {
 
@@ -65,7 +68,7 @@ void Protocol::setDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
                 is_set_db_ = false;
         }
 }
-#elif defined(JAVA_BINDING)
+#elif defined(JAVA_BINDING) 
 void Protocol::setDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
 
 	if (dbptr == nullptr) {
@@ -76,12 +79,52 @@ void Protocol::setDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
 		dbptr_ = dbptr;
 		is_set_db_ = true;
 		packet_sampling_ = packet_sampling;
+		// std::cout << __FILE__ << ":" << __func__ << " new adaptor set" << std::endl;
 	}	
+}
+
+#elif defined(LUA_BINDING)
+
+void Protocol::setDatabaseAdaptor(lua_State *lua, const char *obj_name, int packet_sampling) {
+
+	/// https://www.lua.org/source/5.1/lua.h.html
+	const char *object_name = lua_tostring(lua, -1);
+	std::string sname(object_name);
+
+	if (sname.compare(obj_name) == 0) {
+        	lua_getglobal(lua,object_name);
+        	if (lua_istable(lua,-1)) {
+                	lua_getfield(lua,-1,"insert");
+			if (lua_isfunction(lua,-1)) {
+				ref_function_insert_ = luaL_ref(lua, LUA_REGISTRYINDEX);
+			} else {	
+				std::cerr << "No 'insert' method on Lua class " << object_name << std::endl;
+				return;
+			}
+                	lua_getfield(lua,-1,"update");
+			if (lua_isfunction(lua,-1)) {
+				ref_function_update_ = luaL_ref(lua, LUA_REGISTRYINDEX);
+			} else {	
+				std::cerr << "No 'update' method on Lua class " << object_name << std::endl;
+				return;
+			}
+                	lua_getfield(lua,-1,"remove");
+			if (lua_isfunction(lua,-1)) {
+				ref_function_remove_ = luaL_ref(lua, LUA_REGISTRYINDEX);
+			} else {	
+				std::cout << "No 'remove' method on Lua class " << object_name << std::endl;
+				return;
+			}
+			lua_ = lua;
+			is_set_db_ = true;
+			packet_sampling_ = packet_sampling;
+		}
+	}
 }
 
 #endif
 
-#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)) && defined(HAVE_ADAPTOR)
 
 #if defined(RUBY_BINDING)
 
@@ -126,6 +169,17 @@ void Protocol::databaseAdaptorInsertHandler(Flow *flow) {
 	if (dbptr_ != nullptr) { 
 		dbptr_->insert(key.str());
 	}
+#elif defined(LUA_BINDING)
+
+        lua_rawgeti(lua_, LUA_REGISTRYINDEX, ref_function_insert_);
+
+	lua_pushstring(lua_,key.str().c_str());
+
+        int ret = 0;
+        if ((ret = lua_pcall(lua_,1,0,0)) != 0) {
+        	std::cout << "ERROR:" << lua_tostring(lua_, -1) << std::endl;
+        }
+
 #endif
 }
 
@@ -163,6 +217,18 @@ void Protocol::databaseAdaptorUpdateHandler(Flow *flow) {
 	if (dbptr_ != nullptr) { 
 		dbptr_->update(key.str(),data.str());
 	}
+#elif defined(LUA_BINDING)
+
+        lua_rawgeti(lua_, LUA_REGISTRYINDEX, ref_function_update_);
+
+        lua_pushstring(lua_,key.str().c_str());
+        lua_pushstring(lua_,data.str().c_str());
+
+        int ret = 0;
+        if ((ret = lua_pcall(lua_,2,0,0)) != 0) {
+                std::cout << "ERROR:" << lua_tostring(lua_, -1) << std::endl;
+        }
+
 #endif
 }
 
@@ -197,8 +263,28 @@ void Protocol::databaseAdaptorRemoveHandler(Flow *flow) {
 	if (dbptr_ != nullptr) { 
 		dbptr_->remove(key.str());
 	}
+#elif defined(LUA_BINDING)
+
+        lua_rawgeti(lua_, LUA_REGISTRYINDEX, ref_function_remove_);
+
+        lua_pushstring(lua_,key.str().c_str());
+
+        int ret = 0;
+        if ((ret = lua_pcall(lua_,1,0,0)) != 0) {
+                std::cout << "ERROR:" << lua_tostring(lua_, -1) << std::endl;
+        }
+
 #endif
 }
+
+#if defined(LUA_BINDING)
+
+//void Protocol::getCounters(lua_State *lua) {
+
+
+//}
+
+#endif
 
 #endif
 

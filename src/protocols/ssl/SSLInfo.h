@@ -59,16 +59,15 @@ public:
 	void setHeartbeat(bool value) { heartbeat_ = value; }
 	bool getHeartbeat() const { return heartbeat_; }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
-
         friend std::ostream& operator<< (std::ostream& out, const SSLInfo& sinfo) {
 
-		out << " DataPdus:" << sinfo.data_pdus_;
-                out << " Host:" << sinfo.getServerName() << " ";
+                out << " Pdus:" << sinfo.getTotalDataPdus();
+                if (sinfo.host) out << " Host:" << sinfo.host->getName();
 
                 return out;
         }
 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
         const char *getServerName() const { return (host ? host->getName() : ""); }
 #endif
 
@@ -76,7 +75,7 @@ public:
         SharedPointer<DomainName> getMatchedDomainName() const { return matched_domain_name;}
 #elif defined(RUBY_BINDING)
         DomainName& getMatchedDomainName() const { return *matched_domain_name.get();}
-#elif defined(JAVA_BINDING)
+#elif defined(JAVA_BINDING) || defined(LUA_BINDING)
         DomainName& getMatchedDomainName() const { return *matched_domain_name.get();}
 #endif
 

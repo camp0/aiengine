@@ -66,6 +66,8 @@ public:
 		host_map_(),
 		host_mng_(),ban_host_mng_(),
 		flow_mng_(),
+		current_flow_(nullptr),
+		cache_mng_(),
 		header_field_(),header_parameter_() {
 
 		 // Add the parameters that wants to be process by the SSDPProtocol
@@ -76,10 +78,9 @@ public:
 
 		// TODO: Parameters as Server, Man, NT should be implemented
 		// http://www.upnp-hacks.org/upnp.html
-		CacheManager::getInstance()->setCache(info_cache_);
 	}
 
-    	virtual ~SSDPProtocol() {}
+    	virtual ~SSDPProtocol() { cache_mng_.reset(); }
 
 	struct string_hasher
 	{
@@ -148,8 +149,10 @@ public:
 	VALUE getCache() const;
 #elif defined(JAVA_BINDING)
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
+#elif defined(LUA_BINDING)
+        LuaCounters getCounters() const; 
 #endif
-
+	void setCacheManager(SharedPointer<CacheManager> cmng) { cache_mng_ = cmng; cache_mng_->setCache(info_cache_); }
 private:
 	void parse_header(SSDPInfo *info, boost::string_ref &header);
 	int extract_uri(SSDPInfo *info, boost::string_ref &header);
@@ -200,7 +203,8 @@ private:
 	DomainNameManagerPtrWeak ban_host_mng_;
 
 	FlowManagerPtrWeak flow_mng_;	
-
+	Flow *current_flow_;
+	SharedPointer<CacheManager> cache_mng_;
         boost::string_ref header_field_;
         boost::string_ref header_parameter_;
 #ifdef HAVE_LIBLOG4CXX

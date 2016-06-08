@@ -69,7 +69,7 @@ void UDPGenericProtocol::processFlow(Flow *flow) {
 				flow->regex_mng = rmng;
 				flow->regex.reset();
 			}
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
                         if(regex->call.haveCallback()) {
 				regex->call.executeCallback(flow); 
                         }
@@ -110,13 +110,16 @@ void UDPGenericProtocol::statistics(std::basic_ostream<char>& out) {
         }
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict UDPGenericProtocol::getCounters() const {
         boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE UDPGenericProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters UDPGenericProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets", total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

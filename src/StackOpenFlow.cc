@@ -37,7 +37,7 @@ StackOpenFlow::StackOpenFlow():
 	ip_(IPProtocolPtr(new IPProtocol())),
 	ip_vir_(IPProtocolPtr(new IPProtocol())),
 	udp_vir_(UDPProtocolPtr(new UDPProtocol())),
-	tcp_(TCPProtocolPtr(new TCPProtocol())),
+	tcp_(TCPProtocolPtr(new TCPProtocol("TCPProtocol oflow","tcp oflow"))),
 	tcp_vir_(TCPProtocolPtr(new TCPProtocol())),
 	of_(OpenFlowProtocolPtr(new OpenFlowProtocol())),
 	icmp_(ICMPProtocolPtr(new ICMPProtocol())),
@@ -94,6 +94,7 @@ StackOpenFlow::StackOpenFlow():
         addProtocol(ntp);
         addProtocol(snmp);
         addProtocol(ssdp);
+        addProtocol(rtp);
         addProtocol(udp_generic);
         addProtocol(freqs_udp);
 
@@ -240,6 +241,18 @@ StackOpenFlow::StackOpenFlow():
         sip->setFlowManager(flow_table_udp_vir_);
         ssdp->setFlowManager(flow_table_udp_vir_);
 
+	// Connect the AnomalyManager with the protocols that may have anomalies
+        ip_->setAnomalyManager(anomaly_);
+        tcp_->setAnomalyManager(anomaly_);
+        tcp_vir_->setAnomalyManager(anomaly_);
+        udp_vir_->setAnomalyManager(anomaly_);
+
+	// Link the CacheManager
+	tcp_->setCacheManager(cache_mng_);
+	flow_table_tcp_->setCacheManager(cache_mng_);
+	flow_table_tcp_vir_->setCacheManager(cache_mng_);
+	flow_table_udp_vir_->setCacheManager(cache_mng_);
+
 	// The low FlowManager have a 24 hours timeout to keep the Context on memory
         flow_table_tcp_->setTimeout(86400);
 
@@ -252,7 +265,8 @@ StackOpenFlow::StackOpenFlow():
 
         enableFlowForwarders(ff_tcp_vir_,
 		{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
-        enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
+        enableFlowForwarders(ff_udp_vir_,
+		{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_rtp,ff_udp_generic});
 
         std::ostringstream msg;
         msg << getName() << " ready.";
@@ -358,7 +372,8 @@ void StackOpenFlow::enableNIDSEngine(bool enable) {
 
         if (enable) {
         	disableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin});
-        	disableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_ssdp,ff_snmp});
+        	disableFlowForwarders(ff_udp_vir_,
+			{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_ssdp,ff_snmp,ff_rtp});
 
                 std::ostringstream msg;
                 msg << "Enable NIDSEngine on " << getName();
@@ -370,7 +385,8 @@ void StackOpenFlow::enableNIDSEngine(bool enable) {
 
         	enableFlowForwarders(ff_tcp_vir_,
 			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
-        	enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
+        	enableFlowForwarders(ff_udp_vir_,
+			{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_rtp,ff_udp_generic});
         }
 	enable_nids_engine_ = enable;
 }

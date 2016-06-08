@@ -33,7 +33,7 @@
 #include <iostream>
 #include <unordered_set>
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING) 
 #include "Callback.h"
 #if defined(HAVE_BLOOMFILTER)
 #include <boost/bloom_filter/dynamic_bloom_filter.hpp>
@@ -46,7 +46,7 @@ class HTTPUriSet
 {
 public:
     	explicit HTTPUriSet(const std::string &name):
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 		call(),
 #endif
 		name_(name),
@@ -86,9 +86,12 @@ public:
 	void setCallback(VALUE callback) { call.setCallback(callback); }
 #elif defined(JAVA_BINDING)
 	void setCallback(JaiCallback *callback) { call.setCallback(callback); }
-#endif	
+#elif defined(LUA_BINDING)
+        void setCallback(lua_State* lua, const char *callback) { call.setCallback(lua,callback); }
+        const char *getCallback() const { return call.getCallback(); }
+#endif
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING) 
 	Callback call;	
 #endif
 private:

@@ -38,7 +38,7 @@ void SNMPProtocol::processFlow(Flow *flow) {
                 if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
                         flow->setPacketAnomaly(PacketAnomalyType::SNMP_BOGUS_HEADER);
                 }
-		anomaly_->incAnomaly(PacketAnomalyType::SNMP_BOGUS_HEADER);
+		anomaly_->incAnomaly(flow,PacketAnomalyType::SNMP_BOGUS_HEADER);
                 return;
 	}
 
@@ -52,6 +52,7 @@ void SNMPProtocol::processFlow(Flow *flow) {
                 	if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
                         	flow->setPacketAnomaly(PacketAnomalyType::SNMP_BOGUS_HEADER);
                 	}
+			anomaly_->incAnomaly(flow,PacketAnomalyType::SNMP_BOGUS_HEADER);
 			return;	
 		}
 
@@ -102,13 +103,16 @@ void SNMPProtocol::statistics(std::basic_ostream<char>& out){
 }
 
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict SNMPProtocol::getCounters() const {
         boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE SNMPProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters SNMPProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets", total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

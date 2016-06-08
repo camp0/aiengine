@@ -164,29 +164,39 @@ void POPProtocol::attach_user_name(POPInfo *info, boost::string_ref &name) {
 }
 
 
-void POPProtocol::handle_cmd_user(Flow *flow,POPInfo *info, boost::string_ref &header) {
+void POPProtocol::handle_cmd_user(POPInfo *info, boost::string_ref &header) {
 
-        size_t token = header.find("@");
-        size_t end = header.find("\x0d\x0a") - 5;
+	// The user could be a email address or just a string that identifies the mailbox
+	
+        size_t token = header.find_first_of("@");
+        size_t end = header.find_first_of("\x0d\x0a") - 5;
+	boost::string_ref user_name;
+	boost::string_ref domain;
 
-	if ((token > header.length())or(end > header.length())) {
-                if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
-                        flow->setPacketAnomaly(PacketAnomalyType::POP_BOGUS_HEADER);
-                }
-		anomaly_->incAnomaly(PacketAnomalyType::POP_BOGUS_HEADER);
-		return;
+	if (token != std::string::npos) {
+	
+		if ((token > header.length())or(end > header.length())) {
+                	if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        	current_flow_->setPacketAnomaly(PacketAnomalyType::POP_BOGUS_HEADER);
+                	}
+			anomaly_->incAnomaly(current_flow_,PacketAnomalyType::POP_BOGUS_HEADER);
+			return;
+		}
+
+		user_name = header.substr(5,end);
+        	domain = header.substr(token + 1,header.size()-2);
+
+	} else { // No domain
+		user_name = header.substr(5,end);
+        	domain = user_name; // the domain is the user 
 	}
-
-	boost::string_ref user_name(header.substr(5,end));
-
-        boost::string_ref domain(header.substr(token + 1,header.size()-2));
 
 	if (!ban_domain_mng_.expired()) {
         	DomainNameManagerPtr ban_hosts = ban_domain_mng_.lock();
                 SharedPointer<DomainName> dom_candidate = ban_hosts->getDomainName(domain);
                 if (dom_candidate) {
 #ifdef HAVE_LIBLOG4CXX
-                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with ban host " << dom_candidate->getName());
+                        LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with ban host " << dom_candidate->getName());
 #endif
                         ++total_ban_domains_;
                         info->setIsBanned(true);
@@ -201,12 +211,12 @@ void POPProtocol::handle_cmd_user(Flow *flow,POPInfo *info, boost::string_ref &h
         	DomainNameManagerPtr dom_mng = domain_mng_.lock();
                 SharedPointer<DomainName> dom_candidate = dom_mng->getDomainName(domain);
                 if (dom_candidate) {
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 #ifdef HAVE_LIBLOG4CXX
-                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << dom_candidate->getName());
+                        LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with " << dom_candidate->getName());
 #endif
                         if(dom_candidate->call.haveCallback()) {
-                                dom_candidate->call.executeCallback(flow);
+                                dom_candidate->call.executeCallback(current_flow_);
                         }
 #endif
                 }
@@ -236,6 +246,8 @@ void POPProtocol::processFlow(Flow *flow) {
                 return;
         }
 
+	current_flow_ = flow;
+
 	if (flow->getFlowDirection() == FlowDirection::FORWARD) {
 		
                 // Commands send by the client
@@ -253,7 +265,7 @@ void POPProtocol::processFlow(Flow *flow) {
                 
 				if ( cmd == static_cast<int8_t>(POPCommandTypes::POP_CMD_USER)) {
 					boost::string_ref header(reinterpret_cast<const char*>(pop_header_),length);
-					handle_cmd_user(flow,pinfo.get(),header);
+					handle_cmd_user(pinfo.get(),header);
 				}
 		                return;
                         }
@@ -327,13 +339,16 @@ void POPProtocol::decreaseAllocatedMemory(int value) {
         user_cache_->destroy(value);
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict POPProtocol::getCounters() const {
         boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE POPProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters POPProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets", total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

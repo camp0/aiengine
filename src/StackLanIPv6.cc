@@ -71,6 +71,7 @@ StackLanIPv6::StackLanIPv6():
         addProtocol(imap);
         addProtocol(pop);
         addProtocol(bitcoin);
+        addProtocol(mqtt);
         addProtocol(tcp_generic);
         addProtocol(freqs_tcp);
         addProtocol(dns);
@@ -78,6 +79,9 @@ StackLanIPv6::StackLanIPv6():
         addProtocol(ntp);
         addProtocol(snmp);
         addProtocol(ssdp);
+	addProtocol(netbios);
+        addProtocol(coap);
+        addProtocol(rtp);
         addProtocol(udp_generic);
         addProtocol(freqs_udp);
  
@@ -167,17 +171,31 @@ StackLanIPv6::StackLanIPv6():
         smtp->setFlowManager(flow_table_tcp_);
         imap->setFlowManager(flow_table_tcp_);
         pop->setFlowManager(flow_table_tcp_);
+        mqtt->setFlowManager(flow_table_tcp_);
+
         dns->setFlowManager(flow_table_udp_);
         sip->setFlowManager(flow_table_udp_);
         ssdp->setFlowManager(flow_table_udp_);
-	
+        coap->setFlowManager(flow_table_udp_);
+
+	// Connect the AnomalyManager with the protocols that may have anomalies
+        ip6_->setAnomalyManager(anomaly_);
+        tcp_->setAnomalyManager(anomaly_);
+        udp_->setAnomalyManager(anomaly_);
+
+        // Link the CacheManager  
+        flow_table_udp_->setCacheManager(cache_mng_);
+        flow_table_tcp_->setCacheManager(cache_mng_);
+        tcp_->setCacheManager(cache_mng_);
+        
 	// Configure the FlowForwarders
 	tcp_->setFlowForwarder(ff_tcp_);	
 	udp_->setFlowForwarder(ff_udp_);	
 
 	enableFlowForwarders(ff_tcp_,
-		{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
-        enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
+		{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_mqtt,ff_tcp_generic});
+        enableFlowForwarders(ff_udp_,
+		{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_netbios,ff_coap,ff_rtp,ff_udp_generic});
 
         std::ostringstream msg;
         msg << getName() << " ready.";
@@ -239,8 +257,9 @@ void StackLanIPv6::enableFrequencyEngine(bool enable) {
 void StackLanIPv6::enableNIDSEngine(bool enable) {
 
 	if (enable) {
-        	disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin});
-        	disableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp});
+        	disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_mqtt});
+        	disableFlowForwarders(ff_udp_,
+			{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_netbios,ff_coap,ff_rtp});
 
 	        std::ostringstream msg;
        		msg << "Enable NIDSEngine on " << getName(); 
@@ -251,8 +270,9 @@ void StackLanIPv6::enableNIDSEngine(bool enable) {
         	disableFlowForwarders(ff_udp_,{ff_udp_generic});
 
         	enableFlowForwarders(ff_tcp_,
-			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
-        	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
+			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_mqtt,ff_tcp_generic});
+        	enableFlowForwarders(ff_udp_,
+			{ff_dns,ff_sip,ff_ntp,ff_snmp,ff_ssdp,ff_netbios,ff_coap,ff_rtp,ff_udp_generic});
 	}
 	enable_nids_engine_ = enable;
 }
@@ -274,16 +294,17 @@ void StackLanIPv6::setTotalTCPFlows(int value) {
 	imap->increaseAllocatedMemory(value * 0.05);
 	pop->increaseAllocatedMemory(value * 0.05);
 	bitcoin->increaseAllocatedMemory(value * 0.05);
+	mqtt->increaseAllocatedMemory(value * 0.05);
 }
 
 void StackLanIPv6::setTotalUDPFlows(int value) {
 
 	flow_cache_udp_->createFlows(value);
-	dns->increaseAllocatedMemory(value/ 2);
 
-        // SIP values
+	dns->increaseAllocatedMemory(value/ 2);
         sip->increaseAllocatedMemory(value * 0.2);
         ssdp->increaseAllocatedMemory(value * 0.2);
+        coap->increaseAllocatedMemory(value * 0.2);
 }
 
 int StackLanIPv6::getTotalTCPFlows() const { return flow_cache_tcp_->getTotalFlows(); }

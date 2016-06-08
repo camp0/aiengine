@@ -51,7 +51,7 @@ public:
 	void setName(const std::string& name) { name_ = name; }
 	const char *getName() const { return name_.c_str(); }
 
-#if defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
         void addDomainName(DomainName& domain) {
 
 		SharedPointer<DomainName> d = SharedPointer<DomainName>(new DomainName());

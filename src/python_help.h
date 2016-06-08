@@ -51,6 +51,7 @@ const char *help_release_cache = 		"Release the cache of a specific protocol.";
 const char *help_releases_caches = 		"Release all the caches.";
 const char *help_get_counters = 		"Gets the counters of a specific protocol on a python dict.";
 const char *help_get_cache = 			"Gets the main cache of a protocol on a python dict.";
+const char *help_anomaly_callback = 		"Sets a callback for specific anomalies on the given protocol.";
 const char *help_get_statistics =		"Gets the statisitics of a protocol on a python dict.";
 	
 const char *help_regex_expression = 		"Gets the regular expression.";
@@ -98,24 +99,36 @@ const char *help_flow_have_tag =		"Gets if the Flow have tag from lower network 
 const char *help_flow_reject =			"Gets/Sets the reject of the connection.";
 const char *help_flow_tag =			"Gets the tag from lower network layers."; 
 const char *help_flow_evidence =		"Gets/Sets the evidence of the Flow for make forensic analysis."; 
-const char *help_flow_ip_set = 			"Returns the IPSet Info of the Flow if is part of an IPSet."; 
-const char *help_flow_http_info =		"Returns the HTTP Info if the Flow is HTTP."; 
-const char *help_flow_sip_info =		"Returns the SIP Info if the Flow is SIP.";	
+const char *help_flow_label =			"Gets/Sets the label of the Flow (external labeling)."; 
+const char *help_flow_duration =		"Gets the duration on secs of the Flow."; 
+const char *help_flow_ip_set = 			"Gets the IPSet Info of the Flow if is part of an IPSet."; 
+const char *help_flow_http_info =		"Gets the HTTPInfo if the Flow is HTTP."; 
+const char *help_flow_sip_info =		"Gets the SIPInfo if the Flow is SIP.";	
 const char *help_flow_smtp_info = 		"Gets the SMTP Info if the Flow is SMTP.";	
 const char *help_flow_pop_info = 		"Gets the POP Info if the Flow is POP.";	
 const char *help_flow_imap_info = 		"Gets the IMAP Info if the Flow is IMAP.";	
 const char *help_flow_frequencies =		"Gets a map of frequencies of the payload of the Flow."; 	
 const char *help_flow_packet_frequencies =	"Gets the packet frequencies of the Flow."; 	
-const char *help_flow_ssl_info = 		"Gets the SSL info if the Flow is SSL.";	
-const char *help_flow_dns_info = 		"Gets the DNS info name if the Flow is a DNS.";	
-const char *help_flow_ssdp_info =		"Gets the SSDP info if the Flow is SSDP.";	
-const char *help_flow_bitcoin_info =		"Gets the Bitcoin info if the Flow is Bitcoin.";	
+const char *help_flow_ssl_info = 		"Gets a SSLInfo object the Flow is SSL.";	
+const char *help_flow_dns_info = 		"Gets a DNSInfo object if the Flow is a DNS.";	
+const char *help_flow_ssdp_info =		"Gets a SSDPInfo object if the Flow is SSDP.";	
+const char *help_flow_bitcoin_info =		"Gets a BitcoinInfo object if the Flow is Bitcoin.";	
+const char *help_flow_coap_info =		"Gets a CoAPInfo object if the Flow is CoAP.";	
+const char *help_flow_mqtt_info =		"Gets a MQTTInfo object if the Flow is MQTT.";	
 const char *help_flow_regex =			"Gets the regex if the Flow have been matched with the associated regex.";	
 const char *help_flow_payload = 		"Gets a list of the bytes of the payload of the Flow.";	
 const char *help_flow_anomaly =			"Gets the attached anomaly of the Flow."; 		 	
 const char *help_flow_l7_protocol_name =	"Gets the name of the Protocol of L7 of the Flow.";
+
+const char *help_mqtt_info_topic =		"Gets the MQTT publish topic if the Flow is MQTT.";
  
-const char *help_bitcoin_info_tx =		"Get the total number of Bitcoin transactions of the Flow.";
+const char *help_coap_info_uri =		"Gets the CoAP URI if the Flow is CoAP.";
+const char *help_coap_info_host_name =		"Gets the CoAP Hostname if the Flow is CoAP."; 
+const char *help_coap_info_matched_domain_name ="Gets the matched DomainName object."; 
+
+const char *help_bitcoin_info_tx =		"Get the total number of Bitcoin transactions on the Flow.";
+const char *help_bitcoin_info_blocks =		"Get the total number of Bitcoin blocks on the Flow.";
+const char *help_bitcoin_info_rejects =		"Get the total number of Bitcoin rejects on the Flow.";
 	
 const char *help_dns_info_iter =		"Iterate over the IP addresses returned on the query response."; 
 const char *help_dns_info_domain_name =		"Gets the DNS domain name."; 
@@ -127,6 +140,7 @@ const char *help_ssl_info_matched_domain_name =	"Gets the matched DomainName obj
 const char *help_http_info_uri =		"Gets the HTTP URI if the Flow is HTTP.";
 const char *help_http_info_host_name =		"Gets the HTTP Host if the Flow is HTTP."; 
 const char *help_http_info_user_agent =		"Gets the HTTP UserAgent if the Flow is HTTP."; 
+const char *help_http_info_content_type =	"Gets the HTTP Content Type if the Flow is HTTP."; 
 const char *help_http_info_banned =		"Gets/Sets the Flow banned for no more analysis on the python side and release resources."; 
 const char *help_http_info_matched_domain_name ="Gets the matched DomainName object."; 
 

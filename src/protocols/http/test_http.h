@@ -127,6 +127,10 @@ struct StackHTTPtest : public StackTest
                 tcp->setFlowForwarder(ff_tcp);
 
                 ff_tcp->addUpFlowForwarder(ff_http);
+
+		ip->setAnomalyManager(anomaly);
+		tcp->setAnomalyManager(anomaly);
+		http->setAnomalyManager(anomaly);
         }
 
         ~StackHTTPtest()
@@ -217,6 +221,9 @@ struct StackIPv6HTTPtest : public StackTest
 
                 ff_tcp->addUpFlowForwarder(ff_http);
 
+		ip6->setAnomalyManager(anomaly);
+		tcp->setAnomalyManager(anomaly);
+		http->setAnomalyManager(anomaly);
         }
 
 	void showFlows() { flow_mng->showFlows(); }

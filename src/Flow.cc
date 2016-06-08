@@ -79,6 +79,7 @@ void Flow::reset() {
 	pa_ = PacketAnomalyType::NONE;
 	arrive_time_ = 0;
 	current_time_ = 0;
+	label_ = nullptr;
 }
 
 void Flow::serialize(std::ostream& stream) {
@@ -110,10 +111,13 @@ void Flow::serialize(std::ostream& stream) {
 	if (!ipset.expired()) 
                 stream << ",\"s\":\"" << ipset.lock()->getName() << "\"";
 	
-	//if(pa_ != PacketAnomalyType::NONE)
-	//	stream << ",\"a\":\"" << AnomalyManager::getInstance()->getName(pa_) << "\"";
+	if(pa_ != PacketAnomalyType::NONE)
+		stream << ",\"a\":\"" << static_cast<std::int8_t>(pa_) << "\"";
 
 	stream << ",\"p\":\"" << getL7ShortProtocolName() << "\"";
+
+	if (label_ != nullptr) 
+		stream << ",\"l\":\"" << getLabel() << "\"";
 #else
 	stream << "{";
 	stream << "\"ipsrc\":\"" << address_.getSrcAddrDotNotation() << "\",";
@@ -127,10 +131,13 @@ void Flow::serialize(std::ostream& stream) {
 	if (!ipset.expired())
 		stream << ",\"ipset\":\"" << ipset.lock()->getName() << "\"";
 
-	//if (pa_ != PacketAnomalyType::NONE)
-		//stream << ",\"anomaly\":\"" << AnomalyManager::getInstance()->getName(pa_) << "\"";
+	if (pa_ != PacketAnomalyType::NONE)
+		stream << ",\"anomaly\":\"" << getFlowAnomalyString() << "\"";
 
 	stream << ",\"layer7\":\"" << getL7ProtocolName() << "\"";
+
+	if (label_ != nullptr) 
+		stream << ",\"label\":\"" << getLabel() << "\"";
 #endif
 	if (protocol_ == IPPROTO_TCP) {
 		SharedPointer<TCPInfo> tinfo = getTCPInfo();
@@ -144,6 +151,31 @@ void Flow::serialize(std::ostream& stream) {
 			SharedPointer<SSLInfo> sinfo = getSSLInfo();	
 			if (sinfo){
 				sinfo->serialize(stream);
+			} else {
+				SharedPointer<SMTPInfo> smtpinfo = getSMTPInfo();
+				if (smtpinfo) {
+					smtpinfo->serialize(stream);
+				} else {
+					SharedPointer<POPInfo> popinfo = getPOPInfo();
+					if (popinfo) {
+						popinfo->serialize(stream);
+					} else {
+						SharedPointer<IMAPInfo> iinfo = getIMAPInfo();
+						if (iinfo) {
+							iinfo->serialize(stream);
+						} else {
+							SharedPointer<BitcoinInfo> binfo = getBitcoinInfo();
+							if (binfo) {
+								binfo->serialize(stream);
+							} else {
+								SharedPointer<MQTTInfo> minfo = getMQTTInfo();
+								if (minfo) {
+									minfo->serialize(stream);
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	} else { // UDP
@@ -154,6 +186,16 @@ void Flow::serialize(std::ostream& stream) {
 			SharedPointer<SIPInfo> sinfo = getSIPInfo();
 			if (sinfo) {
 				sinfo->serialize(stream);
+			} else {
+				SharedPointer<SSDPInfo> ssdpinfo = getSSDPInfo();
+				if (ssdpinfo) {
+					ssdpinfo->serialize(stream);
+				} else {
+					SharedPointer<CoAPInfo> coapinfo = getCoAPInfo();
+					if (coapinfo) {
+						coapinfo->serialize(stream);
+					}
+				}
 			}
 		}
 		SharedPointer<GPRSInfo> ginfo = getGPRSInfo();
@@ -177,8 +219,8 @@ void Flow::showFlowInfo(std::ostream& out) const {
         	out << " Tag:" << getTag();
         }
 
-        //if (getPacketAnomaly() != PacketAnomalyType::NONE)
-	//	out << " Anomaly:" << AnomalyManager::getInstance()->getName(pa_);
+        if (getPacketAnomaly() != PacketAnomalyType::NONE)
+		out << " Anomaly:" << getFlowAnomalyString();
 
         if (ipset.lock()) out << " IPset:" << ipset.lock()->getName();
 
@@ -188,31 +230,33 @@ void Flow::showFlowInfo(std::ostream& out) const {
 
 		SharedPointer<HTTPInfo> hinfo = getHTTPInfo();
 		if (hinfo) {
-                	out << " Req(" << hinfo->getTotalRequests() << ")Res(" << hinfo->getTotalResponses() << ")Code(" << hinfo->getResponseCode() << ") ";
-                	if (hinfo->getIsBanned()) out << "Banned ";
-                	if (hinfo->host) out << "Host:" << hinfo->host->getName();
-                	if (hinfo->ua) out << " UserAgent:" << hinfo->ua->getName();
+			out << *hinfo.get();
         	} else {
 			SharedPointer<SSLInfo> sinfo = getSSLInfo();
 			if (sinfo) {
-				out << " Pdus:" << sinfo->getTotalDataPdus();
-				if (sinfo->host) out << " Host:" << sinfo->host->getName();
+				out << *sinfo.get();
 			} else {
 				SharedPointer<SMTPInfo> smtpinfo = getSMTPInfo();
 				if (smtpinfo) {
-					if (smtpinfo->from) out << " From:" << smtpinfo->from->getName();
-					if (smtpinfo->to) out << " To:" << smtpinfo->to->getName();
+					out << *smtpinfo.get();
 				} else {
 					SharedPointer<POPInfo> popinfo = getPOPInfo();
 					if (popinfo) {
-						if (popinfo->user_name) out << " User:" << popinfo->user_name->getName();
+						out << *popinfo.get();
 					} else {
 						SharedPointer<IMAPInfo> iinfo = getIMAPInfo();
 						if (iinfo) {
-							if (iinfo->user_name) out << " User:" << iinfo->user_name->getName();
+							out << *iinfo.get();
 						} else {
 							SharedPointer<BitcoinInfo> binfo = getBitcoinInfo();
-							if (binfo) out << " Tx:" << binfo->getTotalTransactions();
+							if (binfo) {
+								out << *binfo.get();
+							} else {
+								SharedPointer<MQTTInfo> minfo = getMQTTInfo();
+								if (minfo) {
+									out << *minfo.get();
+								}
+							}
 						}
 					}
 				} 
@@ -221,19 +265,26 @@ void Flow::showFlowInfo(std::ostream& out) const {
 	} else {
 		SharedPointer<GPRSInfo> ginfo = getGPRSInfo();
 		if (ginfo) {
-			out << " GPRS:" << *ginfo.get();
+			out << *ginfo.get();
 		} 
 
 		SharedPointer<DNSInfo> dnsinfo = getDNSInfo();
 		if (dnsinfo) {
-			if (dnsinfo->name) out << " Domain:" << dnsinfo->name->getName();	
+			out << *dnsinfo.get();	
 		} else {
 			SharedPointer<SIPInfo> sipinfo = getSIPInfo();
 			if (sipinfo) {
-                		if (sipinfo->uri) out << " SIPUri:" << sipinfo->uri->getName();
-                		if (sipinfo->from) out << " SIPFrom:" << sipinfo->from->getName();
-                		if (sipinfo->to) out << " SIPTo:" << sipinfo->to->getName();
-                		if (sipinfo->via) out << " SIPVia:" << sipinfo->via->getName();
+				out << *sipinfo.get();
+			} else {
+				SharedPointer<SSDPInfo> ssdpinfo = getSSDPInfo();
+				if (ssdpinfo) {
+					out << *ssdpinfo.get();
+				} else {
+					SharedPointer<CoAPInfo> coapinfo = getCoAPInfo();
+					if (coapinfo) {
+						out << *coapinfo.get();
+					}
+				}
 			}
         	}
 	}

@@ -126,6 +126,8 @@ struct StackSSLtest : public StackTest
 
                 ff_tcp->addUpFlowForwarder(ff_ssl);
 
+		tcp->setAnomalyManager(anomaly);
+		ssl->setAnomalyManager(anomaly);
         }
 
 	void show() {

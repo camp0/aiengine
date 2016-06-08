@@ -113,12 +113,11 @@ public:
 		host_map_(),
 		domain_mng_(),ban_domain_mng_(),
 		flow_mng_(),
-		current_flow_(nullptr) {
+		current_flow_(nullptr),
+		anomaly_(),
+		cache_mng_() {}
 
-		CacheManager::getInstance()->setCache(info_cache_);
-	}
-
-    	virtual ~SSLProtocol() {}
+    	virtual ~SSLProtocol() { anomaly_.reset(); cache_mng_.reset(); }
 
 	static const uint16_t id = 0;
 	static const int header_size = 2;
@@ -181,12 +180,19 @@ public:
         VALUE getCache() const;
 #elif defined(JAVA_BINDING)
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
+#elif defined(LUA_BINDING)
+        LuaCounters getCounters() const;
 #endif
 
 #if defined(STAND_ALONE)
 	// Just for testing purposes on the unit test
 	Cache<StringCache>::CachePtr getHostCache() const { return host_cache_; }
 #endif
+
+	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
+	void setCacheManager(SharedPointer<CacheManager> cmng) { cache_mng_ = cmng; cache_mng_->setCache(info_cache_); }
+
+	Flow* getCurrentFlow() const { return current_flow_; }
 
 private:
         void release_ssl_info_cache(SSLInfo *info);
@@ -211,7 +217,7 @@ private:
         DomainNameManagerPtrWeak ban_domain_mng_;
 	FlowManagerPtrWeak flow_mng_;
 
-	PacketAnomalyType handle_client_hello(SSLInfo *info,int length,int offset, unsigned char *data);
+	void handle_client_hello(SSLInfo *info,int length,int offset, unsigned char *data);
 	void handle_server_hello(SSLInfo *info,int offset, unsigned char *data);
 	void handle_certificate(SSLInfo *info,int offset, unsigned char *data);
 
@@ -222,6 +228,7 @@ private:
 #endif
 	Flow *current_flow_; // For accessing for logging
 	SharedPointer<AnomalyManager> anomaly_;
+	SharedPointer<CacheManager> cache_mng_;
 };
 
 typedef std::shared_ptr<SSLProtocol> SSLProtocolPtr;

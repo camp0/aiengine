@@ -143,7 +143,7 @@ void SSLProtocol::attach_host(SSLInfo *info, boost::string_ref &host) {
         }
 }
 
-PacketAnomalyType SSLProtocol::handle_client_hello(SSLInfo *info,int length,int offset, u_char *data) {
+void SSLProtocol::handle_client_hello(SSLInfo *info,int length,int offset, u_char *data) {
 
 	ssl_hello *hello = reinterpret_cast<ssl_hello*>(data); 
 	uint16_t version = ntohs(hello->version);
@@ -154,7 +154,11 @@ PacketAnomalyType SSLProtocol::handle_client_hello(SSLInfo *info,int length,int 
 	if((version >= SSL3_VERSION)and(version <= TLS1_2_VERSION)) {
 
 		if (ntohs(hello->length) > length) {
-			return PacketAnomalyType::SSL_BOGUS_HEADER;
+			if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        	current_flow_->setPacketAnomaly(PacketAnomalyType::SSL_BOGUS_HEADER);
+			}
+                        anomaly_->incAnomaly(current_flow_,PacketAnomalyType::SSL_BOGUS_HEADER);
+                        return; 
 		}
 		length = ntohs(hello->length);
 
@@ -178,9 +182,9 @@ PacketAnomalyType SSLProtocol::handle_client_hello(SSLInfo *info,int length,int 
 				u_char *extensions = &data[block_offset];
 				uint16_t extensions_length = ((extensions[0] << 8) + extensions[1]);
 
-				if (extensions_length > length) {
-					return PacketAnomalyType::SSL_BOGUS_HEADER;
-				}
+				////if (extensions_length > length) {
+			// 		return PacketAnomalyType::SSL_BOGUS_HEADER;
+			//	}
 
 				block_offset += 2;
 				while (block_offset < length) {
@@ -200,7 +204,8 @@ PacketAnomalyType SSLProtocol::handle_client_hello(SSLInfo *info,int length,int 
 									LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with banned host " << host_candidate->getName());
 #endif
 									++total_ban_hosts_;
-									return PacketAnomalyType::NONE;
+									info->setIsBanned(true);
+									return;
 								}
 							}
 							++total_allow_hosts_;
@@ -225,7 +230,7 @@ PacketAnomalyType SSLProtocol::handle_client_hello(SSLInfo *info,int length,int 
 			}	
 		}
 	} // end version 
-	return PacketAnomalyType::NONE;
+	return;
 }
 
 void SSLProtocol::handle_server_hello(SSLInfo *info,int offset,unsigned char *data) {
@@ -287,11 +292,7 @@ void SSLProtocol::processFlow(Flow *flow) {
 					bool have_data = false;
 	
 					if (type == SSL3_MT_CLIENT_HELLO)  {
-						PacketAnomalyType ret = handle_client_hello(sinfo.get(),flow->packet->getLength(),offset,ssl_data);
-						if ((ret != PacketAnomalyType::NONE)and(flow->getPacketAnomaly() == PacketAnomalyType::NONE)) {
-							flow->setPacketAnomaly(ret);
-							anomaly_->incAnomaly(ret);	
-						}
+						handle_client_hello(sinfo.get(),flow->packet->getLength(),offset,ssl_data);
 						have_data = true;
 					} else if (type == SSL3_MT_SERVER_HELLO)  {
 						handle_server_hello(sinfo.get(),offset,ssl_data);
@@ -327,7 +328,7 @@ void SSLProtocol::processFlow(Flow *flow) {
 						SharedPointer<DomainName> host_candidate = host_mng->getDomainName(sinfo->host->getName());
 						if (host_candidate) {
 							sinfo->matched_domain_name = host_candidate;
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 #ifdef HAVE_LIBLOG4CXX
 							LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
 #endif  
@@ -404,13 +405,16 @@ void SSLProtocol::decreaseAllocatedMemory(int value) {
 	host_cache_->destroy(value);
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict SSLProtocol::getCounters() const {
 	boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE SSLProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters SSLProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
 	addValueToCounter(counters,"packets", total_packets_);
 	addValueToCounter(counters,"bytes", total_bytes_);
@@ -423,7 +427,9 @@ VALUE SSLProtocol::getCounters() const {
 
         return counters;
 }
+#endif
 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) 
 #if defined(PYTHON_BINDING)
 boost::python::dict SSLProtocol::getCache() const {
 #elif defined(RUBY_BINDING)
@@ -431,7 +437,6 @@ VALUE SSLProtocol::getCache() const {
 #endif
         return addMapToHash(host_map_);
 }
-
 #endif
 
 } // namespace aiengine

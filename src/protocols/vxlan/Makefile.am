@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 if HAVE_LIBLOG4CXX
@@ -14,6 +16,7 @@ check_PROGRAMS = test_vxlan
 
 test_vxlan_SOURCES = 	../../Multiplexer.cc \
 			../../Protocol.cc ../../CacheManager.cc \
+			../../StringCache.cc \
 			../ethernet/EthernetProtocol.cc \
 			../../Flow.cc \
 			../../AnomalyManager.cc \
@@ -23,14 +26,8 @@ test_vxlan_SOURCES = 	../../Multiplexer.cc \
 			../../ipset/IPSet.cc \
 			../../ipset/IPSetManager.cc \
 			../udp/UDPProtocol.cc \
-			../gprs/GPRSInfo.cc \
-			../sip/SIPInfo.cc \
-			../dns/DNSInfo.cc \
+			$(TEST_FLOW_OBJECTS) \
 			../tcp/TCPProtocol.cc \
-			../tcp/TCPInfo.cc \
-			../ssl/SSLInfo.cc \
-			../http/HTTPInfo.cc \
-			../smtp/SMTPInfo.cc \
 			../../names/DomainNameManager.cc \
 			../../names/DomainName.cc \
 			../dns/DNSProtocol.cc \

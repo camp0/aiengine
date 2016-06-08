@@ -67,12 +67,10 @@ public:
 		from_cache_(new Cache<StringCache>("From cache")),
 		to_cache_(new Cache<StringCache>("To cache")),
 		uri_map_(),via_map_(),from_map_(),to_map_(),
-		flow_mng_() {
+		flow_mng_(),
+		cache_mng_() {}
 
-		CacheManager::getInstance()->setCache(info_cache_);
-	}	
-
-    	virtual ~SIPProtocol() {}
+    	virtual ~SIPProtocol() { cache_mng_.reset(); }
 
 	static const uint16_t id = 0;
 	static const int header_size = 0;
@@ -127,8 +125,10 @@ public:
         VALUE getCounters() const;
 #elif defined(JAVA_BINDING)
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
+#elif defined(LUA_BINDING)
+        LuaCounters getCounters() const; 
 #endif
-
+	void setCacheManager(SharedPointer<CacheManager> cmng) { cache_mng_ = cmng; cache_mng_->setCache(info_cache_); }
 private:
 
 	void attach_uri_to_flow(SIPInfo *info, boost::string_ref &uri);
@@ -165,6 +165,7 @@ private:
 	GenericMapType to_map_;	
 
 	FlowManagerPtrWeak flow_mng_;
+	SharedPointer<CacheManager> cache_mng_;
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
 #endif

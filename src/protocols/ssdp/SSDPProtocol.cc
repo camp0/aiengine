@@ -274,7 +274,6 @@ int SSDPProtocol::extract_uri(SSDPInfo *info, boost::string_ref &header) {
 
         int offset = 0;
         bool found = false;
-        // boost::string_ref ssdp_header(header,length);
         int method_size = 0;
 
         // Check if is a response
@@ -337,7 +336,6 @@ void SSDPProtocol::parse_header(SSDPInfo *info, boost::string_ref &header ) {
         size_t i = 0;
 
         // Process the HTTP header
-        // const char *ptr = parameters;
         int field_index = 0;
         int parameter_index = 0;
 
@@ -357,8 +355,8 @@ void SSDPProtocol::parse_header(SSDPInfo *info, boost::string_ref &header ) {
 
                                         bool sw = callback(info,header_parameter_);
                                         if (!sw) { // The flow have been marked as banned
-                                                // info->setIsBanned(true);
-                                                //release_http_info_cache(info);
+                                                // TODO info->setIsBanned(true);
+                                                // release_http_info_cache(info);
                                                 break;
                                         }
                                 }
@@ -410,8 +408,7 @@ void SSDPProtocol::processFlow(Flow *flow) {
                 return;
         }
 
-	// const char *header = reinterpret_cast <const char*> (flow->packet->getPayload());
-
+	current_flow_ = flow;
 	boost::string_ref header(reinterpret_cast <const char*> (flow->packet->getPayload()),length);
 
         int offset = extract_uri(info.get(),header);
@@ -428,7 +425,7 @@ void SSDPProtocol::processFlow(Flow *flow) {
                         	DomainNameManagerPtr host_mng = host_mng_.lock();
                                 SharedPointer<DomainName> host_candidate = host_mng->getDomainName(info->host->getName());
                                 if (host_candidate) {
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 #ifdef HAVE_LIBLOG4CXX
                                 	LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
 #endif
@@ -521,7 +518,6 @@ void SSDPProtocol::decreaseAllocatedMemory(int value) {
 }
 
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
-
 #if defined(PYTHON_BINDING)
 boost::python::dict SSDPProtocol::getCache() const {
 #elif defined(RUBY_BINDING)
@@ -529,13 +525,19 @@ VALUE SSDPProtocol::getCache() const {
 #endif
 	return addMapToHash(host_map_);
 }
+#endif
 
+
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict SSDPProtocol::getCounters() const {
 	boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE SSDPProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters SSDPProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
 
         addValueToCounter(counters,"packets", total_packets_);

@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 noinst_HEADERS =	test_dhcp.h
@@ -13,13 +15,7 @@ test_dhcp_SOURCES = 	../../Multiplexer.cc \
 			../../FlowForwarder.cc \
 			../../flow/FlowManager.cc \
 			../ip/IPProtocol.cc \
-                        ../tcp/TCPInfo.cc \
-                        ../http/HTTPInfo.cc \
-                        ../ssl/SSLInfo.cc \
-                        ../smtp/SMTPInfo.cc \
-                        ../dns/DNSInfo.cc \
-                        ../gprs/GPRSInfo.cc \
-                        ../sip/SIPInfo.cc \
+                        $(TEST_FLOW_OBJECTS) \
 			../../ipset/IPSet.cc \
 			../../ipset/IPSetManager.cc \
 			../udp/UDPProtocol.cc \

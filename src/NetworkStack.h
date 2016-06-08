@@ -51,6 +51,10 @@
 #include "protocols/pop/POPProtocol.h"
 #include "protocols/bitcoin/BitcoinProtocol.h"
 #include "protocols/modbus/ModbusProtocol.h"
+#include "protocols/coap/CoAPProtocol.h"
+#include "protocols/rtp/RTPProtocol.h"
+#include "protocols/mqtt/MQTTProtocol.h"
+#include "protocols/netbios/NetbiosProtocol.h"
 #include "protocols/frequency/FrequencyProtocol.h"
 
 namespace aiengine {
@@ -90,6 +94,7 @@ public:
 	virtual bool isEnableNIDSEngine() const = 0;
 
 	void enableLinkLayerTagging(const std::string& type); 
+	const std::string &getLinkLayerTagging() const { return link_layer_tag_name_; } 
 
 	virtual void setFlowsTimeout(int timeout) = 0;
 	virtual int getFlowsTimeout() const = 0;
@@ -104,7 +109,7 @@ public:
 	void enableFlowForwarders(const SharedPointer<FlowForwarder>& ff, std::initializer_list<SharedPointer<FlowForwarder>> fps);
 	void disableFlowForwarders(const SharedPointer<FlowForwarder>& ff, std::initializer_list<SharedPointer<FlowForwarder>> fps);
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING) 
 	void setDomainNameManager(DomainNameManager& dnm, const std::string& name);
 	void setDomainNameManager(DomainNameManager& dnm, const std::string& name, bool allow);
 	
@@ -115,9 +120,16 @@ public:
 	virtual FlowManagerPtrWeak getUDPFlowManager() = 0;
 #endif
 
-#if defined(RUBY_BINDING) // || defined(JAVA_BINDING)
+#if defined(RUBY_BINDING) || defined(LUA_BINDING)
 	virtual void setTCPRegexManager(RegexManager &sig) { setTCPRegexManager(std::make_shared<RegexManager>(sig)); } 
 	virtual void setUDPRegexManager(RegexManager &sig) { setUDPRegexManager(std::make_shared<RegexManager>(sig)); } 
+
+	RegexManager &getTCPRegexManager() const { return *tcp_regex_mng_.get(); }
+	RegexManager &getUDPRegexManager() const { return *udp_regex_mng_.get(); }
+
+	IPSetManager &getTCPIPSetManager() const { return *tcp_ipset_mng_.get(); }
+	IPSetManager &getUDPIPSetManager() const { return *udp_ipset_mng_.get(); }
+
 #elif defined(JAVA_BINDING)
 	virtual void setTCPRegexManager(RegexManager *sig);
 	virtual void setUDPRegexManager(RegexManager *sig); 
@@ -147,6 +159,8 @@ public:
 
 	const char *getLinkLayerTag() const { return link_layer_tag_name_.c_str(); } 
 
+	void setAnomalyCallback(PyObject *callback,const std::string& proto_name);
+
 #elif defined(RUBY_BINDING)
 	void setTCPDatabaseAdaptor(VALUE dbptr); 
 	void setTCPDatabaseAdaptor(VALUE dbptr, int packet_sampling); 
@@ -155,6 +169,9 @@ public:
 
 	VALUE getCounters(const std::string& name);
 	VALUE getCache(const std::string& name);
+
+	void setAnomalyCallback(VALUE callback,const std::string& proto_name);
+
 #elif defined(JAVA_BINDING)
 	void setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr);
 	void setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr,int packet_sampling);
@@ -162,7 +179,19 @@ public:
 	void setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr,int packet_sampling);
 	
 	std::map<std::string,int> getCounters(const std::string& name);
+	
+	void setAnomalyCallback(JaiCallback *callback,const std::string& proto_name);
+#elif defined(LUA_BINDING)
+	void setTCPDatabaseAdaptor(lua_State *dbptr, const char* obj_name);
+	void setTCPDatabaseAdaptor(lua_State *dbptr, const char* obj_name, int packet_sampling);
+	void setUDPDatabaseAdaptor(lua_State *dbptr, const char *obj_name);
+	void setUDPDatabaseAdaptor(lua_State *dbptr, const char *obj_name, int packet_sampling);
+
+	void setAnomalyCallback(lua_State *lua, const std::string& callback,const std::string& proto_name);
+
+	std::map<std::string,int> getCounters(const char *name);
 #endif
+
 	void addProtocol(ProtocolPtr proto); 
 	void setStatisticsLevel(int level); 
 	int getStatisticsLevel() const { return stats_level_; }
@@ -174,6 +203,8 @@ public:
 	void infoMessage(const std::string& msg);
 
 	friend std::ostream& operator<< (std::ostream& out, const NetworkStack& ns);
+
+	// SharedPointer<AnomalyManager>& getAnomalyManager() const { return anomaly_; } 
 
 protected:
 	// Multiplexers of low layer parts (vlan, mpls, ethernet, etc....)
@@ -196,6 +227,10 @@ protected:
         POPProtocolPtr pop;
         BitcoinProtocolPtr bitcoin;
         ModbusProtocolPtr modbus;
+        CoAPProtocolPtr coap;
+        RTPProtocolPtr rtp;
+        MQTTProtocolPtr mqtt;
+	NetbiosProtocolPtr netbios;
         TCPGenericProtocolPtr tcp_generic;
         UDPGenericProtocolPtr udp_generic;
         FrequencyProtocolPtr freqs_tcp;
@@ -211,11 +246,17 @@ protected:
         SharedPointer<FlowForwarder> ff_imap;
         SharedPointer<FlowForwarder> ff_pop,ff_bitcoin;
         SharedPointer<FlowForwarder> ff_modbus;
+        SharedPointer<FlowForwarder> ff_coap;
+        SharedPointer<FlowForwarder> ff_rtp;
+	SharedPointer<FlowForwarder> ff_mqtt;
+	SharedPointer<FlowForwarder> ff_netbios;
         SharedPointer<FlowForwarder> ff_tcp_generic;
         SharedPointer<FlowForwarder> ff_udp_generic;
         SharedPointer<FlowForwarder> ff_tcp_freqs;
         SharedPointer<FlowForwarder> ff_udp_freqs;
 
+	SharedPointer<AnomalyManager> anomaly_;
+	SharedPointer<CacheManager> cache_mng_;
 private:
 #ifdef HAVE_LIBLOG4CXX
         static log4cxx::LoggerPtr logger;
@@ -235,7 +276,6 @@ private:
 	SharedPointer<IPSetManager> tcp_ipset_mng_;
 	SharedPointer<IPSetManager> udp_ipset_mng_;
 	std::string link_layer_tag_name_;
-	SharedPointer<AnomalyManager> anomaly_;
 };
 
 typedef std::shared_ptr <NetworkStack> NetworkStackPtr;

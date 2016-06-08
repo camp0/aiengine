@@ -57,7 +57,7 @@ public:
 	void evaluate(const std::string& data,bool *result); // Remove in future versions  
 	void evaluate(boost::string_ref& data,bool *result); 
 
-#if defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 	void addRegex(Regex& sig) { 
 		// Create a shared pointer and reset it to the object
 		SharedPointer<Regex> re(new Regex());
@@ -66,6 +66,7 @@ public:
 		addRegex(re); 
 	}
 #endif
+
 	void addRegex(const std::string& name,const std::string& expression);
 	void addRegex(const SharedPointer<Regex>& sig);
 	

@@ -234,6 +234,13 @@ struct StackTestOpenFlow : public StackTest
 	        udp_vir->setFlowForwarder(ff_udp_vir);
                 ff_udp_vir->addUpFlowForwarder(ff_dns_vir);
                 ff_udp_vir->addUpFlowForwarder(ff_udpg_vir);
+
+		ip->setAnomalyManager(anomaly);
+		ip_vir->setAnomalyManager(anomaly);
+		tcp->setAnomalyManager(anomaly);
+		tcp_vir->setAnomalyManager(anomaly);
+		udp_vir->setAnomalyManager(anomaly);
+		dns_vir->setAnomalyManager(anomaly);
 	}
 
         ~StackTestOpenFlow() {

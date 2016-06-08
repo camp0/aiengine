@@ -49,13 +49,21 @@ void SIPInfo::serialize(std::ostream& stream) {
                 have_item = true;
         }
         if (from) {
+		// Some froms contains double quotes that needs to be replaced
+		std::string fromstr(from->getName());
+		std::replace( fromstr.begin(), fromstr.end(), '\"', '\'');
+
                 if (have_item) stream << ",";
-                stream << "\"f\":\"" << from->getName() << "\"";
+                stream << "\"f\":\"" << fromstr << "\"";
                 have_item = true;
         }
         if (to) {
+		// Some froms contains double quotes that needs to be replaced
+		std::string tostr(to->getName());
+		std::replace( tostr.begin(), tostr.end(), '\"', '\'');
+
                 if (have_item) stream << ",";
-                stream << "\"t\":\"" << to->getName() << "\"";
+                stream << "\"t\":\"" << tostr << "\"";
                 have_item = true;
         }
         if (via) {
@@ -69,13 +77,21 @@ void SIPInfo::serialize(std::ostream& stream) {
                 have_item = true;
         }
         if (from) {
+		// Some froms contains double quotes that needs to be replaced
+		std::string fromstr(from->getName());
+		std::replace( fromstr.begin(), fromstr.end(), '\"', '\'');
+
                 if (have_item) stream << ",";
-                stream << "\"from\":\"" << from->getName() << "\"";
+                stream << "\"from\":\"" << fromstr << "\"";
                 have_item = true;
         }
         if (to) {
+		// Some froms contains double quotes that needs to be replaced
+		std::string tostr(to->getName());
+		std::replace( tostr.begin(), tostr.end(), '\"', '\'');
+
                 if (have_item) stream << ",";
-                stream << "\"to\":\"" << to->getName() << "\"";
+                stream << "\"to\":\"" << tostr << "\"";
                 have_item = true;
         }
         if (via) {

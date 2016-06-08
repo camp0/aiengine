@@ -42,7 +42,8 @@ public:
     	explicit IPProtocol(const std::string& name,const std::string& short_name):
 		Protocol(name,short_name),
 		stats_level_(0),
-		ip_header_(nullptr),total_bytes_(0),total_frag_packets_(0) {}
+		ip_header_(nullptr),total_bytes_(0),total_frag_packets_(0),
+		anomaly_() {}
 
     	explicit IPProtocol():IPProtocol("IPProtocol","ip") {}
 
@@ -110,13 +111,17 @@ public:
         VALUE getCounters() const;
 #elif defined(JAVA_BINDING)
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
+#elif defined(LUA_BINDING)
+        LuaCounters getCounters() const;
 #endif
 
+	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
 private:
 	int stats_level_;
 	struct ip *ip_header_;
 	int64_t total_bytes_;
 	int32_t total_frag_packets_;
+	SharedPointer<AnomalyManager> anomaly_;
 };
 
 typedef std::shared_ptr<IPProtocol> IPProtocolPtr;

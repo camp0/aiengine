@@ -21,7 +21,6 @@
  * Written by Luis Campo Giralte <luis.camp0.2009@gmail.com> 
  *
  */
-#pragma once
 #ifndef SRC_FLOW_H_
 #define SRC_FLOW_H_
 
@@ -53,8 +52,11 @@
 #include "protocols/sip/SIPInfo.h"
 #include "protocols/ssdp/SSDPInfo.h"
 #include "protocols/bitcoin/BitcoinInfo.h"
+#include "protocols/coap/CoAPInfo.h"
+#include "protocols/mqtt/MQTTInfo.h"
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "AnomalyManager.h"
 
 namespace aiengine {
 
@@ -70,9 +72,11 @@ public:
 	void setId(unsigned long hash) { hash_=hash;}
 	unsigned long getId() const { return hash_;}
 
+	// The flow have been marked as reject (RST)
 	bool isReject() const { return reject_; }
 	void setReject(bool reject) { reject_ = reject; }
 
+	// The flow have been marked to write as evidence
 	bool haveEvidence() const { return have_evidence_; }
 	void setEvidence(bool value) { have_evidence_ = value; }
 
@@ -87,8 +91,13 @@ public:
 	FlowDirection getFlowDirection() { return direction_; }
 	FlowDirection getPrevFlowDirection() { return prev_direction_; }
 
-	void setPacketAnomaly(const PacketAnomalyType &pa) { pa_ = pa; /* ++ PacketAnomalies[static_cast<std::int8_t>(pa)].hits; */ }
+	void setPacketAnomaly(const PacketAnomalyType &pa) { pa_ = pa; }
 	PacketAnomalyType getPacketAnomaly() const { return pa_; }
+	const char *getFlowAnomalyString() const { return PacketAnomalyTypeString[static_cast<std::int8_t>(pa_)].name; }
+
+	// The user label the flow as wanted
+	void setLabel(const char *label) { label_ = const_cast<char*>(label); }
+	const char *getLabel() const { return label_; }
 
 	// IP functions
 	void setFiveTuple(uint32_t src_a,uint16_t src_p,uint16_t proto,uint32_t dst_a,uint16_t dst_p);
@@ -156,6 +165,8 @@ public:
         SharedPointer<SIPInfo> getSIPInfo() const { return DynamicPointerCast<SIPInfo>(layer7info); }
         SharedPointer<SMTPInfo> getSMTPInfo() const { return DynamicPointerCast<SMTPInfo>(layer7info); }
 	SharedPointer<BitcoinInfo> getBitcoinInfo() const { return DynamicPointerCast<BitcoinInfo>(layer7info); }
+	SharedPointer<CoAPInfo> getCoAPInfo() const { return DynamicPointerCast<CoAPInfo>(layer7info); }
+	SharedPointer<MQTTInfo> getMQTTInfo() const { return DynamicPointerCast<MQTTInfo>(layer7info); }
 
 	// Special objects for frequency analisys
 	SharedPointer<Frequencies> frequencies;
@@ -180,7 +191,7 @@ public:
 
 	void showFlowInfo(std::ostream& out) const;
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 
         int32_t getTotalBytes() const { return total_bytes;}
         int32_t getTotalPacketsLayer7() const { return total_packets_l7;}
@@ -190,7 +201,8 @@ public:
         PacketFrequencies& getPacketFrequencies() const { return *packet_frequencies.get();}
 
         Regex& getRegex() const { return *regex.lock().get();}
-	IPSet& getIPSetInfo() const { return dynamic_cast<IPSet&>(*ipset.lock().get()); }
+	// IPSet& getIPSetInfo() const { return (ipset.lock() ? dynamic_cast<IPSet&>(*(ipset.lock().get())) : nullptr); }
+	IPSet *getIPSetInfo() const { return (ipset.lock() ? dynamic_cast<IPSet*>(ipset.lock().get()) : nullptr); }
 
         HTTPInfo& getHTTPInfoObject() const { return *getHTTPInfo().get();}
         SIPInfo& getSIPInfoObject() const { return *getSIPInfo().get();}
@@ -201,8 +213,8 @@ public:
         IMAPInfo& getIMAPInfoObject() const { return *getIMAPInfo().get();}
         SSDPInfo& getSSDPInfoObject() const { return *getSSDPInfo().get();}
 	BitcoinInfo& getBitcoinInfoObject() const { return *getBitcoinInfo().get(); }
-        
-	const char *getFlowAnomaly() const { return AnomalyManager::getInstance()->getName(pa_); }
+        CoAPInfo& getCoAPInfoObject() const { return *getCoAPInfo().get();}
+        MQTTInfo& getMQTTInfoObject() const { return *getMQTTInfo().get();}
 #endif
 
 #if defined(PYTHON_BINDING)
@@ -248,6 +260,7 @@ private:
 	PacketAnomalyType pa_;
 	time_t arrive_time_;
 	time_t current_time_;
+	char *label_;
 };
 
 } // namespace aiengine 

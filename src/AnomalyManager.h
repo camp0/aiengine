@@ -33,8 +33,12 @@
 #include <array>
 #include <vector>
 #include <cstring>
+#include <algorithm>
+#include "Callback.h"
 
 namespace aiengine {
+
+class Flow;
 
 enum class PacketAnomalyType : std::int8_t {
 	NONE = 0, 
@@ -51,30 +55,94 @@ enum class PacketAnomalyType : std::int8_t {
 	POP_BOGUS_HEADER = 11, 
 	SNMP_BOGUS_HEADER = 12,
 	SSL_BOGUS_HEADER = 13,
-	MAX_PACKET_ANOMALIES
+	HTTP_BOGUS_URI_HEADER = 14,
+	HTTP_BOGUS_NO_HEADERS = 15,
+	COAP_BOGUS_HEADER = 16,
+	RTP_BOGUS_HEADER = 17,
+	MQTT_BOGUS_HEADER = 18,
+	MAX_PACKET_ANOMALIES = 19
 };
 
-static std::array <const char *,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> PacketAnomamlyTypeString;
-
-struct Anomaly {
+typedef struct {
 	std::int8_t index;
 	const char* name;
+} AnomalyDescription ;
+
+static std::array <AnomalyDescription,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> PacketAnomalyTypeString {{
+        { static_cast<std::int8_t>(PacketAnomalyType::NONE),				"None"                          },
+        { static_cast<std::int8_t>(PacketAnomalyType::IPV4_FRAGMENTATION),              "IPv4 Fragmentation"            },
+        { static_cast<std::int8_t>(PacketAnomalyType::IPV6_FRAGMENTATION),              "IPv6 Fragmentation"            },
+        { static_cast<std::int8_t>(PacketAnomalyType::IPV6_LOOP_EXTENSION_HEADERS),     "IPv6 Loop ext headers"         },
+        { static_cast<std::int8_t>(PacketAnomalyType::TCP_BAD_FLAGS),                   "TCP bad flags"                 },
+        { static_cast<std::int8_t>(PacketAnomalyType::TCP_BOGUS_HEADER),                "TCP bogus header"              },
+        { static_cast<std::int8_t>(PacketAnomalyType::UDP_BOGUS_HEADER),                "UDP bogus header"              },
+        { static_cast<std::int8_t>(PacketAnomalyType::DNS_BOGUS_HEADER),                "DNS bogus header"              },
+        { static_cast<std::int8_t>(PacketAnomalyType::DNS_LONG_NAME),                   "DNS long domain name"          },
+        { static_cast<std::int8_t>(PacketAnomalyType::SMTP_BOGUS_HEADER),               "SMTP bogus header"             },
+        { static_cast<std::int8_t>(PacketAnomalyType::IMAP_BOGUS_HEADER),               "IMAP bogus header"             },
+        { static_cast<std::int8_t>(PacketAnomalyType::POP_BOGUS_HEADER),                "POP bogus header"              },
+        { static_cast<std::int8_t>(PacketAnomalyType::SNMP_BOGUS_HEADER),               "SNMP bogus header"             },
+        { static_cast<std::int8_t>(PacketAnomalyType::SSL_BOGUS_HEADER),                "SSL bogus header"              },
+        { static_cast<std::int8_t>(PacketAnomalyType::HTTP_BOGUS_URI_HEADER),           "HTTP malformed URI"            },
+        { static_cast<std::int8_t>(PacketAnomalyType::HTTP_BOGUS_NO_HEADERS),           "HTTP no headers"		},
+        { static_cast<std::int8_t>(PacketAnomalyType::COAP_BOGUS_HEADER),		"CoAP bogus headers"          	},
+        { static_cast<std::int8_t>(PacketAnomalyType::RTP_BOGUS_HEADER),		"RTP bogus headers"          	},
+        { static_cast<std::int8_t>(PacketAnomalyType::MQTT_BOGUS_HEADER),		"MQTT bogus headers"          	}
+}};
+
+typedef struct {
+	std::int8_t index;
 	int32_t hits;
-};
+	const char* protocol_name;
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
+	Callback call;
+#endif
+} AnomalyInfo;
 
 class AnomalyManager
 {
 public:
-        explicit AnomalyManager()
-                {}
+        explicit AnomalyManager(): anomalies_{{
+		{ static_cast<std::int8_t>(PacketAnomalyType::NONE), 				0, 	"" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::IPV4_FRAGMENTATION), 		0, 	"" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::IPV6_FRAGMENTATION),		0,	"" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::IPV6_LOOP_EXTENSION_HEADERS),	0,	"" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::TCP_BAD_FLAGS),			0,	"tcp" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::TCP_BOGUS_HEADER),		0,	"tcp" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::UDP_BOGUS_HEADER),		0,	"udp" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::DNS_BOGUS_HEADER),		0,	"dns" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::DNS_LONG_NAME),			0,	"dns" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::SMTP_BOGUS_HEADER),		0,	"smtp" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::IMAP_BOGUS_HEADER),		0,	"imap" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::POP_BOGUS_HEADER),		0,	"pop" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::SNMP_BOGUS_HEADER),		0,	"" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::SSL_BOGUS_HEADER),		0,	"ssl" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::HTTP_BOGUS_URI_HEADER),		0,	"http" },
+		{ static_cast<std::int8_t>(PacketAnomalyType::HTTP_BOGUS_NO_HEADERS),		0,	"http" },
+        	{ static_cast<std::int8_t>(PacketAnomalyType::COAP_BOGUS_HEADER),		0,      "" },
+        	{ static_cast<std::int8_t>(PacketAnomalyType::RTP_BOGUS_HEADER),		0,      "" },
+        	{ static_cast<std::int8_t>(PacketAnomalyType::MQTT_BOGUS_HEADER),		0,      "" }
+		}}
+        {}
 
 	void statistics(std::basic_ostream<char>& out);
         void statistics() { statistics(std::cout); }
+	void incAnomaly(Flow *flow, PacketAnomalyType t); 
 	void incAnomaly(PacketAnomalyType t); 
 	const char *getName(PacketAnomalyType t);
 
+#if defined(PYTHON_BINDING)
+        void setCallback(PyObject *callback,const std::string &protocol_name);
+#elif defined(RUBY_BINDING)
+        void setCallback(VALUE callback,const std::string &protocol_name); 
+#elif defined(JAVA_BINDING)
+        void setCallback(JaiCallback *callback,const std::string &protocol_name); 
+#elif defined(LUA_BINDING)
+        void setCallback(lua_State *lua, const std::string& callback,const std::string &protocol_name); 
+#endif
+
 private:
-	std::array <Anomaly,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> anomalies_;
+	std::array <AnomalyInfo,static_cast<std::int8_t>(PacketAnomalyType::MAX_PACKET_ANOMALIES)> anomalies_;
 };
 
 } // namespace aiengine 

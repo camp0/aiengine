@@ -32,7 +32,7 @@ void VxLanProtocol::processFlow(Flow *flow) {
         total_bytes_ += bytes;
         ++total_packets_;
 
-        if (!mux_.expired()&&(bytes > 0)) {
+        if (!mux_.expired()&&(bytes >= header_size)) {
 		// TODO: Check the VNI and forward the packet
                 MultiplexerPtr mux = mux_.lock();
 
@@ -78,13 +78,16 @@ void VxLanProtocol::statistics(std::basic_ostream<char>& out){
 	}
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict VxLanProtocol::getCounters() const {
         boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE VxLanProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters VxLanProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets", total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

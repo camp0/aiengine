@@ -37,13 +37,13 @@ std::unordered_map<std::string ,BitcoinCommandType> BitcoinProtocol::commands_ {
 	{ "getblocks", 	std::make_tuple(BC_CMD_GETBLOCKS,	"get blocks",	0,	24, [](BitcoinInfo &a) {} ) }, // ok
 	{ "getheaders", std::make_tuple(BC_CMD_GETHEADERS,	"get headers",	0,	20, [](BitcoinInfo &a) {} ) },
 	{ "tx", 	std::make_tuple(BC_CMD_TX,		"transaction",	0,	20, [](BitcoinInfo &a) { a.incTransactions(); } ) },
-	{ "block", 	std::make_tuple(BC_CMD_BLOCK,		"block",	0,	24, [](BitcoinInfo &a) {} ) }, // ok
+	{ "block", 	std::make_tuple(BC_CMD_BLOCK,		"block",	0,	24, [](BitcoinInfo &a) { a.incBlocks(); } ) }, // ok
 	{ "headers", 	std::make_tuple(BC_CMD_HEADERS,		"headers",	0,	20, [](BitcoinInfo &a) {} ) },
 	{ "getaddr", 	std::make_tuple(BC_CMD_GETADDR,		"getaddr",	0,	24, [](BitcoinInfo &a) {} ) }, // ok
 	{ "mempool", 	std::make_tuple(BC_CMD_MEMPOOL,		"mempool",	0,	20, [](BitcoinInfo &a) {} ) },
 	{ "ping",	std::make_tuple(BC_CMD_PING,		"ping",		0,	20, [](BitcoinInfo &a) {} ) },
 	{ "pong",	std::make_tuple(BC_CMD_PONG,		"pong",		0,	20, [](BitcoinInfo &a) {} ) },
-	{ "reject",	std::make_tuple(BC_CMD_REJECT,		"reject",	0,	20, [](BitcoinInfo &a) {} ) },
+	{ "reject",	std::make_tuple(BC_CMD_REJECT,		"reject",	0,	20, [](BitcoinInfo &a) { a.incRejects(); } ) },
 	{ "alert",	std::make_tuple(BC_CMD_ALERT,		"alert",	0,	20, [](BitcoinInfo &a) {} ) }
 };
 
@@ -113,6 +113,8 @@ void BitcoinProtocol::processFlow(Flow *flow) {
                 }
                 flow->layer7info = info;
         }
+
+	current_flow_ = flow;
 
 	unsigned char *payload = flow->packet->getPayload();
 	int offset = 0;
@@ -199,7 +201,7 @@ void BitcoinProtocol::statistics(std::basic_ostream<char>& out){
 }
 
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 
 #if defined(PYTHON_BINDING)
 boost::python::dict BitcoinProtocol::getCounters() const {
@@ -210,6 +212,9 @@ VALUE BitcoinProtocol::getCounters() const {
 #elif defined(JAVA_BINDING)
 JavaCounters BitcoinProtocol::getCounters() const {
         JavaCounters counters;
+#elif defined(LUA_BINDING)
+LuaCounters BitcoinProtocol::getCounters() const {
+        LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets",total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

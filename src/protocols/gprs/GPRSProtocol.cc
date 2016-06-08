@@ -141,17 +141,32 @@ void GPRSProtocol::processFlow(Flow *flow) {
         total_bytes_ += bytes;
 	++total_packets_;
 
-        if (!mux_.expired()&&(bytes > 0)) {
-       
+        if (!mux_.expired()&&(bytes >= header_size)) {
+
+		unsigned char *payload = flow->packet->getPayload();      
+		setHeader(payload);
+
 		uint8_t type = gprs_header_->type; 
-		
+			
 		if (type == T_PDU) {
 			MultiplexerPtr mux = mux_.lock();
 
 			Packet gpacket(*(flow->packet));
-			
-			gpacket.setPrevHeaderSize(header_size);
+		
+			bool next_extension_header_present = gprs_header_->flags & (1 << 2); 
+			int offset = 0;
 
+			if (next_extension_header_present) {
+				offset += 6; // sizeof extension headers
+			}
+			bool have_seq_number = gprs_header_->flags & (1 << 1);
+			if (have_seq_number) {
+				offset += 2;
+			}	
+
+			gpacket.setPayload(&payload[offset]);
+			gpacket.setPrevHeaderSize(header_size + offset);
+			
 			mux->setNextProtocolIdentifier(ETHERTYPE_IP); 
 			mux->forwardPacket(gpacket);
 
@@ -218,13 +233,16 @@ void GPRSProtocol::statistics(std::basic_ostream<char>& out) {
 	}
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict GPRSProtocol::getCounters() const {
         boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE GPRSProtocol::getCounters() const {
 	VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters GPRSProtocol::getCounters() const {
+        LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets", total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

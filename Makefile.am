@@ -34,12 +34,16 @@ SUBDIRS = 	src \
 		src/protocols/imap \
 		src/protocols/modbus \
 		src/protocols/bitcoin \
+		src/protocols/mqtt \
 		src/protocols/dns \
 		src/protocols/sip \
 		src/protocols/dhcp \
 		src/protocols/ntp \
 		src/protocols/snmp \
 		src/protocols/ssdp \
+		src/protocols/coap \
+		src/protocols/rtp \
+		src/protocols/netbios \
 		src/protocols/tcpgeneric \
 		src/protocols/udpgeneric \
 		src/protocols/frequency 

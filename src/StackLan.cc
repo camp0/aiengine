@@ -72,14 +72,19 @@ StackLan::StackLan():
         addProtocol(pop);
         addProtocol(bitcoin);
         addProtocol(modbus);
+        addProtocol(mqtt);
         addProtocol(tcp_generic);
         addProtocol(freqs_tcp);
+
         addProtocol(dns);
         addProtocol(sip);
         addProtocol(dhcp);
         addProtocol(ntp);
         addProtocol(snmp);
         addProtocol(ssdp);
+	addProtocol(netbios);
+        addProtocol(coap);
+        addProtocol(rtp);
         addProtocol(udp_generic);
         addProtocol(freqs_udp);
 
@@ -170,17 +175,31 @@ StackLan::StackLan():
 	imap->setFlowManager(flow_table_tcp_);
 	pop->setFlowManager(flow_table_tcp_);
 	bitcoin->setFlowManager(flow_table_tcp_);
+	mqtt->setFlowManager(flow_table_tcp_);
+
 	dns->setFlowManager(flow_table_udp_);
 	sip->setFlowManager(flow_table_udp_);
 	ssdp->setFlowManager(flow_table_udp_);
-	
+	coap->setFlowManager(flow_table_udp_);
+
+	// Connect the AnomalyManager with the protocols that may have anomalies
+	ip_->setAnomalyManager(anomaly_);
+	tcp_->setAnomalyManager(anomaly_);
+	udp_->setAnomalyManager(anomaly_);
+
+	// Connect the CacheManager
+	flow_table_udp_->setCacheManager(cache_mng_);	
+	flow_table_tcp_->setCacheManager(cache_mng_);	
+	tcp_->setCacheManager(cache_mng_);
+
 	// Configure the FlowForwarders
 	tcp_->setFlowForwarder(ff_tcp_);	
 	udp_->setFlowForwarder(ff_udp_);	
 
 	enableFlowForwarders(ff_tcp_,
-		{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus,ff_tcp_generic});
-	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
+		{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus,ff_mqtt,ff_tcp_generic});
+	enableFlowForwarders(ff_udp_,
+		{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_netbios,ff_coap,ff_rtp,ff_udp_generic});
 
 	std::ostringstream msg;
 
@@ -246,8 +265,9 @@ void StackLan::enableNIDSEngine(bool enable) {
 	if (enable) {
 
 		disableFlowForwarders(ff_tcp_,
-			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus}); // we dont remove the ff_tcp_generic
-		disableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp}); // we dont remove the ff_udp_generic
+			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus,ff_mqtt}); // we dont remove the ff_tcp_generic
+		disableFlowForwarders(ff_udp_,
+			{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_netbios,ff_coap,ff_rtp}); // we dont remove the ff_udp_generic
 
                 std::ostringstream msg;
                 msg << "Enable NIDSEngine on " << getName();
@@ -258,8 +278,9 @@ void StackLan::enableNIDSEngine(bool enable) {
 		disableFlowForwarders(ff_udp_,{ff_udp_generic}); 
 	
 		enableFlowForwarders(ff_tcp_,
-			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus,ff_tcp_generic});
-        	enableFlowForwarders(ff_udp_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});	
+			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_modbus,ff_mqtt,ff_tcp_generic});
+        	enableFlowForwarders(ff_udp_,
+			{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_netbios,ff_coap,ff_rtp,ff_udp_generic});	
 	}
 	enable_nids_engine_ = enable;
 }
@@ -281,16 +302,17 @@ void StackLan::setTotalTCPFlows(int value) {
         imap->increaseAllocatedMemory(value * 0.05);
         pop->increaseAllocatedMemory(value * 0.05);
         bitcoin->increaseAllocatedMemory(value * 0.05);
+        mqtt->increaseAllocatedMemory(value * 0.05);
 }
 
 void StackLan::setTotalUDPFlows(int value) {
 
 	flow_cache_udp_->createFlows(value);
-	dns->increaseAllocatedMemory(value / 2);
 
-	// SIP values
+	dns->increaseAllocatedMemory(value / 2);
 	sip->increaseAllocatedMemory(value * 0.2);
 	ssdp->increaseAllocatedMemory(value * 0.2);
+	coap->increaseAllocatedMemory(value * 0.2);
 }
 
 int StackLan::getTotalTCPFlows() const { return flow_cache_tcp_->getTotalFlows(); }

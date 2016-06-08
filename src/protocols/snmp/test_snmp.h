@@ -111,6 +111,8 @@ struct StackSNMPtest : public StackTest
                 // Configure the FlowForwarders
                 udp->setFlowForwarder(ff_udp);
 		ff_udp->addUpFlowForwarder(ff_snmp);
+
+		snmp->setAnomalyManager(anomaly);
         }
 
 	void show() {

@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 if HAVE_LIBLOG4CXX
@@ -15,24 +17,20 @@ noinst_HEADERS = 	SIPProtocol.h SIPInfo.h test_sip.h
 test_sip_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../FlowForwarder.cc ../../CacheManager.cc \
 			../../AnomalyManager.cc \
+			../../StringCache.cc \
 			../ethernet/EthernetProtocol.cc \
 			../ip/IPProtocol.cc \
 			../../ipset/IPSetManager.cc \
 			../../ipset/IPSet.cc \
 			../ip6/IPv6Protocol.cc \
 			../udp/UDPProtocol.cc \
-			../gprs/GPRSInfo.cc \
-			../dns/DNSInfo.cc \
-			../tcp/TCPInfo.cc \
-			../ssl/SSLInfo.cc \
-			../http/HTTPInfo.cc \
-			../smtp/SMTPInfo.cc \
+			$(TEST_FLOW_OBJECTS) \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \
 			../../names/DomainName.cc \
 			../../regex/Regex.cc \
-			SIPInfo.cc SIPProtocol.cc test_sip.cc
+			SIPProtocol.cc test_sip.cc
 
 test_sip_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
 test_sip_LDADD   = $(BOOST_LDFLAGS) -lboost_unit_test_framework $(LOG4CXX_FLAGS) $(PCRE_LIB)

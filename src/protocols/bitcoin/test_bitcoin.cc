@@ -41,6 +41,12 @@ BOOST_AUTO_TEST_CASE (test1_bitcoin)
 
 	inject(packet);
 
+        Flow *flow = bitcoin->getCurrentFlow();
+
+        BOOST_CHECK( flow != nullptr);
+        SharedPointer<BitcoinInfo> info = flow->getBitcoinInfo();
+        BOOST_CHECK(info != nullptr);
+
         // Check the results
         BOOST_CHECK(ip->getTotalPackets() == 1);
         BOOST_CHECK(ip->getTotalValidatedPackets() == 1);
@@ -60,6 +66,10 @@ BOOST_AUTO_TEST_CASE (test1_bitcoin)
 	
 	BOOST_CHECK( bitcoin->getTotalBitcoinOperations() == 1);
 	BOOST_CHECK( bitcoin->getPayloadLength() == 85);
+
+	BOOST_CHECK(info->getTotalTransactions() == 0);
+	BOOST_CHECK(info->getTotalBlocks() == 0);
+	BOOST_CHECK(info->getTotalRejects() == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test2_bitcoin)
@@ -69,6 +79,12 @@ BOOST_AUTO_TEST_CASE (test2_bitcoin)
         Packet packet(pkt,length);
 
 	inject(packet);
+
+        Flow *flow = bitcoin->getCurrentFlow();
+
+        BOOST_CHECK( flow != nullptr);
+        SharedPointer<BitcoinInfo> info = flow->getBitcoinInfo();
+        BOOST_CHECK(info != nullptr);
 
         // Check the results
         BOOST_CHECK(ip->getTotalPackets() == 1);
@@ -89,6 +105,10 @@ BOOST_AUTO_TEST_CASE (test2_bitcoin)
 
 	BOOST_CHECK( bitcoin->getTotalBitcoinOperations() == 4);
 	BOOST_CHECK( bitcoin->getPayloadLength() == 31);
+
+	BOOST_CHECK(info->getTotalTransactions() == 0);
+	BOOST_CHECK(info->getTotalBlocks() == 0);
+	BOOST_CHECK(info->getTotalRejects() == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test3_bitcoin)
@@ -98,6 +118,12 @@ BOOST_AUTO_TEST_CASE (test3_bitcoin)
         Packet packet(pkt,length);
 
 	inject(packet);
+
+        Flow *flow = bitcoin->getCurrentFlow();
+
+        BOOST_CHECK( flow != nullptr);
+        SharedPointer<BitcoinInfo> info = flow->getBitcoinInfo();
+        BOOST_CHECK(info != nullptr);
 
         // Check the results
         BOOST_CHECK(ip->getTotalPackets() == 1);
@@ -118,6 +144,10 @@ BOOST_AUTO_TEST_CASE (test3_bitcoin)
 
 	BOOST_CHECK( bitcoin->getTotalBitcoinOperations() == 6);
 	BOOST_CHECK( bitcoin->getPayloadLength() == 215);
+
+	BOOST_CHECK(info->getTotalTransactions() == 0);
+	BOOST_CHECK(info->getTotalBlocks() == 6);
+	BOOST_CHECK(info->getTotalRejects() == 0);
 }
 
 BOOST_AUTO_TEST_CASE (test4_bitcoin)
@@ -127,6 +157,12 @@ BOOST_AUTO_TEST_CASE (test4_bitcoin)
         Packet packet(pkt,length);
 
 	inject(packet);
+
+        Flow *flow = bitcoin->getCurrentFlow();
+
+        BOOST_CHECK( flow != nullptr);
+        SharedPointer<BitcoinInfo> info = flow->getBitcoinInfo();
+        BOOST_CHECK(info != nullptr);
 
         // Check the results
         BOOST_CHECK(ip->getTotalPackets() == 1);
@@ -145,8 +181,12 @@ BOOST_AUTO_TEST_CASE (test4_bitcoin)
         BOOST_CHECK(bitcoin->getTotalBytes() == 282);
         BOOST_CHECK(bitcoin->getTotalMalformedPackets() == 0);
 
-	BOOST_CHECK( bitcoin->getTotalBitcoinOperations() == 1);
-	BOOST_CHECK( bitcoin->getPayloadLength() == 258);
+	BOOST_CHECK(bitcoin->getTotalBitcoinOperations() == 1);
+	BOOST_CHECK(bitcoin->getPayloadLength() == 258);
+
+	BOOST_CHECK(info->getTotalTransactions() == 1);
+	BOOST_CHECK(info->getTotalBlocks() == 0);
+	BOOST_CHECK(info->getTotalRejects() == 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

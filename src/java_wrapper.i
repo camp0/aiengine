@@ -21,6 +21,13 @@
 #include "names/DomainNameManager.h"
 #include "names/DomainName.h"
 #include "learner/LearnerEngine.h"
+#ifdef HAVE_LIBLOG4CXX
+#include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
+
+using namespace log4cxx;
+using namespace log4cxx::helpers;
+#endif
 %}
 
 %template(Counters) std::map<std::string,int32_t>;
@@ -118,6 +125,7 @@
 %ignore aiengine::FlowManager::getLastProcessFlow;
 %ignore aiengine::FlowManager::setProtocol;
 %ignore aiengine::FlowManager::updateFlowTime;
+%ignore aiengine::FlowManager::setCacheManager;
 
 %ignore aiengine::DomainNameManager::removeDomainName(const SharedPointer<DomainName>& domain);
 %ignore aiengine::DomainNameManager::addDomainName(const SharedPointer<DomainName>& domain);
@@ -144,6 +152,8 @@
 %ignore aiengine::Flow::getSSDPInfo;
 %ignore aiengine::Flow::getSIPInfo;
 %ignore aiengine::Flow::getBitcoinInfo;
+%ignore aiengine::Flow::getCoAPInfo;
+%ignore aiengine::Flow::getMQTTInfo;
 %ignore aiengine::Flow::packet;
 %ignore aiengine::Flow::regex;
 %ignore aiengine::Flow::frequencies;
@@ -192,6 +202,8 @@
 %ignore aiengine::HTTPInfo::uri;
 %ignore aiengine::HTTPInfo::host;
 %ignore aiengine::HTTPInfo::ua;
+%ignore aiengine::HTTPInfo::ct;
+%ignore aiengine::HTTPInfo::filename;
 %ignore aiengine::HTTPInfo::matched_domain_name;
 %ignore aiengine::HTTPInfo::getTotalRequests;
 %ignore aiengine::HTTPInfo::getTotalResponses;
@@ -204,6 +216,9 @@
 
 %ignore aiengine::BitcoinInfo::reset;
 %ignore aiengine::BitcoinInfo::incTransactions;
+
+%ignore aiengine::MQTTInfo::reset;
+%ignore aiengine::MQTTInfo::topic;
 
 %ignore aiengine::SIPInfo::reset;
 %ignore aiengine::SIPInfo::resetStrings;
@@ -263,6 +278,13 @@
 %ignore aiengine::SSDPInfo::getTotalRequests;
 %ignore aiengine::SSDPInfo::getTotalResponses;
 
+%ignore aiengine::CoAPInfo::reset;
+%ignore aiengine::CoAPInfo::hostname;
+%ignore aiengine::CoAPInfo::uri;
+%ignore aiengine::CoAPInfo::matched_domain_name;
+%ignore aiengine::CoAPInfo::setIsBanned;
+%ignore aiengine::CoAPInfo::getIsBanned;
+
 %ignore operator<<;
 
 %feature("director") JaiCallback;
@@ -299,6 +321,8 @@
 %include "protocols/pop/POPInfo.h"
 %include "protocols/ssdp/SSDPInfo.h"
 %include "protocols/bitcoin/BitcoinInfo.h"
+%include "protocols/coap/CoAPInfo.h"
+%include "protocols/mqtt/MQTTInfo.h"
 %include "Flow.h"
 //%include "learner/LearnerEngine.h"
 //%include "protocols/frequency/FrequencyGroup.h"
@@ -307,10 +331,10 @@
   static {
     try {
       System.load("/home/luis/c++/aiengine/src/jaaiengine.so");  
-      //System.loadLibrary("example");
     } catch (UnsatisfiedLinkError e) {
       System.err.println("Native code library failed to load. \n" + e);
       System.exit(1);
     }
   }
 %}
+

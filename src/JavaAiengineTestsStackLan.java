@@ -33,6 +33,8 @@ public class JavaAiengineTestsStackLan {
 
 	this.s.setUDPRegexManager(rm);
 
+        this.s.enableNIDSEngine(true);
+
 	this.s.enableLinkLayerTagging("vlan");
 
        	this.pd.open("../pcapfiles/flow_vlan_netbios.pcap");

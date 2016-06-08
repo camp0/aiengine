@@ -55,6 +55,7 @@
 #include "DatabaseAdaptor.h"
 #include "./ipset/IPSetManager.h"
 #include "names/DomainNameManager.h"
+#include "CacheManager.h"
 
 namespace aiengine {
 
@@ -90,6 +91,11 @@ typedef struct ruby_shared_data {
 
 #define addValueToCounter(h,key,value) rb_hash_aset(h,rb_str_new2(key),INT2NUM(value)); 
 
+#elif defined(LUA_BINDING)
+
+#define addValueToCounter(h,key,value) h[key] = value;
+typedef std::map<std::string,int32_t> LuaCounters;
+
 #endif
 
 class Protocol 
@@ -108,6 +114,11 @@ public:
 		,dbptr_(Qnil),is_set_db_(false),packet_sampling_(32)
 #elif defined(JAVA_BINDING)
 		,dbptr_(nullptr),is_set_db_(false),packet_sampling_(32)
+#elif defined(LUA_BINDING)
+		,lua_(nullptr),is_set_db_(false),packet_sampling_(32),
+		ref_function_insert_(LUA_NOREF), 
+		ref_function_update_(LUA_NOREF), 
+		ref_function_remove_(LUA_NOREF)
 #endif
 		{}
 
@@ -148,6 +159,7 @@ public:
 	virtual void addRejectFunction(std::function <void (Flow*)> reject) {}
 
 	virtual void setAnomalyManager(SharedPointer<AnomalyManager> amng) {}
+	virtual void setCacheManager(SharedPointer<CacheManager> cmng) {}
 
 #if defined(PYTHON_BINDING)
         virtual boost::python::dict getCounters() const = 0;
@@ -164,12 +176,14 @@ public:
 	
 	VALUE addMapToHash(const GenericMapType &mt) const;
 #elif defined(JAVA_BINDING)
-
 	void setDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling);
 	virtual JavaCounters getCounters() const = 0;
+#elif defined(LUA_BINDING)
+	void setDatabaseAdaptor(lua_State *lua, const char *obj_name, int packet_sampling);
+	virtual LuaCounters getCounters() const = 0;
 #endif
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 
 	bool getDatabaseObjectIsSet() const { return is_set_db_;}
 	int getPacketSampling() const { return packet_sampling_;}
@@ -204,10 +218,17 @@ private:
 	VALUE dbptr_;
 	bool is_set_db_;
 	int packet_sampling_;
-#elif defined(JAVA_BINDING)
+#elif defined(JAVA_BINDING) 
 	DatabaseAdaptor *dbptr_;
 	bool is_set_db_;
 	int packet_sampling_;
+#elif defined(LUA_BINDING)
+	lua_State *lua_;
+	bool is_set_db_;
+	int packet_sampling_;
+	int ref_function_insert_;
+	int ref_function_update_;
+	int ref_function_remove_;
 #endif
 
 #ifdef HAVE_LIBLOG4CXX

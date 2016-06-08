@@ -681,6 +681,9 @@ BOOST_AUTO_TEST_CASE (test14_http)
         http->processFlow(flow.get());
 
 	// TODO: Verify the response
+	std::string ct("text/plain");
+	BOOST_CHECK(info->ct != nullptr);
+        BOOST_CHECK(ct.compare(info->ct->getName()) == 0);
 
 	// Inject the next header
 	flow->setFlowDirection(FlowDirection::FORWARD);
@@ -863,15 +866,18 @@ BOOST_AUTO_TEST_CASE (test18_http)
         std::string host("86.19.100.102");
         std::string ua("Shockwave Flash");
 	std::string uri("/open/1");
+	std::string ct("application/x-fcs");
 
         SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
         BOOST_CHECK(info != nullptr);
 
         BOOST_CHECK(info->host != nullptr);
         BOOST_CHECK(info->ua != nullptr);
+        BOOST_CHECK(info->ct != nullptr);
         BOOST_CHECK(host.compare(info->host->getName()) == 0);
         BOOST_CHECK(ua.compare(info->ua->getName()) == 0);
         BOOST_CHECK(uri.compare(info->uri->getName()) == 0);
+        BOOST_CHECK(ct.compare(info->ct->getName()) == 0);
 
 	BOOST_CHECK(info->getContentLength() == 1);
 }
@@ -884,7 +890,7 @@ BOOST_AUTO_TEST_CASE (test19_http)
 			"Connection: Keep-Alive\r\n"
 			"Content-Length: 17\r\n"
 			"Server: FlashCom/3.5.7\r\n"
-			"Content-Type:  application/x-fcs\r\n"
+			"Content-Type: application/x-fcs\r\n"
 			"\r\n"
 			"Cuomdz02wSLGeYbI.";
 
@@ -934,7 +940,7 @@ BOOST_AUTO_TEST_CASE (test20_http)
                         "Connection: Keep-Alive\r\n"
                         "Content-Length: 17\r\n"
                         "Server: FlashCom/3.5.7\r\n"
-                        "Content-Type:  application/x-fcs\r\n"
+                        "Content-Type: application/x-fcs\r\n"
                         "\r\n"
                         "Cuomdz02wSLGeYbI.";
 
@@ -970,13 +976,16 @@ BOOST_AUTO_TEST_CASE (test20_http)
         std::string host("86.19.100.102");
         std::string ua("Shockwave Flash");
         std::string uri("/open/1");
+	std::string ct("application/x-fcs");
 
         BOOST_CHECK(info->host != nullptr);
         BOOST_CHECK(info->ua != nullptr);
         BOOST_CHECK(info->uri != nullptr);
+        BOOST_CHECK(info->ct != nullptr);
         BOOST_CHECK(host.compare(info->host->getName()) == 0);
         BOOST_CHECK(ua.compare(info->ua->getName()) == 0);
         BOOST_CHECK(uri.compare(info->uri->getName()) == 0);
+        BOOST_CHECK(ct.compare(info->ct->getName()) == 0);
 
         BOOST_CHECK(info->getContentLength() == 17);
 }
@@ -999,7 +1008,7 @@ BOOST_AUTO_TEST_CASE (test21_http)
                         "Connection: Keep-Alive\r\n"
                         "Content-Length: 37\r\n"
                         "Server: FlashCom/3.5.7\r\n"
-                        "Content-Type:  application/x-fcs\r\n"
+                        "Content-Type: application/x-fcs\r\n"
                         "\r\n"
                         "Cuomdz02wSLGeYbI.";
 
@@ -1361,6 +1370,9 @@ BOOST_AUTO_TEST_CASE (test26_http)
         flow->setFlowDirection(FlowDirection::FORWARD);
         http->processFlow(flow.get());
 
+	// Verify the anomaly
+	BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::NONE);
+
         BOOST_CHECK(host_name->getMatchs() == 1);
         BOOST_CHECK(host_name->getTotalEvaluates() == 0);
         BOOST_CHECK(re1->getMatchs() == 1);
@@ -1386,7 +1398,7 @@ BOOST_AUTO_TEST_CASE (test27_http)
                         "Connection: Keep-Alive\r\n"
                         "Content-Length: 37\r\n"
                         "Server: FlashCom/3.5.7\r\n"
-                        "Content-Type:  application/x-fcs\r\n"
+                        "Content-Type: application/x-fcs\r\n"
                         "\r\n"
                         "Cuomdz02wSLGeYbI.";
 
@@ -1419,11 +1431,162 @@ BOOST_AUTO_TEST_CASE (test27_http)
         flow->setFlowDirection(FlowDirection::BACKWARD);
         http->processFlow(flow.get());
 
+	// Verify the anomaly
+	BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::NONE);
+
 	BOOST_CHECK(host_name->getMatchs() == 1);
         BOOST_CHECK(host_name->getTotalEvaluates() == 0);
         BOOST_CHECK(re1->getMatchs() == 1);
         BOOST_CHECK(re1->getTotalEvaluates() == 1);
 }
+
+// Verify the use of malformed uris
+BOOST_AUTO_TEST_CASE (test28_http) 
+{
+        char *header =  "GET /VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB/oonnnnn-a-/otherfile.html\r\n"
+                        "Connection: close\r\n"
+                        "Accept-Language: en-gb\r\n"
+                        "Accept: */*\r\n"
+			"Cookie: PREF=ID=765870cb5ff303a3:TM=1209230140:LM=1209255358:GM=1:S=tFGcUUKdZTTlFhg8; "
+				"rememberme=true; SID=DQAAAHcAAADymnf27WSdmq8VK7DtQkDCYwpT6yEH1c8p6crrirTO3HsXN"
+				"2N_pOcW-T82lcNyvlUHgXiVPsZYrH6TnjQrgCEOLjUSOCrlLFh5I0BdGjioxzmksgWrrfeMV-y7bx1"
+				"T1LPCMDOW0Wkw0XFqWOpMlkBCHsdt2Vcsha0j20VpIaw6yg; NID=10=jMYWNkozslA4UaRu8zyFSL"
+				"Ens8iWVz4GdkeefkqVm5dFS0F0ztc8hDlNJRllb_WeYe9Wx6a8Yo7MnrFzqwZczgXV5e-RFbCrrJ9dfU5gs79L_v3BSdueIg_OOfjpScSh\r\n"
+                        "User-Agent: LuisAgent\r\n"
+                        "Accept-Encoding: gzip, deflate\r\n"
+                        "Host: www.bu.com\r\n\r\n";
+
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+        Packet packet(pkt,length);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->increaseAllocatedMemory(1);
+
+        flow->packet = const_cast<Packet*>(&packet);
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+
+	// Verify the anomaly
+	BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::HTTP_BOGUS_URI_HEADER);
+}
+
+// Verify the use of no headers anomaly
+BOOST_AUTO_TEST_CASE (test29_http) 
+{
+        char *header1 = "GET /VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WFO0fxkBCOZXW9MUeOXx3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB/oonnnnn-a-/otherfile.html HTTP/1.0\r\n"
+                        "Host: www.somehost.com\r\n"
+                        "\r\n";
+
+        char *response = "HTTP/1.1 200 OK\r\n"
+                        "Cache-Control: no-cache\r\n"
+                        "Connection: Keep-Alive\r\n"
+			"\r\n";
+
+        Packet packetr(reinterpret_cast <unsigned char*> (response),strlen(response));
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header1);
+        int length1 = strlen(header1);
+        Packet packet1(pkt1,length1);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->increaseAllocatedMemory(1);
+
+        flow->packet = const_cast<Packet*>(&packet1);
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+
+	// Verify the anomaly
+	BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::NONE);
+
+	// The HTTP response from the server
+        flow->packet = const_cast<Packet*>(&packetr);
+        flow->setFlowDirection(FlowDirection::BACKWARD);
+        http->processFlow(flow.get());
+
+        char *header2 = "GET /VrK3rTSpTd%2Fr8PIqHD4wZCWvwEdnf2k8US7WF%20%20x3XbL7bs8YRSvnhkrM3mnIuU5PZuwKY9rQzKB/oonnnnn-a-/otherfile.html HTTP/1.0\r\n"
+                  	"\r\n";
+        
+        unsigned char *pkt2 = reinterpret_cast <unsigned char*> (header2);
+        int length2 = strlen(header2);
+        Packet packet2(pkt2,length2);
+
+	flow->packet = const_cast<Packet*>(&packet2);
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+
+	// Verify the anomaly
+	BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::HTTP_BOGUS_NO_HEADERS);
+}
+
+// Verify the extraction of the filename on the content-disposition field
+BOOST_AUTO_TEST_CASE (test30_http)
+{
+	char *header =	"GET /00015d766423rr9f/1415286120 HTTP/1.1\r\n"
+			"Accept: image/jpeg, application/x-ms-application, image/gif, */*\r\n"
+			"Referer: http://grannityrektonaver.co.vu/15c0b14drr9f_1_08282d03fb0251bbd75ff6dc6e317bd9.html\r\n"
+			"Accept-Language: en-US\r\n"
+			"User-Agent: Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729\r\n"
+			"Accept-Encoding: gzip, deflate\r\n"
+			"Host: grannityrektonaver.co.vu\r\n"
+			"Connection: Keep-Alive\r\n"
+			"\r\n";
+
+        char *response = "HTTP/1.1 200 OK\r\n"
+                        "Server: nginx/1.2.1r\n"
+			"Date: Thu, 06 Nov 2014 15:03:10 GMT\r\n"
+			"Content-Type: application/pdf\r\n"
+			"Content-Length: 9940\r\n"
+			"Connection: keep-alive\r\n"
+			"X-Powered-By: PHP/5.4.33\r\n"
+			"Accept-Ranges: bytes\r\n"
+			"Content-Disposition: inline; filename=XykpdWhZZ2.pdf\r\n"
+			"\r\n"
+			"%PDF-1.6\r\n"
+			"%....\r\n"
+			"1 0 obj\r\n"
+			"<<\r\n"
+			"/Type /Catalog\r\n"
+			"/Version /1.4\r\n"
+			"/Pages 2 0 R\r\n"
+                        "/AcroForm 3 0 R\r\n"
+			">>\r\n"
+			"endobj";
+
+        Packet packetr(reinterpret_cast <unsigned char*> (response),strlen(response));
+        unsigned char *pkt1 = reinterpret_cast <unsigned char*> (header);
+        int length1 = strlen(header);
+        Packet packet1(pkt1,length1);
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        http->increaseAllocatedMemory(1);
+
+        flow->packet = const_cast<Packet*>(&packet1);
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        http->processFlow(flow.get());
+
+        flow->packet = const_cast<Packet*>(&packetr);
+        flow->setFlowDirection(FlowDirection::BACKWARD);
+        http->processFlow(flow.get());
+
+        SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
+        BOOST_CHECK(info != nullptr);
+
+        BOOST_CHECK(info->getResponseCode() == 200);
+        BOOST_CHECK(info->getContentLength() == 9940);
+
+        BOOST_CHECK(info->getTotalRequests()  == 1);
+        BOOST_CHECK(info->getTotalResponses()  == 1);
+
+	BOOST_CHECK(info->ct != nullptr);
+	BOOST_CHECK(info->filename != nullptr);
+
+	std::string ct("application/pdf");
+	std::string filename("XykpdWhZZ2.pdf");
+
+	BOOST_CHECK(ct.compare(info->ct->getName()) == 0);
+	BOOST_CHECK(filename.compare(info->filename->getName()) == 0);
+}
+
 
 
 BOOST_AUTO_TEST_SUITE_END( )

@@ -48,6 +48,10 @@ NetworkStack::NetworkStack():
         pop(POPProtocolPtr(new POPProtocol())),
 	bitcoin(BitcoinProtocolPtr(new BitcoinProtocol())),
 	modbus(ModbusProtocolPtr(new ModbusProtocol())),
+	coap(CoAPProtocolPtr(new CoAPProtocol())),
+	rtp(RTPProtocolPtr(new RTPProtocol())),
+	mqtt(MQTTProtocolPtr(new MQTTProtocol())),
+	netbios(NetbiosProtocolPtr(new NetbiosProtocol())),
         tcp_generic(TCPGenericProtocolPtr(new TCPGenericProtocol())),
         udp_generic(UDPGenericProtocolPtr(new UDPGenericProtocol())),
         freqs_tcp(FrequencyProtocolPtr(new FrequencyProtocol("TCPFrequencyProtocol","tcpfrequency"))),
@@ -66,18 +70,24 @@ NetworkStack::NetworkStack():
         ff_pop(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_bitcoin(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_modbus(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_coap(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_rtp(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_mqtt(SharedPointer<FlowForwarder>(new FlowForwarder())),
+        ff_netbios(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_tcp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_udp_generic(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_tcp_freqs(SharedPointer<FlowForwarder>(new FlowForwarder())),
         ff_udp_freqs(SharedPointer<FlowForwarder>(new FlowForwarder())),
-
+	anomaly_(SharedPointer<AnomalyManager>(new AnomalyManager())), 
+	cache_mng_(SharedPointer<CacheManager>(new CacheManager())), 
+	// Private section
 	stats_level_(0),name_(""),
 	proto_vector_(),
 	domain_mng_list_(),
 	tcp_regex_mng_(),udp_regex_mng_(),
 	tcp_ipset_mng_(),udp_ipset_mng_(),
-	link_layer_tag_name_(),
-	anomaly_(SharedPointer<AnomalyManager>(new AnomalyManager())) {
+	link_layer_tag_name_()
+	{
 
         // configure the HTTP Layer
         http->setFlowForwarder(ff_http);
@@ -127,6 +137,25 @@ NetworkStack::NetworkStack():
         ff_ssdp->addChecker(std::bind(&SSDPProtocol::ssdpChecker,ssdp,std::placeholders::_1));
         ff_ssdp->addFlowFunction(std::bind(&SSDPProtocol::processFlow,ssdp,std::placeholders::_1));
 
+        // Configure the netbios
+        netbios->setFlowForwarder(ff_netbios);
+        ff_netbios->setProtocol(static_cast<ProtocolPtr>(netbios));
+        ff_netbios->addChecker(std::bind(&NetbiosProtocol::netbiosChecker,netbios,std::placeholders::_1));
+        ff_netbios->addFlowFunction(std::bind(&NetbiosProtocol::processFlow,netbios,std::placeholders::_1));
+
+	// Configure the CoAP
+        coap->setFlowForwarder(ff_coap);
+        ff_coap->setProtocol(static_cast<ProtocolPtr>(coap));
+        ff_coap->addChecker(std::bind(&CoAPProtocol::coapChecker,coap,std::placeholders::_1));
+        ff_coap->addFlowFunction(std::bind(&CoAPProtocol::processFlow,coap,std::placeholders::_1));
+
+        // configure the rtp 
+        rtp->setFlowForwarder(ff_rtp);
+        ff_rtp->setProtocol(static_cast<ProtocolPtr>(rtp));
+        ff_rtp->addChecker(std::bind(&RTPProtocol::rtpChecker,rtp,std::placeholders::_1));
+        ff_rtp->addFlowFunction(std::bind(&RTPProtocol::processFlow,rtp,
+		std::placeholders::_1));
+
         // Configure the SMTP 
         smtp->setFlowForwarder(ff_smtp);
         ff_smtp->setProtocol(static_cast<ProtocolPtr>(smtp));
@@ -157,6 +186,12 @@ NetworkStack::NetworkStack():
         ff_modbus->addChecker(std::bind(&ModbusProtocol::modbusChecker,modbus,std::placeholders::_1));
         ff_modbus->addFlowFunction(std::bind(&ModbusProtocol::processFlow,modbus,std::placeholders::_1));
 
+        // Configure the mqtt
+        mqtt->setFlowForwarder(ff_mqtt);
+        ff_mqtt->setProtocol(static_cast<ProtocolPtr>(mqtt));
+        ff_mqtt->addChecker(std::bind(&MQTTProtocol::mqttChecker,mqtt,std::placeholders::_1));
+        ff_mqtt->addFlowFunction(std::bind(&MQTTProtocol::processFlow,mqtt,std::placeholders::_1));
+
         // configure the TCP generic Layer
         tcp_generic->setFlowForwarder(ff_tcp_generic);
         ff_tcp_generic->setProtocol(static_cast<ProtocolPtr>(tcp_generic));
@@ -181,6 +216,29 @@ NetworkStack::NetworkStack():
         ff_udp_freqs->addChecker(std::bind(&FrequencyProtocol::freqChecker,freqs_udp,std::placeholders::_1));
         ff_udp_freqs->addFlowFunction(std::bind(&FrequencyProtocol::processFlow,freqs_udp,std::placeholders::_1));
 
+	// Sets the reference to the CacheManager or protocols that release objects
+        ssl->setCacheManager(cache_mng_);
+       	http->setCacheManager(cache_mng_);
+        dns->setCacheManager(cache_mng_);
+        sip->setCacheManager(cache_mng_);
+        coap->setCacheManager(cache_mng_);
+        smtp->setCacheManager(cache_mng_);
+        pop->setCacheManager(cache_mng_);
+        imap->setCacheManager(cache_mng_);
+        mqtt->setCacheManager(cache_mng_);
+
+	// Sets the AnomalyManager on protocols that could generate an anomaly
+        dns->setAnomalyManager(anomaly_);
+        snmp->setAnomalyManager(anomaly_);
+        coap->setAnomalyManager(anomaly_);
+        rtp->setAnomalyManager(anomaly_);
+        sip->setAnomalyManager(anomaly_);
+        http->setAnomalyManager(anomaly_);
+        ssl->setAnomalyManager(anomaly_);
+        smtp->setAnomalyManager(anomaly_);
+        pop->setAnomalyManager(anomaly_);
+        imap->setAnomalyManager(anomaly_);
+        mqtt->setAnomalyManager(anomaly_);
 }
 
 ProtocolPtr NetworkStack::get_protocol(const std::string &name) {
@@ -259,7 +317,7 @@ void NetworkStack::statistics(std::basic_ostream<char>& out) const {
 	out << *this; 
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 
 void NetworkStack::setDomainNameManager(DomainNameManager& dnm, const std::string& name) {
 
@@ -284,40 +342,70 @@ void NetworkStack::setDomainNameManager(DomainNameManager& dnm, const std::strin
 
 #endif
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 
 #if defined(PYTHON_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(boost::python::object &dbptr) {
-#elif defined(RUBY_BINDING)
-void NetworkStack::setUDPDatabaseAdaptor(VALUE dbptr) {
-#elif defined(JAVA_BINDING)
-void NetworkStack::setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr) {
-#endif
+
 	setUDPDatabaseAdaptor(dbptr,32);
 }
+#elif defined(RUBY_BINDING)
+void NetworkStack::setUDPDatabaseAdaptor(VALUE dbptr) {
+
+	setUDPDatabaseAdaptor(dbptr,32);
+}
+#elif defined(JAVA_BINDING) 
+void NetworkStack::setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr) {
+
+	setUDPDatabaseAdaptor(dbptr,32);
+}
+#elif defined(LUA_BINDING)
+void NetworkStack::setUDPDatabaseAdaptor(lua_State *lua, const char *obj_name) {
+
+	setUDPDatabaseAdaptor(lua,obj_name,32);
+}
+#endif
 
 #if defined(PYTHON_BINDING)
 void NetworkStack::setTCPDatabaseAdaptor(boost::python::object &dbptr) {
-#elif defined(RUBY_BINDING)
-void NetworkStack::setTCPDatabaseAdaptor(VALUE dbptr) {
-#elif defined(JAVA_BINDING)
-void NetworkStack::setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr) {
-#endif
+
 	setTCPDatabaseAdaptor(dbptr,32);
 }
+#elif defined(RUBY_BINDING)
+void NetworkStack::setTCPDatabaseAdaptor(VALUE dbptr) {
+
+	setTCPDatabaseAdaptor(dbptr,32);
+}
+#elif defined(JAVA_BINDING) 
+void NetworkStack::setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr) {
+	
+	setTCPDatabaseAdaptor(dbptr,32);
+}
+#elif defined(LUA_BINDING)
+void NetworkStack::setTCPDatabaseAdaptor(lua_State *lua, const char* obj_name) {
+	
+	setTCPDatabaseAdaptor(lua,obj_name,32);
+}
+#endif
 
 #if defined(PYTHON_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(boost::python::object &dbptr, int packet_sampling) {
 #elif defined(RUBY_BINDING)
 void NetworkStack::setUDPDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
-#elif defined(JAVA_BINDING)
+#elif defined(JAVA_BINDING) 
 void NetworkStack::setUDPDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
+#elif defined(LUA_BINDING)
+void NetworkStack::setUDPDatabaseAdaptor(lua_State *lua, const char *obj_name, int packet_sampling) {
 #endif
         ProtocolPtr pp = get_protocol(UDPProtocol::default_name);
         if (pp) {
                 UDPProtocolPtr proto = std::static_pointer_cast<UDPProtocol>(pp);
                 if (proto) {
+#if defined(LUA_BINDING)
+                        proto->setDatabaseAdaptor(lua,obj_name,packet_sampling);
+#else
                         proto->setDatabaseAdaptor(dbptr,packet_sampling);
+#endif
                 }
         }
 }
@@ -328,14 +416,38 @@ void NetworkStack::setTCPDatabaseAdaptor(boost::python::object &dbptr, int packe
 void NetworkStack::setTCPDatabaseAdaptor(VALUE dbptr, int packet_sampling) {
 #elif defined(JAVA_BINDING)
 void NetworkStack::setTCPDatabaseAdaptor(DatabaseAdaptor *dbptr, int packet_sampling) {
+#elif defined(LUA_BINDING)
+void NetworkStack::setTCPDatabaseAdaptor(lua_State *lua, const char *obj_name, int packet_sampling) {
 #endif
         ProtocolPtr pp = get_protocol(TCPProtocol::default_name);
         if (pp) {
                 TCPProtocolPtr proto = std::static_pointer_cast<TCPProtocol>(pp);
                 if (proto) {
+#if defined(LUA_BINDING)
+                        proto->setDatabaseAdaptor(lua,obj_name,packet_sampling);
+#else
                         proto->setDatabaseAdaptor(dbptr,packet_sampling);
+#endif
                 }
         }
+}
+
+#if defined(PYTHON_BINDING)
+void NetworkStack::setAnomalyCallback(PyObject *callback,const std::string& proto_name) {
+#elif defined(RUBY_BINDING)
+void NetworkStack::setAnomalyCallback(VALUE callback,const std::string& proto_name) {
+#elif defined(JAVA_BINDING)
+void NetworkStack::setAnomalyCallback(JaiCallback *callback,const std::string& proto_name) {
+#elif defined(LUA_BINDING)
+void NetworkStack::setAnomalyCallback(lua_State *lua, const std::string& callback,const std::string& proto_name) {
+#endif
+	if (anomaly_) {
+#if defined(LUA_BINDING)
+		anomaly_->setCallback(lua,callback,proto_name);
+#else
+		anomaly_->setCallback(callback,proto_name);
+#endif
+	}
 }
 
 #endif
@@ -399,6 +511,21 @@ std::map<std::string,int> NetworkStack::getCounters(const std::string& name) {
                 counters = pp->getCounters();
         }
 
+	return counters;
+}
+
+#elif defined(LUA_BINDING)
+
+std::map<std::string,int> NetworkStack::getCounters(const char *name) {
+// std::map<std::string,int> NetworkStack::getCounters(lua_State *lua, const char *name) {
+	std::map<std::string,int> counters;
+	std::string sname(name);
+
+        ProtocolPtr pp = get_protocol(sname);
+
+        if (pp) {
+                counters = pp->getCounters();
+	}
 	return counters;
 }
 

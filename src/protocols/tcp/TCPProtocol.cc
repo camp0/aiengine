@@ -130,7 +130,7 @@ SharedPointer<Flow> TCPProtocol::getFlow(const Packet& packet) {
 						flow->layer4info = tcp_info_ptr;
 					}
                                         
-#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)) && defined(HAVE_ADAPTOR)
                                         if (getDatabaseObjectIsSet()) { // There is attached a database object
 						databaseAdaptorInsertHandler(flow.get());
                                         }
@@ -174,7 +174,7 @@ bool TCPProtocol::processPacket(Packet &packet) {
 				flow->setPacketAnomaly(packet.getPacketAnomaly());
 			}
 
-			computeState(flow.get(),tcp_info.get(),bytes);
+			computeState(tcp_info.get(),bytes);
 #ifdef DEBUG
                 	char mbstr[100];
                 	std::strftime(mbstr, 100, "%D %X", std::localtime(&packet_time_));
@@ -190,7 +190,7 @@ bool TCPProtocol::processPacket(Packet &packet) {
 #ifdef DEBUG
                                                 std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << ":Lookup positive on IPSet:" << ipset->getName() << std::endl;
 #endif
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
                                                 if (ipset->call.haveCallback()) {
                                                         ipset->call.executeCallback(flow.get());
                                                 }
@@ -223,12 +223,12 @@ bool TCPProtocol::processPacket(Packet &packet) {
 						std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << ":retrieving to flow cache" << std::endl; 
 #endif
 
-#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)) && defined(HAVE_ADAPTOR)
                                         	if (getDatabaseObjectIsSet()) { // There is attached a database object
 							databaseAdaptorRemoveHandler(flow.get());
                                         	}
 #endif
-						CacheManager::getInstance()->releaseFlow(flow.get());	
+						cache_mng_->releaseTCPFlow(flow.get());	
 				
 						flow_table_->removeFlow(flow);
 						flow_cache_->releaseFlow(flow);
@@ -237,7 +237,7 @@ bool TCPProtocol::processPacket(Packet &packet) {
 				}
 			}
 
-#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)) && defined(HAVE_ADAPTOR)
+#if (defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)) && defined(HAVE_ADAPTOR)
                 	if (((flow->total_packets % getPacketSampling()) == 0)or(packet.forceAdaptorWrite())) {
                         	if (getDatabaseObjectIsSet()) { // There is attached a database object
 					databaseAdaptorUpdateHandler(flow.get());
@@ -275,7 +275,7 @@ bool TCPProtocol::processPacket(Packet &packet) {
 	return true;
 }
 
-void TCPProtocol::computeState(Flow *flow, TCPInfo *info,int32_t bytes) {
+void TCPProtocol::computeState(TCPInfo *info,int32_t bytes) {
 
 	bool syn = isSyn();
 	bool ack = isAck();
@@ -286,8 +286,8 @@ void TCPProtocol::computeState(Flow *flow, TCPInfo *info,int32_t bytes) {
 	char *str_num __attribute__((unused)) = (char*)"None";
 
 	bool bad_flags = false;
-	int flowdir = static_cast<int>(flow->getFlowDirection());
-	int prev_flowdir __attribute__((unused)) = static_cast<int>(flow->getPrevFlowDirection());
+	int flowdir = static_cast<int>(current_flow_->getFlowDirection());
+	int prev_flowdir __attribute__((unused)) = static_cast<int>(current_flow_->getPrevFlowDirection());
 	uint32_t seq_num = getSequence();
 	uint32_t ack_num __attribute__((unused)) = getAckSequence();
 	uint32_t next_seq_num = 0;
@@ -311,7 +311,7 @@ void TCPProtocol::computeState(Flow *flow, TCPInfo *info,int32_t bytes) {
 			info->seq_num[flowdir] = seq_num + 1;
 			++seq_num;
 #if defined(HAVE_TCP_QOS_METRICS)
-			info->connection_setup_time = flow->getLastPacketTime();
+			info->connection_setup_time = current_flow_->getLastPacketTime();
 #endif
 		}
                 if (fin) { 
@@ -341,14 +341,16 @@ void TCPProtocol::computeState(Flow *flow, TCPInfo *info,int32_t bytes) {
 				++ info->ack;
 #if defined(HAVE_TCP_QOS_METRICS)
 				if (info->ack == 1) {
-					info->connection_setup_time = flow->getLastPacketTime() - info->connection_setup_time;
+					info->connection_setup_time = current_flow_->getLastPacketTime() - info->connection_setup_time;
+					total_connection_setup_time_ += info->connection_setup_time;
 				}
 				// TODO: Application response time, time between client and server with payload
 				if (bytes > 0) {
 					if ( flowdir == static_cast<int>(FlowDirection::FORWARD)) { // Client data
-						info->last_client_data_time = flow->getLastPacketTime();
+						info->last_client_data_time = current_flow_->getLastPacketTime();
 					} else { // Server data, so compute the values
-						info->application_response_time = flow->getLastPacketTime() - info->last_client_data_time;
+						info->application_response_time = current_flow_->getLastPacketTime() - info->last_client_data_time;
+						total_application_response_time_ += info->application_response_time;
 					}
 				}
 #endif
@@ -360,10 +362,10 @@ void TCPProtocol::computeState(Flow *flow, TCPInfo *info,int32_t bytes) {
 	}
 
 	if (bad_flags) {
-		if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
-			flow->setPacketAnomaly(PacketAnomalyType::TCP_BAD_FLAGS);
+		if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+			current_flow_->setPacketAnomaly(PacketAnomalyType::TCP_BAD_FLAGS);
 		}
-		anomaly_->incAnomaly(PacketAnomalyType::TCP_BAD_FLAGS);
+		anomaly_->incAnomaly(current_flow_,PacketAnomalyType::TCP_BAD_FLAGS);
 	}
 
 	// Check if the sequence numbers are fine
@@ -396,25 +398,26 @@ void TCPProtocol::computeState(Flow *flow, TCPInfo *info,int32_t bytes) {
 	}
 #if defined(HAVE_TCP_QOS_METRICS)
         // Compute the number of rsts per second
-        if (flow->getLastPacketTime() - info->last_sample_time >= 1) {
-       		if (flow->getDuration() > 0) { 
-	        	info->server_reset_rate = info->rst / flow->getDuration();
+        if (current_flow_->getLastPacketTime() - info->last_sample_time >= 1) {
+       		if (current_flow_->getDuration() > 0) { 
+	        	info->server_reset_rate = info->rst / current_flow_->getDuration();
+			total_server_reset_rate_ += info->server_reset_rate;
 		}
         }
 
-        info->last_sample_time = flow->getLastPacketTime();
+        info->last_sample_time = current_flow_->getLastPacketTime();
 #endif
 
 #ifdef DEBUG
 	const char *prev_state = ((tcp_states[info->state_prev]).state)->name;
 	const char *curr_state = ((tcp_states[info->state_curr]).state)->name;
-	std::cout << __FILE__ << ":" << __func__ << ":flow:" << flow << " curr:" << curr_state << " flg:" << str_flag << " " << str_num;
+	std::cout << __FILE__ << ":" << __func__ << ":flow:" << current_flow_ << " curr:" << curr_state << " flg:" << str_flag << " " << str_num;
 	std::cout << " seq(" << seq_num << ")ack(" << ack_num << ") dir:" << flowdir << " bytes:" << bytes;
 	std::cout << " nseq(" << next_seq_num << ")nack(" << next_ack_num << ")" << std::endl;
 #endif
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 
 #if defined(PYTHON_BINDING)
 boost::python::dict TCPProtocol::getCounters() const {
@@ -422,6 +425,9 @@ boost::python::dict TCPProtocol::getCounters() const {
 #elif defined(RUBY_BINDING)
 VALUE TCPProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters TCPProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets", total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

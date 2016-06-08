@@ -66,11 +66,15 @@ public:
 		uri_cache_(new Cache<StringCache>("Uri cache")),
 		host_cache_(new Cache<StringCache>("Host cache")),
 		ua_cache_(new Cache<StringCache>("UserAgent cache")),
-		ua_map_(),host_map_(),uri_map_(),
+		ct_cache_(new Cache<StringCache>("ContentType cache")),
+		file_cache_(new Cache<StringCache>("File cache")),
+		ua_map_(),host_map_(),uri_map_(),ct_map_(),file_map_(),
 		domain_mng_(),ban_domain_mng_(),
 		flow_mng_(),
 		http_ref_header_(),header_field_(),header_parameter_(),
-		current_flow_(nullptr) {
+		current_flow_(nullptr),
+		cache_mng_(),
+		anomaly_() {
 
 		// Add the parameters that wants to be process by the HTTPProtocol		
 		parameters_.insert(std::make_pair<boost::string_ref,HttpParameterHandler>(boost::string_ref("Host"),
@@ -79,11 +83,13 @@ public:
 			std::bind(&HTTPProtocol::process_ua_parameter,this,std::placeholders::_1,std::placeholders::_2)));
 		parameters_.insert(std::make_pair<boost::string_ref,HttpParameterHandler>(boost::string_ref("Content-Length"),
 			std::bind(&HTTPProtocol::process_content_length_parameter,this,std::placeholders::_1,std::placeholders::_2)));
-
-		CacheManager::getInstance()->setCache(info_cache_);
+		parameters_.insert(std::make_pair<boost::string_ref,HttpParameterHandler>(boost::string_ref("Content-Type"),
+			std::bind(&HTTPProtocol::process_content_type_parameter,this,std::placeholders::_1,std::placeholders::_2)));
+		parameters_.insert(std::make_pair<boost::string_ref,HttpParameterHandler>(boost::string_ref("Content-disposition"),
+			std::bind(&HTTPProtocol::process_content_disposition_parameter,this,std::placeholders::_1,std::placeholders::_2)));
 	}	
 
-    	virtual ~HTTPProtocol() {}
+    	virtual ~HTTPProtocol() { cache_mng_.reset(); anomaly_.reset(); }
 
 	struct string_hasher
 	{
@@ -93,7 +99,6 @@ public:
         	}
 	};
 
-//	static constexpr char *default_name = "HTTPProtocol";
 	static const uint16_t id = 0;
 	static const int header_size = 0;
 	int getHeaderSize() const { return header_size;}
@@ -163,8 +168,11 @@ public:
 	VALUE getCache() const; 
 #elif defined(JAVA_BINDING)
         JavaCounters getCounters() const;
+#elif defined(LUA_BINDING)
+        LuaCounters getCounters() const;
 #endif
-
+	void setCacheManager(SharedPointer<CacheManager> cmng) { cache_mng_ = cmng; cache_mng_->setCache(info_cache_); }
+	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
 private:
 
 	void debugHTTPInfo(Flow *flow, HTTPInfo *info,const char *payload);
@@ -175,6 +183,8 @@ private:
 	void attach_uri(HTTPInfo *info, boost::string_ref &uri);
 	void attach_host(HTTPInfo *info, boost::string_ref &host);
 	void attach_useragent(HTTPInfo *info, boost::string_ref &ua);
+	void attach_content_type(HTTPInfo *info, boost::string_ref &ct);
+	void attach_filename(HTTPInfo *info, boost::string_ref &name);
 
 	int extract_uri(HTTPInfo *info, boost::string_ref &header);
 
@@ -182,6 +192,8 @@ private:
 	bool process_host_parameter(HTTPInfo *info,boost::string_ref &host);
 	bool process_ua_parameter(HTTPInfo *info,boost::string_ref &ua);
 	bool process_content_length_parameter(HTTPInfo *info,boost::string_ref &parameter);
+	bool process_content_type_parameter(HTTPInfo *info,boost::string_ref &ct);
+	bool process_content_disposition_parameter(HTTPInfo *info,boost::string_ref &cd);
 
 	int32_t release_http_info(HTTPInfo *info);
 	void release_http_info_cache(HTTPInfo *info);
@@ -206,10 +218,14 @@ private:
 	Cache<StringCache>::CachePtr uri_cache_;
 	Cache<StringCache>::CachePtr host_cache_;
 	Cache<StringCache>::CachePtr ua_cache_;
+	Cache<StringCache>::CachePtr ct_cache_;
+	Cache<StringCache>::CachePtr file_cache_;
 
 	GenericMapType ua_map_;	
 	GenericMapType host_map_;	
 	GenericMapType uri_map_;	
+	GenericMapType ct_map_;	
+	GenericMapType file_map_;	
 
         DomainNameManagerPtrWeak domain_mng_;
         DomainNameManagerPtrWeak ban_domain_mng_;
@@ -222,6 +238,8 @@ private:
 	boost::string_ref header_field_;
 	boost::string_ref header_parameter_;
 	Flow *current_flow_;
+	SharedPointer<CacheManager> cache_mng_;
+	SharedPointer<AnomalyManager> anomaly_;
 };
 
 typedef std::shared_ptr<HTTPProtocol> HTTPProtocolPtr;

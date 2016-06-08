@@ -48,8 +48,19 @@ void HTTPInfo::serialize(std::ostream& stream) {
 #ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION 
 	stream << ",\"i\":{";
 
+       	stream << "\"q\":" << getTotalRequests() << ",";
+       	stream << "\"s\":" << getTotalResponses();
+
 	if (host) {
-        	stream << "\"h\":\"" << host->getName() << "\"";
+        	stream << ",\"h\":\"" << host->getName() << "\"";
+		have_item = true;
+	}
+	if (ct) {
+        	stream << ",\"c\":\"" << ct->getName() << "\"";
+		have_item = true;
+	}
+	if (filename) {
+        	stream << ",\"f\":\"" << filename->getName() << "\"";
 		have_item = true;
 	}
         if (matched_domain_name) {
@@ -58,8 +69,18 @@ void HTTPInfo::serialize(std::ostream& stream) {
 	}
 #else
 	stream << ",\"info\":{";
+       	stream << "\"reqs\":" << getTotalRequests() << ",";
+       	stream << "\"ress\":" << getTotalResponses();
 	if (host) {
-        	stream << "\"host\":\"" << host->getName() << "\"";
+        	stream << ",\"host\":\"" << host->getName() << "\"";
+		have_item = true;
+	}
+	if (ct) {
+        	stream << ",\"ctype\":\"" << ct->getName() << "\"";
+		have_item = true;
+	}
+	if (filename) {
+        	stream << ",\"filename\":\"" << filename->getName() << "\"";
 		have_item = true;
 	}
         if (matched_domain_name) {
@@ -75,6 +96,8 @@ void HTTPInfo::resetStrings() {
 	uri.reset(); 
 	host.reset(); 
 	ua.reset(); 
+	ct.reset();
+	filename.reset();
 }
 
 } // namespace aiengine

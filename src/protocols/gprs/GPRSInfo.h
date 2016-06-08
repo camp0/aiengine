@@ -57,11 +57,12 @@ public:
 
         friend std::ostream& operator<< (std::ostream& out, const GPRSInfo& gi) {
         
-                out << "IMSI(" << gi.getIMSIString() << ")";
+                out << " IMSI(" << gi.getIMSIString() << ")";
 		if (gi.pdp_type_number_ == PDP_END_USER_TYPE_IPV4) out << "IPv4";
 		if (gi.pdp_type_number_ == PDP_END_USER_TYPE_IPV6) out << "IPv6";
                 return out;
         }
+
 private:
 	uint64_t imsi_;
 	uint64_t imei_;

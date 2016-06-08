@@ -47,8 +47,8 @@ public:
 	void serialize(std::ostream& stream); 
 	void resetStrings();
 
-	int32_t getContentLength() const { return content_length_; }
-	void setContentLength(int32_t content_length) { content_length_ = content_length; }
+	int64_t getContentLength() const { return content_length_; }
+	void setContentLength(int64_t content_length) { content_length_ = content_length; }
 
 	int32_t getDataChunkLength() const { return data_chunk_length_; }
 	void setDataChunkLength(int32_t length) { data_chunk_length_ = length; }
@@ -74,23 +74,35 @@ public:
         SharedPointer<StringCache> uri;
         SharedPointer<StringCache> host;
         SharedPointer<StringCache> ua;
+        SharedPointer<StringCache> ct;
+        SharedPointer<StringCache> filename;
 	SharedPointer<DomainName> matched_domain_name;
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+	friend std::ostream& operator<< (std::ostream& out, const HTTPInfo& hinfo) {
 
+                out << " Req(" << hinfo.getTotalRequests();
+		out << ")Res(" << hinfo.getTotalResponses();
+		out << ")Code(" << hinfo.getResponseCode() << ") ";
+                
+		if (hinfo.getIsBanned()) out << "Banned ";
+                if (hinfo.host) out << "Host:" << hinfo.host->getName();
+                if (hinfo.ct) out << " ContentType:" << hinfo.ct->getName();
+                if (hinfo.filename) out << " Filename:" << hinfo.filename->getName();
+                if (hinfo.ua) out << " UserAgent:" << hinfo.ua->getName();
+
+        	return out;
+	}
+
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 	void setBanAndRelease(bool value) { needs_release_ = value; is_banned_ = value; }
 	void setIsRelease(bool value) { needs_release_ = value; }
 	bool getIsRelease() const { return needs_release_; }
 
-	friend std::ostream& operator<< (std::ostream& out, const HTTPInfo& hinfo) {
-	
-		out << "Banned:" << hinfo.is_banned_ << " CLength:" << hinfo.content_length_;
-        	return out;
-	}
-
 	const char *getUri() const { return  (uri ? uri->getName() : ""); }	
 	const char *getHostName() const { return (host ? host->getName() : ""); }	
 	const char *getUserAgent() const { return (ua ? ua->getName() : ""); }	
+	const char *getContentType() const { return (ct ? ct->getName() : ""); }	
+	const char *getFilename() const { return (filename ? filename->getName() : ""); }	
 #endif
 
 #if defined(PYTHON_BINDING)
@@ -99,15 +111,17 @@ public:
 	DomainName& getMatchedDomainName() const { return *matched_domain_name.get(); }
 #elif defined(JAVA_BINDING)
 	DomainName& getMatchedDomainName() const { return *matched_domain_name.get(); }
+#elif defined(LUA_BINDING)
+	DomainName& getMatchedDomainName() const { return *matched_domain_name.get(); }
 #endif
 
 private:
 	bool have_data_;
 	bool is_banned_;
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 	bool needs_release_;
 #endif
-	int32_t content_length_;	
+	int64_t content_length_;	
 	int32_t data_chunk_length_;
 	int16_t total_requests_;
 	int16_t total_responses_;	

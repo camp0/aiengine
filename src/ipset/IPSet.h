@@ -67,6 +67,9 @@ public:
         void setCallback(VALUE callback) { call.setCallback(callback); }
 #elif defined(JAVA_BINDING)
         void setCallback(JaiCallback *callback) { call.setCallback(callback); }
+#elif defined(LUA_BINDING)
+	void setCallback(lua_State* lua, const char *callback) { call.setCallback(lua,callback); }
+	const char *getCallback() const { return call.getCallback(); }
 #endif
 
 private:

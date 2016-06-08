@@ -5,6 +5,7 @@ AM_PROG_LIBTOOL
 AM_CONFIG_HEADER(config.h)
 
 AC_CONFIG_MACRO_DIR([m4])
+m4_include([m4/ax_compare_version.m4])
 m4_include([m4/ax_python_devel.m4])
 m4_include([m4/ax_boost_base.m4])
 m4_include([m4/ax_boost_python.m4])
@@ -20,6 +21,7 @@ m4_include([m4/ax_swig_enable_cxx.m4])
 m4_include([m4/ax_swig_multi_module_support.m4])
 m4_include([m4/ax_prog_javah.m4])
 m4_include([m4/ax_prog_java_cc.m4])
+m4_include([m4/ax_lua.m4])
 
 AC_PREREQ(2.59)
 
@@ -73,6 +75,17 @@ AM_CXXFLAGS="$AM_CXXFLAGS -Wno-write-strings"
 # Dont use it unless you know what you are doing
 # CXXFLAGS="-std=c++11"
 # CXXFLAGS="-std=c++0x"
+
+# Verify the c++ compiler version, needs 5.x up
+ax_cv_cxx_compiler_version="`$CXX -dumpversion`"
+AC_MSG_CHECKING(for c++ versions higher than 5.x)
+AX_COMPARE_VERSION([$ax_cv_cxx_compiler_version], [ge], [5.0],
+    [is_ge_gxx50=yes], [is_ge_gxx50=no])
+
+if test "x$is_ge_gxx50" != "xyes"; then
+    AC_MSG_ERROR([G++ 5.x or higher required (found $ax_cv_cxx_compiler_version)])
+fi
+AC_MSG_RESULT([$is_ge_gxx50])
 
 ##########################################################################
 # Pcap support
@@ -345,6 +358,26 @@ AM_JAVAFLAGS="$CPPFLAGS"
 CPPFLAGS="$temp_cpp_flags"
 
 ##########################################################################
+# Swig Lua support
+##########################################################################
+
+AM_CONDITIONAL([HAVE_LUA_SUPPORT],false)
+
+enable_lua_support=no
+have_lua_support=no
+AX_PROG_LUA(5.1,[],[enable_lua_support=yes],[enable_lua_support=no])
+
+if test x"$enable_lua_support" = x"yes"; then
+    AX_LUA_HEADERS([have_lua_support=yes],[have_lua_support=no])
+
+    if test x"$have_lua_support" = x"yes"; then
+        AM_CONDITIONAL([HAVE_LUA_SUPPORT],true)
+    fi
+fi
+
+LUA_INCLUDE="$LUA_INCLUDE"
+
+##########################################################################
 # TCP/UDP reject connection support
 ##########################################################################
 
@@ -378,6 +411,21 @@ if test x"$pythongil_support" = x"yes"; then
     AC_DEFINE([HAVE_PYTHON_GIL],[1],[Python GIL support])
 fi
 
+##########################################################################
+# Enable for static memory for chaches 
+##########################################################################
+
+AC_MSG_CHECKING([whether to build with static memory blocks (256) bytes])
+AC_ARG_ENABLE([staticmemory],
+    [AS_HELP_STRING([--enable-staticmemory],
+        [enable static/fixed memory support (def=no)])],
+    [staticmemory=yes],
+    [staticmemory=no])
+AC_MSG_RESULT([$staticmemory])
+
+if test x"$staticmemory" = x"yes"; then
+    AC_DEFINE([HAVE_STATIC_MEMORY_CACHE],[],[Static memory support])
+fi
 
 ##########################################################################
 
@@ -419,12 +467,16 @@ src/protocols/imap/Makefile
 src/protocols/pop/Makefile
 src/protocols/modbus/Makefile
 src/protocols/bitcoin/Makefile
+src/protocols/mqtt/Makefile
 src/protocols/dns/Makefile
 src/protocols/sip/Makefile
 src/protocols/dhcp/Makefile
 src/protocols/ntp/Makefile
 src/protocols/snmp/Makefile
 src/protocols/ssdp/Makefile
+src/protocols/coap/Makefile
+src/protocols/rtp/Makefile
+src/protocols/netbios/Makefile
 src/protocols/tcpgeneric/Makefile
 src/protocols/udpgeneric/Makefile
 src/protocols/frequency/Makefile
@@ -458,8 +510,10 @@ echo "
   Flow sc support.......: $fscompress_support
   Swig/Ruby support.....: $have_ruby_support
   Swig/Java support.....: $have_java_support
+  Swig/Lua support......: $have_lua_support
   TCP Qos support.......: $tcpqos
   TCP/UDP reject support: $reject_support
   Python GIL support....: $pythongil_support
+  Static memory support.: $staticmemory
 "
 

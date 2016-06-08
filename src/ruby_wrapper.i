@@ -19,6 +19,14 @@
 #include "names/DomainNameManager.h"
 #include "names/DomainName.h"
 #include "learner/LearnerEngine.h"
+#ifdef HAVE_LIBLOG4CXX
+#include "log4cxx/logger.h"
+#include "log4cxx/basicconfigurator.h"
+
+using namespace log4cxx;
+using namespace log4cxx::helpers;
+#endif
+using namespace std;
 %}
 
 %apply SWIGTYPE *DISOWN { Signature* signature };
@@ -32,6 +40,9 @@
 
 %init %{ 
 std::cout << "Ruby AIengine BETA init." << std::endl;
+#ifdef HAVE_LIBLOG4CXX  
+        BasicConfigurator::configure();
+#endif
 %}
 
 %ignore operator+;
@@ -54,6 +65,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore PCAP_NETMASK_UNKNOWN;
 %ignore aiengine::RegexNullDeleter;
 
+%ignore aiengine::CacheManager;
 %ignore aiengine::NetworkStack::setName;
 %ignore aiengine::NetworkStack::setLinkLayerMultiplexer;
 %ignore aiengine::NetworkStack::getLinkLayerMultiplexer;
@@ -132,6 +144,8 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::Flow::getSSDPInfo;
 %ignore aiengine::Flow::getSIPInfo;
 %ignore aiengine::Flow::getBitcoinInfo;
+%ignore aiengine::Flow::getCoAPInfo;
+%ignore aiengine::Flow::getMQTTInfo;
 %ignore aiengine::Flow::packet;
 %ignore aiengine::Flow::regex;
 %ignore aiengine::Flow::frequencies;
@@ -207,6 +221,8 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::HTTPInfo::uri;
 %ignore aiengine::HTTPInfo::host;
 %ignore aiengine::HTTPInfo::ua;
+%ignore aiengine::HTTPInfo::ct;
+%ignore aiengine::HTTPInfo::filename;
 %ignore aiengine::HTTPInfo::matched_domain_name;
 %ignore aiengine::HTTPInfo::getTotalRequests;
 %ignore aiengine::HTTPInfo::getTotalResponses;
@@ -216,6 +232,10 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::HTTPInfo::getIsRelease;
 %ignore aiengine::HTTPInfo::setHTTPDataDirection;
 %ignore aiengine::HTTPInfo::getHTTPDataDirection;
+
+%ignore aiengine::MQTTInfo::reset;
+%ignore aiengine::MQTTInfo::topic;
+//%ignore aiengine::MQTTInfo::incTransactions;
 
 %ignore aiengine::BitcoinInfo::reset;
 %ignore aiengine::BitcoinInfo::incTransactions;
@@ -284,6 +304,13 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::SSDPInfo::getTotalRequests;
 %ignore aiengine::SSDPInfo::getTotalResponses;
 
+%ignore aiengine::CoAPInfo::reset;
+%ignore aiengine::CoAPInfo::hostname;
+%ignore aiengine::CoAPInfo::uri;
+%ignore aiengine::CoAPInfo::matched_domain_name;
+%ignore aiengine::CoAPInfo::setIsBanned;
+%ignore aiengine::CoAPInfo::getIsBanned;
+
 %ignore aiengine::LearnerEngine::agregatePacketFlow;
 %ignore aiengine::LearnerEngine::setFrequencyGroup;
 %ignore aiengine::LearnerEngine::agregateFlows;
@@ -313,6 +340,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %ignore aiengine::FlowManager::setProtocol;
 %ignore aiengine::FlowManager::updateFlowTime;
 %ignore aiengine::FlowManager::FlowTimeRefreshRate;
+%ignore aiengine::FlowManager::setCacheManager;
 
 %rename("regexmanager=")		aiengine::IPAbstractSet::setRegexManager;
 %rename("timeout=")			aiengine::FlowManager::setTimeout;
@@ -343,6 +371,8 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("http_info")			aiengine::Flow::getHTTPInfoObject;
 %rename("sip_info")			aiengine::Flow::getSIPInfoObject;
 %rename("ssdp_info")			aiengine::Flow::getSSDPInfoObject;
+%rename("coap_info")			aiengine::Flow::getCoAPInfoObject;
+%rename("mqtt_info")			aiengine::Flow::getMQTTInfoObject;
 %rename("regex")			aiengine::Flow::getRegex;
 %rename("payload")			aiengine::Flow::getPayload;
 %rename("uri")				aiengine::SIPInfo::getUri;
@@ -352,6 +382,7 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %rename("user_agent")			aiengine::HTTPInfo::getUserAgent;
 %rename("host_name")			aiengine::HTTPInfo::getHostName;
 %rename("uri")				aiengine::HTTPInfo::getUri;
+%rename("content_type")			aiengine::HTTPInfo::getContentType;
 %rename("banned")			aiengine::HTTPInfo::getIsBanned;
 %rename("matched_domain_name")          aiengine::HTTPInfo::getMatchedDomainName;
 %rename("host_name")			aiengine::SSDPPInfo::getHostName;
@@ -473,6 +504,8 @@ std::cout << "Ruby AIengine BETA init." << std::endl;
 %include "protocols/pop/POPInfo.h"
 %include "protocols/ssdp/SSDPInfo.h"
 %include "protocols/bitcoin/BitcoinInfo.h"
+%include "protocols/coap/CoAPInfo.h"
+%include "protocols/mqtt/MQTTInfo.h"
 %include "Flow.h"
 %include "learner/LearnerEngine.h"
 %include "protocols/frequency/FrequencyGroup.h"

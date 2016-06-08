@@ -26,15 +26,6 @@
 
 namespace aiengine {
 
-/*
-printf("%s > ", inet_ntop(AF_INET6, (struct in6_addr *)&(ip6h->ip6_src), ipaddr, sizeof(ipaddr)));
-    printf("%s", inet_ntop(AF_INET6, (struct in6_addr *)&(ip6h->ip6_dst), ipaddr, sizeof(ipaddr)));
-    pt = getprotobynumber(ip6h->ip6_nxt);   // get protocol name
-    printf(" %s HopLim:%d TC:%d PayloadLen:%d\n",
-          pt->p_name, ip6h->ip6_hlim,
-          ((ip6h->ip6_flow >> 20) & 0xFF), ntohs(ip6h->ip6_plen));
-*/
-
 char* IPv6Protocol::getSrcAddrDotNotation() const {
 
 	static char straddr_src[INET6_ADDRSTRLEN];
@@ -88,6 +79,7 @@ bool IPv6Protocol::processPacket(Packet& packet) {
 
 				if (have_extension_hdr) {
 					packet.setPacketAnomaly(PacketAnomalyType::IPV6_LOOP_EXTENSION_HEADERS);
+					anomaly_->incAnomaly(PacketAnomalyType::IPV6_LOOP_EXTENSION_HEADERS);
 				}
 				++total_extension_header_packets_;
 				have_extension_hdr = true;
@@ -101,6 +93,7 @@ bool IPv6Protocol::processPacket(Packet& packet) {
 				
 				if (have_extension_hdr) {
 					packet.setPacketAnomaly(PacketAnomalyType::IPV6_LOOP_EXTENSION_HEADERS);
+					anomaly_->incAnomaly(PacketAnomalyType::IPV6_LOOP_EXTENSION_HEADERS);
 				}
 				
 				++total_extension_header_packets_;
@@ -122,6 +115,7 @@ bool IPv6Protocol::processPacket(Packet& packet) {
 			case IPPROTO_FRAGMENT: 
 				++total_frag_packets_;
 				packet.setPacketAnomaly(PacketAnomalyType::IPV6_FRAGMENTATION);
+				anomaly_->incAnomaly(PacketAnomalyType::IPV6_FRAGMENTATION);
 				return false; // The packet can not progress through the stack
 			case IPPROTO_NONE:
 				++total_no_header_packets_;
@@ -168,13 +162,16 @@ void IPv6Protocol::statistics(std::basic_ostream<char>& out) {
         }
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict IPv6Protocol::getCounters() const {
         boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE IPv6Protocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters IPv6Protocol::getCounters() const {
+	LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets", total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

@@ -25,7 +25,7 @@
 
 namespace aiengine {
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 
 void Interpreter::setShell(bool enable) {
 
@@ -113,6 +113,11 @@ void Interpreter::handle_read_user_input(boost::system::error_code error) {
 		rb_eval_string_protect(cmd.c_str(),&state);
 		if (state) {
 			rb_raise(rb_eRuntimeError, "Error");
+		}
+#elif defined(LUA_BINDING)
+		int ret = luaL_dostring(lua_,cmd.c_str());
+		if (ret != 0) {
+			std::cout << "ERROR:" << lua_tostring(lua_, -1) << std::endl; 
 		}
 #endif
                	user_input_buffer_.consume(64);

@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 if HAVE_LIBLOG4CXX
@@ -15,17 +17,12 @@ check_PROGRAMS = test_ssdp
 test_ssdp_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../FlowForwarder.cc ../../CacheManager.cc \
 			../../AnomalyManager.cc \
+			../../StringCache.cc \
 			../../protocols/ethernet/EthernetProtocol.cc \
 			../../protocols/ip/IPProtocol.cc \
 			../../ipset/IPSetManager.cc \
 			../../ipset/IPSet.cc \
-                        ../tcp/TCPInfo.cc \
-                        ../http/HTTPInfo.cc \
-                        ../ssl/SSLInfo.cc \
-                        ../smtp/SMTPInfo.cc \
-                        ../dns/DNSInfo.cc \
-                        ../gprs/GPRSInfo.cc \
-                        ../sip/SIPInfo.cc \
+                        $(TEST_FLOW_OBJECTS) \
 			../../protocols/udp/UDPProtocol.cc \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \

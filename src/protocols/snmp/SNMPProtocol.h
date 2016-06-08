@@ -58,10 +58,11 @@ public:
                 total_snmp_get_requests_(0),
         	total_snmp_get_next_requests_(0),
         	total_snmp_get_responses_(0),
-        	total_snmp_set_requests_(0) 
+        	total_snmp_set_requests_(0),
+		anomaly_() 
 		{}
 
-    	virtual ~SNMPProtocol() {}
+    	virtual ~SNMPProtocol() { anomaly_.reset(); }
 
 	static const uint16_t id = 0;	
 	static constexpr int header_size = sizeof(struct snmp_hdr);
@@ -104,9 +105,7 @@ public:
 	}
 
 	uint8_t getLength() const { return snmp_header_->length; }
-	//uint8_t getLength() const { return ntohs(snmp_header_->length); }
 	uint8_t getVersionLength() const { return snmp_header_->version_length; }
-	//uint8_t getVersionLength() const { return ntohs(snmp_header_->version_length); }
 
 	int64_t getAllocatedMemory() const { return sizeof(SNMPProtocol); }
 
@@ -115,9 +114,12 @@ public:
 #elif defined(RUBY_BINDING)
         VALUE getCounters() const;
 #elif defined(JAVA_BINDING)
-        std::map<std::string,int> getCounters() const  { std::map<std::string,int> counters; return counters;};
+        JavaCounters getCounters() const  { JavaCounters counters; return counters; }
+#elif defined(LUA_BINDING)
+        LuaCounters getCounters() const; 
 #endif	
 
+	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
 private:
 	int stats_level_;
 	struct snmp_hdr *snmp_header_;

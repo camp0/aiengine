@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 if HAVE_LIBLOG4CXX
@@ -20,13 +22,7 @@ test_frequency_SOURCES = 	../../Multiplexer.cc \
 				../../AnomalyManager.cc \
 				../ethernet/EthernetProtocol.cc \
 				../ip/IPProtocol.cc \
-                        	../tcp/TCPInfo.cc \
-                        	../http/HTTPInfo.cc \
-                        	../ssl/SSLInfo.cc \
-                        	../smtp/SMTPInfo.cc \
-                        	../dns/DNSInfo.cc \
-                        	../gprs/GPRSInfo.cc \
-                        	../sip/SIPInfo.cc \
+                        	$(TEST_FLOW_OBJECTS) \
 				../../ipset/IPSetManager.cc \
 				../../ipset/IPSet.cc \
 				../tcp/TCPProtocol.cc \

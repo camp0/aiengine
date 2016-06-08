@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include <vector> 
+#include "Pointer.h"
 #include "StringCache.h"
 #include "FlowInfo.h"
 
@@ -41,18 +42,9 @@ public:
     	explicit SSDPInfo() { reset(); }
     	virtual ~SSDPInfo() {}
 
-	void reset() {
-		is_banned_ = false; 
-		total_requests_ = 0;
-		total_responses_ = 0;
-		response_code_ = 0;
-		host.reset(); 
-		uri.reset();
-	 }
-
-	void serialize(std::ostream& stream) {}
-
-	void resetStrings() { uri.reset(); host.reset(); }
+	void reset(); 
+	void serialize(std::ostream& stream); 
+	void resetStrings(); 
 
 	SharedPointer<StringCache> uri;
 	SharedPointer<StringCache> host;
@@ -69,14 +61,16 @@ public:
         void setResponseCode(int16_t code) { response_code_ = code; }
         int16_t getResponseCode() const { return response_code_; }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 
         const char *getUri() const { return  (uri ? uri->getName() : ""); }
         const char *getHostName() const { return (host ? host->getName() : ""); }
 #endif
+
 	friend std::ostream& operator<< (std::ostream& out, const SSDPInfo& info) {
 
-		if (info.host) out << info.host->getName();	
+		if (info.host) out << " Host:" << info.host->getName();	
+		if (info.uri) out << " Uri:" << info.uri->getName();	
         	return out;
 	}
 

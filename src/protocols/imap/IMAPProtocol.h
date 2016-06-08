@@ -88,12 +88,12 @@ public:
 		domain_mng_(),ban_domain_mng_(),
 		info_cache_(new Cache<IMAPInfo>("IMAP Info cache")),
 		user_cache_(new Cache<StringCache>("Name cache")),	
-		user_map_(),flow_mng_() {
+		user_map_(),flow_mng_(),
+		current_flow_(nullptr),
+		anomaly_(),
+		cache_mng_() {}
 
-		CacheManager::getInstance()->setCache(info_cache_);
-	}
-
-    	virtual ~IMAPProtocol() {}
+    	virtual ~IMAPProtocol() { anomaly_.reset(); cache_mng_.reset(); }
 
 	static const uint16_t id = 0;
 	static const int header_size = 6; // Minimum header 220 \r\n;
@@ -150,13 +150,16 @@ public:
         VALUE getCounters() const;
 #elif defined(JAVA_BINDING)
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
+#elif defined(LUA_BINDING)
+        LuaCounters getCounters() const;
 #endif
-
+	void setAnomalyManager(SharedPointer<AnomalyManager> amng) { anomaly_ = amng; }
+	void setCacheManager(SharedPointer<CacheManager> cmng) { cache_mng_ = cmng; cache_mng_->setCache(info_cache_); }
 private:
         void release_imap_info_cache(IMAPInfo *info);
         int32_t release_imap_info(IMAPInfo *info);
 
-        void handle_cmd_login(Flow *flow,IMAPInfo *info, boost::string_ref &header);
+        void handle_cmd_login(IMAPInfo *info, boost::string_ref &header);
         void attach_user_name(IMAPInfo *info, boost::string_ref &name);
 
 	int stats_level_;
@@ -179,10 +182,12 @@ private:
         GenericMapType user_map_;
 
 	FlowManagerPtrWeak flow_mng_;	
+	Flow *current_flow_;
 #ifdef HAVE_LIBLOG4CXX
 	static log4cxx::LoggerPtr logger;
 #endif
 	SharedPointer<AnomalyManager> anomaly_;
+	SharedPointer<CacheManager> cache_mng_;
 };
 
 typedef std::shared_ptr<IMAPProtocol> IMAPProtocolPtr;

@@ -37,15 +37,17 @@
 #include "PyGilContext.h"
 #elif defined(RUBY_BINDING)
 #include <ruby.h>
-#endif 
+#elif defined(LUA_BINDING)
+#include <lua.hpp>
+#endif
 
 namespace aiengine {
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 
 // TODO
 #ifndef VERSION
-#define VERSION "1.4"
+#define VERSION "1.5"
 #endif
 
 class Interpreter 
@@ -60,6 +62,9 @@ public:
 		shell_enable_(false),
 		want_exit_(false) {
 		std::ios_base::sync_with_stdio(false);
+#if defined(LUA_BINDING)
+		lua_ = nullptr;
+#endif
 	}
 
 
@@ -71,6 +76,10 @@ public:
 
 	void setShell(bool enable);  
 	bool getShell() const { return shell_enable_; }  
+
+#if defined(LUA_BINDING)
+	void setLuaInterpreter(lua_State *lua) { lua_ = lua; }
+#endif	
 private:
 
 	void handle_read_user_input(boost::system::error_code error);
@@ -79,6 +88,9 @@ private:
 	boost::asio::streambuf user_input_buffer_;
 	bool shell_enable_;
 	bool want_exit_;
+#if defined(LUA_BINDING)
+	lua_State *lua_;
+#endif
 };
 
 #endif // PYTHON_BINDING || RUBY_BINDING

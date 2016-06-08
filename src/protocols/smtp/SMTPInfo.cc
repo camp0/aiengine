@@ -29,30 +29,33 @@ void SMTPInfo::reset() {
 	resetStrings();
 	command_ = 0;
 	is_banned_ = false; 
+	is_data_ = false; 
+	total_data_bytes_ = 0;
+	total_data_blocks_ = 0;
 }
 
 void SMTPInfo::serialize(std::ostream& stream) {
 
-	bool have_item = false;
 #ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION
         stream << ",\"i\":{";
+        stream << "\"t\":" << total_data_blocks_ << ",";
+        stream << "\"b\":" << total_data_bytes_ << "";
+
         if (from) {
-                stream << "\"f\":\"" << from->getName() << "\"";
-                have_item = true;
+                stream << ",\"f\":\"" << from->getName() << "\"";
         }
         if (to) {
-                if (have_item) stream << ",";
-                stream << "\"t\":\"" << to->getName() << "\"";
+                stream << ",\"t\":\"" << to->getName() << "\"";
         }
 #else
         stream << ",\"info\":{";
+        stream << "\"total\":" << total_data_blocks_ << ",";
+        stream << "\"bytes\":" << total_data_bytes_ << "";
         if (from) {
-                stream << "\"from\":\"" << from->getName() << "\"";
-                have_item = true;
+                stream << ",\"from\":\"" << from->getName() << "\"";
         }
         if (to) {
-                if (have_item) stream << ",";
-                stream << "\"to\":\"" << to->getName() << "\"";
+                stream << ",\"to\":\"" << to->getName() << "\"";
         }
 #endif
 	stream << "}";

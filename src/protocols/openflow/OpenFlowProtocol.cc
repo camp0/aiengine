@@ -32,7 +32,7 @@ void OpenFlowProtocol::processFlow(Flow *flow) {
         total_bytes_ += bytes;
         ++total_packets_;
 
-        if (mux_.lock()&&(bytes > 0)) {
+        if (mux_.lock()&&(bytes >= header_size)) {
                 MultiplexerPtr mux = mux_.lock();
 
                 Packet *packet = flow->packet;
@@ -97,13 +97,16 @@ void OpenFlowProtocol::statistics(std::basic_ostream<char>& out){
 	}
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)  || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict OpenFlowProtocol::getCounters() const {
         boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE OpenFlowProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters OpenFlowProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets", total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

@@ -29,6 +29,18 @@ namespace aiengine {
 log4cxx::LoggerPtr PacketDispatcher::logger(log4cxx::Logger::getLogger("aiengine.packetdispatcher"));
 #endif
 
+
+PacketDispatcher::~PacketDispatcher() { 
+
+#if defined(LUA_BINDING)
+        if ((ref_function_ != LUA_NOREF) and ( lua_ != nullptr)) {
+                // delete the reference from registry
+                luaL_unref(lua_, LUA_REGISTRYINDEX, ref_function_);
+        }
+#endif
+	io_service_.stop(); 
+}
+
 void PacketDispatcher::info_message(const std::string &msg) {
 
 #ifdef HAVE_LIBLOG4CXX
@@ -194,7 +206,7 @@ void PacketDispatcher::start_operations(void) {
 		stream_->async_read_some(boost::asio::null_buffers(),
                 	boost::bind(&PacketDispatcher::do_read, this,
                                 boost::asio::placeholders::error));
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 		user_shell_->readUserInput();
 #endif
 	}
@@ -302,11 +314,11 @@ void PacketDispatcher::close(void) {
         }
 }
 
-void PacketDispatcher::setPcapFilter(const std::string &filter) {
+void PacketDispatcher::setPcapFilter(const char *filter) {
 
 	if ((device_is_ready_)or(pcap_file_ready_)) {
 		struct bpf_program fp;
-		char *c_filter = const_cast<char*>(filter.c_str());
+		char *c_filter = const_cast<char*>(filter);
 
 		if (pcap_compile(pcap_, &fp, c_filter, 1, PCAP_NETMASK_UNKNOWN) == 0) {
 
@@ -333,7 +345,22 @@ void PacketDispatcher::setEvidences(bool value) {
         }
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
+
+void PacketDispatcher::restart_timer(int seconds) {
+
+	// reset the shared pointer and create a new timer.
+        timer_.reset(new boost::asio::deadline_timer(io_service_,
+        	boost::posix_time::seconds(seconds)));
+
+        timer_->expires_at(timer_->expires_at() + boost::posix_time::seconds(seconds));
+        timer_->async_wait(boost::bind(&PacketDispatcher::scheduler_handler, this,
+        	boost::asio::placeholders::error));
+}
+
+#endif
+
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) 
 
 void PacketDispatcher::setShell(bool enable) {
 
@@ -345,60 +372,114 @@ bool PacketDispatcher::getShell() const {
         return user_shell_->getShell();
 }
 
+#endif
+
+#if defined(LUA_BINDING)
+
+void PacketDispatcher::setShell(lua_State *lua, bool enable) {
+
+        user_shell_->setShell(enable);
+	user_shell_->setLuaInterpreter(lua);
+}
+
+bool PacketDispatcher::getShell() const {
+
+        return user_shell_->getShell();
+}
+
+#endif
+
 #if defined(PYTHON_BINDING)
 void PacketDispatcher::setScheduler(PyObject *callback, int seconds) {
+
+        if (timer_) // cancel the timer if exists
+                timer_->cancel();
+
+        if ((callback == Py_None)or(seconds <= 0)) {
+                scheduler_set_ = false;
+                scheduler_seconds_ = 0;
+                
+		if (scheduler_callback_)
+                        Py_XDECREF(scheduler_callback_);
+                timer_.reset();
+        } else {
+                if (!PyCallable_Check(callback)) {
+                        std::cerr << "Object is not callable" << std::endl;
+                } else {
+                        if ( scheduler_callback_ ) Py_XDECREF(scheduler_callback_);
+                        scheduler_callback_ = callback;
+                        Py_XINCREF(scheduler_callback_);
+
+                        scheduler_set_ = true;
+                        scheduler_seconds_ = seconds;
+
+			restart_timer(seconds);
+		}
+	}
+}
 #elif defined(RUBY_BINDING)
 void PacketDispatcher::setScheduler(VALUE callback, int seconds) {
-#endif
+
         if (timer_) // cancel the timer if exists
                 timer_->cancel();
 
         // reset the values of the scheduler
-#if defined(PYTHON_BINDING)
-        if ((callback == Py_None)or(seconds <= 0)) {
-#elif defined(RUBY_BINDING)
         if ((callback == Qnil)or(seconds <= 0)) {
-#endif
                 scheduler_set_ = false;
                 scheduler_seconds_ = 0;
 
-#if defined(PYTHON_BINDING)
-                if (scheduler_callback_)
-                        Py_XDECREF(scheduler_callback_);
-#elif defined(RUBY_BINDING)
 		scheduler_callback_ = Qnil;
-#endif
                 timer_.reset();
         } else {
-#if defined(PYTHON_BINDING)
-                if (!PyCallable_Check(callback)) {
-#elif defined(RUBY_BINDING)
 		// TODO: Verify if the callback is callable
 		if (NIL_P(callback)) {
-#endif
                         std::cerr << "Object is not callable" << std::endl;
                 } else {
 
-#if defined(PYTHON_BINDING)
-                        if ( scheduler_callback_ ) Py_XDECREF(scheduler_callback_);
-                        scheduler_callback_ = callback;
-                        Py_XINCREF(scheduler_callback_);
-#elif defined(RUBY_BINDING)
 			scheduler_callback_ = callback;
-#endif
+
                         scheduler_set_ = true;
                         scheduler_seconds_ = seconds;
 
-                        // reset the shared pointer and create a new timer.
-                        timer_.reset(new boost::asio::deadline_timer(io_service_,
-                                boost::posix_time::seconds(scheduler_seconds_)));
-
-                        timer_->expires_at(timer_->expires_at() + boost::posix_time::seconds(scheduler_seconds_));
-                        timer_->async_wait(boost::bind(&PacketDispatcher::scheduler_handler, this,
-                                boost::asio::placeholders::error));
+			restart_timer(seconds);
                 }
         }
 }
+#elif defined(LUA_BINDING)
+
+void PacketDispatcher::setScheduler(lua_State* lua, const char *callback,int seconds) {
+
+        if (timer_) // cancel the timer if exists
+                timer_->cancel();
+
+	if ((callback == nullptr)or(seconds <=0)) {
+		scheduler_callback_ = nullptr;
+                lua_ = nullptr;
+		scheduler_set_ = false;
+                scheduler_seconds_ = 0;
+                ref_function_ = LUA_NOREF;
+		timer_.reset();
+	} else {
+        	lua_getglobal(lua,callback);
+        	if (lua_isfunction(lua,-1)) {
+                	ref_function_ = luaL_ref(lua, LUA_REGISTRYINDEX);
+                	// std::cout << __FILE__<< ":" << __func__ << ":name:" << callback << " ref:" << ref_function_ << std::endl;
+                	lua_ = lua;
+                	scheduler_callback_ = callback;
+			scheduler_seconds_ = seconds;
+                        scheduler_set_ = true;
+
+			restart_timer(seconds);
+		} else {
+                	lua_pop(lua, 1);
+                	ref_function_ = LUA_NOREF;
+                	lua_ = nullptr;
+                	throw std::runtime_error("not a valid LUA function");
+		}
+	}
+}
+
+#endif
 
 #if defined(RUBY_BINDING)
 
@@ -410,6 +491,8 @@ static VALUE ruby_schedule_callback(VALUE ptr) {
 }
 
 #endif
+
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 
 void PacketDispatcher::scheduler_handler(boost::system::error_code error) {
 
@@ -442,7 +525,17 @@ void PacketDispatcher::scheduler_handler(boost::system::error_code error) {
         VALUE result = rb_protect(ruby_schedule_callback,(VALUE)&rbdata,&rberror);
 
         if (rberror)
-                throw "Ruby execption on schedule callback";
+                throw "Ruby exception on schedule callback";
+#elif defined(LUA_BINDING)
+
+        lua_rawgeti(lua_, LUA_REGISTRYINDEX, ref_function_);
+
+        int ret;
+        if ((ret = lua_pcall(lua_,0,0,0)) != 0) {
+		throw lua_tostring(lua_,1);
+        	// std::cout << "ERROR:" << lua_tostring(lua_, -1) << std::endl;
+        }
+
 #endif
         return;
 }
@@ -509,13 +602,16 @@ std::ostream& operator<< (std::ostream& out, const PacketDispatcher& pdis) {
 
 	out << "PacketDispatcher(" << &pdis <<") statistics" << std::endl;
 	out << "\t" << "Connected to " << pdis.stack_name_ <<std::endl;
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 	if (pdis.scheduler_set_) {
 		out << "\t" << "Scheduler on (" << pdis.scheduler_callback_ << ") seconds:" << pdis.scheduler_seconds_ <<std::endl;
 	} else {
 		out << "\t" << "Scheduler off" << std::endl;
 	}
 #endif
+	if (pdis.pcap_filter_.length() > 0) {
+		out << "\t" << "Pcap filter:" << pdis.pcap_filter_ <<std::endl;
+	}
 	out << "\t" << "Total packets:          " << std::setw(10) << pdis.total_packets_ <<std::endl;
 	out << "\t" << "Total bytes:        " << std::setw(14) << pdis.total_bytes_ <<std::endl;
 

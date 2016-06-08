@@ -91,7 +91,7 @@ public:
 	}
 
 	uint16_t getEthernetType() const { return ntohs(vlan_header_->vlan_tci);}
-
+	uint16_t getVlanId() const { return (ntohs(vlan_header_->vlan_tpid) & 0x0FFF);} 
 	int64_t getAllocatedMemory() const { return sizeof(VLanProtocol); }
 
 #if defined(PYTHON_BINDING)
@@ -100,6 +100,8 @@ public:
         VALUE getCounters() const;
 #elif defined(JAVA_BINDING)
         JavaCounters getCounters() const  { JavaCounters counters; return counters; }
+#elif defined(LUA_BINDING)
+        LuaCounters getCounters() const; 
 #endif
 
 private:

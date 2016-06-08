@@ -11,7 +11,7 @@ from distutils.extension import Extension
 # from setuptools import setup
 
 """ List of the files of the lib """
-src_files =  ["Multiplexer.cc","FlowForwarder.cc","PacketDispatcher.cc","Flow.cc","Protocol.cc"]
+src_files =  ["Multiplexer.cc","FlowForwarder.cc","PacketDispatcher.cc","Flow.cc","Protocol.cc","StringCache.cc"]
 src_files += ["Callback.cc","Interpreter.cc","NetworkStack.cc","EvidenceManager.cc","CacheManager.cc","AnomalyManager.cc"]
 src_files += ["flow/FlowManager.cc"] 
 src_files += ["protocols/ethernet/EthernetProtocol.cc"]
@@ -22,24 +22,41 @@ src_files += ["ipset/IPAbstractSet.cc","ipset/IPSet.cc","ipset/IPBloomSet.cc","i
 src_files += ["protocols/ip6/IPv6Protocol.cc"]
 src_files += ["protocols/icmp6/ICMPv6Protocol.cc"]
 src_files += ["protocols/icmp/ICMPProtocol.cc"]
-src_files += ["protocols/udp/UDPProtocol.cc","protocols/tcp/TCPProtocol.cc"]
+src_files += ["protocols/udp/UDPProtocol.cc"]
+src_files += ["protocols/tcp/TCPProtocol.cc"]
+src_files += ["protocols/tcp/TCPInfo.cc"]
 src_files += ["protocols/tcpgeneric/TCPGenericProtocol.cc","protocols/udpgeneric/UDPGenericProtocol.cc"]
 src_files += ["protocols/gre/GREProtocol.cc","protocols/vxlan/VxLanProtocol.cc","protocols/openflow/OpenFlowProtocol.cc"]
 src_files += ["protocols/gprs/GPRSProtocol.cc"]
+src_files += ["protocols/gprs/GPRSInfo.cc"]
 src_files += ["protocols/http/HTTPProtocol.cc"]
 src_files += ["protocols/http/HTTPUriSet.cc"]
+src_files += ["protocols/http/HTTPInfo.cc"]
 src_files += ["protocols/ssl/SSLProtocol.cc"]
+src_files += ["protocols/ssl/SSLInfo.cc"]
 src_files += ["protocols/smtp/SMTPProtocol.cc"]
+src_files += ["protocols/smtp/SMTPInfo.cc"]
 src_files += ["protocols/imap/IMAPProtocol.cc"]
+src_files += ["protocols/imap/IMAPInfo.cc"]
 src_files += ["protocols/pop/POPProtocol.cc"]
+src_files += ["protocols/pop/POPInfo.cc"]
 src_files += ["protocols/dns/DNSProtocol.cc"]
+src_files += ["protocols/dns/DNSInfo.cc"]
 src_files += ["protocols/sip/SIPProtocol.cc"]
+src_files += ["protocols/sip/SIPInfo.cc"]
 src_files += ["protocols/dhcp/DHCPProtocol.cc"]
 src_files += ["protocols/ntp/NTPProtocol.cc"]
 src_files += ["protocols/snmp/SNMPProtocol.cc"]
 src_files += ["protocols/ssdp/SSDPProtocol.cc"]
+src_files += ["protocols/ssdp/SSDPInfo.cc"]
 src_files += ["protocols/modbus/ModbusProtocol.cc"]
 src_files += ["protocols/bitcoin/BitcoinProtocol.cc"]
+src_files += ["protocols/bitcoin/BitcoinInfo.cc"]
+src_files += ["protocols/coap/CoAPProtocol.cc"]
+src_files += ["protocols/coap/CoAPInfo.cc"]
+src_files += ["protocols/rtp/RTPProtocol.cc"]
+src_files += ["protocols/mqtt/MQTTProtocol.cc"]
+src_files += ["protocols/mqtt/MQTTInfo.cc"]
 src_files += ["regex/Regex.cc","regex/RegexManager.cc","protocols/frequency/FrequencyProtocol.cc"]
 src_files += ["protocols/frequency/FrequencyCounter.cc","learner/LearnerEngine.cc"]
 src_files += ["names/DomainName.cc","names/DomainNameManager.cc"]
@@ -158,15 +175,17 @@ if __name__ == "__main__":
     aiengine_module.include_dirs = includes
     aiengine_module.define_macros = macros
 
+    long_desc = ""
+
     setup(name="aiengine",
-        version = "1.4",
+        version = "1.5",
         author = "Luis Campo Giralte",
         author_email = "luis.camp0.2009 at gmail.com",
         url = "https://bitbucket.org/camp0/aiengine",
         license = "GPLv2",
         package_dir = {'': '.'},
         description = "Wrapper for the aiengine",
-        long_description = open('../README.md').read(),
+        long_description = long_desc ,
         ext_modules = [aiengine_module],
         py_modules = ["pyaiengine"],
         classifiers=[

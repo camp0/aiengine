@@ -4,14 +4,16 @@ all: aiengine
 
 python_PYTHON = pyai_tests.py __init__.py
 
+LUA_INCLUDE=@LUA_INCLUDE@
 AM_JAVAFLAGS=@AM_JAVAFLAGS@
 # EXTRA_FLAGS = -flto not supported on the freebsd compiler
 # EXTRA_FLAGS = -O3 '-fprofile-arcs -ftest-coverage -g' For enable gcov tool
 EXTRA_FLAGS = -O3
 
 EXTRA_DIST = 	python_wrapper.cc python_help.h ruby_wrapper.i setup.py MANIFEST.in \
-		ruai_test.rb java_wrapper.i JavaAiengineTestsStackLan.java JavaAiengineTestsStackLanIPv6.java \
-		JavaAiengineTestsStackVirtual.java JunitTestSuite.java 	
+		ruai_tests.rb java_wrapper.i JavaAiengineTestsStackLan.java JavaAiengineTestsStackLanIPv6.java \
+		JavaAiengineTestsStackVirtual.java JunitTestSuite.java \
+		luai_tests.lua lua_wrapper.i	
 
 noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			Protocol.h AnomalyManager.h RejectManager.h \
@@ -62,11 +64,18 @@ noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			protocols/bitcoin/BitcoinProtocol.h \
 			protocols/modbus/ModbusProtocol.h \
 			protocols/dns/DNSProtocol.h \
+			protocols/dns/DNSInfo.h \
 			protocols/sip/SIPProtocol.h \
+			protocols/sip/SIPInfo.h \
 			protocols/dhcp/DHCPProtocol.h \
 			protocols/ntp/NTPProtocol.h \
 			protocols/snmp/SNMPProtocol.h \
 			protocols/ssdp/SSDPProtocol.h \
+			protocols/ssdp/SSDPInfo.h \
+			protocols/coap/CoAPProtocol.h \
+			protocols/coap/CoAPInfo.h \
+			protocols/rtp/RTPProtocol.h \
+			protocols/mqtt/MQTTProtocol.h \
 			protocols/frequency/Frequencies.h \
 			protocols/frequency/PacketFrequencies.h \
 			protocols/frequency/FrequencyProtocol.h \
@@ -80,7 +89,7 @@ aiengine_core_sources =	Multiplexer.cc \
 			PacketDispatcher.cc \
 			Flow.cc CacheManager.cc \
 			Protocol.cc AnomalyManager.cc \
-			Callback.cc \
+			Callback.cc StringCache.cc \
 			Interpreter.cc \
 			flow/FlowManager.cc \
 			protocols/ethernet/EthernetProtocol.cc \
@@ -114,8 +123,11 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/smtp/SMTPProtocol.cc \
 			protocols/smtp/SMTPInfo.cc \
 			protocols/imap/IMAPProtocol.cc \
+			protocols/imap/IMAPInfo.cc \
 			protocols/pop/POPProtocol.cc \
+			protocols/pop/POPInfo.cc \
 			protocols/bitcoin/BitcoinProtocol.cc \
+			protocols/bitcoin/BitcoinInfo.cc \
 			protocols/modbus/ModbusProtocol.cc \
 			protocols/dns/DNSInfo.cc \
 			protocols/dns/DNSProtocol.cc \
@@ -125,6 +137,13 @@ aiengine_core_sources =	Multiplexer.cc \
 			protocols/ntp/NTPProtocol.cc \
 			protocols/snmp/SNMPProtocol.cc \
 			protocols/ssdp/SSDPProtocol.cc \
+			protocols/ssdp/SSDPInfo.cc \
+			protocols/coap/CoAPProtocol.cc \
+			protocols/coap/CoAPInfo.cc \
+			protocols/rtp/RTPProtocol.cc \
+			protocols/mqtt/MQTTProtocol.cc \
+			protocols/mqtt/MQTTInfo.cc \
+			protocols/netbios/NetbiosProtocol.cc \
 			regex/Regex.cc \
 			regex/RegexManager.cc RejectManager.cc \
 			protocols/frequency/FrequencyProtocol.cc \
@@ -194,6 +213,10 @@ tests_SOURCES = $(aiengine_core_sources) \
 		protocols/ntp/test_ntp.cc \
 		protocols/snmp/test_snmp.cc \
 		protocols/ssdp/test_ssdp.cc \
+		protocols/coap/test_coap.cc \
+		protocols/rtp/test_rtp.cc \
+		protocols/mqtt/test_mqtt.cc \
+		protocols/netbios/test_netbios.cc \
 		regex/test_regex.cc \
 		user/test_users.cc \
 		learner/test_learner.cc \
@@ -207,21 +230,31 @@ tests_LDFLAGS = 	-DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ \
 
 ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		AnomalyManager.o CacheManager.o Multiplexer.o FlowForwarder.o PacketDispatcher.o \
-		Flow.o Callback.o \
+		Flow.o Callback.o StringCache.o \
 		RegexManager.o Regex.o \
 		VLanProtocol.o MPLSProtocol.o \
 		IPProtocol.o IPv6Protocol.o \
 		TCPInfo.o TCPHeader.o TCPProtocol.o UDPProtocol.o \
 		TCPGenericProtocol.o UDPGenericProtocol.o \
-		HTTPProtocol.o HTTPInfo.o SSLProtocol.o SSLInfo.o \
+		HTTPProtocol.o HTTPInfo.o \
+		SSLProtocol.o SSLInfo.o \
 		DNSProtocol.o DNSInfo.o \
 		GPRSInfo.o GPRSProtocol.o \
 		NTPProtocol.o SNMPProtocol.o \
-		SMTPProtocol.o SMTPInfo.o IMAPProtocol.o \
-		DHCPProtocol.o SIPProtocol.o SIPInfo.o SSDPProtocol.o \
-		POPProtocol.o GREProtocol.o \
+		SMTPProtocol.o SMTPInfo.o \
+		IMAPProtocol.o IMAPInfo.o \
+		DHCPProtocol.o \
+		SIPProtocol.o SIPInfo.o \
+		SSDPProtocol.o SSDPInfo.o \
+		POPProtocol.o POPInfo.o \
+		GREProtocol.o \
 		OpenFlowProtocol.o VxLanProtocol.o \
-		BitcoinProtocol.o ModbusProtocol.o \
+		BitcoinProtocol.o BitcoinInfo.o \
+		ModbusProtocol.o \
+		RTPProtocol.o \
+		CoAPProtocol.o CoAPInfo.o \
+		MQTTProtocol.o MQTTInfo.o \
+		NetbiosProtocol.o \
 		FrequencyProtocol.o LearnerEngine.o \
 		ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \
 		StackLan.o StackMobile.o StackLanIPv6.o StackVirtual.o StackOpenFlow.o \
@@ -231,7 +264,7 @@ ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 
 java_objects = 	RegexManager.o Regex.o \
 		NetworkStack.o Protocol.o EthernetProtocol.o \
-		FlowManager.o Flow.o Callback.o \
+		FlowManager.o Flow.o Callback.o StringCache.o \
                 AnomalyManager.o CacheManager.o Multiplexer.o FlowForwarder.o PacketDispatcher.o \
                 VLanProtocol.o MPLSProtocol.o \
                 IPProtocol.o IPv6Protocol.o \
@@ -241,10 +274,17 @@ java_objects = 	RegexManager.o Regex.o \
                 DNSProtocol.o DNSInfo.o \
 		GPRSInfo.o GPRSProtocol.o \
                 NTPProtocol.o SNMPProtocol.o \
-                SMTPProtocol.o SMTPInfo.o IMAPProtocol.o \
-                DHCPProtocol.o SIPProtocol.o SIPInfo.o SSDPProtocol.o \
-                POPProtocol.o GREProtocol.o \
-		BitcoinProtocol.o ModbusProtocol.o \
+                SMTPProtocol.o SMTPInfo.o \
+		IMAPProtocol.o IMAPInfo.o \
+                DHCPProtocol.o SIPProtocol.o SIPInfo.o \
+		SSDPProtocol.o SSDPInfo.o \
+                POPProtocol.o POPInfo.o \
+		GREProtocol.o \
+		RTPProtocol.o \
+		CoAPProtocol.o CoAPInfo.o \
+		BitcoinProtocol.o BitcoinInfo.o ModbusProtocol.o \
+		MQTTProtocol.o MQTTInfo.o \
+		NetbiosProtocol.o \
                 OpenFlowProtocol.o VxLanProtocol.o \
                 FrequencyProtocol.o LearnerEngine.o \
                 ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \
@@ -253,11 +293,46 @@ java_objects = 	RegexManager.o Regex.o \
                 IPSetManager.o IPAbstractSet.o IPSet.o HTTPUriSet.o \
                 DomainNameManager.o DomainName.o RejectManager.o EvidenceManager.o
 
+lua_objects =  	NetworkStack.o Protocol.o EthernetProtocol.o \
+                AnomalyManager.o CacheManager.o Multiplexer.o FlowForwarder.o PacketDispatcher.o \
+                Flow.o Callback.o StringCache.o \
+                RegexManager.o Regex.o \
+                VLanProtocol.o MPLSProtocol.o \
+                IPProtocol.o IPv6Protocol.o \
+                TCPInfo.o TCPHeader.o TCPProtocol.o UDPProtocol.o \
+                TCPGenericProtocol.o UDPGenericProtocol.o \
+                HTTPProtocol.o HTTPInfo.o \
+                SSLProtocol.o SSLInfo.o \
+                DNSProtocol.o DNSInfo.o \
+                GPRSInfo.o GPRSProtocol.o \
+                NTPProtocol.o SNMPProtocol.o \
+                SMTPProtocol.o SMTPInfo.o \
+                IMAPProtocol.o IMAPInfo.o \
+                DHCPProtocol.o \
+                SIPProtocol.o SIPInfo.o \
+                SSDPProtocol.o SSDPInfo.o \
+                POPProtocol.o POPInfo.o \
+                GREProtocol.o \
+                OpenFlowProtocol.o VxLanProtocol.o \
+                BitcoinProtocol.o BitcoinInfo.o \
+                ModbusProtocol.o \
+                RTPProtocol.o \
+		NetbiosProtocol.o \
+                CoAPProtocol.o CoAPInfo.o \
+                MQTTProtocol.o MQTTInfo.o \
+                FrequencyProtocol.o LearnerEngine.o \
+                ICMPProtocol.o ICMPv6Protocol.o ICMPv6Header.o \
+                StackLan.o StackMobile.o StackLanIPv6.o StackVirtual.o StackOpenFlow.o \
+                FlowManager.o Interpreter.o \
+                IPSetManager.o IPAbstractSet.o IPSet.o HTTPUriSet.o \
+                DomainNameManager.o DomainName.o RejectManager.o EvidenceManager.o
+
 tests_CPPFLAGS = $(BOOST_CPPFLAGS) -g # -fprofile-arcs -ftest-coverage 
 # Dont forget to put -lgcov if need on test_LDADD
-tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread 
+tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread $(LOG4CXX_FLAGS) 
 
-CLEANFILES = *.o *.lo *.so *.class *_wrap.cxx *_wrap.h
+CLEANFILES = *.o *.lo *.so *.class *_wrap.cxx *_wrap.h swigluarun.h \
+		`rm -rf $(srcdir)/buildjava`
 
 MAINTAINERCLEANFILES = \
         $(srcdir)/Makefile \
@@ -285,14 +360,15 @@ if HAVE_RUBY_SUPPORT
 	@echo "* Compiling Ruby extension.                                                          *"
 	@echo "**************************************************************************************"
 	@echo "Generating interface" $(SWIG)	
-	swig -DRUBY_BINDING -globalmodule -c++ -ruby ruby_wrapper.i 	
+	swig -DRUBY_BINDING -DHAVE_CONFIG_H -globalmodule -c++ -ruby ruby_wrapper.i 	
 	@echo "Compiling ruby interface"
 	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DRUBY_BINDING -I.. -I. \
 		-std=c++11 -c $(aiengine_core_sources) ruby_wrapper_wrap.cxx \
 		-I/usr/include/ruby -I/usr/local/lib/ruby/1.6/i686-linux 
 	@echo "Linking ruby interface"
 	$(CXX) -g -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DRUBY_BINDING -I.. \
-		-shared -std=c++11 $(ruby_objects) ruby_wrapper_wrap.o -o ruaiengine.so $(BOOST_LINK_CORE) -lpcap -lruby -lpcre
+		-shared -std=c++11 $(ruby_objects) ruby_wrapper_wrap.o -o ruaiengine.so $(BOOST_LINK_CORE) \
+		$(LOG4CXX_FLAGS) -lpcap -lruby -lpcre
 endif
 java:
 if HAVE_JAVA_SUPPORT
@@ -300,14 +376,31 @@ if HAVE_JAVA_SUPPORT
 	@echo "* Compiling Java extension.                                                          *"
 	@echo "**************************************************************************************"
 	@echo "Generating Java interface" 
-	swig -DJAVA_BINDING -c++ -java java_wrapper.i 	
+	$(MKDIR_P) buildjava 2>/dev/null
+	swig -DJAVA_BINDING -DHAVE_CONFIG_H -outdir buildjava -c++ -java java_wrapper.i 	
 	@echo "Compiling Java interface"
-	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DJAVA_BINDING -I.. -I. $(CPPFLAGS) $(AM_JAVAFLAGS) \
+	$(CXX) -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DJAVA_BINDING -I./buildjava -I.. -I. $(CPPFLAGS) $(AM_JAVAFLAGS) \
 		-std=c++11 -c $(aiengine_core_sources) java_wrapper_wrap.cxx 
 	@echo "Linking Java interface"
-	$(CXX) -g -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DJAVA_BINDING -I.. \
-		-shared -std=c++11 $(java_objects) java_wrapper_wrap.o -o jaaiengine.so -lpcap $(BOOST_LINK_CORE) -lpcre 
+	$(CXX) -g -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DJAVA_BINDING -I.. -I./buildjava  \
+		-shared -std=c++11 $(java_objects) java_wrapper_wrap.o -o jaaiengine.so -lpcap \
+		$(LOG4CXX_FLAGS) $(BOOST_LINK_CORE) -lpcre 
 	@echo "Compiling Java Unit tests"
-	$(MKDIR_P) buildjava 2>/dev/null
-	$(JAVA_CC) -d buildjava/ -cp /usr/share/java/junit.jar  *.java
+	$(JAVA_CC) -d buildjava/ -sourcepath buildjava/ -cp /usr/share/java/junit.jar  *.java
+endif
+lua:
+if HAVE_LUA_SUPPORT
+	@echo "**************************************************************************************"
+	@echo "* Compiling Lua extension. i                                                         *"
+	@echo "**************************************************************************************"
+	@echo "Generating Lua interface" 
+	swig -lua -external-runtime 
+	swig -DLUA_BINDING -DHAVE_CONFIG_H -c++ -lua lua_wrapper.i 
+	@echo "Compiling Lua interface"
+	$(CXX) -fPIC $(EXTRA_FLAGS) -DSWIG_TYPE_TABLE=luaiengine -DHAVE_CONFIG_H -DLUA_BINDING -I.. -I. $(CPPFLAGS) $(LUA_INCLUDE) -I/usr/include \
+		-std=c++11 -c $(aiengine_core_sources) lua_wrapper_wrap.cxx 
+	@echo "Linking lua interface"
+	$(CXX) -g -fPIC $(EXTRA_FLAGS) -DHAVE_CONFIG_H -DLUA_BINDING -I.. \
+		-shared -std=c++11 $(lua_objects) lua_wrapper_wrap.o -o luaiengine.so $(BOOST_LINK_CORE) \
+		$(LOG4CXX_FLAGS) -lpcap $(LUA_LIB) -lpcre -L/lib64/liblua.so
 endif

@@ -209,6 +209,21 @@ BOOST_AUTO_TEST_CASE (test6_smtp)
         BOOST_CHECK( info->getIsBanned() == false);
 }
 
+BOOST_AUTO_TEST_CASE (test7_smtp)
+{
+        char *header =  "MAIL FROM: <myaexploit@yahoo.com\\x90\\x90\\x90\\x90\\x90\\x90\\x90\\x90\\x90\\x90\\x90\\x90\r\n";
+        unsigned char *pkt = reinterpret_cast <unsigned char*> (header);
+        int length = strlen(header);
+        Packet packet(pkt,length);
+
+        SharedPointer<Flow> flow = SharedPointer<Flow>(new Flow());
+
+        flow->setFlowDirection(FlowDirection::FORWARD);
+        flow->packet = const_cast<Packet*>(&packet);
+        smtp->processFlow(flow.get());
+
+	BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::SMTP_BOGUS_HEADER);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 

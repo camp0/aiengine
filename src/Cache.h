@@ -94,6 +94,7 @@ public:
 	int32_t getTotalFails() const { return total_fails_;}
 	int32_t getAllocatedMemory() const { return allocated_bytes_; }
 	int32_t getCurrentAllocatedMemory() const { return (items_.size() * classSize); }
+	const char *getName() const { return name_.c_str(); }
 
         void statistics(std::basic_ostream<char>& out) {
 

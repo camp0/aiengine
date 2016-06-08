@@ -24,6 +24,10 @@
 #include "Callback.h"
 #include "Flow.h"
 
+#if defined(LUA_BINDING)
+#include "swigluarun.h"
+#endif
+
 namespace aiengine {
 
 #if defined(PYTHON_BINDING)
@@ -126,6 +130,65 @@ void Callback::executeCallback(Flow *flow) {
 	if (callback_ != nullptr) {
 		callback_->call(flow);
 	}
+}
+
+#elif defined(LUA_BINDING)
+
+Callback::~Callback() {
+
+	if ((ref_function_ != LUA_NOREF) and ( lua_ != nullptr)) {
+		// delete the reference from registry
+		luaL_unref(lua_, LUA_REGISTRYINDEX, ref_function_);
+	}
+}
+
+void Callback::setCallback(lua_State* lua,const char *callback) {
+
+	lua_getglobal(lua,callback);
+	if (lua_isfunction(lua,-1)) {
+		ref_function_ = luaL_ref(lua, LUA_REGISTRYINDEX);
+		// std::cout << __FILE__<< ":" << __func__ << ":name:" << callback << " ref:" << ref_function_ << std::endl;
+		callback_set_ = true;
+		lua_ = lua;
+		callback_name_ = callback;
+	} else {
+		lua_pop(lua, 1);
+		ref_function_ = LUA_NOREF;
+		callback_set_ = false;
+		lua_ = nullptr;
+		throw std::runtime_error("not a valid LUA function");
+	}
+        return;
+}
+
+bool Callback::push_pointer(lua_State *L, void* ptr, const char* type_name, int owned) {
+
+  	// task 1: get the object 'type' which is registered with SWIG
+  	// you need to call SWIG_TypeQuery() with the class name
+  	// (normally, just look in the wrapper file to get this)
+
+ 	swig_type_info * pTypeInfo = SWIG_TypeQuery(L, type_name);
+	if (pTypeInfo == 0)
+  		return false;   // error
+  	// task 2: push the pointer to the Lua stack
+  	// this requires a pointer & the type
+  	// the last param specifies if Lua is responsible for deleting the object
+
+	SWIG_NewPointerObj(L, ptr, pTypeInfo, owned);
+	return true;
+}
+
+
+void Callback::executeCallback(Flow *flow) {
+
+	lua_rawgeti(lua_, LUA_REGISTRYINDEX, ref_function_);
+
+	if (push_pointer(lua_,flow,"aiengine::Flow*",0)) {
+        	int ret; 
+        	if ((ret = lua_pcall(lua_,1,0,0)) != 0) {
+			std::cout << "ERROR:" << lua_tostring(lua_, -1) << std::endl;
+		} 
+	}	
 }
 
 #endif

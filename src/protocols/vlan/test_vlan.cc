@@ -71,6 +71,7 @@ BOOST_AUTO_TEST_CASE (test3_vlan)
         BOOST_CHECK(mux_vlan->getTotalForwardPackets() == 0);
         BOOST_CHECK(mux_vlan->getTotalFailPackets() == 1);
 
+	BOOST_CHECK(vlan->getVlanId() == 104);
         BOOST_CHECK(vlan->getEthernetType() == ETHERTYPE_IP);
 }
 

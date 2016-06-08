@@ -188,29 +188,30 @@ void SMTPProtocol::attach_from(SMTPInfo *info, boost::string_ref &from) {
         }
 }
 
-void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, boost::string_ref &header) {
+void SMTPProtocol::handle_cmd_mail(SMTPInfo *info, boost::string_ref &header) {
 
 	SharedPointer<StringCache> from_ptr = info->from;
 
-	size_t start = header.find("<");
-	size_t end = header.rfind(">");
+	size_t start = header.find_first_of("<");
+	size_t end = header.find_first_of(">");
 
 	if ((start > header.length())or(end > header.length())) {
-                if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
-                        flow->setPacketAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
+                if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        current_flow_->setPacketAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
                 }
-		anomaly_->incAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
+		anomaly_->incAnomaly(current_flow_,PacketAnomalyType::SMTP_BOGUS_HEADER);
 		return;
 	}
 
 	boost::string_ref from(header.substr(start + 1, end - start - 1));
-	size_t token = from.find("@");
+
+	size_t token = from.find_first_of("@");
 
 	if (token > from.length()) {
-                if (flow->getPacketAnomaly() == PacketAnomalyType::NONE) {
-                        flow->setPacketAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
+                if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                        current_flow_->setPacketAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
                 }
-		anomaly_->incAnomaly(PacketAnomalyType::SMTP_BOGUS_HEADER);
+		anomaly_->incAnomaly(current_flow_,PacketAnomalyType::SMTP_BOGUS_HEADER);
 		return;
 	}
 	boost::string_ref domain(from.substr(token + 1,from.size()));
@@ -220,7 +221,7 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, boost::string_ref 
                 SharedPointer<DomainName> dom_candidate = ban_hosts->getDomainName(domain);
                 if (dom_candidate) {
 #ifdef HAVE_LIBLOG4CXX
-                        LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with ban host " << dom_candidate->getName());
+                        LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with ban host " << dom_candidate->getName());
 #endif
                         ++total_ban_domains_;
 			info->setIsBanned(true);
@@ -235,12 +236,12 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, boost::string_ref 
         	DomainNameManagerPtr dom_mng = domain_mng_.lock();
         	SharedPointer<DomainName> dom_candidate = dom_mng->getDomainName(domain);
                 if (dom_candidate) {
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 #ifdef HAVE_LIBLOG4CXX
-			LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << dom_candidate->getName());
+			LOG4CXX_INFO (logger, "Flow:" << *current_flow_ << " matchs with " << dom_candidate->getName());
 #endif
                         if(dom_candidate->call.haveCallback()) {
-                       		dom_candidate->call.executeCallback(flow);
+                       		dom_candidate->call.executeCallback(current_flow_);
                         }
 #endif
                 }
@@ -250,7 +251,7 @@ void SMTPProtocol::handle_cmd_mail(Flow *flow,SMTPInfo *info, boost::string_ref 
 void SMTPProtocol::handle_cmd_rcpt(SMTPInfo *info, boost::string_ref &header) {
 
 	if (!info->to) {
-        	size_t start = header.find("<");
+        	size_t start = header.find_first_of("<");
         	size_t end = header.rfind(">");
 
 		boost::string_ref to(header.substr(start + 1,end - start - 1));
@@ -274,10 +275,11 @@ void SMTPProtocol::handle_cmd_rcpt(SMTPInfo *info, boost::string_ref &header) {
 void SMTPProtocol::processFlow(Flow *flow) {
 
 	int length = flow->packet->getLength();
+	unsigned char *payload = flow->packet->getPayload();
 	total_bytes_ += length;
 	++total_packets_;
 
-	setHeader(flow->packet->getPayload());
+	setHeader(payload);
 
        	SharedPointer<SMTPInfo> sinfo = flow->getSMTPInfo();
 
@@ -294,33 +296,48 @@ void SMTPProtocol::processFlow(Flow *flow) {
                 return;
         }
 
+	current_flow_ = flow;
+
 	if (flow->getFlowDirection() == FlowDirection::FORWARD) {
-		
-		// Commands send by the client
-        	for (auto &command: commands_) {
-                	const char *c = std::get<0>(command);
-                	int offset = std::get<1>(command);
+	
+		if (sinfo->getIsData()) { // The client is transfering the email
+			sinfo->incTotalDataBytes(length);
 
-                	if (std::memcmp(c,&smtp_header_[0],offset) == 0) {
-                        	int32_t *hits = &std::get<3>(command);
-				int8_t cmd = std::get<4>(command);
+			// Check if is the last data block
+			int offset = length - 7;
+			if (offset > 0) {
+				if (std::memcmp(&payload[offset],"\x0d\x0a\x0d\x0a\x2e\x0d\x0a",7) == 0) {
+					sinfo->incTotalDataBlocks();
+					sinfo->setIsData(false);
+				}
+			}	
+		} else { // Commands send by the client
+        		for (auto &command: commands_) {
+                		const char *c = std::get<0>(command);
+                		int offset = std::get<1>(command);
 
-                        	++(*hits);
-				++total_smtp_client_commands_;
+                		if (std::memcmp(c,&smtp_header_[0],offset) == 0) {
+                        		int32_t *hits = &std::get<3>(command);
+					int8_t cmd = std::get<4>(command);
 
-				// Check if the commands are MAIL or RCPT
-				if ( cmd == static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_MAIL)) {
-					boost::string_ref header(reinterpret_cast<const char*>(smtp_header_),length);
-					handle_cmd_mail(flow,sinfo.get(),header);
-				} else if ( cmd == static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_RCPT)) {
-					boost::string_ref header(reinterpret_cast<const char*>(smtp_header_),length);
-					handle_cmd_rcpt(sinfo.get(),header);
-				}	
-				sinfo->setCommand(cmd);
+                        		++(*hits);
+					++total_smtp_client_commands_;
 
-                        	return;
-                	}
-        	}
+					// Check if the commands are MAIL or RCPT
+					if ( cmd == static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_MAIL)) {
+						boost::string_ref header(reinterpret_cast<const char*>(smtp_header_),length);
+						handle_cmd_mail(sinfo.get(),header);
+					} else if ( cmd == static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_RCPT)) {
+						boost::string_ref header(reinterpret_cast<const char*>(smtp_header_),length);
+						handle_cmd_rcpt(sinfo.get(),header);
+					} else if ( cmd == static_cast<int8_t>(SMTPCommandTypes::SMTP_CMD_DATA)) {
+						sinfo->setIsData(true);
+					}	
+					sinfo->setCommand(cmd);
+                        		return;
+                		}
+        		}
+		}
 	} else {
 		// Responses from the server
 
@@ -407,13 +424,16 @@ void SMTPProtocol::decreaseAllocatedMemory(int value) {
 	to_cache_->destroy(value);
 }
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict SMTPProtocol::getCounters() const {
         boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE SMTPProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters SMTPProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets", total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

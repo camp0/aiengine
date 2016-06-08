@@ -136,6 +136,8 @@ int64_t HTTPProtocol::getAllocatedMemory() const {
         value += uri_cache_->getAllocatedMemory();
         value += host_cache_->getAllocatedMemory();
         value += ua_cache_->getAllocatedMemory();
+        value += ct_cache_->getAllocatedMemory();
+        value += file_cache_->getAllocatedMemory();
 
         return value;
 }
@@ -199,6 +201,16 @@ int32_t HTTPProtocol::release_http_info(HTTPInfo *info) {
         	bytes_released += uri->getNameSize();
                 uri_cache_->release(uri);
         }
+	if (info->ct) {
+        	SharedPointer<StringCache> ct = info->ct;
+        	bytes_released += ct->getNameSize();
+                ct_cache_->release(ct);
+        }
+	if (info->filename) {
+        	SharedPointer<StringCache> name = info->filename;
+        	bytes_released += name->getNameSize();
+                file_cache_->release(name);
+        }
         info->resetStrings();
 
 	return bytes_released;
@@ -223,6 +235,8 @@ void HTTPProtocol::releaseCache() {
                 int32_t release_hosts = host_map_.size();
                 int32_t release_uris = uri_map_.size();
                 int32_t release_uas = ua_map_.size();
+                int32_t release_cts = ct_map_.size();
+                int32_t release_files = file_map_.size();
 
                 // Compute the size of the strings used as keys on the map
                 std::for_each (host_map_.begin(), host_map_.end(), [&total_bytes_released] (PairStringCacheHits const &ht) {
@@ -234,6 +248,13 @@ void HTTPProtocol::releaseCache() {
                 std::for_each (uri_map_.begin(), uri_map_.end(), [&total_bytes_released] (PairStringCacheHits const &ht) {
                         total_bytes_released += ht.first.size();
                 });
+                std::for_each (ct_map_.begin(), ct_map_.end(), [&total_bytes_released] (PairStringCacheHits const &ht) {
+                        total_bytes_released += ht.first.size();
+                });
+                std::for_each (file_map_.begin(), file_map_.end(), [&total_bytes_released] (PairStringCacheHits const &ht) {
+                        total_bytes_released += ht.first.size();
+                });
+
 
                 for (auto &flow: ft) {
 			SharedPointer<HTTPInfo> info = flow->getHTTPInfo();
@@ -249,6 +270,8 @@ void HTTPProtocol::releaseCache() {
                 host_map_.clear();
 		uri_map_.clear();
 		ua_map_.clear();
+		ct_map_.clear();
+		file_map_.clear();
 
                 double cache_compression_rate = 0;
                 
@@ -258,7 +281,9 @@ void HTTPProtocol::releaseCache() {
 
                 msg.str("");
                 msg << "Release " << release_hosts << " hosts, " << release_uas;
-		msg << " useragents, " << release_uris << " uris, " << release_flows << " flows";
+		msg << " useragents, " << release_uris << " uris, ";
+		msg << release_files << " filenames, ";
+		msg << release_cts << " contenttypes, " << release_flows << " flows";
 		msg << ", " << total_bytes_released << " bytes, compression rate " << cache_compression_rate << "%";
                 infoMessage(msg.str());
         }
@@ -312,19 +337,43 @@ bool HTTPProtocol::process_ua_parameter(HTTPInfo *info, boost::string_ref &ua) {
 
 bool HTTPProtocol::process_content_length_parameter(HTTPInfo *info, boost::string_ref &parameter) {
 
-	int32_t length = 0;
+	int64_t length = std::atoll(parameter.data());
 
-	try {
-		length = std::stoi(std::string(parameter));
-		info->setContentLength(length);
-		info->setDataChunkLength(length);
-		info->setHaveData(true);
+	info->setContentLength(length);
+	info->setDataChunkLength(length);
+	info->setHaveData(true);
 
-	} catch(std::invalid_argument&) { //or catch(...) to catch all exceptions
-		length = 0;
+	return true;
+}
+
+bool HTTPProtocol::process_content_disposition_parameter(HTTPInfo *info, boost::string_ref &cd) {
+
+        size_t end = cd.find("filename=");
+
+        if (end != std::string::npos) {
+		boost::string_ref filename = cd.substr(end + 9);
+		if (filename.starts_with('"')) {
+			filename.remove_prefix(1);
+		}      
+		if (filename.ends_with('"')) {
+			filename.remove_suffix(1);
+		} 
+		if (filename.length() > 0) {
+			attach_filename(info,filename);
+		}
 	}
+        return true;
+}
 
-	// std::cout << "Content-length:" << length << std::endl;
+bool HTTPProtocol::process_content_type_parameter(HTTPInfo *info, boost::string_ref &ct) {
+
+	size_t ct_end = ct.find_first_of(";");
+
+        if (ct_end != std::string::npos) {
+        	ct = ct.substr(0,ct_end);
+        }
+
+	attach_content_type(info,ct);	
 	return true;
 }
 
@@ -368,6 +417,39 @@ void HTTPProtocol::attach_uri(HTTPInfo *info, boost::string_ref &uri) {
 	}
 }
 
+void HTTPProtocol::attach_content_type(HTTPInfo *info, boost::string_ref &ct) {
+
+        GenericMapType::iterator it = ct_map_.find(ct);
+        if (it == ct_map_.end()) {
+                SharedPointer<StringCache> ct_ptr = ct_cache_->acquire();
+                if (ct_ptr) {
+                        ct_ptr->setName(ct.data(),ct.length());
+                        info->ct = ct_ptr;
+                        ct_map_.insert(std::make_pair(boost::string_ref(ct_ptr->getName()),
+                                std::make_pair(ct_ptr,1)));
+                }
+        } else {
+                // Update the ContentType of the flow
+                info->ct = std::get<0>(it->second);
+	}
+}
+
+void HTTPProtocol::attach_filename(HTTPInfo *info, boost::string_ref &name) {
+
+        GenericMapType::iterator it = file_map_.find(name);
+        if (it == file_map_.end()) {
+                SharedPointer<StringCache> name_ptr = file_cache_->acquire();
+                if (name_ptr) {
+                        name_ptr->setName(name.data(),name.length());
+                        info->filename = name_ptr;
+                        file_map_.insert(std::make_pair(boost::string_ref(name_ptr->getName()),
+                                std::make_pair(name_ptr,1)));
+                }
+        } else {
+                // Update the Filename of the flow
+                info->filename = std::get<0>(it->second);
+	}
+}
 
 int HTTPProtocol::extract_uri(HTTPInfo *info, boost::string_ref &header) {
 
@@ -394,6 +476,24 @@ int HTTPProtocol::extract_uri(HTTPInfo *info, boost::string_ref &header) {
 			++(*hits);
 		}
 
+		// Extract the content-type
+		size_t h_offset = header.find("Content-Type:");
+		if (h_offset != std::string::npos) {
+			boost::string_ref ct_value(header.substr(h_offset + 14));
+			size_t ct_end = ct_value.find_first_of("\r\n");
+
+			ct_value = ct_value.substr(0,ct_end);
+			process_content_type_parameter(info,ct_value);
+		
+			h_offset = header.find("Content-Disposition:");
+			if (h_offset != std::string::npos) {
+				boost::string_ref cd_value(header.substr(h_offset + 20));
+				size_t ct_end = cd_value.find_first_of("\r\n");
+
+				cd_value = cd_value.substr(0,ct_end);
+				process_content_disposition_parameter(info,cd_value);
+			}
+                }
                 // No uri to extract
                 return method_size;
         }
@@ -422,7 +522,13 @@ int HTTPProtocol::extract_uri(HTTPInfo *info, boost::string_ref &header) {
                         // ++total_requests_;
                         attach_uri(info,uri);
 			method_size = end + 10;
-                }
+                } else {
+			// Anomaly on the URI header
+			if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+				current_flow_->setPacketAnomaly(PacketAnomalyType::HTTP_BOGUS_URI_HEADER);
+			}
+			anomaly_->incAnomaly(current_flow_,PacketAnomalyType::HTTP_BOGUS_URI_HEADER);
+		}
         }else{
                 ++total_http_others_;
         }
@@ -445,7 +551,6 @@ void HTTPProtocol::parse_header(HTTPInfo *info, boost::string_ref &header) {
        		// Check if is end off line
                 if (std::memcmp(&header[i],"\r\n",2) == 0 ) {
 
-			// std::cout << "HEADER PARAMETER:i(" << i << ")" << &header[i] << std::endl;
                 	if(header_field_.length()) {
                         	auto it = parameters_.find(header_field_);
                                 if (it != parameters_.end()) {
@@ -522,7 +627,7 @@ void HTTPProtocol::process_payloadl7(Flow * flow, HTTPInfo *info, boost::string_
                                 flow->regex_mng = rmng;
                                 flow->regex.reset();
                         }
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
                         if(regex->call.haveCallback()) {
                                 regex->call.executeCallback(flow);
                         }
@@ -555,6 +660,11 @@ int HTTPProtocol::process_requests_and_responses(HTTPInfo *info, boost::string_r
 			boost::string_ref newheader(header.substr(offset, length));
 			// std::cout << __FILE__ << ":" << __func__ << ":length:" << length << " header:" << newheader << std::endl;
                 	parse_header(info, newheader);
+		} else {
+                        if (current_flow_->getPacketAnomaly() == PacketAnomalyType::NONE) {
+                                current_flow_->setPacketAnomaly(PacketAnomalyType::HTTP_BOGUS_NO_HEADERS);
+                        }
+                        anomaly_->incAnomaly(current_flow_,PacketAnomalyType::HTTP_BOGUS_NO_HEADERS);
 		}
         }
 
@@ -574,11 +684,14 @@ void HTTPProtocol::processFlow(Flow *flow) {
 	if(!info) {
 		info = info_cache_->acquire();
                 if (!info) {
+#ifdef HAVE_LIBLOG4CXX
+                        LOG4CXX_WARN (logger, "No memory on '" << info_cache_->getName() << "' for flow:" << *flow);
+#endif
 			return;
 		}
 		flow->layer7info = info;
 	} 
-
+	
 	if (info->getIsBanned() == true) {
 #ifdef PYTHON_BINDING
 		// The HTTP flow could be banned from the python side
@@ -632,7 +745,7 @@ void HTTPProtocol::processFlow(Flow *flow) {
                 				SharedPointer<DomainName> host_candidate = host_mng->getDomainName(info->host->getName());
 						if (host_candidate) {
 							info->matched_domain_name = host_candidate;
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 #ifdef HAVE_LIBLOG4CXX
 							LOG4CXX_INFO (logger, "Flow:" << *flow << " matchs with " << host_candidate->getName());
 #endif	
@@ -647,9 +760,9 @@ void HTTPProtocol::processFlow(Flow *flow) {
 
 			if ((info->matched_domain_name)and(offset > 0)) {
 				SharedPointer<HTTPUriSet> uset = info->matched_domain_name->getHTTPUriSet();
-				if((uset) and (offset >0)) {
+				if (uset) {
 					if (uset->lookupURI(info->uri->getName())) {
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 						if (uset->call.haveCallback()) {
 							uset->call.executeCallback(flow);	
 						}
@@ -691,6 +804,8 @@ void HTTPProtocol::increaseAllocatedMemory(int number) {
 	uri_cache_->create(number);
 	host_cache_->create(number);
 	ua_cache_->create(number);
+	ct_cache_->create(number);
+	file_cache_->create(number);
 }
 
 void HTTPProtocol::decreaseAllocatedMemory(int number) {
@@ -699,6 +814,8 @@ void HTTPProtocol::decreaseAllocatedMemory(int number) {
 	uri_cache_->destroy(number);
 	host_cache_->destroy(number);
 	ua_cache_->destroy(number);
+	ct_cache_->destroy(number);
+	file_cache_->destroy(number);
 }
 
 void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
@@ -744,7 +861,6 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
                                         
 						out << "\t" << "Total " << label << ":" << std::right << std::setfill(' ') << std::setw(35 - strlen(label)) << hits <<std::endl;
 					}
-
 				}
 			}
 			if (stats_level_ > 2) {
@@ -755,10 +871,15 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 					uri_cache_->statistics(out);
 					host_cache_->statistics(out);
 					ua_cache_->statistics(out);
+					ct_cache_->statistics(out);
+					file_cache_->statistics(out);
+
 					if(stats_level_ > 4) {
 						showCacheMap(out,uri_map_,"HTTP Uris","Uri");
 						showCacheMap(out,host_map_,"HTTP Hosts","Host");
 						showCacheMap(out,ua_map_,"HTTP UserAgents","UserAgent");
+						showCacheMap(out,ct_map_,"HTTP ContentTypes","ContentType");
+						showCacheMap(out,file_map_,"HTTP Filenames","Filename");
 					}
 				}
 			}
@@ -767,10 +888,7 @@ void HTTPProtocol::statistics(std::basic_ostream<char>& out) {
 }
 
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING)
-
-#if !defined(JAVA_BINDING)
-
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) 
 #if defined(PYTHON_BINDING)
 boost::python::dict HTTPProtocol::getCache() const {
 #elif defined(RUBY_BINDING)
@@ -781,7 +899,7 @@ VALUE HTTPProtocol::getCache() const {
 
 #endif
 
-
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict HTTPProtocol::getCounters() const {
 	boost::python::dict counters;
@@ -791,6 +909,9 @@ VALUE HTTPProtocol::getCounters() const {
 #elif defined(JAVA_BINDING)
 JavaCounters HTTPProtocol::getCounters() const {
 	JavaCounters counters;
+#elif defined(LUA_BINDING)
+LuaCounters HTTPProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
 
         addValueToCounter(counters,"packets", total_packets_);

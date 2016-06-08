@@ -461,6 +461,14 @@ int main(int argc, char* argv[]) {
 	std::cout << "\tPcre version:" << PCRE_MAJOR << "." << PCRE_MINOR ;
 	std::cout << " Boost version:" << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << std::endl;
 
+
+        // Garbage 
+        __asm__ volatile (
+        	"push %rax\n"
+               	"xor %rax,%rax\n"
+               	"pop %rax\n"
+        );
+
 #ifdef HAVE_LIBLOG4CXX
 	BasicConfigurator::configure();
 #endif	
@@ -545,9 +553,13 @@ int main(int argc, char* argv[]) {
 					or(it->path().extension() == ".cap") 
 					or(it->path().extension() == ".pcapng"))) {
 					std::ostringstream os;
-				
-					os << option_input.c_str() << "/" << it->path().filename().c_str();
+			
+					// std::cout << "adding " << it->path().c_str() << std::endl;	
+					// os << option_input.c_str() << "/" << it->path().filename().c_str();
+					os << it->path().c_str();
       					inputs.push_back(os.str());
+				} else {
+					it.no_push();
 				}
 				++it;
 			}

@@ -71,7 +71,7 @@ void TCPGenericProtocol::processFlow(Flow *flow) {
 				flow->regex_mng = rmng;
 				flow->regex.reset();
 			} 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
                         if(regex->call.haveCallback()) {
 				regex->call.executeCallback(flow);
                         }
@@ -113,13 +113,16 @@ void TCPGenericProtocol::statistics(std::basic_ostream<char>& out) {
 }
 
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(LUA_BINDING)
 #if defined(PYTHON_BINDING)
 boost::python::dict TCPGenericProtocol::getCounters() const {
         boost::python::dict counters;
 #elif defined(RUBY_BINDING)
 VALUE TCPGenericProtocol::getCounters() const {
         VALUE counters = rb_hash_new();
+#elif defined(LUA_BINDING)
+LuaCounters TCPGenericProtocol::getCounters() const {
+	LuaCounters counters;
 #endif
         addValueToCounter(counters,"packets", total_packets_);
         addValueToCounter(counters,"bytes", total_bytes_);

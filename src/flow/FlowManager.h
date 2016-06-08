@@ -66,7 +66,8 @@ class FlowManager
 public:
     	explicit FlowManager(std::string name):name_(name),total_process_flows_(0),
 		total_timeout_flows_(0),timeout_(180),flowTable_(),flow_it_(),flow_cache_(),
-		tcp_info_cache_(),protocol_(),lookup_flow_() {}
+		tcp_info_cache_(),protocol_(),lookup_flow_(),
+		cache_mng_() {}
 
     	explicit FlowManager(): FlowManager("FlowManager") {}
 
@@ -116,7 +117,7 @@ public:
 
 #endif
 	void setProtocol(ProtocolPtrWeak proto) { protocol_ = proto; }
-
+	void setCacheManager(SharedPointer<CacheManager> cmng) { cache_mng_ = cmng; }
 private:
 	void print_pretty_flow(std::basic_ostream<char>& out,const Flow& flow, const char *proto_name);
 
@@ -131,6 +132,7 @@ private:
 	Cache<TCPInfo>::CachePtr tcp_info_cache_;
 	ProtocolPtrWeak protocol_;
 	SharedPointer<Flow> lookup_flow_; // cacheable flow;
+	SharedPointer<CacheManager> cache_mng_;
 };
 
 typedef std::shared_ptr<FlowManager> FlowManagerPtr;

@@ -25,6 +25,8 @@ The main functionalities of AIEngine are:
 - Support for detect DDoS at network/application layer.
 - Support for rejecting TCP/UDP connections.
 - Support for network forensics on real time.
+- Supports protocols such as Bitcoin,CoAP,DHCP,DNS,GPRS,GRE,HTTP,ICMPv4/ICMPv6,IMAP,IPv4/v6,Modbus,
+  MPLS,MQTT,NTP,OpenFlow,POP,RTP,SIP,SMTP,SSDP,SSL,TCP,UDP,VLAN,VXLAN. 
 
 Using AIEngine 
 ---------------
@@ -32,7 +34,7 @@ Using AIEngine
 To use AIEngine(reduce version) just execute the binary aiengine or use the python/ruby/java binding.
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
-	aiengine 1.4
+	aiengine 1.5
 	Mandatory arguments:
 	  -I [ --input ] arg                Sets the network interface ,pcap file or 
 	                                    directory with pcap files.
@@ -132,6 +134,8 @@ The main objects that the python module provide export are the following ones.
         SIPInfo
         SMTPInfo
         SSLInfo
+        MQTTInfo
+        CoAPInfo
 
 For a complete description of the class methods 
 
@@ -159,6 +163,7 @@ The first option for compile the library is using O3 compile optimization, this 
     $ ./configure
     $ cd src
     $ make python
+    $ python pyai_test.py
 
 The second option will compile the library by using the standard pythonic way by using setup.py, this will generate
 a bigger library size if compare with the previous one.
@@ -168,6 +173,7 @@ a bigger library size if compare with the previous one.
     $ ./configure
     $ cd src
     $ python setup.py build_ext -i 
+    $ python pyai_test.py
    
 Compile AIEngine Ruby library 
 ------------------------------
@@ -179,6 +185,7 @@ The ruby library is still on develop phase.
     $ ./configure
     $ cd src
     $ make ruby
+    $ ruby ruai_tests.rb
 
 Compile AIEngine Java library
 ------------------------------
@@ -191,6 +198,18 @@ The java library is still on develop phase.
     $ cd src
     $ make java
     $ java -cp ".:/usr/share/java/junit.jar:/usr/share/java/hamcrest/core.jar:./buildjava" org.junit.runner.JUnitCore JunitTestSuite
+
+Compile AIEngine Lua library 
+------------------------------
+
+The lua library is still on develop phase.
+
+    $ git clone https://bitbucket.com/camp0/aiengine
+    $ ./autogen.sh
+    $ ./configure
+    $ cd src
+    $ make lua
+    $ lua luai_tests.lua
 
 Contributing to AIEngine 
 -------------------------

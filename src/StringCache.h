@@ -29,21 +29,23 @@
 #endif
 
 #include <iostream>
-#include <algorithm>
 
 namespace aiengine {
 
 class StringCache 
 {
 public:
-    	explicit StringCache(const char *value):value_(value) {}
-    	explicit StringCache() { reset(); }
+    	explicit StringCache(const char *value);
+    	explicit StringCache():StringCache("") {}
     	virtual ~StringCache() { value_.clear();}
 
-	void reset() { value_ = ""; }
+#ifdef HAVE_STATIC_MEMORY_CACHE
+	static const int max_static_memory = 256;
+#endif
+	void reset(); 
 	const char *getName() const { return value_.c_str(); }
-	void setName(const char *name, int length) { value_.assign(name,length); }
-	void setName(const char *name) { value_.assign(name); }
+	void setName(const char *name, int length); 
+	void setName(const char *name);
 
 	size_t getNameSize() const { return value_.size(); }
 

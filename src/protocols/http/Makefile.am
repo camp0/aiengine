@@ -1,3 +1,5 @@
+include $(top_srcdir)/src/common.mk
+
 AUTOMAKE_OPTIONS = gnu
 
 if HAVE_LIBLOG4CXX
@@ -15,18 +17,14 @@ noinst_HEADERS = 	HTTPProtocol.h HTTPInfo.h HTTPUriSet.h test_http.h
 test_http_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../FlowForwarder.cc ../../CacheManager.cc \
 			../../AnomalyManager.cc \
+			../../StringCache.cc \
 			../ethernet/EthernetProtocol.cc \
 			../ip/IPProtocol.cc \
 			../../ipset/IPSetManager.cc \
 			../../ipset/IPSet.cc \
 			../ip6/IPv6Protocol.cc \
 			../tcp/TCPProtocol.cc \
-			../gprs/GPRSInfo.cc \
-			../sip/SIPInfo.cc \
-			../tcp/TCPInfo.cc \
-			../smtp/SMTPInfo.cc \
-			../dns/DNSInfo.cc \
-			../ssl/SSLInfo.cc \
+			$(TEST_FLOW_OBJECTS) \
 			../../Flow.cc \
 			../../flow/FlowManager.cc \
 			../../names/DomainNameManager.cc \
@@ -34,7 +32,7 @@ test_http_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 			../../regex/RegexManager.cc \
 			../../regex/Regex.cc \
 			HTTPUriSet.cc \
-			HTTPInfo.cc HTTPProtocol.cc test_http.cc
+			HTTPProtocol.cc test_http.cc
 
 test_http_CPPFLAGS = -I../.. $(BOOST_CPPFLAGS) -DSTAND_ALONE
 test_http_LDADD   = $(BOOST_LDFLAGS) $(LOG4CXX_FLAGS) -lboost_unit_test_framework $(PCRE_LIB)

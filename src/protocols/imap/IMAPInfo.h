@@ -29,6 +29,7 @@
 #endif
 
 #include <iostream>
+#include "Pointer.h"
 #include "StringCache.h"
 #include "FlowInfo.h"
 
@@ -40,14 +41,8 @@ public:
     	explicit IMAPInfo() { reset(); }
     	virtual ~IMAPInfo() {}
 
-	void reset() { 
-		client_commands_ = 0;
-		server_commands_ = 0;
-		user_name.reset();
-		is_banned_ = false;
-	}
-
-	void serialize(std::ostream& stream) {}
+	void reset(); 
+	void serialize(std::ostream& stream); 
 
         void setIsBanned(bool value) { is_banned_ = value; }
         bool getIsBanned() const { return is_banned_; }
@@ -57,14 +52,15 @@ public:
 
 	SharedPointer<StringCache> user_name;
 
-#if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
-
 	friend std::ostream& operator<< (std::ostream& out, const IMAPInfo& iinfo) {
-	
-		out << "Client cmds:" << iinfo.client_commands_ << " Server cmds:" << iinfo.server_commands_;
+
+		if (iinfo.user_name) {
+			out << " User:" << iinfo.user_name->getName();
+		}	
         	return out;
 	}
 
+#if defined(PYTHON_BINDING) || defined(RUBY_BINDING) || defined(JAVA_BINDING) || defined(LUA_BINDING)
 	const char *getUserName() const { return (user_name ? user_name->getName() : ""); }
 #endif
 

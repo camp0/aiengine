@@ -35,7 +35,7 @@ StackMobile::StackMobile():
         mpls_(MPLSProtocolPtr(new MPLSProtocol())),
         ip_low_(IPProtocolPtr(new IPProtocol())),
         ip_high_(IPProtocolPtr(new IPProtocol())),
-        udp_low_(UDPProtocolPtr(new UDPProtocol())),
+        udp_low_(UDPProtocolPtr(new UDPProtocol("UDPProtocol GPRS","udp gprs"))),
         udp_high_(UDPProtocolPtr(new UDPProtocol())),
         tcp_(TCPProtocolPtr(new TCPProtocol())),
 	gprs_(GPRSProtocolPtr(new GPRSProtocol())),
@@ -90,6 +90,7 @@ StackMobile::StackMobile():
 	addProtocol(ntp);
 	addProtocol(snmp);
 	addProtocol(ssdp);
+	addProtocol(rtp);
 	addProtocol(udp_generic);
 	addProtocol(freqs_udp);
 
@@ -222,6 +223,19 @@ StackMobile::StackMobile():
         ssdp->setFlowManager(flow_table_udp_high_);
         gprs_->setFlowManager(flow_table_udp_low_);
 
+        // Connect the AnomalyManager with the protocols that may have anomalies
+        ip_low_->setAnomalyManager(anomaly_);
+        ip_high_->setAnomalyManager(anomaly_);
+        tcp_->setAnomalyManager(anomaly_);
+        udp_low_->setAnomalyManager(anomaly_);
+        udp_high_->setAnomalyManager(anomaly_);
+      
+	// Link the CacheManager  
+        flow_table_udp_low_->setCacheManager(cache_mng_);
+        flow_table_udp_high_->setCacheManager(cache_mng_);
+        flow_table_tcp_->setCacheManager(cache_mng_);
+        tcp_->setCacheManager(cache_mng_);
+ 
 	// The low FlowManager have a 24 hours timeout to keep the Context on memory
         flow_table_udp_low_->setTimeout(86400);
 
@@ -232,8 +246,10 @@ StackMobile::StackMobile():
 	tcp_->setFlowForwarder(ff_tcp_);	
 	udp_high_->setFlowForwarder(ff_udp_high_);	
 
-	enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
-        enableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
+	enableFlowForwarders(ff_tcp_,
+		{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
+        enableFlowForwarders(ff_udp_high_,
+		{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_rtp,ff_udp_generic});
 
         std::ostringstream msg;
         msg << getName() << " ready.";
@@ -338,7 +354,8 @@ void StackMobile::enableNIDSEngine(bool enable) {
 
         if (enable) {
 		disableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin});
-        	disableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp});
+        	disableFlowForwarders(ff_udp_high_,
+			{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_rtp});
 
 	        std::ostringstream msg;
         	msg << "Enable NIDSEngine on " << getName(); 
@@ -349,7 +366,8 @@ void StackMobile::enableNIDSEngine(bool enable) {
         	disableFlowForwarders(ff_udp_high_,{ff_udp_generic});
 
 		enableFlowForwarders(ff_tcp_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
-        	enableFlowForwarders(ff_udp_high_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
+        	enableFlowForwarders(ff_udp_high_,
+			{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_rtp,ff_udp_generic});
         }
 	enable_nids_engine_ = enable;
 }

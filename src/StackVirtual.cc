@@ -34,7 +34,7 @@ StackVirtual::StackVirtual():
 	vlan_(VLanProtocolPtr(new VLanProtocol())),
 	mpls_(MPLSProtocolPtr(new MPLSProtocol())),
 	ip_(IPProtocolPtr(new IPProtocol())),
-	udp_(UDPProtocolPtr(new UDPProtocol())),
+	udp_(UDPProtocolPtr(new UDPProtocol("UPDProtocol vlxan","udp vxlan"))),
 	vxlan_(VxLanProtocolPtr(new VxLanProtocol())),
 	gre_(GREProtocolPtr(new GREProtocol())),
 	eth_vir_(EthernetProtocolPtr(new EthernetProtocol())),
@@ -96,6 +96,7 @@ StackVirtual::StackVirtual():
         addProtocol(ntp);
         addProtocol(snmp);
         addProtocol(ssdp);
+        addProtocol(rtp);
         addProtocol(udp_generic);
         addProtocol(freqs_udp);
 
@@ -246,16 +247,29 @@ StackVirtual::StackVirtual():
 	udp_->setFlowManager(flow_table_udp_);
 	flow_table_udp_->setProtocol(udp_);	
 
-        // TODO: Im not sure of need this
+        // Protocols that contains objects should have a reference to the FlowManager 
         http->setFlowManager(flow_table_tcp_vir_);
         ssl->setFlowManager(flow_table_tcp_vir_);
         smtp->setFlowManager(flow_table_tcp_vir_);
         imap->setFlowManager(flow_table_tcp_vir_);
         pop->setFlowManager(flow_table_tcp_vir_);
+
         dns->setFlowManager(flow_table_udp_vir_);
         sip->setFlowManager(flow_table_udp_vir_);
         ssdp->setFlowManager(flow_table_udp_vir_);
 
+	// Connect the AnomalyManager with the protocols that may have anomalies
+        ip_->setAnomalyManager(anomaly_);
+        tcp_vir_->setAnomalyManager(anomaly_);
+        udp_vir_->setAnomalyManager(anomaly_);
+        udp_->setAnomalyManager(anomaly_);
+
+        // Link the CacheManager  
+        flow_table_udp_->setCacheManager(cache_mng_);
+        flow_table_udp_vir_->setCacheManager(cache_mng_);
+        flow_table_tcp_vir_->setCacheManager(cache_mng_);
+        tcp_vir_->setCacheManager(cache_mng_);
+        
 	// Configure the FlowForwarders
 	udp_->setFlowForwarder(ff_udp_);
 	ff_udp_->addUpFlowForwarder(ff_vxlan_);	
@@ -265,7 +279,8 @@ StackVirtual::StackVirtual():
 
         enableFlowForwarders(ff_tcp_vir_,
 		{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
-        enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
+        enableFlowForwarders(ff_udp_vir_,
+		{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_rtp,ff_udp_generic});
 
         std::ostringstream msg;
         msg << getName() << " ready.";
@@ -335,7 +350,8 @@ void StackVirtual::enableNIDSEngine(bool enable) {
 
 	if (enable) {
         	disableFlowForwarders(ff_tcp_vir_,{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin});
-        	disableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp});
+        	disableFlowForwarders(ff_udp_vir_,
+			{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_rtp});
 
                 std::ostringstream msg;
                 msg << "Enable NIDSEngine on " << getName();
@@ -347,7 +363,8 @@ void StackVirtual::enableNIDSEngine(bool enable) {
 
         	enableFlowForwarders(ff_tcp_vir_,
 			{ff_http,ff_ssl,ff_smtp,ff_imap,ff_pop,ff_bitcoin,ff_tcp_generic});
-        	enableFlowForwarders(ff_udp_vir_,{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_udp_generic});
+        	enableFlowForwarders(ff_udp_vir_,
+			{ff_dns,ff_sip,ff_dhcp,ff_ntp,ff_snmp,ff_ssdp,ff_rtp,ff_udp_generic});
 	}
 	enable_nids_engine_ = enable;
 }
