@@ -1,7 +1,7 @@
 AIEngine (Artificial Inteligent Engine)
 =========
 
-AIEngine is a next generation interactive/programmable Python/Ruby/Java packet inspection engine with capabilities of learning
+AIEngine is a next generation interactive/programmable Python/Ruby/Java/Lua packet inspection engine with capabilities of learning
 without any human intervention, NIDS(Network Intrusion Detection System) functionality, DNS domain classification, network collector, network forensics and many others. 
 
 AIEngine also helps network/security professionals to identify traffic and develop
@@ -31,7 +31,7 @@ The main functionalities of AIEngine are:
 Using AIEngine 
 ---------------
 
-To use AIEngine(reduce version) just execute the binary aiengine or use the python/ruby/java binding.
+To use AIEngine(reduce version) just execute the binary aiengine or use the python/ruby/java/lua binding.
 
 	luis@luis-xps:~/c++/aiengine/src$ ./aiengine -h
 	aiengine 1.5
