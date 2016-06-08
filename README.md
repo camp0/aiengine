@@ -101,7 +101,7 @@ AIEngine supports five types of Network stacks depending on the network topology
 Integrating/Program AIEngine with other systems 
 ------------------------------------------------
 
-AIEngine is a python/ruby/java module also that allows to be more flexible in terms of integration with other systems and functionalities.
+AIEngine is a python/ruby/java/lua module also that allows to be more flexible in terms of integration with other systems and functionalities.
 The main objects that the python module provide export are the following ones.
 
         DNSInfo
