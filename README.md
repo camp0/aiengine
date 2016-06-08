@@ -178,8 +178,6 @@ a bigger library size if compare with the previous one.
 Compile AIEngine Ruby library 
 ------------------------------
 
-The ruby library is still on develop phase.
-
     $ git clone https://bitbucket.com/camp0/aiengine
     $ ./autogen.sh
     $ ./configure
@@ -190,8 +188,6 @@ The ruby library is still on develop phase.
 Compile AIEngine Java library
 ------------------------------
 
-The java library is still on develop phase.
-
     $ git clone https://bitbucket.com/camp0/aiengine
     $ ./autogen.sh
     $ ./configure
@@ -201,8 +197,6 @@ The java library is still on develop phase.
 
 Compile AIEngine Lua library 
 ------------------------------
-
-The lua library is still on develop phase.
 
     $ git clone https://bitbucket.com/camp0/aiengine
     $ ./autogen.sh
