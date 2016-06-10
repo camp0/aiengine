@@ -327,10 +327,15 @@ using namespace log4cxx::helpers;
 //%include "learner/LearnerEngine.h"
 //%include "protocols/frequency/FrequencyGroup.h"
 
+%pragma(java) jniclassimports=%{
+import java.lang.*;
+%}
+
 %pragma(java) jniclasscode=%{
   static {
     try {
-      System.load("/home/luis/c++/aiengine/src/jaaiengine.so");  
+      String osPath = System.getProperty("user.dir");
+      System.load(osPath + "/jaaiengine.so");  
     } catch (UnsatisfiedLinkError e) {
       System.err.println("Native code library failed to load. \n" + e);
       System.exit(1);

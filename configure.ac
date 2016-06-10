@@ -22,6 +22,7 @@ m4_include([m4/ax_swig_multi_module_support.m4])
 m4_include([m4/ax_prog_javah.m4])
 m4_include([m4/ax_prog_java_cc.m4])
 m4_include([m4/ax_lua.m4])
+m4_include([m4/ax_code_coverage.m4])
 
 AC_PREREQ(2.59)
 
@@ -428,6 +429,12 @@ if test x"$staticmemory" = x"yes"; then
 fi
 
 ##########################################################################
+# Enable gcov and lcov coverage 
+##########################################################################
+
+AX_CODE_COVERAGE
+
+##########################################################################
 
 CXXFLAGS=$AM_CXXFLAGS
 
@@ -515,5 +522,6 @@ echo "
   TCP/UDP reject support: $reject_support
   Python GIL support....: $pythongil_support
   Static memory support.: $staticmemory
+  Code coverage.........: $enable_code_coverage
 "
 

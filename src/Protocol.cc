@@ -277,15 +277,6 @@ void Protocol::databaseAdaptorRemoveHandler(Flow *flow) {
 #endif
 }
 
-#if defined(LUA_BINDING)
-
-//void Protocol::getCounters(lua_State *lua) {
-
-
-//}
-
-#endif
-
 #endif
 
 void Protocol::infoMessage(const std::string& msg) {

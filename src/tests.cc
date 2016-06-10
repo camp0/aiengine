@@ -1024,7 +1024,7 @@ BOOST_FIXTURE_TEST_CASE(test_case_23,StackLanTest) // Tests for release the cach
 
 BOOST_AUTO_TEST_SUITE_END( )
 
-BOOST_AUTO_TEST_SUITE (test_real_stack) // Test cases for real stacks StackLan and Stack3G 
+BOOST_AUTO_TEST_SUITE (test_suite_stack_lan) // Test cases for real stacks StackLan 
 
 BOOST_AUTO_TEST_CASE ( test_case_1 )
 {
@@ -1505,84 +1505,8 @@ BOOST_AUTO_TEST_CASE (test_case_13) // Test the UDP regex
 	BOOST_CHECK(r_generic->getTotalEvaluates() == 1);
 }
 
-BOOST_AUTO_TEST_CASE (test_case_14) // Test the TCP regex with IPv6 extension headers
-{
-        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
-        NetworkStackPtr stack = NetworkStackPtr(new StackLanIPv6());
-        RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
-        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("Bad http","^GET /bad.html"));
-
-        // connect with the stack
-        pd->setStack(stack);
-
-        stack->setTotalTCPFlows(1);
-
-	stack->enableNIDSEngine(true);
-
-        rmng->addRegex(r_generic);
-        stack->setTCPRegexManager(rmng);
-
-        pd->open("../pcapfiles/ipv6_ah.pcap");
-        pd->run();
-        pd->close();
-
-        BOOST_CHECK(r_generic->getMatchs() == 1);
-        BOOST_CHECK(r_generic->getTotalEvaluates() == 1);
-}
-
-// Test the virtual Stack and the RegexManager
-
-BOOST_AUTO_TEST_CASE (test_case_15) 
-{
-        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
-        NetworkStackPtr stack = NetworkStackPtr(new StackVirtual());
-        RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
-        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("Bin directory","^bin$"));
-
-        // connect with the stack
-        pd->setStack(stack);
-
-	stack->setTotalUDPFlows(32);
-        stack->setTotalTCPFlows(1);
-
-        rmng->addRegex(r_generic);
-        stack->setTCPRegexManager(rmng);
-
-        pd->open("../pcapfiles/vxlan_ftp.pcap");
-        pd->run();
-        pd->close();
-
-        BOOST_CHECK(r_generic->getMatchs() == 1);
-        BOOST_CHECK(r_generic->getTotalEvaluates() == 1);
-}
-
-// Similar test as previous but with failing regex
-BOOST_AUTO_TEST_CASE (test_case_16)
-{
-        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
-        NetworkStackPtr stack = NetworkStackPtr(new StackVirtual());
-        RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
-        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("Bin directory","^bin$"));
-
-        // connect with the stack
-        pd->setStack(stack);
-
-        stack->setTotalUDPFlows(32);
-        stack->setTotalTCPFlows(1);
-
-        rmng->addRegex(r_generic);
-        stack->setTCPRegexManager(rmng);
-
-        pd->open("../pcapfiles/gre_ssh.pcap");
-        pd->run();
-        pd->close();
-
-        BOOST_CHECK(r_generic->getMatchs() == 0);
-        BOOST_CHECK(r_generic->getTotalEvaluates() == 75);
-}
-
 // Test the release cache funcionality
-BOOST_AUTO_TEST_CASE ( test_case_17 )
+BOOST_AUTO_TEST_CASE ( test_case_14 )
 {
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         StackLanPtr stack = StackLanPtr(new StackLan());
@@ -1623,54 +1547,9 @@ BOOST_AUTO_TEST_CASE ( test_case_17 )
         }
 }
 
-// Test the OpenFlow stack funcionality with regex and a ipset
-BOOST_AUTO_TEST_CASE ( test_case_18 )
-{
-        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
-        StackOpenFlowPtr stack = StackOpenFlowPtr(new StackOpenFlow());
-        RegexManagerPtr re = RegexManagerPtr(new RegexManager());
-        SharedPointer<Regex> r = SharedPointer<Regex>(new Regex("a signature","^\x26\x01"));
-        SharedPointer<IPSet> ipset_tcp = SharedPointer<IPSet>(new IPSet("IPSet 1"));
-        SharedPointer<IPSetManager> ipset_mng = SharedPointer<IPSetManager>(new IPSetManager());
-
-        ipset_mng->addIPSet(ipset_tcp);
-        ipset_tcp->addIPAddress("192.168.2.14");
-
-        stack->setTCPIPSetManager(ipset_mng);
-
-        re->addRegex(r);
-        stack->setTCPRegexManager(re);
-
-        stack->setTotalTCPFlows(8);
-        stack->setTotalUDPFlows(8);
-        pd->setStack(stack);
-
-        pd->open("../pcapfiles/openflow.pcap");
-        pd->run();
-        pd->close();
-
-	// stack->showFlows();
-	// stack->setStatisticsLevel(4);
-	// stack->statistics();
-
-        FlowManagerPtr flows_tcp = stack->getTCPFlowManager().lock();
-
-        BOOST_CHECK(flows_tcp->getTotalFlows() == 1);
-        for (auto &flow: flows_tcp->getFlowTable()) {
-                BOOST_CHECK(flow->regex.lock() == r);
-		BOOST_CHECK(flow->ipset.lock() == ipset_tcp);
-        }
-
-        FlowManagerPtr flows_udp = stack->getUDPFlowManager().lock();
-        BOOST_CHECK(flows_udp->getTotalFlows() == 1);
-        for (auto &flow: flows_udp->getFlowTable()) {
-                BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::UDP_BOGUS_HEADER);
-        }
-}
-
 // Test the chain of regex with the RegexManager
 // To understand the values of the test, open the smtp.pcap file
-BOOST_AUTO_TEST_CASE ( test_case_19 )
+BOOST_AUTO_TEST_CASE ( test_case_15 )
 {
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         StackLanPtr stack = StackLanPtr(new StackLan());
@@ -1741,7 +1620,7 @@ BOOST_AUTO_TEST_CASE ( test_case_19 )
 }
 
 // Test the functionality of the SSDPProtocol
-BOOST_AUTO_TEST_CASE ( test_case_20 )
+BOOST_AUTO_TEST_CASE ( test_case_16 )
 {
         PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
         StackLanPtr stack = StackLanPtr(new StackLan());
@@ -1768,6 +1647,245 @@ BOOST_AUTO_TEST_CASE ( test_case_20 )
                 called = true;
         }
 	BOOST_CHECK(called == true);
+}
+
+BOOST_AUTO_TEST_CASE ( test_case_17 )
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        NetworkStackPtr stack = NetworkStackPtr(new StackLan());
+
+        pd->setStack(stack);
+
+        stack->setTotalTCPFlows(10);
+	stack->increaseAllocatedMemory("POPProtocol",1);
+
+        pd->open("../pcapfiles/pop_flow.pcap");
+        pd->run();
+        pd->close();
+
+	FlowManagerPtr fm = stack->getTCPFlowManager().lock();
+
+        bool called = false;
+        // Check the relaseCache functionality 
+        for (auto &flow: fm->getFlowTable()) {
+                BOOST_CHECK(flow->getPOPInfo() != nullptr);
+                called = true;
+        }
+	BOOST_CHECK(called == true);
+	called = false;
+        
+	stack->releaseCaches();
+        for (auto &flow: fm->getFlowTable()) {
+                BOOST_CHECK(flow->layer7info == nullptr);
+                called = true;
+        }
+	BOOST_CHECK(called == true);
+}
+
+BOOST_AUTO_TEST_SUITE_END( )
+
+BOOST_AUTO_TEST_SUITE (test_suite_stack_mobile) // Test cases for real stacks StackMobile
+
+BOOST_AUTO_TEST_CASE ( test_case_1 )
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        NetworkStackPtr stack = NetworkStackPtr(new StackMobile());
+
+        pd->setStack(stack);
+
+        stack->setTotalUDPFlows(10);
+	stack->increaseAllocatedMemory("SIPProtocol",10);
+
+        pd->open("../pcapfiles/gprs_sip_flow.pcap");
+        pd->run();
+        pd->close();
+
+	FlowManagerPtr fm = stack->getUDPFlowManager().lock();
+
+        bool called = false;
+        // Check the relaseCache functionality 
+        for (auto &flow: fm->getFlowTable()) {
+                BOOST_CHECK(flow->getSIPInfo() != nullptr);
+                called = true;
+        }
+	BOOST_CHECK(called == true);
+	called = false;
+
+        stack->releaseCaches();
+        for (auto &flow: fm->getFlowTable()) {
+                BOOST_CHECK(flow->getSIPInfo() == nullptr);
+                called = true;
+        }
+	BOOST_CHECK(called == true);
+}
+
+BOOST_AUTO_TEST_SUITE_END( )
+
+BOOST_AUTO_TEST_SUITE (test_suite_stack_lan6) // Test cases for real stacks StackIPv6
+
+BOOST_AUTO_TEST_CASE (test_case_1) // Test the TCP regex with IPv6 extension headers
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        NetworkStackPtr stack = NetworkStackPtr(new StackLanIPv6());
+        RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
+        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("Bad http","^GET /bad.html"));
+
+        pd->setStack(stack);
+
+        stack->setTotalTCPFlows(1);
+
+	stack->enableNIDSEngine(true);
+
+        rmng->addRegex(r_generic);
+        stack->setTCPRegexManager(rmng);
+
+        pd->open("../pcapfiles/ipv6_ah.pcap");
+        pd->run();
+        pd->close();
+
+        BOOST_CHECK(r_generic->getMatchs() == 1);
+        BOOST_CHECK(r_generic->getTotalEvaluates() == 1);
+}
+
+BOOST_AUTO_TEST_CASE (test_case_2) // Test the DomainNames with DNS traffic
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        NetworkStackPtr stack = NetworkStackPtr(new StackLanIPv6());
+	DomainNameManagerPtr dom = DomainNameManagerPtr(new DomainNameManager());
+	DomainNamePtr d1 = DomainNamePtr(new DomainName("domain1","itojun.org"));
+	DomainNamePtr d2 = DomainNamePtr(new DomainName("domain2","yahoo.com"));
+
+	dom->addDomainName(d1);	
+	dom->addDomainName(d2);	
+
+        pd->setStack(stack);
+
+        stack->setTotalTCPFlows(0);
+        stack->setTotalUDPFlows(10);
+	stack->increaseAllocatedMemory("DNSProtocol",10);
+
+	stack->setDomainNameManager(*dom.get(),"DNSProtocol");
+
+        pd->open("../pcapfiles/ipv6_mix_traffic.pcap");
+        pd->setPcapFilter("port 53");
+        pd->run();
+        pd->close();
+
+	BOOST_CHECK( d1->getMatchs() == 3);
+	BOOST_CHECK( d2->getMatchs() == 1);
+        
+	FlowManagerPtr fm = stack->getUDPFlowManager().lock();
+
+        bool called = false;
+        // Check the relaseCache functionality 
+        for (auto &flow: fm->getFlowTable()) {
+                BOOST_CHECK(flow->getDNSInfo() != nullptr);
+                called = true;
+        }
+	BOOST_CHECK(called == true);
+	called = false;
+
+        stack->releaseCaches();
+
+        for (auto &flow: fm->getFlowTable()) {
+                BOOST_CHECK(flow->layer7info == nullptr);
+                called = true;
+        }
+	BOOST_CHECK(called == true);
+}
+
+BOOST_AUTO_TEST_SUITE_END( )
+
+BOOST_AUTO_TEST_SUITE (test_suite_stack_virtual) // Test cases for real stacks StackVirtual
+
+BOOST_AUTO_TEST_CASE (test_case_1)
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        NetworkStackPtr stack = NetworkStackPtr(new StackVirtual());
+        RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
+        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("Bin directory","^bin$"));
+
+        pd->setStack(stack);
+
+        stack->setTotalUDPFlows(32);
+        stack->setTotalTCPFlows(1);
+
+        rmng->addRegex(r_generic);
+        stack->setTCPRegexManager(rmng);
+
+        pd->open("../pcapfiles/gre_ssh.pcap");
+        pd->run();
+        pd->close();
+
+        BOOST_CHECK(r_generic->getMatchs() == 0);
+        BOOST_CHECK(r_generic->getTotalEvaluates() == 75);
+}
+
+BOOST_AUTO_TEST_CASE (test_case_2)
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        NetworkStackPtr stack = NetworkStackPtr(new StackVirtual());
+        RegexManagerPtr rmng = RegexManagerPtr(new RegexManager());
+        SharedPointer<Regex> r_generic = SharedPointer<Regex>(new Regex("Bin directory","^bin$"));
+
+        pd->setStack(stack);
+
+        stack->setTotalUDPFlows(32);
+        stack->setTotalTCPFlows(1);
+
+        rmng->addRegex(r_generic);
+        stack->setTCPRegexManager(rmng);
+
+        pd->open("../pcapfiles/vxlan_ftp.pcap");
+        pd->run();
+        pd->close();
+
+        BOOST_CHECK(r_generic->getMatchs() == 1);
+        BOOST_CHECK(r_generic->getTotalEvaluates() == 1);
+}
+
+BOOST_AUTO_TEST_SUITE_END( )
+
+BOOST_AUTO_TEST_SUITE (test_suite_stack_openflow) // Test cases for real stacks StackOpenFlow
+
+BOOST_AUTO_TEST_CASE ( test_case_1 )
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        StackOpenFlowPtr stack = StackOpenFlowPtr(new StackOpenFlow());
+        RegexManagerPtr re = RegexManagerPtr(new RegexManager());
+        SharedPointer<Regex> r = SharedPointer<Regex>(new Regex("a signature","^\x26\x01"));
+        SharedPointer<IPSet> ipset_tcp = SharedPointer<IPSet>(new IPSet("IPSet 1"));
+        SharedPointer<IPSetManager> ipset_mng = SharedPointer<IPSetManager>(new IPSetManager());
+
+        ipset_mng->addIPSet(ipset_tcp);
+        ipset_tcp->addIPAddress("192.168.2.14");
+
+        stack->setTCPIPSetManager(ipset_mng);
+
+        re->addRegex(r);
+        stack->setTCPRegexManager(re);
+
+        stack->setTotalTCPFlows(8);
+        stack->setTotalUDPFlows(8);
+        pd->setStack(stack);
+
+        pd->open("../pcapfiles/openflow.pcap");
+        pd->run();
+        pd->close();
+
+        FlowManagerPtr flows_tcp = stack->getTCPFlowManager().lock();
+
+        BOOST_CHECK(flows_tcp->getTotalFlows() == 1);
+        for (auto &flow: flows_tcp->getFlowTable()) {
+                BOOST_CHECK(flow->regex.lock() == r);
+                BOOST_CHECK(flow->ipset.lock() == ipset_tcp);
+        }
+
+        FlowManagerPtr flows_udp = stack->getUDPFlowManager().lock();
+        BOOST_CHECK(flows_udp->getTotalFlows() == 1);
+        for (auto &flow: flows_udp->getFlowTable()) {
+                BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::UDP_BOGUS_HEADER);
+        }
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

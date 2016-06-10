@@ -39,7 +39,7 @@ using namespace std;
 %trackobjects;
 
 %init %{ 
-std::cout << "Ruby AIengine BETA init." << std::endl;
+std::cout << "Ruby AIengine init." << std::endl;
 #ifdef HAVE_LIBLOG4CXX  
         BasicConfigurator::configure();
 #endif

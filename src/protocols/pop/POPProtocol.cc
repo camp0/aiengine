@@ -58,7 +58,7 @@ int64_t POPProtocol::getAllocatedMemory() const {
 }
 
 // Removes or decrements the hits of the maps.
-void POPProtocol::release_pop_info_cache(POPInfo *info) {
+__attribute__ ((unused)) void POPProtocol::release_pop_info_cache(POPInfo *info) {
 
         SharedPointer<StringCache> user_ptr = info->user_name;
 

@@ -4,6 +4,10 @@ all: aiengine
 
 python_PYTHON = pyai_tests.py __init__.py
 
+@CODE_COVERAGE_RULES@
+
+AM_CPPFLAGS= -g -fprofile-arcs -ftest-coverage
+
 LUA_INCLUDE=@LUA_INCLUDE@
 AM_JAVAFLAGS=@AM_JAVAFLAGS@
 # EXTRA_FLAGS = -flto not supported on the freebsd compiler
@@ -226,7 +230,7 @@ tests_SOURCES = $(aiengine_core_sources) \
 tests_LDFLAGS = 	-DBOOST_ASIO_DISABLE_EPOLL -lpthread -lstdc++ \
 			$(BOOST_LDFLAGS) $(BOOST_LINK_CORE) $(PCRE_LIB) \
 			-lboost_program_options \
-			-lboost_filesystem -lpcap $(LOG4CXX_FLAGS) 
+			-lboost_filesystem -lpcap $(LOG4CXX_FLAGS) $(CODE_COVERAGE_LDFLAGS) 
 
 ruby_objects = 	NetworkStack.o Protocol.o EthernetProtocol.o \
 		AnomalyManager.o CacheManager.o Multiplexer.o FlowForwarder.o PacketDispatcher.o \
@@ -327,9 +331,9 @@ lua_objects =  	NetworkStack.o Protocol.o EthernetProtocol.o \
                 IPSetManager.o IPAbstractSet.o IPSet.o HTTPUriSet.o \
                 DomainNameManager.o DomainName.o RejectManager.o EvidenceManager.o
 
-tests_CPPFLAGS = $(BOOST_CPPFLAGS) -g # -fprofile-arcs -ftest-coverage 
+tests_CPPFLAGS = -DTESTING $(BOOST_CPPFLAGS) $(CODE_COVERAGE_CXXFLAGS) # -fprofile-arcs -ftest-coverage 
 # Dont forget to put -lgcov if need on test_LDADD
-tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread $(LOG4CXX_FLAGS) 
+tests_LDADD   = $(BOOST_LIBS) $(BOOST_LINK_CORE) -lboost_unit_test_framework -lpcap -lpthread $(LOG4CXX_FLAGS) $(CODE_COVERAGE_LDFLAGS) 
 
 CLEANFILES = *.o *.lo *.so *.class *_wrap.cxx *_wrap.h swigluarun.h \
 		`rm -rf $(srcdir)/buildjava`

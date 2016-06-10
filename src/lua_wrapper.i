@@ -45,7 +45,7 @@ using namespace std;
 %template(LuaCounters) std::map<std::string,int>;
 
 %init %{ 
-std::cout << "Lua AIengine BETA init." << std::endl;
+std::cout << "Lua AIengine init." << std::endl;
 #ifdef HAVE_LIBLOG4CXX  
         BasicConfigurator::configure();
 #endif
@@ -111,7 +111,6 @@ std::cout << "Lua AIengine BETA init." << std::endl;
 %rename("set_anomaly_callback")         aiengine::NetworkStack::setAnomalyCallback;
 
 %attribute(aiengine::NetworkStack,std::string,link_layer_tag,getLinkLayerTagging,enableLinkLayerTagging)
-//%attribute(aiengine::NetworkStack,bool,enable_nids_engine,isEnableFrequencyEngine,enableNIDSEngine)
 %attribute2(aiengine::NetworkStack,RegexManager,tcp_regex_manager,getTCPRegexManager,setTCPRegexManager)
 %attribute2(aiengine::NetworkStack,RegexManager,udp_regex_manager,getUDPRegexManager,setUDPRegexManager)
 

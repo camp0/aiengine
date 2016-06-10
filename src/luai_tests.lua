@@ -443,6 +443,30 @@ TestStackMobile = {}
         luaunit.assertEquals(c:get("registers"), 2)
     end
 
+    function TestStackMobile:test03()
+        -- Check functionality for database adaptor
+
+        -- Setup an Adaptor for udp traffic        
+        adap = Adaptor:new()
+        self.st:set_udp_database_adaptor("adap")
+
+        self.pd:open("../pcapfiles/gprs_sip_flow.pcap");
+        self.pd:run();
+        self.pd:close();
+
+        local decode = json.decode(adap.lastdata)
+
+        -- Check some dns json info
+        luaunit.assertEquals(decode["portdst"], 5060)
+        luaunit.assertEquals(decode["info"]["uri"], "sip:apn.sip.voice.ng4t.com")
+        luaunit.assertEquals(decode["info"]["via"], "SIP/2.0/UDP 10.255.1.1:5090;branch=z9hG4bK199817980098801998")
+        
+        -- Check the information of the adaptor 
+        luaunit.assertEquals(adap.inserts, 1)
+        luaunit.assertEquals(adap.updates, 1)
+        luaunit.assertEquals(adap.removes, 0)
+    end
+
 TestStackLanIPv6 = {} 
     function TestStackLanIPv6:setUp() 
         self.st = luaiengine.StackLanIPv6()
@@ -684,6 +708,60 @@ TestStackVirtual = {}
         -- check the values of the adaptor 
         luaunit.assertEquals(adap.inserts, 1)
         luaunit.assertEquals(adap.updates, 1)
+        luaunit.assertEquals(adap.removes, 0)
+    end
+
+TestStackOpenFlow = {} 
+    function TestStackOpenFlow:setUp() 
+        self.st = luaiengine.StackOpenFlow()
+        self.pd = luaiengine.PacketDispatcher()
+
+        self.st.tcp_flows = 2048
+        self.st.udp_flows = 1024
+        self.pd:set_stack(self.st)
+    end
+
+    function TestStackOpenFlow:tearDown() 
+    end
+
+    function TestStackOpenFlow:test01()
+        -- Create a regex for a detect the flow on a openflow network 
+        local callme_regex = false
+
+        function callback_regex(flow)
+            luaunit.assertNotEquals( flow.regex,nill)
+            luaunit.assertEquals(flow.regex.name,"Bin directory")
+            callme_regex = true
+        end
+
+        rm = luaiengine.RegexManager()
+        r = luaiengine.Regex("Bin directory","^\x26\x01")
+        r:set_callback("callback_regex")
+        rm:add_regex(r)
+        self.st.tcp_regex_manager = rm
+
+        self.pd:open("../pcapfiles/openflow.pcap")
+        self.pd:run()
+        self.pd:close()
+
+        luaunit.assertEquals(r.matchs, 1)
+        luaunit.assertEquals(callme_regex, true)
+    end
+
+    function TestStackOpenFlow:test02()
+        -- verify the dataadaptors on a openflow network 
+
+        -- Setup an Adaptor for TCP traffic        
+        adap = Adaptor:new()
+        self.st:set_tcp_database_adaptor("adap")
+
+        self.pd:open("../pcapfiles/openflow.pcap")
+        self.pd:run()
+        self.pd:close()
+
+        -- Check the information of the adaptor 
+        luaunit.assertEquals(adap.inserts, 1)
+        luaunit.assertEquals(adap.updates, 0)
         luaunit.assertEquals(adap.removes, 0)
     end
 
