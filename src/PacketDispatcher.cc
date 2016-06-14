@@ -330,6 +330,7 @@ void PacketDispatcher::setPcapFilter(const char *filter) {
                 		info_message(msg.str());
 			}
 		}
+		pcap_freecode (&fp);
 	}
 }
 

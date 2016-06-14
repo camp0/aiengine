@@ -65,53 +65,53 @@ class databaseTestAdaptor(pyaiengine.DatabaseAdaptor):
 class StackLanTests(unittest.TestCase):
 
     def setUp(self):
-        self.s = pyaiengine.StackLan()
-        self.dis = pyaiengine.PacketDispatcher() 
-        self.dis.stack = self.s
-        self.s.tcp_flows = 2048
-        self.s.udp_flows = 1024
+        self.st = pyaiengine.StackLan()
+        self.pd = pyaiengine.PacketDispatcher() 
+        self.pd.stack = self.st
+        self.st.tcp_flows = 2048
+        self.st.udp_flows = 1024
         self.called_callback = 0 
         self.ip_called_callback = 0 
 
     def tearDown(self):
-        del self.s
-        del self.dis
+        del self.st
+        del self.pd
 
     def test1(self):
         """ Create a regex for netbios and detect """
-        self.s.link_layer_tag = "vlan"
+        self.st.link_layer_tag = "vlan"
 
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("netbios","CACACACA")
         rm.add_regex(r)
-        self.s.udp_regex_manager = rm
+        self.st.udp_regex_manager = rm
 
-        self.s.enable_nids_engine = True
+        self.st.enable_nids_engine = True
 
-        self.dis.open("../pcapfiles/flow_vlan_netbios.pcap");
-        self.dis.run();
-        self.dis.close();
+        self.pd.open("../pcapfiles/flow_vlan_netbios.pcap");
+        self.pd.run();
+        self.pd.close();
 
         self.assertEqual(r.matchs, 1)
-        self.assertEqual(self.s.udp_regex_manager, rm)
-        self.assertEqual(self.s.link_layer_tag,"vlan")
+        self.assertEqual(self.st.udp_regex_manager, rm)
+        self.assertEqual(self.st.link_layer_tag,"vlan")
 
     def test2(self):
         """ Verify that None is working on the udpregexmanager """
-        self.s.link_layer_tag = "vlan"
+        self.st.link_layer_tag = "vlan"
 
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("netbios","CACACACA")
         rm.add_regex(r)
-        self.s.udp_regex_manager = rm
-        self.s.udp_regex_manager = None
+        self.st.udp_regex_manager = rm
+        self.st.udp_regex_manager = None
 
-        self.dis.open("../pcapfiles/flow_vlan_netbios.pcap");
-        self.dis.run();
-        self.dis.close();
+        self.pd.open("../pcapfiles/flow_vlan_netbios.pcap");
+        self.pd.run();
+        self.pd.close();
 
         self.assertEqual(r.matchs, 0)
-        self.assertEqual(self.s.udp_regex_manager, None)
+        self.assertEqual(self.st.udp_regex_manager, None)
 
     def test3(self):
         """ Create a regex for netbios with callback """
@@ -120,19 +120,19 @@ class StackLanTests(unittest.TestCase):
             self.assertEqual(flow.regex.matchs,1)
             self.assertEqual(flow.regex.name, "netbios")
     
-        self.s.link_layer_tag = "vlan"
+        self.st.link_layer_tag = "vlan"
 
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("netbios","CACACACA")
         r.callback = callback
         rm.add_regex(r)
-        self.s.udp_regex_manager = rm
+        self.st.udp_regex_manager = rm
 
-        self.s.enable_nids_engine = True
+        self.st.enable_nids_engine = True
 
-        self.dis.open("../pcapfiles/flow_vlan_netbios.pcap");
-        self.dis.run();
-        self.dis.close();
+        self.pd.open("../pcapfiles/flow_vlan_netbios.pcap");
+        self.pd.run();
+        self.pd.close();
 
         self.assertEqual(r.matchs, 1)
         self.assertEqual(self.called_callback, 1)
@@ -140,17 +140,17 @@ class StackLanTests(unittest.TestCase):
     def test4(self):
         """ Verify DNS and HTTP traffic """
 
-        self.dis.open("../pcapfiles/accessgoogle.pcap");
-        self.dis.run();
-        self.dis.close();
+        self.pd.open("../pcapfiles/accessgoogle.pcap");
+        self.pd.run();
+        self.pd.close();
 
-        ft = self.s.tcp_flow_manager 
-        fu = self.s.udp_flow_manager
+        ft = self.st.tcp_flow_manager 
+        fu = self.st.udp_flow_manager
 
         self.assertEqual(len(ft), 1)
         self.assertEqual(len(fu), 1)
 
-        for flow in self.s.udp_flow_manager:
+        for flow in self.st.udp_flow_manager:
     	    udp_flow = flow
     	    break
 
@@ -175,19 +175,19 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(str(http_flow.http_info.host_name),"www.google.com")
 
         """ All the flows can not have ip_set assigned """
-        for flow in self.s.tcp_flow_manager:
+        for flow in self.st.tcp_flow_manager:
             self.assertEqual(flow.ip_set,None)
 
     def test5(self):
         """ Verify SSL traffic """
 
-        self.dis.open("../pcapfiles/sslflow.pcap");
-        self.dis.run();
-        self.dis.close();
+        self.pd.open("../pcapfiles/sslflow.pcap");
+        self.pd.run();
+        self.pd.close();
 
-        self.assertEqual(len(self.s.tcp_flow_manager), 1)
+        self.assertEqual(len(self.st.tcp_flow_manager), 1)
 
-        for flow in self.s.tcp_flow_manager:
+        for flow in self.st.tcp_flow_manager:
             f = flow
             break
 
@@ -205,19 +205,19 @@ class StackLanTests(unittest.TestCase):
         dm = pyaiengine.DomainNameManager()
         dm.add_domain_name(d)
 
-        self.s.set_domain_name_manager(dm,"SSLProtocol")
+        self.st.set_domain_name_manager(dm,"SSLProtocol")
 
-        self.dis.open("../pcapfiles/sslflow.pcap");
-        self.dis.run();
-        self.dis.close();
+        self.pd.open("../pcapfiles/sslflow.pcap");
+        self.pd.run();
+        self.pd.close();
 
         self.assertEqual(len(dm), 1)
         self.assertEqual(d.matchs , 1)
         self.assertEqual(self.called_callback, 1)
 
         """ check also the integrity of the ssl cache and counters """
-        cc = self.s.get_counters("SSLProtocol")
-        ca = self.s.get_cache("SSLProtocol")
+        cc = self.st.get_counters("SSLProtocol")
+        ca = self.st.get_cache("SSLProtocol")
         self.assertEqual(len(ca),1)
         self.assertEqual(cc['server hellos'], 1)
 
@@ -243,12 +243,12 @@ class StackLanTests(unittest.TestCase):
         dm = pyaiengine.DomainNameManager()
         dm.add_domain_name(d)
 
-        self.s.tcp_ip_set_manager = ipm
-        self.s.set_domain_name_manager(dm,"SSLProtocol")
+        self.st.tcp_ip_set_manager = ipm
+        self.st.set_domain_name_manager(dm,"SSLProtocol")
 
-        self.dis.open("../pcapfiles/sslflow.pcap");
-        self.dis.run();
-        self.dis.close();
+        self.pd.open("../pcapfiles/sslflow.pcap");
+        self.pd.run();
+        self.pd.close();
 
         self.assertEqual(d.matchs, 1)
         self.assertEqual(self.called_callback,1)
@@ -259,11 +259,11 @@ class StackLanTests(unittest.TestCase):
 
         db = databaseTestAdaptor()
 
-        self.s.set_tcp_database_adaptor(db,16)
+        self.st.set_tcp_database_adaptor(db,16)
 
-        self.dis.open("../pcapfiles/sslflow.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.pd.open("../pcapfiles/sslflow.pcap")
+        self.pd.run()
+        self.pd.close()
 
         self.assertEqual(db.getInserts(), 1)
         self.assertEqual(db.getUpdates(), 5)
@@ -274,12 +274,12 @@ class StackLanTests(unittest.TestCase):
 
         db = databaseTestAdaptor()
 
-        self.s.link_layer_tag  = "vlan"
-        self.s.set_udp_database_adaptor(db,16)
+        self.st.link_layer_tag  = "vlan"
+        self.st.set_udp_database_adaptor(db,16)
 
-        self.dis.open("../pcapfiles/flow_vlan_netbios.pcap");
-        self.dis.run();
-        self.dis.close();
+        self.pd.open("../pcapfiles/flow_vlan_netbios.pcap");
+        self.pd.run();
+        self.pd.close();
 
         self.assertEqual(db.getInserts(), 1)
         self.assertEqual(db.getUpdates(), 1)
@@ -301,15 +301,15 @@ class StackLanTests(unittest.TestCase):
         d.callback = domain_callback
         dm.add_domain_name(d)
 
-        self.s.set_domain_name_manager(dm,"SSLProtocol")
+        self.st.set_domain_name_manager(dm,"SSLProtocol")
 
         db = databaseTestAdaptor()
 
-        self.s.set_tcp_database_adaptor(db,16)
+        self.st.set_tcp_database_adaptor(db,16)
 
-        self.dis.open("../pcapfiles/sslflow.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.pd.open("../pcapfiles/sslflow.pcap")
+        self.pd.run()
+        self.pd.close()
 
         self.assertEqual(db.getInserts(), 1)
         self.assertEqual(db.getUpdates(), 5)
@@ -326,18 +326,18 @@ class StackLanTests(unittest.TestCase):
 
         [rm.add_regex(r) for r in rl] 
  
-        self.assertEqual(self.s.tcp_regex_manager, None) 
+        self.assertEqual(self.st.tcp_regex_manager, None) 
       
-        self.s.tcp_regex_manager = rm 
-        self.s.enable_nids_engine = True
+        self.st.tcp_regex_manager = rm 
+        self.st.enable_nids_engine = True
 
-        self.dis.open("../pcapfiles/sslflow.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.pd.open("../pcapfiles/sslflow.pcap")
+        self.pd.run()
+        self.pd.close()
 
         self.assertEqual(len(rm), 5)
     
-        self.assertEqual(rm, self.s.tcp_regex_manager)
+        self.assertEqual(rm, self.st.tcp_regex_manager)
         for r in rl:
     	    self.assertEqual(r.matchs, 0)
 
@@ -363,11 +363,11 @@ class StackLanTests(unittest.TestCase):
             ipm = pyaiengine.IPSetManager()
             ipm.add_ip_set(ip)
 
-            self.s.tcp_ip_set_manager = ipm
+            self.st.tcp_ip_set_manager = ipm
 
-            self.dis.open("../pcapfiles/sslflow.pcap");
-            self.dis.run();
-            self.dis.close();
+            self.pd.open("../pcapfiles/sslflow.pcap");
+            self.pd.run();
+            self.pd.close();
 
             self.assertEqual(self.ip_called_callback,1)
 
@@ -411,35 +411,35 @@ class StackLanTests(unittest.TestCase):
         d.callback = domain_callback
         dm.add_domain_name(d)
 
-        self.s.set_domain_name_manager(dm,"HTTPProtocol")
+        self.st.set_domain_name_manager(dm,"HTTPProtocol")
 
-        self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.pd.open("../pcapfiles/two_http_flows_noending.pcap")
+        self.pd.run()
+        self.pd.close()
 
         self.assertEqual(self.called_callback, 1)
 
     def test14(self):
         """ Verify cache release functionality """
 
-        self.s.flowstimeout = 50000000 # No timeout :D
+        self.st.flowstimeout = 50000000 # No timeout :D
 
-        self.dis.open("../pcapfiles/sslflow.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.pd.open("../pcapfiles/sslflow.pcap")
+        self.pd.run()
+        self.pd.close()
         
-        ft = self.s.tcp_flow_manager
+        ft = self.st.tcp_flow_manager
 
         self.assertEqual(len(ft), 1)
 
         for flow in ft:
             self.assertNotEqual(flow.ssl_info,None)
        
-        self.dis.open("../pcapfiles/accessgoogle.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.pd.open("../pcapfiles/accessgoogle.pcap")
+        self.pd.run()
+        self.pd.close()
 
-        fu = self.s.udp_flow_manager
+        fu = self.st.udp_flow_manager
 
         self.assertEqual(len(fu), 1)
 
@@ -447,13 +447,13 @@ class StackLanTests(unittest.TestCase):
             self.assertNotEqual(flow.dns_info,None)
 
         # release some of the caches
-        self.s.release_cache("SSLProtocol")
+        self.st.release_cache("SSLProtocol")
         
         for flow in ft:
             self.assertEqual(flow.ssl_info,None)
 
         # release all the caches
-        self.s.release_caches()
+        self.st.release_caches()
 
         for flow in ft:
             self.assertEqual(flow.ssl_info,None)
@@ -467,19 +467,19 @@ class StackLanTests(unittest.TestCase):
 
         db = databaseTestAdaptor()
 
-        self.s.link_layer_tag = "vlan"
-        self.s.set_udp_database_adaptor(db,16)
+        self.st.link_layer_tag = "vlan"
+        self.st.set_udp_database_adaptor(db,16)
 
-        self.s.flows_timeout = 1
+        self.st.flows_timeout = 1
 
-        self.dis.open("../pcapfiles/flow_vlan_netbios.pcap");
-        self.dis.run();
-        self.dis.close();
+        self.pd.open("../pcapfiles/flow_vlan_netbios.pcap");
+        self.pd.run();
+        self.pd.close();
 
         self.assertEqual(db.getInserts(), 1)
         self.assertEqual(db.getUpdates(), 1)
         self.assertEqual(db.getRemoves(), 1)
-        self.assertEqual(self.s.flows_timeout, 1)
+        self.assertEqual(self.st.flows_timeout, 1)
 
     def test16(self):
         """ Verify that ban domains dont take memory """
@@ -489,19 +489,19 @@ class StackLanTests(unittest.TestCase):
         dm = pyaiengine.DomainNameManager()
         dm.add_domain_name(d)
 
-        self.s.set_domain_name_manager(dm,"HTTPProtocol",False)
+        self.st.set_domain_name_manager(dm,"HTTPProtocol",False)
 
-        self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
-        self.dis.pcap_filter = "tcp" 
-        self.dis.run()
-        self.dis.close()
+        self.pd.open("../pcapfiles/two_http_flows_noending.pcap")
+        self.pd.pcap_filter = "tcp" 
+        self.pd.run()
+        self.pd.close()
 
         self.assertEqual(d.matchs, 1)
 
-        ft = self.s.tcp_flow_manager
+        ft = self.st.tcp_flow_manager
 
         self.assertEqual(len(ft), 2)
-        self.assertEqual(self.dis.pcap_filter, "tcp")
+        self.assertEqual(self.pd.pcap_filter, "tcp")
 
         # Only the first flow is the banned
         for flow in ft:
@@ -530,20 +530,20 @@ class StackLanTests(unittest.TestCase):
         d.callback = domain_callback
         dm.add_domain_name(d)
 
-        self.s.set_domain_name_manager(dm,"HTTPProtocol")
+        self.st.set_domain_name_manager(dm,"HTTPProtocol")
 
-        self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.pd.open("../pcapfiles/two_http_flows_noending.pcap")
+        self.pd.run()
+        self.pd.close()
 
         self.assertEqual(self.called_callback, 1)
 
-        ft = self.s.tcp_flow_manager
+        ft = self.st.tcp_flow_manager
 
         self.assertEqual(len(ft), 2)
 
         # Only the first flow is the banned and released
-        for flow in self.s.tcp_flow_manager:
+        for flow in self.st.tcp_flow_manager:
             inf = flow.http_info
             self.assertNotEqual(inf, None)
             self.assertEqual(inf.uri, '')
@@ -551,22 +551,22 @@ class StackLanTests(unittest.TestCase):
             self.assertEqual(inf.host_name, '')
             break
 
-        self.s.release_caches()
+        self.st.release_caches()
 
     def test18(self):
         """ Verify the getCounters functionatly """
 
-        self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.pd.open("../pcapfiles/two_http_flows_noending.pcap")
+        self.pd.run()
+        self.pd.close()
 
-        c = self.s.get_counters("EthernetProtocol")
+        c = self.st.get_counters("EthernetProtocol")
 
         self.assertEqual(c.has_key("packets"), True) 
         self.assertEqual(c.has_key("bytes"), True) 
         self.assertEqual(c["bytes"], 910064)
 
-        c = self.s.get_counters("TCPProtocol")
+        c = self.st.get_counters("TCPProtocol")
 
         self.assertEqual(c["bytes"], 879940)
         self.assertEqual(c["packets"], 886)
@@ -576,7 +576,7 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(c["rsts"], 0)
         self.assertEqual(c["fins"], 0)
 
-        c = self.s.get_counters("UnknownProtocol")
+        c = self.st.get_counters("UnknownProtocol")
         self.assertEqual(len(c), 0)
 
     def test19(self):
@@ -595,16 +595,16 @@ class StackLanTests(unittest.TestCase):
         dm = pyaiengine.DomainNameManager()
         dm.add_domain_name(d)
 
-        self.s.set_domain_name_manager(dm,"SMTPProtocol")
+        self.st.set_domain_name_manager(dm,"SMTPProtocol")
 
         oldstack = None
 
         with pyaiengine.PacketDispatcher("../pcapfiles/smtp.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run();
             oldstack = pd.stack
 
-        self.assertEqual(oldstack,self.s)
+        self.assertEqual(oldstack,self.st)
 
         self.assertEqual(d.matchs , 1)
         self.assertEqual(self.called_callback,1)
@@ -643,11 +643,11 @@ class StackLanTests(unittest.TestCase):
 	r6 = pyaiengine.Regex("smtp6" , "^QUIT")
 	rm3.add_regex(r6)
 
-        self.s.tcp_regex_manager = rmbase
-        self.s.enable_nids_engine = True
+        self.st.tcp_regex_manager = rmbase
+        self.st.enable_nids_engine = True
 
         with pyaiengine.PacketDispatcher("../pcapfiles/smtp.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run();
 
 	for r in rlist:
@@ -716,10 +716,10 @@ class StackLanTests(unittest.TestCase):
 
 	d.http_uri_set = self.uset
 
-        self.s.set_domain_name_manager(dm,"HTTPProtocol")
+        self.st.set_domain_name_manager(dm,"HTTPProtocol")
 
         with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run();
 
         self.assertEqual(d.http_uri_set, self.uset)
@@ -756,10 +756,10 @@ class StackLanTests(unittest.TestCase):
 
         d.http_uri_set = self.uset
 
-        self.s.set_domain_name_manager(dm,"HTTPProtocol")
+        self.st.set_domain_name_manager(dm,"HTTPProtocol")
 
         with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run();
 
         self.assertEqual(len(self.uset), 1)
@@ -776,18 +776,18 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(p.stack, None)
         
         # p.stack = p 
-        self.dis.stack = None
+        self.pd.stack = None
 
-        self.assertEqual(self.dis.stack, None)
+        self.assertEqual(self.pd.stack, None)
 
     def test25(self):
         """ Verify the functionatliy of the SSDP Protocol """
    
         with pyaiengine.PacketDispatcher("../pcapfiles/ssdp_flow.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run();
 
-        fu = self.s.udp_flow_manager
+        fu = self.st.udp_flow_manager
         for flow in fu:
             s = flow.ssdp_info
             if (s):
@@ -799,13 +799,13 @@ class StackLanTests(unittest.TestCase):
     def test26(self):
         """ Verify the functionatliy of the SSDP Protocol and remove the memory of that protocol """
 
-        self.s.decrease_allocated_memory("ssdp",10000)
+        self.st.decrease_allocated_memory("ssdp",10000)
 
         with pyaiengine.PacketDispatcher("../pcapfiles/ssdp_flow.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run();
 
-        fu = self.s.udp_flow_manager
+        fu = self.st.udp_flow_manager
         for flow in fu:
             s = flow.ssdp_info
             self.assertEqual(s,None)
@@ -842,10 +842,10 @@ class StackLanTests(unittest.TestCase):
         d.callback = callback_domain
         dm.add_domain_name(d)
 
-        self.s.set_domain_name_manager(dm,"http")
+        self.st.set_domain_name_manager(dm,"http")
 
         with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run();
 
         self.assertEqual(self.called_callback, 2)
@@ -861,10 +861,10 @@ class StackLanTests(unittest.TestCase):
             that contains exactly 39 requests and 38 responses """
         with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
             pd.pcap_filter = "tcp and port 55354"
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run();
 
-        c = self.s.get_counters("HTTPProtocol")
+        c = self.st.get_counters("HTTPProtocol")
         self.assertEqual(c["requests"], 39)
         self.assertEqual(c["responses"], 38)
 
@@ -875,10 +875,10 @@ class StackLanTests(unittest.TestCase):
             that contains exactly 39 requests and 38 responses """
         with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
             pd.pcap_filter = "tcp and port 49503"
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run();
 
-        c = self.s.get_counters("HTTPProtocol")
+        c = self.st.get_counters("HTTPProtocol")
         self.assertEqual(c["requests"], 3)
         self.assertEqual(c["responses"], 3)
 
@@ -895,11 +895,11 @@ class StackLanTests(unittest.TestCase):
         d.callback = domain_callback
         dm.add_domain_name(d)
 
-        self.s.set_domain_name_manager(dm,"HTTPProtocol")
+        self.st.set_domain_name_manager(dm,"HTTPProtocol")
 
         with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
             pd.evidences = True
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run()
 
         self.assertEqual(self.called_callback,1)
@@ -936,16 +936,16 @@ class StackLanTests(unittest.TestCase):
         im = pyaiengine.IPSetManager()
 
         im.add_ip_set(i)
-        self.s.tcp_ip_set_manager = im
+        self.st.tcp_ip_set_manager = im
 
         r = pyaiengine.Regex("generic http","^GET.*HTTP")
         r.callback = regex_callback
         rm.add_regex(r)
 
-        self.s.enable_nids_engine = True
+        self.st.enable_nids_engine = True
 
         with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run();
  
         self.assertEqual(self.called_callback,2)
@@ -979,16 +979,16 @@ class StackLanTests(unittest.TestCase):
         im = pyaiengine.IPSetManager()
 
         im.add_ip_set(i)
-        self.s.tcp_ip_set_manager = im
+        self.st.tcp_ip_set_manager = im
 
         r = pyaiengine.Regex("generic http","^GET.*HTTP")
         r.callback = regex_callback
         rm.add_regex(r)
 
-        self.s.enable_nids_engine = True
+        self.st.enable_nids_engine = True
 
         with pyaiengine.PacketDispatcher("../pcapfiles/two_http_flows_noending.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run();
 
         self.assertEqual(self.called_callback,1)
@@ -1023,14 +1023,14 @@ class StackLanTests(unittest.TestCase):
 
         db = databaseTestAdaptor()
 
-        self.s.set_udp_database_adaptor(db)
+        self.st.set_udp_database_adaptor(db)
 
-        self.s.udp_regex_manager = rm
+        self.st.udp_regex_manager = rm
 
-        self.s.enable_nids_engine = True
+        self.st.enable_nids_engine = True
 
         with pyaiengine.PacketDispatcher("../pcapfiles/ssdp_flow.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run()
 
         d = json.loads(db.lastdata)
@@ -1042,39 +1042,39 @@ class StackLanTests(unittest.TestCase):
 
         db = databaseTestAdaptor()
 
-        self.s.set_udp_database_adaptor(db)
+        self.st.set_udp_database_adaptor(db)
 
         with pyaiengine.PacketDispatcher("../pcapfiles/ipv4_coap.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run()
 
         d = json.loads(db.lastdata)
         self.assertEqual(d["info"]["uri"], "/1/1/768/core.power")
 
         """ Release the cache for coap """
-        self.assertEqual(len(self.s.udp_flow_manager), 1)
+        self.assertEqual(len(self.st.udp_flow_manager), 1)
 
-        for flow in self.s.udp_flow_manager:
+        for flow in self.st.udp_flow_manager:
             self.assertNotEqual(flow.coap_info,None)
 
         """ release  the cache """
-        self.s.release_cache("CoAPProtocol")
+        self.st.release_cache("CoAPProtocol")
 
-        for flow in self.s.udp_flow_manager:
+        for flow in self.st.udp_flow_manager:
             self.assertEqual(flow.coap_info,None)
 
         """ release all the caches """
-        self.s.release_caches()
+        self.st.release_caches()
 
     def test36(self):
         """ Verify the mqtt protocol functionality """
 
         db = databaseTestAdaptor()
 
-        self.s.set_tcp_database_adaptor(db,1)
+        self.st.set_tcp_database_adaptor(db,1)
 
         with pyaiengine.PacketDispatcher("../pcapfiles/ipv4_mqtt.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run()
            
         d = json.loads(db.lastdata)
@@ -1084,9 +1084,9 @@ class StackLanTests(unittest.TestCase):
         # print(json.dumps(d,sort_keys=True,indent=4, separators=(',', ': ')))
 
         """ Release the cache for mqtt """
-        self.assertEqual(len(self.s.tcp_flow_manager), 1)
+        self.assertEqual(len(self.st.tcp_flow_manager), 1)
 
-        for flow in self.s.tcp_flow_manager:
+        for flow in self.st.tcp_flow_manager:
             self.assertNotEqual(flow.mqtt_info,None)
             self.assertEqual(flow.coap_info,None)
             self.assertEqual(flow.http_info,None)
@@ -1094,9 +1094,9 @@ class StackLanTests(unittest.TestCase):
             self.assertEqual(flow.ssl_info,None)
 
         """ release  the cache """
-        self.s.release_cache("MQTTProtocol")
+        self.st.release_cache("MQTTProtocol")
 
-        for flow in self.s.tcp_flow_manager:
+        for flow in self.st.tcp_flow_manager:
             self.assertEqual(flow.mqtt_info,None)
             self.assertEqual(flow.coap_info,None)
             self.assertEqual(flow.http_info,None)
@@ -1104,7 +1104,7 @@ class StackLanTests(unittest.TestCase):
             self.assertEqual(flow.ssl_info,None)
 
         """ release all the caches """
-        self.s.release_caches()
+        self.st.release_caches()
 
     def test37(self):
         """ Verify the coap protocol functionality with domains matched """
@@ -1121,14 +1121,14 @@ class StackLanTests(unittest.TestCase):
         d.callback = domain_callback
         dm.add_domain_name(d)
 
-        self.s.set_domain_name_manager(dm,"CoAPProtocol")
+        self.st.set_domain_name_manager(dm,"CoAPProtocol")
 
         db = databaseTestAdaptor()
 
-        self.s.set_udp_database_adaptor(db)
+        self.st.set_udp_database_adaptor(db)
 
         with pyaiengine.PacketDispatcher("../pcapfiles/ipv4_coap_big_uri.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run()
 
         data = json.loads(db.lastdata)
@@ -1136,6 +1136,17 @@ class StackLanTests(unittest.TestCase):
         self.assertEqual(data["info"]["uri"], "/somepath/really/maliciousuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuua/time")
         self.assertEqual(self.called_callback , 1)
         self.assertEqual(d.matchs, 1)
+
+    def test38(self):
+        """ Test the modbus protocol """
+
+        with pyaiengine.PacketDispatcher("../pcapfiles/modbus_five_flows.pcap") as pd:
+            pd.stack = self.st
+            pd.run()
+
+        c = self.st.get_counters("ModbusProtocol")
+        self.assertEqual(c["write single coil"], 4)
+        self.assertEqual(c["read coils"], 6)
 
 
 class StackMobileTests(unittest.TestCase):
@@ -1151,6 +1162,11 @@ class StackMobileTests(unittest.TestCase):
         del self.st
         del self.pd
 
+    def inject(self,pcapfile):
+        with pyaiengine.PacketDispatcher(pcapfile) as pd:
+            pd.stack = self.st
+            pd.run()
+
     def test1(self):
         """ Verify the integrity of the sip fields """
 
@@ -1158,9 +1174,7 @@ class StackMobileTests(unittest.TestCase):
 
         self.st.set_udp_database_adaptor(db)
 
-        with pyaiengine.PacketDispatcher("../pcapfiles/gprs_sip_flow.pcap") as pd:
-            pd.stack = self.st
-            pd.run()
+        self.inject("../pcapfiles/gprs_sip_flow.pcap") 
 
         for flow in self.st.udp_flow_manager:
             self.assertEqual(flow.mqtt_info,None)
@@ -1190,16 +1204,21 @@ class StackMobileTests(unittest.TestCase):
 class StackLanIPv6Tests(unittest.TestCase):
 
     def setUp(self):
-        self.s = pyaiengine.StackLanIPv6()
-        self.dis = pyaiengine.PacketDispatcher()
-        self.dis.stack = self.s
-        self.s.tcp_flows = 2048
-        self.s.udp_flows = 1024
+        self.st = pyaiengine.StackLanIPv6()
+        self.pd = pyaiengine.PacketDispatcher()
+        self.pd.stack = self.st
+        self.st.tcp_flows = 2048
+        self.st.udp_flows = 1024
         self.called_callback = 0
 
     def tearDown(self):
-        del self.s
-        del self.dis
+        del self.st
+        del self.pd
+
+    def inject(self,pcapfile):
+        with pyaiengine.PacketDispatcher(pcapfile) as pd:
+            pd.stack = self.st
+            pd.run()
 
     def test1(self):
         """ Create a regex for a generic exploit """
@@ -1207,11 +1226,9 @@ class StackLanIPv6Tests(unittest.TestCase):
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("generic exploit",b"\x90\x90\x90\x90\x90\x90\x90")
         rm.add_regex(r)
-        self.s.tcp_regex_manager = rm
+        self.st.tcp_regex_manager = rm
 
-        self.dis.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.inject("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
 
         self.assertEqual(r.matchs, 1)
 
@@ -1227,18 +1244,18 @@ class StackLanIPv6Tests(unittest.TestCase):
         im = pyaiengine.IPSetManager()
 
         im.add_ip_set(ipset)
-        self.s.tcp_ip_set_manager = im
+        self.st.tcp_ip_set_manager = im
 
         rm = pyaiengine.RegexManager()
         r1 = pyaiengine.Regex("generic exploit","\x90\x90\x90\x90\x90\x90\x90")
         rm.add_regex(r1)
         r2 = pyaiengine.Regex("other exploit","(this can not match)")
         rm.add_regex(r2)
-        self.s.tcp_regex_manager = rm
+        self.st.tcp_regex_manager = rm
 
-        self.dis.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.pd.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
+        self.pd.run()
+        self.pd.close()
 
         self.assertEqual(r1.matchs, 1)
         self.assertEqual(r2.matchs, 0)
@@ -1256,18 +1273,18 @@ class StackLanIPv6Tests(unittest.TestCase):
         im = pyaiengine.IPSetManager()
 
         im.add_ip_set(ipset)
-        self.s.tcp_ip_set_manager = im
+        self.st.tcp_ip_set_manager = im
 
         rm = pyaiengine.RegexManager()
         r1 = pyaiengine.Regex("generic exploit","\xaa\xbb\xcc\xdd\x90\x90\x90")
         rm.add_regex(r1)
         r2 = pyaiengine.Regex("other exploit","(this can not match)")
         rm.add_regex(r2)
-        self.s.tcp_regex_manager = rm
+        self.st.tcp_regex_manager = rm
 
-        self.dis.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.pd.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
+        self.pd.run()
+        self.pd.close()
 
         self.assertEqual(r1.matchs, 0)
         self.assertEqual(r2.matchs, 0)
@@ -1278,11 +1295,11 @@ class StackLanIPv6Tests(unittest.TestCase):
 
         db = databaseTestAdaptor()
         
-        self.s.set_tcp_database_adaptor(db,16)
+        self.st.set_tcp_database_adaptor(db,16)
 
-        self.dis.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.pd.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
+        self.pd.run()
+        self.pd.close()
 
         self.assertEqual(db.getInserts(), 1)
         self.assertEqual(db.getUpdates(), 5)
@@ -1294,12 +1311,12 @@ class StackLanIPv6Tests(unittest.TestCase):
         db_udp = databaseTestAdaptor()
         db_tcp = databaseTestAdaptor()
 
-        self.s.set_udp_database_adaptor(db_udp,16)
-        self.s.set_tcp_database_adaptor(db_tcp)
+        self.st.set_udp_database_adaptor(db_udp,16)
+        self.st.set_tcp_database_adaptor(db_tcp)
 
-        self.dis.open("../pcapfiles/ipv6_google_dns.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.pd.open("../pcapfiles/ipv6_google_dns.pcap")
+        self.pd.run()
+        self.pd.close()
 
         self.assertEqual(db_udp.getInserts(), 1)
         self.assertEqual(db_udp.getUpdates(), 1)
@@ -1326,15 +1343,15 @@ class StackLanIPv6Tests(unittest.TestCase):
         im.add_ip_set(ipset2)
         im.add_ip_set(ipset3)
 
-        self.s.tcp_ip_set_manager = im
+        self.st.tcp_ip_set_manager = im
 
-        self.dis.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.pd.open("../pcapfiles/generic_exploit_ipv6_defcon20.pcap")
+        self.pd.run()
+        self.pd.close()
 
         self.assertEqual(len(im), 3)
         self.assertEqual(self.called_callback , 0)
-        self.assertEqual(self.s.tcp_ip_set_manager , im)
+        self.assertEqual(self.st.tcp_ip_set_manager , im)
 
     def test7(self):
         """ Extract IPv6 address from a DomainName matched """
@@ -1350,11 +1367,9 @@ class StackLanIPv6Tests(unittest.TestCase):
         dm = pyaiengine.DomainNameManager()
         dm.add_domain_name(d)
 
-        self.s.set_domain_name_manager(dm,"dns")
+        self.st.set_domain_name_manager(dm,"dns")
 
-        self.dis.open("../pcapfiles/ipv6_google_dns.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.inject("../pcapfiles/ipv6_google_dns.pcap")
 
         self.assertEqual(self.called_callback , 1)
 
@@ -1374,11 +1389,9 @@ class StackLanIPv6Tests(unittest.TestCase):
         rm2.add_regex(r2)
         rm2.add_regex(r3)
 
-        self.s.tcp_regex_manager = rmbase
+        self.st.tcp_regex_manager = rmbase
 
-        with pyaiengine.PacketDispatcher("../pcapfiles/generic_exploit_ipv6_defcon20.pcap") as pd:
-            pd.stack = self.s
-            pd.run()
+        self.inject("../pcapfiles/generic_exploit_ipv6_defcon20.pcap") 
 
         self.assertEqual(r1.matchs, 1)
         self.assertEqual(r2.matchs, 0)
@@ -1408,16 +1421,16 @@ class StackLanIPv6Tests(unittest.TestCase):
 	rm3.add_regex(r4)
 	rm3.add_regex(r5)
 
-        self.s.tcp_regex_manager = rm1
+        self.st.tcp_regex_manager = rm1
 
         oldstack = None
 
         with pyaiengine.PacketDispatcher("../pcapfiles/generic_exploit_ipv6_defcon20.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run()
-            oldstack = self.s
+            oldstack = self.st
 
-        self.assertEqual(self.s, oldstack)
+        self.assertEqual(self.st, oldstack)
 
         self.assertEqual(r1.matchs, 1)
         self.assertEqual(r2.matchs, 0)
@@ -1428,25 +1441,25 @@ class StackLanIPv6Tests(unittest.TestCase):
         """ Verify the functionality of the getCache method """
 
         with pyaiengine.PacketDispatcher("../pcapfiles/ipv6_google_dns.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run()
 
-        d = self.s.get_cache("DNSProtocol")
-        self.assertEqual(len(self.s.get_cache("DNSProtocol")),1)
-        self.assertEqual(len(self.s.get_cache("DNSProtocolNoExists")),0)
-        self.s.release_cache("DNSProtocol")
-        self.assertEqual(len(self.s.get_cache("DNSProtocol")),0)
-        self.assertEqual(len(self.s.get_cache("HTTPProtocol")),0)
-        self.assertEqual(len(self.s.get_cache("SSLProtocol")),0)
+        d = self.st.get_cache("DNSProtocol")
+        self.assertEqual(len(self.st.get_cache("DNSProtocol")),1)
+        self.assertEqual(len(self.st.get_cache("DNSProtocolNoExists")),0)
+        self.st.release_cache("DNSProtocol")
+        self.assertEqual(len(self.st.get_cache("DNSProtocol")),0)
+        self.assertEqual(len(self.st.get_cache("HTTPProtocol")),0)
+        self.assertEqual(len(self.st.get_cache("SSLProtocol")),0)
 
     def test11(self):
         """ Verify the correctness of the HTTP Protocol on IPv6 """
 
         with pyaiengine.PacketDispatcher("../pcapfiles/http_over_ipv6.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run();
 
-        c = self.s.get_counters("HTTPProtocol")
+        c = self.st.get_counters("HTTPProtocol")
         self.assertEqual(c["requests"], 11)
         self.assertEqual(c["responses"], 11)
 
@@ -1477,10 +1490,10 @@ class StackLanIPv6Tests(unittest.TestCase):
         d.callback = callback_domain
         dm.add_domain_name(d)
 
-        self.s.set_domain_name_manager(dm,"HTTPProtocol")
+        self.st.set_domain_name_manager(dm,"HTTPProtocol")
 
         with pyaiengine.PacketDispatcher("../pcapfiles/http_over_ipv6.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run();
 
         self.assertEqual(self.called_callback, 2)
@@ -1500,11 +1513,11 @@ class StackLanIPv6Tests(unittest.TestCase):
         d.callback = domain_callback
         dm.add_domain_name(d)
 
-        self.s.set_domain_name_manager(dm,"DNSProtocol")
+        self.st.set_domain_name_manager(dm,"DNSProtocol")
 
         with pyaiengine.PacketDispatcher("../pcapfiles/ipv6_google_dns.pcap") as pd:
             pd.evidences = True
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run()
 
         self.assertEqual(self.called_callback,1)
@@ -1524,12 +1537,12 @@ class StackLanIPv6Tests(unittest.TestCase):
 
         db = databaseTestAdaptor()
 
-        self.s.set_tcp_database_adaptor(db)
+        self.st.set_tcp_database_adaptor(db)
 
-        self.s.tcp_regex_manager = rm
+        self.st.tcp_regex_manager = rm
 
         with pyaiengine.PacketDispatcher("../pcapfiles/generic_exploit_ipv6_defcon20.pcap") as pd:
-            pd.stack = self.s
+            pd.stack = self.st
             pd.run()
 
         d = json.loads(db.lastdata)
@@ -1539,32 +1552,35 @@ class StackLanIPv6Tests(unittest.TestCase):
 class StackLanLearningTests(unittest.TestCase):
 
     def setUp(self):
-        self.s = pyaiengine.StackLan()
-        self.dis = pyaiengine.PacketDispatcher()
-        self.dis.stack = self.s
-        self.s.tcp_flows = 2048
-        self.s.udp_flows = 1024
+        self.st = pyaiengine.StackLan()
+        self.pd = pyaiengine.PacketDispatcher()
+        self.pd.stack = self.st
+        self.st.tcp_flows = 2048
+        self.st.udp_flows = 1024
         self.f = pyaiengine.FrequencyGroup()
 
     def tearDown(self):
-        del self.s
-        del self.dis
+        del self.st
+        del self.pd
         del self.f
+
+    def inject(self,pcapfile):
+        self.pd.open(pcapfile)
+        self.pd.run()
+        self.pd.close()
 
     def test1(self):
 
         self.f.reset()
-        self.s.enable_frequency_engine = True
+        self.st.enable_frequency_engine = True
 
-        self.dis.open("../pcapfiles/two_http_flows_noending.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.inject("../pcapfiles/two_http_flows_noending.pcap")
 
         self.assertEqual(self.f.total_process_flows, 0)
         self.assertEqual(self.f.total_computed_frequencies, 0)
 
         """ Add the TCP Flows of the FlowManager on the FrequencyEngine """
-        self.f.add_flows_by_destination_port(self.s.tcp_flow_manager)
+        self.f.add_flows_by_destination_port(self.st.tcp_flow_manager)
         self.f.compute()
     
         self.assertEqual(self.f.total_process_flows, 2)
@@ -1573,17 +1589,15 @@ class StackLanLearningTests(unittest.TestCase):
     def test2(self):
         
         self.f.reset()
-        self.s.enable_frequency_engine = True
+        self.st.enable_frequency_engine = True
         
-        self.dis.open("../pcapfiles/tor_4flows.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.inject("../pcapfiles/tor_4flows.pcap")
 
         self.assertEqual(self.f.total_process_flows, 0)
         self.assertEqual(self.f.total_computed_frequencies, 0)
 
         """ Add the TCP Flows of the FlowManager on the FrequencyEngine """
-        self.f.add_flows_by_destination_port(self.s.tcp_flow_manager)
+        self.f.add_flows_by_destination_port(self.st.tcp_flow_manager)
         self.f.compute()
 
         self.assertEqual(len(self.f.get_reference_flows_by_key("80")), 4)
@@ -1597,14 +1611,12 @@ class StackLanLearningTests(unittest.TestCase):
         learn = pyaiengine.LearnerEngine()
 
         self.f.reset()
-        self.s.enable_frequency_engine = True
+        self.st.enable_frequency_engine = True
         
-        self.dis.open("../pcapfiles/tor_4flows.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.inject("../pcapfiles/tor_4flows.pcap")
 
         """ Add the TCP Flows of the FlowManager on the FrequencyEngine """
-        self.f.add_flows_by_destination_port(self.s.tcp_flow_manager)
+        self.f.add_flows_by_destination_port(self.st.tcp_flow_manager)
         self.f.compute()
 
         flow_list = self.f.get_reference_flows()
@@ -1625,16 +1637,21 @@ class StackLanLearningTests(unittest.TestCase):
 class StackVirtualTests(unittest.TestCase):
 
     def setUp(self):
-        self.s = pyaiengine.StackVirtual()
-        self.dis = pyaiengine.PacketDispatcher()
-        self.dis.stack = self.s
-        self.s.tcp_flows = 2048
-        self.s.udp_flows = 1024
+        self.st = pyaiengine.StackVirtual()
+        self.pd = pyaiengine.PacketDispatcher()
+        self.pd.stack = self.st
+        self.st.tcp_flows = 2048
+        self.st.udp_flows = 1024
         self.called_callback = 0
 
     def tearDown(self):
-        del self.s
-        del self.dis
+        del self.st
+        del self.pd
+
+    def inject(self,pcapfile):
+        self.pd.open(pcapfile)
+        self.pd.run()
+        self.pd.close()
 
     def test1(self):
         """ Create a regex for a detect the flow on a virtual network """
@@ -1642,11 +1659,9 @@ class StackVirtualTests(unittest.TestCase):
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("Bin directory","^bin$")
         rm.add_regex(r)
-        self.s.tcp_regex_manager = rm
+        self.st.tcp_regex_manager = rm
 
-        self.dis.open("../pcapfiles/vxlan_ftp.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.inject("../pcapfiles/vxlan_ftp.pcap")
 
         self.assertEqual(r.matchs, 1)
 
@@ -1656,16 +1671,14 @@ class StackVirtualTests(unittest.TestCase):
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("Bin directory",b"^SSH-2.0.*$")
         rm.add_regex(r)
-        self.s.tcp_regex_manager = rm
+        self.st.tcp_regex_manager = rm
 
-        self.dis.open("../pcapfiles/gre_ssh.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.inject("../pcapfiles/gre_ssh.pcap")
 
         self.assertEqual(r.matchs, 1)
 
-        self.assertEqual(len(self.s.tcp_flow_manager), 1)
-        self.assertEqual(len(self.s.udp_flow_manager), 0)
+        self.assertEqual(len(self.st.tcp_flow_manager), 1)
+        self.assertEqual(len(self.st.udp_flow_manager), 0)
 
 
     def test3(self):
@@ -1674,33 +1687,29 @@ class StackVirtualTests(unittest.TestCase):
         rm = pyaiengine.RegexManager()
         r = pyaiengine.Regex("SSH activity",b"^SSH-2.0.*$")
         rm.add_regex(r)
-        self.s.tcp_regex_manager = rm
+        self.st.tcp_regex_manager = rm
 
-        self.s.enable_nids_engine = True	
+        self.st.enable_nids_engine = True	
 
         # The first packet of the pcapfile is from 18 sep 2014
-        self.dis.open("../pcapfiles/vxlan_ftp.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.inject("../pcapfiles/vxlan_ftp.pcap")
 
         """ This FlowManagers points to the virtualize layer """
-        ft = self.s.tcp_flow_manager
-        fu = self.s.udp_flow_manager
+        ft = self.st.tcp_flow_manager
+        fu = self.st.udp_flow_manager
 
         self.assertEqual(ft.flows , 1)
         self.assertEqual(ft.process_flows , 1)
         self.assertEqual(ft.timeout_flows , 0)
 
         self.assertEqual(r.matchs, 0)
-        self.assertEqual(len(self.s.tcp_flow_manager), 1)
-        self.assertEqual(len(self.s.udp_flow_manager), 0)
+        self.assertEqual(len(self.st.tcp_flow_manager), 1)
+        self.assertEqual(len(self.st.udp_flow_manager), 0)
 
-        self.s.flows_timeout = (60 * 60 * 24)
+        self.st.flows_timeout = (60 * 60 * 24)
 
         # The first packet of the pcapfile is from 19 sep 2014
-        self.dis.open("../pcapfiles/gre_ssh.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.inject("../pcapfiles/gre_ssh.pcap")
       
         self.assertEqual(ft.flows , 2)
         self.assertEqual(ft.process_flows , 2)
@@ -1721,13 +1730,11 @@ class StackVirtualTests(unittest.TestCase):
         r = pyaiengine.Regex("Bin directory",b"^bin$")
         r.callback = virt_callback
         rm.add_regex(r)
-        self.s.tcp_regex_manager = rm
+        self.st.tcp_regex_manager = rm
 
-        self.s.enable_nids_engine = True
+        self.st.enable_nids_engine = True
 
-        self.dis.open("../pcapfiles/vxlan_ftp.pcap")
-        self.dis.run()
-        self.dis.close()
+        self.inject("../pcapfiles/vxlan_ftp.pcap")
 
         self.assertEqual(r.callback, virt_callback)
         self.assertEqual(r.matchs, 1)

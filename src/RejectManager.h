@@ -49,6 +49,8 @@ namespace aiengine {
 class StackLan;
 class StackLanIPv6;
 
+/* LCOV_EXCL_START */
+
 template <class Stack_Type>
 class RejectManager 
 {
@@ -82,6 +84,8 @@ private:
 	TCPRawSocket::socket tcp_socket_;
 	ICMPRawSocket::socket icmp_socket_;
 };
+
+/* LCOV_EXCL_STOP */
 
 } // namespace aiengine
 

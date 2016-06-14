@@ -15,7 +15,8 @@ EXTRA_DIST = 	4udppackets.pcap sslflow.pcap \
 		smtp.pcap ssdp_flow.pcap \
 		ipv4_coap.pcap ipv4_mqtt.pcap ipv4_coap_big_uri.pcap \
 		gprs_sip_flow.pcap ipv6_mix_traffic.pcap \
-		pop_flow.pcap 
+		pop_flow.pcap imap_flow.pcap \
+		modbus_five_flows.pcap 
 
 MAINTAINERCLEANFILES = Makefile.in 
 

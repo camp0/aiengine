@@ -52,7 +52,7 @@ class Callback
 #if defined(PYTHON_BINDING)
 public:
 	Callback():callback_set_(false),callback_(nullptr) {}
-	virtual ~Callback() {}
+	virtual ~Callback(); 
 
 	bool haveCallback() const { return callback_set_;}
 

@@ -31,9 +31,9 @@ namespace aiengine {
         + __GNUC_MINOR__ * 100 \
         + __GNUC_PATCHLEVEL__)
 
-
 void EvidenceManager::enable() {
 
+	/* LCOV_EXCL_START */
 	if (!evidence_file_.is_open()) {
 		// Enable the mmap and the mmsync syscalls of the kernel
 		std::time_t t = std::time(nullptr);
@@ -75,11 +75,13 @@ void EvidenceManager::enable() {
 		evidence_offset_ = sizeof(struct pcap_file_header);
 		++ total_files_;
 	}
+	/* LCOV_EXCL_STOP */
 }
 
 
 void EvidenceManager::disable() {
 
+	/* LCOV_EXCL_START */
 	if (evidence_file_.is_open()) {
 		evidence_file_.close();
 		// Truncate the file to the exact size of it
@@ -87,9 +89,11 @@ void EvidenceManager::disable() {
 		evidence_data_ = nullptr;
 		evidence_offset_ = 0;
 	}
+	/* LCOV_EXCL_STOP */
 }
 
 void EvidenceManager::write(const Packet& pkt) {
+	/* LCOV_EXCL_START */
 	int length = pkt.curr_packet.getLength();
 
 	if (evidence_offset_ + length + sizeof(pcap_header_writeable) > total_size_ ) {
@@ -109,10 +113,12 @@ void EvidenceManager::write(const Packet& pkt) {
 	std::memcpy(&evidence_data_[evidence_offset_],pkt.curr_packet.getPayload(),length);	
 	evidence_offset_ += length;
 	++ total_write_packets_;
+	/* LCOV_EXCL_STOP */
 }
 
 std::ostream& operator<< (std::ostream& out, const EvidenceManager& em) {
 
+	/* LCOV_EXCL_START */
         int alloc_memory = em.total_size_;
         std::string unit = "Bytes";
 
@@ -124,6 +130,7 @@ std::ostream& operator<< (std::ostream& out, const EvidenceManager& em) {
         out << "\t" << "Total files:        " << std::setw(14) << em.total_files_ <<std::endl;
 
 	return out;
+	/* LCOV_EXCL_STOP */
 }
 
 } // namespace aiengine

@@ -26,6 +26,8 @@
 
 namespace aiengine {
 
+/* LCOV_EXCL_START */
+
 template<>
 RejectManager<StackLan>::RejectManager(boost::asio::io_service& io_service):
 	total_tcp_rejects_(0),total_udp_rejects_(0),
@@ -343,5 +345,7 @@ void RejectManager<StackLanIPv6>::rejectUDPFlow(Flow *flow) {
                 ++total_udp_rejects_;
 	}
 }
+
+/* LCOV_EXCL_STOP */
 
 } // namespace aiengine

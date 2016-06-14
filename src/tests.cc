@@ -1665,10 +1665,16 @@ BOOST_AUTO_TEST_CASE ( test_case_17 )
 
 	FlowManagerPtr fm = stack->getTCPFlowManager().lock();
 
+       	std::filebuf fb;
+       	fb.open ("/dev/null",std::ios::out);
+       	std::ostream outp(&fb);
+
         bool called = false;
         // Check the relaseCache functionality 
         for (auto &flow: fm->getFlowTable()) {
                 BOOST_CHECK(flow->getPOPInfo() != nullptr);
+		flow->serialize(outp);
+		// Check some of the values ?
                 called = true;
         }
 	BOOST_CHECK(called == true);
@@ -1680,6 +1686,104 @@ BOOST_AUTO_TEST_CASE ( test_case_17 )
                 called = true;
         }
 	BOOST_CHECK(called == true);
+       	
+	// For exercise the statistics
+       	stack->setStatisticsLevel(5);
+       	stack->statistics(outp);
+      	stack->showFlows(outp); 
+       	fb.close();
+}
+
+BOOST_AUTO_TEST_CASE ( test_case_18 )
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        NetworkStackPtr stack = NetworkStackPtr(new StackLan());
+
+        pd->setStack(stack);
+
+        stack->setTotalUDPFlows(10);
+	stack->increaseAllocatedMemory("CoAPProtocol",10);
+
+        pd->open("../pcapfiles/ipv4_coap.pcap");
+        pd->run();
+        pd->close();
+
+	FlowManagerPtr fm = stack->getUDPFlowManager().lock();
+
+       	std::filebuf fb;
+       	fb.open ("/dev/null",std::ios::out);
+       	std::ostream outp(&fb);
+
+        bool called = false;
+        // Check the relaseCache functionality 
+        for (auto &flow: fm->getFlowTable()) {
+                BOOST_CHECK(flow->getCoAPInfo() != nullptr);
+		flow->serialize(outp);
+		// Check some of the values ?
+                called = true;
+	}
+	BOOST_CHECK( called == true);
+}
+
+BOOST_AUTO_TEST_CASE ( test_case_19 ) 
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        NetworkStackPtr stack = NetworkStackPtr(new StackLan());
+
+        pd->setStack(stack);
+
+        stack->setTotalTCPFlows(10);
+	stack->increaseAllocatedMemory("ModbusProtocol",5);
+
+        pd->open("../pcapfiles/modbus_five_flows.pcap");
+        pd->run();
+        pd->close();
+
+	FlowManagerPtr fm = stack->getTCPFlowManager().lock();
+
+	// TODO
+}
+
+BOOST_AUTO_TEST_CASE ( test_case_20 ) 
+{
+        PacketDispatcherPtr pd = PacketDispatcherPtr(new PacketDispatcher());
+        NetworkStackPtr stack = NetworkStackPtr(new StackLan());
+
+        pd->setStack(stack);
+
+        stack->setTotalTCPFlows(10);
+	stack->increaseAllocatedMemory("IMAPProtocol",1);
+
+        pd->open("../pcapfiles/imap_flow.pcap");
+        pd->run();
+        pd->close();
+
+	FlowManagerPtr fm = stack->getTCPFlowManager().lock();
+
+       	std::filebuf fb;
+       	fb.open ("/dev/null",std::ios::out);
+       	std::ostream outp(&fb);
+
+        bool called = false;
+        // Check the relaseCache functionality 
+        for (auto &flow: fm->getFlowTable()) {
+                BOOST_CHECK(flow->getIMAPInfo() != nullptr);
+                BOOST_CHECK(flow->getPOPInfo() == nullptr);
+                BOOST_CHECK(flow->getSMTPInfo() == nullptr);
+		flow->serialize(outp);
+		// Check some of the values ?
+		called = true;
+	}
+	BOOST_CHECK (called == true);	
+        
+	stack->releaseCaches();
+
+        called = false;
+        for (auto &flow: fm->getFlowTable()) {
+                BOOST_CHECK(flow->getIMAPInfo() == nullptr);
+		called = true;
+	}
+	BOOST_CHECK (called == true);	
 }
 
 BOOST_AUTO_TEST_SUITE_END( )
@@ -1717,6 +1821,17 @@ BOOST_AUTO_TEST_CASE ( test_case_1 )
                 called = true;
         }
 	BOOST_CHECK(called == true);
+	
+	// For exercise the statistics
+       	std::filebuf fb;
+       	fb.open ("/dev/null",std::ios::out);
+       	std::ostream outp(&fb);
+
+       	stack->setStatisticsLevel(5);
+       	stack->statistics(outp);
+      	stack->showFlows(outp); 
+       
+       	fb.close();
 }
 
 BOOST_AUTO_TEST_SUITE_END( )
@@ -1776,10 +1891,17 @@ BOOST_AUTO_TEST_CASE (test_case_2) // Test the DomainNames with DNS traffic
         
 	FlowManagerPtr fm = stack->getUDPFlowManager().lock();
 
+       	std::filebuf fb;
+       	fb.open ("/dev/null",std::ios::out);
+       	std::ostream outp(&fb);
+
         bool called = false;
         // Check the relaseCache functionality 
         for (auto &flow: fm->getFlowTable()) {
                 BOOST_CHECK(flow->getDNSInfo() != nullptr);
+
+		// Execute the code for serialize the flows
+		flow->serialize(outp);
                 called = true;
         }
 	BOOST_CHECK(called == true);
@@ -1792,6 +1914,13 @@ BOOST_AUTO_TEST_CASE (test_case_2) // Test the DomainNames with DNS traffic
                 called = true;
         }
 	BOOST_CHECK(called == true);
+
+       	// For exercise the statistics
+       	stack->setStatisticsLevel(5);
+       	stack->statistics(outp);
+      	stack->showFlows(outp); 
+       
+       	fb.close();
 }
 
 BOOST_AUTO_TEST_SUITE_END( )
@@ -1842,6 +1971,17 @@ BOOST_AUTO_TEST_CASE (test_case_2)
 
         BOOST_CHECK(r_generic->getMatchs() == 1);
         BOOST_CHECK(r_generic->getTotalEvaluates() == 1);
+
+       	// For exercise the statistics
+       	std::filebuf fb;
+       	fb.open ("/dev/null",std::ios::out);
+       	std::ostream outp(&fb);
+
+       	stack->setStatisticsLevel(5);
+       	stack->statistics(outp);
+      	stack->showFlows(outp); 
+       
+       	fb.close();
 }
 
 BOOST_AUTO_TEST_SUITE_END( )
@@ -1886,6 +2026,18 @@ BOOST_AUTO_TEST_CASE ( test_case_1 )
         for (auto &flow: flows_udp->getFlowTable()) {
                 BOOST_CHECK(flow->getPacketAnomaly() == PacketAnomalyType::UDP_BOGUS_HEADER);
         }
+
+       	// For exercise the statistics
+       	std::filebuf fb;
+       	fb.open ("/dev/null",std::ios::out);
+       	//fb.open ("/tmp/test.txt",std::ios::out);
+       	std::ostream outp(&fb);
+
+       	stack->setStatisticsLevel(5);
+       	stack->statistics(outp);
+      	stack->showFlows(outp); 
+       
+       	fb.close();
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

@@ -60,6 +60,7 @@ int64_t POPProtocol::getAllocatedMemory() const {
 // Removes or decrements the hits of the maps.
 __attribute__ ((unused)) void POPProtocol::release_pop_info_cache(POPInfo *info) {
 
+	/* LCOV_EXCL_START */
         SharedPointer<StringCache> user_ptr = info->user_name;
 
         if (user_ptr) { // There is no from attached
@@ -75,6 +76,7 @@ __attribute__ ((unused)) void POPProtocol::release_pop_info_cache(POPInfo *info)
         }
 
         release_pop_info(info);
+	/* LCOV_EXCL_STOP */
 }
 
 

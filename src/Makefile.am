@@ -5,6 +5,7 @@ all: aiengine
 python_PYTHON = pyai_tests.py __init__.py
 
 @CODE_COVERAGE_RULES@
+CODE_COVERAGE_LCOV_OPTIONS_DEFAULT = $(CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH) --directory . --no-external 
 
 AM_CPPFLAGS= -g -fprofile-arcs -ftest-coverage
 

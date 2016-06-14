@@ -59,6 +59,14 @@ void Callback::setCallback(PyObject *callback) {
    	}
 }
 
+Callback::~Callback() {
+
+	if (callback_) {
+		Py_XDECREF(callback_);
+		callback_ = nullptr;
+	}
+}
+
 void Callback::executeCallback(Flow *flow) {
 
         try {

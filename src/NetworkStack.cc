@@ -513,7 +513,6 @@ std::map<std::string,int> NetworkStack::getCounters(const std::string& name) {
 #elif defined(LUA_BINDING)
 
 std::map<std::string,int> NetworkStack::getCounters(const char *name) {
-// std::map<std::string,int> NetworkStack::getCounters(lua_State *lua, const char *name) {
 	std::map<std::string,int> counters;
 	std::string sname(name);
 
@@ -607,7 +606,7 @@ void NetworkStack::increaseAllocatedMemory(const std::string& name,int value) {
         ProtocolPtr proto = get_protocol(name);
         if (proto) {
         	std::ostringstream msg;
-                msg << "Increase allocated memory in " << value << " on protocol " << name;
+                msg << "Increase allocated memory in " << value << " on " << name << " protocol";
 
                 infoMessage(msg.str());
 
@@ -620,7 +619,7 @@ void NetworkStack::decreaseAllocatedMemory(const std::string& name,int value) {
         ProtocolPtr proto = get_protocol(name);
         if (proto) {
         	std::ostringstream msg;
-                msg << "Decrease allocated memory in " << value << " on protocol " << name;
+                msg << "Decrease allocated memory in " << value << " on " << name << " protocol";
 
                 infoMessage(msg.str());
 

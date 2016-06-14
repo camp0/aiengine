@@ -26,6 +26,7 @@
 namespace aiengine {
 
 uint16_t ICMPv6Header::checksum (uint16_t *addr, int len) {
+	/* LCOV_EXCL_START */
 	int count = len;
         register uint32_t sum = 0;
         uint16_t answer = 0;
@@ -51,12 +52,14 @@ uint16_t ICMPv6Header::checksum (uint16_t *addr, int len) {
         // Checksum is one's compliment of sum.
         answer = ~sum;
         return answer;
+	/* LCOV_EXCL_STOP */
 }
 
 #define IP_MAXPACKET 2048
 
 void ICMPv6Header::computeChecksum (struct ip6_hdr *iphdr, const u_char *payload, int payloadlen)
 {
+	/* LCOV_EXCL_START */
 	char buf[IP_MAXPACKET];
   	char *ptr;
   	int chksumlen = 0;
@@ -134,6 +137,7 @@ void ICMPv6Header::computeChecksum (struct ip6_hdr *iphdr, const u_char *payload
     		chksumlen += 1;
   	}
   	setChecksum(checksum ((uint16_t *) buf, chksumlen));
+	/* LCOV_EXCL_STOP */
 }
 
 } // namespace aiengine
