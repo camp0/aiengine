@@ -1034,7 +1034,10 @@ class StackLanTests(unittest.TestCase):
             pd.run()
 
         d = json.loads(db.lastdata)
-        self.assertEqual(d["matchs"], "my regex")
+        if "matchs" in d:
+            self.assertEqual(d["matchs"], "my regex")
+        elif "m" in d:
+            self.assertEqual(d["m"], "my regex")
         self.assertEqual(r.matchs, 1)
 
     def test35(self):
@@ -1049,7 +1052,10 @@ class StackLanTests(unittest.TestCase):
             pd.run()
 
         d = json.loads(db.lastdata)
-        self.assertEqual(d["info"]["uri"], "/1/1/768/core.power")
+        if "info" in d:
+            self.assertEqual(d["info"]["uri"], "/1/1/768/core.power")
+        elif "i" in d:
+            self.assertEqual(d["i"]["u"], "/1/1/768/core.power")
 
         """ Release the cache for coap """
         self.assertEqual(len(self.st.udp_flow_manager), 1)
@@ -1078,9 +1084,15 @@ class StackLanTests(unittest.TestCase):
             pd.run()
            
         d = json.loads(db.lastdata)
-        self.assertEqual(d["info"]["operation"], 11)
-        self.assertEqual(d["info"]["total_server"], 7)
-        self.assertEqual(d["info"]["total_client"], 4)
+        if "info" in d:
+            self.assertEqual(d["info"]["operation"], 11)
+            self.assertEqual(d["info"]["total_server"], 7)
+            self.assertEqual(d["info"]["total_client"], 4)
+        elif "i" in d:
+            self.assertEqual(d["i"]["o"], 11)
+            self.assertEqual(d["i"]["s"], 7)
+            self.assertEqual(d["i"]["c"], 4)
+
         # print(json.dumps(d,sort_keys=True,indent=4, separators=(',', ': ')))
 
         """ Release the cache for mqtt """
@@ -1133,7 +1145,13 @@ class StackLanTests(unittest.TestCase):
 
         data = json.loads(db.lastdata)
         # print(json.dumps(data,sort_keys=True,indent=4, separators=(',', ': ')))
-        self.assertEqual(data["info"]["uri"], "/somepath/really/maliciousuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuua/time")
+        if "info" in data:
+            self.assertEqual(data["info"]["uri"], "/somepath/really/maliciousuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuua/time")
+        elif "i" in data: 
+            self.assertEqual(data["i"]["u"], "/somepath/really/maliciousuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuua/time")
+        else:
+            self.assertTrue(False)
+
         self.assertEqual(self.called_callback , 1)
         self.assertEqual(d.matchs, 1)
 
@@ -1191,10 +1209,19 @@ class StackMobileTests(unittest.TestCase):
         self.assertEqual(c["requests"], 7)
         self.assertEqual(c["responses"], 7)
         self.assertEqual(c["registers"], 2)
-        self.assertEqual(d["info"]["uri"],"sip:apn.sip.voice.ng4t.com")
-        self.assertEqual(d["info"]["from"],"'User1' <sip:ng40user1@apn.sip.voice.ng4t.com>;tag=690711")
-        self.assertEqual(d["info"]["to"],"'User1' <sip:ng40user1@apn.sip.voice.ng4t.com>")
-        self.assertEqual(d["info"]["via"],"SIP/2.0/UDP 10.255.1.1:5090;branch=z9hG4bK199817980098801998")
+
+        if "info" in d:
+            self.assertEqual(d["info"]["uri"],"sip:apn.sip.voice.ng4t.com")
+            self.assertEqual(d["info"]["from"],"'User1' <sip:ng40user1@apn.sip.voice.ng4t.com>;tag=690711")
+            self.assertEqual(d["info"]["to"],"'User1' <sip:ng40user1@apn.sip.voice.ng4t.com>")
+            self.assertEqual(d["info"]["via"],"SIP/2.0/UDP 10.255.1.1:5090;branch=z9hG4bK199817980098801998")
+        elif "i" in d:
+            self.assertEqual(d["i"]["u"],"sip:apn.sip.voice.ng4t.com")
+            self.assertEqual(d["i"]["f"],"'User1' <sip:ng40user1@apn.sip.voice.ng4t.com>;tag=690711")
+            self.assertEqual(d["i"]["t"],"'User1' <sip:ng40user1@apn.sip.voice.ng4t.com>")
+            self.assertEqual(d["i"]["v"],"SIP/2.0/UDP 10.255.1.1:5090;branch=z9hG4bK199817980098801998")
+        else:
+            self.assertTrue(False)
 
         self.st.release_cache("SIPProtocol")
         
@@ -1546,6 +1573,7 @@ class StackLanIPv6Tests(unittest.TestCase):
             pd.run()
 
         d = json.loads(db.lastdata)
+        print(d)
         self.assertEqual(d["matchs"], "my regex")
         self.assertEqual(r.matchs, 1)
 
@@ -1784,7 +1812,14 @@ class StackOpenFlowTests(unittest.TestCase):
             pd.run()
 
         d = json.loads(db.lastdata)
-        self.assertEqual(d["matchs"], "Bin directory")
+
+        if "matchs" in d:
+            self.assertEqual(d["matchs"], "Bin directory")
+        elif "m" in d:
+            self.assertEqual(d["m"], "Bin directory")
+        else:
+            self.assertTrue(False)
+
         self.assertEqual(r.matchs, 1)
 
 

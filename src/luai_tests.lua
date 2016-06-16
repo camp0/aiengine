@@ -258,9 +258,15 @@ TestStackLan = {}
         
         local decode = json.decode(adap.lastdata)
 
+        if decode["layer7"] then
+            luaunit.assertEquals(decode["layer7"],"NetbiosProtocol")
+            luaunit.assertEquals(decode["portdst"],137)
+        else 
+            if decode["p"] then
+               luaunit.assertEquals(decode["p"],"netbios")
+            end
+        end
         -- check info of the adaptor
-        luaunit.assertEquals(decode["layer7"],"NetbiosProtocol")
-        luaunit.assertEquals(decode["portdst"],137)
     end
 
     function TestStackLan:test07()
@@ -457,10 +463,16 @@ TestStackMobile = {}
         local decode = json.decode(adap.lastdata)
 
         -- Check some dns json info
-        luaunit.assertEquals(decode["portdst"], 5060)
-        luaunit.assertEquals(decode["info"]["uri"], "sip:apn.sip.voice.ng4t.com")
-        luaunit.assertEquals(decode["info"]["via"], "SIP/2.0/UDP 10.255.1.1:5090;branch=z9hG4bK199817980098801998")
-        
+        if decode["info"] then
+            luaunit.assertEquals(decode["portdst"], 5060)
+            luaunit.assertEquals(decode["info"]["uri"], "sip:apn.sip.voice.ng4t.com")
+            luaunit.assertEquals(decode["info"]["via"], "SIP/2.0/UDP 10.255.1.1:5090;branch=z9hG4bK199817980098801998")
+        else 
+            if decode["i"] then
+                luaunit.assertEquals(decode["i"]["u"], "sip:apn.sip.voice.ng4t.com")
+                luaunit.assertEquals(decode["i"]["v"], "SIP/2.0/UDP 10.255.1.1:5090;branch=z9hG4bK199817980098801998")
+            end
+        end
         -- Check the information of the adaptor 
         luaunit.assertEquals(adap.inserts, 1)
         luaunit.assertEquals(adap.updates, 1)
@@ -625,10 +637,16 @@ TestStackLanIPv6 = {}
         local decode = json.decode(adap.lastdata)
 
         -- Check some dns json info
-        luaunit.assertEquals(decode["portdst"], 53) 
-        luaunit.assertEquals(decode["info"]["dnsdomain"], "www.google.com") 
-        luaunit.assertEquals(decode["info"]["matchs"], "Google domain") 
-
+        if decode["info"] then
+            luaunit.assertEquals(decode["portdst"], 53) 
+            luaunit.assertEquals(decode["info"]["dnsdomain"], "www.google.com") 
+            luaunit.assertEquals(decode["info"]["matchs"], "Google domain") 
+        else
+            if decode["i"] then
+                luaunit.assertEquals(decode["i"]["h"], "www.google.com") 
+                luaunit.assertEquals(decode["i"]["m"], "Google domain") 
+            end
+        end
         -- Check the information of the adaptor 
         luaunit.assertEquals(adap.inserts, 1)
         luaunit.assertEquals(adap.updates, 2)
@@ -700,10 +718,15 @@ TestStackVirtual = {}
         local decode = json.decode(adap.lastdata)
   
         -- check info of the adaptor
-        luaunit.assertEquals(decode["matchs"],"Bin directory")
-        luaunit.assertEquals(decode["proto"],6)
-        luaunit.assertEquals(decode["ipdst"],"192.168.1.100")
-
+        if decode["matchs"] then
+            luaunit.assertEquals(decode["matchs"],"Bin directory")
+            luaunit.assertEquals(decode["proto"],6)
+            luaunit.assertEquals(decode["ipdst"],"192.168.1.100")
+        else 
+            if decode["m"] then
+                luaunit.assertEquals(decode["m"],"Bin directory")
+            end
+        end
         -- print(adap.lastdata)
         -- check the values of the adaptor 
         luaunit.assertEquals(adap.inserts, 1)

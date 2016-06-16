@@ -97,7 +97,7 @@ void Flow::serialize(std::ostream& stream) {
 	//	p:	Short layer7 protocol name
 	//	t:	TCPInfo (flags,QoS)
 	//	g:	GPRS information if StackMobile is running
-	//	r:	Regex matched on the flow
+	//	m:	Regex matched on the flow
 		
         stream << "{";
         stream << "\"5tuple\":\"" << address_.getSrcAddrDotNotation() << ":";
@@ -205,7 +205,7 @@ void Flow::serialize(std::ostream& stream) {
 
 #ifdef HAVE_FLOW_SERIALIZATION_COMPRESSION 
         if(!regex.expired())
-                stream << ",\"r\":\"" << regex.lock()->getName() << "\"";
+                stream << ",\"m\":\"" << regex.lock()->getName() << "\"";
 #else
 	if (!regex.expired())	
 		stream << ",\"matchs\":\"" << regex.lock()->getName() << "\"";
