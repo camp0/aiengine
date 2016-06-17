@@ -1573,8 +1573,13 @@ class StackLanIPv6Tests(unittest.TestCase):
             pd.run()
 
         d = json.loads(db.lastdata)
-        print(d)
-        self.assertEqual(d["matchs"], "my regex")
+        if "matchs" in d:
+            self.assertEqual(d["matchs"], "my regex")
+        elif "m" in d:
+            self.assertEqual(d["m"], "my regex")
+        else:
+            self.assertTrue(False)
+
         self.assertEqual(r.matchs, 1)
 
 class StackLanLearningTests(unittest.TestCase):
