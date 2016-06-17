@@ -6,7 +6,7 @@ EXTRA_DIST = 	tests_packets.h README.txt \
 		smtp_test_packets.h imap_test_packets.h pop_test_packets.h snmp_test_packets.h \
 		full_ssl_packets.h modbus_test_packets.h bitcoin_test_packets.h \
 		ssl_test_packets.h \
-		coap_test_packets.h 
+		coap_test_packets.h mqtt_test_packets.h 
 
 MAINTAINERCLEANFILES = Makefile.in 
 

@@ -2,7 +2,7 @@ include $(top_srcdir)/src/common.mk
 
 AUTOMAKE_OPTIONS = gnu
 
-noinst_HEADERS =	test_netbios.h
+noinst_HEADERS =	NetbiosProtocol.h test_netbios.h
 
 TEST = test_netbios
 

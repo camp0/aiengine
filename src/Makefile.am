@@ -81,6 +81,7 @@ noinst_HEADERS =        Packet.h Pointer.h RawPacket.h \
 			protocols/coap/CoAPInfo.h \
 			protocols/rtp/RTPProtocol.h \
 			protocols/mqtt/MQTTProtocol.h \
+			protocols/netbios/NetbiosProtocol.h \
 			protocols/frequency/Frequencies.h \
 			protocols/frequency/PacketFrequencies.h \
 			protocols/frequency/FrequencyProtocol.h \
