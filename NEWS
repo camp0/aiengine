@@ -131,4 +131,7 @@ Features/Changes of 1.4
 - Bug fixing.
 
 Features/Changes of 1.5
+- Support for Coap, mqtt, netbios and rtp protocols.
+- Support for Lua language. 
 - Support for anomaly handlers.
+- Bug fixing.
