@@ -200,6 +200,8 @@ public:
 	// Helper for show the content of cache of StringCache types
 	void showCacheMap(std::basic_ostream<char>& out,GenericMapType &mt, const std::string &title, const std::string &item_name);
 
+	void showPayload(std::basic_ostream<char>& out,unsigned char *payload, int lenght);
+
 	SharedPointer<IPSetManager> ipset_mng_;
 	mutable int64_t total_malformed_packets_;
 	mutable int64_t total_validated_packets_;
@@ -207,6 +209,9 @@ public:
         MultiplexerPtrWeak mux_;
         WeakPointer<FlowForwarder> flow_forwarder_;
 private:
+
+	void print_payload_line(std::basic_ostream<char>& out,unsigned char *payload, int from, int to);
+
 	std::string name_;
 	std::string short_name_;
 	uint16_t protocol_id_;

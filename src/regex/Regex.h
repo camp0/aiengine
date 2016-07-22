@@ -65,6 +65,7 @@ public:
 		,extract_buffer_()
 		,next_regex_(),is_terminal_(true),have_jit_(false),
 		show_match_(false),
+		show_packet_(false),
 		have_evidence_(false),regex_mng_()
 	{
 		study_exp_ = NULL;
@@ -157,6 +158,10 @@ public:
 	void setShowMatch(bool value) { show_match_ = value; }
 	bool getShowMatch() const { return show_match_; }
 
+	// For show the matched packet on std::cout
+	void setShowPacket(bool value) { show_packet_ = value; }
+	bool getShowPacket() const { return show_packet_; }
+
 private:
 	pcre *exp_;
 	pcre_extra *study_exp_;
@@ -166,6 +171,7 @@ private:
 	bool is_terminal_;
 	bool have_jit_;
 	bool show_match_;
+	bool show_packet_;
 	bool have_evidence_;
 	SharedPointer<RegexManager> regex_mng_;
 };

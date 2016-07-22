@@ -322,6 +322,38 @@ void Protocol::showCacheMap(std::basic_ostream<char>& out,GenericMapType &mt, co
         }
 }
 
+
+void Protocol::print_payload_line(std::basic_ostream<char>& out,unsigned char *payload, int from, int to) {
+
+	out << "         ";
+	for (int i = from ; i < to; ++i) {
+		if (payload[i] >= 32 && payload[i] <= 128)
+			out << (unsigned char)payload[i];
+		else
+			out << ".";
+	}
+	out << std::endl;
+}
+
+void Protocol::showPayload(std::basic_ostream<char>& out,unsigned char *payload, int length) {
+
+	for ( int i = 0; i < length  ; ++i) {
+		if ( i!=0 and i%16==0) {
+			print_payload_line(out,payload,i - 16, i);
+		}
+
+		if ( i%16 == 0 ) out << "\t";
+		// if ( i%16 == 0 ) out << "   ";
+		out << " " << std::hex << std::setfill('0') << std::setw(2) << (unsigned int)payload[i];
+
+		if (i == length -1) {
+			for(int j=0;j<15-i%16;++j) out << "   "; //extra spaces
+
+			print_payload_line(out,payload,i -i%16, i);
+		}
+	}
+}
+
 #if defined(PYTHON_BINDING) || defined(RUBY_BINDING)
 
 #if defined(PYTHON_BINDING)

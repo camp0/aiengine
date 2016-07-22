@@ -85,6 +85,7 @@ std::string option_release_cache_protocol;
 std::string option_show_flows_name;
 bool option_show_flows = false;
 bool option_show_matched_regex = false;
+bool option_show_matched_packet = false;
 bool option_enable_frequencies = false;
 bool option_enable_regex = false;
 bool option_enable_learner = false;
@@ -350,6 +351,7 @@ int main(int argc, char* argv[]) {
                 ("flow-class,c",  	po::value<std::string>(&option_regex_type_flows)->default_value("all"),
 					"Uses tcp, udp or all for matches the signature on the flows.") 
                 ("matched-flows,m",  	"Shows the flows that matchs with the regex.")
+                ("matched-packet,M",  	"Shows the packet payload that matchs with the regex.")
                 ("reject-flows,j",  	"Rejects the flows that matchs with the regex.")
                 ("evidence,w",  	"Generates a pcap file with the matching regex for forensic analysis.")
 		;
@@ -429,6 +431,7 @@ int main(int argc, char* argv[]) {
 		if (var_map.count("release")) option_release_caches = true;
 		if (var_map.count("enable-yara")) option_generate_yara = true; 
 		if (var_map.count("matched-flows")) option_show_matched_regex = true;
+		if (var_map.count("matched-packet")) option_show_matched_packet = true;
 		if (var_map.count("reject-flows")) option_reject_flows_regex = true;
 		if (var_map.count("evidence")) option_enable_regex_evidence = true;
 
@@ -458,16 +461,19 @@ int main(int argc, char* argv[]) {
         std::cout << " " << system_stats->getVersionName();
         std::cout << " " << system_stats->getMachineName();
         std::cout << std::endl;
-	std::cout << "\tPcre version:" << PCRE_MAJOR << "." << PCRE_MINOR ;
+	std::cout << "\tGCC version:" << __GNUG__ << "." << __GNUC_MINOR__ << "." << __GNUC_PATCHLEVEL__;
+	std::cout << " Pcre version:" << PCRE_MAJOR << "." << PCRE_MINOR ;
 	std::cout << " Boost version:" << BOOST_VERSION / 100000 << "." << BOOST_VERSION / 100 % 1000 << std::endl;
 
+#if defined(__x86_64__) || defined(_M_X64)
 
-        // Garbage 
+        // TODO Garbage 
         __asm__ volatile (
         	"push %rax\n"
                	"xor %rax,%rax\n"
                	"pop %rax\n"
         );
+#endif
 
 #ifdef HAVE_LIBLOG4CXX
 	BasicConfigurator::configure();
@@ -508,6 +514,7 @@ int main(int argc, char* argv[]) {
 				prevr = r;
 			}
 			topr->setShowMatch(option_show_matched_regex);
+			topr->setShowPacket(option_show_matched_packet);
 			topr->setRejectConnection(option_reject_flows_regex);	
 			topr->setEvidence(option_enable_regex_evidence);
 			sm->addRegex(topr);	
@@ -554,8 +561,6 @@ int main(int argc, char* argv[]) {
 					or(it->path().extension() == ".pcapng"))) {
 					std::ostringstream os;
 			
-					// std::cout << "adding " << it->path().c_str() << std::endl;	
-					// os << option_input.c_str() << "/" << it->path().filename().c_str();
 					os << it->path().c_str();
       					inputs.push_back(os.str());
 				} else {
