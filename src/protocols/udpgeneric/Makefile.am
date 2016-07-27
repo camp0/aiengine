@@ -14,7 +14,7 @@ TEST = test_udpgeneric
 
 check_PROGRAMS = test_udpgeneric
 
-test_udpgeneric_SOURCES = 	../../Multiplexer.cc \
+test_udpgeneric_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 				../../FlowForwarder.cc ../../CacheManager.cc \
 				../../AnomalyManager.cc \
 				../ethernet/EthernetProtocol.cc \

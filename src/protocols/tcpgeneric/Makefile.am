@@ -14,7 +14,7 @@ TEST = test_tcpgeneric
 
 check_PROGRAMS = test_tcpgeneric
 
-test_tcpgeneric_SOURCES = 	../../Multiplexer.cc \
+test_tcpgeneric_SOURCES = 	../../Multiplexer.cc ../../Protocol.cc \
 				../../FlowForwarder.cc ../../CacheManager.cc \
 				../../AnomalyManager.cc \
 				../ethernet/EthernetProtocol.cc \

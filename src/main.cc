@@ -80,7 +80,7 @@ std::string option_freqs_group_value;
 std::string option_freqs_type_flows;
 std::string option_regex_type_flows;
 std::vector<std::string> vector_regex;
-std::string option_selected_protocol;
+std::string option_selected_protocols;
 std::string option_release_cache_protocol;
 std::string option_show_flows_name;
 bool option_show_flows = false;
@@ -94,6 +94,7 @@ bool option_release_caches = false;
 bool option_generate_yara = false;
 bool option_reject_flows_regex = false;
 bool option_enable_regex_evidence = false;
+bool option_continue_regex = false;
 int tcp_flows_cache;
 int udp_flows_cache;
 int option_statistics_level = 0;
@@ -264,8 +265,14 @@ void showStackStatistics() {
 
 	pktdis->statistics();
        	if (option_statistics_level > 0) {
-        	if (option_selected_protocol.length() > 0) {
-                	stack->statistics(option_selected_protocol);
+        	if (option_selected_protocols.length() > 0) {
+			std::vector<std::string> items;
+		
+			boost::split(items, option_selected_protocols, boost::is_any_of(","));
+		
+			for (auto &p: items) {	
+                		stack->statistics(p);
+			}
                	} else {
                 	stack->statistics();
                	}
@@ -352,6 +359,7 @@ int main(int argc, char* argv[]) {
 					"Uses tcp, udp or all for matches the signature on the flows.") 
                 ("matched-flows,m",  	"Shows the flows that matchs with the regex.")
                 ("matched-packet,M",  	"Shows the packet payload that matchs with the regex.")
+                ("continue,C",  	"Continue evaluating the regex with the next packets of the Flow.")
                 ("reject-flows,j",  	"Rejects the flows that matchs with the regex.")
                 ("evidence,w",  	"Generates a pcap file with the matching regex for forensic analysis.")
 		;
@@ -387,8 +395,8 @@ int main(int argc, char* argv[]) {
 					"Show statistics of the network stack (5 levels).")
 		("timeout,T",		po::value<int>(&option_flows_timeout)->default_value(180),
 					"Sets the flows timeout.")
-               	("protocol,P",          po::value<std::string>(&option_selected_protocol)->default_value(""),
-                                       	"Show statistics of a specific protocol of the network stack.")
+               	("protocol,P",          po::value<std::string>(&option_selected_protocols)->default_value(""),
+                                       	"Show statistics of specific protocols of the network stack.")
                 ("release,e",  		"Release the caches.") 
                 ("release-cache,l",  	po::value<std::string>(&option_release_cache_protocol)->default_value(""),
 					"Release a specific cache.") 
@@ -430,6 +438,7 @@ int main(int argc, char* argv[]) {
 		if (var_map.count("enable-learner")) option_enable_learner = true;
 		if (var_map.count("release")) option_release_caches = true;
 		if (var_map.count("enable-yara")) option_generate_yara = true; 
+		if (var_map.count("continue")) option_continue_regex = true;
 		if (var_map.count("matched-flows")) option_show_matched_regex = true;
 		if (var_map.count("matched-packet")) option_show_matched_packet = true;
 		if (var_map.count("reject-flows")) option_reject_flows_regex = true;
@@ -517,6 +526,7 @@ int main(int argc, char* argv[]) {
 			topr->setShowPacket(option_show_matched_packet);
 			topr->setRejectConnection(option_reject_flows_regex);	
 			topr->setEvidence(option_enable_regex_evidence);
+			topr->setContinue(option_continue_regex);
 			sm->addRegex(topr);	
         	}
 

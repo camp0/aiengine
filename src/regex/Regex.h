@@ -63,10 +63,14 @@ public:
 	explicit Regex(const std::string &name, const std::string& exp):
 		Signature(name,exp)
 		,extract_buffer_()
-		,next_regex_(),is_terminal_(true),have_jit_(false),
+		,next_regex_(),
+		is_terminal_(true),
+		have_jit_(false),
 		show_match_(false),
 		show_packet_(false),
-		have_evidence_(false),regex_mng_()
+		have_evidence_(false),
+		continue_(false),
+		regex_mng_()
 	{
 		study_exp_ = NULL;
 		const char *errorstr;
@@ -162,6 +166,10 @@ public:
 	void setShowPacket(bool value) { show_packet_ = value; }
 	bool getShowPacket() const { return show_packet_; }
 
+	// For continue evaluating the flow 
+	void setContinue(bool value) { continue_ = value; }
+	bool getContinue() const { return continue_; }
+
 private:
 	pcre *exp_;
 	pcre_extra *study_exp_;
@@ -173,6 +181,7 @@ private:
 	bool show_match_;
 	bool show_packet_;
 	bool have_evidence_;
+	bool continue_;
 	SharedPointer<RegexManager> regex_mng_;
 };
 

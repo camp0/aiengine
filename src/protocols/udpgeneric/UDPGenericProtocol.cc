@@ -44,7 +44,7 @@ void UDPGenericProtocol::processFlow(Flow *flow) {
 		boost::string_ref data(reinterpret_cast<const char*>(payload),flow->packet->getLength());
                 bool result = false;
 
-                if (regex) {
+                if ((regex) and (!regex->getContinue())) {
                         if (regex->isTerminal() == false) {
                                 regex = regex->getNextRegex();
                                 if (regex) // There is no need but....
@@ -57,7 +57,7 @@ void UDPGenericProtocol::processFlow(Flow *flow) {
 
                 if((result)and(regex)) {
                         if (regex->getShowMatch()) {
-                                std::cout << "UDP Flow:[" << *flow << "] pkts:" << flow->total_packets << "] matchs with (";
+                                std::cout << std::dec << "UDP Flow:[" << *flow << "] pkts:" << flow->total_packets << " matchs with (";
                                 std::cout << std::addressof(*regex.get()) << ")Regex [" << regex->getName() << "]" << std::endl;
 				if (regex->getShowPacket())
 					showPayload(std::cout,flow->packet->getPayload(),flow->packet->getLength());

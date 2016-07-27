@@ -39,13 +39,12 @@ void TCPGenericProtocol::processFlow(Flow *flow) {
 
 	if (!flow->regex_mng.expired()) {
 		SharedPointer<RegexManager> sig = flow->regex_mng.lock();
-	
 		SharedPointer<Regex> regex = flow->regex.lock();
 		const unsigned char *payload = flow->packet->getPayload();
 		boost::string_ref data(reinterpret_cast<const char*>(payload),flow->packet->getLength());
 		bool result = false;
 
-		if (regex) { // The flow have been matched with some regex
+		if ((regex) and (!regex->getContinue())) { // The flow have been matched with some regex
 			if (regex->isTerminal() == false) {
 				regex = regex->getNextRegex();
 				if (regex) // There is no need but.... 
@@ -58,7 +57,7 @@ void TCPGenericProtocol::processFlow(Flow *flow) {
 
 		if((result)and(regex)) {
 			if (regex->getShowMatch()) {
-				std::cout << "TCP Flow:[" << *flow << "] pkts:" << flow->total_packets << "] matchs with (";
+				std::cout << std::dec << "TCP Flow:[" << *flow << "] pkts:" << flow->total_packets << " matchs with (";
 				std::cout << std::addressof(*regex.get()) << ")Regex [" << regex->getName() << "]" << std::endl;
 				if (regex->getShowPacket())
 					showPayload(std::cout,flow->packet->getPayload(),flow->packet->getLength());

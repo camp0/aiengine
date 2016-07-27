@@ -50,7 +50,9 @@ class TCPGenericProtocol: public Protocol
 public:
     	explicit TCPGenericProtocol():Protocol(TCPGenericProtocol::default_name,"tcpgeneric"),
 		stats_level_(0),
-		tcp_generic_header_(nullptr),total_bytes_(0) {}
+		tcp_generic_header_(nullptr),
+		total_bytes_(0),
+		sigs_() {}
 
     	virtual ~TCPGenericProtocol() {}
 
@@ -110,7 +112,6 @@ private:
 	unsigned char *tcp_generic_header_;
         int64_t total_bytes_;
 	SharedPointer<RegexManager> sigs_;
-
 };
 
 typedef std::shared_ptr<TCPGenericProtocol> TCPGenericProtocolPtr;
