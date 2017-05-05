@@ -4,6 +4,8 @@ AIEngine (Artificial Inteligent Engine)
 AIEngine is a next generation interactive/programmable Python/Ruby/Java/Lua packet inspection engine with capabilities of learning
 without any human intervention, NIDS(Network Intrusion Detection System) functionality, DNS domain classification, network collector, network forensics and many others. 
 
+This actual project is on https://bitbucket.org/camp0/aiengine
+
 AIEngine also helps network/security professionals to identify traffic and develop
 signatures for use them on NIDS, Firewalls, Traffic classifiers and so on.
 
